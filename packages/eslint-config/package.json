@@ -1,7 +1,7 @@
 {
-  "name": "@myzenbuddy/config-eslint",
+  "name": "@myzenbuddy/eslint-config",
   "version": "0.0.0",
-  "main": "./index.js",
+  "main": "index.js",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",

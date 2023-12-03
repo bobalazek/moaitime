@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "clean": "pnpm dlx rimraf --glob **/node_modules --glob .turbo --glob **/dist",
+    "clean": "pnpm dlx rimraf --glob **/node_modules --glob **/.turbo --glob **/dist",
+    "daemon:clean": "pnpx turbo daemon clean",
     "dev": "turbo dev",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
@@ -14,12 +15,13 @@
     "test:watch": "turbo test:watch"
   },
   "devDependencies": {
-    "@myzenbuddy/config-eslint": "workspace:*",
-    "@myzenbuddy/config-prettier": "workspace:*",
-    "@myzenbuddy/config-tsconfig": "workspace:*",
+    "@myzenbuddy/eslint-config": "workspace:*",
+    "@myzenbuddy/prettier-config": "workspace:*",
+    "@myzenbuddy/tsconfig-config": "workspace:*",
     "eslint": "^8.55.0",
     "husky": "^8.0.0",
     "prettier": "^3.1.0",
+    "tsup": "^8.0.1",
     "turbo": "^1.10.16"
   },
   "packageManager": "pnpm@8.11.0",

@@ -13,6 +13,9 @@ jobs:
       - name: Git - Checkout
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Node - Setup
         uses: actions/setup-node@v4
         with:

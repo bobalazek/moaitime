@@ -5,14 +5,14 @@
   "scripts": {
     "build": "turbo build",
     "clean": "pnpm dlx rimraf --glob **/node_modules --glob **/.turbo --glob **/dist",
-    "daemon:clean": "pnpx turbo daemon clean",
     "dev": "turbo dev",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "lint": "turbo lint",
     "prepare": "husky install",
     "test": "turbo test",
-    "test:watch": "turbo test:watch"
+    "test:watch": "turbo test:watch",
+    "turbo:clean": "pnpx turbo daemon clean"
   },
   "dependencies": {
     "zod": "^3.22.4"
@@ -21,6 +21,7 @@
     "@myzenbuddy/eslint-config": "workspace:*",
     "@myzenbuddy/prettier-config": "workspace:*",
     "@myzenbuddy/tsconfig-config": "workspace:*",
+    "@types/node": "^20.10.2",
     "eslint": "^8.55.0",
     "husky": "^8.0.0",
     "prettier": "^3.1.0",

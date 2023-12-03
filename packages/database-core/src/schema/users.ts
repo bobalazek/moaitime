@@ -37,8 +37,12 @@ export const users = pgTable(
     return {
       emailIdx: index('email_idx').on(table.email),
       newEmailIdx: index('new_email_idx').on(table.newEmail),
-      emailConfirmationTokenIdx: index('email_confirmation_token_idx').on(table.emailConfirmationToken),
-      newEmailConfirmationTokenIdx: index('new_email_confirmation_token_idx').on(table.newEmailConfirmationToken),
+      emailConfirmationTokenIdx: index('email_confirmation_token_idx').on(
+        table.emailConfirmationToken
+      ),
+      newEmailConfirmationTokenIdx: index('new_email_confirmation_token_idx').on(
+        table.newEmailConfirmationToken
+      ),
       passwordResetTokenIdx: index('password_reset_token_idx').on(table.passwordResetToken),
     };
   }

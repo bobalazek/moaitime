@@ -11,6 +11,21 @@ const config = {
     'prettier-plugin-packagejson',
     'prettier-plugin-tailwindcss', // Make sure that this one is always last!
   ],
+  importOrder: [
+    '<TYPES>',
+    '',
+    '<TYPES>^[.]',
+    '',
+    '<BUILT_IN_MODULES>',
+    '',
+    '<THIRD_PARTY_MODULES>',
+    '',
+    '^@myzenbuddy/(.*)$',
+    '',
+    '^[./]',
+  ],
+  importOrderParserPlugins: ['typescript', 'classProperties', 'decorators-legacy', 'jsx'],
+  tailwindFunctions: ['tw', 'cn', 'clsx'],
 };
 
 module.exports = config;

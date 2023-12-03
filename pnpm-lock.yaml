@@ -21,6 +21,9 @@ importers:
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
         version: link:packages/tsconfig-config
+      '@types/node':
+        specifier: ^20.10.2
+        version: 20.10.2
       eslint:
         specifier: ^8.55.0
         version: 8.55.0

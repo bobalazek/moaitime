@@ -5,7 +5,13 @@ import pino, { BaseLogger, Bindings, LogFn, transport, TransportTargetOptions } 
 
 import { getEnv, LOGS_DIR } from '@myzenbuddy/shared-backend';
 
-const { LOGGER_FORCE_JSON_OUTPUT, LOGGER_WRITE_TO_LOG_FILES, NODE_ENV, LOGGER_LEVEL, SERVICE_NAME } = getEnv();
+const {
+  LOGGER_FORCE_JSON_OUTPUT,
+  LOGGER_WRITE_TO_LOG_FILES,
+  NODE_ENV,
+  LOGGER_LEVEL,
+  SERVICE_NAME,
+} = getEnv();
 
 export class Logger implements BaseLogger {
   private _logger: ReturnType<typeof pino>;
@@ -30,7 +36,9 @@ export class Logger implements BaseLogger {
 
   reset(bindings: Bindings) {
     const defaultOptions = this._defaultOptions();
-    const base = bindings['base'] ? { ...defaultOptions.base, ...bindings['base'] } : defaultOptions;
+    const base = bindings['base']
+      ? { ...defaultOptions.base, ...bindings['base'] }
+      : defaultOptions;
     const options = { ...defaultOptions, ...bindings, base };
 
     this._cleanup();

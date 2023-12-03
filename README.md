@@ -20,6 +20,7 @@ This is the MyZenBuddy project.
 - [Commands](./docs/COMMANDS.md)
 - [Development](./docs/DEVELOPMENT.md)
 - [Testing](./docs/TESTING.md)
+- [Known Issues](./docs/KNOWN-ISSUES.md)
 
 ## License
 

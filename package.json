@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build": "turbo build --no-daemon",
     "clean": "pnpm dlx rimraf --glob **/node_modules --glob **/.turbo --glob **/dist",
-    "dev": "turbo dev",
+    "dev": "turbo dev --filter='./apps/*'",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "lint": "turbo lint",

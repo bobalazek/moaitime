@@ -8,7 +8,9 @@
       "outputs": ["dist/**"]
     },
     "lint": {},
-    "test": {},
+    "test": {
+      "dependsOn": ["build"]
+    },
     "test:watch": {
       "cache": false
     },

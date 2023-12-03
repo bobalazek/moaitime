@@ -31,7 +31,9 @@ export class UserAccessTokensManager {
     return row ?? null;
   }
 
-  async findOneByRefreshToken(refreshToken: string): Promise<(UserAccessToken & { user: User }) | null> {
+  async findOneByRefreshToken(
+    refreshToken: string
+  ): Promise<(UserAccessToken & { user: User }) | null> {
     const row = await databaseClient.query.userAccessTokens.findFirst({
       where: eq(userAccessTokens.refreshToken, refreshToken),
       with: {
@@ -63,7 +65,10 @@ export class UserAccessTokensManager {
   }
 
   async deleteOneById(id: string): Promise<UserAccessToken> {
-    const rows = await databaseClient.delete(userAccessTokens).where(eq(userAccessTokens.id, id)).returning();
+    const rows = await databaseClient
+      .delete(userAccessTokens)
+      .where(eq(userAccessTokens.id, id))
+      .returning();
 
     return rows[0];
   }

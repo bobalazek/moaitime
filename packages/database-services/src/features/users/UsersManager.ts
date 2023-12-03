@@ -1,6 +1,13 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
-import { databaseClient, insertUserSchema, NewUser, updateUserSchema, User, users } from '@myzenbuddy/database-core';
+import {
+  databaseClient,
+  insertUserSchema,
+  NewUser,
+  updateUserSchema,
+  User,
+  users,
+} from '@myzenbuddy/database-core';
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>) {
@@ -31,7 +38,9 @@ export class UsersManager {
     return row ?? null;
   }
 
-  async findOneByNewEmailConfirmationToken(newEmailConfirmationToken: string): Promise<User | null> {
+  async findOneByNewEmailConfirmationToken(
+    newEmailConfirmationToken: string
+  ): Promise<User | null> {
     const row = await databaseClient.query.users.findFirst({
       where: eq(users.newEmailConfirmationToken, newEmailConfirmationToken),
     });

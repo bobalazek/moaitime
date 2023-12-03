@@ -87,8 +87,12 @@ export class AuthManager {
     }
 
     const now = new Date();
-    const lastSentAt = isNewEmail ? user.newEmailConfirmationLastSentAt : user.emailConfirmationLastSentAt;
-    const expiresAt = lastSentAt ? addSeconds(lastSentAt, AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS) : null;
+    const lastSentAt = isNewEmail
+      ? user.newEmailConfirmationLastSentAt
+      : user.emailConfirmationLastSentAt;
+    const expiresAt = lastSentAt
+      ? addSeconds(lastSentAt, AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS)
+      : null;
 
     if (!expiresAt || (expiresAt && expiresAt.getTime() < now.getTime())) {
       throw new Error(`Seems like the token already expired. Please try and request it again.`);
@@ -128,8 +132,12 @@ export class AuthManager {
     }
 
     const now = new Date();
-    const lastSentAt = isNewEmail ? user.newEmailConfirmationLastSentAt : user.emailConfirmationLastSentAt;
-    const expiresAt = lastSentAt ? addSeconds(lastSentAt, AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS) : null;
+    const lastSentAt = isNewEmail
+      ? user.newEmailConfirmationLastSentAt
+      : user.emailConfirmationLastSentAt;
+    const expiresAt = lastSentAt
+      ? addSeconds(lastSentAt, AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS)
+      : null;
     if (expiresAt && expiresAt.getTime() > now.getTime()) {
       throw new Error(
         `You already have a pending new email confirmation request. Check your email or try again later.`
@@ -180,11 +188,16 @@ export class AuthManager {
 
     const now = new Date();
     const expiresAt = user.passwordResetLastRequestedAt
-      ? addSeconds(user.passwordResetLastRequestedAt, AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS)
+      ? addSeconds(
+          user.passwordResetLastRequestedAt,
+          AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS
+        )
       : null;
 
     if (expiresAt && expiresAt.getTime() > now.getTime()) {
-      throw new Error(`You already have a pending password reset request. Check your email or try again later.`);
+      throw new Error(
+        `You already have a pending password reset request. Check your email or try again later.`
+      );
     }
 
     const updatedUser = await this._usersManager.updateOneById(user.id, {
@@ -205,7 +218,10 @@ export class AuthManager {
 
     const now = new Date();
     const expiresAt = user.passwordResetLastRequestedAt
-      ? addSeconds(user.passwordResetLastRequestedAt, AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS)
+      ? addSeconds(
+          user.passwordResetLastRequestedAt,
+          AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS
+        )
       : null;
 
     if (!expiresAt || (expiresAt && expiresAt.getTime() < now.getTime())) {
@@ -240,7 +256,10 @@ export class AuthManager {
       throw new Error('Token has expired');
     }
 
-    if (userAccessToken.refreshTokenClaimedAt && userAccessToken.refreshTokenClaimedAt.getTime() < now.getTime()) {
+    if (
+      userAccessToken.refreshTokenClaimedAt &&
+      userAccessToken.refreshTokenClaimedAt.getTime() < now.getTime()
+    ) {
       throw new Error('Token was already claimed');
     }
 
@@ -320,7 +339,9 @@ export class AuthManager {
     // but we will need to figure once we are there.
 
     const isPasswordSame =
-      currentPassword && user.password ? await this.comparePassword(currentPassword, user.password) : true;
+      currentPassword && user.password
+        ? await this.comparePassword(currentPassword, user.password)
+        : true;
     if (!isPasswordSame) {
       throw new Error('Invalid password provided');
     }
@@ -354,7 +375,9 @@ export class AuthManager {
     return user;
   }
 
-  async getUserByAccessToken(token: string): Promise<{ user: User; userAccessToken: UserAccessToken } | null> {
+  async getUserByAccessToken(
+    token: string
+  ): Promise<{ user: User; userAccessToken: UserAccessToken } | null> {
     const userAccessToken = await this._userAccessTokensManager.findOneByToken(token);
     if (!userAccessToken) {
       throw new Error('Invalid credentials');

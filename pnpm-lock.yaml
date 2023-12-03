@@ -71,6 +71,76 @@ importers:
         specifier: ^8.10.9
         version: 8.10.9
 
+  packages/database-fixtures:
+    dependencies:
+      '@myzenbuddy/database-core':
+        specifier: '*'
+        version: link:../database-core
+      '@myzenbuddy/shared-backend':
+        specifier: '*'
+        version: link:../shared-backend
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+      date-fns-tz:
+        specifier: ^2.0.0
+        version: 2.0.0(date-fns@2.30.0)
+      drizzle-orm:
+        specifier: ^0.29.0
+        version: 0.29.1(@types/pg@8.10.9)(pg@8.11.3)
+
+  packages/database-seeds:
+    dependencies:
+      '@myzenbuddy/database-core':
+        specifier: '*'
+        version: link:../database-core
+      '@myzenbuddy/shared-backend':
+        specifier: '*'
+        version: link:../shared-backend
+      drizzle-orm:
+        specifier: ^0.29.0
+        version: 0.29.1(@types/pg@8.10.9)(pg@8.11.3)
+
+  packages/database-services:
+    dependencies:
+      '@myzenbuddy/database-core':
+        specifier: '*'
+        version: link:../database-core
+      '@myzenbuddy/database-testing':
+        specifier: '*'
+        version: link:../database-testing
+      '@myzenbuddy/shared-backend':
+        specifier: '*'
+        version: link:../shared-backend
+      '@myzenbuddy/shared-common':
+        specifier: '*'
+        version: link:../shared-common
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+      drizzle-orm:
+        specifier: ^0.29.0
+        version: 0.29.1(@types/pg@8.10.9)(pg@8.11.3)
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
+    devDependencies:
+      '@types/uuid':
+        specifier: ^9.0.7
+        version: 9.0.7
+
+  packages/database-testing:
+    dependencies:
+      '@myzenbuddy/database-core':
+        specifier: '*'
+        version: link:../database-core
+      '@myzenbuddy/database-fixtures':
+        specifier: '*'
+        version: link:../database-fixtures
+      '@myzenbuddy/database-seeds':
+        specifier: '*'
+        version: link:../database-seeds
+
   packages/eslint-config:
     devDependencies:
       '@typescript-eslint/eslint-plugin':
@@ -1332,6 +1402,10 @@ packages:
 
   /@types/semver@7.5.6:
     resolution: {integrity: sha512-dn1l8LaMea/IjDoHNd9J52uBbInB796CDffS6VdIxvqYCPSG0V0DzHp76GpaWnlhg88uYyPbXCDIowa86ybd5A==}
+    dev: true
+
+  /@types/uuid@9.0.7:
+    resolution: {integrity: sha512-WUtIVRUZ9i5dYXefDEAI7sh9/O7jGvHg7Df/5O/gtH3Yabe5odI3UWopVR1qbPXQtvOxWu3mM4XxlYeZtMWF4g==}
     dev: true
 
   /@typescript-eslint/eslint-plugin@6.13.1(@typescript-eslint/parser@6.13.1)(eslint@8.55.0)(typescript@5.3.2):
@@ -4308,6 +4382,11 @@ packages:
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: false
+
+  /uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
     dev: false
 
   /vite-node@0.34.6(@types/node@20.10.2):

@@ -1,0 +1,77 @@
+import { DBQueryConfig, eq } from 'drizzle-orm';
+
+import { databaseClient, insertUserSchema, NewUser, updateUserSchema, User, users } from '@myzenbuddy/database-core';
+
+export class UsersManager {
+  async findMany(options?: DBQueryConfig<'many', true>) {
+    return databaseClient.query.users.findMany(options);
+  }
+
+  async findOneById(id: string): Promise<User | null> {
+    const row = await databaseClient.query.users.findFirst({
+      where: eq(users.id, id),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByEmail(email: string): Promise<User | null> {
+    const row = await databaseClient.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
+    const row = await databaseClient.query.users.findFirst({
+      where: eq(users.emailConfirmationToken, emailConfirmationToken),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByNewEmailConfirmationToken(newEmailConfirmationToken: string): Promise<User | null> {
+    const row = await databaseClient.query.users.findFirst({
+      where: eq(users.newEmailConfirmationToken, newEmailConfirmationToken),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByPasswordResetToken(passwordResetToken: string): Promise<User | null> {
+    const row = await databaseClient.query.users.findFirst({
+      where: eq(users.passwordResetToken, passwordResetToken),
+    });
+
+    return row ?? null;
+  }
+
+  async insertOne(data: NewUser): Promise<User> {
+    data = insertUserSchema.parse(data) as unknown as NewUser;
+
+    const rows = await databaseClient.insert(users).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
+    data = updateUserSchema.parse(data) as unknown as NewUser;
+
+    const rows = await databaseClient
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(id: string): Promise<User> {
+    const rows = await databaseClient.delete(users).where(eq(users.id, id)).returning();
+
+    return rows[0];
+  }
+}
+
+export const usersManager = new UsersManager();

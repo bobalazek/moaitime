@@ -14,7 +14,11 @@
     "strict": true,
     "strictNullChecks": true,
     "preserveSymlinks": true,
-    "moduleResolution": "node"
+    "skipDefaultLibCheck": true,
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"]
   },
   "exclude": ["node_modules", "dist"]
 }

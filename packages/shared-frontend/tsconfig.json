@@ -1,8 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src/**/*"],
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext"
-  }
+  "include": ["src/**/*"]
 }

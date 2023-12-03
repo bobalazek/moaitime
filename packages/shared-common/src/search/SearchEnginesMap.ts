@@ -1,6 +1,7 @@
+import { SearchEngineInterface } from './SearchEngineInterface';
 import { SearchEnginesEnum } from './SearchEnginesEnum';
 
-export const SearchEnginesMap: Record<SearchEnginesEnum, { label: string; searchUrl: string; iconImageUrl: string }> = {
+export const SearchEnginesMap: Record<SearchEnginesEnum, SearchEngineInterface> = {
   [SearchEnginesEnum.GOOGLE]: {
     label: 'Google',
     searchUrl: 'https://www.google.com/search?q={search}',

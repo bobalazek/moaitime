@@ -16,7 +16,7 @@ importers:
         version: link:packages/prettier-config
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
-        version: link:packages/config-tsconfig
+        version: link:packages/tsconfig-config
       eslint:
         specifier: ^8.55.0
         version: 8.55.0
@@ -32,8 +32,9 @@ importers:
       turbo:
         specifier: ^1.10.16
         version: 1.10.16
-
-  packages/config-tsconfig: {}
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6
 
   packages/eslint-config:
     devDependencies:
@@ -76,6 +77,8 @@ importers:
       date-fns-tz:
         specifier: ^2.0.0
         version: 2.0.0(date-fns@2.30.0)
+
+  packages/tsconfig-config: {}
 
 packages:
 

@@ -8,5 +8,7 @@ export function getGmtOffset(timezone: string) {
   const offsetMinutes = Math.abs(offset) % 60;
   const prefix = offset >= 0 ? '+' : '-';
 
-  return `GMT${prefix}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
+  return `GMT${prefix}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes
+    .toString()
+    .padStart(2, '0')}`;
 }

@@ -13,14 +13,28 @@ jobs:
       - name: Git - Checkout
         uses: actions/checkout@v4
 
+      - name: Node - Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
       - name: pnpm - Setup
         uses: pnpm/action-setup@v2
+        with:
+          run_install: false
 
-      - name: Prepare environment variables
-        run: cp -f .env.local.example .env.local
+      - name: pnpm - Store path
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Docker compose - Build & start the containers
-        run: docker compose up -d
+      - name: pnpm - Setup Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: pnpm - Install
         run: pnpm install

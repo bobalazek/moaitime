@@ -13,14 +13,8 @@ jobs:
       - name: Git - Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Node - Setup
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: pnpm
+      - name: pnpm - Setup
+        uses: pnpm/action-setup@v2
 
       - name: Prepare environment variables
         run: cp -f .env.local.example .env.local

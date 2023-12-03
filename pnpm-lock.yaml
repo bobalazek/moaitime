@@ -14,6 +14,9 @@ importers:
       '@myzenbuddy/config-prettier':
         specifier: workspace:*
         version: link:packages/config-prettier
+      '@myzenbuddy/config-tsconfig':
+        specifier: workspace:*
+        version: link:packages/config-tsconfig
       eslint:
         specifier: ^8.55.0
         version: 8.55.0
@@ -56,6 +59,8 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.5.7
         version: 0.5.7(@ianvs/prettier-plugin-sort-imports@4.1.1)(prettier@3.1.0)
+
+  packages/config-tsconfig: {}
 
 packages:
 

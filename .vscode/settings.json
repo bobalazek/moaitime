@@ -6,6 +6,7 @@
       "mode": "auto"
     }
   ],
+  "prettier.configPath": ".prettierrc.js",
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true

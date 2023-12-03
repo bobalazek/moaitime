@@ -23,7 +23,7 @@ Follow these steps to set up your development environment:
 4. **Prepare Docker Environment**
    - Duplicate the `.env.local.example` file and rename it to `.env.local`. For now, you are not required to do any changes to it
    - You will need to duplicate the `.env.test.local.example` file and rename it to `.env.test.local`. The reason for this is, that when we running any kind of tests (unit or E2E), we want to use a different database, so we don't mess up the data in the main database
-   - Start the Docker environment using `docker compose up -d`
+   - Start the Docker environment using `docker compose --file docker/compose.yaml up -d`
 5. **Setup Database**
    - Run `pnpm database:reload` to setup the database. This drops the current schema in the database, runs the migrations and the inserts the seed and fixture data
 6. **That is It**

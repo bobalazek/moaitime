@@ -5,11 +5,11 @@ const config = {
   useTabs: false,
   singleQuote: true,
   semi: true,
-  trailingComma: "es5",
+  trailingComma: 'es5',
   plugins: [
-    "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-packagejson",
-    "prettier-plugin-tailwindcss", // Make sure that this one is always last!
+    '@ianvs/prettier-plugin-sort-imports',
+    'prettier-plugin-packagejson',
+    'prettier-plugin-tailwindcss', // Make sure that this one is always last!
   ],
 };
 

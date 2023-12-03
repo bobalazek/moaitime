@@ -1,20 +1,27 @@
 {
   "name": "@myzenbuddy/root",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "clean": "pnpm dlx rimraf --glob **/node_modules --glob .turbo --glob **/dist",
     "dev": "turbo dev",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "lint": "turbo lint",
-    "test": "turbo test"
+    "test": "turbo test",
+    "test:watch": "turbo test:watch"
   },
   "devDependencies": {
     "@myzenbuddy/config-eslint": "workspace:*",
     "@myzenbuddy/config-prettier": "workspace:*",
+    "@myzenbuddy/config-tsconfig": "workspace:*",
     "eslint": "^8.55.0",
     "prettier": "^3.1.0",
     "turbo": "^1.10.16"
   },
-  "packageManager": "pnpm@8.11.0"
+  "packageManager": "pnpm@8.11.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

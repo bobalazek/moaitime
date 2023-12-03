@@ -1,0 +1,41 @@
+name: Test Workflow
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  test-and-benchmark:
+    name: Test and Benchmark
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Git - Checkout
+        uses: actions/checkout@v4
+
+      - name: Node - Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Prepare environment variables
+        run: cp -f .env.local.example .env.local
+
+      - name: Docker compose - Build & start the containers
+        run: docker compose up -d
+
+      - name: pnpm - Install
+        run: pnpm install
+
+      - name: pnpm - Lint
+        run: pnpm lint
+
+      - name: pnpm - Format Check
+        run: pnpm format:check
+
+      - name: pnpm - Build
+        run: pnpm build
+
+      - name: pnpm - Test
+        run: pnpm test

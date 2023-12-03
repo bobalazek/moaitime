@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+pnpm install
+
+# If pnpm-lock.yaml was changed as a result, revert those changes
+if git diff --exit-code pnpm-lock.yaml >/dev/null; then
+    echo "pnpm-lock.yaml unchanged"
+else
+    echo "Reverting changes to pnpm-lock.yaml"
+    git checkout pnpm-lock.yaml
+fi

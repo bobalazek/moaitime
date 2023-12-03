@@ -32,6 +32,9 @@ importers:
       turbo:
         specifier: ^1.10.16
         version: 1.10.16
+      vite:
+        specifier: ^5.0.4
+        version: 5.0.4(@types/node@20.10.2)
       vitest:
         specifier: ^0.34.6
         version: 0.34.6
@@ -77,6 +80,8 @@ importers:
       date-fns-tz:
         specifier: ^2.0.0
         version: 2.0.0(date-fns@2.30.0)
+
+  packages/shared-frontend: {}
 
   packages/tsconfig-config: {}
 

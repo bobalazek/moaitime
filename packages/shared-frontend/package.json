@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/shared-common",
+  "name": "@myzenbuddy/shared-frontend",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -23,9 +23,5 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint ."
-  },
-  "dependencies": {
-    "date-fns": "^2.30.0",
-    "date-fns-tz": "^2.0.0"
   }
 }

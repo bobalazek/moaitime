@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/shared-logging",
+  "name": "@myzenbuddy/database-core",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -25,9 +25,14 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@myzenbuddy/shared-backend": "workspace:*",
-    "dotenv": "^16.3.1",
-    "pino": "^8.16.2",
-    "pino-pretty": "^10.2.3"
+    "@myzenbuddy/shared-backend": "*",
+    "@myzenbuddy/shared-common": "*",
+    "drizzle-kit": "^0.20.4",
+    "drizzle-orm": "^0.29.0",
+    "drizzle-zod": "^0.5.1",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.9"
   }
 }

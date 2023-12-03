@@ -14,6 +14,9 @@
     "test": "turbo test",
     "test:watch": "turbo test:watch"
   },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
   "devDependencies": {
     "@myzenbuddy/eslint-config": "workspace:*",
     "@myzenbuddy/prettier-config": "workspace:*",

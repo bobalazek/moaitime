@@ -27,9 +27,7 @@
   "dependencies": {
     "app-root-path": "^3.1.0",
     "bcrypt": "^5.1.1",
-    "dotenv": "^16.3.1",
-    "tslib": "^2.3.0",
-    "zod": "^3.22.4"
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2"

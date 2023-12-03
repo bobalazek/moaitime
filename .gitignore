@@ -1,0 +1,14 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# macos
+.DS_Store
+
+# env
+.env.local
+.env.*.local
+
+# turbo
+.turbo

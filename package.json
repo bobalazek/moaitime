@@ -1,0 +1,20 @@
+{
+  "name": "@myzenbuddy/root",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
+    "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
+    "lint": "turbo lint",
+    "test": "turbo test"
+  },
+  "devDependencies": {
+    "@myzenbuddy/config-eslint": "workspace:*",
+    "@myzenbuddy/config-prettier": "workspace:*",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "turbo": "^1.10.16"
+  },
+  "packageManager": "pnpm@8.11.0"
+}

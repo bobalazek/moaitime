@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "nrwl.angular-console",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "firsttris.vscode-jest-runner",
+    "bradlc.vscode-tailwindcss",
+    "EditorConfig.EditorConfig",
+    "ms-azuretools.vscode-docker",
+    "eamodio.gitlens",
+    "ecmel.vscode-html-css",
+    "christian-kohler.npm-intellisense",
+    "pflannery.vscode-versionlens",
+    "redhat.vscode-yaml",
+    "Codeium.codeium"
+  ]
+}

@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "scripts:check": "drizzle-kit check:pg --config=./src/drizzle.config.ts",

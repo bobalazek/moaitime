@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "build": "vite build",
+    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview",

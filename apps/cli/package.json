@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "lint": "eslint .",
     "run-exec": "node ./dist/main.js"
   },

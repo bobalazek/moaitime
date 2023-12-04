@@ -2,6 +2,7 @@
   "name": "@myzenbuddy/web-e2e",
   "version": "0.0.0",
   "scripts": {
+    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "e2e": "start-server-and-test servers:start \":4200|:3636\" cypress:run",

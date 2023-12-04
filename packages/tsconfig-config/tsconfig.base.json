@@ -19,7 +19,11 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "@myzenbuddy/*": ["../../packages/*/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

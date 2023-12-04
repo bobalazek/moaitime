@@ -7,6 +7,7 @@
       "outputs": ["dist/**"]
     },
     "dev": {
+      "dependsOn": ["topo"],
       "cache": false,
       "persistent": true
     },
@@ -26,6 +27,9 @@
     "e2e": {},
     "e2e:watch": {
       "cache": false
+    },
+    "topo": {
+      "dependsOn": ["^topo"]
     }
   }
 }

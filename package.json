@@ -6,6 +6,8 @@
     "build": "turbo build --no-daemon",
     "clean": "pnpm dlx rimraf --glob **/node_modules --glob **/.turbo --glob **/dist",
     "dev": "turbo dev --no-daemon --concurrency=50",
+    "e2e": "turbo e2e --no-daemon",
+    "e2e:watch": "turbo e2e:watch --no-daemon",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "lint": "turbo lint --no-daemon",

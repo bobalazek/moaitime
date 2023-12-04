@@ -1,0 +1,198 @@
+/// <reference types="cypress" />
+
+import { openTasksFirstListActions, openTasksNewListDropdownMenu, openTasksPopover } from './utils/tasks-helpers';
+
+describe('tasks-lists.cy.ts', () => {
+  before(() => {
+    cy.reloadDatabase();
+  });
+
+  beforeEach(() => {
+    cy.login();
+  });
+
+  it('should switch to a different list', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--body-header--lists-list--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--lists-list--dropdown-menu').find('div[role="menuitemradio"]').contains('Today').click();
+
+    cy.getBySel('tasks--body-header--title').contains('Today').should('exist');
+  });
+
+  it('should delete the task list correctly', () => {
+    openTasksPopover();
+
+    openTasksFirstListActions();
+
+    cy.getBySel('tasks--list-actions--dropdown-menu').find('div').contains('Delete').click();
+
+    cy.get('div[role="alertdialog"] button').contains('Confirm').click();
+
+    cy.contains('List deleted').should('exist');
+  });
+
+  it('should edit the task list name', () => {
+    openTasksPopover();
+
+    openTasksFirstListActions();
+
+    cy.getBySel('tasks--list-actions--dropdown-menu').find('span').contains('Edit').click();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').click();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').clear();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').type('New list {enter}');
+
+    cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('tasks--body-header--title').contains('New list');
+  });
+
+  it('should check if successfull message is displayed after editing a task list name', () => {
+    openTasksPopover();
+
+    openTasksFirstListActions();
+
+    cy.getBySel('tasks--list-actions--dropdown-menu').find('span').contains('Edit').click();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').click();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').clear();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').type('New list {enter}');
+
+    cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
+
+    cy.contains('You have successfully saved the list.').should('exist');
+  });
+
+  it('should edit and save the task list color', () => {
+    // TODO: hacky workaround - should rather use
+    // import { TASK_LIST_COLORS } from '@myzenbuddy/shared-common';
+    // but not working at the moment
+    const LIST_COLOR_OPTION = {
+      name: 'Grey',
+      value: '#6B7280',
+    };
+
+    openTasksPopover();
+
+    openTasksFirstListActions();
+
+    cy.getBySel('tasks--list-actions--dropdown-menu').find('span').contains('Edit').click();
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(100);
+
+    cy.getBySel('tasks--list-form-dialog--color-select--trigger-button').click();
+
+    cy.getBySel('tasks--list-form-dialog--color-select')
+      .find('div[role="option"]')
+      .contains(LIST_COLOR_OPTION.name)
+      .click();
+
+    cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('tasks--body-header--title').should('have.attr', 'data-color', LIST_COLOR_OPTION.value);
+  });
+
+  it('should check if add a new task list works correctly', () => {
+    openTasksPopover();
+
+    openTasksNewListDropdownMenu();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').type('New list {enter}');
+
+    cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('tasks--body-header--title').contains('New list');
+  });
+
+  it('should check if a successful message is displayed after adding a new task list', () => {
+    openTasksPopover();
+
+    openTasksNewListDropdownMenu();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').type('New list {enter}');
+
+    cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
+
+    cy.contains('You have successfully saved the list.').should('exist');
+  });
+
+  it('should exit the add new task list dialog when clicking on the Close button', () => {
+    openTasksPopover();
+
+    openTasksNewListDropdownMenu();
+
+    cy.getBySel('tasks--list-form-dialog').find('div').contains('Close').click();
+
+    cy.getBySel('tasks--list-form-dialog').should('not.exist');
+  });
+
+  it('should exit the add new task list dialog when clicking on the x (close) button in the right top corner', () => {
+    openTasksPopover();
+
+    openTasksNewListDropdownMenu();
+
+    cy.getBySel('tasks--list-form-dialog').find('[data-test="dialog--close"]').click();
+
+    cy.getBySel('tasks--list-form-dialog').should('not.exist');
+  });
+
+  it('should move a task to another list', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--body-header').contains('Inbox');
+
+    cy.getBySel('tasks--tasks-form').type('New task{enter}');
+
+    cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu').find('div[role="menuitem"]').contains('Move').click();
+
+    cy.getBySel('tasks--lists-list--dropdown-menu')
+      .find('div[role="menuitemradio"]')
+      .find('span')
+      .contains('Today')
+      .click();
+
+    cy.getBySel('tasks--body-header').contains('Today');
+
+    cy.getBySel('tasks--sortable-task').contains('New task');
+  });
+
+  it('should add color when creating a new task list', () => {
+    // TODO: hacky workaround - should rather use
+    // import { TASK_LIST_COLORS } from '@myzenbuddy/shared-common';
+    // but not working at the moment
+    const LIST_COLOR_OPTION = {
+      name: 'Grey',
+      value: '#6B7280',
+    };
+
+    openTasksPopover();
+
+    cy.getBySel('tasks--body-header--lists-list--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--selected-list--dropdown-menu--add-new-button').click();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').click();
+
+    cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').type('New list {enter}');
+
+    cy.getBySel('tasks--list-form-dialog--color-select--trigger-button').click();
+
+    cy.getBySel('tasks--list-form-dialog--color-select')
+      .find('div[role="option"]')
+      .contains(LIST_COLOR_OPTION.name)
+      .click();
+
+    cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('tasks--body-header--title').should('have.attr', 'data-color', LIST_COLOR_OPTION.value);
+  });
+});

@@ -1,0 +1,13 @@
+{
+  "name": "@myzenbuddy/web-e2e",
+  "version": "0.0.0",
+  "scripts": {
+    "e2e": "cypress",
+    "e2e:watch": "cypress open"
+  },
+  "dependencies": {
+    "@myzenbuddy/shared-common": "workspace:*",
+    "@myzenbuddy/shared-frontend": "workspace:*",
+    "cypress": "^13.0.0"
+  }
+}

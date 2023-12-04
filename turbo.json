@@ -16,6 +16,10 @@
     "test:watch": {
       "cache": false
     },
+    "e2e": {},
+    "e2e:watch": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true,

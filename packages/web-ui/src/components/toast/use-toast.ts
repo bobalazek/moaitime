@@ -6,7 +6,13 @@ import * as React from 'react';
 const TOAST_LIMIT = 3;
 const TOAST_REMOVE_DELAY = 1000 * 3;
 
-type ToastPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+type ToastPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right';
 
 type ToasterToast = ToastProps & {
   id: string;

@@ -15,7 +15,10 @@ export default function Weather() {
     <ErrorBoundary>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen} modal={true}>
         <PopoverTrigger asChild>
-          <button className="text-xl transition-all hover:text-gray-200" data-test="weather--popover--trigger-button">
+          <button
+            className="text-xl transition-all hover:text-gray-200"
+            data-test="weather--popover--trigger-button"
+          >
             <WeatherConditionIcon className="text-3xl" />
           </button>
         </PopoverTrigger>

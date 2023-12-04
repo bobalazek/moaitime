@@ -10,7 +10,10 @@ export class AuthMiddleware implements NestMiddleware {
     if (req.headers['authorization']) {
       if (typeof req.headers['authorization'] === 'string') {
         accessToken = req.headers['authorization'];
-      } else if (Array.isArray(req.headers['authorization']) && typeof req.headers['authorization'][0] === 'string') {
+      } else if (
+        Array.isArray(req.headers['authorization']) &&
+        typeof req.headers['authorization'][0] === 'string'
+      ) {
         accessToken = req.headers['authorization'][0];
       }
 
@@ -20,7 +23,9 @@ export class AuthMiddleware implements NestMiddleware {
     }
 
     try {
-      const userWithAccessToken = accessToken ? await authManager.getUserByAccessToken(accessToken) : null;
+      const userWithAccessToken = accessToken
+        ? await authManager.getUserByAccessToken(accessToken)
+        : null;
       if (userWithAccessToken) {
         const { user, userAccessToken } = userWithAccessToken;
 

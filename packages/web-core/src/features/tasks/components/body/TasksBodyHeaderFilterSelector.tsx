@@ -53,7 +53,11 @@ export default function TasksBodyHeaderFilterSelector() {
           }}
         >
           {sortOptions.map((sortOption) => (
-            <DropdownMenuRadioItem key={sortOption.value} className="cursor-pointer" value={sortOption.value}>
+            <DropdownMenuRadioItem
+              key={sortOption.value}
+              className="cursor-pointer"
+              value={sortOption.value}
+            >
               {sortOption.label}
             </DropdownMenuRadioItem>
           ))}

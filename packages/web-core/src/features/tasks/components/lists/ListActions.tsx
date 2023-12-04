@@ -2,7 +2,12 @@ import { memo } from 'react';
 import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
 import { ListInterface } from '@myzenbuddy/shared-common';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@myzenbuddy/web-ui';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@myzenbuddy/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 
@@ -20,7 +25,11 @@ const ListActions = memo(({ list }: { list: ListInterface }) => {
             <FaEllipsisV className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 bg-gray-700" align="end" data-test="tasks--list-actions--dropdown-menu">
+        <DropdownMenuContent
+          className="w-56 bg-gray-700"
+          align="end"
+          data-test="tasks--list-actions--dropdown-menu"
+        >
           <DropdownMenuItem
             className="cursor-pointer"
             onClick={async (event) => {

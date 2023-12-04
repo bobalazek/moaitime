@@ -18,7 +18,8 @@ function TasksForm() {
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: 'Oh dear, or dear. Did you, by any chance, forget to select a list? Awkward, right?',
+        description:
+          'Oh dear, or dear. Did you, by any chance, forget to select a list? Awkward, right?',
       });
 
       return;
@@ -29,7 +30,8 @@ function TasksForm() {
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: 'Oh dear, or dear. Did you, by any chance, forget to type something? Awkward, right?',
+        description:
+          'Oh dear, or dear. Did you, by any chance, forget to type something? Awkward, right?',
       });
 
       return;

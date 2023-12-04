@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { authManager } from '@myzenbuddy/database-services';
@@ -16,7 +25,10 @@ import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
 @Controller('/api/v1/auth')
 export class AuthController {
   @Post('login')
-  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response): Promise<LoginResponseDto> {
+  async login(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
     const { user, userAccessToken } = await authManager.login(body.email, body.password);
 
     res.status(200);
@@ -29,7 +41,10 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<ResponseDto> {
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (!req.user) {
       return {
@@ -48,7 +63,10 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<LoginResponseDto> {
+  async register(
+    @Body() body: RegisterDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
     await authManager.register(body);
 
     const { user, userAccessToken } = await authManager.login(body.email, body.password);
@@ -63,7 +81,10 @@ export class AuthController {
   }
 
   @Post('resend-email-confirmation')
-  async resendEmailConfirmation(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<ResponseDto> {
+  async resendEmailConfirmation(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
     if (!req.user) {
       throw new UnauthorizedException();
     }
@@ -117,7 +138,10 @@ export class AuthController {
   }
 
   @Post('confirm-email')
-  async confirmEmail(@Body() body: TokenDto, @Res({ passthrough: true }) res: Response): Promise<ResponseDto> {
+  async confirmEmail(
+    @Body() body: TokenDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
     await authManager.confirmEmail(body.token);
 
     res.status(200);
@@ -129,7 +153,10 @@ export class AuthController {
   }
 
   @Post('confirm-new-email')
-  async confirmNewEmail(@Body() body: TokenDto, @Res({ passthrough: true }) res: Response): Promise<ResponseDto> {
+  async confirmNewEmail(
+    @Body() body: TokenDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
     await authManager.confirmEmail(body.token, true);
 
     res.status(200);
@@ -156,7 +183,10 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async resetPassword(@Body() body: ResetPasswordDto, @Res({ passthrough: true }) res: Response): Promise<ResponseDto> {
+  async resetPassword(
+    @Body() body: ResetPasswordDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
     await authManager.resetPassword(body.token, body.password);
 
     res.status(200);
@@ -168,7 +198,10 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  async refreshToken(@Body() body: TokenDto, @Res({ passthrough: true }) res: Response): Promise<LoginResponseDto> {
+  async refreshToken(
+    @Body() body: TokenDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
     const { user, userAccessToken } = await authManager.refreshToken(body.token);
 
     res.status(200);
@@ -182,7 +215,10 @@ export class AuthController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('me')
-  async me(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<LoginResponseDto> {
+  async me(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
     if (!req.user) {
       throw new UnauthorizedException();
     }

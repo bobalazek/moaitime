@@ -73,7 +73,10 @@ export default function CalendarMonthlyView() {
       </div>
       <AnimatePresence>
         {weeks.map((week, weekIndex) => {
-          const weekKey = `${format(week[0], 'yyyy-MM-dd')}---${format(selectedDate, 'yyyy-MM-dd')}`;
+          const weekKey = `${format(week[0], 'yyyy-MM-dd')}---${format(
+            selectedDate,
+            'yyyy-MM-dd'
+          )}`;
 
           return (
             <motion.div

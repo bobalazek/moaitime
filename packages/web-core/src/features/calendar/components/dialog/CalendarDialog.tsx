@@ -11,7 +11,8 @@ import CalendarYearlyView from '../views/CalendarYearlyView';
 import CalendarDialogHeader, { CalendarDialogHeaderRef } from './CalendarDialogHeader';
 
 export default function CalendarDialog() {
-  const { dialogOpen, selectedView, setDialogOpen, setSelectedView, setSelectedDate } = useCalendarStore();
+  const { dialogOpen, selectedView, setDialogOpen, setSelectedView, setSelectedDate } =
+    useCalendarStore();
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
 
   useEffect(() => {
@@ -20,7 +21,9 @@ export default function CalendarDialog() {
         return;
       }
 
-      const selectedViewByKey = calendarViewOptions.find((option) => option.keyboardShortcutKey === e.key)?.value;
+      const selectedViewByKey = calendarViewOptions.find(
+        (option) => option.keyboardShortcutKey === e.key
+      )?.value;
       if (selectedViewByKey) {
         e.preventDefault();
         setSelectedDate(new Date());
@@ -46,7 +49,10 @@ export default function CalendarDialog() {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent className="flex h-screen max-w-none flex-col overflow-auto p-4" data-test="calendar--dialog">
+      <DialogContent
+        className="flex h-screen max-w-none flex-col overflow-auto p-4"
+        data-test="calendar--dialog"
+      >
         <DialogHeader>
           <CalendarDialogHeader ref={headerRef} />
         </DialogHeader>

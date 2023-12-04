@@ -1,14 +1,28 @@
 import { useEffect, useState } from 'react';
 
-import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@myzenbuddy/web-ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  Input,
+  Label,
+  Textarea,
+  useToast,
+} from '@myzenbuddy/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 import { ListsSelect } from '../lists/ListsSelect';
 
 export default function TaskDialog() {
   const { toast } = useToast();
-  const { selectedTaskDialogOpen, selectedTask, setSelectedTaskDialogOpen, editTask, deleteTask, undeleteTask } =
-    useTasksStore();
+  const {
+    selectedTaskDialogOpen,
+    selectedTask,
+    setSelectedTaskDialogOpen,
+    editTask,
+    deleteTask,
+    undeleteTask,
+  } = useTasksStore();
   const [task, setTask] = useState(selectedTask);
 
   useEffect(() => {
@@ -57,7 +71,11 @@ export default function TaskDialog() {
   };
 
   return (
-    <Dialog open={selectedTaskDialogOpen} onOpenChange={setSelectedTaskDialogOpen} data-test="tasks--task-dialog">
+    <Dialog
+      open={selectedTaskDialogOpen}
+      onOpenChange={setSelectedTaskDialogOpen}
+      data-test="tasks--task-dialog"
+    >
       <DialogContent>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-name">Name</Label>

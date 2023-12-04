@@ -1,5 +1,3 @@
-'use client';
-
 import type { FC } from 'react';
 
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
@@ -102,7 +100,9 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
 
   const [selectedPreset, setSelectedPreset] = useState<string | undefined>(undefined);
 
-  const [isSmallScreen, setIsSmallScreen] = useState(typeof window !== 'undefined' ? window.innerWidth < 960 : false);
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 960 : false
+  );
 
   useEffect(() => {
     const handleResize = (): void => {
@@ -184,7 +184,9 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
     if (rangeCompare) {
       const rangeCompare = {
         from: new Date(range.from.getFullYear() - 1, range.from.getMonth(), range.from.getDate()),
-        to: range.to ? new Date(range.to.getFullYear() - 1, range.to.getMonth(), range.to.getDate()) : undefined,
+        to: range.to
+          ? new Date(range.to.getFullYear() - 1, range.to.getMonth(), range.to.getDate())
+          : undefined,
       };
       setRangeCompare(rangeCompare);
     }
@@ -220,20 +222,23 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
           ? new Date(initialDateTo)
           : initialDateTo
         : typeof initialDateFrom === 'string'
-        ? new Date(initialDateFrom)
-        : initialDateFrom,
+          ? new Date(initialDateFrom)
+          : initialDateFrom,
     });
     setRangeCompare(
       initialCompareFrom
         ? {
-            from: typeof initialCompareFrom === 'string' ? new Date(initialCompareFrom) : initialCompareFrom,
+            from:
+              typeof initialCompareFrom === 'string'
+                ? new Date(initialCompareFrom)
+                : initialCompareFrom,
             to: initialCompareTo
               ? typeof initialCompareTo === 'string'
                 ? new Date(initialCompareTo)
                 : initialCompareTo
               : typeof initialCompareFrom === 'string'
-              ? new Date(initialCompareFrom)
-              : initialCompareFrom,
+                ? new Date(initialCompareFrom)
+                : initialCompareFrom,
           }
         : undefined
     );
@@ -273,7 +278,9 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   // Helper function to check if two date ranges are equal
   const areRangesEqual = (a?: DateRange, b?: DateRange) => {
     if (!a || !b) return a === b; // If either is undefined, return true if both are undefined
-    return a.from.getTime() === b.from.getTime() && (!a.to || !b.to || a.to.getTime() === b.to.getTime());
+    return (
+      a.from.getTime() === b.from.getTime() && (!a.to || !b.to || a.to.getTime() === b.to.getTime())
+    );
   };
 
   useEffect(() => {
@@ -336,10 +343,22 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                             });
                           }
                           setRangeCompare({
-                            from: new Date(range.from.getFullYear(), range.from.getMonth(), range.from.getDate() - 365),
+                            from: new Date(
+                              range.from.getFullYear(),
+                              range.from.getMonth(),
+                              range.from.getDate() - 365
+                            ),
                             to: range.to
-                              ? new Date(range.to.getFullYear() - 1, range.to.getMonth(), range.to.getDate())
-                              : new Date(range.from.getFullYear() - 1, range.from.getMonth(), range.from.getDate()),
+                              ? new Date(
+                                  range.to.getFullYear() - 1,
+                                  range.to.getMonth(),
+                                  range.to.getDate()
+                                )
+                              : new Date(
+                                  range.from.getFullYear() - 1,
+                                  range.from.getMonth(),
+                                  range.from.getDate()
+                                ),
                           });
                         } else {
                           setRangeCompare(undefined);
@@ -383,7 +402,9 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                         onChange={(date) => {
                           if (rangeCompare) {
                             const compareToDate =
-                              rangeCompare.to == null || date > rangeCompare.to ? date : rangeCompare.to;
+                              rangeCompare.to == null || date > rangeCompare.to
+                                ? date
+                                : rangeCompare.to;
                             setRangeCompare((prevRangeCompare) => ({
                               ...prevRangeCompare,
                               from: date,
@@ -402,7 +423,8 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                         value={rangeCompare?.to}
                         onChange={(date) => {
                           if (rangeCompare && rangeCompare.from) {
-                            const compareFromDate = date < rangeCompare.from ? date : rangeCompare.from;
+                            const compareFromDate =
+                              date < rangeCompare.from ? date : rangeCompare.from;
                             setRangeCompare({
                               ...rangeCompare,
                               from: compareFromDate,
@@ -444,14 +466,16 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                   }}
                   selected={range}
                   numberOfMonths={isSmallScreen ? 1 : 2}
-                  defaultMonth={new Date(new Date().setMonth(new Date().getMonth() - (isSmallScreen ? 0 : 1)))}
+                  defaultMonth={
+                    new Date(new Date().setMonth(new Date().getMonth() - (isSmallScreen ? 0 : 1)))
+                  }
                 />
               </div>
             </div>
           </div>
           {!isSmallScreen && (
-            <div className="flex flex-col items-end gap-1 pr-2 pl-6 pb-6">
-              <div className="flex w-full flex-col items-end gap-1 pr-2 pl-6 pb-6">
+            <div className="flex flex-col items-end gap-1 pb-6 pl-6 pr-2">
+              <div className="flex w-full flex-col items-end gap-1 pb-6 pl-6 pr-2">
                 {PRESETS.map((preset) => (
                   <PresetButton
                     key={preset.name}

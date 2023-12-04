@@ -12,7 +12,11 @@ function CalendarDialogHeaderText() {
   } = useSettingsStore();
 
   const year = selectedDate.getFullYear();
-  const date = selectedDate.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
+  const date = selectedDate.toLocaleString('default', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   let text = <span>{date}</span>;
 
@@ -33,7 +37,11 @@ function CalendarDialogHeaderText() {
       month: !isSameMonth(startDayOfWeek, endDayOfWeek) ? 'long' : undefined,
       day: 'numeric',
     });
-    const endDate = endDayOfWeek.toLocaleString('default', { month: 'long', day: 'numeric', year: 'numeric' });
+    const endDate = endDayOfWeek.toLocaleString('default', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
 
     text = (
       <span>

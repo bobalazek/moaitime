@@ -24,7 +24,8 @@ const __EMPTY_VALUE_PLACEHOLDER = '__empty';
 
 export default function ListFormDialog() {
   const { toast } = useToast();
-  const { listFormDialogOpen, setListFormDialogOpen, selectedListFormDialog, saveListFormDialog } = useTasksStore();
+  const { listFormDialogOpen, setListFormDialogOpen, selectedListFormDialog, saveListFormDialog } =
+    useTasksStore();
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
 
@@ -46,7 +47,8 @@ export default function ListFormDialog() {
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: error instanceof Error ? error.message : 'Something went wrong while saving the list.',
+        description:
+          error instanceof Error ? error.message : 'Something went wrong while saving the list.',
       });
     }
   };
@@ -79,7 +81,10 @@ export default function ListFormDialog() {
               setColor(value !== __EMPTY_VALUE_PLACEHOLDER ? value : '');
             }}
           >
-            <SelectTrigger className="w-full" data-test="tasks--list-form-dialog--color-select--trigger-button">
+            <SelectTrigger
+              className="w-full"
+              data-test="tasks--list-form-dialog--color-select--trigger-button"
+            >
               <SelectValue placeholder="Color" />
             </SelectTrigger>
             <SelectContent data-test="tasks--list-form-dialog--color-select">

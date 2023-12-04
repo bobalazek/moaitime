@@ -16,7 +16,12 @@ function CalendarDialogHeaderCalendar() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className="border" variant="ghost" size="sm" data-test="calendar--dialog--header--calendar-button">
+        <Button
+          className="border"
+          variant="ghost"
+          size="sm"
+          data-test="calendar--dialog--header--calendar-button"
+        >
           <FaCalendarAlt />
         </Button>
       </PopoverTrigger>

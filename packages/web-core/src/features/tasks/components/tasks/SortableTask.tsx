@@ -15,7 +15,13 @@ const SortableTask = ({ task }: { task: TaskInterface }) => {
   };
 
   return (
-    <div ref={setNodeRef} style={style} data-test="tasks--sortable-task" {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      data-test="tasks--sortable-task"
+      {...attributes}
+      {...listeners}
+    >
       <Task task={task} />
     </div>
   );

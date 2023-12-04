@@ -8,7 +8,11 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { useEffect, useRef } from 'react';
 
 import { TasksListSortFieldEnum } from '@myzenbuddy/shared-common';
@@ -21,7 +25,8 @@ const collisionDetection = closestCenter;
 const strategy = verticalListSortingStrategy;
 
 export default function TasksList() {
-  const { reorderTasks, selectedListTasks, selectedListTasksSortField, setListEndElement } = useTasksStore();
+  const { reorderTasks, selectedListTasks, selectedListTasksSortField, setListEndElement } =
+    useTasksStore();
   const taskItemsListEndElementRef = useRef<HTMLDivElement>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -53,7 +58,12 @@ export default function TasksList() {
   return (
     <div className="relative h-[320px] overflow-auto pr-4" data-test="tasks--tasks-list">
       {selectedListTasks.length === 0 && <div className="py-1 italic">No tasks. Yay!</div>}
-      <DndContext sensors={sensors} modifiers={modifiers} collisionDetection={collisionDetection} onDragEnd={onDragEnd}>
+      <DndContext
+        sensors={sensors}
+        modifiers={modifiers}
+        collisionDetection={collisionDetection}
+        onDragEnd={onDragEnd}
+      >
         <SortableContext
           items={selectedListTasks}
           strategy={strategy}

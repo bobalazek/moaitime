@@ -3,7 +3,10 @@ import { toast } from '@myzenbuddy/web-ui';
 import { useAuthStore } from '../../auth/state/authStore';
 import { ErrorResponse } from '../errors/ErrorResponse';
 
-export const fetchJson = async <T>(input: RequestInfo | URL, init?: RequestInit | undefined): Promise<T> => {
+export const fetchJson = async <T>(
+  input: RequestInfo | URL,
+  init?: RequestInit | undefined
+): Promise<T> => {
   const { auth, logout } = useAuthStore.getState();
   if (auth?.userAccessToken?.token) {
     if (!init) {

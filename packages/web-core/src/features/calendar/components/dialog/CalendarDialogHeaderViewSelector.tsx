@@ -31,7 +31,10 @@ export default function CalendarDialogHeaderViewSelector() {
           <FaCaretDown />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" data-test="calendar--dialog--header--view-selector--dropdown-menu">
+      <DropdownMenuContent
+        align="end"
+        data-test="calendar--dialog--header--view-selector--dropdown-menu"
+      >
         <DropdownMenuRadioGroup
           value={selectedView}
           onValueChange={(value) => {
@@ -45,7 +48,9 @@ export default function CalendarDialogHeaderViewSelector() {
               value={calendarViewOption.value}
             >
               {calendarViewOption.label}
-              <DropdownMenuShortcut>{calendarViewOption.keyboardShortcutKey.toUpperCase()}</DropdownMenuShortcut>
+              <DropdownMenuShortcut>
+                {calendarViewOption.keyboardShortcutKey.toUpperCase()}
+              </DropdownMenuShortcut>
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

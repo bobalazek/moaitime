@@ -14,8 +14,12 @@ import { useTasksStore } from '../../state/tasksStore';
 
 export default function ListDeleteAlertDialog() {
   const { toast } = useToast();
-  const { listDeleteAlertDialogOpen, setListDeleteAlertDialogOpen, selectedListDeleteAlertDialog, deleteList } =
-    useTasksStore();
+  const {
+    listDeleteAlertDialogOpen,
+    setListDeleteAlertDialogOpen,
+    selectedListDeleteAlertDialog,
+    deleteList,
+  } = useTasksStore();
   if (!listDeleteAlertDialogOpen || !selectedListDeleteAlertDialog) {
     return null;
   }
@@ -39,8 +43,8 @@ export default function ListDeleteAlertDialog() {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the "<b>{selectedListDeleteAlertDialog.name}</b>"
-            list.
+            This action cannot be undone. This will permanently delete the "
+            <b>{selectedListDeleteAlertDialog.name}</b>" list.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

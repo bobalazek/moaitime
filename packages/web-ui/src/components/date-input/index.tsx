@@ -46,22 +46,27 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
     // Validate the day of the month
     const newDate = { ...date, [field]: value };
     const d = new Date(newDate.year, newDate.month - 1, newDate.day);
-    return d.getFullYear() === newDate.year && d.getMonth() + 1 === newDate.month && d.getDate() === newDate.day;
+    return (
+      d.getFullYear() === newDate.year &&
+      d.getMonth() + 1 === newDate.month &&
+      d.getDate() === newDate.day
+    );
   };
 
-  const handleInputChange = (field: keyof DateParts) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value ? Number(e.target.value) : '';
-    const isValid = typeof newValue === 'number' && validateDate(field, newValue);
+  const handleInputChange =
+    (field: keyof DateParts) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value ? Number(e.target.value) : '';
+      const isValid = typeof newValue === 'number' && validateDate(field, newValue);
 
-    // If the new value is valid, update the date
-    const newDate = { ...date, [field]: newValue };
-    setDate(newDate);
+      // If the new value is valid, update the date
+      const newDate = { ...date, [field]: newValue };
+      setDate(newDate);
 
-    // only call onChange when the entry is valid
-    if (isValid) {
-      onChange(new Date(newDate.year, newDate.month - 1, newDate.day));
-    }
-  };
+      // only call onChange when the entry is valid
+      if (isValid) {
+        onChange(new Date(newDate.year, newDate.month - 1, newDate.day));
+      }
+    };
 
   const initialDate = useRef<DateParts>(date);
 
@@ -93,7 +98,16 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
     // Prevent non-numeric characters, excluding allowed keys
     if (
       !/^[0-9]$/.test(e.key) &&
-      !['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab', 'Backspace', 'Enter'].includes(e.key)
+      ![
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'Delete',
+        'Tab',
+        'Backspace',
+        'Enter',
+      ].includes(e.key)
     ) {
       e.preventDefault();
       return;
@@ -162,7 +176,8 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
     if (e.key === 'ArrowRight') {
       if (
         e.currentTarget.selectionStart === e.currentTarget.value.length ||
-        (e.currentTarget.selectionStart === 0 && e.currentTarget.selectionEnd === e.currentTarget.value.length)
+        (e.currentTarget.selectionStart === 0 &&
+          e.currentTarget.selectionEnd === e.currentTarget.value.length)
       ) {
         e.preventDefault();
         if (field === 'month') dayRef.current?.focus();
@@ -171,7 +186,8 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
     } else if (e.key === 'ArrowLeft') {
       if (
         e.currentTarget.selectionStart === 0 ||
-        (e.currentTarget.selectionStart === 0 && e.currentTarget.selectionEnd === e.currentTarget.value.length)
+        (e.currentTarget.selectionStart === 0 &&
+          e.currentTarget.selectionEnd === e.currentTarget.value.length)
       ) {
         e.preventDefault();
         if (field === 'day') monthRef.current?.focus();

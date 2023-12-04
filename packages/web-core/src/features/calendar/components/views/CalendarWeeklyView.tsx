@@ -3,7 +3,11 @@ import { eachDayOfInterval, endOfWeek, format, isSameDay, startOfWeek } from 'da
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { CalendarViewEnum, EventWithVerticalPosition, getGmtOffset } from '@myzenbuddy/shared-common';
+import {
+  CalendarViewEnum,
+  EventWithVerticalPosition,
+  getGmtOffset,
+} from '@myzenbuddy/shared-common';
 
 import { useSettingsStore } from '../../../settings/state/settingsStore';
 import { useCalendarStore } from '../../state/calendarStore';
@@ -19,7 +23,8 @@ type EventsPerDay = {
 const HOUR_HEIGHT_PX = 64;
 
 export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) {
-  const { events, selectedDate, selectedView, setSelectedDate, setSelectedView } = useCalendarStore();
+  const { events, selectedDate, selectedView, setSelectedDate, setSelectedView } =
+    useCalendarStore();
   const {
     settings: { generalTimezone, calendarStartDayOfWeek },
   } = useSettingsStore();
@@ -132,7 +137,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                   <div className="mt-1" data-test="calendar--monthly-view--day-of-month">
                     <button
                       className={clsx(
-                        'hover:text-primary rounded-full py-1 px-2 text-2xl transition-all hover:bg-gray-600',
+                        'hover:text-primary rounded-full px-2 py-1 text-2xl transition-all hover:bg-gray-600',
                         isActive && 'bg-primary text-accent'
                       )}
                       onClick={() => onDayClick(day)}
@@ -154,7 +159,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
         </AnimatePresence>
       </div>
       <div className="relative flex flex-1">
-        <div className="absolute top-0 left-0 h-full w-full">
+        <div className="absolute left-0 top-0 h-full w-full">
           {hours.map((hour) => {
             return <div className="border-b-2" key={hour} style={{ height: HOUR_HEIGHT_PX }} />;
           })}

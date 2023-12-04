@@ -36,7 +36,10 @@ export default function AuthResetPasswordPage() {
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: error instanceof Error ? error.message : 'Something went wrong while trying to reset password',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while trying to reset password',
       });
     }
   };

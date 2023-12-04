@@ -29,7 +29,9 @@ export default function Clock() {
             showSeconds={settings.clockShowSeconds}
           />
         )}
-        {!settings.clockUseDigitalClock && <AnalogClock time={time} showSeconds={settings.clockShowSeconds} />}
+        {!settings.clockUseDigitalClock && (
+          <AnalogClock time={time} showSeconds={settings.clockShowSeconds} />
+        )}
       </div>
     </ErrorBoundary>
   );

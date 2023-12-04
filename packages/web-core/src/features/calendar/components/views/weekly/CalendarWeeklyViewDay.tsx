@@ -74,7 +74,8 @@ export default function CalendarWeeklyViewDay({
         const eventStartsAt = new Date(event.startsAt);
         const eventEndsAt = new Date(event.endsAt);
         const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
-        const height = ((eventEndsAt.getTime() - eventStartsAt.getTime()) / 1000 / 60 / 60) * hourHeightPx;
+        const height =
+          ((eventEndsAt.getTime() - eventStartsAt.getTime()) / 1000 / 60 / 60) * hourHeightPx;
         const style = {
           top,
           height,

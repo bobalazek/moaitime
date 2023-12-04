@@ -25,7 +25,10 @@ export default function SearchInput() {
               return;
             }
 
-            const url = SearchEnginesMap[settings.searchEngine].searchUrl.replace('{search}', search);
+            const url = SearchEnginesMap[settings.searchEngine].searchUrl.replace(
+              '{search}',
+              search
+            );
 
             window.open(url, '_blank');
           }}

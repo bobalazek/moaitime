@@ -46,7 +46,11 @@ export default function SearchEngineDropdownMenu() {
             const SearchEngineIconImageUrl = SearchEnginesMap[searchEngine].iconImageUrl;
 
             return (
-              <DropdownMenuRadioItem key={searchEngine} value={searchEngine} className="cursor-pointer">
+              <DropdownMenuRadioItem
+                key={searchEngine}
+                value={searchEngine}
+                className="cursor-pointer"
+              >
                 <img src={SearchEngineIconImageUrl} className="mr-2 h-4 w-4" alt="Search logo" />
                 {searchEngineLabel}
               </DropdownMenuRadioItem>

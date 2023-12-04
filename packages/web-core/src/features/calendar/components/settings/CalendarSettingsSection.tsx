@@ -1,5 +1,13 @@
 import { CalendarDayOfWeek } from '@myzenbuddy/shared-common';
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '@myzenbuddy/web-ui';
+import {
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Switch,
+} from '@myzenbuddy/web-ui';
 
 import { useSettingsStore } from '../../../settings/state/settingsStore';
 import CalendarSettingsSectionHeaderText from './CalendarSettingsSectionHeaderText';
@@ -43,7 +51,9 @@ export default function CalendarSettingsSection() {
       <h4 className="text-lg font-bold">
         <CalendarSettingsSectionHeaderText />
       </h4>
-      <p className="mb-4 text-sm text-gray-400">Just some visual squares to show you what day it is.</p>
+      <p className="mb-4 text-sm text-gray-400">
+        Just some visual squares to show you what day it is.
+      </p>
       <div className="mb-4">
         <div className="flex items-center">
           <Switch

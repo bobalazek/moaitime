@@ -1,4 +1,13 @@
-import { Body, Controller, Patch, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Patch,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { authManager } from '@myzenbuddy/database-services';
@@ -43,7 +52,10 @@ export class AuthSettingsController {
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
   }
 
-  private async _getUpdatedUserAndAccessTokenResponse(token: string, res: Response): Promise<LoginResponseDto> {
+  private async _getUpdatedUserAndAccessTokenResponse(
+    token: string,
+    res: Response
+  ): Promise<LoginResponseDto> {
     const userWithAccessToken = await authManager.getUserByAccessToken(token);
     if (!userWithAccessToken) {
       throw new UnauthorizedException();
@@ -53,7 +65,10 @@ export class AuthSettingsController {
 
     return {
       success: true,
-      data: convertToUserAndAccessTokenDto(userWithAccessToken.user, userWithAccessToken.userAccessToken),
+      data: convertToUserAndAccessTokenDto(
+        userWithAccessToken.user,
+        userWithAccessToken.userAccessToken
+      ),
     };
   }
 }

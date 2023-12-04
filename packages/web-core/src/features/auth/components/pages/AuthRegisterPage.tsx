@@ -35,7 +35,8 @@ export default function AuthRegisterPage() {
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: error instanceof Error ? error.message : 'Something went wrong while trying to register',
+        description:
+          error instanceof Error ? error.message : 'Something went wrong while trying to register',
       });
     }
   };

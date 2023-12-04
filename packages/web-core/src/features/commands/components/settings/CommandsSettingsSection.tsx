@@ -12,7 +12,8 @@ export default function CommandsSettingsSection() {
         <CommandsSettingsSectionHeaderText />
       </h4>
       <p className="mb-4 text-sm text-gray-400">
-        Since we are a productivity tool, we of course also offer you the possibility to use commands!
+        Since we are a productivity tool, we of course also offer you the possibility to use
+        commands!
       </p>
       <div className="mb-4">
         <div className="flex items-center">
@@ -47,7 +48,9 @@ export default function CommandsSettingsSection() {
               Search Button Enabled
             </Label>
           </div>
-          <p className="mt-2 text-xs text-gray-400">Do you want the search button at the top to be visible to you?</p>
+          <p className="mt-2 text-xs text-gray-400">
+            Do you want the search button at the top to be visible to you?
+          </p>
         </div>
       )}
     </div>

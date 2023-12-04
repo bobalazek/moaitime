@@ -7,8 +7,13 @@ import { useAuthStore } from '../../state/authStore';
 
 export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterface }) {
   const { toast } = useToast();
-  const { logout, updateSettings, resendEmailConfirmation, resendNewEmailConfirmation, cancelNewEmailConfirmation } =
-    useAuthStore();
+  const {
+    logout,
+    updateSettings,
+    resendEmailConfirmation,
+    resendNewEmailConfirmation,
+    cancelNewEmailConfirmation,
+  } = useAuthStore();
   const [userDisplayName, setUserDisplayName] = useState(auth.user.displayName || '');
   const [userEmail, setUserEmail] = useState(auth.user.email || '');
 
@@ -54,7 +59,10 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: error instanceof Error ? error.message : 'Something went wrong while trying to save the account',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while trying to save the account',
       });
     }
   };
@@ -81,9 +89,13 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
         {!auth.user.emailConfirmedAt && (
           <div className="mt-2">
             <p className="text-sm text-gray-500">
-              Your email address has not been verified yet. Please check your inbox and follow the instructions to
-              verify it. Click{' '}
-              <button type="button" className="font-bold" onClick={onResendVerificationEmailButtonClick}>
+              Your email address has not been verified yet. Please check your inbox and follow the
+              instructions to verify it. Click{' '}
+              <button
+                type="button"
+                className="font-bold"
+                onClick={onResendVerificationEmailButtonClick}
+              >
                 here
               </button>{' '}
               to resend the verification email.
@@ -93,13 +105,22 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
         {auth.user.newEmail && (
           <div className="mt-2">
             <p className="text-sm text-gray-500">
-              A verification email has been sent to <b>{auth.user.newEmail}</b>. Please check the inbox of that email
-              address and follow the instructions to verify it. In case you did not get it, click{' '}
-              <button type="button" className="font-bold" onClick={onResendVerificationNewEmailButtonClick}>
+              A verification email has been sent to <b>{auth.user.newEmail}</b>. Please check the
+              inbox of that email address and follow the instructions to verify it. In case you did
+              not get it, click{' '}
+              <button
+                type="button"
+                className="font-bold"
+                onClick={onResendVerificationNewEmailButtonClick}
+              >
                 here
               </button>{' '}
               to resend the verification email. If you want to cancel the email change, click{' '}
-              <button type="button" className="font-bold" onClick={onCancelNewEmailConfirmationButtonClick}>
+              <button
+                type="button"
+                className="font-bold"
+                onClick={onCancelNewEmailConfirmationButtonClick}
+              >
                 here
               </button>
               .

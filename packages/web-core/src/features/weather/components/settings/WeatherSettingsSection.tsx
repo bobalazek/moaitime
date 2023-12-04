@@ -46,7 +46,8 @@ export default function WeatherSettingsSection() {
             </Label>
           </div>
           <p className="mt-2 text-xs text-gray-400">
-            Should we use the metrics or imperial system? We are not judging, everyone has their own preferences, okay?
+            Should we use the metrics or imperial system? We are not judging, everyone has their own
+            preferences, okay?
           </p>
         </div>
       )}

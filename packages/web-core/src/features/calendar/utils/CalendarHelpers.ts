@@ -16,7 +16,11 @@ import {
 } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
-import { CalendarDayOfWeek, EventInterface, EventWithVerticalPosition } from '@myzenbuddy/shared-common';
+import {
+  CalendarDayOfWeek,
+  EventInterface,
+  EventWithVerticalPosition,
+} from '@myzenbuddy/shared-common';
 
 export const getWeeksForMonth = (month: Date, calendarStartDayOfWeek: number) => {
   const startDay = startOfMonth(month);
@@ -24,11 +28,15 @@ export const getWeeksForMonth = (month: Date, calendarStartDayOfWeek: number) =>
   const daysInMonth = eachDayOfInterval({ start: startDay, end: endDay });
   const adjustedStartDay = getDay(startDay) - calendarStartDayOfWeek;
   const startPadding = adjustedStartDay < 0 ? 7 - Math.abs(adjustedStartDay) : adjustedStartDay;
-  const emptyStartDays = Array.from({ length: startPadding }, (_, i) => subDays(startDay, startPadding - i));
+  const emptyStartDays = Array.from({ length: startPadding }, (_, i) =>
+    subDays(startDay, startPadding - i)
+  );
   const totalDays = daysInMonth.length + emptyStartDays.length;
   const remainingDays = totalDays % 7;
   const daysAfterEndOfMonth = remainingDays === 0 ? 0 : 7 - remainingDays;
-  const emptyEndDays = Array.from({ length: daysAfterEndOfMonth }, (_, i) => addDays(endDay, i + 1));
+  const emptyEndDays = Array.from({ length: daysAfterEndOfMonth }, (_, i) =>
+    addDays(endDay, i + 1)
+  );
   const daysToDisplay = [...emptyStartDays, ...daysInMonth, ...emptyEndDays];
 
   const weeks = [];

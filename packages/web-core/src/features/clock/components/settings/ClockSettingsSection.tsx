@@ -12,7 +12,8 @@ export default function ClockSettingsSection() {
         <ClockSettingsSectionHeaderText />
       </h4>
       <p className="mb-4 text-sm text-gray-400">
-        At some point in time, every one checked what the time is, so we also offer the same feature.
+        At some point in time, every one checked what the time is, so we also offer the same
+        feature.
       </p>
       <div className="mb-4">
         <div className="flex items-center">
@@ -49,8 +50,8 @@ export default function ClockSettingsSection() {
               </Label>
             </div>
             <p className="mt-2 text-xs text-gray-400">
-              In case you are one of those people that still knows how to read an analog clock, we also give you this
-              option!
+              In case you are one of those people that still knows how to read an analog clock, we
+              also give you this option!
             </p>
           </div>
           {settings.clockUseDigitalClock && (
@@ -70,7 +71,8 @@ export default function ClockSettingsSection() {
                 </Label>
               </div>
               <p className="mt-2 text-xs text-gray-400">
-                Counting to 24 may require some practice, so we also give you the option to use the 12-hour clock.
+                Counting to 24 may require some practice, so we also give you the option to use the
+                12-hour clock.
               </p>
             </div>
           )}

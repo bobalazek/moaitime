@@ -1,4 +1,4 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ReactNode } from 'react';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
 import { Alert, AlertDescription, AlertTitle, Button } from '@myzenbuddy/web-ui';
@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch() {
     // TODO: send to reporting service once we have that set up
   }
 

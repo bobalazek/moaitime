@@ -1,4 +1,13 @@
-import { addDays, addMonths, addWeeks, addYears, subDays, subMonths, subWeeks, subYears } from 'date-fns';
+import {
+  addDays,
+  addMonths,
+  addWeeks,
+  addYears,
+  subDays,
+  subMonths,
+  subWeeks,
+  subYears,
+} from 'date-fns';
 import { forwardRef, useImperativeHandle } from 'react';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
@@ -18,7 +27,8 @@ export interface CalendarDialogHeaderRef {
 }
 
 const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
-  const { setSelectedDate, selectedDate, selectedView, isTodayInSelectedDaysRange } = useCalendarStore();
+  const { setSelectedDate, selectedDate, selectedView, isTodayInSelectedDaysRange } =
+    useCalendarStore();
 
   const onPrevButtonClick = () => {
     if (selectedView === CalendarViewEnum.DAY) {

@@ -24,27 +24,30 @@ const Task = memo(({ task }: { task: TaskInterface }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
-  const onDoubleClick = useCallback((event?: React.MouseEvent<HTMLDivElement, MouseEvent>, cursorAtEnd?: boolean) => {
-    event?.stopPropagation();
+  const onDoubleClick = useCallback(
+    (event?: React.MouseEvent<HTMLDivElement, MouseEvent>, cursorAtEnd?: boolean) => {
+      event?.stopPropagation();
 
-    if (!textElementRef.current) {
-      return;
-    }
-
-    textElementRef.current.contentEditable = 'true';
-
-    setTimeout(() => {
       if (!textElementRef.current) {
         return;
       }
 
-      textElementRef.current.focus();
+      textElementRef.current.contentEditable = 'true';
 
-      if (cursorAtEnd) {
-        setCursorToEnd(textElementRef.current);
-      }
-    }, 0);
-  }, []);
+      setTimeout(() => {
+        if (!textElementRef.current) {
+          return;
+        }
+
+        textElementRef.current.focus();
+
+        if (cursorAtEnd) {
+          setCursorToEnd(textElementRef.current);
+        }
+      }, 0);
+    },
+    []
+  );
 
   const onKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === ' ') {
@@ -126,7 +129,7 @@ const Task = memo(({ task }: { task: TaskInterface }) => {
           {task.name}
         </div>
         {task.deletedAt && (
-          <p className="mt-1 ml-6 text-xs text-gray-400" data-test="tasks--task--deleted-text">
+          <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
             (deleted at {new Date(task.deletedAt).toLocaleString()})
           </p>
         )}

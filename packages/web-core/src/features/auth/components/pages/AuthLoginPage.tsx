@@ -42,7 +42,8 @@ export default function AuthLoginPage() {
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: error instanceof Error ? error.message : 'Something went wrong while trying to login',
+        description:
+          error instanceof Error ? error.message : 'Something went wrong while trying to login',
       });
     }
   };
@@ -75,7 +76,11 @@ export default function AuthLoginPage() {
               <div className="flex flex-col space-y-2">
                 <div className="flex items-end justify-between">
                   <Label htmlFor="login-password">Password</Label>
-                  <a href="/forgot-password" onClick={onForgotPasswordButtonClick} className="text-xs font-bold">
+                  <a
+                    href="/forgot-password"
+                    onClick={onForgotPasswordButtonClick}
+                    className="text-xs font-bold"
+                  >
                     Forgot Password?
                   </a>
                 </div>

@@ -23,7 +23,10 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
 
   return (
     <div className="w-full border" data-test="calendar--yearly-view--month">
-      <div className="p-2 text-center text-xl font-bold" data-test="calendar--yearly-view--month--name">
+      <div
+        className="p-2 text-center text-xl font-bold"
+        data-test="calendar--yearly-view--month--name"
+      >
         {monthName}
       </div>
       <div className="flex flex-shrink border-b-2 text-center">
@@ -52,7 +55,7 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
                   <div key={dayKey} className="w-0 flex-grow p-2">
                     <button
                       className={clsx(
-                        'hover:text-primary rounded-full py-1 px-2 text-sm transition-all hover:bg-gray-600',
+                        'hover:text-primary rounded-full px-2 py-1 text-sm transition-all hover:bg-gray-600',
                         !isSameMonth && 'text-gray-500',
                         isActive && 'bg-primary text-accent'
                       )}

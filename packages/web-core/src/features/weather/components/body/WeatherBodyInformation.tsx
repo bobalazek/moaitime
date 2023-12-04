@@ -2,7 +2,10 @@ import { TiThermometer, TiWeatherWindy } from 'react-icons/ti';
 
 import { useSettingsStore } from '../../../settings/state/settingsStore';
 import { useWeatherStore } from '../../state/weatherStore';
-import { convertCelciusToFahrenheit, convertKilometersPerHourToMilesPerHour } from '../../utils/WeatherHelpers';
+import {
+  convertCelciusToFahrenheit,
+  convertKilometersPerHourToMilesPerHour,
+} from '../../utils/WeatherHelpers';
 import WeatherConditionIcon from '../misc/WeatherConditionIcon';
 
 export default function WeatherBodyInformation() {

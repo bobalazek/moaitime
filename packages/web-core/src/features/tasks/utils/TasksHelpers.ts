@@ -114,7 +114,9 @@ export const getTasksForList = async (
           : new Date(bValue).getTime() - new Date(aValue).getTime();
       }
 
-      return sortDirection === SortDirectionEnum.ASC ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      return sortDirection === SortDirectionEnum.ASC
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
     }
 
     return 0;
@@ -144,7 +146,10 @@ export const addTask = async (task: OmitedTask): Promise<TaskInterface> => {
   return addedTask;
 };
 
-export const editTask = async (taskId: string, task: Partial<TaskInterface>): Promise<TaskInterface> => {
+export const editTask = async (
+  taskId: string,
+  task: Partial<TaskInterface>
+): Promise<TaskInterface> => {
   const taskIndex = _databaseTasks.findIndex((t) => t.id === taskId);
   if (taskIndex === -1) {
     throw new Error('Task not found');

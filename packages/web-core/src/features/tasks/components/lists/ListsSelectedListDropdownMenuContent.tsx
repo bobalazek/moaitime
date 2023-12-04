@@ -78,7 +78,9 @@ export default function ListsSelectedListDropdownMenuContent({
           >
             <span className="w-full break-words pr-6">
               <span>{list.name}</span>
-              {typeof list.tasksCount !== 'undefined' && <span className="text-gray-400"> ({list.tasksCount})</span>}
+              {typeof list.tasksCount !== 'undefined' && (
+                <span className="text-gray-400"> ({list.tasksCount})</span>
+              )}
             </span>
             {showListActions && <ListActions list={list} />}
           </DropdownMenuRadioItem>

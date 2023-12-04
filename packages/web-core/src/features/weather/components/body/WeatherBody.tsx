@@ -16,7 +16,11 @@ export default function WeatherBody() {
       <h4 className="mb-4 flex items-center text-lg font-bold" data-test="weather--body--location">
         {!weather && <i>Location not set</i>}
         {weather && <span>{weather.location}</span>}
-        <button className="ml-2" onClick={onEditButtonClick} data-test="weather--body--location--edit-button">
+        <button
+          className="ml-2"
+          onClick={onEditButtonClick}
+          data-test="weather--body--location--edit-button"
+        >
           <FaEdit className="h-4 w-4" />
         </button>
       </h4>

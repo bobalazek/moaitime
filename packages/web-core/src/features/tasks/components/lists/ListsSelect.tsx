@@ -16,7 +16,13 @@ import {
 
 import { useTasksStore } from '../../state/tasksStore';
 
-export function ListsSelect({ value, onChangeValue }: { value?: string; onChangeValue: (value?: string) => void }) {
+export function ListsSelect({
+  value,
+  onChangeValue,
+}: {
+  value?: string;
+  onChangeValue: (value?: string) => void;
+}) {
   const { lists } = useTasksStore();
   const [open, setOpen] = useState(false);
 
@@ -62,7 +68,9 @@ export function ListsSelect({ value, onChangeValue }: { value?: string; onChange
                   borderColor: list?.color ?? 'transparent',
                 }}
               >
-                <Check className={clsx('mr-2 h-4 w-4', value === list.id ? 'opacity-100' : 'opacity-0')} />
+                <Check
+                  className={clsx('mr-2 h-4 w-4', value === list.id ? 'opacity-100' : 'opacity-0')}
+                />
                 {list.name}
               </CommandItem>
             ))}

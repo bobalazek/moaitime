@@ -1,6 +1,13 @@
 import { useEffect } from 'react';
 
-import { Command, CommandEmpty, CommandInput, CommandList, Dialog, DialogContent } from '@myzenbuddy/web-ui';
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandList,
+  Dialog,
+  DialogContent,
+} from '@myzenbuddy/web-ui';
 
 import CalendarCommandsList from '../../calendar/components/CalendarCommandsList';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
@@ -36,7 +43,11 @@ export default function CommandsDialog() {
             loop
             className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
           >
-            <CommandInput data-test="commands-dialog-input" value={search} onValueChange={setSearch} />
+            <CommandInput
+              data-test="commands-dialog-input"
+              value={search}
+              onValueChange={setSearch}
+            />
             <CommandList data-test="commands-dialog-list">
               <CommandEmpty>
                 No results found for "<b>{search}</b>".

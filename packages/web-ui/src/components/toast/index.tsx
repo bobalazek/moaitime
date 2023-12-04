@@ -20,7 +20,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:top-0 sm:right-0 sm:bottom-auto sm:flex-col md:max-w-[420px]',
+      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:bottom-auto sm:right-0 sm:top-0 sm:flex-col md:max-w-[420px]',
       className
     )}
     {...props}
@@ -34,7 +34,8 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: 'border bg-background text-foreground',
-        destructive: 'destructive group border-destructive bg-destructive text-destructive-foreground',
+        destructive:
+          'destructive group border-destructive bg-destructive text-destructive-foreground',
       },
     },
     defaultVariants: {
@@ -57,9 +58,9 @@ const Toast = React.forwardRef<
       ref={ref}
       className={cn(
         toastVariants({ variant }),
-        position === 'top-left' && 'top-0 left-0',
-        position === 'top-center' && 'top-0 left-1/2 -translate-x-1/2 transform',
-        position === 'top-right' && 'top-0 right-0',
+        position === 'top-left' && 'left-0 top-0',
+        position === 'top-center' && 'left-1/2 top-0 -translate-x-1/2 transform',
+        position === 'top-right' && 'right-0 top-0',
         position === 'bottom-left' && 'bottom-0 left-0',
         position === 'bottom-center' && 'bottom-0 left-1/2 -translate-x-1/2 transform',
         position === 'bottom-right' && 'bottom-0 right-0',
@@ -116,7 +117,11 @@ const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description ref={ref} className={cn('text-sm opacity-90', className)} {...props} />
+  <ToastPrimitives.Description
+    ref={ref}
+    className={cn('text-sm opacity-90', className)}
+    {...props}
+  />
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 

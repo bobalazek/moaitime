@@ -8,7 +8,9 @@ export const convertKilometersPerHourToMilesPerHour = (kilometersPerHour: number
   return (kilometersPerHour * 0.621371).toFixed(0);
 };
 
-export const getLocationsWithCoordinates = async (query: string): Promise<LocationInterface[]> => {
+export const getLocationsWithCoordinates = async (/*query: string*/): Promise<
+  LocationInterface[]
+> => {
   const locations: LocationInterface[] = [
     {
       name: 'Veržej',

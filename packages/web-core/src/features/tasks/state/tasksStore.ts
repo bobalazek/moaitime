@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 
-import { ListInterface, SortDirectionEnum, TaskInterface, TasksListSortFieldEnum } from '@myzenbuddy/shared-common';
+import {
+  ListInterface,
+  SortDirectionEnum,
+  TaskInterface,
+  TasksListSortFieldEnum,
+} from '@myzenbuddy/shared-common';
 
 import {
   addList,
@@ -39,7 +44,10 @@ export type TasksStore = {
   // Form Dialog
   listFormDialogOpen: boolean;
   selectedListFormDialog: ListInterface | null;
-  setListFormDialogOpen: (listDialogOpen: boolean, selectedListFormDialog?: ListInterface | null) => void;
+  setListFormDialogOpen: (
+    listDialogOpen: boolean,
+    selectedListFormDialog?: ListInterface | null
+  ) => void;
   saveListFormDialog: (list: Partial<ListInterface>) => Promise<ListInterface>;
   // Delete Alert Dialog
   listDeleteAlertDialogOpen: boolean;
@@ -58,7 +66,10 @@ export type TasksStore = {
   // Selected
   selectedTaskDialogOpen: boolean;
   selectedTask: TaskInterface | null;
-  setSelectedTaskDialogOpen: (selectedTaskDialogOpen: boolean, selectedTask?: TaskInterface | null) => void;
+  setSelectedTaskDialogOpen: (
+    selectedTaskDialogOpen: boolean,
+    selectedTask?: TaskInterface | null
+  ) => void;
   // Selected List Tasks
   selectedListTasks: TaskInterface[];
   selectedListTasksSortField: TasksListSortFieldEnum;
@@ -169,7 +180,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   // Form Dialog
   listFormDialogOpen: false,
   selectedListFormDialog: null,
-  setListFormDialogOpen: (listFormDialogOpen: boolean, selectedListFormDialog?: ListInterface | null) => {
+  setListFormDialogOpen: (
+    listFormDialogOpen: boolean,
+    selectedListFormDialog?: ListInterface | null
+  ) => {
     set({
       listFormDialogOpen,
       selectedListFormDialog,
@@ -296,7 +310,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   // Selected
   selectedTaskDialogOpen: false,
   selectedTask: null,
-  setSelectedTaskDialogOpen: (selectedTaskDialogOpen: boolean, selectedTask?: TaskInterface | null) => {
+  setSelectedTaskDialogOpen: (
+    selectedTaskDialogOpen: boolean,
+    selectedTask?: TaskInterface | null
+  ) => {
     set({
       selectedTaskDialogOpen,
       selectedTask,

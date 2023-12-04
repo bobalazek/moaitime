@@ -17,8 +17,8 @@ export default function AuthSettingsSection() {
         <Alert>
           <AlertTitle>Not logged in</AlertTitle>
           <AlertDescription className="mb-4">
-            At the moment it seems that you are not yet logged in, which is a bummer, because our app really shines once
-            you connect to your account!
+            At the moment it seems that you are not yet logged in, which is a bummer, because our
+            app really shines once you connect to your account!
           </AlertDescription>
         </Alert>
       )}

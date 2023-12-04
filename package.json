@@ -5,7 +5,7 @@
   "scripts": {
     "build": "turbo build --no-daemon",
     "clean": "pnpm dlx rimraf --glob **/node_modules --glob **/.turbo --glob **/dist",
-    "dev": "turbo dev --no-daemon --filter='./apps/*'",
+    "dev": "turbo dev --no-daemon --concurrency=50",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "lint": "turbo lint --no-daemon",

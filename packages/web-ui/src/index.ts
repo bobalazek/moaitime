@@ -1,6 +1,3 @@
-// Styles
-import '@myzenbuddy/tailwind-config/globals.css';
-
 // Alert Dialog
 export * from './components/alert-dialog';
 

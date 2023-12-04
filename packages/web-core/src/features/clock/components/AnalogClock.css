@@ -1,0 +1,141 @@
+.clock,
+.clock-hands,
+.clock-faces {
+  width: 300px;
+  height: 300px;
+  position: absolute;
+}
+
+/***** Clock *****/
+.clock {
+  pointer-events: none;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.2);
+  font-size: 24px;
+  color: #444;
+  text-align: center;
+  background-color: #fff;
+}
+
+.clock-center-dot {
+  background: #aaa;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 3px solid #ddd;
+}
+
+/***** Clock - Hands *****/
+.hand {
+  position: absolute;
+  transform-origin: 50% 0%;
+  border-radius: 16px;
+}
+
+.hand.hour-hand {
+  width: 8px;
+  height: 80px;
+  background: #222;
+  top: 50%;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.hand.minute-hand {
+  width: 4px;
+  height: 100px;
+  background: #444;
+  top: 50%;
+  left: 50%;
+  margin-left: -2px;
+}
+
+.hand.second-hand {
+  width: 2px;
+  height: 120px;
+  background: red;
+  top: 50%;
+  left: 50%;
+  margin-left: -1px;
+}
+
+/***** Clock - Faces *****/
+.face {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  line-height: 1;
+}
+
+.face.face-1 {
+  top: 16%;
+  left: 70%;
+}
+
+.face.face-2 {
+  top: 30%;
+  left: 85%;
+}
+
+.face.face-3 {
+  top: 50%;
+  left: 92%;
+}
+
+.face.face-4 {
+  top: 70%;
+  left: 85%;
+}
+
+.face.face-5 {
+  top: 85%;
+  left: 70%;
+}
+
+.face.face-6 {
+  top: 92%;
+  left: 50%;
+}
+
+.face.face-7 {
+  top: 85%;
+  left: 30%;
+}
+
+.face.face-8 {
+  top: 70%;
+  left: 15%;
+}
+
+.face.face-9 {
+  top: 50%;
+  left: 8%;
+}
+
+.face.face-10 {
+  top: 30%;
+  left: 15%;
+}
+
+.face.face-11 {
+  top: 16%;
+  left: 30%;
+}
+
+.face.face-12 {
+  top: 8%;
+  left: 50%;
+}

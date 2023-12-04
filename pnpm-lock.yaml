@@ -130,6 +130,9 @@ importers:
       '@myzenbuddy/database-seeds':
         specifier: '*'
         version: link:../../packages/database-seeds
+      '@myzenbuddy/database-testing':
+        specifier: '*'
+        version: link:../../packages/database-testing
       '@myzenbuddy/shared-logging':
         specifier: '*'
         version: link:../../packages/shared-logging

@@ -21,13 +21,14 @@
   ],
   "scripts": {
     "build": "tsup",
-    "cli": "node ./dist/main.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "run-exec": "node ./dist/main.js"
   },
   "dependencies": {
     "@myzenbuddy/database-core": "*",
     "@myzenbuddy/database-fixtures": "*",
     "@myzenbuddy/database-seeds": "*",
+    "@myzenbuddy/database-testing": "*",
     "@myzenbuddy/shared-logging": "*",
     "commander": "^11.1.0"
   }

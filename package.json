@@ -5,6 +5,7 @@
   "scripts": {
     "build": "turbo build --no-daemon",
     "clean": "pnpm dlx rimraf --glob **/node_modules --glob **/.turbo --glob **/dist",
+    "cli": "cd apps/cli && pnpm build && pnpm run-exec",
     "dev": "cross-env NODE_ENV=development turbo dev --no-daemon --concurrency=50",
     "e2e": "cross-env NODE_ENV=test turbo e2e --no-daemon",
     "e2e:watch": "cross-env NODE_ENV=test turbo e2e:watch --no-daemon",

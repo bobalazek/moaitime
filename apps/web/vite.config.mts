@@ -5,6 +5,7 @@ export default defineConfig({
   server: {
     port: 4200,
     host: 'localhost',
+    hmr: true,
   },
   preview: {
     port: 4300,

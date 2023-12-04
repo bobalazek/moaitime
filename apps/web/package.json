@@ -1,0 +1,42 @@
+{
+  "name": "@myzenbuddy/web",
+  "version": "0.0.0",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/main.d.mts",
+        "default": "./dist/main.mjs"
+      },
+      "require": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    }
+  },
+  "main": "./dist/main.js",
+  "module": "./dist/main.mjs",
+  "types": "./dist/main.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@myzenbuddy/web-core": "*",
+    "@nx/react": "17.1.3",
+    "autoprefixer": "^10.4.16",
+    "postcss": "8.4.21",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tailwindcss": "^3.3.5",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@myzenbuddy/tailwind-config": "workspace:*",
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14"
+  }
+}

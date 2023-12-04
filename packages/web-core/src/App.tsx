@@ -6,8 +6,6 @@ import { AppRoutes } from './AppRoutes';
 import { ErrorBoundary } from './features/core/components/ErrorBoundary';
 import { initializeApp } from './features/core/utils/BootstrapHelpers';
 
-import './globals.css';
-
 export function App() {
   useEffect(() => {
     initializeApp();

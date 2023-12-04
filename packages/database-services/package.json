@@ -23,7 +23,8 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
     "@myzenbuddy/database-core": "*",
@@ -35,6 +36,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.7"
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.2"
   }
 }

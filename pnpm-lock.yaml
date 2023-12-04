@@ -118,6 +118,9 @@ importers:
       '@types/supertest':
         specifier: ^2.0.16
         version: 2.0.16
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   apps/cli:
     dependencies:
@@ -243,6 +246,10 @@ importers:
       drizzle-orm:
         specifier: ^0.29.0
         version: 0.29.1(@types/pg@8.10.9)(pg@8.11.3)
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/database-seeds:
     dependencies:
@@ -255,6 +262,10 @@ importers:
       drizzle-orm:
         specifier: ^0.29.0
         version: 0.29.1(@types/pg@8.10.9)(pg@8.11.3)
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/database-services:
     dependencies:
@@ -283,6 +294,9 @@ importers:
       '@types/uuid':
         specifier: ^9.0.7
         version: 9.0.7
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/database-testing:
     dependencies:
@@ -295,6 +309,10 @@ importers:
       '@myzenbuddy/database-seeds':
         specifier: '*'
         version: link:../database-seeds
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/eslint-config:
     devDependencies:
@@ -347,6 +365,9 @@ importers:
       '@types/bcrypt':
         specifier: ^5.0.2
         version: 5.0.2
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/shared-common:
     dependencies:
@@ -356,8 +377,16 @@ importers:
       date-fns-tz:
         specifier: ^2.0.0
         version: 2.0.0(date-fns@2.30.0)
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
-  packages/shared-frontend: {}
+  packages/shared-frontend:
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/shared-logging:
     dependencies:
@@ -373,6 +402,10 @@ importers:
       pino-pretty:
         specifier: ^10.2.3
         version: 10.2.3
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/tailwind-config:
     dependencies:
@@ -464,6 +497,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.5
         version: 3.3.5
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
   packages/web-ui:
     dependencies:
@@ -549,6 +585,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.5
         version: 3.3.5
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
 
 packages:
 

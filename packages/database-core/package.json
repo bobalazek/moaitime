@@ -21,11 +21,12 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch --onSuccess \"tsc --emitDeclarationOnly --declaration\"",
+    "dev": "tsup --watch",
     "lint": "eslint .",
-    "scripts:check": "pnpm exec drizzle-kit check:pg --config=./src/drizzle.config.ts",
-    "scripts:generate-migration": "pnpm exec drizzle-kit generate:pg --config=./src/drizzle.config.ts",
-    "scripts:update-metadata": "pnpm exec drizzle-kit up:pg --config=./src/drizzle.config.ts"
+    "scripts:check": "drizzle-kit check:pg --config=./src/drizzle.config.ts",
+    "scripts:generate-migration": "drizzle-kit generate:pg --config=./src/drizzle.config.ts",
+    "scripts:update-metadata": "drizzle-kit up:pg --config=./src/drizzle.config.ts",
+    "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
     "@myzenbuddy/shared-backend": "*",

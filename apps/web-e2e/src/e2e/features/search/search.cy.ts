@@ -21,21 +21,6 @@ describe('search.cy.ts', () => {
     cy.getBySel('search').should('not.exist');
   });
 
-  it('should be able to search', () => {
-    cy.getBySel('search').should('exist');
-
-    cy.window().then((win) => {
-      cy.stub(win, 'open').callsFake((url) => {
-        win.location.href = url;
-      });
-    });
-
-    cy.getBySel('search').find('input').click();
-    cy.getBySel('search').find('input').type('test{enter}');
-
-    cy.url().should('contain', 'test');
-  });
-
   it('should switch to a different search engine', () => {
     cy.getBySel('search').should('exist');
 

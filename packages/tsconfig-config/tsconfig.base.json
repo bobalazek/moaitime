@@ -3,9 +3,11 @@
   "compilerOptions": {
     "sourceMap": true,
     "inlineSources": true,
+    "emitDecoratorMetadata": true,
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,

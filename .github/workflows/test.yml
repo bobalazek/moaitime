@@ -56,3 +56,6 @@ jobs:
 
       - name: pnpm - Test
         run: pnpm test
+
+      - name: pnpm - E2E
+        run: pnpm e2e

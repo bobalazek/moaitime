@@ -44,9 +44,15 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task').first().find('[data-test="tasks--task--name"]').clear();
 
-    cy.getBySel('tasks--task').first().find('[data-test="tasks--task--name"]').type('My edited task{enter}');
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--name"]')
+      .type('My edited task{enter}');
 
-    cy.getBySel('tasks--task').first().find('[data-test="tasks--task--name"]').should('have.text', 'My edited task');
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--name"]')
+      .should('have.text', 'My edited task');
   });
 
   it('should edit task when edit button is clicked', () => {
@@ -54,9 +60,15 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--tasks-form').type('My new task{enter}');
 
-    cy.getBySel('tasks--task').first().find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]').click();
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
 
-    cy.getBySel('tasks--task--actions-dropdown-menu').find('div[role="menuitem"]').contains('Edit').click();
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Edit')
+      .click();
 
     cy.getBySel('tasks--task')
       .first()
@@ -69,9 +81,15 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--tasks-form').type('My new task{enter}');
 
-    cy.getBySel('tasks--task').first().find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]').click();
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
 
-    cy.getBySel('tasks--task--actions-dropdown-menu').find('div[role="menuitem"]').contains('Delete').click();
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Delete')
+      .click();
 
     cy.getBySel('tasks--task--name').should('not.exist');
   });

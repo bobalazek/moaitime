@@ -26,7 +26,10 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Descending').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Descending')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('bbb').should('exist');
 
@@ -44,7 +47,10 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Name').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Name')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
 
@@ -62,9 +68,15 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Name').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Name')
+      .click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Descending').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Descending')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('ddd').should('exist');
 
@@ -82,7 +94,10 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Created At').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Created At')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');
 
@@ -100,9 +115,15 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Created At').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Created At')
+      .click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Descending').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Descending')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('bbb').should('exist');
 
@@ -128,7 +149,10 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Completed At').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Completed At')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('ddd').should('exist');
 
@@ -154,9 +178,15 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Completed At').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Completed At')
+      .click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Descending').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Descending')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
 
@@ -180,7 +210,10 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Updated At').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Updated At')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
 
@@ -204,9 +237,15 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Updated At').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Updated At')
+      .click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Descending').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Descending')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('eee').should('exist');
 
@@ -230,11 +269,17 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Updated At').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Updated At')
+      .click();
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Descending').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Descending')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('eee').should('exist');
 
@@ -252,11 +297,17 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').first().click();
 
-    cy.getBySel('tasks--task--actions-dropdown-menu').find('div[role="menuitem"]').contains('Delete').click();
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Delete')
+      .click();
 
     cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').eq(1).click();
 
-    cy.getBySel('tasks--task--actions-dropdown-menu').find('div[role="menuitem"]').contains('Delete').click();
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Delete')
+      .click();
 
     cy.getBySel('tasks--tasks-list').contains('ccc').should('not.exist');
 
@@ -264,7 +315,10 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--body-header--list-selector--dropdown-menu').find('div').contains('Include deleted?').click();
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Include deleted?')
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');
 

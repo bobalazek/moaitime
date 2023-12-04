@@ -21,9 +21,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "cli": "node ./dist/main.js",
     "dev": "tsup --watch --onSuccess \"node dist/main.js\"",
     "lint": "eslint .",
+    "serve": "node ./dist/main.js",
     "test": "vitest run"
   },
   "dependencies": {

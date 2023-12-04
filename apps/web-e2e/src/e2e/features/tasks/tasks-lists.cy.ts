@@ -1,6 +1,10 @@
 /// <reference types="cypress" />
 
-import { openTasksFirstListActions, openTasksNewListDropdownMenu, openTasksPopover } from './utils/tasks-helpers';
+import {
+  openTasksFirstListActions,
+  openTasksNewListDropdownMenu,
+  openTasksPopover,
+} from './utils/tasks-helpers';
 
 describe('tasks-lists.cy.ts', () => {
   before(() => {
@@ -16,7 +20,10 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--lists-list--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--lists-list--dropdown-menu').find('div[role="menuitemradio"]').contains('Today').click();
+    cy.getBySel('tasks--lists-list--dropdown-menu')
+      .find('div[role="menuitemradio"]')
+      .contains('Today')
+      .click();
 
     cy.getBySel('tasks--body-header--title').contains('Today').should('exist');
   });
@@ -84,7 +91,6 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--list-actions--dropdown-menu').find('span').contains('Edit').click();
 
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(100);
 
     cy.getBySel('tasks--list-form-dialog--color-select--trigger-button').click();
@@ -96,7 +102,11 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
 
-    cy.getBySel('tasks--body-header--title').should('have.attr', 'data-color', LIST_COLOR_OPTION.value);
+    cy.getBySel('tasks--body-header--title').should(
+      'have.attr',
+      'data-color',
+      LIST_COLOR_OPTION.value
+    );
   });
 
   it('should check if add a new task list works correctly', () => {
@@ -152,7 +162,10 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--task--actions-dropdown-menu').find('div[role="menuitem"]').contains('Move').click();
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Move')
+      .click();
 
     cy.getBySel('tasks--lists-list--dropdown-menu')
       .find('div[role="menuitemradio"]')
@@ -193,6 +206,10 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--list-form-dialog').find('button').contains('Save').click();
 
-    cy.getBySel('tasks--body-header--title').should('have.attr', 'data-color', LIST_COLOR_OPTION.value);
+    cy.getBySel('tasks--body-header--title').should(
+      'have.attr',
+      'data-color',
+      LIST_COLOR_OPTION.value
+    );
   });
 });

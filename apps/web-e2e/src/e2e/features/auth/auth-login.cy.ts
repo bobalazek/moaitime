@@ -23,8 +23,7 @@ describe('auth-login.cy.ts', () => {
     cy.get('#login-button').click();
 
     cy.contains('Invalid credentials').should('exist');
-  })
-
+  });
 
   it('should stay on the login page if all fields are not filled correctly', () => {
     cy.visit('/');
@@ -34,6 +33,5 @@ describe('auth-login.cy.ts', () => {
     cy.get('#login-button').click();
 
     cy.location('pathname').should('eq', '/login');
-  })
-
+  });
 });

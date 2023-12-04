@@ -2,12 +2,18 @@
   "name": "@myzenbuddy/web-e2e",
   "version": "0.0.0",
   "scripts": {
-    "e2e": "cypress",
-    "e2e:watch": "cypress open"
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "e2e": "start-server-and-test servers:start \":4200|:3636\" cypress:run",
+    "e2e:watch": "start-server-and-test servers:start \":4200|:3636\" cypress:open",
+    "lint": "eslint .",
+    "servers:start": "concurrently --kill-others \"cd ../web && pnpm build && pnpm serve\" \"cd ../api && pnpm build && pnpm serve\""
   },
   "dependencies": {
     "@myzenbuddy/shared-common": "workspace:*",
     "@myzenbuddy/shared-frontend": "workspace:*",
-    "cypress": "^13.0.0"
+    "concurrently": "^8.2.2",
+    "cypress": "^13.0.0",
+    "start-server-and-test": "^2.0.3"
   }
 }

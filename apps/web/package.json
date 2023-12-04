@@ -22,7 +22,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@myzenbuddy/web-core": "*",

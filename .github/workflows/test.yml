@@ -18,6 +18,12 @@ jobs:
         with:
           node-version: 18
 
+      - name: Prepare environment variables
+        run: cp -f .env.local.example .env.local
+
+      - name: Docker compose - Build & start the containers
+        run: docker compose up -d
+
       - name: pnpm - Setup
         uses: pnpm/action-setup@v2
         with:

@@ -1,7 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
-  "include": ["src/**/*"],
-  "compilerOptions": {
-    "jsx": "react-jsx"
-  }
+  "extends": "@myzenbuddy/tsconfig-config/tsconfig.frontend.json",
+  "include": ["src/**/*"]
 }

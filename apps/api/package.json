@@ -36,6 +36,7 @@
     "@myzenbuddy/database-testing": "*",
     "@myzenbuddy/shared-backend": "*",
     "@myzenbuddy/shared-common": "*",
+    "@myzenbuddy/tsconfig-config": "workspace:*",
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.2.10",

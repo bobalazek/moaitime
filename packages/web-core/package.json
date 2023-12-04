@@ -16,6 +16,7 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "source": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "files": [
     "dist/**"
@@ -34,6 +35,7 @@
     "@dnd-kit/utilities": "3.2.2",
     "@myzenbuddy/shared-common": "*",
     "@myzenbuddy/shared-frontend": "*",
+    "@myzenbuddy/tsconfig-config": "workspace:*",
     "@myzenbuddy/web-ui": "*",
     "@radix-ui/react-popover": "^1.0.7",
     "clsx": "^2.0.0",

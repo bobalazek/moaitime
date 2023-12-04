@@ -81,6 +81,9 @@ importers:
       '@myzenbuddy/shared-common':
         specifier: '*'
         version: link:../../packages/shared-common
+      '@myzenbuddy/tsconfig-config':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig-config
       '@nestjs/common':
         specifier: ^10.0.2
         version: 10.2.10(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -148,6 +151,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@myzenbuddy/tsconfig-config':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig-config
       '@myzenbuddy/web-core':
         specifier: '*'
         version: link:../../packages/web-core
@@ -442,6 +448,9 @@ importers:
       '@myzenbuddy/shared-frontend':
         specifier: '*'
         version: link:../shared-frontend
+      '@myzenbuddy/tsconfig-config':
+        specifier: workspace:*
+        version: link:../tsconfig-config
       '@myzenbuddy/web-ui':
         specifier: '*'
         version: link:../web-ui
@@ -506,6 +515,9 @@ importers:
 
   packages/web-ui:
     dependencies:
+      '@myzenbuddy/tsconfig-config':
+        specifier: workspace:*
+        version: link:../tsconfig-config
       '@radix-ui/react-alert-dialog':
         specifier: ^1.0.5
         version: 1.0.5(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)

@@ -1,6 +1,5 @@
 {
-  "extends": "@myzenbuddy/tsconfig-config/tsconfig.backend.json",
-  "include": ["src/**/*"],
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

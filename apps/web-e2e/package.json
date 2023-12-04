@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
+    "cypress:open": "pnpm exec cypress open",
+    "cypress:run": "pnpm exec cypress run",
     "e2e": "start-server-and-test servers:start \":4200|:3636\" cypress:run",
     "e2e:watch": "start-server-and-test servers:start \":4200|:3636\" cypress:open",
     "lint": "eslint .",

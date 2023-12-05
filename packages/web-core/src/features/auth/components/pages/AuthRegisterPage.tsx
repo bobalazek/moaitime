@@ -36,8 +36,6 @@ export default function AuthRegisterPage() {
         title: 'Success!',
         description: 'You have successfully registered!',
       });
-
-      navigate('/');
     } catch (error) {
       toast({
         variant: 'destructive',

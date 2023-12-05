@@ -36,8 +36,6 @@ export default function AuthLoginPage() {
   const onLoginButtonClick = async () => {
     try {
       await login(email, password);
-
-      navigate('/');
     } catch (error) {
       toast({
         variant: 'destructive',

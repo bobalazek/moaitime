@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build --no-daemon",
-    "clean": "turbo clean --no-daemon --parallel && pnpm dlx rimraf --glob node_modules",
+    "clean": "turbo clean --no-daemon --parallel",
     "cli": "cd apps/cli && pnpm build && pnpm run-exec",
     "database:check": "cd ./packages/database-core && pnpm scripts:check",
     "database:generate-migration": "cd ./packages/database-core && pnpm scripts:generate-migration",

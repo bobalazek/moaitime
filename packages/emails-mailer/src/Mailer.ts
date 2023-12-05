@@ -11,6 +11,12 @@ export type MailerSendOptions = {
   subject: string;
 };
 
+export type MailerSendAuthWelcomeEmailOptions = {
+  userEmail: string;
+  userDisplayName: string;
+  verifyEmailUrl: string;
+};
+
 export class Mailer {
   private _transporter: nodemailer.Transporter;
 
@@ -20,17 +26,13 @@ export class Mailer {
     this._transporter = nodemailer.createTransport(SMTP_URL);
   }
 
-  async sendAuthWelcomeEmail(to: string) {
-    return this.send(
-      AuthWelcomeEmail({
-        userDisplayName: 'Bob',
-        verifyEmailUrl: 'https://myzenbuddy.com/verify-email',
-      }),
-      {
-        to,
-        subject: 'Welcome to My Zen Buddy!',
-      }
-    );
+  async sendAuthWelcomeEmail(options: MailerSendAuthWelcomeEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthWelcomeEmail(rest), {
+      to: userEmail,
+      subject: 'Welcome to MyZenBuddy!',
+    });
   }
 
   async send(Email: ReactElement, options: MailerSendOptions) {

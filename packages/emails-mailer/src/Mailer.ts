@@ -7,6 +7,8 @@ import { AuthWelcomeEmail } from '@myzenbuddy/emails-core';
 import { getEnv, MAILER_FROM } from '@myzenbuddy/shared-backend';
 import { logger, Logger } from '@myzenbuddy/shared-logging';
 
+import { configureTransporter } from './Helpers';
+
 export type MailerSendOptions = {
   to: string;
   subject: string;
@@ -19,13 +21,14 @@ export type MailerSendAuthWelcomeEmailOptions = {
 };
 
 export class Mailer {
-  private _transporter: nodemailer.Transporter | null;
+  private _transporter: nodemailer.Transporter | null = null;
 
   constructor(private _logger: Logger) {
     const { SMTP_URL, NODE_ENV } = getEnv();
 
-    this._transporter =
-      NODE_ENV !== 'test' && SMTP_URL ? nodemailer.createTransport(SMTP_URL) : null;
+    if (SMTP_URL && NODE_ENV !== 'test') {
+      this._transporter = configureTransporter(SMTP_URL);
+    }
   }
 
   async sendAuthWelcomeEmail(options: MailerSendAuthWelcomeEmailOptions) {

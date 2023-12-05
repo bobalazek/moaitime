@@ -44,5 +44,10 @@
   "packageManager": "pnpm@8.11.0",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "react-email@1.10.0": "patches/react-email@1.10.0.patch"
+    }
   }
 }

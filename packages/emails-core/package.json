@@ -22,6 +22,7 @@
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist --glob react-email",
     "dev": "tsup --watch",
     "lint": "eslint .",
+    "serve": "email dev --port 3535 --dir ./src/emails",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
@@ -48,6 +49,7 @@
     "@myzenbuddy/tailwind-config": "workspace:*",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
+    "react-email": "1.10.0",
     "typescript": "^5.3.2"
   }
 }

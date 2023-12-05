@@ -12,7 +12,6 @@
     "preserveWatchOutput": true,
     "strict": true,
     "strictNullChecks": true,
-    "preserveSymlinks": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "moduleResolution": "bundler",

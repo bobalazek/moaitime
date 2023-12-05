@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "preserveSymlinks": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   }

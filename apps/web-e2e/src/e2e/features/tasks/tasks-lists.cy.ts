@@ -35,7 +35,7 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--list-actions--dropdown-menu').find('div').contains('Delete').click();
 
-    cy.get('div[role="alertdialog"] button').contains('Confirm').click();
+    cy.get('div[role="alertdialog"]').find('button').contains('Confirm').click();
 
     cy.contains('List deleted').should('exist');
   });

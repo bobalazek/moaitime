@@ -415,6 +415,9 @@ importers:
       '@myzenbuddy/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
+      '@myzenbuddy/shared-logging':
+        specifier: workspace:*
+        version: link:../shared-logging
       '@react-email/render':
         specifier: ^0.0.10
         version: 0.0.10

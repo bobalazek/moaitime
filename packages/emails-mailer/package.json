@@ -27,6 +27,7 @@
   "dependencies": {
     "@myzenbuddy/emails-core": "workspace:*",
     "@myzenbuddy/shared-backend": "workspace:*",
+    "@myzenbuddy/shared-logging": "workspace:*",
     "@react-email/render": "^0.0.10",
     "nodemailer": "^6.9.7",
     "react": "18.2.0"

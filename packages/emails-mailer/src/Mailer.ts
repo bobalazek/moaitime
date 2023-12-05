@@ -4,7 +4,8 @@ import { render } from '@react-email/render';
 import * as nodemailer from 'nodemailer';
 
 import { AuthWelcomeEmail } from '@myzenbuddy/emails-core';
-import { getEnv } from '@myzenbuddy/shared-backend';
+import { getEnv, MAILER_FROM } from '@myzenbuddy/shared-backend';
+import { logger, Logger } from '@myzenbuddy/shared-logging';
 
 export type MailerSendOptions = {
   to: string;
@@ -18,12 +19,13 @@ export type MailerSendAuthWelcomeEmailOptions = {
 };
 
 export class Mailer {
-  private _transporter: nodemailer.Transporter;
+  private _transporter: nodemailer.Transporter | null;
 
-  constructor() {
-    const { SMTP_URL } = getEnv();
+  constructor(private _logger: Logger) {
+    const { SMTP_URL, NODE_ENV } = getEnv();
 
-    this._transporter = nodemailer.createTransport(SMTP_URL);
+    this._transporter =
+      NODE_ENV !== 'test' && SMTP_URL ? nodemailer.createTransport(SMTP_URL) : null;
   }
 
   async sendAuthWelcomeEmail(options: MailerSendAuthWelcomeEmailOptions) {
@@ -39,8 +41,14 @@ export class Mailer {
     const html = render(Email);
     const text = render(Email, { plainText: true });
 
+    if (!this._transporter) {
+      this._logger.warn('SMTP_URL is not set, skipping sending email');
+
+      return;
+    }
+
     await this._transporter.sendMail({
-      from: 'My Zen Buddy <mailer@corcosoft.com>',
+      from: MAILER_FROM,
       ...options,
       html,
       text,
@@ -48,4 +56,4 @@ export class Mailer {
   }
 }
 
-export const mailer = new Mailer();
+export const mailer = new Mailer(logger);

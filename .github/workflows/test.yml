@@ -9,6 +9,8 @@ jobs:
     name: Test and Benchmark
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      DISABLE_OPENCOLLECTIVE: true
     steps:
       - name: Git - Checkout
         uses: actions/checkout@v4

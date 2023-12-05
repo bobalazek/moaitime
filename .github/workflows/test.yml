@@ -47,7 +47,7 @@ jobs:
       # Tried disabling post-install scripts, but that causes another issue with bcrypt dependency down the line.
       - name: pnpm - Workaround
         run: |
-          pnpm add -g node-gyp opencollective
+          pnpm add -g node-pre-gyp opencollective
 
       - name: pnpm - Install
         run: pnpm install

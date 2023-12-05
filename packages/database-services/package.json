@@ -16,9 +16,6 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
   "scripts": {
     "build": "tsup",
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",

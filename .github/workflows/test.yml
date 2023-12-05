@@ -43,8 +43,14 @@ jobs:
       #          restore-keys: |
       #            ${{ runner.os }}-pnpm-store-
 
+      # We need this hack-y workaround to make sure the postinstall script is run correctly.
+      # Tried disabling post-install scripts, but that causes another issue with bcrypt dependency down the line.
+      - name: pnpm - Workaround
+        run: |
+          pnpm add -g opencollective-postinstall
+
       - name: pnpm - Install
-        run: pnpm install --ignore-scripts
+        run: pnpm install
 
       - name: pnpm - Lint
         run: pnpm lint

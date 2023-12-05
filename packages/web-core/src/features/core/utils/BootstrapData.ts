@@ -199,6 +199,9 @@ export const greetings: GreetingInterface[] = [
   {
     text: 'Hey {displayName}, stay groovy!',
   },
+  {
+    text: 'I Am {displayName}!',
+  },
 ];
 
 export const backgrounds: BackgroundInterface[] = [

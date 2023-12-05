@@ -16,7 +16,7 @@ export function configureTransporter(url: string) {
   const [username, password] = credentials.split(':');
   const [host, port] = hostAndPort.split(':');
 
-  const transporterOptions = {
+  return nodemailer.createTransport({
     host,
     port: parseInt(port, 10),
     secure: isSecure,
@@ -24,9 +24,5 @@ export function configureTransporter(url: string) {
       user: decodeURIComponent(username),
       pass: password,
     },
-  };
-
-  console.log(transporterOptions);
-
-  return nodemailer.createTransport(transporterOptions);
+  });
 }

@@ -75,7 +75,7 @@ export class AuthManager {
     await mailer.sendAuthWelcomeEmail({
       userEmail: newUser.email,
       userDisplayName: newUser.displayName,
-      verifyEmailUrl: `${WEB_URL}/auth/confirm-email?token=${newUser.emailConfirmationToken}`,
+      confirmEmailUrl: `${WEB_URL}/auth/confirm-email?token=${newUser.emailConfirmationToken}`,
     });
 
     return newUser;
@@ -123,8 +123,6 @@ export class AuthManager {
 
     const updatedUser = await this._usersManager.updateOneById(user.id, updateData);
 
-    // TODO: send success emails
-
     return updatedUser;
   }
 
@@ -163,7 +161,19 @@ export class AuthManager {
 
     const updatedUser = await this._usersManager.updateOneById(user.id, updateData);
 
-    // TODO: send new email confirmation
+    if (isNewEmail) {
+      await mailer.sendAuthConfirmNewEmailEmail({
+        userEmail: updatedUser.newEmail as string,
+        userDisplayName: updatedUser.displayName,
+        confirmEmailUrl: `${WEB_URL}/auth/confirm-new-email?token=${updatedUser.newEmailConfirmationToken}`,
+      });
+    } else {
+      await mailer.sendAuthConfirmEmailEmail({
+        userEmail: updatedUser.email,
+        userDisplayName: updatedUser.displayName,
+        confirmEmailUrl: `${WEB_URL}/auth/confirm-email?token=${updatedUser.emailConfirmationToken}`,
+      });
+    }
 
     return updatedUser;
   }

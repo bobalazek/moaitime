@@ -11,25 +11,26 @@ import { globalStyles } from '../GlobalStyles';
 import EmailFooter from '../partials/EmailFooter';
 import EmailHeader from '../partials/EmailHeader';
 
-export interface AuthWelcomeEmailProps {
+// It is NOT a typo! It is an Email (suffix), that is mean to ConfirmNewEmail in the Auth (prefix) feature!
+export interface AuthConfirmNewEmailEmailProps {
   userDisplayName: string;
   confirmEmailUrl: string;
 }
 
-export const AuthWelcomeEmail = ({
+export const AuthConfirmNewEmailEmail = ({
   userDisplayName = 'Stranger',
   confirmEmailUrl = '',
-}: AuthWelcomeEmailProps) => (
+}: AuthConfirmNewEmailEmailProps) => (
   <Html>
     <Head />
-    <Preview>The productivity platform you always wanted</Preview>
+    <Preview>Oh, got a new email? Nice!</Preview>
     <Body style={globalStyles.body}>
       <Container style={globalStyles.container}>
         <EmailHeader />
         <Text style={globalStyles.paragraph}>Hi {userDisplayName},</Text>
         <Text style={globalStyles.paragraph}>
-          Welcome to MyZenBuddy, the productivity platform that you always wanted, but never knew it
-          existed!
+          We just want to make sure that you are the owner of this email address. Is that alright
+          with you?
         </Text>
         <Section style={globalStyles.textCenter}>
           <Button style={globalStyles.button} href={confirmEmailUrl}>
@@ -42,4 +43,4 @@ export const AuthWelcomeEmail = ({
   </Html>
 );
 
-export default AuthWelcomeEmail;
+export default AuthConfirmNewEmailEmail;

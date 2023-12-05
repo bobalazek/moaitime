@@ -1,1 +1,3 @@
 export * from './emails/AuthWelcomeEmail';
+export * from './emails/AuthConfirmEmailEmail';
+export * from './emails/AuthConfirmNewEmailEmail';

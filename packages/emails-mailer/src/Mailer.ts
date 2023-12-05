@@ -3,7 +3,11 @@ import type { ReactElement } from 'react';
 import { render } from '@react-email/render';
 import * as nodemailer from 'nodemailer';
 
-import { AuthWelcomeEmail } from '@myzenbuddy/emails-core';
+import {
+  AuthConfirmEmailEmail,
+  AuthConfirmNewEmailEmail,
+  AuthWelcomeEmail,
+} from '@myzenbuddy/emails-core';
 import { getEnv, MAILER_FROM } from '@myzenbuddy/shared-backend';
 import { logger, Logger } from '@myzenbuddy/shared-logging';
 
@@ -14,10 +18,10 @@ export type MailerSendOptions = {
   subject: string;
 };
 
-export type MailerSendAuthWelcomeEmailOptions = {
+export type MailerSendAuthWelcomeAndConfirmEmailOptions = {
   userEmail: string;
   userDisplayName: string;
-  verifyEmailUrl: string;
+  confirmEmailUrl: string;
 };
 
 export class Mailer {
@@ -31,18 +35,38 @@ export class Mailer {
     }
   }
 
-  async sendAuthWelcomeEmail(options: MailerSendAuthWelcomeEmailOptions) {
+  async sendAuthWelcomeEmail(options: MailerSendAuthWelcomeAndConfirmEmailOptions) {
     const { userEmail, ...rest } = options;
 
     return this.send(AuthWelcomeEmail(rest), {
       to: userEmail,
-      subject: 'Welcome to MyZenBuddy!',
+      subject: '🎉 Welcome to MyZenBuddy!',
+    });
+  }
+
+  async sendAuthConfirmEmailEmail(options: MailerSendAuthWelcomeAndConfirmEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthConfirmEmailEmail(rest), {
+      to: userEmail,
+      subject: '✅ Email Confirmation for MyZenBuddy',
+    });
+  }
+
+  async sendAuthConfirmNewEmailEmail(options: MailerSendAuthWelcomeAndConfirmEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthConfirmNewEmailEmail(rest), {
+      to: userEmail,
+      subject: '✅ Email Conirmation for MyZenBuddy',
     });
   }
 
   async send(Email: ReactElement, options: MailerSendOptions) {
     const html = render(Email);
     const text = render(Email, { plainText: true });
+
+    // TODO: temporary save into database, so we can E2E test it!
 
     if (!this._transporter) {
       this._logger.warn('SMTP_URL is not set, skipping sending email');

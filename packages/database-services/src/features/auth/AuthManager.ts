@@ -2,13 +2,14 @@ import { addSeconds } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 import { NewUser, User, UserAccessToken } from '@myzenbuddy/database-core';
+import { mailer } from '@myzenbuddy/emails-mailer';
 import {
   AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS,
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
   compareHash,
   generateHash,
 } from '@myzenbuddy/shared-backend';
-import { UserRoleEnum } from '@myzenbuddy/shared-common';
+import { UserRoleEnum, WEB_URL } from '@myzenbuddy/shared-common';
 
 import { UsersManager, usersManager } from '../users';
 import { UserAccessTokensManager, userAccessTokensManager } from '../users/UserAccessTokensManager';
@@ -70,6 +71,12 @@ export class AuthManager {
       emailConfirmationToken: uuidv4(),
       emailConfirmationLastSentAt: new Date(),
     } as NewUser);
+
+    await mailer.sendAuthWelcomeEmail({
+      userEmail: newUser.email,
+      userDisplayName: newUser.displayName,
+      verifyEmailUrl: `${WEB_URL}/auth/confirm-email?token=${newUser.emailConfirmationToken}`,
+    });
 
     return newUser;
   }

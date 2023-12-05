@@ -27,6 +27,7 @@
   "dependencies": {
     "@myzenbuddy/database-core": "*",
     "@myzenbuddy/database-testing": "*",
+    "@myzenbuddy/emails-mailer": "*",
     "@myzenbuddy/shared-backend": "*",
     "@myzenbuddy/shared-common": "*",
     "date-fns": "^2.30.0",

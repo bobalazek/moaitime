@@ -31,6 +31,13 @@ export default function AuthRegisterPage() {
   const onRegisterButtonClick = async () => {
     try {
       await register(displayName, email, password);
+
+      toast({
+        title: 'Success!',
+        description: 'You have successfully registered!',
+      });
+
+      navigate('/');
     } catch (error) {
       toast({
         variant: 'destructive',

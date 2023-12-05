@@ -1,8 +1,6 @@
 /// <reference types="cypress" />
 
-import type { SettingsInterface } from '@myzenbuddy/shared-common';
-
-import { API_URL } from '@myzenbuddy/shared-frontend';
+import { API_URL, SettingsInterface } from '@myzenbuddy/shared-common';
 
 type SettingsKeys = keyof SettingsInterface;
 

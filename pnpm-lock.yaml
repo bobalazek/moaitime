@@ -126,6 +126,9 @@ importers:
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
+      '@types/express-serve-static-core':
+        specifier: ^4.17.41
+        version: 4.17.41
       '@types/supertest':
         specifier: ^2.0.16
         version: 2.0.16
@@ -289,6 +292,9 @@ importers:
       '@myzenbuddy/database-testing':
         specifier: '*'
         version: link:../database-testing
+      '@myzenbuddy/emails-mailer':
+        specifier: '*'
+        version: link:../emails-mailer
       '@myzenbuddy/shared-backend':
         specifier: '*'
         version: link:../shared-backend

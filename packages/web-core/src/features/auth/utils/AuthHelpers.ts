@@ -1,5 +1,9 @@
-import { AuthInterface, ResponseInterface, UpdateUserInterface } from '@myzenbuddy/shared-common';
-import { API_URL } from '@myzenbuddy/shared-frontend';
+import {
+  API_URL,
+  AuthInterface,
+  ResponseInterface,
+  UpdateUserInterface,
+} from '@myzenbuddy/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

@@ -12,7 +12,7 @@
         "default": "./dist/index.js"
       }
     },
-    "./styles.css": "./dist/index.css"
+    "./globals.css": "./dist/index.css"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

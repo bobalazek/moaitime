@@ -1,0 +1,4 @@
+{
+  "extends": "@myzenbuddy/tsconfig-config/tsconfig.frontend.json",
+  "include": ["src/**/*"]
+}

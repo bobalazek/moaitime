@@ -8,7 +8,7 @@
     "e2e": "start-server-and-test servers:start \":4200|:3636\" cypress:run",
     "e2e:watch": "start-server-and-test servers:start \":4200|:3636\" cypress:open",
     "lint": "eslint .",
-    "servers:start": "concurrently --kill-others \"cd ../web && pnpm build && pnpm serve\" \"cd ../api && pnpm build && pnpm serve\""
+    "servers:start": "cd ../../ && pnpm build && pnpm cli database:reload && concurrently --kill-others \"cd ./apps/web && pnpm serve\" \"cd ./apps/api && pnpm serve\""
   },
   "dependencies": {
     "@myzenbuddy/shared-common": "workspace:*",

@@ -27,12 +27,16 @@ export default function AuthForgotPasswordPage() {
   };
 
   const onRequestPasswordResetButtonClick = async () => {
-    const response = await requestPasswordReset(email);
+    try {
+      const response = await requestPasswordReset(email);
 
-    toast({
-      title: 'Success!',
-      description: response.message ?? 'You have successfully requested the password reset!',
-    });
+      toast({
+        title: 'Success!',
+        description: response.message ?? 'You have successfully requested the password reset!',
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (

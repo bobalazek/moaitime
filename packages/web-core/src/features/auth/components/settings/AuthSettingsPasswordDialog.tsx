@@ -27,17 +27,21 @@ export default function AuthSettingsPasswordDialog() {
   }, [passwordSettingsDialogOpen]);
 
   const onSaveButtonClick = async () => {
-    await updatePasswordSettings({
-      currentPassword,
-      newPassword,
-    });
+    try {
+      await updatePasswordSettings({
+        currentPassword,
+        newPassword,
+      });
 
-    toast({
-      title: 'Password updated',
-      description: 'You have successfully updated your password',
-    });
+      toast({
+        title: 'Password updated',
+        description: 'You have successfully updated your password',
+      });
 
-    setPasswordSettingsDialogOpen(false);
+      setPasswordSettingsDialogOpen(false);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   const onCancelButtonClick = () => {

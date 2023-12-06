@@ -29,12 +29,16 @@ export default function AuthRegisterPage() {
   };
 
   const onRegisterButtonClick = async () => {
-    const response = await register(displayName, email, password);
+    try {
+      const response = await register(displayName, email, password);
 
-    toast({
-      title: 'Success!',
-      description: response.message ?? 'You have successfully registered!',
-    });
+      toast({
+        title: 'Success!',
+        description: response.message ?? 'You have successfully registered!',
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (

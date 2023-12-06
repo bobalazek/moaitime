@@ -29,14 +29,19 @@ export default function AuthResetPasswordPage() {
 
   const onResetPasswordButtonClick = async () => {
     const token = searchParams.get('token') || '';
-    const response = await resetPassword(token, password);
 
-    toast({
-      title: 'Success!',
-      description: response.message ?? 'You have successfully reset your password!',
-    });
+    try {
+      const response = await resetPassword(token, password);
 
-    navigate('/login');
+      toast({
+        title: 'Success!',
+        description: response.message ?? 'You have successfully reset your password!',
+      });
+
+      navigate('/login');
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (

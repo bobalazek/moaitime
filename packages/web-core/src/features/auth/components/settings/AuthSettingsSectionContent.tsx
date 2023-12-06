@@ -23,42 +23,58 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
   }, [auth.user]);
 
   const onResendVerificationEmailButtonClick = async () => {
-    await resendEmailConfirmation();
+    try {
+      await resendEmailConfirmation();
 
-    toast({
-      title: `Verification email sent`,
-      description: `A verification email has been sent to "${auth.user.email}". Please check your inbox and follow the instructions to verify it.`,
-    });
+      toast({
+        title: `Verification email sent`,
+        description: `A verification email has been sent to "${auth.user.email}". Please check your inbox and follow the instructions to verify it.`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   const onResendVerificationNewEmailButtonClick = async () => {
-    await resendEmailConfirmation(true);
+    try {
+      await resendEmailConfirmation(true);
 
-    toast({
-      title: `Verification email sent`,
-      description: `A verification email has been sent to "${auth.user.newEmail}". Please check your inbox and follow the instructions to verify it.`,
-    });
+      toast({
+        title: `Verification email sent`,
+        description: `A verification email has been sent to "${auth.user.newEmail}". Please check your inbox and follow the instructions to verify it.`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   const onCancelNewEmailButtonClick = async () => {
-    await cancelNewEmail();
+    try {
+      await cancelNewEmail();
 
-    toast({
-      title: `Email change cancelled`,
-      description: `Your email address has been reverted to "${auth.user.email}".`,
-    });
+      toast({
+        title: `Email change cancelled`,
+        description: `Your email address has been reverted to "${auth.user.email}".`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   const onSaveButtonClick = async () => {
-    await updateSettings({
-      displayName: userDisplayName,
-      email: userEmail,
-    });
+    try {
+      await updateSettings({
+        displayName: userDisplayName,
+        email: userEmail,
+      });
 
-    toast({
-      title: `Accound saved`,
-      description: `You have successfully saved your account.`,
-    });
+      toast({
+        title: `Accound saved`,
+        description: `You have successfully saved your account.`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (

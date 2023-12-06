@@ -32,7 +32,11 @@ export default function AuthLoginPage() {
   };
 
   const onLoginButtonClick = async () => {
-    await login(email, password);
+    try {
+      await login(email, password);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (

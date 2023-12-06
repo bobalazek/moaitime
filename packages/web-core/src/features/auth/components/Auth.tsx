@@ -11,7 +11,11 @@ export default function Auth() {
         return;
       }
 
-      await me();
+      try {
+        await me();
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
     };
 
     document.addEventListener('visibilitychange', onVisibilityChange);

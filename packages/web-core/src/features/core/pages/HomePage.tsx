@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
+import Auth from '../../auth/components/Auth';
 import Background from '../../background/components/Background';
 import BackgroundInformation from '../../background/components/BackgroundInfromation';
 import Calendar from '../../calendar/components/Calendar';
@@ -26,6 +27,7 @@ export default function HomePage() {
 
   return (
     <ErrorBoundary>
+      <Auth />
       <Background />
       <motion.div
         key="content"

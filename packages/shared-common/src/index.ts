@@ -35,6 +35,7 @@ export * from './search/SearchEnginesMap';
 // Users
 export * from './users/UserInterface';
 export * from './users/UpdateUserInterface';
+export * from './users/UpdateUserPasswordInterface';
 export * from './users/UserAccessTokenInterface';
 export * from './users/UserRoleEnum';
 export * from './users/TeamUserRoleEnum';

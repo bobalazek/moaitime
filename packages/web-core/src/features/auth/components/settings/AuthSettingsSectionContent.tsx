@@ -7,7 +7,13 @@ import { useAuthStore } from '../../state/authStore';
 
 export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterface }) {
   const { toast } = useToast();
-  const { logout, updateSettings, resendEmailConfirmation, cancelNewEmail } = useAuthStore();
+  const {
+    logout,
+    updateSettings,
+    resendEmailConfirmation,
+    cancelNewEmail,
+    setPasswordSettingsDialogOpen,
+  } = useAuthStore();
   const [userDisplayName, setUserDisplayName] = useState(auth.user.displayName ?? '');
   const [userEmail, setUserEmail] = useState(auth.user.email ?? '');
 
@@ -118,10 +124,11 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
           size="sm"
           variant="outline"
           onClick={() => {
-            alert('TODO: implement this');
+            setPasswordSettingsDialogOpen(true);
           }}
+          data-test="auth--settings--change-password-button"
         >
-          Set Password
+          Change Password
         </Button>
       </div>
       <div className="mb-4 text-right">

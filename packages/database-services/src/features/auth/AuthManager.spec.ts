@@ -426,5 +426,29 @@ describe('AuthManager.ts', () => {
 
       expect(updatedUser.password).not.toBe(user.password);
     });
+
+    it('should throw error if password is not provided', async () => {
+      const user = await authManager.register({
+        displayName: 'Tester18',
+        email: 'tester+18@corcosoft.com',
+        password: 'password',
+      });
+
+      const result = () => authManager.updatePassword(user.id, '', 'password');
+
+      await expect(result).rejects.toThrow('Password can not be empty');
+    });
+
+    it('should throw error if password is too short', async () => {
+      const user = await authManager.register({
+        displayName: 'Tester19',
+        email: 'tester+19@corcosoft.com',
+        password: 'password',
+      });
+
+      const result = () => authManager.updatePassword(user.id, 'short', 'password');
+
+      await expect(result).rejects.toThrow('Password must be at least 8 characters long');
+    });
   });
 });

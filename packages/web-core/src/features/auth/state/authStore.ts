@@ -1,7 +1,12 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { AuthInterface, ResponseInterface, UpdateUserInterface } from '@myzenbuddy/shared-common';
+import {
+  AuthInterface,
+  ResponseInterface,
+  UpdateUserInterface,
+  UpdateUserPasswordInterface,
+} from '@myzenbuddy/shared-common';
 
 import {
   cancelNewEmail,
@@ -14,6 +19,7 @@ import {
   requestPasswordReset,
   resendEmailConfirmation,
   resetPassword,
+  updatePasswordSettings,
   updateSettings,
 } from '../utils/AuthHelpers';
 
@@ -40,8 +46,13 @@ export type AuthStore = {
   cancelNewEmail: () => Promise<ResponseInterface>;
   // Me
   me: () => Promise<ResponseInterface>;
+  // Settings
   // Update Settings
   updateSettings: (data: UpdateUserInterface) => Promise<ResponseInterface>;
+  // Update Password Settings
+  passwordSettingsDialogOpen: boolean;
+  setPasswordSettingsDialogOpen: (passwordSettingsDialogOpen: boolean) => void;
+  updatePasswordSettings: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -143,7 +154,8 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      // Update
+      // Settings
+      // Update Settings
       updateSettings: async (data: UpdateUserInterface) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
@@ -151,6 +163,23 @@ export const useAuthStore = create<AuthStore>()(
         }
 
         const response = await updateSettings(data);
+
+        set({ auth: response.data });
+
+        return response;
+      },
+      // Update Password Settings
+      passwordSettingsDialogOpen: false,
+      setPasswordSettingsDialogOpen: (passwordSettingsDialogOpen: boolean) => {
+        set({ passwordSettingsDialogOpen });
+      },
+      updatePasswordSettings: async (data: UpdateUserPasswordInterface) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        const response = await updatePasswordSettings(data);
 
         set({ auth: response.data });
 

@@ -62,6 +62,8 @@ export class AuthManager {
       throw new Error('Password is not set');
     }
 
+    this._validatePassword(password);
+
     const hashedPassword = await this.validateAndHashPassword(password);
 
     const newUser = await this._usersManager.insertOne({
@@ -245,6 +247,8 @@ export class AuthManager {
       throw new Error(`Seems like the token already expired. Please try and request it again.`);
     }
 
+    this._validatePassword(password);
+
     const hashedPassword = await this.validateAndHashPassword(password);
     const updatedUser = await this._usersManager.updateOneById(user.id, {
       password: hashedPassword,
@@ -371,6 +375,8 @@ export class AuthManager {
       throw new Error('Invalid password provided');
     }
 
+    this._validatePassword(newPassword);
+
     const hashedPassword = await this.validateAndHashPassword(newPassword);
 
     const updatedUser = await this._usersManager.updateOneById(id, {
@@ -436,6 +442,16 @@ export class AuthManager {
 
   async comparePassword(rawPassword: string, hashedPassword: string): Promise<boolean> {
     return compareHash(rawPassword, hashedPassword);
+  }
+
+  private _validatePassword(password: string) {
+    if (!password) {
+      throw new Error('Password can not be empty');
+    }
+
+    if (password.length < 8) {
+      throw new Error('Password must be at least 8 characters long');
+    }
   }
 }
 

@@ -15,6 +15,11 @@ declare global {
       reloadDatabase(): Chainable;
 
       /**
+       * Gets the newest email
+       */
+      getNewestEmail(): Chainable;
+
+      /**
        * Logs in with the given credentials
        */
       login(email?: string, password?: string): Chainable;
@@ -51,6 +56,13 @@ Cypress.Commands.add('reloadDatabase', () => {
   return cy.request({
     method: 'POST',
     url: `${API_URL}/api/testing/reload-database`,
+  });
+});
+
+Cypress.Commands.add('getNewestEmail', () => {
+  return cy.request({
+    method: 'GET',
+    url: `${API_URL}/api/testing/emails/newest`,
   });
 });
 

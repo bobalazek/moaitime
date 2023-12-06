@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/emails-mailer",
+  "name": "@myzenbuddy/database-services-testing",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -11,8 +11,7 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
-    },
-    "./globals.css": "./dist/index.css"
+    }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -22,20 +21,19 @@
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
+    "test": "vitest run",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/database-services-testing": "workspace:*",
-    "@myzenbuddy/emails-core": "workspace:*",
+    "@myzenbuddy/database-core": "workspace:*",
     "@myzenbuddy/shared-backend": "workspace:*",
-    "@myzenbuddy/shared-logging": "workspace:*",
-    "@react-email/render": "^0.0.10",
-    "nodemailer": "^6.9.7",
-    "react": "18.2.0"
+    "@myzenbuddy/shared-common": "workspace:*",
+    "date-fns": "^2.30.0",
+    "drizzle-orm": "^0.29.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@myzenbuddy/tailwind-config": "workspace:*",
-    "@types/nodemailer": "^6.4.14",
-    "@types/react": "18.2.33"
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.2"
   }
 }

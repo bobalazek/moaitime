@@ -10,7 +10,7 @@ import {
 } from '@myzenbuddy/database-core';
 
 export class UsersManager {
-  async findMany(options?: DBQueryConfig<'many', true>) {
+  async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
     return databaseClient.query.users.findMany(options);
   }
 

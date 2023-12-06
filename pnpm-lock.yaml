@@ -66,25 +66,28 @@ importers:
   apps/api:
     dependencies:
       '@myzenbuddy/database-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-core
       '@myzenbuddy/database-fixtures':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-fixtures
       '@myzenbuddy/database-seeds':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-seeds
       '@myzenbuddy/database-services':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-services
+      '@myzenbuddy/database-services-testing':
+        specifier: workspace:*
+        version: link:../../packages/database-services-testing
       '@myzenbuddy/database-testing':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-testing
       '@myzenbuddy/shared-backend':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/shared-backend
       '@myzenbuddy/shared-common':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/shared-common
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
@@ -139,19 +142,19 @@ importers:
   apps/cli:
     dependencies:
       '@myzenbuddy/database-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-core
       '@myzenbuddy/database-fixtures':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-fixtures
       '@myzenbuddy/database-seeds':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-seeds
       '@myzenbuddy/database-testing':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/database-testing
       '@myzenbuddy/shared-logging':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/shared-logging
       commander:
         specifier: ^11.1.0
@@ -163,7 +166,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/tsconfig-config
       '@myzenbuddy/web-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../../packages/web-core
       '@nx/react':
         specifier: 17.1.3
@@ -221,10 +224,10 @@ importers:
   packages/database-core:
     dependencies:
       '@myzenbuddy/shared-backend':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-backend
       '@myzenbuddy/shared-common':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-common
       drizzle-kit:
         specifier: ^0.20.4
@@ -249,10 +252,10 @@ importers:
   packages/database-fixtures:
     dependencies:
       '@myzenbuddy/database-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-core
       '@myzenbuddy/shared-backend':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-backend
       date-fns:
         specifier: ^2.30.0
@@ -271,10 +274,10 @@ importers:
   packages/database-seeds:
     dependencies:
       '@myzenbuddy/database-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-core
       '@myzenbuddy/shared-backend':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-backend
       drizzle-orm:
         specifier: ^0.29.0
@@ -287,19 +290,47 @@ importers:
   packages/database-services:
     dependencies:
       '@myzenbuddy/database-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-core
       '@myzenbuddy/database-testing':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-testing
       '@myzenbuddy/emails-mailer':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../emails-mailer
       '@myzenbuddy/shared-backend':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-backend
       '@myzenbuddy/shared-common':
-        specifier: '*'
+        specifier: workspace:*
+        version: link:../shared-common
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+      drizzle-orm:
+        specifier: ^0.29.0
+        version: 0.29.1(@types/pg@8.10.9)(pg@8.11.3)
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
+    devDependencies:
+      '@types/uuid':
+        specifier: ^9.0.7
+        version: 9.0.7
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.2
+
+  packages/database-services-testing:
+    dependencies:
+      '@myzenbuddy/database-core':
+        specifier: workspace:*
+        version: link:../database-core
+      '@myzenbuddy/shared-backend':
+        specifier: workspace:*
+        version: link:../shared-backend
+      '@myzenbuddy/shared-common':
+        specifier: workspace:*
         version: link:../shared-common
       date-fns:
         specifier: ^2.30.0
@@ -321,13 +352,13 @@ importers:
   packages/database-testing:
     dependencies:
       '@myzenbuddy/database-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-core
       '@myzenbuddy/database-fixtures':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-fixtures
       '@myzenbuddy/database-seeds':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-seeds
     devDependencies:
       typescript:
@@ -409,6 +440,9 @@ importers:
 
   packages/emails-mailer:
     dependencies:
+      '@myzenbuddy/database-services-testing':
+        specifier: workspace:*
+        version: link:../database-services-testing
       '@myzenbuddy/emails-core':
         specifier: workspace:*
         version: link:../emails-core
@@ -564,16 +598,16 @@ importers:
         specifier: 3.2.2
         version: 3.2.2(react@18.2.0)
       '@myzenbuddy/shared-common':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-common
       '@myzenbuddy/shared-frontend':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-frontend
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
         version: link:../tsconfig-config
       '@myzenbuddy/web-ui':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../web-ui
       '@radix-ui/react-popover':
         specifier: ^1.0.7
@@ -13107,6 +13141,7 @@ packages:
   /typescript@5.2.2:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
+    hasBin: true
     dev: false
 
   /typescript@5.3.2:
@@ -13282,6 +13317,7 @@ packages:
 
   /uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    hasBin: true
     dev: false
 
   /uuid@9.0.1:

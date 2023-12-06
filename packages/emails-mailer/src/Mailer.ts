@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { render } from '@react-email/render';
 import * as nodemailer from 'nodemailer';
 
+import { TestingEmailsManager, testingEmailsManager } from '@myzenbuddy/database-services-testing';
 import {
   AuthConfirmEmailEmail,
   AuthConfirmNewEmailEmail,
@@ -34,7 +35,10 @@ export type MailerSendAuthResetPasswordEmailOptions = {
 export class Mailer {
   private _transporter: nodemailer.Transporter | null = null;
 
-  constructor(private _logger: Logger) {
+  constructor(
+    private _logger: Logger,
+    private _testingEmailsManager: TestingEmailsManager
+  ) {
     const { SMTP_URL, NODE_ENV } = getEnv();
 
     if (SMTP_URL && NODE_ENV !== 'test') {
@@ -82,7 +86,20 @@ export class Mailer {
     const html = render(Email);
     const text = render(Email, { plainText: true });
 
-    // TODO: temporary save into database, so we can E2E test it!
+    const finalOptions = {
+      from: MAILER_FROM,
+      ...options,
+      html,
+      text,
+    };
+
+    if (getEnv().NODE_ENV === 'test') {
+      await this._testingEmailsManager.insertOne({
+        data: {
+          ...finalOptions,
+        },
+      });
+    }
 
     if (!this._transporter) {
       this._logger.warn('SMTP_URL is not set, skipping sending email');
@@ -90,13 +107,8 @@ export class Mailer {
       return;
     }
 
-    await this._transporter.sendMail({
-      from: MAILER_FROM,
-      ...options,
-      html,
-      text,
-    });
+    await this._transporter.sendMail(finalOptions);
   }
 }
 
-export const mailer = new Mailer(logger);
+export const mailer = new Mailer(logger, testingEmailsManager);

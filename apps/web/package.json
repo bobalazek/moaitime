@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@myzenbuddy/tsconfig-config": "workspace:*",
-    "@myzenbuddy/web-core": "*",
+    "@myzenbuddy/web-core": "workspace:*",
     "@nx/react": "17.1.3",
     "autoprefixer": "^10.4.16",
     "postcss": "8.4.21",

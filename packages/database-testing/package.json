@@ -24,9 +24,9 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/database-core": "*",
-    "@myzenbuddy/database-fixtures": "*",
-    "@myzenbuddy/database-seeds": "*"
+    "@myzenbuddy/database-core": "workspace:*",
+    "@myzenbuddy/database-fixtures": "workspace:*",
+    "@myzenbuddy/database-seeds": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

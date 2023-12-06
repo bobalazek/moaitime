@@ -23,11 +23,11 @@
     "run-exec": "node ./dist/main.js"
   },
   "dependencies": {
-    "@myzenbuddy/database-core": "*",
-    "@myzenbuddy/database-fixtures": "*",
-    "@myzenbuddy/database-seeds": "*",
-    "@myzenbuddy/database-testing": "*",
-    "@myzenbuddy/shared-logging": "*",
+    "@myzenbuddy/database-core": "workspace:*",
+    "@myzenbuddy/database-fixtures": "workspace:*",
+    "@myzenbuddy/database-seeds": "workspace:*",
+    "@myzenbuddy/database-testing": "workspace:*",
+    "@myzenbuddy/shared-logging": "workspace:*",
     "commander": "^11.1.0"
   }
 }

@@ -6,7 +6,7 @@ Seems that there is an issue at the moment with `pnpm` where if you have zod as 
 
 ## Declaration types not working
 
-Look at the following issue: <https://github.com/egoist/tsup/issues/885> and <https://tsup.egoist.dev/#generate-typescript-declaration-maps--d-ts-map>
+Look at the following issue: <https://github.com/egoist/tsup/issues/885> and <https://tsup.egoist.dev/#generate-typescript-declaration-maps--d-ts-map>. Also another issue related to this: <https://github.com/microsoft/TypeScript/issues/47663#issuecomment-1519138189>.
 
 ## React not defined
 

@@ -7,3 +7,4 @@ export * from './schema/teamUsers';
 export * from './schema/calendars';
 export * from './schema/events';
 export * from './schema/lists';
+export * from './schema/testingEmails';

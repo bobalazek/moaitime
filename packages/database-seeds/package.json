@@ -24,8 +24,8 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/database-core": "*",
-    "@myzenbuddy/shared-backend": "*",
+    "@myzenbuddy/database-core": "workspace:*",
+    "@myzenbuddy/shared-backend": "workspace:*",
     "drizzle-orm": "^0.29.0"
   },
   "devDependencies": {

@@ -25,11 +25,11 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/database-core": "*",
-    "@myzenbuddy/database-testing": "*",
-    "@myzenbuddy/emails-mailer": "*",
-    "@myzenbuddy/shared-backend": "*",
-    "@myzenbuddy/shared-common": "*",
+    "@myzenbuddy/database-core": "workspace:*",
+    "@myzenbuddy/database-testing": "workspace:*",
+    "@myzenbuddy/emails-mailer": "workspace:*",
+    "@myzenbuddy/shared-backend": "workspace:*",
+    "@myzenbuddy/shared-common": "workspace:*",
     "date-fns": "^2.30.0",
     "drizzle-orm": "^0.29.0",
     "uuid": "^9.0.1"

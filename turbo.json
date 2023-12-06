@@ -31,6 +31,7 @@
       "dependsOn": ["build"]
     },
     "e2e:watch": {
+      "dependsOn": ["build"],
       "cache": false
     }
   }

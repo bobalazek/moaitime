@@ -44,10 +44,10 @@ jobs:
       #            ${{ runner.os }}-pnpm-store-
 
       # We need this hack-y workaround to make sure the postinstall script is run correctly.
-      # Tried disabling post-install scripts, but that causes another issue with bcrypt dependency down the line.
+      # Tried disabling post-install scripts, but that causes another issue down the line.
       - name: pnpm - Workaround
         run: |
-          pnpm add -g node-pre-gyp opencollective
+          pnpm add -g opencollective
 
       - name: pnpm - Install
         run: pnpm install

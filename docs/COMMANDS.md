@@ -9,7 +9,6 @@
 - `pnpm e2e` - runs the E2E tests with Cypress, while also starting the API and web apps
 - `pnpm e2e:watch` - runs the E2E tests with Cypress Studio, while also starting the API and web apps
 - `pnpm lint` - runs the ESLint
-- `pnpm lint:fix` - runs and fixes issues with the ESLint
 - `pnpm format` - runs and fixes issues with the Prettier
 - `pnpm format:check` - checks if there are any issues with the Prettier
 - `pnpm clean` - removes the `node_modules`, `dist` and `.turbo` folders in the root and all of it's apps and packages

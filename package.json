@@ -5,7 +5,7 @@
   "scripts": {
     "build": "turbo build --no-daemon",
     "clean": "turbo clean --no-daemon --parallel",
-    "cli": "cd apps/cli && pnpm build && pnpm run-exec",
+    "cli": "pnpm build && cd apps/cli && pnpm run-exec",
     "database:check": "cd ./packages/database-core && pnpm scripts:check",
     "database:generate-migration": "cd ./packages/database-core && pnpm scripts:generate-migration",
     "database:update-metadata": "cd ./packages/database-core && pnpm scripts:update-metadata",

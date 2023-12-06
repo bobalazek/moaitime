@@ -14,10 +14,12 @@ import { authManager } from '@myzenbuddy/database-services';
 
 import { ResponseDto } from '../../core/dtos/response.dto';
 import { TokenDto } from '../../core/dtos/token.dto';
+import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
 import { LoginResponseDto } from '../dtos/login-response.dto';
 import { LoginDto } from '../dtos/login.dto';
 import { RegisterDto } from '../dtos/register.dto';
 import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
+import { ResendEmailConfirmationDto } from '../dtos/resend-email-confirmation.dto';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
@@ -82,6 +84,7 @@ export class AuthController {
 
   @Post('resend-email-confirmation')
   async resendEmailConfirmation(
+    @Body() body: ResendEmailConfirmationDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
@@ -89,7 +92,7 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    await authManager.resendEmailConfirmation(req.user.id);
+    await authManager.resendEmailConfirmation(req.user.id, !!body.isNewEmail);
 
     res.status(200);
 
@@ -99,8 +102,8 @@ export class AuthController {
     };
   }
 
-  @Post('resend-new-email-confirmation')
-  async resendNewEmailConfirmation(
+  @Post('cancel-new-email')
+  async cancelNewEmail(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
@@ -108,62 +111,28 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    await authManager.resendEmailConfirmation(req.user.id, true);
+    await authManager.cancelNewEmail(req.user.id);
 
     res.status(200);
 
     return {
       success: true,
-      message: 'Successfully resent new email confirmation',
-    };
-  }
-
-  @Post('cancel-new-email-confirmation')
-  async cancelNewEmailConfirmation(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<ResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
-    await authManager.cancelNewEmailConfirmation(req.user.id);
-
-    res.status(200);
-
-    return {
-      success: true,
-      message: 'Successfully cancelled new email confirmation',
+      message: 'Successfully cancelled new email',
     };
   }
 
   @Post('confirm-email')
   async confirmEmail(
-    @Body() body: TokenDto,
+    @Body() body: ConfirmEmailDto,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
-    await authManager.confirmEmail(body.token);
+    await authManager.confirmEmail(body.token, !!body.isNewEmail);
 
     res.status(200);
 
     return {
       success: true,
-      message: 'Successfully confirmed email',
-    };
-  }
-
-  @Post('confirm-new-email')
-  async confirmNewEmail(
-    @Body() body: TokenDto,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<ResponseDto> {
-    await authManager.confirmEmail(body.token, true);
-
-    res.status(200);
-
-    return {
-      success: true,
-      message: 'Successfully confirmed new email',
+      message: 'Successfully confirmed the email address!',
     };
   }
 

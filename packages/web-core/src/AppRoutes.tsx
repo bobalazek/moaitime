@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import AuthConfirmEmailPage from './features/auth/components/pages/AuthConfirmEmailPage';
 import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotPasswordPage';
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
@@ -53,6 +54,7 @@ export function AppRoutes() {
             </PublicOnlyRoute>
           }
         />
+        <Route path="/confirm-email" element={<AuthConfirmEmailPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

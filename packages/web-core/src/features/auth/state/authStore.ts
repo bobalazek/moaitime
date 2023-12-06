@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { AuthInterface, UpdateUserInterface } from '@myzenbuddy/shared-common';
+import { AuthInterface, ResponseInterface, UpdateUserInterface } from '@myzenbuddy/shared-common';
 
 import {
-  cancelNewEmailConfirmation,
+  cancelNewEmail,
+  confirmEmail,
   login,
   logout,
   me,
@@ -12,7 +13,6 @@ import {
   register,
   requestPasswordReset,
   resendEmailConfirmation,
-  resendNewEmailConfirmation,
   resetPassword,
   updateSettings,
 } from '../utils/AuthHelpers';
@@ -21,27 +21,27 @@ export type AuthStore = {
   auth: AuthInterface | null;
   setAuth: (auth: AuthInterface | null) => Promise<void>;
   // Login
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<ResponseInterface>;
   // Logout
-  logout: () => Promise<void>;
+  logout: () => Promise<ResponseInterface>;
   // Register
-  register: (displayName: string, email: string, password: string) => Promise<void>;
+  register: (displayName: string, email: string, password: string) => Promise<ResponseInterface>;
   // Request Password Reset
-  requestPasswordReset: (email: string) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<ResponseInterface>;
   // Reset Password
-  resetPassword: (token: string, password: string) => Promise<void>;
+  resetPassword: (token: string, password: string) => Promise<ResponseInterface>;
+  // Confirm Email
+  confirmEmail: (token: string, isNewEmail?: boolean) => Promise<ResponseInterface>;
   // Refresh Token
-  refreshToken: () => Promise<void>;
+  refreshToken: () => Promise<ResponseInterface>;
   // Resend Email Confirmation
-  resendEmailConfirmation: () => Promise<void>;
-  // Resend New Email Confirmation
-  resendNewEmailConfirmation: () => Promise<void>;
+  resendEmailConfirmation: (isNewEmail?: boolean) => Promise<ResponseInterface>;
   // Cancel New Email Confirmation
-  cancelNewEmailConfirmation: () => Promise<void>;
+  cancelNewEmail: () => Promise<ResponseInterface>;
   // Me
-  me: () => Promise<void>;
+  me: () => Promise<ResponseInterface>;
   // Update Settings
-  updateSettings: (data: UpdateUserInterface) => Promise<void>;
+  updateSettings: (data: UpdateUserInterface) => Promise<ResponseInterface>;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -53,29 +53,45 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Login
       login: async (email: string, password: string) => {
-        const { data: auth } = await login(email, password);
+        const response = await login(email, password);
 
-        set({ auth });
+        set({ auth: response.data });
+
+        return response;
       },
       // Logout
       logout: async () => {
-        await logout();
+        const response = await logout();
 
         set({ auth: null });
+
+        return response;
       },
       // Register
       register: async (displayName: string, email: string, password: string) => {
-        const { data: auth } = await register(displayName, email, password);
+        const response = await register(displayName, email, password);
 
-        set({ auth });
+        set({ auth: response.data });
+
+        return response;
       },
       // Request Password Reset
       requestPasswordReset: async (email: string) => {
-        await requestPasswordReset(email);
+        const response = await requestPasswordReset(email);
+
+        return response;
       },
       // Reset Password
       resetPassword: async (token: string, password: string) => {
-        await resetPassword(token, password);
+        const response = await resetPassword(token, password);
+
+        return response;
+      },
+      // Confirm Email
+      confirmEmail: async (token: string, isNewEmail?: boolean) => {
+        const response = await confirmEmail(token, isNewEmail);
+
+        return response;
       },
       // Refresh Token
       refreshToken: async () => {
@@ -84,38 +100,35 @@ export const useAuthStore = create<AuthStore>()(
           throw new Error('No refresh token found');
         }
 
-        const { data: newAuth } = await refreshToken(auth.userAccessToken.refreshToken);
+        const response = await refreshToken(auth.userAccessToken.refreshToken);
 
-        set({ auth: newAuth });
+        set({ auth: response.data });
+
+        return response;
       },
       // Resend Email Confirmation
-      resendEmailConfirmation: async () => {
+      resendEmailConfirmation: async (isNewEmail?: boolean) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
-        await resendEmailConfirmation();
-      },
-      // Resend New Email Confirmation
-      resendNewEmailConfirmation: async () => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
+        const response = await resendEmailConfirmation(isNewEmail);
 
-        await resendNewEmailConfirmation();
+        return response;
       },
-      // Cancel New Email Confirmation
-      cancelNewEmailConfirmation: async () => {
+      // Cancel New Email
+      cancelNewEmail: async () => {
         const { auth, me } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
-        await cancelNewEmailConfirmation();
+        const response = await cancelNewEmail();
 
         await me();
+
+        return response;
       },
       // Me
       me: async () => {
@@ -124,9 +137,11 @@ export const useAuthStore = create<AuthStore>()(
           throw new Error('No token found');
         }
 
-        const { data: newAuth } = await me();
+        const response = await me();
 
-        set({ auth: newAuth });
+        set({ auth: response.data });
+
+        return response;
       },
       // Update
       updateSettings: async (data: UpdateUserInterface) => {
@@ -135,9 +150,11 @@ export const useAuthStore = create<AuthStore>()(
           throw new Error('No token found');
         }
 
-        const { data: newAuth } = await updateSettings(data);
+        const response = await updateSettings(data);
 
-        set({ auth: newAuth });
+        set({ auth: response.data });
+
+        return response;
       },
     }),
     {

@@ -3,11 +3,19 @@ import { FaCalendarAlt, FaCog } from 'react-icons/fa';
 import { CommandGroup, CommandItem } from '@myzenbuddy/web-ui';
 
 import { useCommandsStore } from '../../commands/state/commandsStore';
+import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useCalendarStore } from '../state/calendarStore';
 
 export default function CalendarCommandsList() {
+  const {
+    settings: { calendarEnabled },
+  } = useSettingsStore();
   const { setDialogOpen } = useCalendarStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+
+  if (!calendarEnabled) {
+    return null;
+  }
 
   return (
     <CommandGroup

@@ -75,7 +75,7 @@ export class AuthManager {
     await mailer.sendAuthWelcomeEmail({
       userEmail: newUser.email,
       userDisplayName: newUser.displayName,
-      confirmEmailUrl: `${WEB_URL}/auth/confirm-email?token=${newUser.emailConfirmationToken}`,
+      confirmEmailUrl: `${WEB_URL}/confirm-email?token=${newUser.emailConfirmationToken}`,
     });
 
     return newUser;
@@ -165,20 +165,20 @@ export class AuthManager {
       await mailer.sendAuthConfirmNewEmailEmail({
         userEmail: updatedUser.newEmail as string,
         userDisplayName: updatedUser.displayName,
-        confirmEmailUrl: `${WEB_URL}/auth/confirm-new-email?token=${updatedUser.newEmailConfirmationToken}`,
+        confirmEmailUrl: `${WEB_URL}/confirm-email?token=${updatedUser.newEmailConfirmationToken}&isNewEmail=true`,
       });
     } else {
       await mailer.sendAuthConfirmEmailEmail({
         userEmail: updatedUser.email,
         userDisplayName: updatedUser.displayName,
-        confirmEmailUrl: `${WEB_URL}/auth/confirm-email?token=${updatedUser.emailConfirmationToken}`,
+        confirmEmailUrl: `${WEB_URL}/confirm-email?token=${updatedUser.emailConfirmationToken}`,
       });
     }
 
     return updatedUser;
   }
 
-  async cancelNewEmailConfirmation(id: string): Promise<User> {
+  async cancelNewEmail(id: string): Promise<User> {
     const user = await this._usersManager.findOneById(id);
     if (!user) {
       throw new Error('User not found');
@@ -309,7 +309,11 @@ export class AuthManager {
       updateData.displayName = data.displayName;
     }
 
-    if (typeof data.email !== 'undefined' && data.email !== user.email) {
+    if (
+      typeof data.email !== 'undefined' &&
+      data.email !== user.email &&
+      data.email !== user.newEmail
+    ) {
       const existingUser = await this._usersManager.findOneByEmail(data.email);
       if (existingUser && existingUser.id !== id) {
         throw new Error('User with this email address already exists');
@@ -333,7 +337,11 @@ export class AuthManager {
     const updatedUser = await this._usersManager.updateOneById(id, updateData);
 
     if (isEmailChanged) {
-      // TODO: if email changed, send email confirmation
+      await mailer.sendAuthConfirmNewEmailEmail({
+        userEmail: updatedUser.newEmail as string,
+        userDisplayName: updatedUser.displayName,
+        confirmEmailUrl: `${WEB_URL}/confirm-email?token=${updatedUser.newEmailConfirmationToken}&isNewEmail=true`,
+      });
     }
 
     return updatedUser;

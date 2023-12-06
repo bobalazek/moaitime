@@ -5,7 +5,8 @@ import { ErrorResponse } from '../errors/ErrorResponse';
 
 export const fetchJson = async <T>(
   input: RequestInfo | URL,
-  init?: RequestInit | undefined
+  init?: RequestInit | undefined,
+  options?: { preventToast?: boolean }
 ): Promise<T> => {
   const { auth, logout } = useAuthStore.getState();
   if (auth?.userAccessToken?.token) {
@@ -31,11 +32,11 @@ export const fetchJson = async <T>(
       await logout();
     }
 
-    if (data.error) {
+    if (data.error && !options?.preventToast) {
       toast({
         variant: 'destructive',
         title: 'Oops!',
-        description: data.error ?? 'Something went wrong while trying to register',
+        description: data.error ?? 'Something went wrong.',
       });
     }
 

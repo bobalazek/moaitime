@@ -1,7 +1,7 @@
 export const WEB_URL =
   typeof window !== 'undefined' && window?.location
     ? `${window.location.protocol}//${window.location.hostname}`
-    : `http://localhost:3000`;
+    : `http://localhost:4200`;
 
 export const API_URL =
   typeof window !== 'undefined' && window?.location

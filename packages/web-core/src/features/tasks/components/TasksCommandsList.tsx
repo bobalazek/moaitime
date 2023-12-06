@@ -3,11 +3,19 @@ import { FaCircle, FaExternalLinkAlt, FaPlus, FaTasks } from 'react-icons/fa';
 import { CommandGroup, CommandItem } from '@myzenbuddy/web-ui';
 
 import { useCommandsStore } from '../../commands/state/commandsStore';
+import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useTasksStore } from '../state/tasksStore';
 
 export default function TasksCommandsList() {
+  const {
+    settings: { tasksEnabled },
+  } = useSettingsStore();
   const { setListFormDialogOpen, setPopoverOpen, setSelectedList, lists } = useTasksStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+
+  if (!tasksEnabled) {
+    return null;
+  }
 
   return (
     <CommandGroup

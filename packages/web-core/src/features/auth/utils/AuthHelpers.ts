@@ -50,35 +50,26 @@ export const register = async (displayName: string, email: string, password: str
   return response;
 };
 
-export const resendEmailConfirmation = async () => {
+export const resendEmailConfirmation = async (isNewEmail?: boolean) => {
   const response = await fetchJson<ResponseInterface>(
     `${API_URL}/api/v1/auth/resend-email-confirmation`,
     {
       method: 'POST',
+      body: JSON.stringify({ isNewEmail }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
     }
   );
 
   return response;
 };
 
-export const resendNewEmailConfirmation = async () => {
-  const response = await fetchJson<ResponseInterface>(
-    `${API_URL}/api/v1/auth/resend-new-email-confirmation`,
-    {
-      method: 'POST',
-    }
-  );
-
-  return response;
-};
-
-export const cancelNewEmailConfirmation = async () => {
-  const response = await fetchJson<ResponseInterface>(
-    `${API_URL}/api/v1/auth/cancel-new-email-confirmation`,
-    {
-      method: 'POST',
-    }
-  );
+export const cancelNewEmail = async () => {
+  const response = await fetchJson<ResponseInterface>(`${API_URL}/api/v1/auth/cancel-new-email`, {
+    method: 'POST',
+  });
 
   return response;
 };
@@ -108,6 +99,25 @@ export const resetPassword = async (token: string, password: string) => {
       'Content-Type': 'application/json',
     },
   });
+
+  return response;
+};
+
+export const confirmEmail = async (token: string, isNewEmail?: boolean) => {
+  const response = await fetchJson<ResponseInterface>(
+    `${API_URL}/api/v1/auth/confirm-email`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ token, isNewEmail }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    {
+      preventToast: true,
+    }
+  );
 
   return response;
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AuthInterface } from '@myzenbuddy/shared-common';
 import { Button, Input, useToast } from '@myzenbuddy/web-ui';
@@ -7,15 +7,14 @@ import { useAuthStore } from '../../state/authStore';
 
 export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterface }) {
   const { toast } = useToast();
-  const {
-    logout,
-    updateSettings,
-    resendEmailConfirmation,
-    resendNewEmailConfirmation,
-    cancelNewEmailConfirmation,
-  } = useAuthStore();
-  const [userDisplayName, setUserDisplayName] = useState(auth.user.displayName || '');
-  const [userEmail, setUserEmail] = useState(auth.user.email || '');
+  const { logout, updateSettings, resendEmailConfirmation, cancelNewEmail } = useAuthStore();
+  const [userDisplayName, setUserDisplayName] = useState(auth.user.displayName ?? '');
+  const [userEmail, setUserEmail] = useState(auth.user.email ?? '');
+
+  useEffect(() => {
+    setUserDisplayName(auth.user.displayName ?? '');
+    setUserEmail(auth.user.email ?? '');
+  }, [auth.user]);
 
   const onResendVerificationEmailButtonClick = async () => {
     await resendEmailConfirmation();
@@ -27,7 +26,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
   };
 
   const onResendVerificationNewEmailButtonClick = async () => {
-    await resendNewEmailConfirmation();
+    await resendEmailConfirmation(true);
 
     toast({
       title: `Verification email sent`,
@@ -35,8 +34,8 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
     });
   };
 
-  const onCancelNewEmailConfirmationButtonClick = async () => {
-    await cancelNewEmailConfirmation();
+  const onCancelNewEmailButtonClick = async () => {
+    await cancelNewEmail();
 
     toast({
       title: `Email change cancelled`,
@@ -45,26 +44,15 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
   };
 
   const onSaveButtonClick = async () => {
-    try {
-      await updateSettings({
-        displayName: userDisplayName,
-        email: userEmail,
-      });
+    await updateSettings({
+      displayName: userDisplayName,
+      email: userEmail,
+    });
 
-      toast({
-        title: `Accound saved`,
-        description: `You have successfully saved your account.`,
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Something went wrong while trying to save the account',
-      });
-    }
+    toast({
+      title: `Accound saved`,
+      description: `You have successfully saved your account.`,
+    });
   };
 
   return (
@@ -116,11 +104,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
                 here
               </button>{' '}
               to resend the verification email. If you want to cancel the email change, click{' '}
-              <button
-                type="button"
-                className="font-bold"
-                onClick={onCancelNewEmailConfirmationButtonClick}
-              >
+              <button type="button" className="font-bold" onClick={onCancelNewEmailButtonClick}>
                 here
               </button>
               .

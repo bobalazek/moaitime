@@ -15,3 +15,7 @@
 
 // Import commands.ts using ES2015 syntax:
 import './commands';
+
+// Uncaught exceptions
+// https://github.com/quasarframework/quasar/issues/2233#issuecomment-1006506083
+Cypress.on('uncaught:exception', (err) => !err.message.includes('ResizeObserver'));

@@ -23,25 +23,20 @@ export default function AuthResetPasswordPage() {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
 
-  const token = searchParams.get('token') ?? '';
-
   const onLoginButtonClick = () => {
     navigate('/login');
   };
 
   const onResetPasswordButtonClick = async () => {
-    try {
-      await resetPassword(token, password);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Something went wrong while trying to reset password',
-      });
-    }
+    const token = searchParams.get('token') || '';
+    const response = await resetPassword(token, password);
+
+    toast({
+      title: 'Success!',
+      description: response.message ?? 'You have successfully reset your password!',
+    });
+
+    navigate('/login');
   };
 
   return (

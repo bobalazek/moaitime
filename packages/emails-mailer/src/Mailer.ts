@@ -6,6 +6,7 @@ import * as nodemailer from 'nodemailer';
 import {
   AuthConfirmEmailEmail,
   AuthConfirmNewEmailEmail,
+  AuthResetPasswordEmail,
   AuthWelcomeEmail,
 } from '@myzenbuddy/emails-core';
 import { getEnv, MAILER_FROM } from '@myzenbuddy/shared-backend';
@@ -22,6 +23,12 @@ export type MailerSendAuthWelcomeAndConfirmEmailOptions = {
   userEmail: string;
   userDisplayName: string;
   confirmEmailUrl: string;
+};
+
+export type MailerSendAuthResetPasswordEmailOptions = {
+  userEmail: string;
+  userDisplayName: string;
+  resetPasswordUrl: string;
 };
 
 export class Mailer {
@@ -59,6 +66,15 @@ export class Mailer {
     return this.send(AuthConfirmNewEmailEmail(rest), {
       to: userEmail,
       subject: '✅ Email Conirmation for MyZenBuddy',
+    });
+  }
+
+  async sendAuthResetPasswordEmail(options: MailerSendAuthResetPasswordEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthResetPasswordEmail(rest), {
+      to: userEmail,
+      subject: '🔑 Reset Password for MyZenBuddy',
     });
   }
 

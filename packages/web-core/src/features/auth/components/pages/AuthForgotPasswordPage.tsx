@@ -27,18 +27,12 @@ export default function AuthForgotPasswordPage() {
   };
 
   const onRequestPasswordResetButtonClick = async () => {
-    try {
-      await requestPasswordReset(email);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Something went wrong while trying to request password reset',
-      });
-    }
+    const response = await requestPasswordReset(email);
+
+    toast({
+      title: 'Success!',
+      description: response.message ?? 'You have successfully requested the password reset!',
+    });
   };
 
   return (

@@ -10,7 +10,6 @@ import {
   CardTitle,
   Input,
   Label,
-  useToast,
 } from '@myzenbuddy/web-ui';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
@@ -18,7 +17,6 @@ import { useAuthStore } from '../../state/authStore';
 
 export default function AuthLoginPage() {
   const { login } = useAuthStore();
-  const { toast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,16 +32,7 @@ export default function AuthLoginPage() {
   };
 
   const onLoginButtonClick = async () => {
-    try {
-      await login(email, password);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
-        description:
-          error instanceof Error ? error.message : 'Something went wrong while trying to login',
-      });
-    }
+    await login(email, password);
   };
 
   return (

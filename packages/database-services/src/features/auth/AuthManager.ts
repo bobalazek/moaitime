@@ -62,7 +62,7 @@ export class AuthManager {
       throw new Error('Password is not set');
     }
 
-    this._validatePassword(password);
+    this.validatePassword(password);
 
     const hashedPassword = await this.validateAndHashPassword(password);
 
@@ -224,7 +224,11 @@ export class AuthManager {
       passwordResetLastRequestedAt: now,
     });
 
-    // TODO: send email
+    await mailer.sendAuthResetPasswordEmail({
+      userEmail: updatedUser.email,
+      userDisplayName: updatedUser.displayName,
+      resetPasswordUrl: `${WEB_URL}/reset-password?token=${updatedUser.passwordResetToken}`,
+    });
 
     return updatedUser;
   }
@@ -247,7 +251,7 @@ export class AuthManager {
       throw new Error(`Seems like the token already expired. Please try and request it again.`);
     }
 
-    this._validatePassword(password);
+    this.validatePassword(password);
 
     const hashedPassword = await this.validateAndHashPassword(password);
     const updatedUser = await this._usersManager.updateOneById(user.id, {
@@ -255,8 +259,6 @@ export class AuthManager {
       passwordResetToken: null,
       passwordResetLastRequestedAt: null,
     });
-
-    // TODO: send password reset confirmation
 
     return updatedUser;
   }
@@ -375,7 +377,7 @@ export class AuthManager {
       throw new Error('Invalid password provided');
     }
 
-    this._validatePassword(newPassword);
+    this.validatePassword(newPassword);
 
     const hashedPassword = await this.validateAndHashPassword(newPassword);
 
@@ -444,7 +446,7 @@ export class AuthManager {
     return compareHash(rawPassword, hashedPassword);
   }
 
-  private _validatePassword(password: string) {
+  validatePassword(password: string) {
     if (!password) {
       throw new Error('Password can not be empty');
     }

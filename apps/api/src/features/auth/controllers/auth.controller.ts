@@ -37,7 +37,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully logged in',
+      message: 'You have successfully logged in',
       data: convertToUserAndAccessTokenDto(user, userAccessToken),
     };
   }
@@ -60,7 +60,7 @@ export class AuthController {
 
     return {
       success,
-      message: success ? 'Successfully logged out' : 'Failed to log out',
+      message: success ? 'You have successfully logged out' : 'Failed to log out',
     };
   }
 
@@ -77,7 +77,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully registered',
+      message: 'You have successfully registered',
       data: convertToUserAndAccessTokenDto(user, userAccessToken),
     };
   }
@@ -98,7 +98,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully resent email confirmation',
+      message: 'You have successfully resent the email confirmation',
     };
   }
 
@@ -117,7 +117,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully cancelled new email',
+      message: 'You have successfully cancelled the new email',
     };
   }
 
@@ -132,7 +132,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully confirmed the email address!',
+      message: 'You have successfully confirmed your email address!',
     };
   }
 
@@ -147,7 +147,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully requested password reset',
+      message: 'You have successfully requested password reset',
     };
   }
 
@@ -162,7 +162,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully reset password',
+      message: 'You have successfully reset your password',
     };
   }
 
@@ -177,7 +177,7 @@ export class AuthController {
 
     return {
       success: true,
-      message: 'Successfully refreshed token',
+      message: 'You have successfully refreshed your token',
       data: convertToUserAndAccessTokenDto(user, userAccessToken),
     };
   }

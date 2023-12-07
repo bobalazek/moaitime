@@ -17,10 +17,25 @@ import {
 import { utcToZonedTime } from 'date-fns-tz';
 
 import {
+  API_URL,
   CalendarDayOfWeek,
   EventInterface,
   EventWithVerticalPosition,
+  ResponseInterface,
 } from '@myzenbuddy/shared-common';
+
+import { fetchJson } from '../../core/utils/FetchHelpers';
+
+export const loadEvents = async () => {
+  const response = await fetchJson<ResponseInterface<EventInterface[]>>(
+    `${API_URL}/api/v1/events`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response;
+};
 
 export const getWeeksForMonth = (month: Date, calendarStartDayOfWeek: number) => {
   const startDay = startOfMonth(month);

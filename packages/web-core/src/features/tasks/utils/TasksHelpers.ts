@@ -1,4 +1,12 @@
-import { ListInterface, SortDirectionEnum, TaskInterface } from '@myzenbuddy/shared-common';
+import {
+  API_URL,
+  ListInterface,
+  ResponseInterface,
+  SortDirectionEnum,
+  TaskInterface,
+} from '@myzenbuddy/shared-common';
+
+import { fetchJson } from '../../core/utils/FetchHelpers';
 
 export type OmitedList = Omit<ListInterface, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
 export type OmitedTask = Omit<TaskInterface, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
@@ -8,6 +16,14 @@ let _databaseLists: ListInterface[] = [];
 const _databaseTasks: TaskInterface[] = [];
 
 /********** Lists **********/
+export const loadLists = async () => {
+  const response = await fetchJson<ResponseInterface<ListInterface[]>>(`${API_URL}/api/v1/lists`, {
+    method: 'GET',
+  });
+
+  return response;
+};
+
 export const getLists = async (): Promise<ListInterface[]> => {
   const lists: ListInterface[] = [];
 

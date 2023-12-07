@@ -17,10 +17,10 @@ import {
   getList,
   getLists,
   getTasksForList,
+  loadLists,
   OmitedList,
   OmitedTask,
   reorderTask,
-  setLists,
 } from '../utils/TasksHelpers';
 
 export type TasksStore = {
@@ -32,11 +32,11 @@ export type TasksStore = {
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Lists **********/
   lists: ListInterface[];
-  setLists: (lists: ListInterface[]) => Promise<void>;
   addList: (list: OmitedList) => Promise<ListInterface>;
   editList: (list: ListInterface) => Promise<ListInterface>;
   deleteList: (list: ListInterface) => Promise<ListInterface | null>;
   reloadLists: () => Promise<void>;
+  loadLists: () => Promise<ListInterface[]>;
   // Selected
   selectedList: ListInterface | null;
   setSelectedList: (selectedList: ListInterface | null) => Promise<void>;
@@ -86,9 +86,15 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   /********** General **********/
   popoverOpen: false,
   setPopoverOpen: (popoverOpen: boolean) => {
+    const { loadLists } = get();
+
     set({
       popoverOpen,
     });
+
+    if (popoverOpen) {
+      loadLists();
+    }
   },
   // Tasks List End Element
   listEndElement: null,
@@ -99,11 +105,6 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   /********** Lists **********/
   lists: [],
-  setLists: async (lists: ListInterface[]) => {
-    set({
-      lists: await setLists(lists),
-    });
-  },
   addList: async (list: OmitedList) => {
     const { reloadLists } = get();
     const addedList = await addList(list);
@@ -136,9 +137,19 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return deletedList;
   },
   reloadLists: async () => {
+    const { loadLists } = get();
+
     set({
-      lists: await getLists(),
+      lists: await loadLists(),
     });
+  },
+  loadLists: async () => {
+    const response = await loadLists();
+    const lists = response.data ?? [];
+
+    set({ lists });
+
+    return lists;
   },
   // Selected
   selectedList: null,

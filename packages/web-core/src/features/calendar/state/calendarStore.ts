@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { CalendarViewEnum, EventInterface } from '@myzenbuddy/shared-common';
 
 import { useSettingsStore } from '../../settings/state/settingsStore';
-import { getMonthRange, getWeekRange, getYearRange } from '../utils/CalendarHelpers';
+import { getMonthRange, getWeekRange, getYearRange, loadEvents } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
   /********** General **********/
@@ -21,20 +21,23 @@ export type CalendarStore = {
   reloadSelectedDays: () => void;
   isTodayInSelectedDaysRange: boolean;
   /********** Events **********/
-  // Selected
   events: EventInterface[];
-  setEvents: (events: EventInterface[]) => void;
+  loadEvents: () => Promise<EventInterface[]>;
 };
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   /********** General **********/
   dialogOpen: false,
   setDialogOpen: (dialogOpen: boolean) => {
-    const { reloadSelectedDays } = get();
+    const { reloadSelectedDays, loadEvents } = get();
 
     set({
       dialogOpen,
     });
+
+    if (dialogOpen) {
+      loadEvents();
+    }
 
     reloadSelectedDays();
   },
@@ -100,11 +103,13 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   isTodayInSelectedDaysRange: false,
   /********** Events **********/
-  // Selected
   events: [],
-  setEvents: (events: EventInterface[]) => {
-    set({
-      events,
-    });
+  loadEvents: async () => {
+    const response = await loadEvents();
+    const events = response.data ?? [];
+
+    set({ events });
+
+    return events;
   },
 }));

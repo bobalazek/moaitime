@@ -1,10 +1,7 @@
 import { useBackgroundStore } from '../../background/state/backgroundStore';
-import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useGreetingStore } from '../../greeting/state/greetingStore';
 import { useQuoteStore } from '../../quote/state/quoteStore';
-import { useTasksStore } from '../../tasks/state/tasksStore';
 import { useWeatherStore } from '../../weather/state/weatherStore';
-import { events, lists } from './BootstrapData';
 
 let _isInitialized = false;
 export const initializeApp = () => {
@@ -25,12 +22,6 @@ export const initializeApp = () => {
 
   // Quote
   prepareQuote();
-
-  // Tasks
-  prepareTasks();
-
-  // Calendar
-  prepareCalendar();
 
   _isInitialized = true;
 };
@@ -76,18 +67,4 @@ export const prepareQuote = async () => {
 
   setRandomQuote();
   setTimeout(setRandomQuote, 1000 * 60 * 2);
-};
-
-// Tasks
-export const prepareTasks = () => {
-  const { setLists } = useTasksStore.getState();
-
-  setLists(lists);
-};
-
-// Calendar
-export const prepareCalendar = () => {
-  const { setEvents } = useCalendarStore.getState();
-
-  setEvents(events);
 };

@@ -8,9 +8,6 @@ import {
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-export type OmitedList = Omit<ListInterface, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
-export type OmitedTask = Omit<TaskInterface, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
-
 /********** Lists **********/
 export const loadLists = async () => {
   const response = await fetchJson<ResponseInterface<ListInterface[]>>(`${API_URL}/api/v1/lists`, {
@@ -31,7 +28,7 @@ export const getList = async (listId: string): Promise<ListInterface> => {
   return response.data as ListInterface;
 };
 
-export const addList = async (list: OmitedList): Promise<ListInterface> => {
+export const addList = async (list: ListInterface): Promise<ListInterface> => {
   const response = await fetchJson<ResponseInterface<ListInterface>>(`${API_URL}/api/v1/lists`, {
     method: 'POST',
     body: JSON.stringify(list),
@@ -112,7 +109,7 @@ export const getTask = async (taskId: string): Promise<TaskInterface | null> => 
   return response.data as TaskInterface;
 };
 
-export const addTask = async (task: OmitedTask): Promise<TaskInterface> => {
+export const addTask = async (task: TaskInterface): Promise<TaskInterface> => {
   const response = await fetchJson<ResponseInterface<TaskInterface>>(`${API_URL}/api/v1/tasks`, {
     method: 'POST',
     body: JSON.stringify(task),

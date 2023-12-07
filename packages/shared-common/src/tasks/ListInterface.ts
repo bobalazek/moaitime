@@ -3,4 +3,7 @@ export interface ListInterface {
   name: string;
   color?: string;
   tasksCount?: number;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }

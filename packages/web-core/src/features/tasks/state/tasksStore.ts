@@ -17,8 +17,6 @@ import {
   editTask,
   getTasksForList,
   loadLists,
-  OmitedList,
-  OmitedTask,
   reorderTask,
   uncompleteTask,
   undeleteTask,
@@ -33,7 +31,7 @@ export type TasksStore = {
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Lists **********/
   lists: ListInterface[];
-  addList: (list: OmitedList) => Promise<ListInterface>;
+  addList: (list: ListInterface) => Promise<ListInterface>;
   editList: (listId: string, list: Partial<ListInterface>) => Promise<ListInterface>;
   deleteList: (listId: string) => Promise<ListInterface | null>;
   loadLists: () => Promise<ListInterface[]>;
@@ -57,7 +55,7 @@ export type TasksStore = {
     selectedListDeleteAlertDialog?: ListInterface | null
   ) => void;
   /********** Tasks **********/
-  addTask: (task: OmitedTask) => Promise<TaskInterface>;
+  addTask: (task: TaskInterface) => Promise<TaskInterface>;
   editTask: (taskId: string, task: Partial<TaskInterface>) => Promise<TaskInterface>;
   moveTask: (taskId: string, newListId: string) => Promise<TaskInterface>;
   deleteTask: (taskId: string) => Promise<TaskInterface>;
@@ -107,7 +105,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   /********** Lists **********/
   lists: [],
-  addList: async (list: OmitedList) => {
+  addList: async (list: ListInterface) => {
     const { loadLists } = get();
     const addedList = await addList(list);
 
@@ -195,7 +193,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const savedList = selectedListFormDialog
       ? await editList(selectedListFormDialog.id, list)
-      : await addList(list as OmitedList);
+      : await addList(list as ListInterface);
 
     set({
       listFormDialogOpen: false,
@@ -221,7 +219,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
   },
   /********** Tasks **********/
-  addTask: async (task: OmitedTask) => {
+  addTask: async (task: TaskInterface) => {
     const { reloadSelectedList, loadLists } = get();
 
     const addedTask = await addTask(task);

@@ -9,7 +9,7 @@ function TasksForm() {
   const { selectedList, addTask, listEndElement } = useTasksStore();
   const [name, setName] = useState('');
 
-  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== 'Enter') {
       return;
     }
@@ -37,13 +37,13 @@ function TasksForm() {
       return;
     }
 
-    const newTask = {
+    await addTask({
       name: finalName,
       completed: false,
       listId: selectedList.id,
-    };
-
-    addTask(newTask);
+      // TODO: fix this bit, so we don't use any!
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
     setName('');
 
     // We need to put it into a timeout because the element is not yet rendered,

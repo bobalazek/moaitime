@@ -709,6 +709,48 @@ export const backgrounds: BackgroundInterface[] = [
     author: '2H Media',
     url: 'https://unsplash.com/photos/a-giraffe-standing-in-a-field-7Ioz6wZ3yEc',
   },
+  {
+    imageUrl:
+      'https://images.unsplash.com/photo-1701184556705-7f125ff3624b?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    title: 'An aerial view of the ocean with rocks in the water',
+    author: 'Francesco Ungaro',
+    url: 'https://unsplash.com/photos/an-aerial-view-of-the-ocean-with-rocks-in-the-water-KN1zDWrU59E',
+  },
+  {
+    imageUrl:
+      'https://images.unsplash.com/photo-1700831783851-26635f06e7f5?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    title: 'A mountain covered in green grass and clouds',
+    author: 'Francesco Ungaro',
+    url: 'https://unsplash.com/photos/a-mountain-covered-in-green-grass-and-clouds-xyQf75MDIGw',
+  },
+  {
+    imageUrl:
+      'https://images.unsplash.com/photo-1700660354937-db270cbce838?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    title: 'A body of water surrounded by trees covered in snow',
+    author: 'Anton Sobotyak',
+    url: 'https://unsplash.com/photos/a-body-of-water-surrounded-by-trees-covered-in-snow-iXKkFEEvCxI',
+  },
+  {
+    imageUrl:
+      'https://images.unsplash.com/photo-1689600399375-33d9c1388dba?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    title: 'A grassy field with mountains in the background',
+    author: 'David Cerini',
+    url: 'https://unsplash.com/photos/a-grassy-field-with-mountains-in-the-background-Gh1PqlmwmmM',
+  },
+  {
+    imageUrl:
+      'https://images.unsplash.com/photo-1700165937232-634206a3a186?q=80&w=2669&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    title: 'A large wave crashing into the ocean on a cloudy day',
+    author: 'Andy Spark',
+    url: 'https://unsplash.com/photos/a-large-wave-crashing-into-the-ocean-on-a-cloudy-day-WdO8GRSUm6U',
+  },
+  {
+    imageUrl:
+      'https://images.unsplash.com/photo-1700254783347-7b91d9bfad89?q=80&w=2645&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    title: 'A view of the top of a mountain in the clouds',
+    author: 'Marek Piwnicki',
+    url: 'https://unsplash.com/photos/a-view-of-the-top-of-a-mountain-in-the-clouds-wdQ7DUGJmk8',
+  },
 ];
 
 const now = new Date();

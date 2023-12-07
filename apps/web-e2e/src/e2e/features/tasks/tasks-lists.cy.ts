@@ -20,10 +20,10 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--lists-list--dropdown-menu')
       .find('div[role="menuitemradio"]')
-      .contains('Today')
+      .contains('Personal')
       .click();
 
-    cy.getBySel('tasks--body-header--title').contains('Today').should('exist');
+    cy.getBySel('tasks--body-header--title').contains('Personal').should('exist');
   });
 
   it('should delete the task list correctly', () => {
@@ -168,10 +168,10 @@ describe('tasks-lists.cy.ts', () => {
     cy.getBySel('tasks--lists-list--dropdown-menu')
       .find('div[role="menuitemradio"]')
       .find('span')
-      .contains('Today')
+      .contains('Personal')
       .click();
 
-    cy.getBySel('tasks--body-header').contains('Today');
+    cy.getBySel('tasks--body-header').contains('Personal');
 
     cy.getBySel('tasks--sortable-task').contains('New task');
   });

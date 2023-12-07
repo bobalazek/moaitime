@@ -1,7 +1,16 @@
-import { backgrounds, calendars, databaseClient, users } from '@myzenbuddy/database-core';
+import {
+  backgrounds,
+  calendars,
+  databaseClient,
+  greetings,
+  quotes,
+  users,
+} from '@myzenbuddy/database-core';
 
 import { getBackgroundsSeeds } from './data/Backgrounds';
 import { getCalendarSeeds } from './data/Calendars';
+import { getGreetingsSeeds } from './data/Greetings';
+import { getQuotesSeeds } from './data/Quotes';
 import { getUserSeeds } from './data/Users';
 
 export const insertDatabaseSeedData = async () => {
@@ -13,4 +22,10 @@ export const insertDatabaseSeedData = async () => {
 
   const backgroundSeeds = await getBackgroundsSeeds();
   await databaseClient.insert(backgrounds).values(backgroundSeeds).execute();
+
+  const greetingSeeds = await getGreetingsSeeds();
+  await databaseClient.insert(greetings).values(greetingSeeds).execute();
+
+  const quoteSeeds = await getQuotesSeeds();
+  await databaseClient.insert(quotes).values(quoteSeeds).execute();
 };

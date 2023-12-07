@@ -4,7 +4,7 @@ import { useGreetingStore } from '../../greeting/state/greetingStore';
 import { useQuoteStore } from '../../quote/state/quoteStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import { useWeatherStore } from '../../weather/state/weatherStore';
-import { events, greetings, lists, quotes } from './BootstrapData';
+import { events, lists } from './BootstrapData';
 
 let _isInitialized = false;
 export const initializeApp = () => {
@@ -42,13 +42,7 @@ export const prepareBackground = async () => {
   await loadBackgrounds();
 
   setRandomBackground();
-
-  setInterval(
-    () => {
-      setRandomBackground();
-    },
-    1000 * 60 * 2
-  );
+  setInterval(setRandomBackground, 1000 * 60 * 2);
 };
 
 // Weather
@@ -65,18 +59,20 @@ export const prepareWeather = () => {
 };
 
 // Greeting
-export const prepareGreeting = () => {
-  const { setGreetings, setRandomGreeting } = useGreetingStore.getState();
-  setGreetings(greetings);
+export const prepareGreeting = async () => {
+  const { loadGreetings, setRandomGreeting } = useGreetingStore.getState();
+
+  await loadGreetings();
 
   setRandomGreeting();
   setInterval(setRandomGreeting, 1000 * 60 * 5);
 };
 
 // Quote
-export const prepareQuote = () => {
-  const { setQuotes, setRandomQuote } = useQuoteStore.getState();
-  setQuotes(quotes);
+export const prepareQuote = async () => {
+  const { loadQuotes, setRandomQuote } = useQuoteStore.getState();
+
+  await loadQuotes();
 
   setRandomQuote();
   setTimeout(setRandomQuote, 1000 * 60 * 2);

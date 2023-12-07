@@ -4,8 +4,11 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { SettingsInterface, UserRoleEnum } from '@myzenbuddy/shared-common';
 
+import { backgrounds } from './backgrounds';
 import { calendars } from './calendars';
+import { greetings } from './greetings';
 import { organizationUsers } from './organizationUsers';
+import { quotes } from './quotes';
 import { teamUsers } from './teamUsers';
 import { userAccessTokens } from './userAccessTokens';
 
@@ -16,7 +19,7 @@ export const users = pgTable(
     displayName: text('display_name').notNull(),
     email: text('email').notNull().unique(),
     newEmail: text('new_email').unique(),
-    beforeDeletionEmail: text('before_deletion_email'),
+    beforeDeletionEmail: text('before_deletion_email'), // What was the email before the user requested deletion, in case of recovery
     password: text('password'),
     roles: json('roles').notNull().default('[]').$type<UserRoleEnum[]>(),
     settings: json('settings').$type<SettingsInterface>(),
@@ -53,6 +56,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   teamUsers: many(teamUsers),
   calendars: many(calendars),
   userAccessTokens: many(userAccessTokens),
+  greetings: many(greetings),
+  backgrounds: many(backgrounds),
+  quotes: many(quotes),
 }));
 
 export type User = typeof users.$inferSelect;

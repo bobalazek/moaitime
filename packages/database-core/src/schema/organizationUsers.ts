@@ -45,3 +45,5 @@ export type NewOrganizationUser = typeof organizationUsers.$inferInsert;
 export const selectOrganizationUserSchema = createSelectSchema(organizationUsers);
 
 export const insertOrganizationUserSchema = createInsertSchema(organizationUsers);
+
+export const updateOrgamizationUserSchema = insertOrganizationUserSchema.partial();

@@ -11,7 +11,7 @@ const preloadImage = (src: string, callback: () => void) => {
 };
 
 export default function Background() {
-  const { background } = useBackgroundStore();
+  const { background: background } = useBackgroundStore();
   const [currentImage, setCurrentImage] = useState(background?.imageUrl);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useBackgroundStore } from '../state/backgroundStore';
 
 export default function BackgroundInformation() {
-  const { background } = useBackgroundStore();
+  const { background: background } = useBackgroundStore();
   if (!background) {
     return null;
   }

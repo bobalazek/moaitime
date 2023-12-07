@@ -34,3 +34,5 @@ export type NewTask = typeof tasks.$inferInsert;
 export const selectTaskSchema = createSelectSchema(tasks);
 
 export const insertTaskSchema = createInsertSchema(tasks);
+
+export const updateTaskSchema = insertTaskSchema.partial();

@@ -39,3 +39,5 @@ export type NewList = typeof lists.$inferInsert;
 export const selectListSchema = createSelectSchema(lists);
 
 export const insertListSchema = createInsertSchema(lists);
+
+export const updateListSchema = insertListSchema.partial();

@@ -32,3 +32,5 @@ export type NewCalendar = typeof calendars.$inferInsert;
 export const selectCalendarSchema = createSelectSchema(calendars);
 
 export const insertCalendarSchema = createInsertSchema(calendars);
+
+export const updateCalendarSchema = insertCalendarSchema.partial();

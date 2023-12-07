@@ -4,7 +4,7 @@ import { useGreetingStore } from '../../greeting/state/greetingStore';
 import { useQuoteStore } from '../../quote/state/quoteStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import { useWeatherStore } from '../../weather/state/weatherStore';
-import { backgrounds, events, greetings, lists, quotes } from './BootstrapData';
+import { events, greetings, lists, quotes } from './BootstrapData';
 
 let _isInitialized = false;
 export const initializeApp = () => {
@@ -13,9 +13,6 @@ export const initializeApp = () => {
   }
 
   document.body.classList.add('dark');
-
-  // Settings
-  prepareSettings();
 
   // Background
   prepareBackground();
@@ -38,14 +35,12 @@ export const initializeApp = () => {
   _isInitialized = true;
 };
 
-// Settings
-export const prepareSettings = () => {
-  // TODO
-  // Geolocation bits and stuff
-};
-
 // Background
-export const prepareBackground = () => {
+export const prepareBackground = async () => {
+  const { loadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
+
+  await loadBackgrounds();
+
   setRandomBackground();
 
   setInterval(
@@ -54,14 +49,6 @@ export const prepareBackground = () => {
     },
     1000 * 60 * 2
   );
-};
-
-export const setRandomBackground = () => {
-  const { setBackground } = useBackgroundStore.getState();
-
-  const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-
-  setBackground(randomBackground);
 };
 
 // Weather

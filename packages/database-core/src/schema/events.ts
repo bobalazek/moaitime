@@ -35,3 +35,5 @@ export type NewEvent = typeof events.$inferInsert;
 export const selectEventSchema = createSelectSchema(events);
 
 export const insertEventSchema = createInsertSchema(events);
+
+export const updateEventSchema = insertEventSchema.partial();

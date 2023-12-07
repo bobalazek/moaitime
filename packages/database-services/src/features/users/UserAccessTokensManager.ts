@@ -11,7 +11,7 @@ import {
 } from '@myzenbuddy/database-core';
 
 export class UserAccessTokensManager {
-  async findMany(options: DBQueryConfig<'many', true>): Promise<UserAccessToken[]> {
+  async findMany(options?: DBQueryConfig<'many', true>): Promise<UserAccessToken[]> {
     return databaseClient.query.userAccessTokens.findMany(options);
   }
 

@@ -45,3 +45,5 @@ export type NewTeamUser = typeof teamUsers.$inferInsert;
 export const selectTeamUserSchema = createSelectSchema(teamUsers);
 
 export const insertTeamUserSchema = createInsertSchema(teamUsers);
+
+export const updateTeamUserSchema = insertTeamUserSchema.partial();

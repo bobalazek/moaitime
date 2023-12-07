@@ -29,6 +29,7 @@ export class ListsController {
     if (!req.user) {
       throw new UnauthorizedException();
     }
+
     const data = await listsManager.findManyByUserId(req.user.id);
 
     return {

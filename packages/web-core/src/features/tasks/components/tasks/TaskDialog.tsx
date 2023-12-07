@@ -23,10 +23,22 @@ export default function TaskDialog() {
     deleteTask,
     undeleteTask,
   } = useTasksStore();
-  const [task, setTask] = useState(selectedTask);
+  const [task, setTask] = useState({
+    name: selectedTask?.name ?? '',
+    description: selectedTask?.description ?? '',
+    listId: selectedTask?.listId,
+  });
 
   useEffect(() => {
-    setTask(selectedTask);
+    if (!selectedTask) {
+      return;
+    }
+
+    setTask({
+      name: selectedTask?.name ?? '',
+      description: selectedTask?.description ?? '',
+      listId: selectedTask?.listId,
+    });
   }, [selectedTask]);
 
   if (!selectedTaskDialogOpen || !task) {
@@ -34,7 +46,11 @@ export default function TaskDialog() {
   }
 
   const onUndeleteButtonClick = async () => {
-    const undeletedTask = await undeleteTask(task);
+    if (!selectedTask) {
+      return;
+    }
+
+    const undeletedTask = await undeleteTask(selectedTask.id);
 
     toast({
       title: `Task "${task.name}" undeleted`,
@@ -45,7 +61,11 @@ export default function TaskDialog() {
   };
 
   const onDeleteButtonClick = async () => {
-    await deleteTask(task);
+    if (!selectedTask) {
+      return;
+    }
+
+    await deleteTask(selectedTask.id);
 
     toast({
       title: `Task "${task.name}" deleted`,
@@ -60,7 +80,11 @@ export default function TaskDialog() {
   };
 
   const onSaveButtonClick = async () => {
-    const editedTask = await editTask(task);
+    if (!selectedTask) {
+      return;
+    }
+
+    const editedTask = await editTask(selectedTask.id, task);
 
     toast({
       title: `Task "${editedTask.name}" save`,
@@ -109,12 +133,12 @@ export default function TaskDialog() {
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>
-            {task.deletedAt && (
+            {selectedTask?.deletedAt && (
               <Button type="button" variant="destructive" onClick={onUndeleteButtonClick}>
                 Undelete
               </Button>
             )}
-            {!task.deletedAt && (
+            {!selectedTask?.deletedAt && (
               <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
                 Delete
               </Button>

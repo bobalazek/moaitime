@@ -20,7 +20,7 @@ function setCursorToEnd(element: HTMLElement) {
 }
 
 const Task = memo(({ task }: { task: TaskInterface }) => {
-  const { editTask } = useTasksStore();
+  const { editTask, completeTask, uncompleteTask } = useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
@@ -70,7 +70,7 @@ const Task = memo(({ task }: { task: TaskInterface }) => {
     }
 
     if (name) {
-      await editTask({ ...task, name });
+      await editTask(task.id, { name });
     } else {
       e.target.innerText = task.name;
     }
@@ -79,16 +79,13 @@ const Task = memo(({ task }: { task: TaskInterface }) => {
   };
 
   const onCompleteCheckboxToggle = async (value: boolean) => {
-    await editTask({
-      ...task,
-      completedAt: task.completedAt ? undefined : new Date().toISOString(),
-    });
-
     if (!value) {
-      return;
-    }
+      await uncompleteTask(task.id);
+    } else {
+      await completeTask(task.id);
 
-    setShowConfetti(true);
+      setShowConfetti(true);
+    }
   };
 
   const isCompleted = !!task.completedAt;

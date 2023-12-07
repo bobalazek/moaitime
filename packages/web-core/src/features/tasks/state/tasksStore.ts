@@ -10,16 +10,18 @@ import {
 import {
   addList,
   addTask,
+  completeTask,
   deleteList,
   deleteTask,
   editList,
   editTask,
-  getList,
   getTasksForList,
   loadLists,
   OmitedList,
   OmitedTask,
   reorderTask,
+  uncompleteTask,
+  undeleteTask,
 } from '../utils/TasksHelpers';
 
 export type TasksStore = {
@@ -56,11 +58,13 @@ export type TasksStore = {
   ) => void;
   /********** Tasks **********/
   addTask: (task: OmitedTask) => Promise<TaskInterface>;
-  editTask: (task: TaskInterface) => Promise<TaskInterface>;
-  moveTask: (task: TaskInterface) => Promise<TaskInterface>;
-  deleteTask: (task: TaskInterface) => Promise<TaskInterface>;
-  undeleteTask: (task: TaskInterface) => Promise<TaskInterface>;
-  reorderTasks: (activeId: string, overId: string) => void;
+  editTask: (taskId: string, task: Partial<TaskInterface>) => Promise<TaskInterface>;
+  moveTask: (taskId: string, newListId: string) => Promise<TaskInterface>;
+  deleteTask: (taskId: string) => Promise<TaskInterface>;
+  undeleteTask: (taskId: string) => Promise<TaskInterface>;
+  completeTask: (taskId: string) => Promise<TaskInterface>;
+  uncompleteTask: (taskId: string) => Promise<TaskInterface>;
+  reorderTasks: (activeTaskId: string, overTaskId: string) => void;
   // Selected
   selectedTaskDialogOpen: boolean;
   selectedTask: TaskInterface | null;
@@ -155,7 +159,6 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   reloadSelectedList: async () => {
     const {
-      loadLists,
       selectedList,
       selectedListTasksSortField,
       selectedListTasksSortDirection,
@@ -175,9 +178,6 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     set({
       selectedListTasks,
     });
-
-    // In case the task in a list was moved to another list, so we need to update the count for those lists
-    await loadLists();
   },
   // Form Dialog
   listFormDialogOpen: false,
@@ -236,65 +236,92 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return addedTask;
   },
-  editTask: async (taksListItem: TaskInterface) => {
+  editTask: async (taskId: string, task: Partial<TaskInterface>) => {
     const { reloadSelectedList } = get();
 
-    const editedTask = await editTask(taksListItem.id, taksListItem);
+    const editedTask = await editTask(taskId, task);
 
     set({
-      selectedListTasks: await getTasksForList(taksListItem.listId),
+      selectedListTasks: await getTasksForList(task.listId),
     });
 
     await reloadSelectedList();
 
     return editedTask;
   },
-  moveTask: async (task: TaskInterface) => {
-    const { reloadSelectedList } = get();
+  moveTask: async (taskId: string, newListId: string) => {
+    const { lists, reloadSelectedList } = get();
 
-    const movedTask = await editTask(task.id, {
-      listId: task.listId,
+    const movedTask = await editTask(taskId, {
+      listId: newListId,
     });
-    const selectedList = task.listId ? await getList(task.listId) : null;
+    const selectedList =
+      lists.find((list) => {
+        return list.id === newListId;
+      }) ?? null;
 
     set({
-      selectedListTasks: await getTasksForList(task.listId),
       selectedList,
     });
 
     await reloadSelectedList();
 
+    // We need to update the counts of the lists, once it was moved to another list
+    await loadLists();
+
     return movedTask;
   },
-  deleteTask: async (task: TaskInterface) => {
+  deleteTask: async (taskId: string) => {
     const { reloadSelectedList, loadLists } = get();
 
-    const deletedTask = await deleteTask(task.id);
-
-    set({
-      selectedListTasks: await getTasksForList(task.listId),
-      lists: await loadLists(), // We want to reload the count of tasks
-    });
+    const deletedTask = await deleteTask(taskId);
 
     await reloadSelectedList();
+
+    set({
+      lists: await loadLists(), // We want to reload the count of tasks
+    });
 
     return deletedTask;
   },
-  undeleteTask: async (task: TaskInterface) => {
+  undeleteTask: async (taskId: string) => {
     const { reloadSelectedList, loadLists } = get();
 
-    const undeletedTask = await editTask(task.id, {
-      deletedAt: undefined,
-    });
+    const undeletedTask = await undeleteTask(taskId);
+
+    await reloadSelectedList();
 
     set({
-      selectedListTasks: await getTasksForList(task.listId),
+      lists: await loadLists(), // We want to reload the count of tasks
+    });
+
+    return undeletedTask;
+  },
+  completeTask: async (taskId: string) => {
+    const { reloadSelectedList, loadLists } = get();
+
+    const completedTask = await completeTask(taskId);
+
+    set({
       lists: await loadLists(), // We want to reload the count of tasks
     });
 
     await reloadSelectedList();
 
-    return undeletedTask;
+    return completedTask;
+  },
+  uncompleteTask: async (taskId: string) => {
+    const { reloadSelectedList, loadLists } = get();
+
+    const uncompletedTask = await uncompleteTask(taskId);
+
+    set({
+      lists: await loadLists(), // We want to reload the count of tasks
+    });
+
+    await reloadSelectedList();
+
+    return uncompletedTask;
   },
   reorderTasks: async (originalTaskId: string, newTaskId: string) => {
     const { selectedList, reloadSelectedList, selectedListTasksSortDirection } = get();

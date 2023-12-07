@@ -59,7 +59,7 @@ const TaskActions = memo(
                 <ListsSelectedListDropdownMenuContent
                   isSubContent={true}
                   onListSelect={async (newList) => {
-                    await moveTask({ ...task, listId: newList.id });
+                    await moveTask(task.id, newList.id);
 
                     setDropdownMenuOpen(false);
                   }}
@@ -78,7 +78,7 @@ const TaskActions = memo(
                 <DropdownMenuItem
                   className="cursor-pointer text-red-400"
                   onClick={async () => {
-                    await deleteTask(task);
+                    await deleteTask(task.id);
                   }}
                 >
                   <FaTrash className="mr-2 h-4 w-4" />
@@ -89,7 +89,7 @@ const TaskActions = memo(
                 <DropdownMenuItem
                   className="cursor-pointer text-red-400"
                   onClick={async () => {
-                    await undeleteTask(task);
+                    await undeleteTask(task.id);
                   }}
                 >
                   <FaHistory className="mr-2 h-4 w-4" />

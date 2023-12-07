@@ -11,9 +11,6 @@ import { fetchJson } from '../../core/utils/FetchHelpers';
 export type OmitedList = Omit<ListInterface, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
 export type OmitedTask = Omit<TaskInterface, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
 
-/********** Database **********/
-const _databaseTasks: TaskInterface[] = [];
-
 /********** Lists **********/
 export const loadLists = async () => {
   const response = await fetchJson<ResponseInterface<ListInterface[]>>(`${API_URL}/api/v1/lists`, {
@@ -91,85 +88,104 @@ export const getTasksForList = async (
   const includeDeleted = options?.includeDeleted ?? false;
   const sortField = options?.sortField ?? 'createdAt';
   const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
+  const url = `${API_URL}/api/v1/tasks?listId=${listId}&includeCompleted=${
+    includeCompleted ? 'true' : 'false'
+  }&includeDeleted=${
+    includeDeleted ? 'true' : 'false'
+  }&sortField=${sortField}&sortDirection=${sortDirection}`;
 
-  let finalTasks = _databaseTasks.filter((task) => task.listId === listId);
-
-  if (!includeCompleted) {
-    finalTasks = finalTasks.filter((task) => !task.completedAt);
-  }
-
-  if (!includeDeleted) {
-    finalTasks = finalTasks.filter((task) => !task.deletedAt);
-  }
-
-  finalTasks = finalTasks.sort((a, b) => {
-    const field = sortField as keyof TaskInterface;
-    const aValue = a[field]?.toString() ?? undefined;
-    const bValue = b[field]?.toLocaleString() ?? undefined;
-
-    if (typeof aValue !== 'undefined' && typeof bValue !== 'undefined') {
-      if (sortField.endsWith('At')) {
-        return sortDirection === SortDirectionEnum.ASC
-          ? new Date(aValue).getTime() - new Date(bValue).getTime()
-          : new Date(bValue).getTime() - new Date(aValue).getTime();
-      }
-
-      return sortDirection === SortDirectionEnum.ASC
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
-    }
-
-    return 0;
+  const response = await fetchJson<ResponseInterface<TaskInterface[]>>(url, {
+    method: 'GET',
   });
 
-  return finalTasks;
+  return response.data as TaskInterface[];
 };
 
 export const getTask = async (taskId: string): Promise<TaskInterface | null> => {
-  return _databaseTasks.find((task) => task.id === taskId) ?? null;
+  const response = await fetchJson<ResponseInterface<ListInterface>>(
+    `${API_URL}/api/v1/tasks/${taskId}`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as TaskInterface;
 };
 
 export const addTask = async (task: OmitedTask): Promise<TaskInterface> => {
-  const id = Date.now().toString();
-  const createdAt = new Date().toISOString();
-  const order = (await getTasksForList(task.listId)).length;
-  const addedTask: TaskInterface = {
-    ...task,
-    id,
-    order,
-    createdAt,
-    updatedAt: createdAt,
-  };
+  const response = await fetchJson<ResponseInterface<TaskInterface>>(`${API_URL}/api/v1/tasks`, {
+    method: 'POST',
+    body: JSON.stringify(task),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
-  _databaseTasks.push(addedTask);
-
-  return addedTask;
+  return response.data as TaskInterface;
 };
 
 export const editTask = async (
   taskId: string,
   task: Partial<TaskInterface>
 ): Promise<TaskInterface> => {
-  const taskIndex = _databaseTasks.findIndex((t) => t.id === taskId);
-  if (taskIndex === -1) {
-    throw new Error('Task not found');
-  }
+  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+    `${API_URL}/api/v1/tasks/${taskId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(task),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
-  const editedTask = {
-    ..._databaseTasks[taskIndex],
-    ...task,
-    updatedAt: new Date().toISOString(),
-  };
-
-  _databaseTasks[taskIndex] = editedTask;
-
-  return editedTask;
+  return response.data as TaskInterface;
 };
 
 export const deleteTask = async (taskId: string): Promise<TaskInterface> => {
-  return editTask(taskId, {
-    deletedAt: new Date().toISOString(),
-  });
+  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+    `${API_URL}/api/v1/tasks/${taskId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return response.data as TaskInterface;
+};
+
+export const undeleteTask = async (taskId: string): Promise<TaskInterface> => {
+  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+    `${API_URL}/api/v1/tasks/${taskId}/undelete`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as TaskInterface;
+};
+
+export const completeTask = async (taskId: string): Promise<TaskInterface> => {
+  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+    `${API_URL}/api/v1/tasks/${taskId}/complete`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as TaskInterface;
+};
+
+export const uncompleteTask = async (taskId: string): Promise<TaskInterface> => {
+  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+    `${API_URL}/api/v1/tasks/${taskId}/uncomplete`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as TaskInterface;
 };
 
 export const reorderTask = async (

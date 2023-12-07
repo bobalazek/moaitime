@@ -8,7 +8,7 @@ import { AbstractResponseDto } from '../../core/dtos/abstract-response.dto';
 @Controller('/api/v1/backgrounds')
 export class BackgroundsController {
   @Get()
-  async index(): Promise<AbstractResponseDto<Background[]>> {
+  async list(): Promise<AbstractResponseDto<Background[]>> {
     const data = await backgroundsManager.findMany();
 
     return {

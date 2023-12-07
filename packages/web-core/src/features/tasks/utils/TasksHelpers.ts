@@ -12,7 +12,6 @@ export type OmitedList = Omit<ListInterface, 'id' | 'order' | 'createdAt' | 'upd
 export type OmitedTask = Omit<TaskInterface, 'id' | 'order' | 'createdAt' | 'updatedAt'>;
 
 /********** Database **********/
-let _databaseLists: ListInterface[] = [];
 const _databaseTasks: TaskInterface[] = [];
 
 /********** Lists **********/
@@ -24,73 +23,58 @@ export const loadLists = async () => {
   return response;
 };
 
-export const getLists = async (): Promise<ListInterface[]> => {
-  const lists: ListInterface[] = [];
+export const getList = async (listId: string): Promise<ListInterface> => {
+  const response = await fetchJson<ResponseInterface<ListInterface>>(
+    `${API_URL}/api/v1/lists/${listId}`,
+    {
+      method: 'GET',
+    }
+  );
 
-  for (const list of _databaseLists) {
-    const listTasks = await getTasksForList(list.id);
-
-    lists.push({
-      ...list,
-      tasksCount: listTasks.length,
-    });
-  }
-
-  return lists;
-};
-
-export const getList = async (listId: string): Promise<ListInterface | null> => {
-  const lists = await getLists();
-
-  return lists.find((list) => list.id === listId) ?? null;
-};
-
-export const setLists = async (lists: ListInterface[]): Promise<ListInterface[]> => {
-  _databaseLists = [...lists];
-
-  return getLists();
-};
-
-export const validateList = (list: Partial<ListInterface>, action: 'add' | 'edit') => {
-  if (!list.id && action === 'edit') {
-    throw new Error('ID is required');
-  }
-
-  if (typeof list.name !== 'undefined' && !list.name) {
-    throw new Error('Name is required');
-  }
+  return response.data as ListInterface;
 };
 
 export const addList = async (list: OmitedList): Promise<ListInterface> => {
-  validateList(list, 'add');
+  const response = await fetchJson<ResponseInterface<ListInterface>>(`${API_URL}/api/v1/lists`, {
+    method: 'POST',
+    body: JSON.stringify(list),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
-  const addedList = { ...list, id: Date.now().toString() };
-
-  _databaseLists.push(addedList);
-
-  return addedList;
+  return response.data as ListInterface;
 };
 
-export const editList = async (list: ListInterface): Promise<ListInterface> => {
-  validateList(list, 'edit');
+export const editList = async (
+  listId: string,
+  list: Partial<ListInterface>
+): Promise<ListInterface> => {
+  const response = await fetchJson<ResponseInterface<ListInterface>>(
+    `${API_URL}/api/v1/lists/${listId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(list),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
-  const listIndex = _databaseLists.findIndex((t) => t.id === list.id);
-  if (listIndex >= 0) {
-    _databaseLists[listIndex] = list;
-  }
-
-  return list;
+  return response.data as ListInterface;
 };
 
 export const deleteList = async (listId: string): Promise<ListInterface | null> => {
-  const deletedList = await getList(listId);
+  const response = await fetchJson<ResponseInterface<ListInterface>>(
+    `${API_URL}/api/v1/lists/${listId}`,
+    {
+      method: 'DELETE',
+    }
+  );
 
-  const listIndex = _databaseLists.findIndex((list) => list.id === listId);
-  if (listIndex >= 0) {
-    _databaseLists.splice(listIndex, 1);
-  }
-
-  return deletedList;
+  return response.data as ListInterface;
 };
 
 /********** Tasks **********/

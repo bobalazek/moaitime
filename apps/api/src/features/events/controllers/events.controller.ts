@@ -11,7 +11,7 @@ import { AbstractResponseDto } from '../../core/dtos/abstract-response.dto';
 export class EventsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async index(@Req() req: Request): Promise<AbstractResponseDto<Event[]>> {
+  async list(@Req() req: Request): Promise<AbstractResponseDto<Event[]>> {
     if (!req.user) {
       throw new UnauthorizedException();
     }

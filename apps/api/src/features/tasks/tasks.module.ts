@@ -8,7 +8,7 @@ import { ListsController } from './controllers/lists.controller';
   controllers: [ListsController],
   providers: [],
 })
-export class ListsModule implements NestModule {
+export class TasksModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AppMiddleware).forRoutes('*');
   }

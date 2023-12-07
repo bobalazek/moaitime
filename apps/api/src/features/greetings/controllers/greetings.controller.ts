@@ -8,7 +8,7 @@ import { AbstractResponseDto } from '../../core/dtos/abstract-response.dto';
 @Controller('/api/v1/greetings')
 export class GreetingsController {
   @Get()
-  async index(): Promise<AbstractResponseDto<Greeting[]>> {
+  async list(): Promise<AbstractResponseDto<Greeting[]>> {
     const data = await greetingsManager.findMany();
 
     return {

@@ -25,7 +25,7 @@ export default function ListDeleteAlertDialog() {
   }
 
   const onConfirmButtonClick = async () => {
-    await deleteList(selectedListDeleteAlertDialog);
+    await deleteList(selectedListDeleteAlertDialog.id);
 
     toast({
       title: 'List deleted',

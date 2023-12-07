@@ -4,8 +4,8 @@ import { AuthModule } from '../auth/auth.module';
 import { BackgroundsModule } from '../backgrounds/backgrounds.module';
 import { EventsModule } from '../events/events.module';
 import { GreetingsModule } from '../greetings/greetings.module';
-import { ListsModule } from '../lists/lists.module';
 import { QuotesModule } from '../quotes/quotes.module';
+import { TasksModule } from '../tasks/tasks.module';
 import { TestingModule } from '../testing/testing.module';
 import { AppController } from './controllers/app.controller';
 import { AppMiddleware } from './middlewares/app.middleware';
@@ -16,7 +16,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
     BackgroundsModule,
     GreetingsModule,
     QuotesModule,
-    ListsModule,
+    TasksModule,
     EventsModule,
     TestingModule,
   ],

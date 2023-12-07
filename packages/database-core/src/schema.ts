@@ -2,6 +2,7 @@ export * from './schema/users';
 export * from './schema/userAccessTokens';
 export * from './schema/organizations';
 export * from './schema/organizationUsers';
+export * from './schema/tasks';
 export * from './schema/teams';
 export * from './schema/teamUsers';
 export * from './schema/calendars';

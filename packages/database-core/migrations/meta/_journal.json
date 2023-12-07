@@ -43,6 +43,13 @@
       "when": 1701933881658,
       "tag": "0005_slim_ezekiel",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1701950310053,
+      "tag": "0006_charming_cammi",
+      "breakpoints": true
     }
   ]
 }

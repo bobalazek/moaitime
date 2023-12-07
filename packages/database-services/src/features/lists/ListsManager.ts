@@ -1,4 +1,4 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { and, count, DBQueryConfig, eq, inArray, isNull } from 'drizzle-orm';
 
 import {
   databaseClient,
@@ -6,6 +6,7 @@ import {
   List,
   lists,
   NewList,
+  tasks,
   updateListSchema,
 } from '@myzenbuddy/database-core';
 
@@ -15,14 +16,39 @@ export class ListsManager {
   }
 
   async findManyByUserId(userId: string): Promise<List[]> {
-    return databaseClient.query.lists.findMany({
-      where: eq(lists.userId, userId),
+    const result = await databaseClient.query.lists.findMany({
+      where: and(eq(lists.userId, userId), isNull(lists.deletedAt)),
     });
+    const ids = result.map((list) => list.id);
+
+    // TODO: do it all in one query
+
+    const tasksCountData = await databaseClient
+      .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(inArray(tasks.listId, ids))
+      .groupBy(tasks.listId)
+      .execute();
+    const tasksCountMap = new Map(tasksCountData.map((item) => [item.listId, item.tasksCount]));
+
+    return result.map((list) => ({
+      ...list,
+      tasksCount: tasksCountMap.get(list.id) ?? 0,
+    }));
   }
 
   async findOneById(id: string): Promise<List | null> {
     const row = await databaseClient.query.lists.findFirst({
       where: eq(lists.id, id),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByIdAndUserId(id: string, userId: string): Promise<List | null> {
+    const row = await databaseClient.query.lists.findFirst({
+      where: and(eq(lists.id, id), eq(lists.userId, userId)),
     });
 
     return row ?? null;

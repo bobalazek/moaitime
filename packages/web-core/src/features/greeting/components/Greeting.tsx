@@ -15,8 +15,7 @@ const animationVariants = {
   animate: { opacity: 1, height: 'auto' },
 };
 
-// prettier-ignore
-const defaultCharacters = [{ char: "&nbsp;", delay: 0 }];
+const defaultCharacters = [{ char: ' ', delay: 0 }];
 
 export default function Greeting() {
   const { setRandomGreeting } = useGreetingStore();

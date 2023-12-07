@@ -17,7 +17,7 @@ export const loadLists = async () => {
     method: 'GET',
   });
 
-  return response;
+  return response.data as ListInterface[];
 };
 
 export const getList = async (listId: string): Promise<ListInterface> => {

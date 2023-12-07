@@ -23,7 +23,7 @@ export default function TaskDialog() {
     deleteTask,
     undeleteTask,
   } = useTasksStore();
-  const [task, setTask] = useState({
+  const [data, setData] = useState({
     name: selectedTask?.name ?? '',
     description: selectedTask?.description ?? '',
     listId: selectedTask?.listId,
@@ -34,14 +34,14 @@ export default function TaskDialog() {
       return;
     }
 
-    setTask({
+    setData({
       name: selectedTask?.name ?? '',
       description: selectedTask?.description ?? '',
       listId: selectedTask?.listId,
     });
   }, [selectedTask]);
 
-  if (!selectedTaskDialogOpen || !task) {
+  if (!selectedTaskDialogOpen || !data) {
     return null;
   }
 
@@ -53,7 +53,7 @@ export default function TaskDialog() {
     const undeletedTask = await undeleteTask(selectedTask.id);
 
     toast({
-      title: `Task "${task.name}" undeleted`,
+      title: `Task "${data.name}" undeleted`,
       description: 'You have successfully undeleted the task',
     });
 
@@ -68,7 +68,7 @@ export default function TaskDialog() {
     await deleteTask(selectedTask.id);
 
     toast({
-      title: `Task "${task.name}" deleted`,
+      title: `Task "${data.name}" deleted`,
       description: 'You have successfully deleted the task',
     });
 
@@ -84,7 +84,7 @@ export default function TaskDialog() {
       return;
     }
 
-    const editedTask = await editTask(selectedTask.id, task);
+    const editedTask = await editTask(selectedTask.id, data);
 
     toast({
       title: `Task "${editedTask.name}" save`,
@@ -105,9 +105,9 @@ export default function TaskDialog() {
           <Label htmlFor="task-name">Name</Label>
           <Input
             id="task-name"
-            value={task.name}
+            value={data.name}
             onChange={(event) => {
-              setTask({ ...task, name: event.target.value });
+              setData({ ...data, name: event.target.value });
             }}
           />
         </div>
@@ -116,18 +116,18 @@ export default function TaskDialog() {
           <Textarea
             id="task-description"
             rows={5}
-            value={task.description}
+            value={data.description}
             onChange={(event) => {
-              setTask({ ...task, description: event.target.value });
+              setData({ ...data, description: event.target.value });
             }}
           />
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-list">List</Label>
           <ListsSelect
-            value={task.listId}
+            value={data.listId}
             onChangeValue={(value) => {
-              setTask({ ...task, listId: value });
+              setData({ ...data, listId: value });
             }}
           />
         </div>

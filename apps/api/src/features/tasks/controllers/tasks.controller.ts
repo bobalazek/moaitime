@@ -88,7 +88,7 @@ export class TasksController {
       throw new NotFoundException('Task not found');
     }
 
-    const order = (await tasksManager.findMaxOrderByListId(body.listId)) * 100;
+    const order = (await tasksManager.findMaxOrderByListId(body.listId)) + 1;
 
     const data = await tasksManager.insertOne({ ...body, order });
 

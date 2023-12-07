@@ -14,8 +14,7 @@ const animationVariants = {
   animate: { opacity: 1 },
 };
 
-// prettier-ignore
-const defaultCharacters = [{ char: "&nbsp;", delay: 0 }];
+const defaultCharacters = [{ char: ' ', delay: 0 }];
 
 export default function Quote() {
   const { quote, setRandomQuote } = useQuoteStore();

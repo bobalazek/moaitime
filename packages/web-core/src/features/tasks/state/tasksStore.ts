@@ -139,8 +139,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return deletedList;
   },
   loadLists: async () => {
-    const response = await loadLists();
-    const lists = response.data ?? [];
+    const lists = await loadLists();
 
     set({ lists });
 
@@ -241,16 +240,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const editedTask = await editTask(taskId, task);
 
-    set({
-      selectedListTasks: await getTasksForList(task.listId),
-    });
-
     await reloadSelectedList();
 
     return editedTask;
   },
   moveTask: async (taskId: string, newListId: string) => {
-    const { lists, reloadSelectedList } = get();
+    const { lists, reloadSelectedList, loadLists } = get();
 
     const movedTask = await editTask(taskId, {
       listId: newListId,

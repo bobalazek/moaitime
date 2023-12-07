@@ -324,7 +324,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       return;
     }
 
-    await reorderTask(originalTaskId, newTaskId, selectedListTasksSortDirection);
+    await reorderTask(selectedList.id, originalTaskId, newTaskId, selectedListTasksSortDirection);
 
     await reloadSelectedList();
   },

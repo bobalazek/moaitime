@@ -189,42 +189,17 @@ export const uncompleteTask = async (taskId: string): Promise<TaskInterface> => 
 };
 
 export const reorderTask = async (
+  listId: string,
   originalTaskId: string,
   newTaskId: string,
   sortDirection: SortDirectionEnum
-): Promise<TaskInterface[]> => {
-  const originalTask = await getTask(originalTaskId);
-  if (!originalTask) {
-    throw new Error('Original task not found');
-  }
-
-  const newTask = await getTask(newTaskId);
-  if (!newTask) {
-    throw new Error('New task not found');
-  }
-
-  const tasks = await getTasksForList(originalTask.listId, {
-    sortDirection,
-    sortField: 'order',
+) => {
+  return fetchJson<ResponseInterface<TaskInterface>>(`${API_URL}/api/v1/tasks/reorder`, {
+    method: 'POST',
+    body: JSON.stringify({ listId, originalTaskId, newTaskId, sortDirection }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
-
-  const originalIndex = tasks.findIndex((task) => task.id === originalTaskId);
-  const newIndex = tasks.findIndex((task) => task.id === newTaskId);
-
-  const [movedTask] = tasks.splice(originalIndex, 1);
-  tasks.splice(newIndex, 0, movedTask);
-
-  if (sortDirection === SortDirectionEnum.ASC) {
-    tasks.forEach((task, index) => {
-      task.order = index;
-    });
-  } else {
-    tasks.forEach((task, index) => {
-      task.order = tasks.length - 1 - index;
-    });
-  }
-
-  await Promise.all(tasks.map((task) => editTask(task.id, { order: task.order })));
-
-  return tasks;
 };

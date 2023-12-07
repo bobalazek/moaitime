@@ -102,6 +102,14 @@ export class TasksManager {
     return rows[0];
   }
 
+  async updateReorder(map: { [key: string]: number }) {
+    return databaseClient.transaction(async (tx) => {
+      for (const taskId in map) {
+        await tx.update(tasks).set({ order: map[taskId] }).where(eq(tasks.id, taskId));
+      }
+    });
+  }
+
   async deleteOneById(id: string): Promise<Task> {
     const rows = await databaseClient.delete(tasks).where(eq(tasks.id, id)).returning();
 

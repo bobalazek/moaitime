@@ -20,6 +20,7 @@ import { SortDirectionEnum } from '@myzenbuddy/shared-common';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/abstract-response.dto';
 import { CreateTaskDto } from '../dtos/create-task.dto';
+import { ReorderTasksDto } from '../dtos/reorder-tasks.dto';
 import { UpdateTaskDto } from '../dtos/update-task.dto';
 
 @Controller('/api/v1/tasks')
@@ -52,6 +53,51 @@ export class TasksController {
     return {
       success: true,
       data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('reorder')
+  async reorder(@Body() body: ReorderTasksDto, @Req() req: Request) {
+    if (!req.user) {
+      throw new UnauthorizedException();
+    }
+
+    const list = listsManager.findOneByIdAndUserId(body.listId, req.user.id);
+    if (!list) {
+      throw new NotFoundException('List not found');
+    }
+
+    const { sortDirection, listId, originalTaskId, newTaskId } = body;
+
+    const result = await tasksManager.findManyByListId(listId, {
+      includeCompleted: true,
+      includeDeleted: true,
+      sortField: 'order',
+      sortDirection: sortDirection,
+    });
+
+    const originalIndex = result.findIndex((task) => task.id === originalTaskId);
+    const newIndex = result.findIndex((task) => task.id === newTaskId);
+
+    const [movedTask] = result.splice(originalIndex, 1);
+    result.splice(newIndex, 0, movedTask);
+
+    const reorderMap: { [key: string]: number } = {};
+    if (sortDirection === SortDirectionEnum.ASC) {
+      result.forEach((task, index) => {
+        reorderMap[task.id] = index;
+      });
+    } else {
+      result.forEach((task, index) => {
+        reorderMap[task.id] = result.length - 1 - index;
+      });
+    }
+
+    await tasksManager.updateReorder(reorderMap);
+
+    return {
+      success: true,
     };
   }
 

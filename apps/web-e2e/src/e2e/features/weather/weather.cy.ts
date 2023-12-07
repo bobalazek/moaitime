@@ -1,11 +1,9 @@
 /// <reference types="cypress" />
 
 describe('weather.cy.ts', () => {
-  before(() => {
-    cy.reloadDatabase();
-  });
-
   beforeEach(() => {
+    cy.reloadDatabase();
+
     cy.login();
   });
 

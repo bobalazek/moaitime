@@ -7,11 +7,9 @@ import {
 } from './utils/tasks-helpers';
 
 describe('tasks-lists.cy.ts', () => {
-  before(() => {
-    cy.reloadDatabase();
-  });
-
   beforeEach(() => {
+    cy.reloadDatabase();
+
     cy.login();
   });
 
@@ -158,7 +156,7 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--body-header').contains('Inbox');
 
-    cy.getBySel('tasks--tasks-form').type('New task{enter}');
+    cy.getBySel('tasks--tasks-form').find('input').type('New task{enter}');
 
     cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').click();
 

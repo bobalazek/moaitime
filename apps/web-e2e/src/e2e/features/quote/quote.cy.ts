@@ -1,11 +1,9 @@
 /// <reference types="cypress" />
 
 describe('quote.cy.ts', () => {
-  before(() => {
-    cy.reloadDatabase();
-  });
-
   beforeEach(() => {
+    cy.reloadDatabase();
+
     cy.login();
   });
 

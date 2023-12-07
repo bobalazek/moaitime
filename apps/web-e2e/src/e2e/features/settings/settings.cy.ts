@@ -1,11 +1,9 @@
 /// <reference types="cypress" />
 
 describe('settings.cy.ts', () => {
-  before(() => {
-    cy.reloadDatabase();
-  });
-
   beforeEach(() => {
+    cy.reloadDatabase();
+
     cy.login();
   });
 

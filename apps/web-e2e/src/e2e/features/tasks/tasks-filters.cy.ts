@@ -3,11 +3,9 @@
 import { addMultipleTasks, openTasksPopover } from './utils/tasks-helpers';
 
 describe('tasks-filters.cy.ts', () => {
-  before(() => {
-    cy.reloadDatabase();
-  });
-
   beforeEach(() => {
+    cy.reloadDatabase();
+
     cy.login();
   });
 

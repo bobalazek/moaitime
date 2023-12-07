@@ -23,13 +23,16 @@ export class ListsManager {
 
     // TODO: do it all in one query
 
-    const tasksCountData = await databaseClient
-      .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
-      .from(tasks)
-      .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(inArray(tasks.listId, ids))
-      .groupBy(tasks.listId)
-      .execute();
+    const tasksCountData =
+      ids.length > 0
+        ? await databaseClient
+            .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
+            .from(tasks)
+            .leftJoin(lists, eq(tasks.listId, lists.id))
+            .where(inArray(tasks.listId, ids))
+            .groupBy(tasks.listId)
+            .execute()
+        : [];
     const tasksCountMap = new Map(tasksCountData.map((item) => [item.listId, item.tasksCount]));
 
     return result.map((list) => ({

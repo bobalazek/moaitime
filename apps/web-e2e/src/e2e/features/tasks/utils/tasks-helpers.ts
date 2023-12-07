@@ -21,11 +21,11 @@ export function openTasksNewListDropdownMenu() {
 }
 
 export function addMultipleTasks() {
-  cy.getBySel('tasks--tasks-form').type('ccc{enter}');
+  cy.getBySel('tasks--tasks-form').find('input').type('ccc{enter}');
 
-  cy.getBySel('tasks--tasks-form').type('aaa{enter}');
+  cy.getBySel('tasks--tasks-form').find('input').type('aaa{enter}');
 
-  cy.getBySel('tasks--tasks-form').type('ddd{enter}');
+  cy.getBySel('tasks--tasks-form').find('input').type('ddd{enter}');
 
-  cy.getBySel('tasks--tasks-form').type('bbb{enter}');
+  cy.getBySel('tasks--tasks-form').find('input').type('bbb{enter}');
 }

@@ -1,7 +1,8 @@
-import { calendars, databaseClient, events, users } from '@myzenbuddy/database-core';
+import { calendars, databaseClient, events, lists, users } from '@myzenbuddy/database-core';
 
 import { getCalendarFixtures } from './data/Calendars';
 import { getEventFixtures } from './data/Events';
+import { getListFixtures } from './data/Lists';
 import { getUserFixtures } from './data/Users';
 
 export const insertDatabaseFixtureData = async () => {
@@ -13,4 +14,7 @@ export const insertDatabaseFixtureData = async () => {
 
   const eventFixtures = await getEventFixtures();
   await databaseClient.insert(events).values(eventFixtures).execute();
+
+  const listFixtures = await getListFixtures();
+  await databaseClient.insert(lists).values(listFixtures).execute();
 };

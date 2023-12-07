@@ -3,11 +3,9 @@
 import { openTasksPopover } from './utils/tasks-helpers';
 
 describe('tasks-tasks.cy.ts', () => {
-  before(() => {
-    cy.reloadDatabase();
-  });
-
   beforeEach(() => {
+    cy.reloadDatabase();
+
     cy.login();
   });
 
@@ -15,7 +13,7 @@ describe('tasks-tasks.cy.ts', () => {
     openTasksPopover();
 
     // Add a new task
-    cy.getBySel('tasks--tasks-form').type('My new task{enter}');
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
 
     // Check if the new task is in the list
     cy.getBySel('tasks--task').should('exist');
@@ -24,7 +22,7 @@ describe('tasks-tasks.cy.ts', () => {
   it('should toggle the completed state when clicking on the checkbox', () => {
     openTasksPopover();
 
-    cy.getBySel('tasks--tasks-form').type('My new task{enter}');
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
 
     cy.getBySel('tasks--task--completed-checkbox').click();
 
@@ -38,7 +36,7 @@ describe('tasks-tasks.cy.ts', () => {
   it('should edit task when double clicking on it', () => {
     openTasksPopover();
 
-    cy.getBySel('tasks--tasks-form').type('My new task{enter}');
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
 
     cy.getBySel('tasks--task').first().find('[data-test="tasks--task--name"]').dblclick();
 
@@ -58,7 +56,7 @@ describe('tasks-tasks.cy.ts', () => {
   it('should edit task when edit button is clicked', () => {
     openTasksPopover();
 
-    cy.getBySel('tasks--tasks-form').type('My new task{enter}');
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
 
     cy.getBySel('tasks--task')
       .first()
@@ -79,7 +77,7 @@ describe('tasks-tasks.cy.ts', () => {
   it('should delete task when delete button is clicked', () => {
     openTasksPopover();
 
-    cy.getBySel('tasks--tasks-form').type('My new task{enter}');
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
 
     cy.getBySel('tasks--task')
       .first()

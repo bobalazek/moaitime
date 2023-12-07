@@ -1,11 +1,9 @@
 /// <reference types="cypress" />
 
 describe('calendar.cy.ts', () => {
-  before(() => {
-    cy.reloadDatabase();
-  });
-
   beforeEach(() => {
+    cy.reloadDatabase();
+
     cy.login();
   });
 

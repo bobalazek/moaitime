@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { useTasksStore } from '../../tasks/state/tasksStore';
+
 export type CommandsStore = {
   /********** General **********/
   commandsDialogOpen: boolean;
@@ -16,6 +18,10 @@ export const useCommandsStore = create<CommandsStore>()((set) => ({
     set({
       commandsDialogOpen,
     });
+
+    if (commandsDialogOpen) {
+      useTasksStore.getState().loadLists();
+    }
   },
   // Search
   search: '',

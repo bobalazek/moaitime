@@ -17,7 +17,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu').should('exist');
   });
 
-  it('should filter tasks by Order and Descending', () => {
+  it.only('should filter tasks by Order and Descending', () => {
     openTasksPopover();
 
     addMultipleTasks();

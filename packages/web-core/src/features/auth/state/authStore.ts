@@ -8,7 +8,6 @@ import {
   UpdateUserPasswordInterface,
 } from '@myzenbuddy/shared-common';
 
-import { useTasksStore } from '../../tasks/state/tasksStore';
 import {
   cancelNewEmail,
   confirmEmail,
@@ -152,8 +151,6 @@ export const useAuthStore = create<AuthStore>()(
         const response = await me();
 
         set({ auth: response.data });
-
-        useTasksStore.getState().loadLists();
 
         return response;
       },

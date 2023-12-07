@@ -23,9 +23,18 @@ export function openTasksNewListDropdownMenu() {
 export function addMultipleTasks() {
   cy.getBySel('tasks--tasks-form').find('input').type('ccc{enter}');
 
+  // TODO: rather capture the request and wait until it's done
+  cy.wait(1000);
+
   cy.getBySel('tasks--tasks-form').find('input').type('aaa{enter}');
+
+  cy.wait(1000);
 
   cy.getBySel('tasks--tasks-form').find('input').type('ddd{enter}');
 
+  cy.wait(1000);
+
   cy.getBySel('tasks--tasks-form').find('input').type('bbb{enter}');
+
+  cy.wait(1000);
 }

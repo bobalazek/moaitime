@@ -4,11 +4,11 @@ export const getQuotesSeeds = async (): Promise<NewQuote[]> => {
   return [
     {
       text: 'If you sum 1 and 1 together, you get 2.',
-      author: 'Me, an intellectual',
+      author: 'A brilliant mathematician',
     },
     {
       text: "I told my computer I needed a break, and now it won't stop sending me Kit-Kat ads.",
-      author: 'Me, a snack enthusiast',
+      author: 'A snack enthusiast',
     },
     {
       text: "Why don't scientists trust atoms? Because they make up everything!",
@@ -85,6 +85,50 @@ export const getQuotesSeeds = async (): Promise<NewQuote[]> => {
     {
       text: "Some people think prison is one word…but to robbers, it's the whole sentence.",
       author: 'A wordplay warden',
+    },
+    {
+      text: 'I used to be a banker, but I lost interest.',
+      author: 'A former financier',
+    },
+    {
+      text: 'Why did the scarecrow win an award? Because he was outstanding in his field!',
+      author: 'A corny jokester',
+    },
+    {
+      text: "I'm reading a horror story in braille. Something bad is going to happen, I can feel it.",
+      author: 'A tactile thrill-seeker',
+    },
+    {
+      text: 'I told my wife she was drawing her eyebrows too high. She looked surprised.',
+      author: 'A beauty critic comedian',
+    },
+    {
+      text: "Why don't skeletons fight each other? They don't have the guts.",
+      author: 'A bone-dry humorist',
+    },
+    {
+      text: "I'm terrified of elevators, so I'm going to start taking steps to avoid them.",
+      author: 'An acrophobic wit',
+    },
+    {
+      text: "I told my computer I needed more storage. It told me to clear my cache, but I'm not giving up my money!",
+      author: 'A tech-savvy comedian',
+    },
+    {
+      text: 'Why did the bicycle collapse? It was two-tired.',
+      author: 'A cycling comedian',
+    },
+    {
+      text: "I don't play soccer because I enjoy the sport. I'm just doing it for kicks!",
+      author: 'A playful athlete',
+    },
+    {
+      text: "I have a joke about construction, but I'm still working out the kinks with my bulldozer.",
+      author: 'A constructive joker',
+    },
+    {
+      text: "I started a band called 999 Megabytes. We haven't gotten a gig yet.",
+      author: 'A digital musician',
     },
   ];
 };

@@ -2,24 +2,26 @@ import { eq } from 'drizzle-orm';
 
 import { databaseClient, NewCalendar, users } from '@myzenbuddy/database-core';
 
-export const getCalendarSeeds = async (): Promise<NewCalendar[]> => {
-  const userBorut = await databaseClient.query.users.findFirst({
-    where: eq(users.email, 'bobalazek124@gmail.com'),
-  });
-  const userAna = await databaseClient.query.users.findFirst({
-    where: eq(users.email, 'anakociper124@gmail.com'),
-  });
+import { getUserSeeds } from './Users';
 
-  return [
-    {
-      name: "Borut's Calendar",
+export const getCalendarSeeds = async (): Promise<NewCalendar[]> => {
+  const caledars: NewCalendar[] = [];
+
+  const userSeeds = await getUserSeeds();
+  for (const single of userSeeds) {
+    const user = await databaseClient.query.users.findFirst({
+      where: eq(users.email, single.email),
+    });
+    if (!user) {
+      throw new Error(`User "${single.email}" not found!`);
+    }
+
+    caledars.push({
+      name: `${user.displayName}'s Calendar`,
       timezone: 'Europe/Ljubljana',
-      userId: userBorut?.id,
-    },
-    {
-      name: "Ana's Calendar",
-      timezone: 'Europe/Ljubljana',
-      userId: userAna?.id,
-    },
-  ];
+      userId: user.id,
+    });
+  }
+
+  return caledars;
 };

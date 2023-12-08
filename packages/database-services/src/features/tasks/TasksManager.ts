@@ -28,7 +28,7 @@ export class TasksManager {
     options?: TaskManagerFindManyByListIdOptions
   ): Promise<Task[]> {
     let where: SQL<unknown> = eq(tasks.listId, listId);
-    let orderBy: SQL<unknown> | undefined = undefined;
+    let orderBy: SQL<unknown> = asc(tasks.createdAt);
 
     if (!options?.includeCompleted) {
       where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;

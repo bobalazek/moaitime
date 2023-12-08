@@ -225,7 +225,6 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const addedTask = await addTask(task);
 
     set({
-      selectedListTasks: await getTasksForList(task.listId),
       lists: await loadLists(), // We want to reload the count of tasks
     });
 

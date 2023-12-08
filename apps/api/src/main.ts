@@ -47,6 +47,8 @@ async function bootstrap() {
   const url = await app.getUrl();
 
   Logger.log(`🚀 Application is running on: ${url}`);
+
+  return app;
 }
 
 bootstrap();

@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, eq, inArray, isNull } from 'drizzle-orm';
 
 import {
   databaseClient,
@@ -18,10 +18,9 @@ export class ListsManager {
   async findManyByUserId(userId: string): Promise<List[]> {
     const result = await databaseClient.query.lists.findMany({
       where: and(eq(lists.userId, userId), isNull(lists.deletedAt)),
+      orderBy: asc(lists.createdAt),
     });
     const ids = result.map((list) => list.id);
-
-    // TODO: do it all in one query
 
     const tasksCountData =
       ids.length > 0

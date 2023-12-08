@@ -6,7 +6,12 @@ import { defineConfig } from 'tsup';
 export default defineConfig((options) => {
   let onSuccess: (() => Promise<() => Promise<void>>) | string | undefined = undefined;
   let watch: string[] | undefined = undefined;
-  if (options.watch) {
+  // We need to use the "options.env.TSUP_WATCH" instead of directly using "options.watch"
+  // because it seems that if watch is provided, that will always take precedence
+  // over the watch variable we provide.
+  if (options.env?.TSUP_WATCH) {
+    // Trying to solve the following issue:
+    // https://github.com/egoist/tsup/issues/999
     // This is a hacky workaround to trigger a restart the web server if a dependency changes,
     // as at the time of writing this, it does not seem to work otherwise.
 
@@ -14,7 +19,7 @@ export default defineConfig((options) => {
 
     const packages = readdirSync(join(__dirname, '../../packages'));
     for (const packageName of packages) {
-      watch.push(join(__dirname, `../../packages/${packageName}/dist/index.js`));
+      watch.push(join(__dirname, `../../packages/${packageName}/dist/**/index.{js,mjs}`));
     }
 
     onSuccess = 'node dist/main.js';

@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsup",
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
-    "dev": "tsup --watch",
+    "dev": "tsup --env.TSUP_WATCH=true",
     "lint": "eslint .",
     "serve": "node ./dist/main.js",
     "test": "vitest run",

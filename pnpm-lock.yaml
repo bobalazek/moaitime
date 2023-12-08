@@ -229,6 +229,9 @@ importers:
       '@myzenbuddy/shared-common':
         specifier: workspace:*
         version: link:../shared-common
+      '@myzenbuddy/shared-logging':
+        specifier: workspace:*
+        version: link:../shared-logging
       drizzle-kit:
         specifier: ^0.20.4
         version: 0.20.6
@@ -257,6 +260,9 @@ importers:
       '@myzenbuddy/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
+      '@myzenbuddy/shared-logging':
+        specifier: workspace:*
+        version: link:../shared-logging
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -279,6 +285,9 @@ importers:
       '@myzenbuddy/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
+      '@myzenbuddy/shared-logging':
+        specifier: workspace:*
+        version: link:../shared-logging
       drizzle-orm:
         specifier: ^0.29.0
         version: 0.29.1(@types/pg@8.10.9)(pg@8.11.3)

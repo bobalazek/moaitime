@@ -26,6 +26,7 @@
   "dependencies": {
     "@myzenbuddy/database-core": "workspace:*",
     "@myzenbuddy/shared-backend": "workspace:*",
+    "@myzenbuddy/shared-logging": "workspace:*",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "drizzle-orm": "^0.29.0"

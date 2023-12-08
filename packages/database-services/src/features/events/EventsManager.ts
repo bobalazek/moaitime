@@ -15,6 +15,12 @@ export class EventsManager {
     return databaseClient.query.events.findMany(options);
   }
 
+  async findManyByCalendarId(calendarId: string): Promise<Event[]> {
+    return databaseClient.query.events.findMany({
+      where: eq(events.calendarId, calendarId),
+    });
+  }
+
   async findManyByUserId(userId: string): Promise<Event[]> {
     const result = await databaseClient
       .select()

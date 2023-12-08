@@ -31,7 +31,7 @@ export default function WeatherBodyInformation() {
   );
 
   return (
-    <div className="flex gap-5">
+    <div className="mb-4 flex gap-5">
       <h5 className="flex items-center gap-2" data-test="weather--body--information--conditions">
         <WeatherConditionIcon className="text-2xl" />
         <span>{conditions}</span>

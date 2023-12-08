@@ -9,7 +9,6 @@ export type QuoteStore = {
   setQuote: (quote: QuoteInterface | null) => Promise<void>;
   setRandomQuote: () => Promise<void>;
   quotes: QuoteInterface[];
-  setQuotes: (quotes: QuoteInterface[]) => Promise<void>;
   loadQuotes: () => Promise<QuoteInterface[]>;
 };
 
@@ -26,9 +25,6 @@ export const useQuoteStore = create<QuoteStore>()((set, get) => ({
     setQuote(randomQuote);
   },
   quotes: [],
-  setQuotes: async (quotes: QuoteInterface[]) => {
-    set({ quotes });
-  },
   loadQuotes: async () => {
     const response = await loadQuotes();
     const quotes = response.data ?? [];

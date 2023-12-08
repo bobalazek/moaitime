@@ -1,14 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { Toaster } from '@myzenbuddy/web-ui';
 
 import { AppRoutes } from './AppRoutes';
 import { ErrorBoundary } from './features/core/components/ErrorBoundary';
-import { initializeApp } from './features/core/utils/BootstrapHelpers';
 
 export function App() {
+  const isInitializedRef = useRef(false);
+
   useEffect(() => {
-    initializeApp();
+    if (isInitializedRef.current) {
+      return;
+    }
+
+    isInitializedRef.current = true;
+
+    document.body.classList.add('dark');
   }, []);
 
   return (

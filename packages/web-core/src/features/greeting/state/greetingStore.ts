@@ -10,7 +10,6 @@ export type GreetingStore = {
   setGreeting: (greeting: GreetingInterface | null) => Promise<GreetingInterface | null>;
   setRandomGreeting: () => Promise<GreetingInterface>;
   greetings: GreetingInterface[];
-  setGreetings: (greetings: GreetingInterface[]) => Promise<GreetingInterface[]>;
   loadGreetings: () => Promise<GreetingInterface[]>;
 };
 
@@ -38,11 +37,6 @@ export const useGreetingStore = create<GreetingStore>()((set, get) => ({
     return greeting;
   },
   greetings: [],
-  setGreetings: async (greetings: GreetingInterface[]) => {
-    set({ greetings });
-
-    return greetings;
-  },
   loadGreetings: async () => {
     const response = await loadGreetings();
     const greetings = response.data ?? [];

@@ -13,7 +13,7 @@ export default function WeatherBody() {
   return (
     <div className="min-w-[240px]" data-test="weather--body">
       <h3 className="mb-2 text-xl font-bold">Weather</h3>
-      <h4 className="mb-4 flex items-center text-lg font-bold" data-test="weather--body--location">
+      <h4 className="flex items-center text-lg font-bold" data-test="weather--body--location">
         {!weather && <i>Location not set</i>}
         {weather && <span>{weather.location}</span>}
         <button

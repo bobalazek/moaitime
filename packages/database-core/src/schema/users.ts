@@ -7,6 +7,7 @@ import { SettingsInterface, UserRoleEnum } from '@myzenbuddy/shared-common';
 import { backgrounds } from './backgrounds';
 import { calendars } from './calendars';
 import { greetings } from './greetings';
+import { interests } from './interests';
 import { organizationUsers } from './organizationUsers';
 import { quotes } from './quotes';
 import { teamUsers } from './teamUsers';
@@ -65,6 +66,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   greetings: many(greetings),
   backgrounds: many(backgrounds),
   quotes: many(quotes),
+  interests: many(interests),
 }));
 
 export type User = typeof users.$inferSelect;

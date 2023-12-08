@@ -57,6 +57,13 @@
       "when": 1702032136862,
       "tag": "0007_minor_jimmy_woo",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1702045572542,
+      "tag": "0008_rainy_menace",
+      "breakpoints": true
     }
   ]
 }

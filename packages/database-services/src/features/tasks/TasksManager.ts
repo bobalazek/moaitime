@@ -71,7 +71,7 @@ export class TasksManager {
   }
 
   async findMaxOrderByListId(listId: string): Promise<number> {
-    const row = await databaseClient
+    const rows = await databaseClient
       .select()
       .from(tasks)
       .where(eq(tasks.listId, listId))
@@ -79,7 +79,11 @@ export class TasksManager {
       .limit(1)
       .execute();
 
-    return row?.[0]?.order ?? 0;
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    return rows[0].order;
   }
 
   async insertOne(data: NewTask): Promise<Task> {

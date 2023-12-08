@@ -21,56 +21,62 @@ import { getQuotesSeeds as getQuoteSeeds } from './data/Quotes';
 import { getUserSeeds } from './data/Users';
 
 export const insertDatabaseSeedData = async () => {
-  logger.info('Inserting database seed data ...');
+  try {
+    logger.info('Inserting database seed data ...');
 
-  logger.debug('Inserting user seeds ...');
-  const userSeeds = await getUserSeeds();
-  await databaseClient.insert(users).values(userSeeds).execute();
+    logger.debug('Inserting user seeds ...');
+    const userSeeds = await getUserSeeds();
+    await databaseClient.insert(users).values(userSeeds).execute();
 
-  logger.debug('Inserting calendar seeds ...');
-  const calendarSeeds = await getCalendarSeeds();
-  await databaseClient.insert(calendars).values(calendarSeeds).execute();
+    logger.debug('Inserting calendar seeds ...');
+    const calendarSeeds = await getCalendarSeeds();
+    await databaseClient.insert(calendars).values(calendarSeeds).execute();
 
-  logger.debug('Inserting background seeds ...');
-  const backgroundSeeds = await getBackgroundsSeeds();
-  await databaseClient.insert(backgrounds).values(backgroundSeeds).execute();
+    logger.debug('Inserting background seeds ...');
+    const backgroundSeeds = await getBackgroundsSeeds();
+    await databaseClient.insert(backgrounds).values(backgroundSeeds).execute();
 
-  logger.debug('Inserting greeting seeds ...');
-  const greetingSeeds = await getGreetingSeeds();
-  await databaseClient.insert(greetings).values(greetingSeeds).execute();
+    logger.debug('Inserting greeting seeds ...');
+    const greetingSeeds = await getGreetingSeeds();
+    await databaseClient.insert(greetings).values(greetingSeeds).execute();
 
-  logger.debug('Inserting quote seeds ...');
-  const quoteSeeds = await getQuoteSeeds();
-  await databaseClient.insert(quotes).values(quoteSeeds).execute();
+    logger.debug('Inserting quote seeds ...');
+    const quoteSeeds = await getQuoteSeeds();
+    await databaseClient.insert(quotes).values(quoteSeeds).execute();
 
-  logger.debug('Inserting list seeds ...');
-  const listSeeds = await getListSeeds();
-  await databaseClient.insert(lists).values(listSeeds).execute();
+    logger.debug('Inserting list seeds ...');
+    const listSeeds = await getListSeeds();
+    await databaseClient.insert(lists).values(listSeeds).execute();
 
-  logger.debug('Inserting interest seeds ...');
-  const interestSeeds = await getInterestsSeeds();
-  for (const interest of interestSeeds) {
-    const { parentSlug, ...rest } = interest;
+    logger.debug('Inserting interest seeds ...');
+    const interestSeeds = await getInterestsSeeds();
+    for (const interest of interestSeeds) {
+      const { parentSlug, ...rest } = interest;
 
-    let parentId: string | undefined;
-    if (parentSlug) {
-      const rows = await databaseClient
-        .select()
-        .from(interests)
-        .where(eq(interests.slug, parentSlug))
-        .execute();
-      if (rows.length === 0) {
-        throw new Error(`Parent interest with slug "${parentSlug}" not found`);
+      let parentId: string | undefined;
+      if (parentSlug) {
+        const rows = await databaseClient
+          .select()
+          .from(interests)
+          .where(eq(interests.slug, parentSlug))
+          .execute();
+        if (rows.length === 0) {
+          throw new Error(`Parent interest with slug "${parentSlug}" not found`);
+        }
+
+        parentId = rows[0].id;
       }
 
-      parentId = rows[0].id;
+      await databaseClient
+        .insert(interests)
+        .values({ ...rest, parentId })
+        .execute();
     }
 
-    await databaseClient
-      .insert(interests)
-      .values({ ...rest, parentId })
-      .execute();
-  }
+    logger.info('Successfully inserted database seed data');
+  } catch (error) {
+    logger.error(error, 'Failed to insert database seed data');
 
-  logger.info('Successfully inserted database seed data');
+    throw error;
+  }
 };

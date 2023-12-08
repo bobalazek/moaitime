@@ -369,6 +369,9 @@ importers:
       '@myzenbuddy/database-seeds':
         specifier: workspace:*
         version: link:../database-seeds
+      '@myzenbuddy/shared-logging':
+        specifier: workspace:*
+        version: link:../shared-logging
     devDependencies:
       typescript:
         specifier: ^5.3.2

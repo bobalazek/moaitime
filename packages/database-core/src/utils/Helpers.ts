@@ -19,28 +19,35 @@ export const databasePool = new Pool({
 export const databaseClient = drizzle(databasePool, { schema });
 
 export const runDatabaseMigrations = async () => {
-  logger.info('Running database migrations ...');
+  try {
+    logger.info('Running database migrations ...');
 
-  const DIST_DELIMITER = `${sep}dist${sep}`;
+    const DIST_DELIMITER = `${sep}dist${sep}`;
 
-  let migrationsFolder = resolve(relative(process.cwd(), join(__dirname, '..', 'migrations')));
-  if (migrationsFolder.includes(DIST_DELIMITER)) {
-    const DIST_DIR = migrationsFolder.split(DIST_DELIMITER)[0];
-    migrationsFolder = resolve(join(DIST_DIR, 'libs', 'database-core', 'migrations'));
+    let migrationsFolder = resolve(relative(process.cwd(), join(__dirname, '..', 'migrations')));
+    if (migrationsFolder.includes(DIST_DELIMITER)) {
+      const DIST_DIR = migrationsFolder.split(DIST_DELIMITER)[0];
+      migrationsFolder = resolve(join(DIST_DIR, 'libs', 'database-core', 'migrations'));
+    }
+
+    await databaseClient.execute(sql.raw(`CREATE SCHEMA IF NOT EXISTS public`));
+
+    await migrate(databaseClient, { migrationsFolder: migrationsFolder });
+
+    logger.info('Database migrations ran successfully');
+  } catch (error) {
+    logger.error(error, 'Database migrations failed');
+
+    throw error;
   }
-
-  await databaseClient.execute(sql.raw(`CREATE SCHEMA IF NOT EXISTS public`));
-
-  await migrate(databaseClient, { migrationsFolder: migrationsFolder });
-
-  logger.info('Database migrations ran successfully');
 };
 
 export const dropDatabaseSchemas = async () => {
-  logger.info('Dropping database schemas ...');
+  try {
+    logger.info('Dropping database schemas ...');
 
-  const res = await databaseClient.execute(
-    sql.raw(`
+    const res = await databaseClient.execute(
+      sql.raw(`
     SELECT schema_name
     FROM information_schema.schemata
     WHERE
@@ -48,11 +55,16 @@ export const dropDatabaseSchemas = async () => {
       schema_name NOT LIKE 'pg_toast%' AND
       schema_name NOT LIKE 'pg_temp_%'
   `)
-  );
+    );
 
-  for (const row of res.rows) {
-    await databaseClient.execute(sql.raw(`DROP SCHEMA "${row.schema_name}" CASCADE`));
+    for (const row of res.rows) {
+      await databaseClient.execute(sql.raw(`DROP SCHEMA "${row.schema_name}" CASCADE`));
+    }
+
+    logger.info('Database drop schemas ran successfully');
+  } catch (error) {
+    logger.error(error, 'Database drop schemas failed');
+
+    throw error;
   }
-
-  logger.info('Database drop schemas ran successfully');
 };

@@ -22,7 +22,7 @@ import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
 export class AuthSettingsController {
   @UseGuards(AuthenticatedGuard)
   @Patch()
-  async list(
+  async update(
     @Body() body: UpdateUserDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response

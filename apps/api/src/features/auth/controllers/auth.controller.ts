@@ -183,8 +183,8 @@ export class AuthController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get('me')
-  async me(
+  @Get('account')
+  async account(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {

@@ -11,9 +11,9 @@ import {
 import {
   cancelNewEmail,
   confirmEmail,
+  loadAccount,
   login,
   logout,
-  me,
   refreshToken,
   register,
   requestPasswordReset,
@@ -44,8 +44,8 @@ export type AuthStore = {
   resendEmailConfirmation: (isNewEmail?: boolean) => Promise<ResponseInterface>;
   // Cancel New Email Confirmation
   cancelNewEmail: () => Promise<ResponseInterface>;
-  // Me
-  me: () => Promise<ResponseInterface>;
+  // Load Account
+  loadAccount: () => Promise<ResponseInterface>;
   // Settings
   // Update Settings
   updateSettings: (data: UpdateUserInterface) => Promise<ResponseInterface>;
@@ -130,25 +130,25 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Cancel New Email
       cancelNewEmail: async () => {
-        const { auth, me } = get();
+        const { auth, loadAccount } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
         const response = await cancelNewEmail();
 
-        await me();
+        await loadAccount();
 
         return response;
       },
-      // Me
-      me: async () => {
+      // Account
+      loadAccount: async () => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
-        const response = await me();
+        const response = await loadAccount();
 
         set({ auth: response.data });
 
@@ -211,7 +211,7 @@ export const useAuthStore = create<AuthStore>()(
           // Make sure that the store at that point is ready
           setTimeout(async () => {
             try {
-              await state.me();
+              await state.loadAccount();
             } catch (error) {
               // Nothing to do
             }

@@ -139,10 +139,13 @@ export const refreshToken = async (token: string) => {
   return response;
 };
 
-export const me = async () => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(`${API_URL}/api/v1/auth/me`, {
-    method: 'GET',
-  });
+export const loadAccount = async () => {
+  const response = await fetchJson<ResponseInterface<AuthInterface>>(
+    `${API_URL}/api/v1/auth/account`,
+    {
+      method: 'GET',
+    }
+  );
 
   return response;
 };

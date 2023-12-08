@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from '../state/authStore';
 
 export default function Auth() {
-  const { me } = useAuthStore();
+  const { loadAccount } = useAuthStore();
 
   useEffect(() => {
     const onVisibilityChange = async () => {
@@ -12,7 +12,7 @@ export default function Auth() {
       }
 
       try {
-        await me();
+        await loadAccount();
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function
       }

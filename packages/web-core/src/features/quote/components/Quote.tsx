@@ -14,7 +14,7 @@ const animationVariants = {
   animate: { opacity: 1 },
 };
 
-const defaultCharacters = [{ char: ' ', delay: 0 }];
+const defaultCharacters = [{ char: '\u00A0', delay: 0 }];
 
 export default function Quote() {
   const { quote, setRandomQuote } = useQuoteStore();
@@ -53,7 +53,7 @@ export default function Quote() {
   return (
     <ErrorBoundary>
       <div
-        className="text-shadow cursor-default select-none text-xl italic"
+        className="text-shadow cursor-default select-none px-2 text-xl italic"
         onDoubleClick={() => {
           setRandomQuote();
         }}

@@ -21,16 +21,22 @@ export const users = pgTable(
     newEmail: text('new_email').unique(),
     beforeDeletionEmail: text('before_deletion_email'), // What was the email before the user requested deletion, in case of recovery
     password: text('password'),
-    roles: json('roles').notNull().default('[]').$type<UserRoleEnum[]>(),
+    roles: json('roles')
+      .notNull()
+      .default(JSON.stringify([UserRoleEnum.USER]))
+      .$type<UserRoleEnum[]>(),
     settings: json('settings').$type<SettingsInterface>(),
     birthDate: date('birth_date'),
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),
     passwordResetToken: text('password_reset_token').unique(),
+    lockedReason: text('locked_reason'),
     emailConfirmedAt: timestamp('email_confirmed_at'),
     emailConfirmationLastSentAt: timestamp('email_confirmation_last_sent_at'),
     newEmailConfirmationLastSentAt: timestamp('new_email_confirmation_last_sent_at'),
     passwordResetLastRequestedAt: timestamp('password_reset_last_requested_at'),
+    lockedAt: timestamp('locked_at'),
+    lockedUntilAt: timestamp('locked_until_at'),
     deletionRequestedAt: timestamp('deletion_requested_at'),
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),

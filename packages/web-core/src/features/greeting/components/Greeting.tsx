@@ -15,7 +15,7 @@ const animationVariants = {
   animate: { opacity: 1, height: 'auto' },
 };
 
-const defaultCharacters = [{ char: ' ', delay: 0 }];
+const defaultCharacters = [{ char: '\u00A0', delay: 0 }];
 
 export default function Greeting() {
   const { setRandomGreeting } = useGreetingStore();
@@ -48,7 +48,7 @@ export default function Greeting() {
   return (
     <ErrorBoundary>
       <div
-        className="text-shadow cursor-default select-none text-3xl font-bold md:text-5xl lg:text-6xl"
+        className="text-shadow cursor-default select-none px-4 text-3xl font-bold md:text-5xl lg:text-6xl"
         onDoubleClick={() => {
           setRandomGreeting();
         }}

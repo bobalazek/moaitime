@@ -31,7 +31,10 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksFirstListActions();
 
-    cy.getBySel('tasks--list-actions--dropdown-menu').find('div').contains('Delete').click();
+    cy.getBySel('tasks--list-actions--dropdown-menu')
+      .find('div[role="menuitem"] span')
+      .contains('Delete')
+      .click({ force: true });
 
     cy.get('div[role="alertdialog"]').find('button').contains('Confirm').click();
 

@@ -21,20 +21,31 @@ export function openTasksNewListDropdownMenu() {
 }
 
 export function addMultipleTasks() {
+  // ccc
+  cy.intercept('POST', '/api/v1/tasks').as('tasks-ccc');
+
   cy.getBySel('tasks--tasks-form').find('input').type('ccc{enter}');
 
-  // TODO: rather capture the request and wait until it's done
-  cy.wait(1000);
+  cy.wait('@tasks-ccc');
+
+  // aaa
+  cy.intercept('POST', '/api/v1/tasks').as('tasks-aaa');
 
   cy.getBySel('tasks--tasks-form').find('input').type('aaa{enter}');
 
-  cy.wait(1000);
+  cy.wait('@tasks-ccc');
+
+  // ddd
+  cy.intercept('POST', '/api/v1/tasks').as('tasks-ddd');
 
   cy.getBySel('tasks--tasks-form').find('input').type('ddd{enter}');
 
-  cy.wait(1000);
+  cy.wait('@tasks-ddd');
+
+  // bbb
+  cy.intercept('POST', '/api/v1/tasks').as('tasks-bbb');
 
   cy.getBySel('tasks--tasks-form').find('input').type('bbb{enter}');
 
-  cy.wait(1000);
+  cy.wait('@tasks-bbb');
 }

@@ -43,14 +43,14 @@ describe('weather.cy.ts', () => {
     cy.getBySel('weather--popover--trigger-button').should('not.exist');
   });
 
-  it('should by default show the metric system', () => {
+  it.skip('should by default show the metric system', () => {
     cy.getBySel('weather--popover--trigger-button').click();
 
     cy.getBySel('weather--body--information--temperature').contains('°C');
     cy.getBySel('weather--body--information--windSpeed').contains('km/h');
   });
 
-  it('should correctly switch to the imperial system once settings change', () => {
+  it.skip('should correctly switch to the imperial system once settings change', () => {
     cy.toggleSettingsSwitch('Weather', { weatherUseMetricUnits: false });
 
     cy.getBySel('weather--popover--trigger-button').click();

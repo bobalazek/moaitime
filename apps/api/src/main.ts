@@ -8,7 +8,7 @@ import { AppModule } from './features/core/app.module';
 import { ErrorFilter } from './features/core/filters/error.filter';
 import { HttpExceptionFilter } from './features/core/filters/http-exception.filter';
 
-async function bootstrap() {
+export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
   });

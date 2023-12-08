@@ -4,6 +4,7 @@ import { join } from 'path';
 import { defineConfig } from 'tsup';
 
 export default defineConfig((options) => {
+  let onSuccess: (() => Promise<() => Promise<void>>) | string | undefined = undefined;
   let watch: string[] | undefined = undefined;
   if (options.watch) {
     // This is a hacky workaround to trigger a restart the web server if a dependency changes,
@@ -13,8 +14,24 @@ export default defineConfig((options) => {
 
     const packages = readdirSync(join(__dirname, '../../packages'));
     for (const packageName of packages) {
-      watch.push(join(__dirname, `../../packages/${packageName}/dist/**/*.{js,mjs}`));
+      watch.push(join(__dirname, `../../packages/${packageName}/dist/index.js`));
     }
+
+    onSuccess = 'node dist/main.js';
+
+    /*
+    // TODO: fix, as it's not working at the moment
+    onSuccess = async () => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { bootstrap } = await import('./dist/main.mjs');
+
+      const app = await bootstrap();
+
+      return async () => {
+        await app.close();
+      };
+    };
+    */
   }
 
   return {
@@ -25,19 +42,6 @@ export default defineConfig((options) => {
     clean: true,
     shims: true,
     watch,
-    /*
-    // Prefferably, we would like to use this, but it does not seem to work at the moment,
-    // so for now we will still use the --onSuccess="node ./dist/main.js" flag.
-    async onSuccess() {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { bootstrap } = await import('./dist/main.mjs');
-
-      const app = await bootstrap();
-
-      return () => {
-        app.close();
-      };
-    },
-    */
+    onSuccess,
   };
 });

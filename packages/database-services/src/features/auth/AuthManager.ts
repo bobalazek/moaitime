@@ -385,7 +385,10 @@ export class AuthManager {
       password: hashedPassword,
     });
 
-    // TODO: send password changed email
+    await mailer.sendAuthPasswordChangedEmail({
+      userEmail: updatedUser.email,
+      userDisplayName: updatedUser.displayName,
+    });
 
     return updatedUser;
   }

@@ -7,6 +7,7 @@ import { TestingEmailsManager, testingEmailsManager } from '@myzenbuddy/database
 import {
   AuthConfirmEmailEmail,
   AuthConfirmNewEmailEmail,
+  AuthPasswordChangedEmail,
   AuthResetPasswordEmail,
   AuthWelcomeEmail,
 } from '@myzenbuddy/emails-core';
@@ -30,6 +31,11 @@ export type MailerSendAuthResetPasswordEmailOptions = {
   userEmail: string;
   userDisplayName: string;
   resetPasswordUrl: string;
+};
+
+export type MailerSendAuthPasswordChangedEmailOptions = {
+  userEmail: string;
+  userDisplayName: string;
 };
 
 export class Mailer {
@@ -79,6 +85,15 @@ export class Mailer {
     return this.send(AuthResetPasswordEmail(rest), {
       to: userEmail,
       subject: '🔑 Reset Password for MyZenBuddy',
+    });
+  }
+
+  async sendAuthPasswordChangedEmail(options: MailerSendAuthPasswordChangedEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthPasswordChangedEmail(rest), {
+      to: userEmail,
+      subject: '🔑 Password Changed for MyZenBuddy',
     });
   }
 

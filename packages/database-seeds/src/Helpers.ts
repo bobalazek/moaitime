@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import {
   backgrounds,
   calendars,
-  getDatabaseMigrationClient,
+  getMigrationDatabase,
   greetings,
   interests,
   lists,
@@ -24,29 +24,31 @@ export const insertDatabaseSeedData = async () => {
   try {
     logger.info('Inserting database seed data ...');
 
+    const database = getMigrationDatabase();
+
     logger.debug('Inserting user seeds ...');
     const userSeeds = await getUserSeeds();
-    await getDatabaseMigrationClient().insert(users).values(userSeeds).execute();
+    await database.insert(users).values(userSeeds).execute();
 
     logger.debug('Inserting calendar seeds ...');
     const calendarSeeds = await getCalendarSeeds();
-    await getDatabaseMigrationClient().insert(calendars).values(calendarSeeds).execute();
+    await database.insert(calendars).values(calendarSeeds).execute();
 
     logger.debug('Inserting background seeds ...');
     const backgroundSeeds = await getBackgroundsSeeds();
-    await getDatabaseMigrationClient().insert(backgrounds).values(backgroundSeeds).execute();
+    await database.insert(backgrounds).values(backgroundSeeds).execute();
 
     logger.debug('Inserting greeting seeds ...');
     const greetingSeeds = await getGreetingSeeds();
-    await getDatabaseMigrationClient().insert(greetings).values(greetingSeeds).execute();
+    await database.insert(greetings).values(greetingSeeds).execute();
 
     logger.debug('Inserting quote seeds ...');
     const quoteSeeds = await getQuoteSeeds();
-    await getDatabaseMigrationClient().insert(quotes).values(quoteSeeds).execute();
+    await database.insert(quotes).values(quoteSeeds).execute();
 
     logger.debug('Inserting list seeds ...');
     const listSeeds = await getListSeeds();
-    await getDatabaseMigrationClient().insert(lists).values(listSeeds).execute();
+    await database.insert(lists).values(listSeeds).execute();
 
     logger.debug('Inserting interest seeds ...');
     const interestSeeds = await getInterestsSeeds();
@@ -55,7 +57,7 @@ export const insertDatabaseSeedData = async () => {
 
       let parentId: string | undefined;
       if (parentSlug) {
-        const rows = await getDatabaseMigrationClient()
+        const rows = await database
           .select()
           .from(interests)
           .where(eq(interests.slug, parentSlug))
@@ -67,7 +69,7 @@ export const insertDatabaseSeedData = async () => {
         parentId = rows[0].id;
       }
 
-      await getDatabaseMigrationClient()
+      await database
         .insert(interests)
         .values({ ...rest, parentId })
         .execute();

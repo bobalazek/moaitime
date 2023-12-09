@@ -1,7 +1,7 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
 import {
-  getDatabaseClient,
+  getDatabase,
   insertQuoteSchema,
   NewQuote,
   Quote,
@@ -11,11 +11,11 @@ import {
 
 export class QuotesManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Quote[]> {
-    return getDatabaseClient().query.quotes.findMany(options);
+    return getDatabase().query.quotes.findMany(options);
   }
 
   async findOneById(id: string): Promise<Quote | null> {
-    const row = await getDatabaseClient().query.quotes.findFirst({
+    const row = await getDatabase().query.quotes.findFirst({
       where: eq(quotes.id, id),
     });
 
@@ -25,7 +25,7 @@ export class QuotesManager {
   async insertOne(data: NewQuote): Promise<Quote> {
     data = insertQuoteSchema.parse(data) as unknown as Quote;
 
-    const rows = await getDatabaseClient().insert(quotes).values(data).returning();
+    const rows = await getDatabase().insert(quotes).values(data).returning();
 
     return rows[0];
   }
@@ -33,7 +33,7 @@ export class QuotesManager {
   async updateOneById(id: string, data: Partial<NewQuote>): Promise<Quote> {
     data = updateQuoteSchema.parse(data) as unknown as NewQuote;
 
-    const rows = await getDatabaseClient()
+    const rows = await getDatabase()
       .update(quotes)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(quotes.id, id))
@@ -43,7 +43,7 @@ export class QuotesManager {
   }
 
   async deleteOneById(id: string): Promise<Quote> {
-    const rows = await getDatabaseClient().delete(quotes).where(eq(quotes.id, id)).returning();
+    const rows = await getDatabase().delete(quotes).where(eq(quotes.id, id)).returning();
 
     return rows[0];
   }

@@ -4,7 +4,7 @@ import {
   calendars,
   Event,
   events,
-  getDatabaseClient,
+  getDatabase,
   insertEventSchema,
   NewEvent,
   updateEventSchema,
@@ -12,17 +12,17 @@ import {
 
 export class EventsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
-    return getDatabaseClient().query.events.findMany(options);
+    return getDatabase().query.events.findMany(options);
   }
 
   async findManyByCalendarId(calendarId: string): Promise<Event[]> {
-    return getDatabaseClient().query.events.findMany({
+    return getDatabase().query.events.findMany({
       where: eq(events.calendarId, calendarId),
     });
   }
 
   async findManyByUserId(userId: string): Promise<Event[]> {
-    const result = await getDatabaseClient()
+    const result = await getDatabase()
       .select()
       .from(events)
       .leftJoin(calendars, eq(events.calendarId, calendars.id))
@@ -35,7 +35,7 @@ export class EventsManager {
   }
 
   async findOneById(id: string): Promise<Event | null> {
-    const row = await getDatabaseClient().query.events.findFirst({
+    const row = await getDatabase().query.events.findFirst({
       where: eq(events.id, id),
     });
 
@@ -45,7 +45,7 @@ export class EventsManager {
   async insertOne(data: NewEvent): Promise<Event> {
     data = insertEventSchema.parse(data) as unknown as Event;
 
-    const rows = await getDatabaseClient().insert(events).values(data).returning();
+    const rows = await getDatabase().insert(events).values(data).returning();
 
     return rows[0];
   }
@@ -53,7 +53,7 @@ export class EventsManager {
   async updateOneById(id: string, data: Partial<NewEvent>): Promise<Event> {
     data = updateEventSchema.parse(data) as unknown as NewEvent;
 
-    const rows = await getDatabaseClient()
+    const rows = await getDatabase()
       .update(events)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(events.id, id))
@@ -63,7 +63,7 @@ export class EventsManager {
   }
 
   async deleteOneById(id: string): Promise<Event> {
-    const rows = await getDatabaseClient().delete(events).where(eq(events.id, id)).returning();
+    const rows = await getDatabase().delete(events).where(eq(events.id, id)).returning();
 
     return rows[0];
   }

@@ -1,9 +1,9 @@
 import { join, relative, resolve, sep } from 'path';
 
 import { DrizzleConfig, sql } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { Client, ClientConfig } from 'pg'; // Pool is not really working with migrations. At least not on windows.
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import postgres from 'postgres'; // Tried to use "pg", but it's not really working on windows, so we need to use this one for now
 
 import { getEnv } from '@myzenbuddy/shared-backend';
 import { logger } from '@myzenbuddy/shared-logging';
@@ -11,81 +11,76 @@ import { logger } from '@myzenbuddy/shared-logging';
 import * as schema from '../schema';
 
 // Database Client
-type DatabaseClient = ReturnType<typeof drizzle<typeof schema>>;
+type Client = ReturnType<typeof postgres>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ClientConfig = postgres.Options<any>;
+type Database = ReturnType<typeof drizzle<typeof schema>>;
+type DatabaseConfig = DrizzleConfig<typeof schema>;
 
-export const createDatabaseClient = (
-  postgresConfig?: ClientConfig,
-  databaseConfig?: DrizzleConfig<typeof schema>
+export const createDatabaseClients = (
+  clientConfig?: ClientConfig,
+  databaseConfig?: DatabaseConfig
 ) => {
   logger.debug(
-    `Creating database client with pool config: "${JSON.stringify(
-      postgresConfig
-    )}", drizzleConfig: "${JSON.stringify(databaseConfig)}" ...`
+    `Creating database client with client config: "${JSON.stringify(
+      clientConfig
+    )}", database config: "${JSON.stringify(databaseConfig)}" ...`
   );
 
   const { POSTGRESQL_URL } = getEnv();
   const url = new URL(POSTGRESQL_URL);
   url.searchParams.delete('schema');
 
-  const postgresClient = new Client({ connectionString: url.toString(), ...postgresConfig });
-  const databaseClient = drizzle(postgresClient, { schema, ...databaseConfig });
+  const client = postgres(url.toString(), { onnotice: () => {}, ...clientConfig });
+  const database = drizzle(client, { schema, ...databaseConfig });
 
-  return { postgresClient, databaseClient };
+  return { client, database };
 };
 
-let _postgresClient: Client | undefined;
-let _databaseClient: DatabaseClient | undefined;
-export const getDatabaseClient = () => {
-  if (!_databaseClient) {
-    const { postgresClient, databaseClient } = createDatabaseClient();
+let _client: Client | undefined;
+let _database: Database | undefined;
+export const getDatabase = () => {
+  if (!_database) {
+    const { client, database } = createDatabaseClients();
 
-    _postgresClient = postgresClient;
-    _databaseClient = databaseClient;
+    _client = client;
+    _database = database;
   }
 
-  return _databaseClient;
+  return _database;
 };
 
-export const destroyDatabaseClient = async () => {
-  if (!_databaseClient) {
+export const destroyDatabase = async () => {
+  if (!_database) {
     return;
   }
 
-  logger.debug('Destroying database client ...');
+  logger.debug('Destroying database clients ...');
 
-  await _postgresClient?.end();
-  _postgresClient = undefined;
-  _databaseClient = undefined;
+  await _client?.end();
+  _client = undefined;
+  _database = undefined;
 
-  logger.trace('Database client destroyed');
+  await _migrationClient?.end();
+  _migrationDatabase = undefined;
+
+  logger.trace('Database clients destroyed');
 };
 
-// Database Migration Client
-let _migrationPostgresClient: Client | undefined;
-let _migrationDatabaseClient: DatabaseClient | undefined;
-export const getDatabaseMigrationClient = () => {
-  if (!_migrationDatabaseClient) {
-    const { postgresClient, databaseClient } = createDatabaseClient();
+// Migration Database
+let _migrationClient: Client | undefined;
+let _migrationDatabase: Database | undefined;
+export const getMigrationDatabase = () => {
+  if (!_migrationDatabase) {
+    const { client, database } = createDatabaseClients({
+      max: 1,
+    });
 
-    _migrationPostgresClient = postgresClient;
-    _migrationDatabaseClient = databaseClient;
+    _migrationClient = client;
+    _migrationDatabase = database;
   }
 
-  return _migrationDatabaseClient;
-};
-
-export const destroyDatabaseMigrationClient = async () => {
-  if (!_migrationDatabaseClient) {
-    return;
-  }
-
-  logger.debug('Destroying database migration client ...');
-
-  await _migrationPostgresClient?.end();
-  _migrationPostgresClient = undefined;
-  _migrationDatabaseClient = undefined;
-
-  logger.trace('Database migration client destroyed');
+  return _migrationDatabase;
 };
 
 // Database Migrations
@@ -101,9 +96,11 @@ export const runDatabaseMigrations = async () => {
       migrationsFolder = resolve(join(DIST_DIR, 'libs', 'database-core', 'migrations'));
     }
 
-    await getDatabaseMigrationClient().execute(sql.raw(`CREATE SCHEMA IF NOT EXISTS "public"`));
+    const database = getMigrationDatabase();
 
-    await migrate(getDatabaseMigrationClient(), {
+    await database.execute(sql.raw(`CREATE SCHEMA IF NOT EXISTS "public"`));
+
+    await migrate(database, {
       migrationsFolder,
     });
 
@@ -120,8 +117,10 @@ export const dropDatabaseSchema = async () => {
   try {
     logger.info('Dropping database schema ...');
 
-    await getDatabaseMigrationClient().execute(sql.raw(`DROP SCHEMA IF EXISTS "drizzle" CASCADE`));
-    await getDatabaseMigrationClient().execute(sql.raw(`DROP SCHEMA IF EXISTS "public" CASCADE`));
+    const database = await getMigrationDatabase();
+
+    await database.execute(sql.raw(`DROP SCHEMA IF EXISTS "drizzle" CASCADE`));
+    await database.execute(sql.raw(`DROP SCHEMA IF EXISTS "public" CASCADE`));
 
     logger.info('Database drop schemas ran successfully');
   } catch (error) {

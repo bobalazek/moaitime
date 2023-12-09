@@ -1,10 +1,4 @@
-import {
-  calendars,
-  events,
-  getDatabaseMigrationClient,
-  lists,
-  users,
-} from '@myzenbuddy/database-core';
+import { calendars, events, getMigrationDatabase, lists, users } from '@myzenbuddy/database-core';
 import { logger } from '@myzenbuddy/shared-logging';
 
 import { getCalendarFixtures } from './data/Calendars';
@@ -16,21 +10,23 @@ export const insertDatabaseFixtureData = async () => {
   try {
     logger.info('Inserting database fixture data ...');
 
+    const database = getMigrationDatabase();
+
     logger.debug('Inserting user fixtures ...');
     const userFixtures = await getUserFixtures();
-    await getDatabaseMigrationClient().insert(users).values(userFixtures).execute();
+    await database.insert(users).values(userFixtures).execute();
 
     logger.debug('Inserting calendar fixtures ...');
     const calendarFixtures = await getCalendarFixtures();
-    await getDatabaseMigrationClient().insert(calendars).values(calendarFixtures).execute();
+    await database.insert(calendars).values(calendarFixtures).execute();
 
     logger.debug('Inserting event fixtures ...');
     const eventFixtures = await getEventFixtures();
-    await getDatabaseMigrationClient().insert(events).values(eventFixtures).execute();
+    await database.insert(events).values(eventFixtures).execute();
 
     logger.debug('Inserting list fixtures ...');
     const listFixtures = await getListFixtures();
-    await getDatabaseMigrationClient().insert(lists).values(listFixtures).execute();
+    await database.insert(lists).values(listFixtures).execute();
 
     logger.info('Database fixture data inserted successfully');
   } catch (error) {

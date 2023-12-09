@@ -1,7 +1,7 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
 import {
-  getDatabaseClient,
+  getDatabase,
   insertUserSchema,
   NewUser,
   updateUserSchema,
@@ -11,11 +11,11 @@ import {
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
-    return getDatabaseClient().query.users.findMany(options);
+    return getDatabase().query.users.findMany(options);
   }
 
   async findOneById(id: string): Promise<User | null> {
-    const row = await getDatabaseClient().query.users.findFirst({
+    const row = await getDatabase().query.users.findFirst({
       where: eq(users.id, id),
     });
 
@@ -23,7 +23,7 @@ export class UsersManager {
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
-    const row = await getDatabaseClient().query.users.findFirst({
+    const row = await getDatabase().query.users.findFirst({
       where: eq(users.email, email),
     });
 
@@ -31,7 +31,7 @@ export class UsersManager {
   }
 
   async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
-    const row = await getDatabaseClient().query.users.findFirst({
+    const row = await getDatabase().query.users.findFirst({
       where: eq(users.emailConfirmationToken, emailConfirmationToken),
     });
 
@@ -41,7 +41,7 @@ export class UsersManager {
   async findOneByNewEmailConfirmationToken(
     newEmailConfirmationToken: string
   ): Promise<User | null> {
-    const row = await getDatabaseClient().query.users.findFirst({
+    const row = await getDatabase().query.users.findFirst({
       where: eq(users.newEmailConfirmationToken, newEmailConfirmationToken),
     });
 
@@ -49,7 +49,7 @@ export class UsersManager {
   }
 
   async findOneByPasswordResetToken(passwordResetToken: string): Promise<User | null> {
-    const row = await getDatabaseClient().query.users.findFirst({
+    const row = await getDatabase().query.users.findFirst({
       where: eq(users.passwordResetToken, passwordResetToken),
     });
 
@@ -59,7 +59,7 @@ export class UsersManager {
   async insertOne(data: NewUser): Promise<User> {
     data = insertUserSchema.parse(data) as unknown as NewUser;
 
-    const rows = await getDatabaseClient().insert(users).values(data).returning();
+    const rows = await getDatabase().insert(users).values(data).returning();
 
     return rows[0];
   }
@@ -67,7 +67,7 @@ export class UsersManager {
   async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
     data = updateUserSchema.parse(data) as unknown as NewUser;
 
-    const rows = await getDatabaseClient()
+    const rows = await getDatabase()
       .update(users)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(users.id, id))
@@ -77,7 +77,7 @@ export class UsersManager {
   }
 
   async deleteOneById(id: string): Promise<User> {
-    const rows = await getDatabaseClient().delete(users).where(eq(users.id, id)).returning();
+    const rows = await getDatabase().delete(users).where(eq(users.id, id)).returning();
 
     return rows[0];
   }

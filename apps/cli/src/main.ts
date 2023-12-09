@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 
-import { destroyDatabaseClient, destroyDatabaseMigrationClient } from '@myzenbuddy/database-core';
+import { destroyDatabase } from '@myzenbuddy/database-core';
 import { logger } from '@myzenbuddy/shared-logging';
 
 import { addDatabaseDropSchemasCommand } from './database/DatabaseDropSchemasCommand';
@@ -20,8 +20,7 @@ addDatabaseReloadCommand(program);
 
 program
   .hook('postAction', async () => {
-    await destroyDatabaseClient();
-    await destroyDatabaseMigrationClient();
+    await destroyDatabase();
     await logger.terminate();
   })
   .parse(process.argv);

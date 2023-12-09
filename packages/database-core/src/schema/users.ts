@@ -27,7 +27,7 @@ export const users = pgTable(
       .default(JSON.stringify([UserRoleEnum.USER]))
       .$type<UserRoleEnum[]>(),
     settings: json('settings').$type<SettingsInterface>(),
-    birthDate: date('birth_date'),
+    birthDate: date('birth_date'), // For some reason that returns the Date object instead of a string if using the "postgres" driver. Works fine with "pg"
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),
     passwordResetToken: text('password_reset_token').unique(),

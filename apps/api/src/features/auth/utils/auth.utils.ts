@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 import { User, UserAccessToken } from '@myzenbuddy/database-core';
 
 import { UserAccessTokenDto } from '../../users/dtos/user-access-token.dto';
@@ -12,6 +14,16 @@ export const convertToUserAndAccessTokenDto = (
 } => {
   const now = new Date();
 
+  let birthDate: string | null = null;
+
+  // TODO: Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185. Should actually be a string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (user.birthDate && (user.birthDate as unknown as Date) instanceof Date) {
+    birthDate = format(user.birthDate as unknown as Date, 'yyyy-MM-dd');
+  } else if (user.birthDate) {
+    birthDate = user.birthDate as string;
+  }
+
   return {
     user: {
       id: user.id,
@@ -19,7 +31,7 @@ export const convertToUserAndAccessTokenDto = (
       email: user.email,
       newEmail: user.newEmail ?? null,
       roles: user.roles,
-      birthDate: user.birthDate,
+      birthDate,
       emailConfirmedAt: user.emailConfirmedAt?.toISOString() ?? null,
       createdAt: user.createdAt?.toISOString() ?? now.toISOString(),
       updatedAt: user.updatedAt?.toISOString() ?? now.toISOString(),

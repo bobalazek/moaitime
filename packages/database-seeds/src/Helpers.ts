@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import {
   backgrounds,
   calendars,
-  databaseClient,
+  getDatabaseMigrationClient,
   greetings,
   interests,
   lists,
@@ -14,10 +14,10 @@ import { logger } from '@myzenbuddy/shared-logging';
 
 import { getBackgroundsSeeds } from './data/Backgrounds';
 import { getCalendarSeeds } from './data/Calendars';
-import { getGreetingsSeeds as getGreetingSeeds } from './data/Greetings';
+import { getGreetingSeeds } from './data/Greetings';
 import { getInterestsSeeds } from './data/Interests';
 import { getListSeeds } from './data/Lists';
-import { getQuotesSeeds as getQuoteSeeds } from './data/Quotes';
+import { getQuoteSeeds } from './data/Quotes';
 import { getUserSeeds } from './data/Users';
 
 export const insertDatabaseSeedData = async () => {
@@ -26,27 +26,27 @@ export const insertDatabaseSeedData = async () => {
 
     logger.debug('Inserting user seeds ...');
     const userSeeds = await getUserSeeds();
-    await databaseClient.insert(users).values(userSeeds).execute();
+    await getDatabaseMigrationClient().insert(users).values(userSeeds).execute();
 
     logger.debug('Inserting calendar seeds ...');
     const calendarSeeds = await getCalendarSeeds();
-    await databaseClient.insert(calendars).values(calendarSeeds).execute();
+    await getDatabaseMigrationClient().insert(calendars).values(calendarSeeds).execute();
 
     logger.debug('Inserting background seeds ...');
     const backgroundSeeds = await getBackgroundsSeeds();
-    await databaseClient.insert(backgrounds).values(backgroundSeeds).execute();
+    await getDatabaseMigrationClient().insert(backgrounds).values(backgroundSeeds).execute();
 
     logger.debug('Inserting greeting seeds ...');
     const greetingSeeds = await getGreetingSeeds();
-    await databaseClient.insert(greetings).values(greetingSeeds).execute();
+    await getDatabaseMigrationClient().insert(greetings).values(greetingSeeds).execute();
 
     logger.debug('Inserting quote seeds ...');
     const quoteSeeds = await getQuoteSeeds();
-    await databaseClient.insert(quotes).values(quoteSeeds).execute();
+    await getDatabaseMigrationClient().insert(quotes).values(quoteSeeds).execute();
 
     logger.debug('Inserting list seeds ...');
     const listSeeds = await getListSeeds();
-    await databaseClient.insert(lists).values(listSeeds).execute();
+    await getDatabaseMigrationClient().insert(lists).values(listSeeds).execute();
 
     logger.debug('Inserting interest seeds ...');
     const interestSeeds = await getInterestsSeeds();
@@ -55,7 +55,7 @@ export const insertDatabaseSeedData = async () => {
 
       let parentId: string | undefined;
       if (parentSlug) {
-        const rows = await databaseClient
+        const rows = await getDatabaseMigrationClient()
           .select()
           .from(interests)
           .where(eq(interests.slug, parentSlug))
@@ -67,7 +67,7 @@ export const insertDatabaseSeedData = async () => {
         parentId = rows[0].id;
       }
 
-      await databaseClient
+      await getDatabaseMigrationClient()
         .insert(interests)
         .values({ ...rest, parentId })
         .execute();

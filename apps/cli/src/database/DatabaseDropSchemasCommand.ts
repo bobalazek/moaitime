@@ -1,13 +1,13 @@
 import type { Command } from 'commander';
 
-import { dropDatabaseSchemas } from '@myzenbuddy/database-core';
+import { dropDatabaseSchema } from '@myzenbuddy/database-core';
 import { logger } from '@myzenbuddy/shared-logging';
 
 export const addDatabaseDropSchemasCommand = (program: Command) => {
-  const command = program.command('database:drop-schemas').action(async () => {
-    logger.info('Dropping database schemas ...');
+  const command = program.command('database:drop-schema').action(async () => {
+    logger.info('Dropping database schema ...');
 
-    await dropDatabaseSchemas();
+    await dropDatabaseSchema();
   });
   program.addCommand(command);
 };

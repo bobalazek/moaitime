@@ -1,7 +1,7 @@
 import { and, asc, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
 import {
-  databaseClient,
+  getDatabaseClient,
   insertTaskSchema,
   lists,
   NewTask,
@@ -20,7 +20,7 @@ export type TaskManagerFindManyByListIdOptions = {
 
 export class TasksManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Task[]> {
-    return databaseClient.query.tasks.findMany(options);
+    return getDatabaseClient().query.tasks.findMany(options);
   }
 
   async findManyByListId(
@@ -45,14 +45,14 @@ export class TasksManager {
       orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
     }
 
-    return databaseClient.query.tasks.findMany({
+    return getDatabaseClient().query.tasks.findMany({
       where,
       orderBy,
     });
   }
 
   async findOneById(id: string): Promise<Task | null> {
-    const row = await databaseClient.query.tasks.findFirst({
+    const row = await getDatabaseClient().query.tasks.findFirst({
       where: eq(lists.id, id),
     });
 
@@ -60,7 +60,7 @@ export class TasksManager {
   }
 
   async findOneByIdAndUserId(id: string, userId: string): Promise<Task | null> {
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .select()
       .from(tasks)
       .leftJoin(lists, eq(tasks.listId, lists.id))
@@ -71,7 +71,7 @@ export class TasksManager {
   }
 
   async findMaxOrderByListId(listId: string): Promise<number> {
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .select()
       .from(tasks)
       .where(eq(tasks.listId, listId))
@@ -89,7 +89,7 @@ export class TasksManager {
   async insertOne(data: NewTask): Promise<Task> {
     data = insertTaskSchema.parse(data) as unknown as Task;
 
-    const rows = await databaseClient.insert(tasks).values(data).returning();
+    const rows = await getDatabaseClient().insert(tasks).values(data).returning();
 
     return rows[0];
   }
@@ -97,7 +97,7 @@ export class TasksManager {
   async updateOneById(id: string, data: Partial<NewTask>): Promise<Task> {
     data = updateTaskSchema.parse(data) as unknown as NewTask;
 
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .update(tasks)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(tasks.id, id))
@@ -107,7 +107,7 @@ export class TasksManager {
   }
 
   async updateReorder(map: { [key: string]: number }) {
-    return databaseClient.transaction(async (tx) => {
+    return getDatabaseClient().transaction(async (tx) => {
       for (const taskId in map) {
         await tx.update(tasks).set({ order: map[taskId] }).where(eq(tasks.id, taskId));
       }
@@ -115,7 +115,7 @@ export class TasksManager {
   }
 
   async deleteOneById(id: string): Promise<Task> {
-    const rows = await databaseClient.delete(tasks).where(eq(tasks.id, id)).returning();
+    const rows = await getDatabaseClient().delete(tasks).where(eq(tasks.id, id)).returning();
 
     return rows[0];
   }

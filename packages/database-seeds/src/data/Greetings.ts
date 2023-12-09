@@ -1,6 +1,6 @@
 import { NewGreeting } from '@myzenbuddy/database-core';
 
-export const getGreetingsSeeds = async (): Promise<NewGreeting[]> => {
+export const getGreetingSeeds = async (): Promise<NewGreeting[]> => {
   return [
     {
       text: 'Good Morning, {displayName}!',

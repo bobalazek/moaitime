@@ -1,10 +1,10 @@
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 
-import { databaseClient, NewEvent } from '@myzenbuddy/database-core';
+import { getDatabaseClient, NewEvent } from '@myzenbuddy/database-core';
 
 export const getEventFixtures = async (): Promise<NewEvent[]> => {
-  const calendars = await databaseClient.query.calendars.findMany();
+  const calendars = await getDatabaseClient().query.calendars.findMany();
   const now = new Date();
 
   const events: NewEvent[] = [];

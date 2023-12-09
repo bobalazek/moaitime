@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 
-import { databaseClient, NewList, users } from '@myzenbuddy/database-core';
+import { getDatabaseClient, NewList, users } from '@myzenbuddy/database-core';
 
 import { TASK_LIST_COLORS } from '../../../shared-common/src';
 import { getUserFixtures } from './Users';
@@ -10,7 +10,7 @@ export const getListFixtures = async (): Promise<NewList[]> => {
 
   const userFixtures = await getUserFixtures();
   for (const single of userFixtures) {
-    const user = await databaseClient.query.users.findFirst({
+    const user = await getDatabaseClient().query.users.findFirst({
       where: eq(users.email, single.email),
     });
     if (!user) {

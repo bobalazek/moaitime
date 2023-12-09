@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 
-import { databaseClient, NewCalendar, users } from '@myzenbuddy/database-core';
+import { getDatabaseClient, NewCalendar, users } from '@myzenbuddy/database-core';
 
 import { getUserSeeds } from './Users';
 
@@ -9,7 +9,7 @@ export const getCalendarSeeds = async (): Promise<NewCalendar[]> => {
 
   const userSeeds = await getUserSeeds();
   for (const single of userSeeds) {
-    const user = await databaseClient.query.users.findFirst({
+    const user = await getDatabaseClient().query.users.findFirst({
       where: eq(users.email, single.email),
     });
     if (!user) {

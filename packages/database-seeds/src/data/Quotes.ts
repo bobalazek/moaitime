@@ -1,6 +1,6 @@
 import { NewQuote } from '@myzenbuddy/database-core';
 
-export const getQuotesSeeds = async (): Promise<NewQuote[]> => {
+export const getQuoteSeeds = async (): Promise<NewQuote[]> => {
   return [
     {
       text: 'If you sum 1 and 1 together, you get 2.',

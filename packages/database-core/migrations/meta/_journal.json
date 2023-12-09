@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1701158334577,
-      "tag": "0000_melted_junta",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1701268136447,
-      "tag": "0001_clear_jack_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1701422219428,
-      "tag": "0002_keen_stone_men",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1701884716377,
-      "tag": "0003_green_sugar_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1701931324544,
-      "tag": "0004_kind_gorilla_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1701933881658,
-      "tag": "0005_slim_ezekiel",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1701950310053,
-      "tag": "0006_charming_cammi",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1702032136862,
-      "tag": "0007_minor_jimmy_woo",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "5",
-      "when": 1702045572542,
-      "tag": "0008_rainy_menace",
+      "when": 1702120579131,
+      "tag": "0000_round_grey_gargoyle",
       "breakpoints": true
     }
   ]

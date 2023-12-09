@@ -24,7 +24,7 @@
 ### CLI - Database
 
 - `pnpm cli database:reload` - it will run the following commands specified below in that order (drop-schemas, run-migrations, insert-seed-data and insert-fixture-data)
-- `pnpm cli database:drop-schemas` - drops all the schemas
+- `pnpm cli database:drop-schema` - drops the database schema
 - `pnpm cli database:run-migrations` - runs all the migrations
 - `pnpm cli database:insert-seed-data` - inserts the seed data
 - `pnpm cli database:insert-fixture-data` - inserts the fixture data

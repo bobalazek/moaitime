@@ -3,7 +3,7 @@ import { DBQueryConfig, eq } from 'drizzle-orm';
 import {
   Background,
   backgrounds,
-  databaseClient,
+  getDatabaseClient,
   insertBackgroundSchema,
   NewBackground,
   updateBackgroundSchema,
@@ -11,11 +11,11 @@ import {
 
 export class BackgroundsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Background[]> {
-    return databaseClient.query.backgrounds.findMany(options);
+    return getDatabaseClient().query.backgrounds.findMany(options);
   }
 
   async findOneById(id: string): Promise<Background | null> {
-    const row = await databaseClient.query.backgrounds.findFirst({
+    const row = await getDatabaseClient().query.backgrounds.findFirst({
       where: eq(backgrounds.id, id),
     });
 
@@ -25,7 +25,7 @@ export class BackgroundsManager {
   async insertOne(data: NewBackground): Promise<Background> {
     data = insertBackgroundSchema.parse(data) as unknown as Background;
 
-    const rows = await databaseClient.insert(backgrounds).values(data).returning();
+    const rows = await getDatabaseClient().insert(backgrounds).values(data).returning();
 
     return rows[0];
   }
@@ -33,7 +33,7 @@ export class BackgroundsManager {
   async updateOneById(id: string, data: Partial<NewBackground>): Promise<Background> {
     data = updateBackgroundSchema.parse(data) as unknown as NewBackground;
 
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .update(backgrounds)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(backgrounds.id, id))
@@ -43,7 +43,10 @@ export class BackgroundsManager {
   }
 
   async deleteOneById(id: string): Promise<Background> {
-    const rows = await databaseClient.delete(backgrounds).where(eq(backgrounds.id, id)).returning();
+    const rows = await getDatabaseClient()
+      .delete(backgrounds)
+      .where(eq(backgrounds.id, id))
+      .returning();
 
     return rows[0];
   }

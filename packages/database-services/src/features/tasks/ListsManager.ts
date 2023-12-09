@@ -1,7 +1,7 @@
 import { and, asc, count, DBQueryConfig, eq, inArray, isNull } from 'drizzle-orm';
 
 import {
-  databaseClient,
+  getDatabaseClient,
   insertListSchema,
   List,
   lists,
@@ -12,11 +12,11 @@ import {
 
 export class ListsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<List[]> {
-    return databaseClient.query.lists.findMany(options);
+    return getDatabaseClient().query.lists.findMany(options);
   }
 
   async findManyByUserId(userId: string): Promise<List[]> {
-    const result = await databaseClient.query.lists.findMany({
+    const result = await getDatabaseClient().query.lists.findMany({
       where: and(eq(lists.userId, userId), isNull(lists.deletedAt)),
       orderBy: asc(lists.createdAt),
     });
@@ -24,7 +24,7 @@ export class ListsManager {
 
     const tasksCountData =
       ids.length > 0
-        ? await databaseClient
+        ? await getDatabaseClient()
             .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
             .from(tasks)
             .leftJoin(lists, eq(tasks.listId, lists.id))
@@ -41,7 +41,7 @@ export class ListsManager {
   }
 
   async findOneById(id: string): Promise<List | null> {
-    const row = await databaseClient.query.lists.findFirst({
+    const row = await getDatabaseClient().query.lists.findFirst({
       where: eq(lists.id, id),
     });
 
@@ -49,7 +49,7 @@ export class ListsManager {
   }
 
   async findOneByIdAndUserId(id: string, userId: string): Promise<List | null> {
-    const row = await databaseClient.query.lists.findFirst({
+    const row = await getDatabaseClient().query.lists.findFirst({
       where: and(eq(lists.id, id), eq(lists.userId, userId)),
     });
 
@@ -59,7 +59,7 @@ export class ListsManager {
   async insertOne(data: NewList): Promise<List> {
     data = insertListSchema.parse(data) as unknown as List;
 
-    const rows = await databaseClient.insert(lists).values(data).returning();
+    const rows = await getDatabaseClient().insert(lists).values(data).returning();
 
     return rows[0];
   }
@@ -67,7 +67,7 @@ export class ListsManager {
   async updateOneById(id: string, data: Partial<NewList>): Promise<List> {
     data = updateListSchema.parse(data) as unknown as NewList;
 
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .update(lists)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(lists.id, id))
@@ -77,7 +77,7 @@ export class ListsManager {
   }
 
   async deleteOneById(id: string): Promise<List> {
-    const rows = await databaseClient.delete(lists).where(eq(lists.id, id)).returning();
+    const rows = await getDatabaseClient().delete(lists).where(eq(lists.id, id)).returning();
 
     return rows[0];
   }

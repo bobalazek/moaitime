@@ -1,1 +1,0 @@
-ALTER TABLE "users" ADD COLUMN "email_confirmation_last_sent_at" timestamp;

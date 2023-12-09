@@ -1,7 +1,7 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
 import {
-  databaseClient,
+  getDatabaseClient,
   Greeting,
   greetings,
   insertGreetingSchema,
@@ -11,11 +11,11 @@ import {
 
 export class GreetingsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Greeting[]> {
-    return databaseClient.query.greetings.findMany(options);
+    return getDatabaseClient().query.greetings.findMany(options);
   }
 
   async findOneById(id: string): Promise<Greeting | null> {
-    const row = await databaseClient.query.greetings.findFirst({
+    const row = await getDatabaseClient().query.greetings.findFirst({
       where: eq(greetings.id, id),
     });
 
@@ -25,7 +25,7 @@ export class GreetingsManager {
   async insertOne(data: NewGreeting): Promise<Greeting> {
     data = insertGreetingSchema.parse(data) as unknown as Greeting;
 
-    const rows = await databaseClient.insert(greetings).values(data).returning();
+    const rows = await getDatabaseClient().insert(greetings).values(data).returning();
 
     return rows[0];
   }
@@ -33,7 +33,7 @@ export class GreetingsManager {
   async updateOneById(id: string, data: Partial<NewGreeting>): Promise<Greeting> {
     data = updateGreetingSchema.parse(data) as unknown as NewGreeting;
 
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .update(greetings)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(greetings.id, id))
@@ -43,7 +43,10 @@ export class GreetingsManager {
   }
 
   async deleteOneById(id: string): Promise<Greeting> {
-    const rows = await databaseClient.delete(greetings).where(eq(greetings.id, id)).returning();
+    const rows = await getDatabaseClient()
+      .delete(greetings)
+      .where(eq(greetings.id, id))
+      .returning();
 
     return rows[0];
   }

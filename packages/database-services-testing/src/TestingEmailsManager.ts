@@ -1,7 +1,7 @@
 import { DBQueryConfig, desc, eq } from 'drizzle-orm';
 
 import {
-  databaseClient,
+  getDatabaseClient,
   insertTestingEmailSchema,
   NewTestingEmail,
   TestingEmail,
@@ -11,11 +11,11 @@ import {
 
 export class TestingEmailsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<TestingEmail[]> {
-    return databaseClient.query.testingEmails.findMany(options);
+    return getDatabaseClient().query.testingEmails.findMany(options);
   }
 
   async findOneById(id: string): Promise<TestingEmail | null> {
-    const row = await databaseClient.query.testingEmails.findFirst({
+    const row = await getDatabaseClient().query.testingEmails.findFirst({
       where: eq(testingEmails.id, id),
     });
 
@@ -23,7 +23,7 @@ export class TestingEmailsManager {
   }
 
   async findOneNewest(): Promise<TestingEmail | null> {
-    const row = await databaseClient.query.testingEmails.findFirst({
+    const row = await getDatabaseClient().query.testingEmails.findFirst({
       orderBy: [desc(testingEmails.createdAt)],
     });
 
@@ -33,7 +33,7 @@ export class TestingEmailsManager {
   async insertOne(data: NewTestingEmail): Promise<TestingEmail> {
     data = insertTestingEmailSchema.parse(data) as unknown as NewTestingEmail;
 
-    const rows = await databaseClient.insert(testingEmails).values(data).returning();
+    const rows = await getDatabaseClient().insert(testingEmails).values(data).returning();
 
     return rows[0];
   }
@@ -41,7 +41,7 @@ export class TestingEmailsManager {
   async updateOneById(id: string, data: Partial<NewTestingEmail>): Promise<TestingEmail> {
     data = updateTestingEmailSchema.parse(data) as unknown as NewTestingEmail;
 
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .update(testingEmails)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(testingEmails.id, id))
@@ -51,7 +51,7 @@ export class TestingEmailsManager {
   }
 
   async deleteOneById(id: string): Promise<TestingEmail> {
-    const rows = await databaseClient
+    const rows = await getDatabaseClient()
       .delete(testingEmails)
       .where(eq(testingEmails.id, id))
       .returning();

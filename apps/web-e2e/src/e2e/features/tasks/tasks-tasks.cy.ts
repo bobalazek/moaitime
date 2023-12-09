@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { openTasksPopover } from './utils/tasks-helpers';
+import { openTasksPopover } from '../../../support/utils/tasks-helpers';
 
 describe('tasks-tasks.cy.ts', () => {
   beforeEach(() => {

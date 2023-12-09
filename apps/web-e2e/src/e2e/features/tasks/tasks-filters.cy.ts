@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { addMultipleTasks, openTasksPopover } from './utils/tasks-helpers';
+import { addMultipleTasks, openTasksPopover } from '../../../support/utils/tasks-helpers';
 
 describe('tasks-filters.cy.ts', () => {
   beforeEach(() => {

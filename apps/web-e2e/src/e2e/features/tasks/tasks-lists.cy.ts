@@ -4,7 +4,7 @@ import {
   openTasksFirstListActions,
   openTasksNewListDropdownMenu,
   openTasksPopover,
-} from './utils/tasks-helpers';
+} from '../../../support/utils/tasks-helpers';
 
 describe('tasks-lists.cy.ts', () => {
   beforeEach(() => {

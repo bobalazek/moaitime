@@ -1,4 +1,6 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
+
+import { destroyDatabase } from '@myzenbuddy/database-core';
 
 import { AuthModule } from '../auth/auth.module';
 import { BackgroundsModule } from '../backgrounds/backgrounds.module';
@@ -23,8 +25,12 @@ import { AppMiddleware } from './middlewares/app.middleware';
   controllers: [AppController],
   providers: [],
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnApplicationShutdown {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AppMiddleware).forRoutes('*');
+  }
+
+  async onApplicationShutdown() {
+    await destroyDatabase();
   }
 }

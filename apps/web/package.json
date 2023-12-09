@@ -22,7 +22,7 @@
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview",
-    "serve": "serve dist --cors --single --listen 4200"
+    "serve": "serve ./dist --no-clipboard --single --listen tcp://127.0.0.1:4200"
   },
   "dependencies": {
     "@myzenbuddy/tsconfig-config": "workspace:*",

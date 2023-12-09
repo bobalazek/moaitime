@@ -14,9 +14,8 @@ export async function bootstrap() {
   });
 
   // Variables
-  const { API_PORT /*, NODE_ENV */ } = getEnv();
+  const { API_PORT, NODE_ENV } = getEnv();
   const port = API_PORT || 3636;
-  //const hostname = NODE_ENV === 'development' ? '127.0.0.1' : '0.0.0.0';
 
   app.enableCors();
 
@@ -42,7 +41,11 @@ export async function bootstrap() {
   );
 
   // Start server
-  await app.listen(port /*, hostname*/); // TODO: If we add the hostname we have issues with E2E testing
+  if (NODE_ENV === 'test') {
+    await app.listen(port);
+  } else {
+    await app.listen(port, '127.0.0.1');
+  }
 
   const url = await app.getUrl();
 

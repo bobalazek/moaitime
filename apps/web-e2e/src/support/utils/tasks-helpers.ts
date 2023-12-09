@@ -19,33 +19,18 @@ export function openTasksNewListDropdownMenu() {
 
   cy.getBySel('tasks--selected-list--dropdown-menu--add-new-button').click();
 }
-
 export function addMultipleTasks() {
-  // ccc
-  cy.intercept('POST', '/api/v1/tasks').as('tasks-ccc');
+  const addAndWaitForTask = (taskName: string) => {
+    cy.getBySel('tasks--tasks-form').find('input').type(`${taskName}{enter}`);
 
-  cy.getBySel('tasks--tasks-form').find('input').type('ccc{enter}');
+    cy.getBySel('tasks--tasks-list')
+      .find('[data-test="tasks--task"]')
+      .last()
+      .should('contain', taskName);
+  };
 
-  cy.wait('@tasks-ccc');
-
-  // aaa
-  cy.intercept('POST', '/api/v1/tasks').as('tasks-aaa');
-
-  cy.getBySel('tasks--tasks-form').find('input').type('aaa{enter}');
-
-  cy.wait('@tasks-ccc');
-
-  // ddd
-  cy.intercept('POST', '/api/v1/tasks').as('tasks-ddd');
-
-  cy.getBySel('tasks--tasks-form').find('input').type('ddd{enter}');
-
-  cy.wait('@tasks-ddd');
-
-  // bbb
-  cy.intercept('POST', '/api/v1/tasks').as('tasks-bbb');
-
-  cy.getBySel('tasks--tasks-form').find('input').type('bbb{enter}');
-
-  cy.wait('@tasks-bbb');
+  addAndWaitForTask('ccc');
+  addAndWaitForTask('aaa');
+  addAndWaitForTask('ddd');
+  addAndWaitForTask('bbb');
 }

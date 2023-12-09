@@ -3,7 +3,7 @@ import { join, relative, resolve, sep } from 'path';
 import { DrizzleConfig, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { Pool, PoolConfig } from 'pg';
+import { Client, ClientConfig } from 'pg'; // Pool is not really working with migrations. At least not on windows.
 
 import { getEnv } from '@myzenbuddy/shared-backend';
 import { logger } from '@myzenbuddy/shared-logging';
@@ -14,7 +14,7 @@ import * as schema from '../schema';
 type DatabaseClient = ReturnType<typeof drizzle<typeof schema>>;
 
 export const createDatabaseClient = (
-  postgresConfig?: PoolConfig,
+  postgresConfig?: ClientConfig,
   databaseConfig?: DrizzleConfig<typeof schema>
 ) => {
   logger.debug(
@@ -27,13 +27,13 @@ export const createDatabaseClient = (
   const url = new URL(POSTGRESQL_URL);
   url.searchParams.delete('schema');
 
-  const postgresClient = new Pool({ connectionString: url.toString(), ...postgresConfig });
+  const postgresClient = new Client({ connectionString: url.toString(), ...postgresConfig });
   const databaseClient = drizzle(postgresClient, { schema, ...databaseConfig });
 
   return { postgresClient, databaseClient };
 };
 
-let _postgresClient: Pool | undefined;
+let _postgresClient: Client | undefined;
 let _databaseClient: DatabaseClient | undefined;
 export const getDatabaseClient = () => {
   if (!_databaseClient) {
@@ -61,13 +61,11 @@ export const destroyDatabaseClient = async () => {
 };
 
 // Database Migration Client
-let _migrationPostgresClient: Pool | undefined;
+let _migrationPostgresClient: Client | undefined;
 let _migrationDatabaseClient: DatabaseClient | undefined;
 export const getDatabaseMigrationClient = () => {
   if (!_migrationDatabaseClient) {
-    const { postgresClient, databaseClient } = createDatabaseClient({
-      max: 1,
-    });
+    const { postgresClient, databaseClient } = createDatabaseClient();
 
     _migrationPostgresClient = postgresClient;
     _migrationDatabaseClient = databaseClient;

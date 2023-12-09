@@ -17,7 +17,7 @@ type ClientConfig = postgres.Options<any>;
 type Database = ReturnType<typeof drizzle<typeof schema>>;
 type DatabaseConfig = DrizzleConfig<typeof schema>;
 
-export const createDatabaseClients = (
+export const createDatabaseAndClient = (
   clientConfig?: ClientConfig,
   databaseConfig?: DatabaseConfig
 ) => {
@@ -31,7 +31,14 @@ export const createDatabaseClients = (
   const url = new URL(POSTGRESQL_URL);
   url.searchParams.delete('schema');
 
-  const client = postgres(url.toString(), { onnotice: () => {}, ...clientConfig });
+  const client = postgres(url.toString(), {
+    onnotice: () => {},
+    transform: {
+      undefined: null,
+    },
+    ...clientConfig,
+  });
+
   const database = drizzle(client, { schema, ...databaseConfig });
 
   return { client, database };
@@ -41,7 +48,7 @@ let _client: Client | undefined;
 let _database: Database | undefined;
 export const getDatabase = () => {
   if (!_database) {
-    const { client, database } = createDatabaseClients();
+    const { client, database } = createDatabaseAndClient();
 
     _client = client;
     _database = database;
@@ -72,7 +79,7 @@ let _migrationClient: Client | undefined;
 let _migrationDatabase: Database | undefined;
 export const getMigrationDatabase = () => {
   if (!_migrationDatabase) {
-    const { client, database } = createDatabaseClients({
+    const { client, database } = createDatabaseAndClient({
       max: 1,
     });
 

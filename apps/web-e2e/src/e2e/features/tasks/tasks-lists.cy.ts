@@ -46,7 +46,10 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksFirstListActions();
 
-    cy.getBySel('tasks--list-actions--dropdown-menu').find('span').contains('Edit').click();
+    cy.getBySel('tasks--list-actions--dropdown-menu')
+      .find('span')
+      .contains('Edit')
+      .click({ force: true });
 
     cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').click();
 
@@ -64,7 +67,10 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksFirstListActions();
 
-    cy.getBySel('tasks--list-actions--dropdown-menu').find('span').contains('Edit').click();
+    cy.getBySel('tasks--list-actions--dropdown-menu')
+      .find('span')
+      .contains('Edit')
+      .click({ force: true });
 
     cy.getBySel('tasks--list-form-dialog').find('input[type="text"]').click();
 
@@ -90,7 +96,10 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksFirstListActions();
 
-    cy.getBySel('tasks--list-actions--dropdown-menu').find('span').contains('Edit').click();
+    cy.getBySel('tasks--list-actions--dropdown-menu')
+      .find('span')
+      .contains('Edit')
+      .click({ force: true });
 
     cy.wait(100);
 

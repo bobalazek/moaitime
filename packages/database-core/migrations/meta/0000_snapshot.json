@@ -78,12 +78,8 @@
           "name": "backgrounds_user_id_users_id_fk",
           "tableFrom": "backgrounds",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -160,12 +156,8 @@
           "name": "calendars_user_id_users_id_fk",
           "tableFrom": "calendars",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -260,12 +252,8 @@
           "name": "events_calendar_id_calendars_id_fk",
           "tableFrom": "events",
           "tableTo": "calendars",
-          "columnsFrom": [
-            "calendar_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["calendar_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -329,12 +317,8 @@
           "name": "greetings_user_id_users_id_fk",
           "tableFrom": "greetings",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -410,12 +394,8 @@
           "name": "interests_user_id_users_id_fk",
           "tableFrom": "interests",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -491,12 +471,8 @@
           "name": "lists_user_id_users_id_fk",
           "tableFrom": "lists",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -504,12 +480,8 @@
           "name": "lists_team_id_teams_id_fk",
           "tableFrom": "lists",
           "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -633,16 +605,12 @@
       "indexes": {
         "organization_id_idx": {
           "name": "organization_id_idx",
-          "columns": [
-            "organization_id"
-          ],
+          "columns": ["organization_id"],
           "isUnique": false
         },
         "user_id_idx": {
           "name": "user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -651,12 +619,8 @@
           "name": "organization_users_organization_id_organizations_id_fk",
           "tableFrom": "organization_users",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -664,12 +628,8 @@
           "name": "organization_users_user_id_users_id_fk",
           "tableFrom": "organization_users",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -739,12 +699,8 @@
           "name": "quotes_user_id_users_id_fk",
           "tableFrom": "quotes",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -832,12 +788,8 @@
           "name": "tasks_list_id_lists_id_fk",
           "tableFrom": "tasks",
           "tableTo": "lists",
-          "columnsFrom": [
-            "list_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["list_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -895,12 +847,8 @@
           "name": "teams_organization_id_organizations_id_fk",
           "tableFrom": "teams",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -981,16 +929,12 @@
       "indexes": {
         "team_id_idx": {
           "name": "team_id_idx",
-          "columns": [
-            "team_id"
-          ],
+          "columns": ["team_id"],
           "isUnique": false
         },
         "user_id_idx": {
           "name": "user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -999,12 +943,8 @@
           "name": "team_users_team_id_teams_id_fk",
           "tableFrom": "team_users",
           "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1012,12 +952,8 @@
           "name": "team_users_user_id_users_id_fk",
           "tableFrom": "team_users",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1130,12 +1066,8 @@
           "name": "user_access_tokens_user_id_users_id_fk",
           "tableFrom": "user_access_tokens",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1145,16 +1077,12 @@
         "user_access_tokens_token_unique": {
           "name": "user_access_tokens_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         },
         "user_access_tokens_refresh_token_unique": {
           "name": "user_access_tokens_refresh_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "refresh_token"
-          ]
+          "columns": ["refresh_token"]
         }
       }
     },
@@ -1308,37 +1236,27 @@
       "indexes": {
         "email_idx": {
           "name": "email_idx",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": false
         },
         "new_email_idx": {
           "name": "new_email_idx",
-          "columns": [
-            "new_email"
-          ],
+          "columns": ["new_email"],
           "isUnique": false
         },
         "email_confirmation_token_idx": {
           "name": "email_confirmation_token_idx",
-          "columns": [
-            "email_confirmation_token"
-          ],
+          "columns": ["email_confirmation_token"],
           "isUnique": false
         },
         "new_email_confirmation_token_idx": {
           "name": "new_email_confirmation_token_idx",
-          "columns": [
-            "new_email_confirmation_token"
-          ],
+          "columns": ["new_email_confirmation_token"],
           "isUnique": false
         },
         "password_reset_token_idx": {
           "name": "password_reset_token_idx",
-          "columns": [
-            "password_reset_token"
-          ],
+          "columns": ["password_reset_token"],
           "isUnique": false
         }
       },
@@ -1348,37 +1266,27 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "users_new_email_unique": {
           "name": "users_new_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "new_email"
-          ]
+          "columns": ["new_email"]
         },
         "users_email_confirmation_token_unique": {
           "name": "users_email_confirmation_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email_confirmation_token"
-          ]
+          "columns": ["email_confirmation_token"]
         },
         "users_new_email_confirmation_token_unique": {
           "name": "users_new_email_confirmation_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "new_email_confirmation_token"
-          ]
+          "columns": ["new_email_confirmation_token"]
         },
         "users_password_reset_token_unique": {
           "name": "users_password_reset_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "password_reset_token"
-          ]
+          "columns": ["password_reset_token"]
         }
       }
     }

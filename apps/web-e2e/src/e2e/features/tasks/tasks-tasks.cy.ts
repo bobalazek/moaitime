@@ -91,4 +91,124 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task--name').should('not.exist');
   });
+
+  it('should open expanded edit options for a task', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.get('#task-name').should('exist');
+  });
+
+  it('should edit task name in expanded edit options', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.wait(100);
+
+    cy.get('#task-name').type('Change task name');
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--tasks-list')
+      .find('[data-test="tasks--task--name"]')
+      .should('have.text', 'Change task name');
+  });
+  it('should add task description in expanded edit options', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.get('#task-description').type('Task description.');
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.get('#task-description').contains('Task description.');
+  });
+
+  it('should move task to another task list in expanded edit options', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.getBySel('tasks--list-select--trigger-button').click();
+
+    cy.getBySel('tasks--list-select').find('div').contains('Errands').click();
+
+    cy.getBySel('tasks--list-select--trigger-button')
+      .find('div')
+      .contains('Errands')
+      .should('exist');
+  });
+
+  it('should check if success message is displayed when clicking Save task in expanded edit options', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.get('button').contains('Save').click();
+
+    cy.contains('You have successfully saved the task').should('exist');
+  });
 });

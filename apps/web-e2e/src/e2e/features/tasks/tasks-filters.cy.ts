@@ -183,10 +183,12 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Completed At')
       .click();
 
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
+
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
       .find('div')
       .contains('Descending')
-      .click({ force: true });
+      .click();
 
     cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
 

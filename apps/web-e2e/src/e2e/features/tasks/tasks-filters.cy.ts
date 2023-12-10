@@ -186,7 +186,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
       .find('div')
       .contains('Descending')
-      .click();
+      .click({ force: true });
 
     cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
 

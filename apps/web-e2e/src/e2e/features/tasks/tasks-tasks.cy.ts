@@ -107,7 +107,7 @@ describe('tasks-tasks.cy.ts', () => {
       .contains('More')
       .click();
 
-    cy.get('#task-name').should('exist');
+    cy.getBySel('tasks--task-dialog').should('exist');
   });
 
   it('should edit task name in expanded edit options', () => {
@@ -218,7 +218,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.contains('You have successfully saved the task').should('exist');
   });
 
-  it('should cancel More dialog when clicking on Cancel', () => {
+  it('should close More dialog when clicking on Cancel', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
@@ -234,6 +234,46 @@ describe('tasks-tasks.cy.ts', () => {
       .click();
 
     cy.get('button').contains('Cancel').click();
+
+    cy.getBySel('tasks--task-dialog').should('not.exist');
+  });
+
+  it('should close More dialog when clicking on the x (close) button in the right top corner in expanded edit options', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.get('[data-test="dialog--close"]').click();
+
+    cy.getBySel('tasks--task-dialog').should('not.exist');
+  });
+
+  it('should close More dialog when clicking outside the dialog', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.clickOutside();
 
     cy.getBySel('tasks--task-dialog').should('not.exist');
   });

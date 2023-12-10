@@ -21,7 +21,13 @@ export function openTasksNewListDropdownMenu() {
 }
 export function addMultipleTasks() {
   const addAndWaitForTask = (taskName: string) => {
+    const aliasName = `createTask-${taskName}`;
+
+    cy.intercept('POST', '/api/v1/tasks').as(aliasName);
+
     cy.getBySel('tasks--tasks-form').find('input').type(`${taskName}{enter}`);
+
+    cy.wait(`@${aliasName}`);
 
     cy.getBySel('tasks--tasks-list')
       .find('[data-test="tasks--task"]')

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Input, useToast } from '@myzenbuddy/web-ui';
 
@@ -8,6 +8,7 @@ function TasksForm() {
   const { toast } = useToast();
   const { selectedList, addTask, listEndElement } = useTasksStore();
   const [name, setName] = useState('');
+  const isSubmittingRef = useRef(false);
 
   // TODO: implement loader to prevent submitting if the task is still being added
 
@@ -39,22 +40,26 @@ function TasksForm() {
       return;
     }
 
-    await addTask({
-      name: finalName,
-      listId: selectedList.id,
-      // TODO: fix this bit, so we don't use any!
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    try {
+      isSubmittingRef.current = true;
 
-    setName('');
+      await addTask({
+        name: finalName,
+        listId: selectedList.id,
+        // TODO: fix this bit, so we don't use any!
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
 
-    // We need to put it into a timeout because the element is not yet rendered,
-    // so we would not scroll to the correct position.
-    setTimeout(() => {
-      listEndElement?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+      setName('');
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // We need to put it into a timeout because the element is not yet rendered,
+      // so we would not scroll to the correct position.
+      setTimeout(() => {
+        listEndElement?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } finally {
+      isSubmittingRef.current = false;
+    }
   };
 
   return (

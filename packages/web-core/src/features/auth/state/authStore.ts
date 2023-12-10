@@ -20,8 +20,8 @@ import {
   requestPasswordReset,
   resendEmailConfirmation,
   resetPassword,
-  updatePasswordSettings,
-  updateSettings,
+  updateAccountPassword,
+  updateAccountSettings,
 } from '../utils/AuthHelpers';
 
 export type AuthStore = {
@@ -45,15 +45,12 @@ export type AuthStore = {
   resendEmailConfirmation: (isNewEmail?: boolean) => Promise<ResponseInterface>;
   // Cancel New Email Confirmation
   cancelNewEmail: () => Promise<ResponseInterface>;
-  // Load Account
+  // Account
   loadAccount: () => Promise<ResponseInterface>;
-  // Settings
-  // Update Settings
-  updateSettings: (data: UpdateUserInterface) => Promise<ResponseInterface>;
-  // Update Password Settings
-  passwordSettingsDialogOpen: boolean;
-  setPasswordSettingsDialogOpen: (passwordSettingsDialogOpen: boolean) => void;
-  updatePasswordSettings: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
+  updateAccountSettings: (data: UpdateUserInterface) => Promise<ResponseInterface>;
+  accountPasswordSettingsDialogOpen: boolean;
+  setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
+  updateAccountPassword: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -161,30 +158,30 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Settings
       // Update Settings
-      updateSettings: async (data: UpdateUserInterface) => {
+      updateAccountSettings: async (data: UpdateUserInterface) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
-        const response = await updateSettings(data);
+        const response = await updateAccountSettings(data);
 
         set({ auth: response.data });
 
         return response;
       },
       // Update Password Settings
-      passwordSettingsDialogOpen: false,
-      setPasswordSettingsDialogOpen: (passwordSettingsDialogOpen: boolean) => {
-        set({ passwordSettingsDialogOpen });
+      accountPasswordSettingsDialogOpen: false,
+      setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => {
+        set({ accountPasswordSettingsDialogOpen });
       },
-      updatePasswordSettings: async (data: UpdateUserPasswordInterface) => {
+      updateAccountPassword: async (data: UpdateUserPasswordInterface) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
-        const response = await updatePasswordSettings(data);
+        const response = await updateAccountPassword(data);
 
         set({ auth: response.data });
 

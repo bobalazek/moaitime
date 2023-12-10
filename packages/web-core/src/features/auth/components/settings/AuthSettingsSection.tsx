@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertTitle } from '@myzenbuddy/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
-import AuthSettingsPasswordDialog from './AuthSettingsPasswordDialog';
+import AuthSettingsAccountPasswordDialog from './AuthSettingsAccountPasswordDialog';
 import AuthSettingsSectionContent from './AuthSettingsSectionContent';
 import AuthSettingsSectionHeaderText from './AuthSettingsSectionHeaderText';
 
@@ -24,7 +24,7 @@ export default function AuthSettingsSection() {
         </Alert>
       )}
       {auth && <AuthSettingsSectionContent auth={auth} />}
-      <AuthSettingsPasswordDialog />
+      <AuthSettingsAccountPasswordDialog />
     </div>
   );
 }

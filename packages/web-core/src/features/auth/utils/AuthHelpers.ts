@@ -150,9 +150,9 @@ export const loadAccount = async () => {
   return response;
 };
 
-export const updateSettings = async (data: UpdateUserInterface) => {
+export const updateAccountSettings = async (data: UpdateUserInterface) => {
   const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/settings`,
+    `${API_URL}/api/v1/auth/account/settings`,
     {
       method: 'PATCH',
       body: JSON.stringify(data),
@@ -166,9 +166,9 @@ export const updateSettings = async (data: UpdateUserInterface) => {
   return response;
 };
 
-export const updatePasswordSettings = async (data: UpdateUserPasswordInterface) => {
+export const updateAccountPassword = async (data: UpdateUserPasswordInterface) => {
   const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/settings/password`,
+    `${API_URL}/api/v1/auth/account/password`,
     {
       method: 'POST',
       body: JSON.stringify(data),

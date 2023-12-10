@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Patch,
   Post,
   Req,
@@ -18,11 +19,29 @@ import { UpdatePasswordDto } from '../dtos/update-password.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
 
-@Controller('/api/v1/auth/settings')
-export class AuthSettingsController {
+@Controller('/api/v1/auth/account')
+export class AuthAccountController {
   @UseGuards(AuthenticatedGuard)
-  @Patch()
-  async update(
+  @Get()
+  async index(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
+    if (!req.user) {
+      throw new UnauthorizedException();
+    }
+
+    res.status(200);
+
+    return {
+      success: true,
+      data: convertToUserAndAccessTokenDto(req.user, req.user._accessToken),
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Patch('settings')
+  async settings(
     @Body() body: UpdateUserDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response

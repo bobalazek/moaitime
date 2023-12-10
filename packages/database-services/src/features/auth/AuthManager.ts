@@ -18,10 +18,10 @@ import {
   WEB_URL,
 } from '@myzenbuddy/shared-common';
 
-import { CalendarsManager, calendarsManager } from '../calendars';
-import { ListsManager, listsManager } from '../tasks';
-import { UsersManager, usersManager } from '../users';
+import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
+import { ListsManager, listsManager } from '../tasks/ListsManager';
 import { UserAccessTokensManager, userAccessTokensManager } from '../users/UserAccessTokensManager';
+import { UsersManager, usersManager } from '../users/UsersManager';
 
 type AuthLoginResult = {
   user: User;

@@ -14,21 +14,24 @@ import {
 
 import { useAuthStore } from '../../state/authStore';
 
-export default function AuthSettingsPasswordDialog() {
+export default function AuthSettingsAccountPasswordDialog() {
   const { toast } = useToast();
-  const { passwordSettingsDialogOpen, setPasswordSettingsDialogOpen, updatePasswordSettings } =
-    useAuthStore();
+  const {
+    accountPasswordSettingsDialogOpen,
+    setAccountPasswordSettingsDialogOpen,
+    updateAccountPassword,
+  } = useAuthStore();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     setCurrentPassword('');
     setNewPassword('');
-  }, [passwordSettingsDialogOpen]);
+  }, [setAccountPasswordSettingsDialogOpen]);
 
   const onSaveButtonClick = async () => {
     try {
-      await updatePasswordSettings({
+      await updateAccountPassword({
         currentPassword,
         newPassword,
       });
@@ -38,21 +41,21 @@ export default function AuthSettingsPasswordDialog() {
         description: 'You have successfully updated your password',
       });
 
-      setPasswordSettingsDialogOpen(false);
+      setAccountPasswordSettingsDialogOpen(false);
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
   };
 
   const onCancelButtonClick = () => {
-    setPasswordSettingsDialogOpen(false);
+    setAccountPasswordSettingsDialogOpen(false);
   };
 
   return (
     <Dialog
-      open={passwordSettingsDialogOpen}
-      onOpenChange={setPasswordSettingsDialogOpen}
-      data-test="auth--settings--password-dialog"
+      open={accountPasswordSettingsDialogOpen}
+      onOpenChange={setAccountPasswordSettingsDialogOpen}
+      data-test="auth--settings--account-password-dialog"
     >
       <DialogContent>
         <DialogHeader>

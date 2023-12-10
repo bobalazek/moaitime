@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { authManager } from '@myzenbuddy/database-services';
@@ -21,7 +12,6 @@ import { RegisterDto } from '../dtos/register.dto';
 import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
 import { ResendEmailConfirmationDto } from '../dtos/resend-email-confirmation.dto';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
 
 @Controller('/api/v1/auth')
@@ -179,24 +169,6 @@ export class AuthController {
       success: true,
       message: 'You have successfully refreshed your token',
       data: convertToUserAndAccessTokenDto(user, userAccessToken),
-    };
-  }
-
-  @UseGuards(AuthenticatedGuard)
-  @Get('account')
-  async account(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<LoginResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
-    res.status(200);
-
-    return {
-      success: true,
-      data: convertToUserAndAccessTokenDto(req.user, req.user._accessToken),
     };
   }
 }

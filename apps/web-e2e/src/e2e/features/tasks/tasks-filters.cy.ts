@@ -59,7 +59,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--task').eq(3).contains('ddd').should('exist');
   });
 
-  it.only('should filter tasks by Name and Descending', () => {
+  it('should filter tasks by Name and Descending', () => {
     openTasksPopover();
 
     addMultipleTasks();
@@ -70,6 +70,8 @@ describe('tasks-filters.cy.ts', () => {
       .find('div')
       .contains('Name')
       .click();
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
       .find('div')
@@ -239,6 +241,8 @@ describe('tasks-filters.cy.ts', () => {
       .find('div')
       .contains('Updated At')
       .click();
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
       .find('div')

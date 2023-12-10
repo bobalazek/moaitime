@@ -49,15 +49,15 @@ const Task = memo(({ task }: { task: TaskInterface }) => {
     []
   );
 
-  const onKeyDown = async (e: React.KeyboardEvent) => {
-    if (e.key === ' ') {
-      e.preventDefault();
+  const onKeyDown = async (event: React.KeyboardEvent) => {
+    if (event.key === ' ') {
+      event.preventDefault();
 
       document.execCommand('insertText', false, ' ');
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
 
-      (e.target as HTMLElement).blur();
+      (event.target as HTMLElement).blur();
     }
   };
 

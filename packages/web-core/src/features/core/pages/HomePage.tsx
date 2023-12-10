@@ -1,18 +1,14 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
 
 import Auth from '../../auth/components/Auth';
 import Background from '../../background/components/Background';
 import BackgroundInformation from '../../background/components/BackgroundInfromation';
-import { useBackgroundStore } from '../../background/state/backgroundStore';
 import Calendar from '../../calendar/components/Calendar';
 import Clock from '../../clock/components/Clock';
 import CommandsButton from '../../commands/components/CommandsButton';
 import CommandsDialog from '../../commands/components/CommandsDialog';
 import Greeting from '../../greeting/components/Greeting';
-import { useGreetingStore } from '../../greeting/state/greetingStore';
 import Quote from '../../quote/components/Quote';
-import { useQuoteStore } from '../../quote/state/quoteStore';
 import Search from '../../search/components/Search';
 import Settings from '../../settings/components/Settings';
 import { useSettingsStore } from '../../settings/state/settingsStore';
@@ -28,44 +24,6 @@ const animationVariants = {
 
 export default function HomePage() {
   const { settings } = useSettingsStore();
-  const { loadBackgrounds, setRandomBackground } = useBackgroundStore();
-  const { loadGreetings, setRandomGreeting } = useGreetingStore();
-  const { loadQuotes, setRandomQuote } = useQuoteStore();
-  const isInitializedRef = useRef(false);
-
-  useEffect(() => {
-    if (isInitializedRef.current) {
-      return;
-    }
-
-    isInitializedRef.current = true;
-
-    // Backgrounds
-    (async () => {
-      await loadBackgrounds();
-
-      setRandomBackground();
-      setInterval(setRandomBackground, 1000 * 60 * 2);
-    })();
-
-    // Greetings
-    (async () => {
-      await loadGreetings();
-
-      setRandomGreeting();
-      setInterval(setRandomGreeting, 1000 * 60 * 2);
-    })();
-
-    // Quotes
-    (async () => {
-      await loadQuotes();
-
-      setRandomQuote();
-      setTimeout(setRandomQuote, 1000 * 60 * 2);
-    })();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <ErrorBoundary>

@@ -83,6 +83,11 @@ export default function AuthLoginPage() {
                   onChange={(event) => {
                     setPassword(event.target.value);
                   }}
+                  onKeyPress={(event) => {
+                    if (event.key === 'Enter') {
+                      onLoginButtonClick();
+                    }
+                  }}
                 />
               </div>
               <Button

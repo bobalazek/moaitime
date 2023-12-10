@@ -8,6 +8,9 @@ import {
   UpdateUserPasswordInterface,
 } from '@myzenbuddy/shared-common';
 
+import { useBackgroundStore } from '../../background/state/backgroundStore';
+import { useGreetingStore } from '../../greeting/state/greetingStore';
+import { useQuoteStore } from '../../quote/state/quoteStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import {
   cancelNewEmail,
@@ -51,6 +54,8 @@ export type AuthStore = {
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
   updateAccountPassword: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
+  // App Data
+  loadAppData: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -62,9 +67,13 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Login
       login: async (email: string, password: string) => {
+        const { loadAppData } = get();
+
         const response = await login(email, password);
 
         set({ auth: response.data });
+
+        loadAppData();
 
         return response;
       },
@@ -141,7 +150,6 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Account
       loadAccount: async () => {
-        const { loadLists } = useTasksStore.getState();
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
@@ -150,9 +158,6 @@ export const useAuthStore = create<AuthStore>()(
         const response = await loadAccount();
 
         set({ auth: response.data });
-
-        // Make sure we load the new lists for that user
-        await loadLists();
 
         return response;
       },
@@ -187,6 +192,43 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
+      // App Data
+      loadAppData: async () => {
+        const { auth } = get();
+        const { loadLists } = useTasksStore.getState();
+        const { loadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
+        const { loadGreetings, setRandomGreeting } = useGreetingStore.getState();
+        const { loadQuotes, setRandomQuote } = useQuoteStore.getState();
+
+        if (!auth?.userAccessToken?.token) {
+          return;
+        }
+
+        loadLists();
+
+        (async () => {
+          await loadBackgrounds();
+
+          setRandomBackground();
+          setInterval(setRandomBackground, 1000 * 60 * 2);
+        })();
+
+        // Greetings
+        (async () => {
+          await loadGreetings();
+
+          setRandomGreeting();
+          setInterval(setRandomGreeting, 1000 * 60 * 2);
+        })();
+
+        // Quotes
+        (async () => {
+          await loadQuotes();
+
+          setRandomQuote();
+          setTimeout(setRandomQuote, 1000 * 60 * 2);
+        })();
+      },
     }),
     {
       name: 'auth-store',
@@ -214,6 +256,7 @@ export const useAuthStore = create<AuthStore>()(
           setTimeout(async () => {
             try {
               await state.loadAccount();
+              await state.loadAppData();
             } catch (error) {
               // Nothing to do
             }

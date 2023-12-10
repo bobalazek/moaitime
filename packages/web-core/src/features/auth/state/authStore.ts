@@ -65,14 +65,9 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Login
       login: async (email: string, password: string) => {
-        const { loadLists } = useTasksStore.getState();
-
         const response = await login(email, password);
 
         set({ auth: response.data });
-
-        // Make sure we load the new lists for that user
-        await loadLists();
 
         return response;
       },
@@ -149,6 +144,7 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Account
       loadAccount: async () => {
+        const { loadLists } = useTasksStore.getState();
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
@@ -157,6 +153,9 @@ export const useAuthStore = create<AuthStore>()(
         const response = await loadAccount();
 
         set({ auth: response.data });
+
+        // Make sure we load the new lists for that user
+        await loadLists();
 
         return response;
       },

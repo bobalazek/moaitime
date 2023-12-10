@@ -218,7 +218,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.contains('You have successfully saved the task').should('exist');
   });
 
-  it.only('should cancel More dialog when clicking on Cancel', () => {
+  it('should cancel More dialog when clicking on Cancel', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
@@ -234,5 +234,7 @@ describe('tasks-tasks.cy.ts', () => {
       .click();
 
     cy.get('button').contains('Cancel').click();
+
+    cy.getBySel('tasks--task-dialog').should('not.exist');
   });
 });

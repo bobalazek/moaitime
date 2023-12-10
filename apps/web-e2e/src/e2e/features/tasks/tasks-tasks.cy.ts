@@ -217,4 +217,22 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.contains('You have successfully saved the task').should('exist');
   });
+
+  it.only('should cancel More dialog when clicking on Cancel', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('More')
+      .click();
+
+    cy.get('button').contains('Cancel').click();
+  });
 });

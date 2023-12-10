@@ -95,12 +95,8 @@ export default function TaskDialog() {
   };
 
   return (
-    <Dialog
-      open={selectedTaskDialogOpen}
-      onOpenChange={setSelectedTaskDialogOpen}
-      data-test="tasks--task-dialog"
-    >
-      <DialogContent>
+    <Dialog open={selectedTaskDialogOpen} onOpenChange={setSelectedTaskDialogOpen}>
+      <DialogContent data-test="tasks--task-dialog">
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-name">Name</Label>
           <Input

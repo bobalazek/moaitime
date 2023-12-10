@@ -17,7 +17,6 @@ import Search from '../../search/components/Search';
 import Settings from '../../settings/components/Settings';
 import { useSettingsStore } from '../../settings/state/settingsStore';
 import Tasks from '../../tasks/components/Tasks';
-import { useTasksStore } from '../../tasks/state/tasksStore';
 import Weather from '../../weather/components/Weather';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
@@ -29,7 +28,6 @@ const animationVariants = {
 
 export default function HomePage() {
   const { settings } = useSettingsStore();
-  const { loadLists } = useTasksStore();
   const { loadBackgrounds, setRandomBackground } = useBackgroundStore();
   const { loadGreetings, setRandomGreeting } = useGreetingStore();
   const { loadQuotes, setRandomQuote } = useQuoteStore();
@@ -41,8 +39,6 @@ export default function HomePage() {
     }
 
     isInitializedRef.current = true;
-
-    loadLists();
 
     // Backgrounds
     (async () => {

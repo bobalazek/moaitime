@@ -26,7 +26,8 @@ export function addMultipleTasks() {
     cy.getBySel('tasks--tasks-list')
       .find('[data-test="tasks--task"]')
       .last()
-      .should('contain', taskName);
+      .find('[data-test="tasks--task--name"]')
+      .should('have.text', taskName);
   };
 
   addAndWaitForTask('ccc');

@@ -17,7 +17,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu').should('exist');
   });
 
-  it.only('should filter tasks by Order and Descending', () => {
+  it('should filter tasks by Order and Descending', () => {
     openTasksPopover();
 
     addMultipleTasks();
@@ -59,7 +59,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--task').eq(3).contains('ddd').should('exist');
   });
 
-  it('should filter tasks by Name and Descending', () => {
+  it.only('should filter tasks by Name and Descending', () => {
     openTasksPopover();
 
     addMultipleTasks();

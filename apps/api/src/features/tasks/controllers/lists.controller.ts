@@ -30,7 +30,13 @@ export class ListsController {
       throw new UnauthorizedException();
     }
 
-    const data = await listsManager.findManyByUserId(req.user.id);
+    const includeCompleted = req.query.includeCompleted === 'true';
+    const includeDeleted = req.query.includeDeleted === 'true';
+
+    const data = await listsManager.findManyByUserId(req.user.id, {
+      includeCompleted,
+      includeDeleted,
+    });
 
     return {
       success: true,

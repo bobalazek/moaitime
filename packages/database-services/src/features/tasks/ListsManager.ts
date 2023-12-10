@@ -1,4 +1,4 @@
-import { and, asc, count, DBQueryConfig, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, eq, inArray, isNull, SQL } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -10,29 +10,48 @@ import {
   updateListSchema,
 } from '@myzenbuddy/database-core';
 
+export type ListsManagerFindManyByUserIdOptions = {
+  includeCompleted?: boolean;
+  includeDeleted?: boolean;
+};
+
 export class ListsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<List[]> {
     return getDatabase().query.lists.findMany(options);
   }
 
-  async findManyByUserId(userId: string): Promise<List[]> {
+  async findManyByUserId(
+    userId: string,
+    options?: ListsManagerFindManyByUserIdOptions
+  ): Promise<List[]> {
     const result = await getDatabase().query.lists.findMany({
       where: and(eq(lists.userId, userId), isNull(lists.deletedAt)),
       orderBy: asc(lists.createdAt),
     });
     const ids = result.map((list) => list.id);
 
-    const tasksCountData =
-      ids.length > 0
-        ? await getDatabase()
-            .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
-            .from(tasks)
-            .leftJoin(lists, eq(tasks.listId, lists.id))
-            .where(inArray(tasks.listId, ids))
-            .groupBy(tasks.listId)
-            .execute()
-        : [];
-    const tasksCountMap = new Map(tasksCountData.map((item) => [item.listId, item.tasksCount]));
+    const tasksCountMap = new Map<string, number>();
+    if (ids.length > 0) {
+      let where = inArray(tasks.listId, ids);
+      if (!options?.includeCompleted) {
+        where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
+      }
+
+      if (!options?.includeDeleted) {
+        where = and(where, isNull(tasks.deletedAt)) as SQL<unknown>;
+      }
+
+      const tasksCountData = await getDatabase()
+        .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
+        .from(tasks)
+        .leftJoin(lists, eq(tasks.listId, lists.id))
+        .where(where)
+        .groupBy(tasks.listId)
+        .execute();
+      for (const item of tasksCountData) {
+        tasksCountMap.set(item.listId, item.tasksCount);
+      }
+    }
 
     return result.map((list) => ({
       ...list,

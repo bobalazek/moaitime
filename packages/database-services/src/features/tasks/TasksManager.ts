@@ -11,7 +11,7 @@ import {
 } from '@myzenbuddy/database-core';
 import { SortDirectionEnum } from '@myzenbuddy/shared-common';
 
-export type TaskManagerFindManyByListIdOptions = {
+export type TasksManagerFindManyByListIdOptions = {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
   sortField?: keyof Task;
@@ -25,7 +25,7 @@ export class TasksManager {
 
   async findManyByListId(
     listId: string,
-    options?: TaskManagerFindManyByListIdOptions
+    options?: TasksManagerFindManyByListIdOptions
   ): Promise<Task[]> {
     let where: SQL<unknown> = eq(tasks.listId, listId);
     let orderBy: SQL<unknown> = asc(tasks.createdAt);

@@ -9,8 +9,17 @@ import {
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Lists **********/
-export const loadLists = async () => {
-  const response = await fetchJson<ResponseInterface<ListInterface[]>>(`${API_URL}/api/v1/lists`, {
+export const loadLists = async (options?: {
+  includeCompleted?: boolean;
+  includeDeleted?: boolean;
+}) => {
+  const includeCompleted = options?.includeCompleted ?? true;
+  const includeDeleted = options?.includeDeleted ?? false;
+  const url = `${API_URL}/api/v1/lists?includeCompleted=${
+    includeCompleted ? 'true' : 'false'
+  }&includeDeleted=${includeDeleted ? 'true' : 'false'}`;
+
+  const response = await fetchJson<ResponseInterface<ListInterface[]>>(url, {
     method: 'GET',
   });
 

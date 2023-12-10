@@ -5,6 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { reloadDatabase } from '@myzenbuddy/database-testing';
 
+import { DEFAULT_LIST_NAMES } from '../../../../shared-backend/src';
+import { calendarsManager } from '../calendars';
+import { listsManager } from '../tasks';
 import { usersManager } from '../users';
 import { userAccessTokensManager } from '../users/UserAccessTokensManager';
 import { authManager } from './AuthManager';
@@ -389,26 +392,42 @@ describe('AuthManager.ts', () => {
 
       await expect(result).rejects.toThrow('Token was already claimed');
     });
+
+    it('should create default lists and a calendar for a new user', async () => {
+      const email = 'tester+16@corcosoft.com';
+      const password = 'password';
+      const user = await authManager.register({
+        displayName: 'Tester16',
+        email,
+        password,
+      });
+
+      const lists = await listsManager.findManyByUserId(user.id);
+      const calendars = await calendarsManager.findManyByUserId(user.id);
+
+      expect(lists.length).toBe(DEFAULT_LIST_NAMES.length);
+      expect(calendars.length).toBe(1);
+    });
   });
 
   describe('update()', () => {
     it('should work correctly', async () => {
       const user = await authManager.register({
-        displayName: 'Tester16',
-        email: 'tester+16@corcosoft.com',
+        displayName: 'Tester17',
+        email: 'tester+17@corcosoft.com',
         password: 'password',
       });
 
       const updatedUser = await authManager.update(user.id, {
-        displayName: 'Tester16Updated',
+        displayName: 'Tester17Updated',
         birthDate: '1990-01-01',
-        email: 'tester+16updated@corcosoft.com',
+        email: 'tester+17updated@corcosoft.com',
       });
 
-      expect(updatedUser.displayName).toBe('Tester16Updated');
+      expect(updatedUser.displayName).toBe('Tester17Updated');
       expect(updatedUser.birthDate).toStrictEqual(new Date('1990-01-01')); // TODO: Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185. Should actually be a string
-      expect(updatedUser.email).toBe('tester+16@corcosoft.com');
-      expect(updatedUser.newEmail).toBe('tester+16updated@corcosoft.com');
+      expect(updatedUser.email).toBe('tester+17@corcosoft.com');
+      expect(updatedUser.newEmail).toBe('tester+17updated@corcosoft.com');
       expect(updatedUser.newEmailConfirmationToken).not.toBe(null);
       expect(updatedUser.newEmailConfirmationLastSentAt).not.toBe(null);
     });
@@ -417,8 +436,8 @@ describe('AuthManager.ts', () => {
   describe('updatePassword()', () => {
     it('should work correctly', async () => {
       const user = await authManager.register({
-        displayName: 'Tester17',
-        email: 'tester+17@corcosoft.com',
+        displayName: 'Tester18',
+        email: 'tester+18@corcosoft.com',
         password: 'password',
       });
 
@@ -429,8 +448,8 @@ describe('AuthManager.ts', () => {
 
     it('should throw error if password is not provided', async () => {
       const user = await authManager.register({
-        displayName: 'Tester18',
-        email: 'tester+18@corcosoft.com',
+        displayName: 'Tester19',
+        email: 'tester+19@corcosoft.com',
         password: 'password',
       });
 
@@ -441,8 +460,8 @@ describe('AuthManager.ts', () => {
 
     it('should throw error if password is too short', async () => {
       const user = await authManager.register({
-        displayName: 'Tester19',
-        email: 'tester+19@corcosoft.com',
+        displayName: 'Tester20',
+        email: 'tester+20@corcosoft.com',
         password: 'password',
       });
 

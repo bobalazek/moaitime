@@ -1,8 +1,9 @@
 import { eq } from 'drizzle-orm';
 
 import { getDatabase, NewList, users } from '@myzenbuddy/database-core';
+import { DEFAULT_LIST_NAMES } from '@myzenbuddy/shared-backend';
+import { TASK_LIST_COLORS } from '@myzenbuddy/shared-common';
 
-import { TASK_LIST_COLORS } from '../../../shared-common/src';
 import { getUserSeeds } from './Users';
 
 export const getListSeeds = async (): Promise<NewList[]> => {
@@ -17,9 +18,8 @@ export const getListSeeds = async (): Promise<NewList[]> => {
       throw new Error(`User "${single.email}" not found!`);
     }
 
-    const listNames = ['Inbox', 'Errands', 'Work', 'Personal'];
-    for (let i = 0; i < listNames.length; i++) {
-      const name = listNames[i];
+    for (let i = 0; i < DEFAULT_LIST_NAMES.length; i++) {
+      const name = DEFAULT_LIST_NAMES[i];
       const color = TASK_LIST_COLORS[i % TASK_LIST_COLORS.length].value;
 
       lists.push({

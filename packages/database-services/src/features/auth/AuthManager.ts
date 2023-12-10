@@ -7,10 +7,19 @@ import {
   AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS,
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
   compareHash,
+  DEFAULT_LIST_NAMES,
   generateHash,
 } from '@myzenbuddy/shared-backend';
-import { UserRoleEnum, WEB_URL } from '@myzenbuddy/shared-common';
+import {
+  DEFAULT_SETTINGS,
+  SettingsInterface,
+  TASK_LIST_COLORS,
+  UserRoleEnum,
+  WEB_URL,
+} from '@myzenbuddy/shared-common';
 
+import { CalendarsManager, calendarsManager } from '../calendars';
+import { ListsManager, listsManager } from '../tasks';
 import { UsersManager, usersManager } from '../users';
 import { UserAccessTokensManager, userAccessTokensManager } from '../users/UserAccessTokensManager';
 
@@ -22,7 +31,9 @@ type AuthLoginResult = {
 export class AuthManager {
   constructor(
     private _usersManager: UsersManager,
-    private _userAccessTokensManager: UserAccessTokensManager
+    private _userAccessTokensManager: UserAccessTokensManager,
+    private _listsManager: ListsManager,
+    private _calendarsManager: CalendarsManager
   ) {}
 
   async login(email: string, password: string): Promise<AuthLoginResult> {
@@ -73,6 +84,25 @@ export class AuthManager {
       emailConfirmationToken: uuidv4(),
       emailConfirmationLastSentAt: new Date(),
     } as NewUser);
+
+    for (let i = 0; i < DEFAULT_LIST_NAMES.length; i++) {
+      const name = DEFAULT_LIST_NAMES[i];
+      const color = TASK_LIST_COLORS[i % TASK_LIST_COLORS.length].value;
+
+      await this._listsManager.insertOne({
+        name,
+        color,
+        userId: newUser.id,
+      });
+    }
+
+    const userSetings = this.getUserSettings(newUser);
+
+    await this._calendarsManager.insertOne({
+      name: `${newUser.displayName}'s Calendar`,
+      userId: newUser.id,
+      timezone: userSetings.generalTimezone,
+    });
 
     await mailer.sendAuthWelcomeEmail({
       userEmail: newUser.email,
@@ -437,6 +467,13 @@ export class AuthManager {
     return userAccessToken;
   }
 
+  getUserSettings(user: User): SettingsInterface {
+    return {
+      ...DEFAULT_SETTINGS,
+      ...(user.settings ?? {}),
+    };
+  }
+
   async validateAndHashPassword(rawPassword: string): Promise<string> {
     return this.hashPassword(rawPassword);
   }
@@ -460,4 +497,9 @@ export class AuthManager {
   }
 }
 
-export const authManager = new AuthManager(usersManager, userAccessTokensManager);
+export const authManager = new AuthManager(
+  usersManager,
+  userAccessTokensManager,
+  listsManager,
+  calendarsManager
+);

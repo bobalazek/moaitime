@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { defaultSettings, SettingsInterface } from '@myzenbuddy/shared-common';
+import { DEFAULT_SETTINGS, SettingsInterface } from '@myzenbuddy/shared-common';
 
 export type SettingsStore = {
   /********** General **********/
@@ -19,7 +19,7 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
       dialogOpen,
     });
   },
-  settings: defaultSettings,
+  settings: DEFAULT_SETTINGS,
   setSettings: async (settings: SettingsInterface) => {
     set({ settings });
   },

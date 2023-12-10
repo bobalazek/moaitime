@@ -14,4 +14,7 @@ export const AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS = 60 * 15;
 export const AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS = 60 * 15;
 
 // Mailer
-export const MAILER_FROM = `MyZenBuddy <mailer@bobalazek.com>`;
+export const MAILER_FROM = 'MyZenBuddy <mailer@bobalazek.com>';
+
+// Lists
+export const DEFAULT_LIST_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];

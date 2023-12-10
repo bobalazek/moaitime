@@ -260,6 +260,9 @@ importers:
       '@myzenbuddy/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
+      '@myzenbuddy/shared-common':
+        specifier: workspace:*
+        version: link:../shared-common
       '@myzenbuddy/shared-logging':
         specifier: workspace:*
         version: link:../shared-logging
@@ -285,6 +288,9 @@ importers:
       '@myzenbuddy/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
+      '@myzenbuddy/shared-common':
+        specifier: workspace:*
+        version: link:../shared-common
       '@myzenbuddy/shared-logging':
         specifier: workspace:*
         version: link:../shared-logging

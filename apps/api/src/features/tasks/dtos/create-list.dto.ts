@@ -1,4 +1,4 @@
 export class CreateListDto {
-  name: string;
+  name!: string;
   color?: string;
 }

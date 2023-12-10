@@ -1,3 +1,3 @@
 export class RequestPasswordResetDto {
-  email: string;
+  email!: string;
 }

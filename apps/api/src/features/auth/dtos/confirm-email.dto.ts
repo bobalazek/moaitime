@@ -1,4 +1,4 @@
 export class ConfirmEmailDto {
-  token: string;
+  token!: string;
   isNewEmail?: string;
 }

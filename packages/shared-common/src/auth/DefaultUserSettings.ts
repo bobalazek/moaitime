@@ -2,7 +2,7 @@ import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 import { UserSettings } from './UserSettingsSchema';
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
-  generalTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  generalTimezone: 'UTC',
   commandsEnabled: true,
   commandsSearchButtonEnabled: true,
   weatherEnabled: true,
@@ -15,7 +15,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   clockEnabled: true,
   clockUseDigitalClock: true,
   clockShowSeconds: true,
-  clockUse24HourClock: !Intl.DateTimeFormat().resolvedOptions().hour12,
+  clockUse24HourClock: true,
   searchEnabled: true,
   searchEngine: SearchEnginesEnum.GOOGLE,
   greetingEnabled: true,

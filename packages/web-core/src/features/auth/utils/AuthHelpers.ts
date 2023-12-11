@@ -37,11 +37,21 @@ export const logout = async () => {
 };
 
 export const register = async (displayName: string, email: string, password: string) => {
+  const data = {
+    displayName,
+    email,
+    password,
+    settings: {
+      generalTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      clockUse24HourClock: !Intl.DateTimeFormat().resolvedOptions().hour12,
+    },
+  };
+
   const response = await fetchJson<ResponseInterface<AuthInterface>>(
     `${API_URL}/api/v1/auth/register`,
     {
       method: 'POST',
-      body: JSON.stringify({ displayName, email, password }),
+      body: JSON.stringify(data),
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

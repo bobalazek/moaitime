@@ -59,7 +59,12 @@ export class AuthController {
     @Body() body: RegisterDto,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
-    await authManager.register(body);
+    await authManager.register({
+      // I really do not feel like fighting with typescript on this one now.
+      // That shall be a problem for future me.
+      settings: body.settings as any,
+      ...body,
+    });
 
     const { user, userAccessToken } = await authManager.login(body.email, body.password);
 

@@ -6,7 +6,7 @@ import AnalogClock from './AnalogClock';
 import DigitalClock from './DigitalClock';
 
 export default function Clock() {
-  const { settings } = useSettingsStore();
+  const { settings, updateSettings } = useSettingsStore();
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -21,7 +21,15 @@ export default function Clock() {
 
   return (
     <ErrorBoundary>
-      <div className="select-none" data-test="clock">
+      <div
+        className="select-none"
+        data-test="clock"
+        onDoubleClick={() => {
+          updateSettings({
+            clockUseDigitalClock: !settings.clockUseDigitalClock,
+          });
+        }}
+      >
         {settings.clockUseDigitalClock && (
           <DigitalClock
             time={time}

@@ -7,7 +7,6 @@ export type SettingsStore = {
   dialogOpen: boolean;
   setDialogOpen: (dialogOpen: boolean) => void;
   settings: SettingsInterface;
-  setSettings: (settings: SettingsInterface) => Promise<void>;
   updateSettings: (settings: Partial<SettingsInterface>) => Promise<void>;
 };
 
@@ -20,9 +19,6 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
     });
   },
   settings: DEFAULT_SETTINGS,
-  setSettings: async (settings: SettingsInterface) => {
-    set({ settings });
-  },
   updateSettings: async (settings: Partial<SettingsInterface>) => {
     set((state) => ({
       settings: {

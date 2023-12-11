@@ -12,7 +12,7 @@ import {
 import { useSettingsStore } from '../../settings/state/settingsStore';
 
 export default function SearchEngineDropdownMenu() {
-  const { settings, setSettings } = useSettingsStore();
+  const { settings, updateSettings } = useSettingsStore();
   const selectedSearchEngine = SearchEnginesMap[settings.searchEngine]
     ? settings.searchEngine
     : SearchEnginesEnum.GOOGLE;
@@ -34,7 +34,7 @@ export default function SearchEngineDropdownMenu() {
         <DropdownMenuRadioGroup
           value={selectedSearchEngine}
           onValueChange={(value) => {
-            setSettings({
+            updateSettings({
               ...settings,
               searchEngine: value as SearchEnginesEnum,
             });

@@ -19,13 +19,13 @@ importers:
     devDependencies:
       '@myzenbuddy/eslint-config':
         specifier: workspace:*
-        version: link:packages/eslint-config
+        version: link:configs/eslint-config
       '@myzenbuddy/prettier-config':
         specifier: workspace:*
-        version: link:packages/prettier-config
+        version: link:configs/prettier-config
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
-        version: link:packages/tsconfig-config
+        version: link:configs/tsconfig-config
       '@swc/core':
         specifier: ^1.3.100
         version: 1.3.100
@@ -91,7 +91,7 @@ importers:
         version: link:../../packages/shared-common
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
-        version: link:../../packages/tsconfig-config
+        version: link:../../configs/tsconfig-config
       '@nestjs/common':
         specifier: ^10.0.2
         version: 10.2.10(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -167,7 +167,7 @@ importers:
     dependencies:
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
-        version: link:../../packages/tsconfig-config
+        version: link:../../configs/tsconfig-config
       '@myzenbuddy/web-core':
         specifier: workspace:*
         version: link:../../packages/web-core
@@ -198,7 +198,7 @@ importers:
     devDependencies:
       '@myzenbuddy/tailwind-config':
         specifier: workspace:*
-        version: link:../../packages/tailwind-config
+        version: link:../../configs/tailwind-config
       '@types/react':
         specifier: 18.2.33
         version: 18.2.33
@@ -223,6 +223,57 @@ importers:
       start-server-and-test:
         specifier: ^2.0.3
         version: 2.0.3
+
+  configs/eslint-config:
+    devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.12.0
+        version: 6.13.1(@typescript-eslint/parser@6.13.1)(eslint@8.55.0)(typescript@5.3.2)
+      '@typescript-eslint/parser':
+        specifier: ^6.12.0
+        version: 6.13.1(eslint@8.55.0)(typescript@5.3.2)
+      eslint-config-prettier:
+        specifier: ^9.0.0
+        version: 9.1.0(eslint@8.55.0)
+      eslint-plugin-import:
+        specifier: ^2.29.0
+        version: 2.29.0(@typescript-eslint/parser@6.13.1)(eslint@8.55.0)
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.0(eslint@8.55.0)
+      vite:
+        specifier: ^5.0.4
+        version: 5.0.4(@types/node@20.10.3)
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6
+
+  configs/prettier-config:
+    devDependencies:
+      '@ianvs/prettier-plugin-sort-imports':
+        specifier: ^4.1.1
+        version: 4.1.1(prettier@3.1.0)
+      prettier:
+        specifier: ^3.1.0
+        version: 3.1.0
+      prettier-plugin-packagejson:
+        specifier: ^2.4.7
+        version: 2.4.7(prettier@3.1.0)
+      prettier-plugin-tailwindcss:
+        specifier: ^0.5.7
+        version: 0.5.7(@ianvs/prettier-plugin-sort-imports@4.1.1)(prettier@3.1.0)
+
+  configs/tailwind-config:
+    dependencies:
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.3.5)
+    devDependencies:
+      tailwindcss:
+        specifier: ^3.3.5
+        version: 3.3.5
+
+  configs/tsconfig-config: {}
 
   packages/database-core:
     dependencies:
@@ -442,7 +493,7 @@ importers:
     devDependencies:
       '@myzenbuddy/tailwind-config':
         specifier: workspace:*
-        version: link:../tailwind-config
+        version: link:../../configs/tailwind-config
       '@types/react':
         specifier: 18.2.33
         version: 18.2.33
@@ -482,52 +533,13 @@ importers:
     devDependencies:
       '@myzenbuddy/tailwind-config':
         specifier: workspace:*
-        version: link:../tailwind-config
+        version: link:../../configs/tailwind-config
       '@types/nodemailer':
         specifier: ^6.4.14
         version: 6.4.14
       '@types/react':
         specifier: 18.2.33
         version: 18.2.33
-
-  packages/eslint-config:
-    devDependencies:
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^6.12.0
-        version: 6.13.1(@typescript-eslint/parser@6.13.1)(eslint@8.55.0)(typescript@5.3.2)
-      '@typescript-eslint/parser':
-        specifier: ^6.12.0
-        version: 6.13.1(eslint@8.55.0)(typescript@5.3.2)
-      eslint-config-prettier:
-        specifier: ^9.0.0
-        version: 9.1.0(eslint@8.55.0)
-      eslint-plugin-import:
-        specifier: ^2.29.0
-        version: 2.29.0(@typescript-eslint/parser@6.13.1)(eslint@8.55.0)
-      eslint-plugin-react-hooks:
-        specifier: ^4.6.0
-        version: 4.6.0(eslint@8.55.0)
-      vite:
-        specifier: ^5.0.4
-        version: 5.0.4(@types/node@20.10.3)
-      vitest:
-        specifier: ^0.34.6
-        version: 0.34.6
-
-  packages/prettier-config:
-    devDependencies:
-      '@ianvs/prettier-plugin-sort-imports':
-        specifier: ^4.1.1
-        version: 4.1.1(prettier@3.1.0)
-      prettier:
-        specifier: ^3.1.0
-        version: 3.1.0
-      prettier-plugin-packagejson:
-        specifier: ^2.4.7
-        version: 2.4.7(prettier@3.1.0)
-      prettier-plugin-tailwindcss:
-        specifier: ^0.5.7
-        version: 0.5.7(@ianvs/prettier-plugin-sort-imports@4.1.1)(prettier@3.1.0)
 
   packages/shared-backend:
     dependencies:
@@ -589,18 +601,6 @@ importers:
         specifier: ^5.3.2
         version: 5.3.2
 
-  packages/tailwind-config:
-    dependencies:
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.3.5)
-    devDependencies:
-      tailwindcss:
-        specifier: ^3.3.5
-        version: 3.3.5
-
-  packages/tsconfig-config: {}
-
   packages/web-core:
     dependencies:
       '@dnd-kit/core':
@@ -623,7 +623,7 @@ importers:
         version: link:../shared-frontend
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
-        version: link:../tsconfig-config
+        version: link:../../configs/tsconfig-config
       '@myzenbuddy/web-ui':
         specifier: workspace:*
         version: link:../web-ui
@@ -666,7 +666,7 @@ importers:
     devDependencies:
       '@myzenbuddy/tailwind-config':
         specifier: workspace:*
-        version: link:../tailwind-config
+        version: link:../../configs/tailwind-config
       '@types/react':
         specifier: 18.2.33
         version: 18.2.33
@@ -690,7 +690,7 @@ importers:
     dependencies:
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
-        version: link:../tsconfig-config
+        version: link:../../configs/tsconfig-config
       '@radix-ui/react-alert-dialog':
         specifier: ^1.0.5
         version: 1.0.5(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
@@ -757,7 +757,7 @@ importers:
     devDependencies:
       '@myzenbuddy/tailwind-config':
         specifier: workspace:*
-        version: link:../tailwind-config
+        version: link:../../configs/tailwind-config
       '@types/react':
         specifier: 18.2.33
         version: 18.2.33
@@ -1075,6 +1075,7 @@ packages:
   /@babel/parser@7.23.5:
     resolution: {integrity: sha512-hOOqoiNXrmGdFbhgCzu6GiURxUgM27Xwd/aPuu8RfHEZPBzL1Z54okAHAQjXfcQNwvrlkAmAp4SlRTZ45vlthQ==}
     engines: {node: '>=6.0.0'}
+    hasBin: true
     dependencies:
       '@babel/types': 7.23.5
 
@@ -9436,6 +9437,7 @@ packages:
   /is-docker@3.0.0:
     resolution: {integrity: sha512-eljcgEDlEns/7AXFosB5K/2nCM4P7FQPkGc/DWLy5rmFEWvZayGrik1d9/QIY5nJ4f9YsVvBkA6kJpHn9rISdQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    hasBin: true
     dev: true
 
   /is-extendable@0.1.1:
@@ -9463,6 +9465,7 @@ packages:
   /is-inside-container@1.0.0:
     resolution: {integrity: sha512-KIYLCCJghfHZxqjYBE7rEy0OBuTd5xCHS7tHVgvCLkx7StIoaxwNW3hCALgEUjFfeRk+MG/Qxmp/vtETEF3tRA==}
     engines: {node: '>=14.16'}
+    hasBin: true
     dependencies:
       is-docker: 3.0.0
     dev: true
@@ -9709,6 +9712,7 @@ packages:
 
   /jsesc@0.5.0:
     resolution: {integrity: sha512-uZz5UnB7u4T9LvwmFqXii7pZSouaRPorGs5who1Ip7VO0wxanFvBL7GkM6dTHlgX+jhBApRetaWpnDabOeTcnA==}
+    hasBin: true
     dev: false
 
   /jsesc@2.5.2:
@@ -9749,6 +9753,7 @@ packages:
 
   /json5@1.0.2:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
+    hasBin: true
     dependencies:
       minimist: 1.2.8
     dev: true
@@ -11118,6 +11123,7 @@ packages:
   /prettier@3.1.0:
     resolution: {integrity: sha512-TQLvXjq5IAibjh8EpBIkNKxO749UEWABoiIZehEPiY4GNpVdhaFKqSTu+QrlU6D2dPAfubRmtJTi4K4YkQ5eXw==}
     engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /pretty-bytes@5.6.0:
@@ -11762,6 +11768,7 @@ packages:
   /rollup@4.6.1:
     resolution: {integrity: sha512-jZHaZotEHQaHLgKr8JnQiDT1rmatjgKlMekyksz+yk9jt/8z9quNjnKNRoaM0wd9DC2QKXjmWWuDYtM3jfF8pQ==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
+    hasBin: true
     optionalDependencies:
       '@rollup/rollup-android-arm-eabi': 4.6.1
       '@rollup/rollup-android-arm64': 4.6.1
@@ -11872,6 +11879,7 @@ packages:
 
   /semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
+    hasBin: true
 
   /semver@7.5.3:
     resolution: {integrity: sha512-QBlUtyVk/5EeHbi7X0fw6liDZc7BBmEaSYn01fMU1OUYbf6GPsbTtd8WmnqbI20SeycoHSeiybkE/q1Q+qlThQ==}
@@ -11883,6 +11891,7 @@ packages:
   /semver@7.5.4:
     resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
     engines: {node: '>=10'}
+    hasBin: true
     dependencies:
       lru-cache: 6.0.0
 
@@ -12075,6 +12084,7 @@ packages:
 
   /sort-package-json@2.6.0:
     resolution: {integrity: sha512-XSQ+lY9bAYA8ZsoChcEoPlgcSMaheziEp1beox1JVxy1SV4F2jSq9+h2rJ+3mC/Dhu9Ius1DLnInD5AWcsDXZw==}
+    hasBin: true
     dependencies:
       detect-indent: 7.0.1
       detect-newline: 4.0.1
@@ -13249,6 +13259,7 @@ packages:
   /vite-node@0.34.6(@types/node@20.10.3):
     resolution: {integrity: sha512-nlBMJ9x6n7/Amaz6F3zJ97EBwR2FkzhBRxF5e+jE6LA3yi6Wtc2lyTij1OnDMIr34v5g/tVQtsVAzhT0jc5ygA==}
     engines: {node: '>=v14.18.0'}
+    hasBin: true
     dependencies:
       cac: 6.7.14
       debug: 4.3.4(supports-color@8.1.1)

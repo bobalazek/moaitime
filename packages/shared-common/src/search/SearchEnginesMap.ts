@@ -1,4 +1,4 @@
-import { SearchEngineInterface } from './SearchEngineInterface';
+import { SearchEngineInterface } from './SearchEngine';
 import { SearchEnginesEnum } from './SearchEnginesEnum';
 
 export const SearchEnginesMap: Record<SearchEnginesEnum, SearchEngineInterface> = {

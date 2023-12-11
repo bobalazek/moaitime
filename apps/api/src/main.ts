@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { useContainer } from 'class-validator';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 import { getEnv } from '@myzenbuddy/shared-backend';
 
@@ -30,8 +30,7 @@ export async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Validation
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.useGlobalPipes(new ZodValidationPipe());
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -44,4 +44,8 @@ export const UserSettingsSchema = z.object({
   calendarStartDayOfWeek: z.number().min(0).max(6) as z.ZodType<CalendarDayOfWeek>,
 });
 
+export const UpdateUserSettingsSchema = UserSettingsSchema.partial();
+
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
+
+export type UpdateUserSettings = z.infer<typeof UpdateUserSettingsSchema>;

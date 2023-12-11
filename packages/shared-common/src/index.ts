@@ -1,49 +1,46 @@
-// Constants
+// General
 export * from './Constants';
+export * from './Helpers';
 
 // Auth
-export * from './auth/AuthInterface';
-export * from './auth/UserInterface';
-export * from './auth/UpdateUserInterface';
-export * from './auth/UpdateUserPasswordInterface';
-export * from './auth/UpdateUserSettingsInterface';
-export * from './auth/UserAccessTokenInterface';
+export * from './auth/Auth';
+export * from './auth/UserSchema';
+export * from './auth/UserAccessToken';
 export * from './auth/UserRoleEnum';
 export * from './auth/UserSettingsSchema';
-export * from './auth/DefaultUserSettings';
+export * from './auth/UserSettingsDefault';
 export * from './auth/TeamUserRoleEnum';
 export * from './auth/OrganizationUserRoleEnum';
 
 // Background
-export * from './background/BackgroundInterface';
+export * from './background/Background';
 
 // Calendar
 export * from './calendar/CalendarViewOptions';
 export * from './calendar/CalendarDayOfWeek';
-export * from './calendar/EventInterface';
+export * from './calendar/Event';
 
 // Core
-export * from './core/Helpers';
 export * from './core/SortDirectionEnum';
-export * from './core/ResponseInterface';
-export * from './core/ErrorResponseInterface';
+export * from './core/Response';
+export * from './core/ErrorResponse';
 
 // Greeting
-export * from './greeting/GreetingInterface';
+export * from './greeting/Greeting';
 
 // Quote
-export * from './quote/QuoteInterface';
+export * from './quote/Quote';
 
 // Search
 export * from './search/SearchEnginesEnum';
 export * from './search/SearchEnginesMap';
 
 // Tasks
-export * from './tasks/ListInterface';
-export * from './tasks/TaskInterface';
+export * from './tasks/List';
+export * from './tasks/Task';
 export * from './tasks/ListColors';
 export * from './tasks/ListSortOptions';
 
 // Weather
-export * from './weather/WeatherInterface';
-export * from './weather/LocationInterface';
+export * from './weather/Weather';
+export * from './weather/Location';

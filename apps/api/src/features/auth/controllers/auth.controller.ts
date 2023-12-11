@@ -62,6 +62,7 @@ export class AuthController {
     await authManager.register({
       // I really do not feel like fighting with typescript on this one now.
       // That shall be a problem for future me.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       settings: body.settings as any,
       ...body,
     });

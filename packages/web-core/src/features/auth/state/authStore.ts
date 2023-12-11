@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import {
-  AuthInterface,
+  Auth,
   ResponseInterface,
-  UpdateUserInterface,
-  UpdateUserPasswordInterface,
-  UpdateUserSettingsInterface,
+  UpdateUser,
+  UpdateUserPassword,
+  UpdateUserSettings,
 } from '@myzenbuddy/shared-common';
 
 import { useBackgroundStore } from '../../background/state/backgroundStore';
@@ -30,8 +30,8 @@ import {
 } from '../utils/AuthHelpers';
 
 export type AuthStore = {
-  auth: AuthInterface | null;
-  setAuth: (auth: AuthInterface | null) => Promise<void>;
+  auth: Auth | null;
+  setAuth: (auth: Auth | null) => Promise<void>;
   // Login
   login: (email: string, password: string) => Promise<ResponseInterface>;
   // Logout
@@ -52,9 +52,9 @@ export type AuthStore = {
   cancelNewEmail: () => Promise<ResponseInterface>;
   // Account
   loadAccount: () => Promise<ResponseInterface>;
-  updateAccount: (data: UpdateUserInterface) => Promise<ResponseInterface>;
-  updateAccountPassword: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
-  updateAccountSettings: (data: UpdateUserSettingsInterface) => Promise<ResponseInterface>;
+  updateAccount: (data: UpdateUser) => Promise<ResponseInterface>;
+  updateAccountPassword: (data: UpdateUserPassword) => Promise<ResponseInterface>;
+  updateAccountSettings: (data: UpdateUserSettings) => Promise<ResponseInterface>;
   // Account Password Settings Dialog
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
@@ -66,7 +66,7 @@ export const useAuthStore = create<AuthStore>()(
   persist<AuthStore>(
     (set, get) => ({
       auth: null,
-      setAuth: async (auth: AuthInterface | null) => {
+      setAuth: async (auth: Auth | null) => {
         set({ auth });
       },
       // Login
@@ -165,7 +165,7 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      updateAccount: async (data: UpdateUserInterface) => {
+      updateAccount: async (data: UpdateUser) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
@@ -177,7 +177,7 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      updateAccountPassword: async (data: UpdateUserPasswordInterface) => {
+      updateAccountPassword: async (data: UpdateUserPassword) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
@@ -189,7 +189,7 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      updateAccountSettings: async (data: UpdateUserSettingsInterface) => {
+      updateAccountSettings: async (data: UpdateUserSettings) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');

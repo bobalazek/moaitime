@@ -1,37 +1,31 @@
 import {
   API_URL,
-  AuthInterface,
+  Auth,
   ResponseInterface,
-  UpdateUserInterface,
-  UpdateUserPasswordInterface,
-  UpdateUserSettingsInterface,
+  UpdateUser,
+  UpdateUserPassword,
+  UpdateUserSettings,
 } from '@myzenbuddy/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 export const login = async (email: string, password: string) => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/login`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/login`, {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
   return response;
 };
 
 export const logout = async () => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/logout`,
-    {
-      method: 'POST',
-    }
-  );
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/logout`, {
+    method: 'POST',
+  });
 
   return response;
 };
@@ -47,17 +41,14 @@ export const register = async (displayName: string, email: string, password: str
     },
   };
 
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/register`,
-    {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/register`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
   return response;
 };
@@ -135,7 +126,7 @@ export const confirmEmail = async (token: string, isNewEmail?: boolean) => {
 };
 
 export const refreshToken = async (token: string) => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
+  const response = await fetchJson<ResponseInterface<Auth>>(
     `${API_URL}/api/v1/auth/refresh-token`,
     {
       method: 'POST',
@@ -151,34 +142,28 @@ export const refreshToken = async (token: string) => {
 };
 
 export const loadAccount = async () => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/account`,
-    {
-      method: 'GET',
-    }
-  );
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/account`, {
+    method: 'GET',
+  });
 
   return response;
 };
 
-export const updateAccount = async (data: UpdateUserInterface) => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/account`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+export const updateAccount = async (data: UpdateUser) => {
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/account`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
   return response;
 };
 
-export const updateAccountPassword = async (data: UpdateUserPasswordInterface) => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
+export const updateAccountPassword = async (data: UpdateUserPassword) => {
+  const response = await fetchJson<ResponseInterface<Auth>>(
     `${API_URL}/api/v1/auth/account/password`,
     {
       method: 'POST',
@@ -192,8 +177,8 @@ export const updateAccountPassword = async (data: UpdateUserPasswordInterface) =
 
   return response;
 };
-export const updateAccountSettings = async (data: UpdateUserSettingsInterface) => {
-  const response = await fetchJson<ResponseInterface<AuthInterface>>(
+export const updateAccountSettings = async (data: UpdateUserSettings) => {
+  const response = await fetchJson<ResponseInterface<Auth>>(
     `${API_URL}/api/v1/auth/account/settings`,
     {
       method: 'PATCH',

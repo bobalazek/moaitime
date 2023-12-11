@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { AuthInterface } from '@myzenbuddy/shared-common';
+import { Auth } from '@myzenbuddy/shared-common';
 import { Button, Input, useToast } from '@myzenbuddy/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
 
-export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterface }) {
+export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
   const { toast } = useToast();
   const {
     logout,

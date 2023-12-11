@@ -40,8 +40,8 @@ export class AuthAccountController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Patch('settings')
-  async settings(
+  @Patch()
+  async update(
     @Body() body: UpdateUserDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response

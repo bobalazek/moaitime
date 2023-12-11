@@ -23,8 +23,8 @@ import {
   requestPasswordReset,
   resendEmailConfirmation,
   resetPassword,
+  updateAccount,
   updateAccountPassword,
-  updateAccountSettings,
 } from '../utils/AuthHelpers';
 
 export type AuthStore = {
@@ -50,10 +50,11 @@ export type AuthStore = {
   cancelNewEmail: () => Promise<ResponseInterface>;
   // Account
   loadAccount: () => Promise<ResponseInterface>;
-  updateAccountSettings: (data: UpdateUserInterface) => Promise<ResponseInterface>;
+  updateAccount: (data: UpdateUserInterface) => Promise<ResponseInterface>;
+  updateAccountPassword: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
+  // Account Password Settings Dialog
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
-  updateAccountPassword: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
   // App Data
   loadAppData: () => Promise<void>;
 };
@@ -161,24 +162,17 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      // Settings
-      // Update Settings
-      updateAccountSettings: async (data: UpdateUserInterface) => {
+      updateAccount: async (data: UpdateUserInterface) => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
-        const response = await updateAccountSettings(data);
+        const response = await updateAccount(data);
 
         set({ auth: response.data });
 
         return response;
-      },
-      // Update Password Settings
-      accountPasswordSettingsDialogOpen: false,
-      setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => {
-        set({ accountPasswordSettingsDialogOpen });
       },
       updateAccountPassword: async (data: UpdateUserPasswordInterface) => {
         const { auth } = get();
@@ -191,6 +185,11 @@ export const useAuthStore = create<AuthStore>()(
         set({ auth: response.data });
 
         return response;
+      },
+      // Account Password Settings Dialog
+      accountPasswordSettingsDialogOpen: false,
+      setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => {
+        set({ accountPasswordSettingsDialogOpen });
       },
       // App Data
       loadAppData: async () => {

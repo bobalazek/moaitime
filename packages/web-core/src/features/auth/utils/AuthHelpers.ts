@@ -150,7 +150,7 @@ export const loadAccount = async () => {
   return response;
 };
 
-export const updateAccountSettings = async (data: UpdateUserInterface) => {
+export const updateAccount = async (data: UpdateUserInterface) => {
   const response = await fetchJson<ResponseInterface<AuthInterface>>(
     `${API_URL}/api/v1/auth/account/settings`,
     {

@@ -11,10 +11,10 @@ import {
   generateHash,
 } from '@myzenbuddy/shared-backend';
 import {
-  DEFAULT_SETTINGS,
-  SettingsInterface,
+  DEFAULT_USER_SETTINGS,
   TASK_LIST_COLORS,
   UserRoleEnum,
+  UserSettingsInterface,
   WEB_URL,
 } from '@myzenbuddy/shared-common';
 
@@ -467,9 +467,9 @@ export class AuthManager {
     return userAccessToken;
   }
 
-  getUserSettings(user: User): SettingsInterface {
+  getUserSettings(user: User): UserSettingsInterface {
     return {
-      ...DEFAULT_SETTINGS,
+      ...DEFAULT_USER_SETTINGS,
       ...(user.settings ?? {}),
     };
   }

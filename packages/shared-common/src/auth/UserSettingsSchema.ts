@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { CalendarDayOfWeek } from '../calendar/CalendarDayOfWeek';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 
-export const SettingsSchema = z.object({
+export const UserSettingsSchema = z.object({
   // General
   generalTimezone: z.string(),
 
@@ -44,4 +44,4 @@ export const SettingsSchema = z.object({
   calendarStartDayOfWeek: z.number().min(0).max(6) as z.ZodType<CalendarDayOfWeek>,
 });
 
-export type SettingsInterface = z.infer<typeof SettingsSchema>;
+export type UserSettingsInterface = z.infer<typeof UserSettingsSchema>;

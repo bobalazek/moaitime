@@ -8,6 +8,8 @@ export * from './auth/UpdateUserInterface';
 export * from './auth/UpdateUserPasswordInterface';
 export * from './auth/UserAccessTokenInterface';
 export * from './auth/UserRoleEnum';
+export * from './auth/UserSettingsSchema';
+export * from './auth/DefaultUserSettings';
 export * from './auth/TeamUserRoleEnum';
 export * from './auth/OrganizationUserRoleEnum';
 
@@ -30,10 +32,6 @@ export * from './greeting/GreetingInterface';
 
 // Quote
 export * from './quote/QuoteInterface';
-
-// Settings
-export * from './settings/SettingsSchema';
-export * from './settings/DefaultSettings';
 
 // Search
 export * from './search/SearchEnginesEnum';

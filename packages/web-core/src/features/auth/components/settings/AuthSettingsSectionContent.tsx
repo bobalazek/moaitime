@@ -9,7 +9,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
   const { toast } = useToast();
   const {
     logout,
-    updateAccountSettings,
+    updateAccount,
     resendEmailConfirmation,
     cancelNewEmail,
     setAccountPasswordSettingsDialogOpen: setPasswordSettingsDialogOpen,
@@ -63,7 +63,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
 
   const onSaveButtonClick = async () => {
     try {
-      await updateAccountSettings({
+      await updateAccount({
         displayName: userDisplayName,
         email: userEmail,
       });

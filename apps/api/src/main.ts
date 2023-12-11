@@ -30,7 +30,6 @@ export async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Validation
-  // Preferably use separate eslint configs for frontend and backend
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 

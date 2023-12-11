@@ -30,7 +30,6 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "3.2.2",
     "@myzenbuddy/shared-common": "workspace:*",
-    "@myzenbuddy/shared-frontend": "workspace:*",
     "@myzenbuddy/tsconfig-config": "workspace:*",
     "@myzenbuddy/web-ui": "workspace:*",
     "@radix-ui/react-popover": "^1.0.7",

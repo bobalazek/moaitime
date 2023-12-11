@@ -214,9 +214,6 @@ importers:
       '@myzenbuddy/shared-common':
         specifier: workspace:*
         version: link:../../packages/shared-common
-      '@myzenbuddy/shared-frontend':
-        specifier: workspace:*
-        version: link:../../packages/shared-frontend
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
@@ -579,12 +576,6 @@ importers:
         specifier: ^5.3.2
         version: 5.3.2
 
-  packages/shared-frontend:
-    devDependencies:
-      typescript:
-        specifier: ^5.3.2
-        version: 5.3.2
-
   packages/shared-logging:
     dependencies:
       '@myzenbuddy/shared-backend':
@@ -621,9 +612,6 @@ importers:
       '@myzenbuddy/shared-common':
         specifier: workspace:*
         version: link:../shared-common
-      '@myzenbuddy/shared-frontend':
-        specifier: workspace:*
-        version: link:../shared-frontend
       '@myzenbuddy/tsconfig-config':
         specifier: workspace:*
         version: link:../../configs/tsconfig-config

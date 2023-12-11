@@ -3,6 +3,13 @@ export * from './Constants';
 
 // Auth
 export * from './auth/AuthInterface';
+export * from './auth/UserInterface';
+export * from './auth/UpdateUserInterface';
+export * from './auth/UpdateUserPasswordInterface';
+export * from './auth/UserAccessTokenInterface';
+export * from './auth/UserRoleEnum';
+export * from './auth/TeamUserRoleEnum';
+export * from './auth/OrganizationUserRoleEnum';
 
 // Background
 export * from './background/BackgroundInterface';
@@ -25,21 +32,12 @@ export * from './greeting/GreetingInterface';
 export * from './quote/QuoteInterface';
 
 // Settings
-export * from './settings/SettingsInterface';
+export * from './settings/SettingsSchema';
 export * from './settings/DefaultSettings';
 
 // Search
 export * from './search/SearchEnginesEnum';
 export * from './search/SearchEnginesMap';
-
-// Users
-export * from './users/UserInterface';
-export * from './users/UpdateUserInterface';
-export * from './users/UpdateUserPasswordInterface';
-export * from './users/UserAccessTokenInterface';
-export * from './users/UserRoleEnum';
-export * from './users/TeamUserRoleEnum';
-export * from './users/OrganizationUserRoleEnum';
 
 // Tasks
 export * from './tasks/ListInterface';

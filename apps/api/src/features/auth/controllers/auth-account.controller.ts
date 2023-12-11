@@ -13,9 +13,9 @@ import { Request, Response } from 'express';
 
 import { authManager } from '@myzenbuddy/database-services';
 
-import { UpdateUserDto } from '../../users/dtos/update-user.dto';
 import { LoginResponseDto } from '../dtos/login-response.dto';
 import { UpdatePasswordDto } from '../dtos/update-password.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
 

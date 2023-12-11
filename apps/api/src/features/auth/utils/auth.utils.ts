@@ -2,8 +2,8 @@ import { format } from 'date-fns';
 
 import { User, UserAccessToken } from '@myzenbuddy/database-core';
 
-import { UserAccessTokenDto } from '../../users/dtos/user-access-token.dto';
-import { UserDto } from '../../users/dtos/user.dto';
+import { UserAccessTokenDto } from '../dtos/user-access-token.dto';
+import { UserDto } from '../dtos/user.dto';
 
 export const convertToUserAndAccessTokenDto = (
   user: User,

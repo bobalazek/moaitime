@@ -20,8 +20,8 @@ import {
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
-import { UserAccessTokensManager, userAccessTokensManager } from '../users/UserAccessTokensManager';
-import { UsersManager, usersManager } from '../users/UsersManager';
+import { UserAccessTokensManager, userAccessTokensManager } from './UserAccessTokensManager';
+import { UsersManager, usersManager } from './UsersManager';
 
 type AuthLoginResult = {
   user: User;

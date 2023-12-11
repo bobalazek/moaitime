@@ -1,5 +1,5 @@
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
-import { SettingsInterface } from './SettingsInterface';
+import { SettingsInterface } from './SettingsSchema';
 
 export const DEFAULT_SETTINGS: SettingsInterface = {
   generalTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,

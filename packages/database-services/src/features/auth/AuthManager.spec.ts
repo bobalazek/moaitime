@@ -8,9 +8,9 @@ import { reloadDatabase } from '@myzenbuddy/database-testing';
 import { DEFAULT_LIST_NAMES } from '../../../../shared-backend/src';
 import { calendarsManager } from '../calendars/CalendarsManager';
 import { listsManager } from '../tasks/ListsManager';
-import { userAccessTokensManager } from '../users/UserAccessTokensManager';
-import { usersManager } from '../users/UsersManager';
 import { authManager } from './AuthManager';
+import { userAccessTokensManager } from './UserAccessTokensManager';
+import { usersManager } from './UsersManager';
 
 describe('AuthManager.ts', () => {
   beforeAll(async () => {

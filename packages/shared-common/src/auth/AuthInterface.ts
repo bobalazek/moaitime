@@ -1,5 +1,5 @@
-import { UserAccessTokenInterface } from '../users/UserAccessTokenInterface';
-import { UserInterface } from '../users/UserInterface';
+import { UserAccessTokenInterface } from './UserAccessTokenInterface';
+import { UserInterface } from './UserInterface';
 
 export interface AuthInterface {
   user: UserInterface;

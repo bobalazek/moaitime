@@ -1,5 +1,7 @@
 // Auth
 export * from './features/auth/AuthManager';
+export * from './features/auth/UsersManager';
+export * from './features/auth/UserAccessTokensManager';
 
 // Backgrounds
 export * from './features/backgrounds/BackgroundsManager';
@@ -19,7 +21,3 @@ export * from './features/quotes/QuotesManager';
 // Tasks
 export * from './features/tasks/TasksManager';
 export * from './features/tasks/ListsManager';
-
-// Users
-export * from './features/users/UsersManager';
-export * from './features/users/UserAccessTokensManager';

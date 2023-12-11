@@ -1,4 +1,3 @@
-import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useBackgroundStore } from '../state/backgroundStore';
 
 export default function BackgroundInformation() {

@@ -1,3 +1,5 @@
-import { UserSettings } from '@myzenbuddy/shared-common';
+import { createZodDto } from 'nestjs-zod';
 
-export class UpdateUserSettingsDto implements Partial<UserSettings> {}
+import { UserSettingsSchema } from '@myzenbuddy/shared-common';
+
+export class UpdateUserSettingsDto extends createZodDto(UserSettingsSchema) {}

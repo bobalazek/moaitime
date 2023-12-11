@@ -1,8 +1,5 @@
-import { UserSettings } from '@myzenbuddy/shared-common';
+import { createZodDto } from 'nestjs-zod';
 
-export class RegisterDto {
-  displayName!: string;
-  email!: string;
-  password!: string;
-  settings?: Pick<UserSettings, 'generalTimezone' | 'clockUse24HourClock'>;
-}
+import { UserRegisterSchema } from '@myzenbuddy/shared-common';
+
+export class RegisterDto extends createZodDto(UserRegisterSchema) {}

@@ -5,6 +5,7 @@ import { Response } from 'express';
 
 import { User, UserAccessToken } from '@myzenbuddy/database-core';
 import { authManager, usersManager } from '@myzenbuddy/database-services';
+import { DEFAULT_USER_SETTINGS } from '@myzenbuddy/shared-common';
 
 import { getTestUser, getTestUserAccessToken } from '../utils/auth.test-data';
 import { AuthController } from './auth.controller';
@@ -82,6 +83,7 @@ describe('AuthController', () => {
         email: testUser.email,
         newEmail: testUser.newEmail,
         roles: testUser.roles,
+        settings: DEFAULT_USER_SETTINGS,
         birthDate: '1990-01-01',
         emailConfirmedAt: testUser.emailConfirmedAt?.toISOString() ?? null,
         createdAt: testUser.createdAt?.toISOString() ?? null,

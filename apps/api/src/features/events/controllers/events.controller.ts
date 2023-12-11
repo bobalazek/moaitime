@@ -5,7 +5,7 @@ import { Event } from '@myzenbuddy/database-core';
 import { eventsManager } from '@myzenbuddy/database-services';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { AbstractResponseDto } from '../../core/dtos/abstract-response.dto';
+import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 
 @Controller('/api/v1/events')
 export class EventsController {

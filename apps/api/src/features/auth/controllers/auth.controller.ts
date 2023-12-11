@@ -3,15 +3,15 @@ import { Request, Response } from 'express';
 
 import { authManager } from '@myzenbuddy/database-services';
 
-import { ResponseDto } from '../../core/dtos/response.dto';
+import { ResponseDto } from '../../core/dtos/responses/response.dto';
 import { TokenDto } from '../../core/dtos/token.dto';
 import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
-import { LoginResponseDto } from '../dtos/login-response.dto';
 import { LoginDto } from '../dtos/login.dto';
 import { RegisterDto } from '../dtos/register.dto';
 import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
 import { ResendEmailConfirmationDto } from '../dtos/resend-email-confirmation.dto';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
+import { LoginResponseDto } from '../dtos/responses/login-response.dto';
 import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
 
 @Controller('/api/v1/auth')

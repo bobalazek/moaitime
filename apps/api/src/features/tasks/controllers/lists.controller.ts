@@ -17,7 +17,7 @@ import { List } from '@myzenbuddy/database-core';
 import { listsManager } from '@myzenbuddy/database-services';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { AbstractResponseDto } from '../../core/dtos/abstract-response.dto';
+import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateListDto } from '../dtos/create-list.dto';
 import { UpdateListDto } from '../dtos/update-list.dto';
 

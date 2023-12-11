@@ -4,7 +4,7 @@ import { testingEmailsManager } from '@myzenbuddy/database-services-testing';
 import { reloadDatabase } from '@myzenbuddy/database-testing';
 import { getEnv } from '@myzenbuddy/shared-backend';
 
-import { ResponseDto } from '../../core/dtos/response.dto';
+import { ResponseDto } from '../../core/dtos/responses/response.dto';
 
 @Controller('/api/testing')
 export class TestingController {

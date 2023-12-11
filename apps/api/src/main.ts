@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { ZodValidationPipe } from 'nestjs-zod';
+import { createZodValidationPipe } from 'nestjs-zod';
 
 import { getEnv } from '@myzenbuddy/shared-backend';
 
@@ -30,6 +30,11 @@ export async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Validation
+  const ZodValidationPipe = createZodValidationPipe({
+    createValidationException: (err) => {
+      return err;
+    },
+  });
   app.useGlobalPipes(new ZodValidationPipe());
 
   app.useGlobalPipes(

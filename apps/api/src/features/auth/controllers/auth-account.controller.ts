@@ -13,7 +13,7 @@ import { Request, Response } from 'express';
 
 import { authManager } from '@myzenbuddy/database-services';
 
-import { LoginResponseDto } from '../dtos/login-response.dto';
+import { LoginResponseDto } from '../dtos/responses/login-response.dto';
 import { UpdateUserPasswordDto } from '../dtos/update-user-password.dto';
 import { UpdateUserSettingsDto } from '../dtos/update-user-settings.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';

@@ -18,7 +18,7 @@ import { listsManager, tasksManager } from '@myzenbuddy/database-services';
 import { SortDirectionEnum } from '@myzenbuddy/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { AbstractResponseDto } from '../../core/dtos/abstract-response.dto';
+import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateTaskDto } from '../dtos/create-task.dto';
 import { ReorderTasksDto } from '../dtos/reorder-tasks.dto';
 import { UpdateTaskDto } from '../dtos/update-task.dto';

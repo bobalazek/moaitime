@@ -1,4 +1,4 @@
-import { UserInterface } from '@myzenbuddy/shared-common';
+import { UserInterface, UserSettings } from '@myzenbuddy/shared-common';
 
 export class UserDto implements UserInterface {
   id!: string;
@@ -8,6 +8,7 @@ export class UserDto implements UserInterface {
   roles!: string[];
   birthDate!: string | null;
   emailConfirmedAt!: string | null;
+  settings!: UserSettings;
   createdAt!: string;
   updatedAt!: string;
 }

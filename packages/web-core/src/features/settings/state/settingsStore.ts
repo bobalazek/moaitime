@@ -10,6 +10,8 @@ export type SettingsStore = {
   updateSettings: (settings: Partial<UserSettings>) => Promise<void>;
 };
 
+// TODO: move that all into the auth store!!!
+
 export const useSettingsStore = create<SettingsStore>()((set) => ({
   /********** General **********/
   dialogOpen: false,

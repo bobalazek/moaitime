@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 
 import { User, UserAccessToken } from '@myzenbuddy/database-core';
+import { authManager } from '@myzenbuddy/database-services';
 
 import { UserAccessTokenDto } from '../dtos/user-access-token.dto';
 import { UserDto } from '../dtos/user.dto';
@@ -31,6 +32,7 @@ export const convertToUserAndAccessTokenDto = (
       email: user.email,
       newEmail: user.newEmail ?? null,
       roles: user.roles,
+      settings: authManager.getUserSettings(user),
       birthDate,
       emailConfirmedAt: user.emailConfirmedAt?.toISOString() ?? null,
       createdAt: user.createdAt?.toISOString() ?? now.toISOString(),

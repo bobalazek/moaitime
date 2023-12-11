@@ -6,6 +6,7 @@ export * from './auth/AuthInterface';
 export * from './auth/UserInterface';
 export * from './auth/UpdateUserInterface';
 export * from './auth/UpdateUserPasswordInterface';
+export * from './auth/UpdateUserSettingsInterface';
 export * from './auth/UserAccessTokenInterface';
 export * from './auth/UserRoleEnum';
 export * from './auth/UserSettingsSchema';

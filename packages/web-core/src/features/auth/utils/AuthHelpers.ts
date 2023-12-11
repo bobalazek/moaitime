@@ -4,6 +4,7 @@ import {
   ResponseInterface,
   UpdateUserInterface,
   UpdateUserPasswordInterface,
+  UpdateUserSettingsInterface,
 } from '@myzenbuddy/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -152,7 +153,7 @@ export const loadAccount = async () => {
 
 export const updateAccount = async (data: UpdateUserInterface) => {
   const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/account/settings`,
+    `${API_URL}/api/v1/auth/account`,
     {
       method: 'PATCH',
       body: JSON.stringify(data),
@@ -171,6 +172,21 @@ export const updateAccountPassword = async (data: UpdateUserPasswordInterface) =
     `${API_URL}/api/v1/auth/account/password`,
     {
       method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+export const updateSettings = async (data: UpdateUserSettingsInterface) => {
+  const response = await fetchJson<ResponseInterface<AuthInterface>>(
+    `${API_URL}/api/v1/auth/settings`,
+    {
+      method: 'PATCH',
       body: JSON.stringify(data),
       headers: {
         Accept: 'application/json',

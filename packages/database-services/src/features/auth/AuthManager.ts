@@ -423,6 +423,28 @@ export class AuthManager {
     return updatedUser;
   }
 
+  async updateSettings(id: string, data: Partial<NewUser['settings']>): Promise<User> {
+    const user = await this._usersManager.findOneById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const userSetings = this.getUserSettings(user);
+
+    const settings = {
+      ...userSetings,
+      ...data,
+    };
+
+    // TODO: do validation
+
+    const updatedUser = await this._usersManager.updateOneById(id, {
+      settings,
+    });
+
+    return updatedUser;
+  }
+
   async getUserByCredentials(email: string, password: string): Promise<User> {
     const user = await this._usersManager.findOneByEmail(email);
     if (!user) {

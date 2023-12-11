@@ -12,7 +12,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
     updateAccount,
     resendEmailConfirmation,
     cancelNewEmail,
-    setAccountPasswordSettingsDialogOpen: setPasswordSettingsDialogOpen,
+    setAccountPasswordSettingsDialogOpen,
   } = useAuthStore();
   const [userDisplayName, setUserDisplayName] = useState(auth.user.displayName ?? '');
   const [userEmail, setUserEmail] = useState(auth.user.email ?? '');
@@ -140,7 +140,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: AuthInterfa
           size="sm"
           variant="outline"
           onClick={() => {
-            setPasswordSettingsDialogOpen(true);
+            setAccountPasswordSettingsDialogOpen(true);
           }}
           data-test="auth--settings--change-password-button"
         >

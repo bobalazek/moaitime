@@ -13,12 +13,12 @@ import {
 import {
   DEFAULT_USER_SETTINGS,
   TASK_LIST_COLORS,
+  UserPasswordSchema,
   UserRoleEnum,
   UserSettings,
   WEB_URL,
 } from '@myzenbuddy/shared-common';
 
-import { UserPasswordSchema } from '../../../../shared-common/dist';
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
 import { UserAccessTokensManager, userAccessTokensManager } from './UserAccessTokensManager';

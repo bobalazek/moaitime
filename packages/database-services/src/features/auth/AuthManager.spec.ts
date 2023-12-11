@@ -4,8 +4,8 @@ import { subHours, subMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 import { reloadDatabase } from '@myzenbuddy/database-testing';
+import { DEFAULT_LIST_NAMES } from '@myzenbuddy/shared-backend';
 
-import { DEFAULT_LIST_NAMES } from '../../../../shared-backend/src';
 import { calendarsManager } from '../calendars/CalendarsManager';
 import { listsManager } from '../tasks/ListsManager';
 import { authManager } from './AuthManager';

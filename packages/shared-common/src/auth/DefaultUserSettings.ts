@@ -1,7 +1,7 @@
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
-import { UserSettingsInterface } from './UserSettingsSchema';
+import { UserSettings } from './UserSettingsSchema';
 
-export const DEFAULT_USER_SETTINGS: UserSettingsInterface = {
+export const DEFAULT_USER_SETTINGS: UserSettings = {
   generalTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   commandsEnabled: true,
   commandsSearchButtonEnabled: true,

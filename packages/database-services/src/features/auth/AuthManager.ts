@@ -14,7 +14,7 @@ import {
   DEFAULT_USER_SETTINGS,
   TASK_LIST_COLORS,
   UserRoleEnum,
-  UserSettingsInterface,
+  UserSettings,
   WEB_URL,
 } from '@myzenbuddy/shared-common';
 
@@ -467,7 +467,7 @@ export class AuthManager {
     return userAccessToken;
   }
 
-  getUserSettings(user: User): UserSettingsInterface {
+  getUserSettings(user: User): UserSettings {
     return {
       ...DEFAULT_USER_SETTINGS,
       ...(user.settings ?? {}),

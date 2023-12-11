@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 
-import { DEFAULT_USER_SETTINGS, UserSettingsInterface } from '@myzenbuddy/shared-common';
+import { DEFAULT_USER_SETTINGS, UserSettings } from '@myzenbuddy/shared-common';
 
 export type SettingsStore = {
   /********** General **********/
   dialogOpen: boolean;
   setDialogOpen: (dialogOpen: boolean) => void;
-  settings: UserSettingsInterface;
-  updateSettings: (settings: Partial<UserSettingsInterface>) => Promise<void>;
+  settings: UserSettings;
+  updateSettings: (settings: Partial<UserSettings>) => Promise<void>;
 };
 
 export const useSettingsStore = create<SettingsStore>()((set) => ({
@@ -19,7 +19,7 @@ export const useSettingsStore = create<SettingsStore>()((set) => ({
     });
   },
   settings: DEFAULT_USER_SETTINGS,
-  updateSettings: async (settings: Partial<UserSettingsInterface>) => {
+  updateSettings: async (settings: Partial<UserSettings>) => {
     set((state) => ({
       settings: {
         ...state.settings,

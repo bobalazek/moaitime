@@ -1,8 +1,6 @@
 /// <reference types="cypress" />
 
-import { API_URL, UserSettingsInterface } from '@myzenbuddy/shared-common';
-
-type UserSettingsKeys = keyof UserSettingsInterface;
+import { API_URL, UserSettings } from '@myzenbuddy/shared-common';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -31,7 +29,7 @@ declare global {
        */
       toggleSettingsSwitch(
         sectionLabel: string,
-        settings: Partial<Record<UserSettingsKeys, boolean | undefined>>
+        settings: Partial<Record<keyof UserSettings, boolean | undefined>>
       ): Chainable;
 
       /**
@@ -91,7 +89,7 @@ Cypress.Commands.add('toggleSettingsSwitch', (sectionLabel, settings) => {
   cy.getBySel(`settings--dialog--sidebar`).find('button').contains(sectionLabel).click();
 
   Object.keys(settings).forEach((setting) => {
-    const state = settings[setting as UserSettingsKeys];
+    const state = settings[setting as keyof UserSettings];
     const switchSelector = `#settings-${setting}`;
 
     cy.get(switchSelector).then(($switch) => {

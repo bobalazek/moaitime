@@ -2,7 +2,7 @@ import { relations } from 'drizzle-orm';
 import { date, index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
-import { UserRoleEnum, UserSettingsInterface } from '@myzenbuddy/shared-common';
+import { UserRoleEnum, UserSettings } from '@myzenbuddy/shared-common';
 
 import { backgrounds } from './backgrounds';
 import { calendars } from './calendars';
@@ -26,7 +26,7 @@ export const users = pgTable(
       .notNull()
       .default(JSON.stringify([UserRoleEnum.USER]))
       .$type<UserRoleEnum[]>(),
-    settings: json('settings').$type<UserSettingsInterface>(),
+    settings: json('settings').$type<UserSettings>(),
     birthDate: date('birth_date'), // For some reason that returns the Date object instead of a string if using the "postgres" driver. Works fine with "pg"
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),

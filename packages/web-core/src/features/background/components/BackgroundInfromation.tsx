@@ -1,14 +1,22 @@
+import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useBackgroundStore } from '../state/backgroundStore';
 
 export default function BackgroundInformation() {
-  const { background: background } = useBackgroundStore();
+  const { background, setRandomBackground } = useBackgroundStore();
   if (!background) {
     return null;
   }
 
   return (
-    <div className="pointer-events-none text-left text-xs" data-test="background-information">
-      <h5 className="font-bold">{background.title}</h5>
+    <div className="text-left text-xs" data-test="background-information">
+      <h5
+        className="cursor-default font-bold"
+        onDoubleClick={() => {
+          setRandomBackground();
+        }}
+      >
+        {background.title}
+      </h5>
       <h6>
         <a href={background.url} target="_blank" rel="noreferrer">
           {background.author}

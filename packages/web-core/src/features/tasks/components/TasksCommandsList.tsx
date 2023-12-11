@@ -2,16 +2,16 @@ import { FaCircle, FaExternalLinkAlt, FaPlus, FaTasks } from 'react-icons/fa';
 
 import { CommandGroup, CommandItem } from '@myzenbuddy/web-ui';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
-import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useTasksStore } from '../state/tasksStore';
 
 export default function TasksCommandsList() {
-  const {
-    settings: { tasksEnabled },
-  } = useSettingsStore();
+  const { auth } = useAuthStore();
   const { setListFormDialogOpen, setPopoverOpen, setSelectedList, lists } = useTasksStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+
+  const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
 
   if (!tasksEnabled) {
     return null;

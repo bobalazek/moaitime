@@ -1,10 +1,13 @@
 import { Label, Switch } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import WeatherSettingsSectionHeaderText from './WeatherSettingsSectionHeaderText';
 
 export default function WeatherSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
+  const weatherUseMetricUnits = auth?.user?.settings?.weatherUseMetricUnits ?? false;
 
   return (
     <div>
@@ -16,10 +19,10 @@ export default function WeatherSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-weatherEnabled"
-            checked={settings.weatherEnabled}
+            checked={weatherEnabled}
             onCheckedChange={() => {
-              updateSettings({
-                weatherEnabled: !settings.weatherEnabled,
+              updateAccountSettings({
+                weatherEnabled: !weatherEnabled,
               });
             }}
           />
@@ -29,15 +32,15 @@ export default function WeatherSettingsSection() {
         </div>
         <p className="mt-2 text-xs text-gray-400">Should we show the weather button?</p>
       </div>
-      {settings.weatherEnabled && (
+      {weatherEnabled && (
         <div className="mb-4">
           <div className="flex items-center">
             <Switch
               id="settings-weatherUseMetricUnits"
-              checked={settings.weatherUseMetricUnits}
+              checked={weatherUseMetricUnits}
               onCheckedChange={() => {
-                updateSettings({
-                  weatherUseMetricUnits: !settings.weatherUseMetricUnits,
+                updateAccountSettings({
+                  weatherUseMetricUnits: !weatherUseMetricUnits,
                 });
               }}
             />

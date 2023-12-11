@@ -12,14 +12,13 @@ import {
   Input,
 } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useWeatherStore } from '../../state/weatherStore';
 
 export default function WeatherLocationDialog() {
-  const {
-    settings: { weatherLocation },
-  } = useSettingsStore();
+  const { auth } = useAuthStore();
   const { locationDialogOpen, setLocationDialogOpen } = useWeatherStore();
+  const weatherLocation = auth?.user?.settings?.weatherLocation ?? '';
   const [name, setName] = useState(weatherLocation);
 
   const onSaveButtonClick = async () => {

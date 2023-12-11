@@ -6,6 +6,7 @@ import {
   ResponseInterface,
   UpdateUserInterface,
   UpdateUserPasswordInterface,
+  UpdateUserSettingsInterface,
 } from '@myzenbuddy/shared-common';
 
 import { useBackgroundStore } from '../../background/state/backgroundStore';
@@ -25,6 +26,7 @@ import {
   resetPassword,
   updateAccount,
   updateAccountPassword,
+  updateAccountSettings,
 } from '../utils/AuthHelpers';
 
 export type AuthStore = {
@@ -52,6 +54,7 @@ export type AuthStore = {
   loadAccount: () => Promise<ResponseInterface>;
   updateAccount: (data: UpdateUserInterface) => Promise<ResponseInterface>;
   updateAccountPassword: (data: UpdateUserPasswordInterface) => Promise<ResponseInterface>;
+  updateAccountSettings: (data: UpdateUserSettingsInterface) => Promise<ResponseInterface>;
   // Account Password Settings Dialog
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
@@ -181,6 +184,18 @@ export const useAuthStore = create<AuthStore>()(
         }
 
         const response = await updateAccountPassword(data);
+
+        set({ auth: response.data });
+
+        return response;
+      },
+      updateAccountSettings: async (data: UpdateUserSettingsInterface) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        const response = await updateAccountSettings(data);
 
         set({ auth: response.data });
 

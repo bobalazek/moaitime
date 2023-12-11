@@ -15,6 +15,7 @@ import { authManager } from '@myzenbuddy/database-services';
 
 import { LoginResponseDto } from '../dtos/login-response.dto';
 import { UpdatePasswordDto } from '../dtos/update-password.dto';
+import { UpdateUserSettingsDto } from '../dtos/update-user-settings.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
@@ -67,6 +68,22 @@ export class AuthAccountController {
     }
 
     await authManager.updatePassword(req.user.id, body.newPassword, body.currentPassword);
+
+    return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Patch('settings')
+  async updateSettings(
+    @Body() body: UpdateUserSettingsDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
+    if (!req.user) {
+      throw new UnauthorizedException();
+    }
+
+    await authManager.updateSettings(req.user.id, body);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
   }

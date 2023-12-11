@@ -9,12 +9,13 @@ import {
   DropdownMenuTrigger,
 } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../settings/state/settingsStore';
+import { useAuthStore } from '../../auth/state/authStore';
 
 export default function SearchEngineDropdownMenu() {
-  const { settings, updateSettings } = useSettingsStore();
-  const selectedSearchEngine = SearchEnginesMap[settings.searchEngine]
-    ? settings.searchEngine
+  const { auth, updateAccountSettings } = useAuthStore();
+  const searchEngine = auth?.user?.settings?.searchEngine ?? SearchEnginesEnum.GOOGLE;
+  const selectedSearchEngine = SearchEnginesMap[searchEngine]
+    ? searchEngine
     : SearchEnginesEnum.GOOGLE;
   const selectedSearchEngineIconImageUrl = SearchEnginesMap[selectedSearchEngine].iconImageUrl;
 
@@ -34,8 +35,7 @@ export default function SearchEngineDropdownMenu() {
         <DropdownMenuRadioGroup
           value={selectedSearchEngine}
           onValueChange={(value) => {
-            updateSettings({
-              ...settings,
+            updateAccountSettings({
               searchEngine: value as SearchEnginesEnum,
             });
           }}

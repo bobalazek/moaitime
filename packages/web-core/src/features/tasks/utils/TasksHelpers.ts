@@ -13,7 +13,7 @@ export const loadLists = async (options?: {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
 }) => {
-  const includeCompleted = options?.includeCompleted ?? true;
+  const includeCompleted = options?.includeCompleted ?? false;
   const includeDeleted = options?.includeDeleted ?? false;
   const url = `${API_URL}/api/v1/lists?includeCompleted=${
     includeCompleted ? 'true' : 'false'

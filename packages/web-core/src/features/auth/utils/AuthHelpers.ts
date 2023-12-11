@@ -182,9 +182,9 @@ export const updateAccountPassword = async (data: UpdateUserPasswordInterface) =
 
   return response;
 };
-export const updateSettings = async (data: UpdateUserSettingsInterface) => {
+export const updateAccountSettings = async (data: UpdateUserSettingsInterface) => {
   const response = await fetchJson<ResponseInterface<AuthInterface>>(
-    `${API_URL}/api/v1/auth/settings`,
+    `${API_URL}/api/v1/auth/account/settings`,
     {
       method: 'PATCH',
       body: JSON.stringify(data),

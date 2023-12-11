@@ -3,15 +3,14 @@ import { format, isSameDay } from 'date-fns';
 
 import { CalendarViewEnum } from '@myzenbuddy/shared-common';
 
-import { useSettingsStore } from '../../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../../auth/state/authStore';
 import { useCalendarStore } from '../../../state/calendarStore';
 import { getWeeksForMonth } from '../../../utils/CalendarHelpers';
 
 export default function CalendarYearlyViewMonth({ month, now }: { month: Date; now: Date }) {
   const { setSelectedDate, setSelectedView } = useCalendarStore();
-  const {
-    settings: { calendarStartDayOfWeek },
-  } = useSettingsStore();
+  const { auth } = useAuthStore();
+  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
   const monthName = format(month, 'MMMM');
   const weeks = getWeeksForMonth(month, calendarStartDayOfWeek);
   const daysOfWeek = weeks[0].map((day) => format(day, 'eee'));

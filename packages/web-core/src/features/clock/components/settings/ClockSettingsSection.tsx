@@ -1,10 +1,15 @@
 import { Label, Switch } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import ClockSettingsSectionHeaderText from './ClockSettingsSectionHeaderText';
 
 export default function ClockSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const clockEnabled = auth?.user?.settings.clockEnabled ?? false;
+  const clockUseDigitalClock = auth?.user?.settings?.clockUseDigitalClock ?? false;
+  const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;
+  const clockShowSeconds = auth?.user?.settings?.clockShowSeconds ?? false;
 
   return (
     <div>
@@ -19,10 +24,10 @@ export default function ClockSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-clockEnabled"
-            checked={settings.clockEnabled}
+            checked={clockEnabled}
             onCheckedChange={() => {
-              updateSettings({
-                clockEnabled: !settings.clockEnabled,
+              updateAccountSettings({
+                clockEnabled: !clockEnabled,
               });
             }}
           />
@@ -32,16 +37,16 @@ export default function ClockSettingsSection() {
         </div>
         <p className="mt-2 text-xs text-gray-400">Should we show the clock?</p>
       </div>
-      {settings.clockEnabled && (
+      {clockEnabled && (
         <>
           <div className="mb-4">
             <div className="flex items-center">
               <Switch
                 id="settings-clockUseDigitalClock"
-                checked={settings.clockUseDigitalClock}
+                checked={clockUseDigitalClock}
                 onCheckedChange={() => {
-                  updateSettings({
-                    clockUseDigitalClock: !settings.clockUseDigitalClock,
+                  updateAccountSettings({
+                    clockUseDigitalClock: !clockUseDigitalClock,
                   });
                 }}
               />
@@ -54,15 +59,15 @@ export default function ClockSettingsSection() {
               also give you this option!
             </p>
           </div>
-          {settings.clockUseDigitalClock && (
+          {clockUseDigitalClock && (
             <div className="mb-4">
               <div className="flex items-center">
                 <Switch
                   id="settings-clockUse24HourClock"
-                  checked={settings.clockUse24HourClock}
+                  checked={clockUse24HourClock}
                   onCheckedChange={() => {
-                    updateSettings({
-                      clockUse24HourClock: !settings.clockUse24HourClock,
+                    updateAccountSettings({
+                      clockUse24HourClock: !clockUse24HourClock,
                     });
                   }}
                 />
@@ -80,10 +85,10 @@ export default function ClockSettingsSection() {
             <div className="flex items-center">
               <Switch
                 id="settings-clockShowSeconds"
-                checked={settings.clockShowSeconds}
+                checked={clockShowSeconds}
                 onCheckedChange={() => {
-                  updateSettings({
-                    clockShowSeconds: !settings.clockShowSeconds,
+                  updateAccountSettings({
+                    clockShowSeconds: !clockShowSeconds,
                   });
                 }}
               />

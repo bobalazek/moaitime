@@ -1,10 +1,12 @@
 import { Label, Switch } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import GreetingSettingsSectionHeaderText from './GreetingSettingsSectionHeaderText';
 
 export default function GreetingSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const greetingEnabled = auth?.user?.settings?.greetingEnabled ?? false;
 
   return (
     <div>
@@ -18,10 +20,10 @@ export default function GreetingSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-greetingEnabled"
-            checked={settings.greetingEnabled}
+            checked={greetingEnabled}
             onCheckedChange={() => {
-              updateSettings({
-                greetingEnabled: !settings.greetingEnabled,
+              updateAccountSettings({
+                greetingEnabled: !greetingEnabled,
               });
             }}
           />

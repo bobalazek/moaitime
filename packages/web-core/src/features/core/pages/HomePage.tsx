@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Auth from '../../auth/components/Auth';
+import { useAuthStore } from '../../auth/state/authStore';
 import Background from '../../background/components/Background';
 import BackgroundInformation from '../../background/components/BackgroundInfromation';
 import Calendar from '../../calendar/components/Calendar';
@@ -11,7 +12,6 @@ import Greeting from '../../greeting/components/Greeting';
 import Quote from '../../quote/components/Quote';
 import Search from '../../search/components/Search';
 import Settings from '../../settings/components/Settings';
-import { useSettingsStore } from '../../settings/state/settingsStore';
 import Tasks from '../../tasks/components/Tasks';
 import Weather from '../../weather/components/Weather';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -23,7 +23,17 @@ const animationVariants = {
 };
 
 export default function HomePage() {
-  const { settings } = useSettingsStore();
+  const { auth } = useAuthStore();
+
+  const calendarEnabled = auth?.user?.settings?.calendarEnabled ?? false;
+  const commandsEnabled = auth?.user?.settings?.commandsEnabled ?? false;
+  const commandsSearchButtonEnabled = auth?.user?.settings?.commandsSearchButtonEnabled ?? false;
+  const clockEnabled = auth?.user?.settings?.clockEnabled ?? false;
+  const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
+  const greetingEnabled = auth?.user?.settings?.greetingEnabled ?? false;
+  const searchEnabled = auth?.user?.settings?.searchEnabled ?? false;
+  const quoteEnabled = auth?.user?.settings?.quoteEnabled ?? false;
+  const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
 
   return (
     <ErrorBoundary>
@@ -39,7 +49,7 @@ export default function HomePage() {
       >
         <div className="flex-shrink-1 flex justify-between p-4">
           <AnimatePresence>
-            {settings.calendarEnabled && (
+            {calendarEnabled && (
               <motion.div
                 key="calendar"
                 layout
@@ -51,7 +61,7 @@ export default function HomePage() {
                 <Calendar />
               </motion.div>
             )}
-            {settings.commandsEnabled && settings.commandsSearchButtonEnabled && (
+            {commandsEnabled && commandsSearchButtonEnabled && (
               <motion.div
                 key="commands"
                 layout
@@ -63,7 +73,7 @@ export default function HomePage() {
                 <CommandsButton />
               </motion.div>
             )}
-            {settings.weatherEnabled && (
+            {weatherEnabled && (
               <motion.div
                 key="weather"
                 layout
@@ -79,7 +89,7 @@ export default function HomePage() {
         </div>
         <div className="flex flex-grow flex-col items-center justify-center p-4 text-center">
           <AnimatePresence>
-            {settings.clockEnabled && (
+            {clockEnabled && (
               <motion.div
                 key="clock"
                 layout
@@ -92,7 +102,7 @@ export default function HomePage() {
                 <Clock />
               </motion.div>
             )}
-            {settings.greetingEnabled && (
+            {greetingEnabled && (
               <motion.div
                 key="greeting"
                 layout
@@ -105,7 +115,7 @@ export default function HomePage() {
                 <Greeting />
               </motion.div>
             )}
-            {settings.searchEnabled && (
+            {searchEnabled && (
               <motion.div
                 key="search"
                 layout
@@ -126,7 +136,7 @@ export default function HomePage() {
             <BackgroundInformation />
           </div>
           <AnimatePresence>
-            {settings.quoteEnabled && (
+            {quoteEnabled && (
               <motion.div
                 key="quote"
                 layout
@@ -139,7 +149,7 @@ export default function HomePage() {
                 <Quote />
               </motion.div>
             )}
-            {settings.tasksEnabled && (
+            {tasksEnabled && (
               <motion.div
                 key="tasks"
                 layout
@@ -155,7 +165,7 @@ export default function HomePage() {
           </AnimatePresence>
         </div>
       </motion.div>
-      {settings.commandsEnabled && <CommandsDialog />}
+      {commandsEnabled && <CommandsDialog />}
     </ErrorBoundary>
   );
 }

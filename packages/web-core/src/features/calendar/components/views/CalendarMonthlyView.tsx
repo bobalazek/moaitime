@@ -4,17 +4,16 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { EventInterface } from '@myzenbuddy/shared-common';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import { getEventsForDay, getWeeksForMonth } from '../../utils/CalendarHelpers';
 import CalendarMonthlyViewDay from './monthly/CalendarMonthlyViewDay';
 
 export default function CalendarMonthlyView() {
   const { events, selectedDate } = useCalendarStore();
-  const {
-    settings: { calendarStartDayOfWeek, generalTimezone },
-  } = useSettingsStore();
-  const prevSelectedDateRef = useRef(selectedDate);
+  const { auth } = useAuthStore();
+  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const weeks = useMemo(() => {
     return getWeeksForMonth(selectedDate, calendarStartDayOfWeek);
   }, [selectedDate, calendarStartDayOfWeek]);
@@ -34,6 +33,7 @@ export default function CalendarMonthlyView() {
   const daysOfWeek = useMemo(() => {
     return weeks?.[0]?.map((day) => format(day, 'eee.')) ?? [];
   }, [weeks]);
+  const prevSelectedDateRef = useRef(selectedDate);
 
   const now = new Date();
   const isFuture = selectedDate > prevSelectedDateRef.current;

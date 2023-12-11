@@ -2,16 +2,16 @@ import { FaCalendarAlt, FaCog } from 'react-icons/fa';
 
 import { CommandGroup, CommandItem } from '@myzenbuddy/web-ui';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
-import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useCalendarStore } from '../state/calendarStore';
 
 export default function CalendarCommandsList() {
-  const {
-    settings: { calendarEnabled },
-  } = useSettingsStore();
+  const { auth } = useAuthStore();
   const { setDialogOpen } = useCalendarStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+
+  const calendarEnabled = !!auth?.user?.settings?.calendarEnabled;
 
   if (!calendarEnabled) {
     return null;

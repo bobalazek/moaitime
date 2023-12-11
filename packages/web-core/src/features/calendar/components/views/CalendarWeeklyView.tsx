@@ -9,7 +9,7 @@ import {
   getGmtOffset,
 } from '@myzenbuddy/shared-common';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import { getEventsForDay } from '../../utils/CalendarHelpers';
 import CalendarEvent from '../events/CalendarEvent';
@@ -25,9 +25,9 @@ const HOUR_HEIGHT_PX = 64;
 export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) {
   const { events, selectedDate, selectedView, setSelectedDate, setSelectedView } =
     useCalendarStore();
-  const {
-    settings: { generalTimezone, calendarStartDayOfWeek },
-  } = useSettingsStore();
+  const { auth } = useAuthStore();
+  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const prevSelectedDateRef = useRef(selectedDate);
   const days = useMemo(() => {
     return singleDay

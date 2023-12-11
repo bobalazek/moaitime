@@ -2,15 +2,14 @@ import { endOfWeek, getWeek, isSameMonth, startOfWeek } from 'date-fns';
 
 import { CalendarViewEnum } from '@myzenbuddy/shared-common';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 
 function CalendarDialogHeaderText() {
+  const { auth } = useAuthStore();
   const { selectedDate, selectedView } = useCalendarStore();
-  const {
-    settings: { calendarStartDayOfWeek },
-  } = useSettingsStore();
 
+  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
   const year = selectedDate.getFullYear();
   const date = selectedDate.toLocaleString('default', {
     month: 'long',

@@ -2,17 +2,17 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 
 import { CommandGroup, CommandItem } from '@myzenbuddy/web-ui';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
-import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useWeatherStore } from '../state/weatherStore';
 import WeatherConditionIcon from './misc/WeatherConditionIcon';
 
 export default function WeatherCommandsList() {
-  const {
-    settings: { weatherEnabled },
-  } = useSettingsStore();
+  const { auth } = useAuthStore();
   const { setPopoverOpen } = useWeatherStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+
+  const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
 
   if (!weatherEnabled) {
     return null;

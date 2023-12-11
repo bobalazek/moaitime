@@ -1,10 +1,12 @@
 import { Label, Switch } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import TasksSettingsSectionHeaderText from './TasksSettingsSectionHeaderText';
 
 export default function TasksSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
 
   return (
     <div>
@@ -18,10 +20,10 @@ export default function TasksSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-tasksEnabled"
-            checked={settings.tasksEnabled}
+            checked={tasksEnabled}
             onCheckedChange={() => {
-              updateSettings({
-                tasksEnabled: !settings.tasksEnabled,
+              updateAccountSettings({
+                tasksEnabled: !tasksEnabled,
               });
             }}
           />

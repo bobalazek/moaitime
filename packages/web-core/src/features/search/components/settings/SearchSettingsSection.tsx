@@ -1,10 +1,12 @@
 import { Label, Switch } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import SearchSettingsSectionHeaderText from './SearchSettingsSectionHeaderText';
 
 export default function SearchSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const searchEnabled = auth?.user?.settings?.searchEnabled ?? false;
 
   return (
     <div>
@@ -18,10 +20,10 @@ export default function SearchSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-searchEnabled"
-            checked={settings.searchEnabled}
+            checked={searchEnabled}
             onCheckedChange={() => {
-              updateSettings({
-                searchEnabled: !settings.searchEnabled,
+              updateAccountSettings({
+                searchEnabled: !searchEnabled,
               });
             }}
           />

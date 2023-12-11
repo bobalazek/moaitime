@@ -1,10 +1,12 @@
 import { Label, Switch } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import QuoteSettingsSectionHeaderText from './QuoteSettingsSectionHeaderText';
 
 export default function QuoteSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const quoteEnabled = auth?.user?.settings?.quoteEnabled ?? false;
 
   return (
     <div>
@@ -18,10 +20,10 @@ export default function QuoteSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-quoteEnabled"
-            checked={settings.quoteEnabled}
+            checked={quoteEnabled}
             onCheckedChange={() => {
-              updateSettings({
-                quoteEnabled: !settings.quoteEnabled,
+              updateAccountSettings({
+                quoteEnabled: !quoteEnabled,
               });
             }}
           />

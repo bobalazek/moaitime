@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
-import { SearchEnginesMap } from '@myzenbuddy/shared-common';
+import { SearchEnginesEnum, SearchEnginesMap } from '@myzenbuddy/shared-common';
 import { Input } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../settings/state/settingsStore';
+import { useAuthStore } from '../../auth/state/authStore';
 import SearchEngineDropdownMenu from './SearchEngineDropdownMenu';
 
 export default function SearchInput() {
-  const { settings } = useSettingsStore();
+  const { auth } = useAuthStore();
   const [search, setSearch] = useState('');
+
+  const searchEngine = auth?.user?.settings?.searchEngine ?? SearchEnginesEnum.GOOGLE;
 
   return (
     <div className="flex items-center justify-center">
@@ -25,10 +27,7 @@ export default function SearchInput() {
               return;
             }
 
-            const url = SearchEnginesMap[settings.searchEngine].searchUrl.replace(
-              '{search}',
-              search
-            );
+            const url = SearchEnginesMap[searchEngine].searchUrl.replace('{search}', search);
 
             window.open(url, '_blank');
           }}

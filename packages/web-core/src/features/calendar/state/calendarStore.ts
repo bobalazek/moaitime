@@ -3,7 +3,7 @@ import { create } from 'zustand';
 
 import { CalendarViewEnum, EventInterface } from '@myzenbuddy/shared-common';
 
-import { useSettingsStore } from '../../settings/state/settingsStore';
+import { useAuthStore } from '../../auth/state/authStore';
 import { getMonthRange, getWeekRange, getYearRange, loadEvents } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -67,10 +67,9 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   selectedDays: [],
   reloadSelectedDays: () => {
     const { selectedDate, selectedView } = get();
-    const {
-      settings: { calendarStartDayOfWeek },
-    } = useSettingsStore.getState();
+    const { auth } = useAuthStore.getState();
 
+    const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
     const now = new Date();
 
     let selectedDays = [selectedDate];

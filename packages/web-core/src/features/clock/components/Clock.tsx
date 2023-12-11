@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
-import { useSettingsStore } from '../../settings/state/settingsStore';
 import AnalogClock from './AnalogClock';
 import DigitalClock from './DigitalClock';
 
 export default function Clock() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
   const [time, setTime] = useState(new Date());
+
+  const clockUseDigitalClock = auth?.user?.settings?.clockUseDigitalClock ?? false;
+  const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;
+  const clockShowSeconds = auth?.user?.settings?.clockShowSeconds ?? false;
 
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -25,21 +29,19 @@ export default function Clock() {
         className="select-none"
         data-test="clock"
         onDoubleClick={() => {
-          updateSettings({
-            clockUseDigitalClock: !settings.clockUseDigitalClock,
+          updateAccountSettings({
+            clockUseDigitalClock: !clockUseDigitalClock,
           });
         }}
       >
-        {settings.clockUseDigitalClock && (
+        {clockUseDigitalClock && (
           <DigitalClock
             time={time}
-            use24HourClock={settings.clockUse24HourClock}
-            showSeconds={settings.clockShowSeconds}
+            use24HourClock={clockUse24HourClock}
+            showSeconds={clockShowSeconds}
           />
         )}
-        {!settings.clockUseDigitalClock && (
-          <AnalogClock time={time} showSeconds={settings.clockShowSeconds} />
-        )}
+        {!clockUseDigitalClock && <AnalogClock time={time} showSeconds={clockShowSeconds} />}
       </div>
     </ErrorBoundary>
   );

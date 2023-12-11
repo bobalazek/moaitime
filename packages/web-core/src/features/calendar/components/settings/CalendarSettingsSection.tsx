@@ -9,7 +9,7 @@ import {
   Switch,
 } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import CalendarSettingsSectionHeaderText from './CalendarSettingsSectionHeaderText';
 
 const startDayOfWeekOptions = [
@@ -44,7 +44,12 @@ const startDayOfWeekOptions = [
 ];
 
 export default function CalendarSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const settings = auth?.user?.settings;
+  if (!settings) {
+    return null;
+  }
 
   return (
     <div>
@@ -60,7 +65,7 @@ export default function CalendarSettingsSection() {
             id="settings-calendarEnabled"
             checked={settings.calendarEnabled}
             onCheckedChange={() => {
-              updateSettings({
+              updateAccountSettings({
                 calendarEnabled: !settings.calendarEnabled,
               });
             }}
@@ -78,7 +83,7 @@ export default function CalendarSettingsSection() {
             <Select
               value={settings.calendarStartDayOfWeek.toString()}
               onValueChange={(value) => {
-                updateSettings({
+                updateAccountSettings({
                   calendarStartDayOfWeek: parseInt(value) as CalendarDayOfWeek,
                 });
               }}

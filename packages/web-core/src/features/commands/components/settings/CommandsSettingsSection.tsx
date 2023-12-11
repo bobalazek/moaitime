@@ -1,10 +1,13 @@
 import { Label, Switch } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import CommandsSettingsSectionHeaderText from './CommandsSettingsSectionHeaderText';
 
 export default function CommandsSettingsSection() {
-  const { settings, updateSettings } = useSettingsStore();
+  const { auth, updateAccountSettings } = useAuthStore();
+
+  const commandsEnabled = auth?.user?.settings?.commandsEnabled ?? false;
+  const commandsSearchButtonEnabled = auth?.user?.settings?.commandsSearchButtonEnabled ?? false;
 
   return (
     <div>
@@ -19,10 +22,10 @@ export default function CommandsSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-commandsEnabled"
-            checked={settings.commandsEnabled}
+            checked={commandsEnabled}
             onCheckedChange={() => {
-              updateSettings({
-                commandsEnabled: !settings.commandsEnabled,
+              updateAccountSettings({
+                commandsEnabled: !commandsEnabled,
               });
             }}
           />
@@ -32,15 +35,15 @@ export default function CommandsSettingsSection() {
         </div>
         <p className="mt-2 text-xs text-gray-400">Should we enable the commands?</p>
       </div>
-      {settings.commandsEnabled && (
+      {commandsEnabled && (
         <div className="mb-4">
           <div className="flex items-center">
             <Switch
               id="settings-commandsSearchButtonEnabled"
-              checked={settings.commandsSearchButtonEnabled}
+              checked={commandsSearchButtonEnabled}
               onCheckedChange={() => {
-                updateSettings({
-                  commandsSearchButtonEnabled: !settings.commandsSearchButtonEnabled,
+                updateAccountSettings({
+                  commandsSearchButtonEnabled: !commandsSearchButtonEnabled,
                 });
               }}
             />

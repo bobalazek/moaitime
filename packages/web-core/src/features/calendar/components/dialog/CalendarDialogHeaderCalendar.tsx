@@ -2,15 +2,14 @@ import { FaCalendarAlt } from 'react-icons/fa';
 
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@myzenbuddy/web-ui';
 
-import { useSettingsStore } from '../../../settings/state/settingsStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 
 function CalendarDialogHeaderCalendar() {
-  const {
-    settings: { calendarStartDayOfWeek },
-  } = useSettingsStore();
+  const { auth } = useAuthStore();
   const { selectedDays, selectedDate, setSelectedDate } = useCalendarStore();
 
+  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
   const now = new Date();
 
   return (

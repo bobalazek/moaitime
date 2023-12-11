@@ -18,6 +18,7 @@ import {
   WEB_URL,
 } from '@myzenbuddy/shared-common';
 
+import { UserPasswordSchema } from '../../../../shared-common/dist';
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
 import { UserAccessTokensManager, userAccessTokensManager } from './UserAccessTokensManager';
@@ -63,17 +64,17 @@ export class AuthManager {
   }
 
   async register(data: NewUser): Promise<User> {
-    const existingUser = await this._usersManager.findOneByEmail(data.email);
-    if (existingUser) {
-      throw new Error('User already exists');
-    }
-
     const { password, ...user } = data;
     if (!password) {
       throw new Error('Password is not set');
     }
 
-    this.validatePassword(password);
+    UserPasswordSchema.parse(password);
+
+    const existingUser = await this._usersManager.findOneByEmail(data.email);
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
 
     const hashedPassword = await this.validateAndHashPassword(password);
 
@@ -281,7 +282,7 @@ export class AuthManager {
       throw new Error(`Seems like the token already expired. Please try and request it again.`);
     }
 
-    this.validatePassword(password);
+    UserPasswordSchema.parse(password);
 
     const hashedPassword = await this.validateAndHashPassword(password);
     const updatedUser = await this._usersManager.updateOneById(user.id, {
@@ -384,6 +385,8 @@ export class AuthManager {
   }
 
   async updatePassword(id: string, newPassword: string, currentPassword?: string): Promise<User> {
+    UserPasswordSchema.parse(newPassword);
+
     const user = await this._usersManager.findOneById(id);
     if (!user) {
       throw new Error('User not found');
@@ -393,7 +396,6 @@ export class AuthManager {
       throw new Error('You must provide your current password');
     }
 
-    // TODO
     // Figure out how to handle users without password,
     // like those that registered with OAuth.
     // Not an issue right now, as we won't have that yet,
@@ -406,8 +408,6 @@ export class AuthManager {
     if (!isPasswordSame) {
       throw new Error('Invalid password provided');
     }
-
-    this.validatePassword(newPassword);
 
     const hashedPassword = await this.validateAndHashPassword(newPassword);
 
@@ -506,16 +506,6 @@ export class AuthManager {
 
   async comparePassword(rawPassword: string, hashedPassword: string): Promise<boolean> {
     return compareHash(rawPassword, hashedPassword);
-  }
-
-  validatePassword(password: string) {
-    if (!password) {
-      throw new Error('Password can not be empty');
-    }
-
-    if (password.length < 8) {
-      throw new Error('Password must be at least 8 characters long');
-    }
   }
 }
 

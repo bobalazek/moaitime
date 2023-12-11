@@ -14,7 +14,7 @@ import { Request, Response } from 'express';
 import { authManager } from '@myzenbuddy/database-services';
 
 import { LoginResponseDto } from '../dtos/login-response.dto';
-import { UpdatePasswordDto } from '../dtos/update-password.dto';
+import { UpdateUserPasswordDto } from '../dtos/update-user-password.dto';
 import { UpdateUserSettingsDto } from '../dtos/update-user-settings.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
@@ -59,7 +59,7 @@ export class AuthAccountController {
   @UseGuards(AuthenticatedGuard)
   @Post('password')
   async password(
-    @Body() body: UpdatePasswordDto,
+    @Body() body: UpdateUserPasswordDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {

@@ -1,4 +1,4 @@
-export class UpdatePasswordDto {
+export class UpdateUserPasswordDto {
   newPassword!: string;
   currentPassword?: string;
 }

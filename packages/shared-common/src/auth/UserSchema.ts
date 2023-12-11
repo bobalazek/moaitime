@@ -15,19 +15,21 @@ export const UserSchema = z.object({
   updatedAt: z.string(),
 });
 
-export const updateUserSchema = z.object({
+export const UserPasswordSchema = z.string().min(8).max(255);
+
+export const UpdateUserSchema = z.object({
   displayName: z.string().min(3).max(255).optional(),
   email: z.string().email().optional(),
   birthDate: z.string().optional().nullable(),
 });
 
-export const updateUserPasswordSchema = z.object({
-  newPassword: z.string().min(8).max(255),
-  currentPassword: z.string().min(8).max(255).optional(),
+export const UpdateUserPasswordSchema = z.object({
+  newPassword: UserPasswordSchema,
+  currentPassword: UserPasswordSchema.optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;
 
-export type UpdateUser = z.infer<typeof updateUserSchema>;
+export type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
-export type UpdateUserPassword = z.infer<typeof updateUserPasswordSchema>;
+export type UpdateUserPassword = z.infer<typeof UpdateUserPasswordSchema>;

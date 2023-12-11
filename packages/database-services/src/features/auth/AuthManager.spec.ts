@@ -55,6 +55,7 @@ describe('AuthManager.ts', () => {
         authManager.register({
           displayName: 'Tester',
           email: 'tester@corcosoft.com',
+          password: 'password12345',
         });
 
       await expect(result).rejects.toThrow('User already exists');
@@ -455,7 +456,23 @@ describe('AuthManager.ts', () => {
 
       const result = () => authManager.updatePassword(user.id, '', 'password');
 
-      await expect(result).rejects.toThrow('Password can not be empty');
+      await expect(result).rejects.toThrow(
+        JSON.stringify(
+          [
+            {
+              code: 'too_small',
+              minimum: 8,
+              type: 'string',
+              inclusive: true,
+              exact: false,
+              message: 'String must contain at least 8 character(s)',
+              path: [],
+            },
+          ],
+          null,
+          2
+        )
+      );
     });
 
     it('should throw error if password is too short', async () => {
@@ -467,7 +484,23 @@ describe('AuthManager.ts', () => {
 
       const result = () => authManager.updatePassword(user.id, 'short', 'password');
 
-      await expect(result).rejects.toThrow('Password must be at least 8 characters long');
+      await expect(result).rejects.toThrow(
+        JSON.stringify(
+          [
+            {
+              code: 'too_small',
+              minimum: 8,
+              type: 'string',
+              inclusive: true,
+              exact: false,
+              message: 'String must contain at least 8 character(s)',
+              path: [],
+            },
+          ],
+          null,
+          2
+        )
+      );
     });
   });
 });

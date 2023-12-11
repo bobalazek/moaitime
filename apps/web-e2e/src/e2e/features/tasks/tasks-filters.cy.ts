@@ -120,6 +120,8 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Created At')
       .click();
 
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
+
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
       .find('div')
       .contains('Descending')
@@ -322,6 +324,63 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
       .find('div')
       .contains('Include deleted?')
+      .click();
+
+    cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');
+
+    cy.getBySel('tasks--task').eq(1).contains('aaa').should('exist');
+
+    cy.getBySel('tasks--task').eq(2).contains('ddd').should('exist');
+
+    cy.getBySel('tasks--task').eq(3).contains('bbb').should('exist');
+  });
+
+  it('should filter tasks by Include completed (exlude completed)', () => {
+    openTasksPopover();
+
+    addMultipleTasks();
+
+    cy.getBySel('tasks--task--completed-checkbox').eq(2).click();
+
+    cy.getBySel('tasks--task--completed-checkbox').eq(0).click();
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Include completed?')
+      .click();
+
+    cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
+
+    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+  });
+
+  it('should filter tasks by Include completed (toggle Include completed)', () => {
+    openTasksPopover();
+
+    addMultipleTasks();
+
+    cy.getBySel('tasks--task--completed-checkbox').eq(2).click();
+
+    cy.getBySel('tasks--task--completed-checkbox').eq(0).click();
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Include completed?')
+      .click();
+
+    cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
+
+    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--body-header--list-selector--dropdown-menu')
+      .find('div')
+      .contains('Include completed?')
       .click();
 
     cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');

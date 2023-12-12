@@ -1,3 +1,4 @@
+import { arrayMove } from '@dnd-kit/sortable';
 import { create } from 'zustand';
 
 import { List, SortDirectionEnum, Task, TasksListSortFieldEnum } from '@myzenbuddy/shared-common';
@@ -50,11 +51,11 @@ export type TasksStore = {
   addTask: (task: Task) => Promise<Task>;
   editTask: (taskId: string, task: Partial<Task>) => Promise<Task>;
   moveTask: (taskId: string, newListId: string) => Promise<Task>;
-  deleteTask: (taskId: string) => Promise<Task>;
+  deleteTask: (taskId: string, isHardDelete?: boolean) => Promise<Task>;
   undeleteTask: (taskId: string) => Promise<Task>;
   completeTask: (taskId: string) => Promise<Task>;
   uncompleteTask: (taskId: string) => Promise<Task>;
-  reorderTasks: (activeTaskId: string, overTaskId: string) => void;
+  reorderTasks: (activeTaskId: string, overTaskId: string) => Promise<void>;
   // Selected
   selectedTaskDialogOpen: boolean;
   selectedTask: Task | null;
@@ -254,10 +255,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return movedTask;
   },
-  deleteTask: async (taskId: string) => {
+  deleteTask: async (taskId: string, isHardDelete?: boolean) => {
     const { reloadSelectedList, loadLists } = get();
 
-    const deletedTask = await deleteTask(taskId);
+    const deletedTask = await deleteTask(taskId, isHardDelete);
 
     await reloadSelectedList();
 
@@ -307,10 +308,20 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return uncompletedTask;
   },
   reorderTasks: async (originalTaskId: string, newTaskId: string) => {
-    const { selectedList, reloadSelectedList, selectedListTasksSortDirection } = get();
+    const { selectedList, selectedListTasks, reloadSelectedList, selectedListTasksSortDirection } =
+      get();
     if (!selectedList) {
       return;
     }
+
+    // We want do an optimistic update to prevent the jump animation,
+    // while the request is in progress.
+    const originalTaskIndex = selectedListTasks.findIndex((task) => task.id === originalTaskId);
+    const newTaskIndex = selectedListTasks.findIndex((task) => task.id === newTaskId);
+    const newSelectedListTasks = arrayMove(selectedListTasks, originalTaskIndex, newTaskIndex);
+    set({
+      selectedListTasks: newSelectedListTasks,
+    });
 
     await reorderTask(selectedList.id, originalTaskId, newTaskId, selectedListTasksSortDirection);
 

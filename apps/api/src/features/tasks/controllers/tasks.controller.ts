@@ -17,6 +17,7 @@ import { listsManager, tasksManager } from '@myzenbuddy/database-services';
 import { SortDirectionEnum } from '@myzenbuddy/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
+import { DeleteDto } from '../../core/dtos/delete.dto';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateTaskDto } from '../dtos/create-task.dto';
 import { ReorderTasksDto } from '../dtos/reorder-tasks.dto';
@@ -154,15 +155,21 @@ export class TasksController {
 
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
-  async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
+  async delete(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: DeleteDto
+  ): Promise<AbstractResponseDto<Task>> {
     const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
     }
 
-    const updatedData = await tasksManager.updateOneById(id, {
-      deletedAt: new Date(),
-    });
+    const updatedData = body.isHardDelete
+      ? await tasksManager.deleteOneById(id)
+      : await tasksManager.updateOneById(id, {
+          deletedAt: new Date(),
+        });
 
     return {
       success: true,

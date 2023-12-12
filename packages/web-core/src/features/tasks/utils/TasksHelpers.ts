@@ -129,9 +129,14 @@ export const editTask = async (taskId: string, task: Partial<Task>): Promise<Tas
   return response.data as Task;
 };
 
-export const deleteTask = async (taskId: string): Promise<Task> => {
+export const deleteTask = async (taskId: string, isHardDelete?: boolean): Promise<Task> => {
   const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/${taskId}`, {
     method: 'DELETE',
+    body: isHardDelete ? JSON.stringify({ isHardDelete }) : undefined,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return response.data as Task;

@@ -85,15 +85,26 @@ const TaskActions = memo(({ task, onEditAndFocus }: { task: Task; onEditAndFocus
               </DropdownMenuItem>
             )}
             {task.deletedAt && (
-              <DropdownMenuItem
-                className="cursor-pointer text-red-400"
-                onClick={async () => {
-                  await undeleteTask(task.id);
-                }}
-              >
-                <FaHistory className="mr-2 h-4 w-4" />
-                <span>Undelete</span>
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={async () => {
+                    await undeleteTask(task.id);
+                  }}
+                >
+                  <FaHistory className="mr-2 h-4 w-4" />
+                  <span>Undelete</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer text-red-400"
+                  onClick={async () => {
+                    await deleteTask(task.id, true);
+                  }}
+                >
+                  <FaTrash className="mr-2 h-4 w-4" />
+                  <span>Hard Delete</span>
+                </DropdownMenuItem>
+              </>
             )}
           </DropdownMenuGroup>
         </DropdownMenuContent>

@@ -31,8 +31,8 @@ export async function bootstrap() {
 
   // Validation
   app.useGlobalPipes(new ZodValidationPipe());
-
   app.useGlobalPipes(
+    // Need to keep that for now, as it is transforming the body to the DTO
     new ValidationPipe({
       transform: true,
     })

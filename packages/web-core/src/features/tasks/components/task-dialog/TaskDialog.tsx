@@ -111,7 +111,7 @@ export default function TaskDialog() {
             id="task-name"
             value={data.name}
             onChange={(event) => {
-              setData({ ...data, name: event.target.value });
+              setData((current) => ({ ...current, description: event.target.value }));
             }}
           />
         </div>
@@ -122,7 +122,7 @@ export default function TaskDialog() {
             rows={5}
             value={data.description ?? ''}
             onChange={(event) => {
-              setData({ ...data, description: event.target.value });
+              setData((current) => ({ ...current, description: event.target.value }));
             }}
           />
         </div>
@@ -131,7 +131,7 @@ export default function TaskDialog() {
           <ListsSelect
             value={data.listId ?? ''}
             onChangeValue={(value) => {
-              setData({ ...data, listId: value });
+              setData((current) => ({ ...current, listId: value }));
             }}
           />
         </div>
@@ -139,9 +139,13 @@ export default function TaskDialog() {
           <Label htmlFor="task-list">Due Date</Label>
           <TaskDialogDueDate
             date={data.dueDate ?? null}
-            onDateChange={(value) => setData({ ...data, dueDate: value })}
+            onDateChange={(value) => {
+              setData((current) => ({ ...current, dueDate: value }));
+            }}
             dateTime={data.dueDateTime ?? null}
-            onDateTimeChange={(value) => setData({ ...data, dueDateTime: value })}
+            onDateTimeChange={(value) => {
+              setData((current) => ({ ...current, dueDateTime: value }));
+            }}
           />
         </div>
         <div className="flex flex-row justify-between gap-2">

@@ -8,7 +8,7 @@ import { useTasksStore } from '../state/tasksStore';
 import TasksBody from './body/TasksBody';
 import ListDeleteAlertDialog from './lists/ListDeleteAlertDialog';
 import ListFormDialog from './lists/ListFormDialog';
-import TaskDialog from './tasks/TaskDialog';
+import TaskDialog from './task-dialog/TaskDialog';
 
 export default function Tasks() {
   const { popoverOpen, setPopoverOpen, lists, selectedList, setSelectedList } = useTasksStore();

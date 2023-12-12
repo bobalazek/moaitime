@@ -1,7 +1,53 @@
 import { z } from 'zod';
 
-import { UserSettingsSchema } from './UserSettingsSchema';
+import { CalendarDayOfWeek } from '../calendar/CalendarDayOfWeek';
+import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 
+// User Settings
+export const UserSettingsSchema = z.object({
+  // General
+  generalTimezone: z.string(),
+
+  // Commands
+  commandsEnabled: z.boolean(),
+  commandsSearchButtonEnabled: z.boolean(),
+
+  // Weather
+  weatherEnabled: z.boolean(),
+  weatherUseMetricUnits: z.boolean(),
+  weatherLocation: z.string(),
+  weatherCoordinates: z.object({
+    latitude: z.number(),
+    longitude: z.number(),
+  }),
+
+  // Clock
+  clockEnabled: z.boolean(),
+  clockUseDigitalClock: z.boolean(),
+  clockShowSeconds: z.boolean(),
+  clockUse24HourClock: z.boolean(),
+
+  // Search
+  searchEnabled: z.boolean(),
+  searchEngine: z.nativeEnum(SearchEnginesEnum),
+
+  // Greeting
+  greetingEnabled: z.boolean(),
+
+  // Quote
+  quoteEnabled: z.boolean(),
+
+  // Tasks
+  tasksEnabled: z.boolean(),
+
+  // Calendar
+  calendarEnabled: z.boolean(),
+  calendarStartDayOfWeek: z.number().min(0).max(6) as z.ZodType<CalendarDayOfWeek>,
+});
+
+export const UpdateUserSettingsSchema = UserSettingsSchema.partial();
+
+// User
 export const UserSchema = z.object({
   id: z.string(),
   displayName: z.string(),
@@ -15,6 +61,7 @@ export const UserSchema = z.object({
   updatedAt: z.string(),
 });
 
+// User Partials
 export const UserDisplayNameSchema = z
   .string()
   .min(1, {
@@ -42,6 +89,7 @@ export const UserBirthDateSchema = z.date({
   }),
 });
 
+// Update User and User Password
 export const UpdateUserSchema = z.object({
   displayName: UserDisplayNameSchema.optional(),
   email: UserEmailSchema.optional(),
@@ -53,8 +101,35 @@ export const UpdateUserPasswordSchema = z.object({
   currentPassword: UserPasswordSchema.optional(), // The only reason it's optional is, because we will have OAuth in the future, where the user won't have a password
 });
 
+// Register User
+export const RegisterUserSchema = z.object({
+  displayName: UserDisplayNameSchema,
+  email: UserEmailSchema,
+  password: UserPasswordSchema,
+  settings: UserSettingsSchema.pick({
+    generalTimezone: true,
+    clockUse24HourClock: true,
+  }).optional(),
+});
+
+// User Access Token
+export const UserAccessTokenLiteSchema = z.object({
+  token: z.string(),
+  refreshToken: z.string(),
+  expiresAt: z.string().nullable(),
+});
+
+// Types
 export type User = z.infer<typeof UserSchema>;
 
 export type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
 export type UpdateUserPassword = z.infer<typeof UpdateUserPasswordSchema>;
+
+export type UserSettings = z.infer<typeof UserSettingsSchema>;
+
+export type UpdateUserSettings = z.infer<typeof UpdateUserSettingsSchema>;
+
+export type RegisterUser = z.infer<typeof RegisterUserSchema>;
+
+export type UserAccessTokenLite = z.infer<typeof UserAccessTokenLiteSchema>;

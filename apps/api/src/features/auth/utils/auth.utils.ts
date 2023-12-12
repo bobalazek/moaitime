@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { User, UserAccessToken } from '@myzenbuddy/database-core';
 import { authManager } from '@myzenbuddy/database-services';
 
-import { UserAccessTokenDto } from '../dtos/user-access-token.dto';
+import { UserAccessTokenLiteDto } from '../dtos/user-access-token-lite.dto';
 import { UserDto } from '../dtos/user.dto';
 
 export const convertToUserAndAccessTokenDto = (
@@ -11,7 +11,7 @@ export const convertToUserAndAccessTokenDto = (
   userAccessToken: UserAccessToken
 ): {
   user: UserDto;
-  userAccessToken: UserAccessTokenDto;
+  userAccessToken: UserAccessTokenLiteDto;
 } => {
   const now = new Date();
 

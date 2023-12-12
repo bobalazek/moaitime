@@ -1,5 +1,5 @@
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
-import { UserSettings } from './UserSettingsSchema';
+import { UserSettings } from './UserSchema';
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   generalTimezone: 'UTC',

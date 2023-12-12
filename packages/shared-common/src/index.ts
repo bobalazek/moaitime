@@ -3,13 +3,10 @@ export * from './Constants';
 export * from './Helpers';
 
 // Auth
-export * from './auth/Auth';
+export * from './auth/AuthSchema';
 export * from './auth/UserSchema';
-export * from './auth/UserAccessToken';
 export * from './auth/UserRoleEnum';
-export * from './auth/UserSettingsSchema';
 export * from './auth/UserSettingsDefault';
-export * from './auth/UserRegisterSchema';
 export * from './auth/TeamUserRoleEnum';
 export * from './auth/OrganizationUserRoleEnum';
 

@@ -238,7 +238,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     // In case we moved the task to another list, we need to update the counts of the lists,
     // and we also need to set that as the selected list
     const editedTask = await editTask(taskId, task);
-    if (editedTask.listId && originalTask?.listId !== editedTask.listId) {
+    if (task.listId && originalTask?.listId !== editedTask.listId) {
       const selectedList = lists.find((list) => {
         return list.id === editedTask.listId;
       });

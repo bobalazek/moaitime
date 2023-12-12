@@ -48,6 +48,22 @@ export default function TaskDialogDueDate({
   const [timePopoverOpen, setTimePopoverOpen] = useState(false);
   const [timeValue, setTimeValue] = useState(dateTime ?? '');
 
+  const onSaveButtonClick = () => {
+    if (timeValue && !isValidTime(timeValue)) {
+      toast({
+        title: 'Invalid time',
+        description: 'Please enter a valid time',
+        variant: 'destructive',
+      });
+
+      return;
+    }
+
+    onDateTimeChange(timeValue ?? null);
+
+    setTimePopoverOpen(false);
+  };
+
   const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
 
   return (
@@ -127,28 +143,17 @@ export default function TaskDialogDueDate({
                 onChange={(e) => {
                   setTimeValue(e.target.value);
                 }}
-              />
-            </div>
-            <div>
-              <Button
-                variant="default"
-                className="w-full"
-                onClick={() => {
-                  if (timeValue && !isValidTime(timeValue)) {
-                    toast({
-                      title: 'Invalid time',
-                      description: 'Please enter a valid time',
-                      variant: 'destructive',
-                    });
-
+                onKeyDown={(e) => {
+                  if (e.key !== 'Enter') {
                     return;
                   }
 
-                  onDateTimeChange(timeValue ?? null);
-
-                  setTimePopoverOpen(false);
+                  onSaveButtonClick();
                 }}
-              >
+              />
+            </div>
+            <div>
+              <Button variant="default" className="w-full" onClick={onSaveButtonClick}>
                 Save
               </Button>
             </div>

@@ -12,6 +12,8 @@ import {
   useToast,
 } from '@myzenbuddy/web-ui';
 
+import TimeRangesDropdownMenu from './partials/TimeRangesDropdownMenu';
+
 type TaskDialogDueDateTimeProps = {
   dateTime: string | null;
   onDateTimeChange: (value: string | null) => void;
@@ -23,6 +25,7 @@ export default function TaskDialogDueDateTime({
 }: TaskDialogDueDateTimeProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [timeRangesDropdownMenuOpen, setTimeRangesDropdownMenuOpen] = useState(false);
   const [timeValue, setTimeValue] = useState(dateTime ?? '');
 
   const onClearButtonClick = (event: MouseEvent) => {
@@ -63,7 +66,7 @@ export default function TaskDialogDueDateTime({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="flex w-full justify-between text-left font-normal"
+          className="flex w-full justify-between font-normal"
           data-test="tasks--due-date--time--trigger-button"
         >
           <span className="flex">
@@ -82,13 +85,19 @@ export default function TaskDialogDueDateTime({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 flex-col space-y-4 p-2" data-test="tasks--due-date--time">
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="task-dialog--due-date-time">Time</Label>
           <Input
             id="task-dialog--due-date-time"
             value={timeValue}
             onChange={(event) => setTimeValue(event.target.value)}
             onKeyDown={onKeyPress}
+            onFocus={() => setTimeRangesDropdownMenuOpen(true)}
+          />
+          <TimeRangesDropdownMenu
+            open={timeRangesDropdownMenuOpen}
+            onOpenChange={setTimeRangesDropdownMenuOpen}
+            onSelect={(value) => setTimeValue(value ?? '')}
           />
         </div>
         <div>

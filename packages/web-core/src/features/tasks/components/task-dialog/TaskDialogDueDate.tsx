@@ -62,7 +62,7 @@ export default function TaskDialogDueDate({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="flex justify-between text-left font-normal"
+          className="flex justify-between font-normal"
           data-test="tasks--due-date--trigger-button"
         >
           <span className="flex">
@@ -79,7 +79,11 @@ export default function TaskDialogDueDate({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto flex-col space-y-4 p-2" data-test="tasks--due-date">
+      <PopoverContent
+        side="top"
+        className="w-auto flex-col space-y-4 p-2"
+        data-test="tasks--due-date"
+      >
         <Calendar
           mode="single"
           disabled={[{ before: new Date() }]}

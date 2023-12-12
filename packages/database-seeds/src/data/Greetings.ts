@@ -81,5 +81,8 @@ export const getGreetingSeeds = async (): Promise<NewGreeting[]> => {
     {
       text: 'I Am {displayName}!',
     },
+    {
+      text: 'It is good to be a {displayName}!',
+    },
   ];
 };

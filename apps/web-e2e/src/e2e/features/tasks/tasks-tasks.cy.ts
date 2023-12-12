@@ -129,6 +129,8 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.get('#task-name').should('be.empty');
 
+    cy.get('#task-name').focus();
+
     cy.get('#task-name').type('Change task name');
 
     cy.get('button').contains('Save').click();

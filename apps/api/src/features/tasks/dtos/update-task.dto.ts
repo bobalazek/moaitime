@@ -1,3 +1,5 @@
-import { CreateTaskDto } from './create-task.dto';
+import { UpdateTaskSchema } from '@myzenbuddy/shared-common';
 
-export class UpdateTaskDto extends CreateTaskDto {}
+import { createZodDto } from '../../core/utils/validation-helpers';
+
+export class UpdateTaskDto extends createZodDto(UpdateTaskSchema) {}

@@ -16,16 +16,13 @@ export function getGmtOffset(timezone: string) {
 export const zodErrorToString = (error: unknown) => {
   if (Array.isArray((error as { errors: unknown[] }).errors)) {
     return (error as { errors: unknown[] }).errors
-      .map((e) => {
-        if (typeof e === 'string') {
-          return e;
+      .map((err) => {
+        if (typeof err === 'string') {
+          return err;
         }
 
-        if (e instanceof Error) {
-          return e.message;
-        }
-
-        return 'Something went wrong';
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (err as any).message ?? 'Something went wrong';
       })
       .join('; ');
   }

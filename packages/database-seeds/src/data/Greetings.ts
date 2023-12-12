@@ -46,7 +46,7 @@ export const getGreetingSeeds = async (): Promise<NewGreeting[]> => {
       text: 'You are breathtaking, {displayName}!',
     },
     {
-      text: "Hello {displayName}, if you were a vegetable, you'd be a 'cute-cumber'!",
+      text: "Hello {displayName}, if you were a vegetable, you'd be a cute-cumber!",
     },
     {
       text: 'Hey {displayName}, stay sharp!',

@@ -140,9 +140,11 @@ export class TasksController {
       throw new NotFoundException('Task not found');
     }
 
-    const list = listsManager.findOneByIdAndUserId(body.listId, req.user.id);
-    if (!list) {
-      throw new NotFoundException('List not found');
+    if (body.listId) {
+      const list = listsManager.findOneByIdAndUserId(body.listId, req.user.id);
+      if (!list) {
+        throw new NotFoundException('List not found');
+      }
     }
 
     const updatedData = await tasksManager.updateOneById(id, body);

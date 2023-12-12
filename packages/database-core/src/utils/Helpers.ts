@@ -124,7 +124,7 @@ export const dropDatabaseSchema = async () => {
   try {
     logger.info('Dropping database schema ...');
 
-    const database = await getMigrationDatabase();
+    const database = getMigrationDatabase();
 
     await database.execute(sql.raw(`DROP SCHEMA IF EXISTS "drizzle" CASCADE`));
     await database.execute(sql.raw(`DROP SCHEMA IF EXISTS "public" CASCADE`));

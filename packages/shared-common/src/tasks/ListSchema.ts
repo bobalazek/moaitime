@@ -10,5 +10,16 @@ export const ListSchema = z.object({
   updatedAt: z.string(),
 });
 
+export const CreateListSchema = z.object({
+  name: z.string().min(1).optional(),
+  color: z.string().nullable().optional(),
+});
+
+export const UpdateListSchema = CreateListSchema;
+
 // Types
 export type List = z.infer<typeof ListSchema>;
+
+export type CreateList = z.infer<typeof CreateListSchema>;
+
+export type UpdateList = z.infer<typeof UpdateListSchema>;

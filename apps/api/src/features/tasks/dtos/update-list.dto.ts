@@ -1,3 +1,5 @@
-import { CreateListDto } from './create-list.dto';
+import { UpdateListSchema } from '@myzenbuddy/shared-common';
 
-export class UpdateListDto extends CreateListDto {}
+import { createZodDto } from '../../core/utils/validation-helpers';
+
+export class UpdateListDto extends createZodDto(UpdateListSchema) {}

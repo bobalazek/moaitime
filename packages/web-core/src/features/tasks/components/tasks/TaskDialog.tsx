@@ -18,11 +18,13 @@ import {
   useToast,
 } from '@myzenbuddy/web-ui';
 
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useTasksStore } from '../../state/tasksStore';
 import { ListsSelect } from '../lists/ListsSelect';
 
 export default function TaskDialog() {
   const { toast } = useToast();
+  const { auth } = useAuthStore();
   const {
     selectedTaskDialogOpen,
     selectedTask,
@@ -32,6 +34,8 @@ export default function TaskDialog() {
     undeleteTask,
   } = useTasksStore();
   const [data, setData] = useState<UpdateTask>();
+
+  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
 
   useEffect(() => {
     if (!selectedTask) {
@@ -49,7 +53,7 @@ export default function TaskDialog() {
     }
 
     setData(parsedSelectedTask.data);
-  }, [selectedTask]);
+  }, [selectedTask, toast]);
 
   if (!selectedTaskDialogOpen || !data) {
     return null;
@@ -94,14 +98,18 @@ export default function TaskDialog() {
       return;
     }
 
-    const editedTask = await editTask(selectedTask.id, data);
+    try {
+      const editedTask = await editTask(selectedTask.id, data);
 
-    toast({
-      title: `Task "${editedTask.name}" save`,
-      description: 'You have successfully saved the task',
-    });
+      toast({
+        title: `Task "${editedTask.name}" save`,
+        description: 'You have successfully saved the task',
+      });
 
-    setSelectedTaskDialogOpen(false);
+      setSelectedTaskDialogOpen(false);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (
@@ -159,6 +167,7 @@ export default function TaskDialog() {
                 onSelect={(value) => {
                   setData({ ...data, dueDate: value ? format(value, 'yyyy-MM-dd') : undefined });
                 }}
+                weekStartsOn={calendarStartDayOfWeek}
               />
             </PopoverContent>
           </Popover>

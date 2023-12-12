@@ -13,19 +13,28 @@ export const TaskSchema = z.object({
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  listId: z.string().nullable(),
+  listId: z.string(),
 });
 
-export const UpdateTaskSchema = z.object({
-  name: z.string().min(1).optional(),
+export const CreateTaskSchema = z.object({
+  name: z
+    .string()
+    .min(1, {
+      message: 'Task name must be provided',
+    })
+    .optional(),
   description: z.string().nullable().optional(),
   dueDate: z.string().nullable().optional(),
   dueDateTime: z.string().nullable().optional(),
   dueDateTimeZone: z.string().nullable().optional(),
-  listId: z.string().nullable().optional(),
+  listId: z.string().optional(),
 });
+
+export const UpdateTaskSchema = CreateTaskSchema;
 
 // Types
 export type Task = z.infer<typeof TaskSchema>;
+
+export type CreateTask = z.infer<typeof CreateTaskSchema>;
 
 export type UpdateTask = z.infer<typeof UpdateTaskSchema>;

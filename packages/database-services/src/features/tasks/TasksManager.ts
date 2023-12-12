@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { and, asc, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, lists, NewTask, Task, tasks } from '@myzenbuddy/database-core';
@@ -37,9 +38,13 @@ export class TasksManager {
       orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
     }
 
-    return getDatabase().query.tasks.findMany({
+    const rows = await getDatabase().query.tasks.findMany({
       where,
       orderBy,
+    });
+
+    return rows.map((row) => {
+      return this._fixDueDateColumn(row);
     });
   }
 
@@ -48,7 +53,11 @@ export class TasksManager {
       where: eq(lists.id, id),
     });
 
-    return row ?? null;
+    if (!row) {
+      return null;
+    }
+
+    return this._fixDueDateColumn(row);
   }
 
   async findOneByIdAndUserId(id: string, userId: string): Promise<Task | null> {
@@ -59,7 +68,11 @@ export class TasksManager {
       .where(and(eq(tasks.id, id), eq(lists.userId, userId)))
       .execute();
 
-    return rows?.[0].tasks ?? null;
+    if (rows.length === 0) {
+      return null;
+    }
+
+    return this._fixDueDateColumn(rows[0].tasks);
   }
 
   async findMaxOrderByListId(listId: string): Promise<number> {
@@ -81,7 +94,7 @@ export class TasksManager {
   async insertOne(data: NewTask): Promise<Task> {
     const rows = await getDatabase().insert(tasks).values(data).returning();
 
-    return rows[0];
+    return this._fixDueDateColumn(rows[0]);
   }
 
   async updateOneById(id: string, data: Partial<NewTask>): Promise<Task> {
@@ -91,7 +104,7 @@ export class TasksManager {
       .where(eq(tasks.id, id))
       .returning();
 
-    return rows[0];
+    return this._fixDueDateColumn(rows[0]);
   }
 
   async updateReorder(map: { [key: string]: number }) {
@@ -105,7 +118,18 @@ export class TasksManager {
   async deleteOneById(id: string): Promise<Task> {
     const rows = await getDatabase().delete(tasks).where(eq(tasks.id, id)).returning();
 
-    return rows[0];
+    return this._fixDueDateColumn(rows[0]);
+  }
+
+  private _fixDueDateColumn(task: Task) {
+    // TODO
+    // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
+    // Should actually be a string
+    if (task.dueDate && (task.dueDate as unknown as Date) instanceof Date) {
+      task.dueDate = format(task.dueDate as unknown as Date, 'yyyy-MM-dd');
+    }
+
+    return task;
   }
 }
 

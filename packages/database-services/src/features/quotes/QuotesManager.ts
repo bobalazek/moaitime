@@ -1,13 +1,6 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
-import {
-  getDatabase,
-  insertQuoteSchema,
-  NewQuote,
-  Quote,
-  quotes,
-  updateQuoteSchema,
-} from '@myzenbuddy/database-core';
+import { getDatabase, NewQuote, Quote, quotes } from '@myzenbuddy/database-core';
 
 export class QuotesManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Quote[]> {
@@ -23,16 +16,12 @@ export class QuotesManager {
   }
 
   async insertOne(data: NewQuote): Promise<Quote> {
-    data = insertQuoteSchema.parse(data) as unknown as Quote;
-
     const rows = await getDatabase().insert(quotes).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewQuote>): Promise<Quote> {
-    data = updateQuoteSchema.parse(data) as unknown as NewQuote;
-
     const rows = await getDatabase()
       .update(quotes)
       .set({ ...data, updatedAt: new Date() })

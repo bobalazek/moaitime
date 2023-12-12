@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { events } from './events';
 import { users } from './users';
@@ -28,9 +27,3 @@ export const calendarsRelations = relations(calendars, ({ one, many }) => ({
 export type Calendar = typeof calendars.$inferSelect;
 
 export type NewCalendar = typeof calendars.$inferInsert;
-
-export const selectCalendarSchema = createSelectSchema(calendars);
-
-export const insertCalendarSchema = createInsertSchema(calendars);
-
-export const updateCalendarSchema = insertCalendarSchema.partial();

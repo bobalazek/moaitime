@@ -1,13 +1,6 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
-import {
-  getDatabase,
-  Greeting,
-  greetings,
-  insertGreetingSchema,
-  NewGreeting,
-  updateGreetingSchema,
-} from '@myzenbuddy/database-core';
+import { getDatabase, Greeting, greetings, NewGreeting } from '@myzenbuddy/database-core';
 
 export class GreetingsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Greeting[]> {
@@ -23,16 +16,12 @@ export class GreetingsManager {
   }
 
   async insertOne(data: NewGreeting): Promise<Greeting> {
-    data = insertGreetingSchema.parse(data) as unknown as Greeting;
-
     const rows = await getDatabase().insert(greetings).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewGreeting>): Promise<Greeting> {
-    data = updateGreetingSchema.parse(data) as unknown as NewGreeting;
-
     const rows = await getDatabase()
       .update(greetings)
       .set({ ...data, updatedAt: new Date() })

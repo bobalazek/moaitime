@@ -1,13 +1,6 @@
 import { and, asc, DBQueryConfig, eq, isNull } from 'drizzle-orm';
 
-import {
-  Calendar,
-  calendars,
-  getDatabase,
-  insertCalendarSchema,
-  NewCalendar,
-  updateCalendarSchema,
-} from '@myzenbuddy/database-core';
+import { Calendar, calendars, getDatabase, NewCalendar } from '@myzenbuddy/database-core';
 
 export class CalendarsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Calendar[]> {
@@ -30,16 +23,12 @@ export class CalendarsManager {
   }
 
   async insertOne(data: NewCalendar): Promise<Calendar> {
-    data = insertCalendarSchema.parse(data) as unknown as Calendar;
-
     const rows = await getDatabase().insert(calendars).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewCalendar>): Promise<Calendar> {
-    data = updateCalendarSchema.parse(data) as unknown as NewCalendar;
-
     const rows = await getDatabase()
       .update(calendars)
       .set({ ...data, updatedAt: new Date() })

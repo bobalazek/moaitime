@@ -1,5 +1,4 @@
 import { json, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 export type TestingEmailData = {
   from: string;
@@ -19,9 +18,3 @@ export const testingEmails = pgTable('testing_emails', {
 export type TestingEmail = typeof testingEmails.$inferSelect;
 
 export type NewTestingEmail = typeof testingEmails.$inferInsert;
-
-export const selectTestingEmailSchema = createSelectSchema(testingEmails);
-
-export const insertTestingEmailSchema = createInsertSchema(testingEmails);
-
-export const updateTestingEmailSchema = insertTestingEmailSchema.partial();

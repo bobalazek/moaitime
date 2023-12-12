@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { users } from './users';
 
@@ -24,9 +23,3 @@ export const greetingsRelations = relations(greetings, ({ one }) => ({
 export type Greeting = typeof greetings.$inferSelect;
 
 export type NewGreeting = typeof greetings.$inferInsert;
-
-export const selectGreetingSchema = createSelectSchema(greetings);
-
-export const insertGreetingSchema = createInsertSchema(greetings);
-
-export const updateGreetingSchema = insertGreetingSchema.partial();

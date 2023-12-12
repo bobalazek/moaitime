@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { users } from './users';
 
@@ -27,9 +26,3 @@ export const backgroundsRelations = relations(backgrounds, ({ one }) => ({
 export type Background = typeof backgrounds.$inferSelect;
 
 export type NewBackground = typeof backgrounds.$inferInsert;
-
-export const selectBackgroundSchema = createSelectSchema(backgrounds);
-
-export const insertBackgroundSchema = createInsertSchema(backgrounds);
-
-export const updateBackgroundSchema = insertBackgroundSchema.partial();

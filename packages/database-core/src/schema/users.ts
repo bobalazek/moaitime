@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm';
 import { date, index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { UserRoleEnum, UserSettings } from '@myzenbuddy/shared-common';
 
@@ -72,9 +71,3 @@ export const usersRelations = relations(users, ({ many }) => ({
 export type User = typeof users.$inferSelect;
 
 export type NewUser = typeof users.$inferInsert;
-
-export const selectUserSchema = createSelectSchema(users);
-
-export const insertUserSchema = createInsertSchema(users);
-
-export const updateUserSchema = insertUserSchema.partial();

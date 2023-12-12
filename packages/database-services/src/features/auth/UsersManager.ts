@@ -1,13 +1,6 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
-import {
-  getDatabase,
-  insertUserSchema,
-  NewUser,
-  updateUserSchema,
-  User,
-  users,
-} from '@myzenbuddy/database-core';
+import { getDatabase, NewUser, User, users } from '@myzenbuddy/database-core';
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
@@ -57,16 +50,12 @@ export class UsersManager {
   }
 
   async insertOne(data: NewUser): Promise<User> {
-    data = insertUserSchema.parse(data) as unknown as NewUser;
-
     const rows = await getDatabase().insert(users).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
-    data = updateUserSchema.parse(data) as unknown as NewUser;
-
     const rows = await getDatabase()
       .update(users)
       .set({ ...data, updatedAt: new Date() })

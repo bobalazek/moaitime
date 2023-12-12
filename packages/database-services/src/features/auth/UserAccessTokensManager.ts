@@ -2,9 +2,7 @@ import { DBQueryConfig, eq } from 'drizzle-orm';
 
 import {
   getDatabase,
-  insertUserAccessTokenSchema,
   NewUserAccessToken,
-  updateUserAccessTokenSchema,
   User,
   UserAccessToken,
   userAccessTokens,
@@ -45,16 +43,12 @@ export class UserAccessTokensManager {
   }
 
   async insertOne(data: NewUserAccessToken): Promise<UserAccessToken> {
-    data = insertUserAccessTokenSchema.parse(data) as unknown as NewUserAccessToken;
-
     const rows = await getDatabase().insert(userAccessTokens).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewUserAccessToken>): Promise<UserAccessToken> {
-    data = updateUserAccessTokenSchema.parse(data) as unknown as NewUserAccessToken;
-
     const rows = await getDatabase()
       .update(userAccessTokens)
       .set({ ...data, updatedAt: new Date() })

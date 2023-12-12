@@ -1,14 +1,6 @@
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
-import {
-  calendars,
-  Event,
-  events,
-  getDatabase,
-  insertEventSchema,
-  NewEvent,
-  updateEventSchema,
-} from '@myzenbuddy/database-core';
+import { calendars, Event, events, getDatabase, NewEvent } from '@myzenbuddy/database-core';
 
 export class EventsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
@@ -43,16 +35,12 @@ export class EventsManager {
   }
 
   async insertOne(data: NewEvent): Promise<Event> {
-    data = insertEventSchema.parse(data) as unknown as Event;
-
     const rows = await getDatabase().insert(events).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewEvent>): Promise<Event> {
-    data = updateEventSchema.parse(data) as unknown as NewEvent;
-
     const rows = await getDatabase()
       .update(events)
       .set({ ...data, updatedAt: new Date() })

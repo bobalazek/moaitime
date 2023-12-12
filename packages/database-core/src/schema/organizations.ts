@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { teams } from './teams';
 
@@ -19,9 +18,3 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
 export type Organization = typeof organizations.$inferSelect;
 
 export type NewOrganization = typeof organizations.$inferInsert;
-
-export const selectOrganizationSchema = createSelectSchema(organizations);
-
-export const insertOrganizationSchema = createInsertSchema(organizations);
-
-export const updateOrganizationSchema = insertOrganizationSchema.partial();

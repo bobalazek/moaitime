@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm';
 import { index, json, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { TeamUserRoleEnum } from '@myzenbuddy/shared-common';
 
@@ -41,9 +40,3 @@ export const teamUsersRelations = relations(teamUsers, ({ many }) => ({
 export type TeamUser = typeof teamUsers.$inferSelect;
 
 export type NewTeamUser = typeof teamUsers.$inferInsert;
-
-export const selectTeamUserSchema = createSelectSchema(teamUsers);
-
-export const insertTeamUserSchema = createInsertSchema(teamUsers);
-
-export const updateTeamUserSchema = insertTeamUserSchema.partial();

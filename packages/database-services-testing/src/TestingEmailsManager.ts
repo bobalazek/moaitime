@@ -2,11 +2,9 @@ import { DBQueryConfig, desc, eq } from 'drizzle-orm';
 
 import {
   getDatabase,
-  insertTestingEmailSchema,
   NewTestingEmail,
   TestingEmail,
   testingEmails,
-  updateTestingEmailSchema,
 } from '@myzenbuddy/database-core';
 
 export class TestingEmailsManager {
@@ -31,16 +29,12 @@ export class TestingEmailsManager {
   }
 
   async insertOne(data: NewTestingEmail): Promise<TestingEmail> {
-    data = insertTestingEmailSchema.parse(data) as unknown as NewTestingEmail;
-
     const rows = await getDatabase().insert(testingEmails).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewTestingEmail>): Promise<TestingEmail> {
-    data = updateTestingEmailSchema.parse(data) as unknown as NewTestingEmail;
-
     const rows = await getDatabase()
       .update(testingEmails)
       .set({ ...data, updatedAt: new Date() })

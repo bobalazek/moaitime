@@ -1,14 +1,6 @@
 import { and, asc, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
-import {
-  getDatabase,
-  insertTaskSchema,
-  lists,
-  NewTask,
-  Task,
-  tasks,
-  updateTaskSchema,
-} from '@myzenbuddy/database-core';
+import { getDatabase, lists, NewTask, Task, tasks } from '@myzenbuddy/database-core';
 import { SortDirectionEnum } from '@myzenbuddy/shared-common';
 
 export type TasksManagerFindManyByListIdOptions = {
@@ -87,16 +79,12 @@ export class TasksManager {
   }
 
   async insertOne(data: NewTask): Promise<Task> {
-    data = insertTaskSchema.parse(data) as unknown as Task;
-
     const rows = await getDatabase().insert(tasks).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewTask>): Promise<Task> {
-    data = updateTaskSchema.parse(data) as unknown as NewTask;
-
     const rows = await getDatabase()
       .update(tasks)
       .set({ ...data, updatedAt: new Date() })

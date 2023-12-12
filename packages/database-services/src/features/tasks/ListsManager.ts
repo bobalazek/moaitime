@@ -1,14 +1,6 @@
 import { and, asc, count, DBQueryConfig, eq, inArray, isNull, SQL } from 'drizzle-orm';
 
-import {
-  getDatabase,
-  insertListSchema,
-  List,
-  lists,
-  NewList,
-  tasks,
-  updateListSchema,
-} from '@myzenbuddy/database-core';
+import { getDatabase, List, lists, NewList, tasks } from '@myzenbuddy/database-core';
 
 export type ListsManagerFindManyByUserIdOptions = {
   includeCompleted?: boolean;
@@ -76,16 +68,12 @@ export class ListsManager {
   }
 
   async insertOne(data: NewList): Promise<List> {
-    data = insertListSchema.parse(data) as unknown as List;
-
     const rows = await getDatabase().insert(lists).values(data).returning();
 
     return rows[0];
   }
 
   async updateOneById(id: string, data: Partial<NewList>): Promise<List> {
-    data = updateListSchema.parse(data) as unknown as NewList;
-
     const rows = await getDatabase()
       .update(lists)
       .set({ ...data, updatedAt: new Date() })

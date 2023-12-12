@@ -7,7 +7,9 @@ declare global {
   namespace Express {
     interface Request {
       // auth.middleware.ts
-      user?: UserWithAccessToken;
+      // Can not be optional, because then we always need
+      // to do !req.user in each and every controller action
+      user: UserWithAccessToken;
     }
 
     interface Response {

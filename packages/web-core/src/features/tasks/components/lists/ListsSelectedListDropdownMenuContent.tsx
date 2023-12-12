@@ -1,6 +1,6 @@
 import { FaPlus } from 'react-icons/fa';
 
-import { ListInterface } from '@myzenbuddy/shared-common';
+import { List } from '@myzenbuddy/shared-common';
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -19,7 +19,7 @@ export default function ListsSelectedListDropdownMenuContent({
   onListSelect,
 }: {
   isSubContent?: boolean;
-  onListSelect?: (list: ListInterface) => void;
+  onListSelect?: (list: List) => void;
 }) {
   const { selectedList, lists, setSelectedList, setListFormDialogOpen } = useTasksStore();
 

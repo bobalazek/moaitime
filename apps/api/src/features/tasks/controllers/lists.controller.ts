@@ -8,7 +8,6 @@ import {
   Post,
   Put,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
@@ -26,10 +25,6 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<List[]>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const includeCompleted = req.query.includeCompleted === 'true';
     const includeDeleted = req.query.includeDeleted === 'true';
 
@@ -47,10 +42,6 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   @Get(':id')
   async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<List>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await listsManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('List not found');
@@ -68,10 +59,6 @@ export class ListsController {
     @Body() body: CreateListDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<List>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await listsManager.insertOne({ ...body, userId: req.user.id });
 
     return {
@@ -87,10 +74,6 @@ export class ListsController {
     @Param('id') id: string,
     @Body() body: UpdateListDto
   ): Promise<AbstractResponseDto<List>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await listsManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('List not found');
@@ -107,10 +90,6 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
   async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<List>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await listsManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('List not found');

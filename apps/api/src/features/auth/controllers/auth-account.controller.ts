@@ -28,10 +28,6 @@ export class AuthAccountController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     res.status(200);
 
     return {
@@ -47,10 +43,6 @@ export class AuthAccountController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     await authManager.update(req.user.id, body);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
@@ -63,10 +55,6 @@ export class AuthAccountController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     await authManager.updatePassword(req.user.id, body.newPassword, body.currentPassword);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
@@ -79,10 +67,6 @@ export class AuthAccountController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     await authManager.updateSettings(req.user.id, body);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);

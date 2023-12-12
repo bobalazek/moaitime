@@ -2,7 +2,7 @@ import { clsx } from 'clsx';
 import { memo, useCallback, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 
-import { TaskInterface } from '@myzenbuddy/shared-common';
+import { Task as TaskType } from '@myzenbuddy/shared-common';
 import { Checkbox } from '@myzenbuddy/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
@@ -19,7 +19,7 @@ function setCursorToEnd(element: HTMLElement) {
   selection?.addRange(range);
 }
 
-const Task = memo(({ task }: { task: TaskInterface }) => {
+const Task = memo(({ task }: { task: TaskType }) => {
   const { editTask, completeTask, uncompleteTask } = useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);

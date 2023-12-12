@@ -1,9 +1,9 @@
 import {
   API_URL,
-  ListInterface,
+  List,
   ResponseInterface,
   SortDirectionEnum,
-  TaskInterface,
+  Task,
 } from '@myzenbuddy/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -19,26 +19,23 @@ export const loadLists = async (options?: {
     includeCompleted ? 'true' : 'false'
   }&includeDeleted=${includeDeleted ? 'true' : 'false'}`;
 
-  const response = await fetchJson<ResponseInterface<ListInterface[]>>(url, {
+  const response = await fetchJson<ResponseInterface<List[]>>(url, {
     method: 'GET',
   });
 
-  return response.data as ListInterface[];
+  return response.data as List[];
 };
 
-export const getList = async (listId: string): Promise<ListInterface> => {
-  const response = await fetchJson<ResponseInterface<ListInterface>>(
-    `${API_URL}/api/v1/lists/${listId}`,
-    {
-      method: 'GET',
-    }
-  );
+export const getList = async (listId: string): Promise<List> => {
+  const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists/${listId}`, {
+    method: 'GET',
+  });
 
-  return response.data as ListInterface;
+  return response.data as List;
 };
 
-export const addList = async (list: ListInterface): Promise<ListInterface> => {
-  const response = await fetchJson<ResponseInterface<ListInterface>>(`${API_URL}/api/v1/lists`, {
+export const addList = async (list: List): Promise<List> => {
+  const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists`, {
     method: 'POST',
     body: JSON.stringify(list),
     headers: {
@@ -47,37 +44,28 @@ export const addList = async (list: ListInterface): Promise<ListInterface> => {
     },
   });
 
-  return response.data as ListInterface;
+  return response.data as List;
 };
 
-export const editList = async (
-  listId: string,
-  list: Partial<ListInterface>
-): Promise<ListInterface> => {
-  const response = await fetchJson<ResponseInterface<ListInterface>>(
-    `${API_URL}/api/v1/lists/${listId}`,
-    {
-      method: 'PUT',
-      body: JSON.stringify(list),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+export const editList = async (listId: string, list: Partial<List>): Promise<List> => {
+  const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists/${listId}`, {
+    method: 'PUT',
+    body: JSON.stringify(list),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
-  return response.data as ListInterface;
+  return response.data as List;
 };
 
-export const deleteList = async (listId: string): Promise<ListInterface | null> => {
-  const response = await fetchJson<ResponseInterface<ListInterface>>(
-    `${API_URL}/api/v1/lists/${listId}`,
-    {
-      method: 'DELETE',
-    }
-  );
+export const deleteList = async (listId: string): Promise<List | null> => {
+  const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists/${listId}`, {
+    method: 'DELETE',
+  });
 
-  return response.data as ListInterface;
+  return response.data as List;
 };
 
 /********** Tasks **********/
@@ -89,7 +77,7 @@ export const getTasksForList = async (
     sortField?: string;
     sortDirection?: SortDirectionEnum;
   }
-): Promise<TaskInterface[]> => {
+): Promise<Task[]> => {
   const includeCompleted = options?.includeCompleted ?? true;
   const includeDeleted = options?.includeDeleted ?? false;
   const sortField = options?.sortField ?? 'createdAt';
@@ -100,26 +88,23 @@ export const getTasksForList = async (
     includeDeleted ? 'true' : 'false'
   }&sortField=${sortField}&sortDirection=${sortDirection}`;
 
-  const response = await fetchJson<ResponseInterface<TaskInterface[]>>(url, {
+  const response = await fetchJson<ResponseInterface<Task[]>>(url, {
     method: 'GET',
   });
 
-  return response.data as TaskInterface[];
+  return response.data as Task[];
 };
 
-export const getTask = async (taskId: string): Promise<TaskInterface | null> => {
-  const response = await fetchJson<ResponseInterface<ListInterface>>(
-    `${API_URL}/api/v1/tasks/${taskId}`,
-    {
-      method: 'GET',
-    }
-  );
+export const getTask = async (taskId: string): Promise<Task | null> => {
+  const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/${taskId}`, {
+    method: 'GET',
+  });
 
-  return response.data as TaskInterface;
+  return response.data as Task;
 };
 
-export const addTask = async (task: TaskInterface): Promise<TaskInterface> => {
-  const response = await fetchJson<ResponseInterface<TaskInterface>>(`${API_URL}/api/v1/tasks`, {
+export const addTask = async (task: Task): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks`, {
     method: 'POST',
     body: JSON.stringify(task),
     headers: {
@@ -128,70 +113,61 @@ export const addTask = async (task: TaskInterface): Promise<TaskInterface> => {
     },
   });
 
-  return response.data as TaskInterface;
+  return response.data as Task;
 };
 
-export const editTask = async (
-  taskId: string,
-  task: Partial<TaskInterface>
-): Promise<TaskInterface> => {
-  const response = await fetchJson<ResponseInterface<TaskInterface>>(
-    `${API_URL}/api/v1/tasks/${taskId}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(task),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+export const editTask = async (taskId: string, task: Partial<Task>): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/${taskId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(task),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
-  return response.data as TaskInterface;
+  return response.data as Task;
 };
 
-export const deleteTask = async (taskId: string): Promise<TaskInterface> => {
-  const response = await fetchJson<ResponseInterface<TaskInterface>>(
-    `${API_URL}/api/v1/tasks/${taskId}`,
-    {
-      method: 'DELETE',
-    }
-  );
+export const deleteTask = async (taskId: string): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/${taskId}`, {
+    method: 'DELETE',
+  });
 
-  return response.data as TaskInterface;
+  return response.data as Task;
 };
 
-export const undeleteTask = async (taskId: string): Promise<TaskInterface> => {
-  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+export const undeleteTask = async (taskId: string): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(
     `${API_URL}/api/v1/tasks/${taskId}/undelete`,
     {
       method: 'POST',
     }
   );
 
-  return response.data as TaskInterface;
+  return response.data as Task;
 };
 
-export const completeTask = async (taskId: string): Promise<TaskInterface> => {
-  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+export const completeTask = async (taskId: string): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(
     `${API_URL}/api/v1/tasks/${taskId}/complete`,
     {
       method: 'POST',
     }
   );
 
-  return response.data as TaskInterface;
+  return response.data as Task;
 };
 
-export const uncompleteTask = async (taskId: string): Promise<TaskInterface> => {
-  const response = await fetchJson<ResponseInterface<TaskInterface>>(
+export const uncompleteTask = async (taskId: string): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(
     `${API_URL}/api/v1/tasks/${taskId}/uncomplete`,
     {
       method: 'POST',
     }
   );
 
-  return response.data as TaskInterface;
+  return response.data as Task;
 };
 
 export const reorderTask = async (
@@ -200,7 +176,7 @@ export const reorderTask = async (
   newTaskId: string,
   sortDirection: SortDirectionEnum
 ) => {
-  return fetchJson<ResponseInterface<TaskInterface>>(`${API_URL}/api/v1/tasks/reorder`, {
+  return fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/reorder`, {
     method: 'POST',
     body: JSON.stringify({ listId, originalTaskId, newTaskId, sortDirection }),
     headers: {

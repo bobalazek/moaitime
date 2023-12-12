@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
@@ -28,10 +27,6 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Task[]>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const listId = req.query.listId as string;
     const list = listsManager.findOneByIdAndUserId(listId, req.user.id);
     if (!list) {
@@ -59,10 +54,6 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Post('reorder')
   async reorder(@Body() body: ReorderTasksDto, @Req() req: Request) {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const list = listsManager.findOneByIdAndUserId(body.listId, req.user.id);
     if (!list) {
       throw new NotFoundException('List not found');
@@ -104,10 +95,6 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Get(':id')
   async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
@@ -125,10 +112,6 @@ export class TasksController {
     @Body() body: CreateTaskDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Task>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const list = listsManager.findOneByIdAndUserId(body.listId, req.user.id);
     if (!list) {
       throw new NotFoundException('Task not found');
@@ -151,10 +134,6 @@ export class TasksController {
     @Param('id') id: string,
     @Body() body: UpdateTaskDto
   ): Promise<AbstractResponseDto<Task>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
@@ -176,10 +155,6 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
   async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
@@ -198,10 +173,6 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Post(':id/undelete')
   async undelete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
@@ -220,10 +191,6 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Post(':id/complete')
   async complete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
@@ -245,10 +212,6 @@ export class TasksController {
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<Task>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');

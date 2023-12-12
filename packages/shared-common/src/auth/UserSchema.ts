@@ -82,11 +82,8 @@ export const UserPasswordSchema = z
     message: 'Password must be at most 255 characters long',
   });
 
-export const UserBirthDateSchema = z.date({
-  errorMap: (error) => ({
-    message: 'You must provide a valid date of birth',
-    path: error.path,
-  }),
+export const UserBirthDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/i, {
+  message: 'You must provide a valid date of birth',
 });
 
 // Update User and User Password

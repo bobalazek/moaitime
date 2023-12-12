@@ -1,11 +1,6 @@
 import { create } from 'zustand';
 
-import {
-  ListInterface,
-  SortDirectionEnum,
-  TaskInterface,
-  TasksListSortFieldEnum,
-} from '@myzenbuddy/shared-common';
+import { List, SortDirectionEnum, Task, TasksListSortFieldEnum } from '@myzenbuddy/shared-common';
 
 import {
   addList,
@@ -30,48 +25,42 @@ export type TasksStore = {
   listEndElement: HTMLElement | null;
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Lists **********/
-  lists: ListInterface[];
-  addList: (list: ListInterface) => Promise<ListInterface>;
-  editList: (listId: string, list: Partial<ListInterface>) => Promise<ListInterface>;
-  deleteList: (listId: string) => Promise<ListInterface | null>;
-  loadLists: () => Promise<ListInterface[]>;
+  lists: List[];
+  addList: (list: List) => Promise<List>;
+  editList: (listId: string, list: Partial<List>) => Promise<List>;
+  deleteList: (listId: string) => Promise<List | null>;
+  loadLists: () => Promise<List[]>;
   // Selected
-  selectedList: ListInterface | null;
-  setSelectedList: (selectedList: ListInterface | null) => Promise<void>;
+  selectedList: List | null;
+  setSelectedList: (selectedList: List | null) => Promise<void>;
   reloadSelectedList: () => Promise<void>;
   // Form Dialog
   listFormDialogOpen: boolean;
-  selectedListFormDialog: ListInterface | null;
-  setListFormDialogOpen: (
-    listDialogOpen: boolean,
-    selectedListFormDialog?: ListInterface | null
-  ) => void;
-  saveListFormDialog: (list: Partial<ListInterface>) => Promise<ListInterface>;
+  selectedListFormDialog: List | null;
+  setListFormDialogOpen: (listDialogOpen: boolean, selectedListFormDialog?: List | null) => void;
+  saveListFormDialog: (list: Partial<List>) => Promise<List>;
   // Delete Alert Dialog
   listDeleteAlertDialogOpen: boolean;
-  selectedListDeleteAlertDialog: ListInterface | null;
+  selectedListDeleteAlertDialog: List | null;
   setListDeleteAlertDialogOpen: (
     listDeleteAlertDialogOpen: boolean,
-    selectedListDeleteAlertDialog?: ListInterface | null
+    selectedListDeleteAlertDialog?: List | null
   ) => void;
   /********** Tasks **********/
-  addTask: (task: TaskInterface) => Promise<TaskInterface>;
-  editTask: (taskId: string, task: Partial<TaskInterface>) => Promise<TaskInterface>;
-  moveTask: (taskId: string, newListId: string) => Promise<TaskInterface>;
-  deleteTask: (taskId: string) => Promise<TaskInterface>;
-  undeleteTask: (taskId: string) => Promise<TaskInterface>;
-  completeTask: (taskId: string) => Promise<TaskInterface>;
-  uncompleteTask: (taskId: string) => Promise<TaskInterface>;
+  addTask: (task: Task) => Promise<Task>;
+  editTask: (taskId: string, task: Partial<Task>) => Promise<Task>;
+  moveTask: (taskId: string, newListId: string) => Promise<Task>;
+  deleteTask: (taskId: string) => Promise<Task>;
+  undeleteTask: (taskId: string) => Promise<Task>;
+  completeTask: (taskId: string) => Promise<Task>;
+  uncompleteTask: (taskId: string) => Promise<Task>;
   reorderTasks: (activeTaskId: string, overTaskId: string) => void;
   // Selected
   selectedTaskDialogOpen: boolean;
-  selectedTask: TaskInterface | null;
-  setSelectedTaskDialogOpen: (
-    selectedTaskDialogOpen: boolean,
-    selectedTask?: TaskInterface | null
-  ) => void;
+  selectedTask: Task | null;
+  setSelectedTaskDialogOpen: (selectedTaskDialogOpen: boolean, selectedTask?: Task | null) => void;
   // Selected List Tasks
-  selectedListTasks: TaskInterface[];
+  selectedListTasks: Task[];
   selectedListTasksSortField: TasksListSortFieldEnum;
   selectedListTasksSortDirection: SortDirectionEnum;
   selectedListTasksIncludeCompleted: boolean;
@@ -105,7 +94,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   /********** Lists **********/
   lists: [],
-  addList: async (list: ListInterface) => {
+  addList: async (list: List) => {
     const { loadLists } = get();
     const addedList = await addList(list);
 
@@ -113,7 +102,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return addedList;
   },
-  editList: async (listId: string, list: Partial<ListInterface>) => {
+  editList: async (listId: string, list: Partial<List>) => {
     const { loadLists } = get();
     const editedList = await editList(listId, list);
 
@@ -150,7 +139,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   // Selected
   selectedList: null,
-  setSelectedList: async (selectedList: ListInterface | null) => {
+  setSelectedList: async (selectedList: List | null) => {
     const { reloadSelectedList } = get();
 
     set({
@@ -184,21 +173,18 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   // Form Dialog
   listFormDialogOpen: false,
   selectedListFormDialog: null,
-  setListFormDialogOpen: (
-    listFormDialogOpen: boolean,
-    selectedListFormDialog?: ListInterface | null
-  ) => {
+  setListFormDialogOpen: (listFormDialogOpen: boolean, selectedListFormDialog?: List | null) => {
     set({
       listFormDialogOpen,
       selectedListFormDialog,
     });
   },
-  saveListFormDialog: async (list: Partial<ListInterface>) => {
+  saveListFormDialog: async (list: Partial<List>) => {
     const { selectedListFormDialog, reloadSelectedList, loadLists } = get();
 
     const savedList = selectedListFormDialog
       ? await editList(selectedListFormDialog.id, list)
-      : await addList(list as ListInterface);
+      : await addList(list as List);
 
     set({
       listFormDialogOpen: false,
@@ -216,7 +202,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   selectedListDeleteAlertDialog: null,
   setListDeleteAlertDialogOpen: (
     listDeleteAlertDialogOpen: boolean,
-    selectedListDeleteAlertDialog?: ListInterface | null
+    selectedListDeleteAlertDialog?: List | null
   ) => {
     set({
       listDeleteAlertDialogOpen,
@@ -224,7 +210,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
   },
   /********** Tasks **********/
-  addTask: async (task: TaskInterface) => {
+  addTask: async (task: Task) => {
     const { reloadSelectedList, loadLists } = get();
 
     const addedTask = await addTask(task);
@@ -237,7 +223,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return addedTask;
   },
-  editTask: async (taskId: string, task: Partial<TaskInterface>) => {
+  editTask: async (taskId: string, task: Partial<Task>) => {
     const { reloadSelectedList } = get();
 
     const editedTask = await editTask(taskId, task);
@@ -333,10 +319,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   // Selected
   selectedTaskDialogOpen: false,
   selectedTask: null,
-  setSelectedTaskDialogOpen: (
-    selectedTaskDialogOpen: boolean,
-    selectedTask?: TaskInterface | null
-  ) => {
+  setSelectedTaskDialogOpen: (selectedTaskDialogOpen: boolean, selectedTask?: Task | null) => {
     set({
       selectedTaskDialogOpen,
       selectedTask,

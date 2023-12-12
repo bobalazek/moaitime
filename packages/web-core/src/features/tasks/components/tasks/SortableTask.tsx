@@ -1,11 +1,11 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import { TaskInterface } from '@myzenbuddy/shared-common';
+import { Task } from '@myzenbuddy/shared-common';
 
-import Task from './Task';
+import TaskComponent from './Task';
 
-const SortableTask = ({ task }: { task: TaskInterface }) => {
+const SortableTask = ({ task }: { task: Task }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: task.id,
   });
@@ -22,7 +22,7 @@ const SortableTask = ({ task }: { task: TaskInterface }) => {
       {...attributes}
       {...listeners}
     >
-      <Task task={task} />
+      <TaskComponent task={task} />
     </div>
   );
 };

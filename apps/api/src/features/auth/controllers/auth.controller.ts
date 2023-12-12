@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { authManager } from '@myzenbuddy/database-services';
@@ -84,10 +84,6 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     await authManager.resendEmailConfirmation(req.user.id, !!body.isNewEmail);
 
     res.status(200);
@@ -103,10 +99,6 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     await authManager.cancelNewEmail(req.user.id);
 
     res.status(200);

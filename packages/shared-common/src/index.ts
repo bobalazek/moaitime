@@ -34,8 +34,8 @@ export * from './search/SearchEnginesEnum';
 export * from './search/SearchEnginesMap';
 
 // Tasks
-export * from './tasks/List';
-export * from './tasks/Task';
+export * from './tasks/ListSchema';
+export * from './tasks/TaskSchema';
 export * from './tasks/ListColors';
 export * from './tasks/ListSortOptions';
 

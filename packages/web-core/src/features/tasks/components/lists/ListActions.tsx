@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
-import { ListInterface } from '@myzenbuddy/shared-common';
+import { List } from '@myzenbuddy/shared-common';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
 
 import { useTasksStore } from '../../state/tasksStore';
 
-const ListActions = memo(({ list }: { list: ListInterface }) => {
+const ListActions = memo(({ list }: { list: List }) => {
   const { setListFormDialogOpen, setListDeleteAlertDialogOpen } = useTasksStore();
 
   return (

@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { Event } from '@myzenbuddy/database-core';
@@ -12,10 +12,6 @@ export class EventsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Event[]>> {
-    if (!req.user) {
-      throw new UnauthorizedException();
-    }
-
     const data = await eventsManager.findManyByUserId(req.user.id);
 
     return {

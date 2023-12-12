@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { KeyboardEvent, MouseEvent, useState } from 'react';
 import { FaClock, FaTimes } from 'react-icons/fa';
 
 import { isValidTime } from '@myzenbuddy/shared-common';
@@ -25,6 +25,15 @@ export default function TaskDialogDueDateTime({
   const [open, setOpen] = useState(false);
   const [timeValue, setTimeValue] = useState(dateTime ?? '');
 
+  const onClearButtonClick = (event: MouseEvent) => {
+    event.preventDefault();
+
+    onDateTimeChange(null);
+
+    setTimeValue('');
+    setOpen(false);
+  };
+
   const onSaveButtonClick = () => {
     if (timeValue && !isValidTime(timeValue)) {
       toast({
@@ -39,6 +48,14 @@ export default function TaskDialogDueDateTime({
     onDateTimeChange(timeValue ?? null);
 
     setOpen(false);
+  };
+
+  const onKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    onSaveButtonClick();
   };
 
   return (
@@ -57,14 +74,7 @@ export default function TaskDialogDueDateTime({
           {dateTime && (
             <span
               className="text-muted-foreground rounded-full p-1 hover:bg-slate-600"
-              onClick={(e) => {
-                e.preventDefault();
-
-                onDateTimeChange(null);
-
-                setTimeValue('');
-                setOpen(false);
-              }}
+              onClick={onClearButtonClick}
             >
               <FaTimes />
             </span>
@@ -77,16 +87,8 @@ export default function TaskDialogDueDateTime({
           <Input
             id="task-dialog--due-date-time"
             value={timeValue}
-            onChange={(e) => {
-              setTimeValue(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key !== 'Enter') {
-                return;
-              }
-
-              onSaveButtonClick();
-            }}
+            onChange={(event) => setTimeValue(event.target.value)}
+            onKeyDown={onKeyPress}
           />
         </div>
         <div>

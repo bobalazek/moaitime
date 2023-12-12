@@ -206,9 +206,9 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
         value={date.month.toString()}
         onChange={handleInputChange('month')}
         onKeyDown={handleKeyDown('month')}
-        onFocus={(e) => {
+        onFocus={(event) => {
           if (window.innerWidth > 1024) {
-            e.target.select();
+            event.target.select();
           }
         }}
         onBlur={handleBlur('month')}
@@ -224,9 +224,9 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
         value={date.day.toString()}
         onChange={handleInputChange('day')}
         onKeyDown={handleKeyDown('day')}
-        onFocus={(e) => {
+        onFocus={(event) => {
           if (window.innerWidth > 1024) {
-            e.target.select();
+            event.target.select();
           }
         }}
         onBlur={handleBlur('day')}
@@ -242,9 +242,9 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
         value={date.year.toString()}
         onChange={handleInputChange('year')}
         onKeyDown={handleKeyDown('year')}
-        onFocus={(e) => {
+        onFocus={(event) => {
           if (window.innerWidth > 1024) {
-            e.target.select();
+            event.target.select();
           }
         }}
         onBlur={handleBlur('year')}

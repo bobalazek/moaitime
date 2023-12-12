@@ -69,7 +69,7 @@ export const zodErrorToString = (error: unknown) => {
   }
 
   if (Array.isArray(error)) {
-    return error.map((e) => e.message).join(', ');
+    return error.map((err) => err.message).join(', ');
   }
 
   if (error instanceof Error) {

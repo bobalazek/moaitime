@@ -38,7 +38,7 @@ export default function WeatherLocationDialog() {
           <Input
             className="flex-grow"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(event) => setName(event.target.value)}
             placeholder="Location"
             data-test="weather--location-dialog--location-input"
           />

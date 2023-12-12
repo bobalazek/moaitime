@@ -1,31 +1,22 @@
-import { clsx } from 'clsx';
-import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { FaCalendar } from 'react-icons/fa';
 
 import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@myzenbuddy/shared-common';
 import {
   Button,
-  Calendar,
   Dialog,
   DialogContent,
   Input,
   Label,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Textarea,
   useToast,
 } from '@myzenbuddy/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
 import { useTasksStore } from '../../state/tasksStore';
 import { ListsSelect } from '../lists/ListsSelect';
 import TaskDialogDueDate from './TaskDialogDueDate';
 
 export default function TaskDialog() {
   const { toast } = useToast();
-  const { auth } = useAuthStore();
   const {
     selectedTaskDialogOpen,
     selectedTask,
@@ -35,8 +26,6 @@ export default function TaskDialog() {
     undeleteTask,
   } = useTasksStore();
   const [data, setData] = useState<UpdateTask>();
-
-  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
 
   useEffect(() => {
     if (!selectedTask) {

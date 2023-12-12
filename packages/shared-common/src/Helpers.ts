@@ -1,6 +1,7 @@
 import { utcToZonedTime } from 'date-fns-tz';
 
-export function getGmtOffset(timezone: string) {
+// Time
+export const getGmtOffset = (timezone: string) => {
   const date = new Date();
   const zonedDate = utcToZonedTime(date, timezone);
   const offset = -zonedDate.getTimezoneOffset();
@@ -11,7 +12,7 @@ export function getGmtOffset(timezone: string) {
   return `GMT${prefix}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes
     .toString()
     .padStart(2, '0')}`;
-}
+};
 
 export const isValidTime = (time: string) => {
   const [hours, minutes] = time.split(':');
@@ -37,6 +38,22 @@ export const isValidTime = (time: string) => {
   return true;
 };
 
+export const getTimezones = () => {
+  // Could maybe use the following library instead?
+  // https://github.com/vvo/tzdb
+  const timezones = new Set<string>();
+
+  timezones.add('UTC');
+  timezones.add('GMT');
+
+  for (const timezone of Intl.supportedValuesOf('timeZone')) {
+    timezones.add(timezone);
+  }
+
+  return Array.from(timezones).sort();
+};
+
+// Errors
 export const zodErrorToString = (error: unknown) => {
   if (Array.isArray((error as { errors: unknown[] }).errors)) {
     return (error as { errors: unknown[] }).errors

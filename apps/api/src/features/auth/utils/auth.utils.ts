@@ -1,5 +1,3 @@
-import { format } from 'date-fns';
-
 import { User, UserAccessToken } from '@myzenbuddy/database-core';
 import { authManager } from '@myzenbuddy/database-services';
 

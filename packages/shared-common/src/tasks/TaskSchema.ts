@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { isValidTime } from '../Helpers';
+import { getTimezones, isValidTime } from '../Helpers';
 
 export const TaskSchema = z.object({
   id: z.string(),
@@ -41,7 +41,23 @@ export const TaskSchema = z.object({
       }
     )
     .nullable(),
-  dueDateTimeZone: z.string().nullable(),
+  dueDateTimeZone: z
+    .string()
+    .refine(
+      (data) => {
+        if (!data) {
+          return true;
+        }
+
+        const timezones = getTimezones();
+
+        return timezones.includes(data);
+      },
+      {
+        message: 'You must provide a valid timezone',
+      }
+    )
+    .nullable(),
   completedAt: z.string().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),

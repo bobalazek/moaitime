@@ -21,6 +21,7 @@ import {
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useTasksStore } from '../../state/tasksStore';
 import { ListsSelect } from '../lists/ListsSelect';
+import TaskDialogDueDate from './TaskDialogDueDate';
 
 export default function TaskDialog() {
   const { toast } = useToast();
@@ -147,30 +148,12 @@ export default function TaskDialog() {
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-list">Due Date</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={'outline'}
-                className={clsx(
-                  'w-full justify-start text-left font-normal',
-                  !data.dueDate && 'text-muted-foreground'
-                )}
-              >
-                <FaCalendar className="mr-2 h-4 w-4" />
-                {data.dueDate ? format(new Date(data.dueDate), 'PPP') : <span>Pick a date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-              <Calendar
-                mode="single"
-                selected={data.dueDate ? new Date(data.dueDate) : undefined}
-                onSelect={(value) => {
-                  setData({ ...data, dueDate: value ? format(value, 'yyyy-MM-dd') : undefined });
-                }}
-                weekStartsOn={calendarStartDayOfWeek}
-              />
-            </PopoverContent>
-          </Popover>
+          <TaskDialogDueDate
+            date={data.dueDate ?? null}
+            onDateChange={(value) => setData({ ...data, dueDate: value })}
+            dateTime={data.dueDateTime ?? null}
+            onDateTimeChange={(value) => setData({ ...data, dueDateTime: value })}
+          />
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>

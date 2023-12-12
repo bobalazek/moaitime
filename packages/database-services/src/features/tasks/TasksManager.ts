@@ -129,6 +129,11 @@ export class TasksManager {
       task.dueDate = format(task.dueDate as unknown as Date, 'yyyy-MM-dd');
     }
 
+    // We do not want the seconds here
+    if (task.dueDateTime && task.dueDateTime.length === 8) {
+      task.dueDateTime = task.dueDateTime.slice(0, -3);
+    }
+
     return task;
   }
 }

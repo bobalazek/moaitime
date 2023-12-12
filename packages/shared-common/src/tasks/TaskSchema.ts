@@ -1,13 +1,46 @@
 import { z } from 'zod';
 
+import { isValidTime } from '../Helpers';
+
 export const TaskSchema = z.object({
   id: z.string(),
   name: z.string(),
   order: z.number(),
   description: z.string().nullable(),
   priority: z.number().nullable(),
-  dueDate: z.string().nullable(),
-  dueDateTime: z.string().nullable(),
+  dueDate: z
+    .string()
+    .refine(
+      (data) => {
+        if (!data) {
+          return true;
+        }
+
+        const now = new Date();
+        const dueDate = new Date(data);
+
+        return dueDate >= now;
+      },
+      {
+        message: 'Due date must be in the future',
+      }
+    )
+    .nullable(),
+  dueDateTime: z
+    .string()
+    .refine(
+      (data) => {
+        if (!data) {
+          return true;
+        }
+
+        return isValidTime(data);
+      },
+      {
+        message: 'You must provide a valid due date time',
+      }
+    )
+    .nullable(),
   dueDateTimeZone: z.string().nullable(),
   completedAt: z.string().nullable(),
   deletedAt: z.string().nullable(),

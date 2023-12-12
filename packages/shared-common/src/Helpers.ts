@@ -13,6 +13,30 @@ export function getGmtOffset(timezone: string) {
     .padStart(2, '0')}`;
 }
 
+export const isValidTime = (time: string) => {
+  const [hours, minutes] = time.split(':');
+  if (!hours || !minutes) {
+    return false;
+  }
+
+  const hoursNumber = Number(hours);
+  const minutesNumber = Number(minutes);
+
+  if (isNaN(hoursNumber) || isNaN(minutesNumber)) {
+    return false;
+  }
+
+  if (hoursNumber < 0 || hoursNumber > 23) {
+    return false;
+  }
+
+  if (minutesNumber < 0 || minutesNumber > 59) {
+    return false;
+  }
+
+  return true;
+};
+
 export const zodErrorToString = (error: unknown) => {
   if (Array.isArray((error as { errors: unknown[] }).errors)) {
     return (error as { errors: unknown[] }).errors

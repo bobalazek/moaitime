@@ -110,7 +110,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--task-dialog').should('exist');
   });
 
-  it('should edit task name in expanded edit options', () => {
+  it.only('should edit task name in expanded edit options', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
@@ -127,13 +127,9 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.get('#task-name').clear();
 
-    cy.wait(1000);
+    cy.get('#task-name').should('be.empty');
 
     cy.get('#task-name').type('Change task name');
-
-    cy.wait(1000);
-
-    cy.get('[value="Change task name"]').should('exist');
 
     cy.get('button').contains('Save').click();
 

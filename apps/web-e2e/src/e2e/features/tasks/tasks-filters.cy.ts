@@ -296,7 +296,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--task').eq(3).contains('aaa').should('exist');
   });
 
-  it.only('should filter tasks by Include deleted', () => {
+  it('should filter tasks by Include deleted', () => {
     cy.intercept('POST', '/api/v1/tasks').as('taskFilters');
 
     openTasksPopover();
@@ -319,8 +319,6 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.wait('@taskFilters');
 
-    //cy.wait(1000);
-
     cy.getBySel('tasks--tasks-list').contains('ccc').should('not.exist');
 
     cy.getBySel('tasks--tasks-list').contains('ddd').should('not.exist');
@@ -332,7 +330,7 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Include deleted?')
       .click();
 
-    cy.wait(1000);
+    cy.wait('@taskFilters');
 
     cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');
 

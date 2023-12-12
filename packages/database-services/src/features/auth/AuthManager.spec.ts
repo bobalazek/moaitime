@@ -426,7 +426,7 @@ describe('AuthManager.ts', () => {
       });
 
       expect(updatedUser.displayName).toBe('Tester17Updated');
-      expect(updatedUser.birthDate).toStrictEqual(new Date('1990-01-01')); // TODO: Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185. Should actually be a string
+      expect(updatedUser.birthDate).toStrictEqual('1990-01-01');
       expect(updatedUser.email).toBe('tester+17@corcosoft.com');
       expect(updatedUser.newEmail).toBe('tester+17updated@corcosoft.com');
       expect(updatedUser.newEmailConfirmationToken).not.toBe(null);

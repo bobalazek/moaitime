@@ -93,8 +93,6 @@ describe('AuthController', () => {
         token: testUserAccessToken.token,
         refreshToken: testUserAccessToken.refreshToken,
         expiresAt: null,
-        createdAt: testUserAccessToken.createdAt?.toISOString() ?? null,
-        updatedAt: testUserAccessToken.updatedAt?.toISOString() ?? null,
       });
     });
   });

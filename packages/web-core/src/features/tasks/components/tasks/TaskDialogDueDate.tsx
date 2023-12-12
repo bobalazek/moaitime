@@ -1,4 +1,4 @@
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { useState } from 'react';
 import { FaCalendar, FaClock, FaTimes } from 'react-icons/fa';
 

@@ -15,17 +15,42 @@ export const UserSchema = z.object({
   updatedAt: z.string(),
 });
 
-export const UserPasswordSchema = z.string().min(8).max(255);
+export const UserDisplayNameSchema = z
+  .string()
+  .min(1, {
+    message: 'Display name must be at least 1 character long',
+  })
+  .max(255);
+
+export const UserEmailSchema = z.string().email({
+  message: 'You must provide a valid email address',
+});
+
+export const UserPasswordSchema = z
+  .string()
+  .min(8, {
+    message: 'Password must be at least 8 characters long',
+  })
+  .max(255, {
+    message: 'Password must be at most 255 characters long',
+  });
+
+export const UserBirthDateSchema = z.date({
+  errorMap: (error) => ({
+    message: 'You must provide a valid date of birth',
+    path: error.path,
+  }),
+});
 
 export const UpdateUserSchema = z.object({
-  displayName: z.string().min(3).max(255).optional(),
-  email: z.string().email().optional(),
-  birthDate: z.string().optional().nullable(),
+  displayName: UserDisplayNameSchema.optional(),
+  email: UserEmailSchema.optional(),
+  birthDate: UserBirthDateSchema.optional().nullable(),
 });
 
 export const UpdateUserPasswordSchema = z.object({
   newPassword: UserPasswordSchema,
-  currentPassword: UserPasswordSchema.optional(),
+  currentPassword: UserPasswordSchema.optional(), // The only reason it's optional is, because we will have OAuth in the future, where the user won't have a password
 });
 
 export type User = z.infer<typeof UserSchema>;

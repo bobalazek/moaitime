@@ -1,12 +1,12 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { createZodValidationPipe } from 'nestjs-zod';
 
 import { getEnv } from '@myzenbuddy/shared-backend';
 
 import { AppModule } from './features/core/app.module';
 import { ErrorFilter } from './features/core/filters/error.filter';
 import { HttpExceptionFilter } from './features/core/filters/http-exception.filter';
+import { ZodValidationPipe } from './features/core/utils/validation-helpers';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -30,11 +30,6 @@ export async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Validation
-  const ZodValidationPipe = createZodValidationPipe({
-    createValidationException: (err) => {
-      return err;
-    },
-  });
   app.useGlobalPipes(new ZodValidationPipe());
 
   app.useGlobalPipes(

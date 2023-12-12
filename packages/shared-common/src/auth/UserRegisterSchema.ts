@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
+import { UserDisplayNameSchema, UserEmailSchema, UserPasswordSchema } from './UserSchema';
 import { UserSettingsSchema } from './UserSettingsSchema';
 
 export const UserRegisterSchema = z.object({
-  displayName: z.string().min(1).max(50),
-  email: z.string().email(),
-  password: z.string().min(8).max(50),
+  displayName: UserDisplayNameSchema,
+  email: UserEmailSchema,
+  password: UserPasswordSchema,
   settings: UserSettingsSchema.pick({
     generalTimezone: true,
     clockUse24HourClock: true,

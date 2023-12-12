@@ -110,7 +110,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--task-dialog').should('exist');
   });
 
-  it.only('should edit task name in expanded edit options', () => {
+  it('should edit task name in expanded edit options', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');

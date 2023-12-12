@@ -1,7 +1,13 @@
 import { arrayMove } from '@dnd-kit/sortable';
 import { create } from 'zustand';
 
-import { List, SortDirectionEnum, Task, TasksListSortFieldEnum } from '@myzenbuddy/shared-common';
+import {
+  List,
+  SortDirectionEnum,
+  Task,
+  TasksListSortFieldEnum,
+  UpdateTask,
+} from '@myzenbuddy/shared-common';
 
 import {
   addList,
@@ -49,7 +55,7 @@ export type TasksStore = {
   ) => void;
   /********** Tasks **********/
   addTask: (task: Task) => Promise<Task>;
-  editTask: (taskId: string, task: Partial<Task>) => Promise<Task>;
+  editTask: (taskId: string, task: UpdateTask) => Promise<Task>;
   moveTask: (taskId: string, newListId: string) => Promise<Task>;
   deleteTask: (taskId: string, isHardDelete?: boolean) => Promise<Task>;
   undeleteTask: (taskId: string) => Promise<Task>;
@@ -224,7 +230,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return addedTask;
   },
-  editTask: async (taskId: string, task: Partial<Task>) => {
+  editTask: async (taskId: string, task: UpdateTask) => {
     const { reloadSelectedList } = get();
 
     const editedTask = await editTask(taskId, task);

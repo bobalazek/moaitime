@@ -1,11 +1,19 @@
+import { clsx } from 'clsx';
+import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
+import { FaCalendar } from 'react-icons/fa';
 
+import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@myzenbuddy/shared-common';
 import {
   Button,
+  Calendar,
   Dialog,
   DialogContent,
   Input,
   Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Textarea,
   useToast,
 } from '@myzenbuddy/web-ui';
@@ -23,22 +31,24 @@ export default function TaskDialog() {
     deleteTask,
     undeleteTask,
   } = useTasksStore();
-  const [data, setData] = useState({
-    name: selectedTask?.name ?? '',
-    description: selectedTask?.description ?? '',
-    listId: selectedTask?.listId,
-  });
+  const [data, setData] = useState<UpdateTask>();
 
   useEffect(() => {
     if (!selectedTask) {
       return;
     }
 
-    setData({
-      name: selectedTask?.name ?? '',
-      description: selectedTask?.description ?? '',
-      listId: selectedTask?.listId,
-    });
+    const parsedSelectedTask = UpdateTaskSchema.safeParse(selectedTask);
+    if (!parsedSelectedTask.success) {
+      toast({
+        title: 'Oops!',
+        description: zodErrorToString(parsedSelectedTask.error),
+      });
+
+      return;
+    }
+
+    setData(parsedSelectedTask.data);
   }, [selectedTask]);
 
   if (!selectedTaskDialogOpen || !data) {
@@ -80,7 +90,7 @@ export default function TaskDialog() {
   };
 
   const onSaveButtonClick = async () => {
-    if (!selectedTask) {
+    if (!selectedTask || !data) {
       return;
     }
 
@@ -112,7 +122,7 @@ export default function TaskDialog() {
           <Textarea
             id="task-description"
             rows={5}
-            value={data.description}
+            value={data.description ?? ''}
             onChange={(event) => {
               setData({ ...data, description: event.target.value });
             }}
@@ -121,11 +131,37 @@ export default function TaskDialog() {
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-list">List</Label>
           <ListsSelect
-            value={data.listId}
+            value={data.listId ?? ''}
             onChangeValue={(value) => {
               setData({ ...data, listId: value });
             }}
           />
+        </div>
+        <div className="mb-4 flex flex-col gap-2">
+          <Label htmlFor="task-list">Due Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={clsx(
+                  'w-full justify-start text-left font-normal',
+                  !data.dueDate && 'text-muted-foreground'
+                )}
+              >
+                <FaCalendar className="mr-2 h-4 w-4" />
+                {data.dueDate ? format(new Date(data.dueDate), 'PPP') : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
+              <Calendar
+                mode="single"
+                selected={data.dueDate ? new Date(data.dueDate) : undefined}
+                onSelect={(value) => {
+                  setData({ ...data, dueDate: value ? format(value, 'yyyy-MM-dd') : undefined });
+                }}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>

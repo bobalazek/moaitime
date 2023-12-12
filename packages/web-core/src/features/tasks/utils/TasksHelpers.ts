@@ -4,6 +4,7 @@ import {
   ResponseInterface,
   SortDirectionEnum,
   Task,
+  UpdateTask,
 } from '@myzenbuddy/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -116,7 +117,7 @@ export const addTask = async (task: Task): Promise<Task> => {
   return response.data as Task;
 };
 
-export const editTask = async (taskId: string, task: Partial<Task>): Promise<Task> => {
+export const editTask = async (taskId: string, task: UpdateTask): Promise<Task> => {
   const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/${taskId}`, {
     method: 'PATCH',
     body: JSON.stringify(task),

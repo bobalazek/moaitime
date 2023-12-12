@@ -1,6 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 
+import { zodErrorToString } from '@myzenbuddy/shared-common';
+
 @Catch(Error)
 export class ErrorFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
@@ -17,11 +19,7 @@ export class ErrorFilter implements ExceptionFilter {
     if (Array.isArray(exceptionAny.errors)) {
       // Hacky way to check if ZodError as instanceof not working with esbuild.
       // Issue: https://github.com/evanw/esbuild/issues/3333
-      error = exceptionAny.errors
-        .map((err: Error) => {
-          return err.message;
-        })
-        .join('; ');
+      error = zodErrorToString(exceptionAny);
     } else if (exceptionResponse?.message) {
       error = Array.isArray(exceptionResponse.message)
         ? exceptionResponse.message.join('; ')

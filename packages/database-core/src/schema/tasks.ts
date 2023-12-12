@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { date, integer, pgTable, text, time, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { lists } from './lists';
@@ -10,7 +10,9 @@ export const tasks = pgTable('tasks', {
   order: integer('order').notNull(),
   description: text('description'),
   priority: integer('priority'),
-  dueAt: timestamp('due_at'),
+  dueDate: date('due_date'),
+  dueDateTime: time('due_date_time'),
+  dueDateTimeZone: text('due_date_time_zone'),
   completedAt: timestamp('completed_at'),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),

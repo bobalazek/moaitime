@@ -23,10 +23,10 @@ export default function CalendarMonthlyView() {
     const newEventsPerDay = new Map<string, EventInterface[]>();
     weeks.forEach((week) => {
       week.forEach((day) => {
-        const dayKey = format(day, 'yyyy-MM-dd');
-        const eventsForDay = getEventsForDay(day, events, generalTimezone, 'all');
+        const date = format(day, 'yyyy-MM-dd');
+        const eventsForDay = getEventsForDay(date, events, generalTimezone, 'all');
 
-        newEventsPerDay.set(dayKey, eventsForDay);
+        newEventsPerDay.set(date, eventsForDay);
       });
     });
 

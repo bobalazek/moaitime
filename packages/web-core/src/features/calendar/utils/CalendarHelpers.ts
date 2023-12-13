@@ -68,11 +68,12 @@ type EventWithDateObjects = Omit<EventInterface, 'startsAt' | 'endsAt'> & {
 };
 
 export const getEventsForDay = (
-  day: Date,
+  date: string,
   events: EventInterface[],
   timezone: string,
   type: 'all' | 'without-full-day' | 'full-day-only' = 'all'
 ): EventWithVerticalPosition[] => {
+  const day = new Date(date);
   const start = startOfDay(day);
   const end = endOfDay(day);
   const optimizedEvents: EventWithDateObjects[] = events
@@ -94,7 +95,6 @@ export const getEventsForDay = (
 
     const isFullDayEvent = event.isAllDay && isSameDay(eventStart, day);
 
-    // Apply the type filter
     const check =
       type === 'all' ||
       (type === 'without-full-day' && !isFullDayEvent) ||

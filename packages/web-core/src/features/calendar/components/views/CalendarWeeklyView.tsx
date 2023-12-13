@@ -38,8 +38,8 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     const newEventsPerDay = new Map<string, EventsPerDay>();
     for (const day of days ?? []) {
       const date = format(day, 'yyyy-MM-dd');
-      const withouFullDay = getEventsForDay(day, events, generalTimezone, 'without-full-day');
-      const fullDayOnly = getEventsForDay(day, events, generalTimezone, 'full-day-only');
+      const withouFullDay = getEventsForDay(date, events, generalTimezone, 'without-full-day');
+      const fullDayOnly = getEventsForDay(date, events, generalTimezone, 'full-day-only');
 
       newEventsPerDay.set(date, { fullDayOnly, withouFullDay });
     }
@@ -193,7 +193,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             return (
               <CalendarWeeklyViewDay
                 key={date}
-                day={day}
+                date={date}
                 isActive={isActive}
                 events={eventsForDay}
                 hourHeightPx={HOUR_HEIGHT_PX}

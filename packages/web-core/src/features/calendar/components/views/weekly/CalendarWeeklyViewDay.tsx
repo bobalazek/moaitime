@@ -1,4 +1,4 @@
-import { endOfDay, format } from 'date-fns';
+import { endOfDay, startOfDay } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import { useEffect, useRef, useState } from 'react';
 
@@ -8,12 +8,12 @@ import { useAuthStore } from '../../../../auth/state/authStore';
 import CalendarEvent from '../../events/CalendarEvent';
 
 export default function CalendarWeeklyViewDay({
-  day,
+  date,
   isActive,
   events,
   hourHeightPx,
 }: {
-  day: Date;
+  date: string;
   isActive: boolean;
   events: EventWithVerticalPosition[];
   hourHeightPx: number;
@@ -24,7 +24,6 @@ export default function CalendarWeeklyViewDay({
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const totalHeight = hourHeightPx * 24;
-  const date = format(day, 'yyyy-MM-dd');
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -76,21 +75,24 @@ export default function CalendarWeeklyViewDay({
       data-date={date}
     >
       {events.map((event) => {
-        const currentDay = new Date(date);
+        const currentDay = utcToZonedTime(new Date(date), generalTimezone);
 
         let eventStartsAt = utcToZonedTime(event.startsAt, generalTimezone);
-        if (eventStartsAt < currentDay) {
-          eventStartsAt = new Date(currentDay.setHours(0, 0, 0, 0));
+        let eventEndsAt = utcToZonedTime(event.endsAt, generalTimezone);
+
+        if (eventStartsAt < startOfDay(currentDay)) {
+          eventStartsAt = startOfDay(currentDay);
         }
 
-        let eventEndsAt = utcToZonedTime(event.endsAt, generalTimezone);
         if (eventEndsAt > endOfDay(currentDay)) {
-          eventEndsAt = new Date(currentDay.setHours(23, 59, 59, 999));
+          eventEndsAt = endOfDay(currentDay);
         }
 
         const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
-        const height =
-          ((eventEndsAt.getTime() - eventStartsAt.getTime()) / 1000 / 60 / 60) * hourHeightPx;
+        const durationInHours =
+          (eventEndsAt.getTime() - eventStartsAt.getTime()) / (1000 * 60 * 60);
+        const height = durationInHours * hourHeightPx;
+
         const style = {
           top,
           height,

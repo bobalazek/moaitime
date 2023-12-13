@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { endOfDay, format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import { useEffect, useRef, useState } from 'react';
 
@@ -76,14 +76,16 @@ export default function CalendarWeeklyViewDay({
       data-date={date}
     >
       {events.map((event) => {
-        const startDate = format(new Date(event.startsAt), 'yyyy-MM-dd');
-        const endDate = format(new Date(event.endsAt), 'yyyy-MM-dd');
+        const currentDay = new Date(date);
 
-        const eventStartsAt = utcToZonedTime(event.startsAt, generalTimezone);
+        let eventStartsAt = utcToZonedTime(event.startsAt, generalTimezone);
+        if (eventStartsAt < currentDay) {
+          eventStartsAt = new Date(currentDay.setHours(0, 0, 0, 0));
+        }
+
         let eventEndsAt = utcToZonedTime(event.endsAt, generalTimezone);
-
-        if (startDate !== endDate) {
-          eventEndsAt = new Date(new Date(date).setHours(23, 59, 59, 999));
+        if (eventEndsAt > endOfDay(currentDay)) {
+          eventEndsAt = new Date(currentDay.setHours(23, 59, 59, 999));
         }
 
         const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;

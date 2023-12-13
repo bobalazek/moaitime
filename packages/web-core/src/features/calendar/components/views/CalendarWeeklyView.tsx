@@ -38,14 +38,14 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     const newEventsPerDay = new Map<string, EventsPerDay>();
     for (const day of days ?? []) {
       const date = format(day, 'yyyy-MM-dd');
-      const withouFullDay = getEventsForDay(day, events, 'without-full-day');
-      const fullDayOnly = getEventsForDay(day, events, 'full-day-only');
+      const withouFullDay = getEventsForDay(day, events, generalTimezone, 'without-full-day');
+      const fullDayOnly = getEventsForDay(day, events, generalTimezone, 'full-day-only');
 
       newEventsPerDay.set(date, { fullDayOnly, withouFullDay });
     }
 
     return newEventsPerDay;
-  }, [days, events]);
+  }, [days, events, generalTimezone]);
 
   const now = new Date();
   const timezone = getGmtOffset(generalTimezone);

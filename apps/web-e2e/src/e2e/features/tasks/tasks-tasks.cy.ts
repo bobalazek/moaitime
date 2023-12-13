@@ -129,7 +129,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.get('#task-name').should('be.empty');
 
-    cy.get('#task-name').focus();
+    cy.wait(100);
 
     cy.get('#task-name').type('Change task name');
 

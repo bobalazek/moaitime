@@ -1,5 +1,6 @@
-import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 import { FaCalendarAlt } from 'react-icons/fa';
+
+import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';

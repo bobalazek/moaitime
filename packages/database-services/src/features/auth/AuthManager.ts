@@ -1,3 +1,6 @@
+import { addSeconds } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
+
 import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import {
@@ -15,8 +18,6 @@ import {
   UserSettings,
   WEB_URL,
 } from '@moaitime/shared-common';
-import { addSeconds } from 'date-fns';
-import { v4 as uuidv4 } from 'uuid';
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';

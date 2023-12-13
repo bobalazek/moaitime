@@ -1,3 +1,6 @@
+import { clsx } from 'clsx';
+import { FaCaretDown } from 'react-icons/fa';
+
 import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 import {
   Button,
@@ -8,8 +11,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@moaitime/web-ui';
-import { clsx } from 'clsx';
-import { FaCaretDown } from 'react-icons/fa';
 
 import { useCalendarStore } from '../../state/calendarStore';
 

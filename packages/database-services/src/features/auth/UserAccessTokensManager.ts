@@ -1,3 +1,5 @@
+import { DBQueryConfig, eq } from 'drizzle-orm';
+
 import {
   getDatabase,
   NewUserAccessToken,
@@ -5,7 +7,6 @@ import {
   UserAccessToken,
   userAccessTokens,
 } from '@moaitime/database-core';
-import { DBQueryConfig, eq } from 'drizzle-orm';
 
 export class UserAccessTokensManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<UserAccessToken[]> {

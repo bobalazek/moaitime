@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm';
+
 import {
   backgrounds,
   calendars,
@@ -9,7 +11,6 @@ import {
   users,
 } from '@moaitime/database-core';
 import { logger } from '@moaitime/shared-logging';
-import { eq } from 'drizzle-orm';
 
 import { getBackgroundsSeeds } from './data/Backgrounds';
 import { getCalendarSeeds } from './data/Calendars';

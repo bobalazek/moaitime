@@ -1,5 +1,6 @@
-import { DropdownMenu, DropdownMenuTrigger } from '@moaitime/web-ui';
 import { FaCaretDown } from 'react-icons/fa';
+
+import { DropdownMenu, DropdownMenuTrigger } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDropdownMenuContent';

@@ -1,5 +1,3 @@
-import { List } from '@moaitime/database-core';
-import { listsManager } from '@moaitime/database-services';
 import {
   Body,
   Controller,
@@ -13,6 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
+
+import { List } from '@moaitime/database-core';
+import { listsManager } from '@moaitime/database-services';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';

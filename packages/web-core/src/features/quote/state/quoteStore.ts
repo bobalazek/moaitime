@@ -1,5 +1,6 @@
-import { QuoteInterface } from '@moaitime/shared-common';
 import { create } from 'zustand';
+
+import { QuoteInterface } from '@moaitime/shared-common';
 
 import { loadQuotes } from '../utils/QuotesHelpers';
 

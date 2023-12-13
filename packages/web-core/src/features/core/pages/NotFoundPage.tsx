@@ -1,5 +1,6 @@
-import { Button, Card, CardDescription, CardHeader, CardTitle } from '@moaitime/web-ui';
 import { useNavigate } from 'react-router-dom';
+
+import { Button, Card, CardDescription, CardHeader, CardTitle } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../components/ErrorBoundary';
 

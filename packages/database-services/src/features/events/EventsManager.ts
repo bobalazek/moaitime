@@ -1,5 +1,6 @@
-import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
 import { DBQueryConfig, eq } from 'drizzle-orm';
+
+import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
 
 export class EventsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {

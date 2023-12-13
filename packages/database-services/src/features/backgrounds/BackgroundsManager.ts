@@ -1,5 +1,6 @@
-import { Background, backgrounds, getDatabase, NewBackground } from '@moaitime/database-core';
 import { DBQueryConfig, eq } from 'drizzle-orm';
+
+import { Background, backgrounds, getDatabase, NewBackground } from '@moaitime/database-core';
 
 export class BackgroundsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Background[]> {

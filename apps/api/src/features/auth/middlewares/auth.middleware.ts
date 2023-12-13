@@ -1,6 +1,7 @@
-import { authManager } from '@moaitime/database-services';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
+
+import { authManager } from '@moaitime/database-services';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {

@@ -1,5 +1,6 @@
-import { EventInterface } from '@moaitime/shared-common';
 import { clsx } from 'clsx';
+
+import { EventInterface } from '@moaitime/shared-common';
 
 export default function CalendarEvent({
   event,

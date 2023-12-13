@@ -1,3 +1,6 @@
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+
 import {
   Auth,
   ResponseInterface,
@@ -5,8 +8,6 @@ import {
   UpdateUserPassword,
   UpdateUserSettings,
 } from '@moaitime/shared-common';
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { useBackgroundStore } from '../../background/state/backgroundStore';
 import { useGreetingStore } from '../../greeting/state/greetingStore';

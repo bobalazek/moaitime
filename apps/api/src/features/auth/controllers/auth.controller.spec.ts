@@ -1,10 +1,11 @@
 /// <reference types="vitest" />
 
+import { Test, TestingModule } from '@nestjs/testing';
+import { Response } from 'express';
+
 import { User, UserAccessToken } from '@moaitime/database-core';
 import { authManager, usersManager } from '@moaitime/database-services';
 import { DEFAULT_USER_SETTINGS } from '@moaitime/shared-common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Response } from 'express';
 
 import { getTestUser, getTestUserAccessToken } from '../utils/auth.test-data';
 import { AuthController } from './auth.controller';

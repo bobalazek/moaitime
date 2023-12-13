@@ -1,11 +1,4 @@
 import {
-  API_URL,
-  CalendarDayOfWeek,
-  EventInterface,
-  EventWithVerticalPosition,
-  ResponseInterface,
-} from '@moaitime/shared-common';
-import {
   addDays,
   areIntervalsOverlapping,
   eachDayOfInterval,
@@ -22,6 +15,14 @@ import {
   subDays,
 } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+
+import {
+  API_URL,
+  CalendarDayOfWeek,
+  EventInterface,
+  EventWithVerticalPosition,
+  ResponseInterface,
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

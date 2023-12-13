@@ -1,6 +1,7 @@
-import { getEnv } from '@moaitime/shared-backend';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+
+import { getEnv } from '@moaitime/shared-backend';
 
 import { AppModule } from './features/core/app.module';
 import { ErrorFilter } from './features/core/filters/error.filter';

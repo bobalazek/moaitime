@@ -1,6 +1,7 @@
-import { EventWithVerticalPosition } from '@moaitime/shared-common';
 import { format } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
+
+import { EventWithVerticalPosition } from '@moaitime/shared-common';
 
 import CalendarEvent from '../../events/CalendarEvent';
 

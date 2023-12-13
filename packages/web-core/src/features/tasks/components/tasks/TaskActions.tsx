@@ -1,3 +1,6 @@
+import { memo, useState } from 'react';
+import { FaEdit, FaEllipsisV, FaHistory, FaInfoCircle, FaList, FaTrash } from 'react-icons/fa';
+
 import { Task } from '@moaitime/shared-common';
 import {
   DropdownMenu,
@@ -8,8 +11,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@moaitime/web-ui';
-import { memo, useState } from 'react';
-import { FaEdit, FaEllipsisV, FaHistory, FaInfoCircle, FaList, FaTrash } from 'react-icons/fa';
 
 import { useTasksStore } from '../../state/tasksStore';
 import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDropdownMenuContent';

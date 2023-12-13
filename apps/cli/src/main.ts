@@ -1,6 +1,7 @@
+import { Command } from 'commander';
+
 import { destroyDatabase } from '@moaitime/database-core';
 import { logger } from '@moaitime/shared-logging';
-import { Command } from 'commander';
 
 import { addDatabaseDropSchemasCommand } from './database/DatabaseDropSchemasCommand';
 import { addDatabaseInsertFixtureDataCommand } from './database/DatabaseInsertFixtureDataCommand';

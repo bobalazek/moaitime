@@ -1,6 +1,7 @@
-import { getDatabase, NewUser, User, users } from '@moaitime/database-core';
 import { format } from 'date-fns';
 import { DBQueryConfig, eq } from 'drizzle-orm';
+
+import { getDatabase, NewUser, User, users } from '@moaitime/database-core';
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {

@@ -1,5 +1,6 @@
-import { getDatabase, NewTestingEmail, TestingEmail, testingEmails } from '@moaitime/database-core';
 import { DBQueryConfig, desc, eq } from 'drizzle-orm';
+
+import { getDatabase, NewTestingEmail, TestingEmail, testingEmails } from '@moaitime/database-core';
 
 export class TestingEmailsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<TestingEmail[]> {

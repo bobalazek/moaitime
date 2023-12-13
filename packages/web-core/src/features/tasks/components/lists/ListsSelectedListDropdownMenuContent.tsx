@@ -1,3 +1,5 @@
+import { FaPlus } from 'react-icons/fa';
+
 import { List } from '@moaitime/shared-common';
 import {
   DropdownMenuContent,
@@ -8,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuSubContent,
 } from '@moaitime/web-ui';
-import { FaPlus } from 'react-icons/fa';
 
 import { useTasksStore } from '../../state/tasksStore';
 import ListActions from './ListActions';

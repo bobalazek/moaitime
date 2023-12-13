@@ -1,5 +1,8 @@
 import type { ReactElement } from 'react';
 
+import { render } from '@react-email/render';
+import * as nodemailer from 'nodemailer';
+
 import { TestingEmailsManager, testingEmailsManager } from '@moaitime/database-services-testing';
 import {
   AuthConfirmEmailEmail,
@@ -10,8 +13,6 @@ import {
 } from '@moaitime/emails-core';
 import { getEnv, MAILER_FROM } from '@moaitime/shared-backend';
 import { logger, Logger } from '@moaitime/shared-logging';
-import { render } from '@react-email/render';
-import * as nodemailer from 'nodemailer';
 
 import { configureTransporter } from './Helpers';
 

@@ -1,5 +1,6 @@
-import { GreetingInterface } from '@moaitime/shared-common';
 import { create } from 'zustand';
+
+import { GreetingInterface } from '@moaitime/shared-common';
 
 import { queryEvaluator } from '../../core/utils/QueryEvaluatorHelpers';
 import { loadGreetings } from '../utils/GreetingsHelpers';

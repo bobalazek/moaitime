@@ -1,4 +1,6 @@
 import { arrayMove } from '@dnd-kit/sortable';
+import { create } from 'zustand';
+
 import {
   List,
   SortDirectionEnum,
@@ -6,7 +8,6 @@ import {
   TasksListSortFieldEnum,
   UpdateTask,
 } from '@moaitime/shared-common';
-import { create } from 'zustand';
 
 import {
   addList,

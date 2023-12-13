@@ -1,6 +1,7 @@
-import { App } from '@moaitime/web-core';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+
+import { App } from '@moaitime/web-core';
 
 import '@moaitime/web-core/globals.css';
 

@@ -1,11 +1,12 @@
 import { join, relative, resolve, sep } from 'path';
 
-import { getEnv } from '@moaitime/shared-backend';
-import { logger } from '@moaitime/shared-logging';
 import { DrizzleConfig, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres'; // Tried to use "pg", but it's not really working on windows, so we need to use this one for now
+
+import { getEnv } from '@moaitime/shared-backend';
+import { logger } from '@moaitime/shared-logging';
 
 import * as schema from '../schema';
 

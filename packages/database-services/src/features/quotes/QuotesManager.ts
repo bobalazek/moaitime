@@ -1,5 +1,6 @@
-import { getDatabase, NewQuote, Quote, quotes } from '@moaitime/database-core';
 import { DBQueryConfig, eq } from 'drizzle-orm';
+
+import { getDatabase, NewQuote, Quote, quotes } from '@moaitime/database-core';
 
 export class QuotesManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Quote[]> {

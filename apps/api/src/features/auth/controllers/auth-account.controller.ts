@@ -1,4 +1,3 @@
-import { authManager } from '@moaitime/database-services';
 import {
   Body,
   Controller,
@@ -11,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+
+import { authManager } from '@moaitime/database-services';
 
 import { LoginResponseDto } from '../dtos/responses/login-response.dto';
 import { UpdateUserPasswordDto } from '../dtos/update-user-password.dto';

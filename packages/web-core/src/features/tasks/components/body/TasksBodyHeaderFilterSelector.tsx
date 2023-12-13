@@ -1,3 +1,5 @@
+import { FaFilter } from 'react-icons/fa';
+
 import { SortDirectionEnum, sortOptions, TasksListSortFieldEnum } from '@moaitime/shared-common';
 import {
   DropdownMenu,
@@ -9,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@moaitime/web-ui';
-import { FaFilter } from 'react-icons/fa';
 
 import { useTasksStore } from '../../state/tasksStore';
 

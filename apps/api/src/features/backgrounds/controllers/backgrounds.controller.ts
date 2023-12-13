@@ -1,6 +1,7 @@
+import { Controller, Get } from '@nestjs/common';
+
 import { Background } from '@moaitime/database-core';
 import { backgroundsManager } from '@moaitime/database-services';
-import { Controller, Get } from '@nestjs/common';
 
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 

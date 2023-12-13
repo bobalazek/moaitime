@@ -1,6 +1,7 @@
-import { authManager } from '@moaitime/database-services';
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
+
+import { authManager } from '@moaitime/database-services';
 
 import { ResponseDto } from '../../core/dtos/responses/response.dto';
 import { TokenDto } from '../../core/dtos/token.dto';

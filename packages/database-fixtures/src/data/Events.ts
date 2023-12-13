@@ -1,6 +1,7 @@
-import { getDatabase, NewEvent } from '@moaitime/database-core';
 import { format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
+
+import { getDatabase, NewEvent } from '@moaitime/database-core';
 
 export const getEventFixtures = async (): Promise<NewEvent[]> => {
   const calendars = await getDatabase().query.calendars.findMany();

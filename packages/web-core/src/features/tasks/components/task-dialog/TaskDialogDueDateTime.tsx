@@ -1,3 +1,6 @@
+import { KeyboardEvent, MouseEvent, useState } from 'react';
+import { FaClock, FaTimes } from 'react-icons/fa';
+
 import { isValidTime } from '@moaitime/shared-common';
 import {
   Button,
@@ -8,8 +11,6 @@ import {
   PopoverTrigger,
   useToast,
 } from '@moaitime/web-ui';
-import { KeyboardEvent, MouseEvent, useState } from 'react';
-import { FaClock, FaTimes } from 'react-icons/fa';
 
 import TimeRangesDropdownMenu from './partials/TimeRangesDropdownMenu';
 

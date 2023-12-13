@@ -1,8 +1,9 @@
-import { Task as TaskType } from '@moaitime/shared-common';
-import { Checkbox } from '@moaitime/web-ui';
 import { clsx } from 'clsx';
 import { memo, useCallback, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
+
+import { Task as TaskType } from '@moaitime/shared-common';
+import { Checkbox } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 import TaskActions from './TaskActions';

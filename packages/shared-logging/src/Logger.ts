@@ -1,8 +1,9 @@
 import { hostname } from 'os';
 import { join } from 'path';
 
-import { getEnv, LOGS_DIR } from '@moaitime/shared-backend';
 import pino, { BaseLogger, Bindings, LogFn, transport, TransportTargetOptions } from 'pino';
+
+import { getEnv, LOGS_DIR } from '@moaitime/shared-backend';
 
 const {
   LOGGER_FORCE_JSON_OUTPUT,

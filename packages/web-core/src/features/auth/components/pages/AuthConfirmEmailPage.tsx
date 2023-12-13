@@ -1,3 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
+import { FaSpinner } from 'react-icons/fa';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import {
   Alert,
   AlertDescription,
@@ -8,9 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@moaitime/web-ui';
-import { useEffect, useRef, useState } from 'react';
-import { FaSpinner } from 'react-icons/fa';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { ErrorResponse } from '../../../core/errors/ErrorResponse';

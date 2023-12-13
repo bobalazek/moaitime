@@ -1,11 +1,12 @@
 /// <reference types="vitest" />
 
-import { User, UserAccessToken } from '@moaitime/database-core';
-import { authManager, usersManager } from '@moaitime/database-services';
-import { reloadDatabase } from '@moaitime/database-testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
+
+import { User, UserAccessToken } from '@moaitime/database-core';
+import { authManager, usersManager } from '@moaitime/database-services';
+import { reloadDatabase } from '@moaitime/database-testing';
 
 import { AuthModule } from '../auth.module';
 import { getTestUser, getTestUserAccessToken } from '../utils/auth.test-data';

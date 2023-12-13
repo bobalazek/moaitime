@@ -32,7 +32,6 @@
     "@moaitime/shared-common": "workspace:*",
     "@moaitime/tsconfig-config": "workspace:*",
     "@moaitime/web-ui": "workspace:*",
-    "@radix-ui/react-popover": "^1.0.7",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",

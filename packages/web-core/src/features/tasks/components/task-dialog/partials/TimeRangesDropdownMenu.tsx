@@ -53,7 +53,7 @@ export default function TimeRangesDropdownMenu({
   const timesFiltered = filterValue ? times.filter((time) => time.startsWith(filterValue)) : times;
 
   return (
-    <DropdownMenu open={open} onOpenChange={onOpenChange} modal={false}>
+    <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         {/* The reason we need that empty div is, because the dropdown menu needs a child to be able to position itself */}
         <div />

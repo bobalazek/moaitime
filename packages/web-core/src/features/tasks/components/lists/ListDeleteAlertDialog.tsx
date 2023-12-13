@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   useToast,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 

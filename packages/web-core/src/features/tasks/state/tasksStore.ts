@@ -1,13 +1,12 @@
 import { arrayMove } from '@dnd-kit/sortable';
-import { create } from 'zustand';
-
 import {
   List,
   SortDirectionEnum,
   Task,
   TasksListSortFieldEnum,
   UpdateTask,
-} from '@myzenbuddy/shared-common';
+} from '@moaitime/shared-common';
+import { create } from 'zustand';
 
 import {
   addList,

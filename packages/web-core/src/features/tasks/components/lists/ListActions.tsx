@@ -1,13 +1,12 @@
-import { memo } from 'react';
-import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
-
-import { List } from '@myzenbuddy/shared-common';
+import { List } from '@moaitime/shared-common';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { memo } from 'react';
+import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
 import { useTasksStore } from '../../state/tasksStore';
 

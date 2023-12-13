@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/prettier-config",
+  "name": "@moaitime/prettier-config",
   "version": "0.0.0",
   "main": "./index.js",
   "devDependencies": {

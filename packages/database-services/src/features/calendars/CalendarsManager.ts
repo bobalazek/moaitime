@@ -1,6 +1,5 @@
+import { Calendar, calendars, getDatabase, NewCalendar } from '@moaitime/database-core';
 import { and, asc, DBQueryConfig, eq, isNull } from 'drizzle-orm';
-
-import { Calendar, calendars, getDatabase, NewCalendar } from '@myzenbuddy/database-core';
 
 export class CalendarsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Calendar[]> {

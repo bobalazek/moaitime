@@ -28,7 +28,7 @@ export const AuthWelcomeEmail = ({
         <EmailHeader />
         <Text style={globalStyles.paragraph}>Hi {userDisplayName},</Text>
         <Text style={globalStyles.paragraph}>
-          Welcome to MyZenBuddy, the productivity platform that you always wanted, but never knew it
+          Welcome to MoaiTime, the productivity platform that you always wanted, but never knew it
           existed!
         </Text>
         <Section style={globalStyles.textCenter}>

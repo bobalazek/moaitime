@@ -5,7 +5,7 @@ import {
   SortDirectionEnum,
   Task,
   UpdateTask,
-} from '@myzenbuddy/shared-common';
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

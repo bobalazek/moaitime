@@ -1,4 +1,4 @@
-import { NewQuote } from '@myzenbuddy/database-core';
+import { NewQuote } from '@moaitime/database-core';
 
 export const getQuoteSeeds = async (): Promise<NewQuote[]> => {
   return [

@@ -1,4 +1,4 @@
-import { toast } from '@myzenbuddy/web-ui';
+import { toast } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import { ErrorResponse } from '../errors/ErrorResponse';

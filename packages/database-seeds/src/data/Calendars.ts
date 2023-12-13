@@ -1,6 +1,5 @@
+import { getDatabase, NewCalendar, users } from '@moaitime/database-core';
 import { eq } from 'drizzle-orm';
-
-import { getDatabase, NewCalendar, users } from '@myzenbuddy/database-core';
 
 import { getUserSeeds } from './Users';
 

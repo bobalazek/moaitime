@@ -5,7 +5,7 @@ import {
   UpdateUser,
   UpdateUserPassword,
   UpdateUserSettings,
-} from '@myzenbuddy/shared-common';
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

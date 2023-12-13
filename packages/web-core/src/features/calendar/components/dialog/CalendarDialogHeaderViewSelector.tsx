@@ -1,7 +1,4 @@
-import { clsx } from 'clsx';
-import { FaCaretDown } from 'react-icons/fa';
-
-import { CalendarViewEnum, calendarViewOptions } from '@myzenbuddy/shared-common';
+import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 import {
   Button,
   DropdownMenu,
@@ -10,7 +7,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { clsx } from 'clsx';
+import { FaCaretDown } from 'react-icons/fa';
 
 import { useCalendarStore } from '../../state/calendarStore';
 

@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/eslint-config",
+  "name": "@moaitime/eslint-config",
   "version": "0.0.0",
   "main": "index.js",
   "devDependencies": {

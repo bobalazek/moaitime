@@ -1,8 +1,7 @@
+import { getDatabase, NewList, users } from '@moaitime/database-core';
+import { DEFAULT_LIST_NAMES } from '@moaitime/shared-backend';
+import { TASK_LIST_COLORS } from '@moaitime/shared-common';
 import { eq } from 'drizzle-orm';
-
-import { getDatabase, NewList, users } from '@myzenbuddy/database-core';
-import { DEFAULT_LIST_NAMES } from '@myzenbuddy/shared-backend';
-import { TASK_LIST_COLORS } from '@myzenbuddy/shared-common';
 
 import { getUserFixtures } from './Users';
 

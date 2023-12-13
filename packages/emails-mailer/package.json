@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/emails-mailer",
+  "name": "@moaitime/emails-mailer",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -25,16 +25,16 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/database-services-testing": "workspace:*",
-    "@myzenbuddy/emails-core": "workspace:*",
-    "@myzenbuddy/shared-backend": "workspace:*",
-    "@myzenbuddy/shared-logging": "workspace:*",
+    "@moaitime/database-services-testing": "workspace:*",
+    "@moaitime/emails-core": "workspace:*",
+    "@moaitime/shared-backend": "workspace:*",
+    "@moaitime/shared-logging": "workspace:*",
     "@react-email/render": "^0.0.10",
     "nodemailer": "^6.9.7",
     "react": "18.2.0"
   },
   "devDependencies": {
-    "@myzenbuddy/tailwind-config": "workspace:*",
+    "@moaitime/tailwind-config": "workspace:*",
     "@types/nodemailer": "^6.4.14",
     "@types/react": "18.2.33"
   }

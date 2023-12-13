@@ -1,5 +1,5 @@
-import { NewUser } from '@myzenbuddy/database-core';
-import { generateHash } from '@myzenbuddy/shared-backend';
+import { NewUser } from '@moaitime/database-core';
+import { generateHash } from '@moaitime/shared-backend';
 
 import { UserRoleEnum } from '../../../shared-common/src';
 

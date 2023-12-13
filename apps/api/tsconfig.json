@@ -1,5 +1,5 @@
 {
-  "extends": "@myzenbuddy/tsconfig-config/tsconfig.backend.json",
+  "extends": "@moaitime/tsconfig-config/tsconfig.backend.json",
   "include": ["src/**/*"],
   "compilerOptions": {
     "experimentalDecorators": true,

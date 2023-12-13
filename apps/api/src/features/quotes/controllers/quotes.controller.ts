@@ -1,7 +1,6 @@
+import { Quote } from '@moaitime/database-core';
+import { quotesManager } from '@moaitime/database-services';
 import { Controller, Get } from '@nestjs/common';
-
-import { Quote } from '@myzenbuddy/database-core';
-import { quotesManager } from '@myzenbuddy/database-services';
 
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 

@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import {
   Command,
   CommandEmpty,
@@ -7,7 +5,8 @@ import {
   CommandList,
   Dialog,
   DialogContent,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { useEffect } from 'react';
 
 import CalendarCommandsList from '../../calendar/components/CalendarCommandsList';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';

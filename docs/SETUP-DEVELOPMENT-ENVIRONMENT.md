@@ -1,4 +1,4 @@
-# MyZenBuddy - Setup Development Environment
+# MoaiTime - Setup Development Environment
 
 ## Prerequisites
 

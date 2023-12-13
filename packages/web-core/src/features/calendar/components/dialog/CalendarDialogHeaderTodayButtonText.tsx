@@ -1,4 +1,4 @@
-import { CalendarViewEnum } from '@myzenbuddy/shared-common';
+import { CalendarViewEnum } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../state/calendarStore';
 

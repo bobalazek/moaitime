@@ -1,7 +1,3 @@
-import { clsx } from 'clsx';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { useState } from 'react';
-
 import {
   Button,
   Command,
@@ -12,7 +8,10 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { clsx } from 'clsx';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useState } from 'react';
 
 import { useTasksStore } from '../../state/tasksStore';
 

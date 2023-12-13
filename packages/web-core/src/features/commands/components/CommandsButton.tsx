@@ -1,4 +1,4 @@
-import { Button } from '@myzenbuddy/web-ui';
+import { Button } from '@moaitime/web-ui';
 
 import { useCommandsStore } from '../state/commandsStore';
 

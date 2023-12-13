@@ -1,6 +1,5 @@
+import { PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 import { Popover } from '@radix-ui/react-popover';
-
-import { PopoverContent, PopoverTrigger } from '@myzenbuddy/web-ui';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useWeatherStore } from '../state/weatherStore';

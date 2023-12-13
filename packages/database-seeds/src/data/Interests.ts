@@ -1,4 +1,4 @@
-import { NewInterest } from '@myzenbuddy/database-core';
+import { NewInterest } from '@moaitime/database-core';
 
 export const getInterestsSeeds = async (): Promise<(NewInterest & { parentSlug?: string })[]> => {
   return [

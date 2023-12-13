@@ -1,4 +1,4 @@
-import { SortDirectionEnum } from '@myzenbuddy/shared-common';
+import { SortDirectionEnum } from '@moaitime/shared-common';
 
 export class ReorderTasksDto {
   listId!: string;

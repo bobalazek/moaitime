@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/shared-common",
+  "name": "@moaitime/shared-common",
   "version": "0.0.0",
   "exports": {
     ".": {

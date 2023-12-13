@@ -1,13 +1,12 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-
 import {
   Auth,
   ResponseInterface,
   UpdateUser,
   UpdateUserPassword,
   UpdateUserSettings,
-} from '@myzenbuddy/shared-common';
+} from '@moaitime/shared-common';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { useBackgroundStore } from '../../background/state/backgroundStore';
 import { useGreetingStore } from '../../greeting/state/greetingStore';

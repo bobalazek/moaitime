@@ -1,7 +1,6 @@
+import { Alert, AlertDescription, AlertTitle, Button } from '@moaitime/web-ui';
 import { Component, ReactNode } from 'react';
 import { FaExclamationTriangle } from 'react-icons/fa';
-
-import { Alert, AlertDescription, AlertTitle, Button } from '@myzenbuddy/web-ui';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

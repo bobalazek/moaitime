@@ -1,15 +1,12 @@
-import { addSeconds } from 'date-fns';
-import { v4 as uuidv4 } from 'uuid';
-
-import { NewUser, User, UserAccessToken } from '@myzenbuddy/database-core';
-import { mailer } from '@myzenbuddy/emails-mailer';
+import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
+import { mailer } from '@moaitime/emails-mailer';
 import {
   AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS,
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
   compareHash,
   DEFAULT_LIST_NAMES,
   generateHash,
-} from '@myzenbuddy/shared-backend';
+} from '@moaitime/shared-backend';
 import {
   DEFAULT_USER_SETTINGS,
   TASK_LIST_COLORS,
@@ -17,7 +14,9 @@ import {
   UserRoleEnum,
   UserSettings,
   WEB_URL,
-} from '@myzenbuddy/shared-common';
+} from '@moaitime/shared-common';
+import { addSeconds } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';

@@ -1,6 +1,5 @@
+import { Toaster } from '@moaitime/web-ui';
 import { useEffect, useRef } from 'react';
-
-import { Toaster } from '@myzenbuddy/web-ui';
 
 import { AppRoutes } from './AppRoutes';
 import { ErrorBoundary } from './features/core/components/ErrorBoundary';

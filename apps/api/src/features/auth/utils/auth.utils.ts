@@ -1,5 +1,5 @@
-import { User, UserAccessToken } from '@myzenbuddy/database-core';
-import { authManager } from '@myzenbuddy/database-services';
+import { User, UserAccessToken } from '@moaitime/database-core';
+import { authManager } from '@moaitime/database-services';
 
 import { UserAccessTokenLiteDto } from '../dtos/user-access-token-lite.dto';
 import { UserDto } from '../dtos/user.dto';

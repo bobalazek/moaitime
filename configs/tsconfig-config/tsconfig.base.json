@@ -21,21 +21,21 @@
     "types": ["node", "vitest/globals"],
     "baseUrl": ".",
     "paths": {
-      "@myzenbuddy/database-core": ["../../packages/database-core/src/index.ts"],
-      "@myzenbuddy/database-fixtures": ["../../packages/database-fixtures/src/index.ts"],
-      "@myzenbuddy/database-seeds": ["../../packages/database-seeds/src/index.ts"],
-      "@myzenbuddy/database-services": ["../../packages/database-services/src/index.ts"],
-      "@myzenbuddy/database-services-testing": [
+      "@moaitime/database-core": ["../../packages/database-core/src/index.ts"],
+      "@moaitime/database-fixtures": ["../../packages/database-fixtures/src/index.ts"],
+      "@moaitime/database-seeds": ["../../packages/database-seeds/src/index.ts"],
+      "@moaitime/database-services": ["../../packages/database-services/src/index.ts"],
+      "@moaitime/database-services-testing": [
         "../../packages/database-services-testing/src/index.ts"
       ],
-      "@myzenbuddy/database-testing": ["../../packages/database-testing/src/index.ts"],
-      "@myzenbuddy/emails-core": ["../../packages/emails-core/src/index.ts"],
-      "@myzenbuddy/emails-mailer": ["../../packages/emails-mailer/src/index.ts"],
-      "@myzenbuddy/shared-backend": ["../../packages/shared-backend/src/index.ts"],
-      "@myzenbuddy/shared-common": ["../../packages/shared-common/src/index.ts"],
-      "@myzenbuddy/shared-logging": ["../../packages/shared-logging/src/index.ts"],
-      "@myzenbuddy/web-core": ["../../packages/web-core/src/index.ts"],
-      "@myzenbuddy/web-ui": ["../../packages/web-ui/src/index.ts"]
+      "@moaitime/database-testing": ["../../packages/database-testing/src/index.ts"],
+      "@moaitime/emails-core": ["../../packages/emails-core/src/index.ts"],
+      "@moaitime/emails-mailer": ["../../packages/emails-mailer/src/index.ts"],
+      "@moaitime/shared-backend": ["../../packages/shared-backend/src/index.ts"],
+      "@moaitime/shared-common": ["../../packages/shared-common/src/index.ts"],
+      "@moaitime/shared-logging": ["../../packages/shared-logging/src/index.ts"],
+      "@moaitime/web-core": ["../../packages/web-core/src/index.ts"],
+      "@moaitime/web-ui": ["../../packages/web-ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

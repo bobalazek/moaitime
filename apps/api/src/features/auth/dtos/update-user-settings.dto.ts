@@ -1,4 +1,4 @@
-import { UpdateUserSettingsSchema } from '@myzenbuddy/shared-common';
+import { UpdateUserSettingsSchema } from '@moaitime/shared-common';
 
 import { createZodDto } from '../../core/utils/validation-helpers';
 

@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { insertDatabaseSeedData } from '@myzenbuddy/database-seeds';
+import { insertDatabaseSeedData } from '@moaitime/database-seeds';
 
 export const addDatabaseInsertSeedDataCommand = (program: Command) => {
   const command = program.command('database:insert-seed-data').action(async () => {

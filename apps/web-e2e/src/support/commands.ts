@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { API_URL, UserSettings } from '@myzenbuddy/shared-common';
+import { API_URL, UserSettings } from '@moaitime/shared-common';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

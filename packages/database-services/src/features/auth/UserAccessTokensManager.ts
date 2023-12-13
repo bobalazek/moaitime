@@ -1,12 +1,11 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
-
 import {
   getDatabase,
   NewUserAccessToken,
   User,
   UserAccessToken,
   userAccessTokens,
-} from '@myzenbuddy/database-core';
+} from '@moaitime/database-core';
+import { DBQueryConfig, eq } from 'drizzle-orm';
 
 export class UserAccessTokensManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<UserAccessToken[]> {

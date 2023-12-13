@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle } from '@myzenbuddy/web-ui';
+import { Alert, AlertDescription, AlertTitle } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
 import AuthSettingsAccountPasswordDialog from './AuthSettingsAccountPasswordDialog';

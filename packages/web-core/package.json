@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/web-core",
+  "name": "@moaitime/web-core",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -29,9 +29,9 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "3.2.2",
-    "@myzenbuddy/shared-common": "workspace:*",
-    "@myzenbuddy/tsconfig-config": "workspace:*",
-    "@myzenbuddy/web-ui": "workspace:*",
+    "@moaitime/shared-common": "workspace:*",
+    "@moaitime/tsconfig-config": "workspace:*",
+    "@moaitime/web-ui": "workspace:*",
     "@radix-ui/react-popover": "^1.0.7",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
@@ -46,7 +46,7 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
-    "@myzenbuddy/tailwind-config": "workspace:*",
+    "@moaitime/tailwind-config": "workspace:*",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "autoprefixer": "^10.4.16",

@@ -1,8 +1,7 @@
+import { Event } from '@moaitime/database-core';
+import { eventsManager } from '@moaitime/database-services';
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-
-import { Event } from '@myzenbuddy/database-core';
-import { eventsManager } from '@myzenbuddy/database-services';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';

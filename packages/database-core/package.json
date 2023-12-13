@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/database-core",
+  "name": "@moaitime/database-core",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -27,9 +27,9 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/shared-backend": "workspace:*",
-    "@myzenbuddy/shared-common": "workspace:*",
-    "@myzenbuddy/shared-logging": "workspace:*",
+    "@moaitime/shared-backend": "workspace:*",
+    "@moaitime/shared-common": "workspace:*",
+    "@moaitime/shared-logging": "workspace:*",
     "drizzle-kit": "^0.20.4",
     "drizzle-orm": "^0.29.0",
     "postgres": "^3.4.3"

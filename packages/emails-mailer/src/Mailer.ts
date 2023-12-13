@@ -1,18 +1,17 @@
 import type { ReactElement } from 'react';
 
-import { render } from '@react-email/render';
-import * as nodemailer from 'nodemailer';
-
-import { TestingEmailsManager, testingEmailsManager } from '@myzenbuddy/database-services-testing';
+import { TestingEmailsManager, testingEmailsManager } from '@moaitime/database-services-testing';
 import {
   AuthConfirmEmailEmail,
   AuthConfirmNewEmailEmail,
   AuthPasswordChangedEmail,
   AuthResetPasswordEmail,
   AuthWelcomeEmail,
-} from '@myzenbuddy/emails-core';
-import { getEnv, MAILER_FROM } from '@myzenbuddy/shared-backend';
-import { logger, Logger } from '@myzenbuddy/shared-logging';
+} from '@moaitime/emails-core';
+import { getEnv, MAILER_FROM } from '@moaitime/shared-backend';
+import { logger, Logger } from '@moaitime/shared-logging';
+import { render } from '@react-email/render';
+import * as nodemailer from 'nodemailer';
 
 import { configureTransporter } from './Helpers';
 
@@ -57,7 +56,7 @@ export class Mailer {
 
     return this.send(AuthWelcomeEmail(rest), {
       to: userEmail,
-      subject: '🎉 Welcome to MyZenBuddy!',
+      subject: '🎉 Welcome to MoaiTime!',
     });
   }
 
@@ -66,7 +65,7 @@ export class Mailer {
 
     return this.send(AuthConfirmEmailEmail(rest), {
       to: userEmail,
-      subject: '✅ Email Confirmation for MyZenBuddy',
+      subject: '✅ Email Confirmation for MoaiTime',
     });
   }
 
@@ -75,7 +74,7 @@ export class Mailer {
 
     return this.send(AuthConfirmNewEmailEmail(rest), {
       to: userEmail,
-      subject: '✅ Email Conirmation for MyZenBuddy',
+      subject: '✅ Email Conirmation for MoaiTime',
     });
   }
 
@@ -84,7 +83,7 @@ export class Mailer {
 
     return this.send(AuthResetPasswordEmail(rest), {
       to: userEmail,
-      subject: '🔑 Reset Password for MyZenBuddy',
+      subject: '🔑 Reset Password for MoaiTime',
     });
   }
 
@@ -93,7 +92,7 @@ export class Mailer {
 
     return this.send(AuthPasswordChangedEmail(rest), {
       to: userEmail,
-      subject: '🔑 Password Changed for MyZenBuddy',
+      subject: '🔑 Password Changed for MoaiTime',
     });
   }
 

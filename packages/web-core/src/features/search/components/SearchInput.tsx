@@ -1,8 +1,7 @@
+import { SearchEnginesEnum, SearchEnginesMap } from '@moaitime/shared-common';
+import { Input } from '@moaitime/web-ui';
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
-
-import { SearchEnginesEnum, SearchEnginesMap } from '@myzenbuddy/shared-common';
-import { Input } from '@myzenbuddy/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import SearchEngineDropdownMenu from './SearchEngineDropdownMenu';

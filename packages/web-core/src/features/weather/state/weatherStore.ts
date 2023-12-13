@@ -1,6 +1,5 @@
+import { WeatherInterface } from '@moaitime/shared-common';
 import { create } from 'zustand';
-
-import { WeatherInterface } from '@myzenbuddy/shared-common';
 
 export type WeatherStore = {
   /********** General **********/

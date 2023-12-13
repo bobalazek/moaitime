@@ -1,7 +1,6 @@
+import { UserRoleEnum } from '@moaitime/shared-common';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-
-import { UserRoleEnum } from '@myzenbuddy/shared-common';
 
 @Injectable()
 export class AuthAdminGuard implements CanActivate {

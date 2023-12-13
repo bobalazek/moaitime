@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/shared-logging",
+  "name": "@moaitime/shared-logging",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -24,7 +24,7 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/shared-backend": "workspace:*",
+    "@moaitime/shared-backend": "workspace:*",
     "dotenv": "^16.3.1",
     "pino": "^8.16.2",
     "pino-pretty": "^10.2.3"

@@ -1,4 +1,4 @@
-import { ErrorResponseInterface } from '@myzenbuddy/shared-common';
+import { ErrorResponseInterface } from '@moaitime/shared-common';
 
 export class ErrorResponse extends Error {
   private _response: ErrorResponseInterface;

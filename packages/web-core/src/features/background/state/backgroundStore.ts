@@ -1,6 +1,5 @@
+import { BackgroundInterface } from '@moaitime/shared-common';
 import { create } from 'zustand';
-
-import { BackgroundInterface } from '@myzenbuddy/shared-common';
 
 import { loadBackgrounds } from '../utils/BackgroundHelpers';
 

@@ -1,4 +1,4 @@
-import { UserAccessTokenLiteSchema } from '@myzenbuddy/shared-common';
+import { UserAccessTokenLiteSchema } from '@moaitime/shared-common';
 
 import { createZodDto } from '../../core/utils/validation-helpers';
 

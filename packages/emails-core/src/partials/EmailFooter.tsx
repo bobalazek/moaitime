@@ -9,7 +9,7 @@ export default function EmailFooter() {
       <Text style={globalStyles.paragraph}>
         Best,
         <br />
-        The MyZenBuddy Team
+        The MoaiTime Team
       </Text>
       <Hr style={globalStyles.hr} />
       <Text style={globalStyles.footer}>221B Baker Street, London, United Kingdom</Text>

@@ -1,4 +1,4 @@
-import { CalendarDayOfWeek } from '@myzenbuddy/shared-common';
+import { CalendarDayOfWeek } from '@moaitime/shared-common';
 import {
   Label,
   Select,
@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import CalendarSettingsSectionHeaderText from './CalendarSettingsSectionHeaderText';

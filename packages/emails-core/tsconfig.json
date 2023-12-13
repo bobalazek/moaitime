@@ -1,4 +1,4 @@
 {
-  "extends": "@myzenbuddy/tsconfig-config/tsconfig.frontend.json",
+  "extends": "@moaitime/tsconfig-config/tsconfig.frontend.json",
   "include": ["src/**/*"]
 }

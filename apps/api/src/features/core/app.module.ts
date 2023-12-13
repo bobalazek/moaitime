@@ -1,6 +1,5 @@
+import { destroyDatabase } from '@moaitime/database-core';
 import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
-
-import { destroyDatabase } from '@myzenbuddy/database-core';
 
 import { AuthModule } from '../auth/auth.module';
 import { BackgroundsModule } from '../backgrounds/backgrounds.module';

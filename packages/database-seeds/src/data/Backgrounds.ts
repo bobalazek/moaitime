@@ -1,4 +1,4 @@
-import { NewBackground } from '@myzenbuddy/database-core';
+import { NewBackground } from '@moaitime/database-core';
 
 export const getBackgroundsSeeds = async (): Promise<NewBackground[]> => {
   return [

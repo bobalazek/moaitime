@@ -1,13 +1,8 @@
+import { CalendarViewEnum, EventWithVerticalPosition, getGmtOffset } from '@moaitime/shared-common';
 import { clsx } from 'clsx';
 import { eachDayOfInterval, endOfWeek, format, isSameDay, startOfWeek } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-
-import {
-  CalendarViewEnum,
-  EventWithVerticalPosition,
-  getGmtOffset,
-} from '@myzenbuddy/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';

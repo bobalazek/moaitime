@@ -1,7 +1,6 @@
+import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 import { useEffect } from 'react';
 import { FaTasks } from 'react-icons/fa';
-
-import { Popover, PopoverContent, PopoverTrigger } from '@myzenbuddy/web-ui';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useTasksStore } from '../state/tasksStore';

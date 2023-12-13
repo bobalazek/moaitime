@@ -1,4 +1,4 @@
-import { SearchEnginesEnum, SearchEnginesMap } from '@myzenbuddy/shared-common';
+import { SearchEnginesEnum, SearchEnginesMap } from '@moaitime/shared-common';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,7 +7,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 

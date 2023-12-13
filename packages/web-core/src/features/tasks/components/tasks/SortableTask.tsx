@@ -1,7 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
-import { Task } from '@myzenbuddy/shared-common';
+import { Task } from '@moaitime/shared-common';
 
 import TaskComponent from './Task';
 

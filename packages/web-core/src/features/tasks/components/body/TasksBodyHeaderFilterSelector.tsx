@@ -1,6 +1,4 @@
-import { FaFilter } from 'react-icons/fa';
-
-import { SortDirectionEnum, sortOptions, TasksListSortFieldEnum } from '@myzenbuddy/shared-common';
+import { SortDirectionEnum, sortOptions, TasksListSortFieldEnum } from '@moaitime/shared-common';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,7 +8,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { FaFilter } from 'react-icons/fa';
 
 import { useTasksStore } from '../../state/tasksStore';
 

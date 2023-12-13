@@ -1,8 +1,7 @@
+import { EventInterface } from '@moaitime/shared-common';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef } from 'react';
-
-import { EventInterface } from '@myzenbuddy/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';

@@ -1,4 +1,4 @@
-import { LocationInterface } from '@myzenbuddy/shared-common';
+import { LocationInterface } from '@moaitime/shared-common';
 
 export const convertCelciusToFahrenheit = (celcius: number) => {
   return ((celcius * 9) / 5 + 32).toFixed(0);

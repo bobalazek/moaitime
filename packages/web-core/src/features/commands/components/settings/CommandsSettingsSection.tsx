@@ -1,4 +1,4 @@
-import { Label, Switch } from '@myzenbuddy/web-ui';
+import { Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import CommandsSettingsSectionHeaderText from './CommandsSettingsSectionHeaderText';

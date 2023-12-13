@@ -1,4 +1,4 @@
-import { API_URL, GreetingInterface, ResponseInterface } from '@myzenbuddy/shared-common';
+import { API_URL, GreetingInterface, ResponseInterface } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

@@ -1,9 +1,8 @@
+import { App } from '@moaitime/web-core';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { App } from '@myzenbuddy/web-core';
-
-import '@myzenbuddy/web-core/globals.css';
+import '@moaitime/web-core/globals.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(

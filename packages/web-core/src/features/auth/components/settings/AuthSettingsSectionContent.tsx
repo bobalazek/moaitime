@@ -1,7 +1,6 @@
+import { Auth } from '@moaitime/shared-common';
+import { Button, Input, useToast } from '@moaitime/web-ui';
 import { useEffect, useState } from 'react';
-
-import { Auth } from '@myzenbuddy/shared-common';
-import { Button, Input, useToast } from '@myzenbuddy/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
 

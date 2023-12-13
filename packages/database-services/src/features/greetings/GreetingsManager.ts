@@ -1,6 +1,5 @@
+import { getDatabase, Greeting, greetings, NewGreeting } from '@moaitime/database-core';
 import { DBQueryConfig, eq } from 'drizzle-orm';
-
-import { getDatabase, Greeting, greetings, NewGreeting } from '@myzenbuddy/database-core';
 
 export class GreetingsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Greeting[]> {

@@ -1,7 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ['@myzenbuddy/eslint-config'],
+  extends: ['@moaitime/eslint-config'],
   ignorePatterns: ['**/dist/**/*', '**/node_modules/**/*'],
   overrides: [
     {

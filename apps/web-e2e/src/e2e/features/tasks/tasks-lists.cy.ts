@@ -85,7 +85,7 @@ describe('tasks-lists.cy.ts', () => {
 
   it('should edit and save the task list color', () => {
     // TODO: hacky workaround - should rather use
-    // import { TASK_LIST_COLORS } from '@myzenbuddy/shared-common';
+    // import { TASK_LIST_COLORS } from '@moaitime/shared-common';
     // but not working at the moment
     const LIST_COLOR_OPTION = {
       name: 'Grey',
@@ -190,7 +190,7 @@ describe('tasks-lists.cy.ts', () => {
 
   it('should add color when creating a new task list', () => {
     // TODO: hacky workaround - should rather use
-    // import { TASK_LIST_COLORS } from '@myzenbuddy/shared-common';
+    // import { TASK_LIST_COLORS } from '@moaitime/shared-common';
     // but not working at the moment
     const LIST_COLOR_OPTION = {
       name: 'Grey',

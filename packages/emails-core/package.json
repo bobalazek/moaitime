@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/emails-core",
+  "name": "@moaitime/emails-core",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -46,7 +46,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@myzenbuddy/tailwind-config": "workspace:*",
+    "@moaitime/tailwind-config": "workspace:*",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "react-email": "1.10.0",

@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import {
   Button,
   Card,
@@ -10,7 +7,9 @@ import {
   CardTitle,
   Input,
   Label,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { useAuthStore } from '../../state/authStore';

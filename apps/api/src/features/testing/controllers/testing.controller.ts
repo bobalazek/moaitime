@@ -1,8 +1,7 @@
+import { testingEmailsManager } from '@moaitime/database-services-testing';
+import { reloadDatabase } from '@moaitime/database-testing';
+import { getEnv } from '@moaitime/shared-backend';
 import { Controller, Get, Post } from '@nestjs/common';
-
-import { testingEmailsManager } from '@myzenbuddy/database-services-testing';
-import { reloadDatabase } from '@myzenbuddy/database-testing';
-import { getEnv } from '@myzenbuddy/shared-backend';
 
 import { ResponseDto } from '../../core/dtos/responses/response.dto';
 

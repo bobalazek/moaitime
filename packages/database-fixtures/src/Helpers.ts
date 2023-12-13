@@ -1,5 +1,5 @@
-import { calendars, events, getMigrationDatabase, lists, users } from '@myzenbuddy/database-core';
-import { logger } from '@myzenbuddy/shared-logging';
+import { calendars, events, getMigrationDatabase, lists, users } from '@moaitime/database-core';
+import { logger } from '@moaitime/shared-logging';
 
 import { getCalendarFixtures } from './data/Calendars';
 import { getEventFixtures } from './data/Events';

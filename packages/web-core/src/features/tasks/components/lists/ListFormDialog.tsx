@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-
-import { TASK_LIST_COLORS } from '@myzenbuddy/shared-common';
+import { TASK_LIST_COLORS } from '@moaitime/shared-common';
 import {
   Button,
   Dialog,
@@ -16,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
   useToast,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { useEffect, useState } from 'react';
 
 import { useTasksStore } from '../../state/tasksStore';
 

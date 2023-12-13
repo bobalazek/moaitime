@@ -1,7 +1,6 @@
+import { OrganizationUserRoleEnum } from '@moaitime/shared-common';
 import { relations } from 'drizzle-orm';
 import { index, json, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
-
-import { OrganizationUserRoleEnum } from '@myzenbuddy/shared-common';
 
 import { organizations } from './organizations';
 import { users } from './users';

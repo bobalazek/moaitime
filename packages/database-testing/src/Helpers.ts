@@ -1,7 +1,7 @@
-import { dropDatabaseSchema, runDatabaseMigrations } from '@myzenbuddy/database-core';
-import { insertDatabaseFixtureData } from '@myzenbuddy/database-fixtures';
-import { insertDatabaseSeedData } from '@myzenbuddy/database-seeds';
-import { logger } from '@myzenbuddy/shared-logging';
+import { dropDatabaseSchema, runDatabaseMigrations } from '@moaitime/database-core';
+import { insertDatabaseFixtureData } from '@moaitime/database-fixtures';
+import { insertDatabaseSeedData } from '@moaitime/database-seeds';
+import { logger } from '@moaitime/shared-logging';
 
 export const reloadDatabase = async () => {
   try {

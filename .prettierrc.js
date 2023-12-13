@@ -1,4 +1,4 @@
-const prettierConfig = require('@myzenbuddy/prettier-config');
+const prettierConfig = require('@moaitime/prettier-config');
 
 module.exports = {
   ...prettierConfig,

@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { reloadDatabase } from '@myzenbuddy/database-testing';
+import { reloadDatabase } from '@moaitime/database-testing';
 
 export const addDatabaseReloadCommand = (program: Command) => {
   const command = program.command('database:reload').action(async () => {

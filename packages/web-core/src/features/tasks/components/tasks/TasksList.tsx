@@ -14,10 +14,9 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { TasksListSortFieldEnum } from '@moaitime/shared-common';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-
-import { TasksListSortFieldEnum } from '@myzenbuddy/shared-common';
 
 import { useTasksStore } from '../../state/tasksStore';
 import SortableTask from './SortableTask';

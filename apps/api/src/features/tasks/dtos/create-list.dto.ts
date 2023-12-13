@@ -1,4 +1,4 @@
-import { CreateListSchema } from '@myzenbuddy/shared-common';
+import { CreateListSchema } from '@moaitime/shared-common';
 
 import { createZodDto } from '../../core/utils/validation-helpers';
 

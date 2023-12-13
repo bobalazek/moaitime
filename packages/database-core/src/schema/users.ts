@@ -1,7 +1,6 @@
+import { UserRoleEnum, UserSettings } from '@moaitime/shared-common';
 import { relations } from 'drizzle-orm';
 import { date, index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-
-import { UserRoleEnum, UserSettings } from '@myzenbuddy/shared-common';
 
 import { backgrounds } from './backgrounds';
 import { calendars } from './calendars';

@@ -1,6 +1,4 @@
-import { FaPlus } from 'react-icons/fa';
-
-import { List } from '@myzenbuddy/shared-common';
+import { List } from '@moaitime/shared-common';
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -9,7 +7,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuSubContent,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { FaPlus } from 'react-icons/fa';
 
 import { useTasksStore } from '../../state/tasksStore';
 import ListActions from './ListActions';

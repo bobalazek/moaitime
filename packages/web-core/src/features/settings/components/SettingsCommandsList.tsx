@@ -1,6 +1,5 @@
+import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 import { FaCog, FaExternalLinkAlt } from 'react-icons/fa';
-
-import { CommandGroup, CommandItem } from '@myzenbuddy/web-ui';
 
 import { useCommandsStore } from '../../commands/state/commandsStore';
 import { useSettingsStore } from '../state/settingsStore';

@@ -1,7 +1,7 @@
 import { join, relative } from 'path';
 import type { Config } from 'drizzle-kit';
 
-import { getEnv } from '@myzenbuddy/shared-backend';
+import { getEnv } from '@moaitime/shared-backend';
 
 const currentWorkingDir = process.cwd();
 const { POSTGRESQL_URL } = getEnv();

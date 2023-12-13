@@ -1,7 +1,6 @@
+import { Dialog, DialogContent } from '@moaitime/web-ui';
 import clsx from 'clsx';
 import { useState } from 'react';
-
-import { Dialog, DialogContent } from '@myzenbuddy/web-ui';
 
 import AuthSettingsSection from '../../auth/components/settings/AuthSettingsSection';
 import AuthSettingsSectionHeaderText from '../../auth/components/settings/AuthSettingsSectionHeaderText';

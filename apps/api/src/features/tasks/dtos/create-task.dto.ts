@@ -1,4 +1,4 @@
-import { CreateTaskSchema } from '@myzenbuddy/shared-common';
+import { CreateTaskSchema } from '@moaitime/shared-common';
 
 import { createZodDto } from '../../core/utils/validation-helpers';
 

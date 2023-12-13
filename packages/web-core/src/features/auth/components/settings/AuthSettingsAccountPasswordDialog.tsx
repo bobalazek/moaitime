@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import {
   Button,
   Dialog,
@@ -10,7 +8,8 @@ import {
   Input,
   Label,
   useToast,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { useEffect, useState } from 'react';
 
 import { useAuthStore } from '../../state/authStore';
 

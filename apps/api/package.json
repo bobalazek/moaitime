@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/api",
+  "name": "@moaitime/api",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -26,15 +26,15 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/database-core": "workspace:*",
-    "@myzenbuddy/database-fixtures": "workspace:*",
-    "@myzenbuddy/database-seeds": "workspace:*",
-    "@myzenbuddy/database-services": "workspace:*",
-    "@myzenbuddy/database-services-testing": "workspace:*",
-    "@myzenbuddy/database-testing": "workspace:*",
-    "@myzenbuddy/shared-backend": "workspace:*",
-    "@myzenbuddy/shared-common": "workspace:*",
-    "@myzenbuddy/tsconfig-config": "workspace:*",
+    "@moaitime/database-core": "workspace:*",
+    "@moaitime/database-fixtures": "workspace:*",
+    "@moaitime/database-seeds": "workspace:*",
+    "@moaitime/database-services": "workspace:*",
+    "@moaitime/database-services-testing": "workspace:*",
+    "@moaitime/database-testing": "workspace:*",
+    "@moaitime/shared-backend": "workspace:*",
+    "@moaitime/shared-common": "workspace:*",
+    "@moaitime/tsconfig-config": "workspace:*",
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.2.10",

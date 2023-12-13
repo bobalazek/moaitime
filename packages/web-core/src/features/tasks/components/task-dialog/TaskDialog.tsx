@@ -1,15 +1,6 @@
+import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@moaitime/shared-common';
+import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
 import { useEffect, useState } from 'react';
-
-import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@myzenbuddy/shared-common';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  Input,
-  Label,
-  Textarea,
-  useToast,
-} from '@myzenbuddy/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 import { ListsSelect } from '../lists/ListsSelect';

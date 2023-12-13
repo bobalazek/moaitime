@@ -1,7 +1,6 @@
+import { CalendarViewEnum, EventInterface } from '@moaitime/shared-common';
 import { addDays, areIntervalsOverlapping, eachDayOfInterval } from 'date-fns';
 import { create } from 'zustand';
-
-import { CalendarViewEnum, EventInterface } from '@myzenbuddy/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import { getMonthRange, getWeekRange, getYearRange, loadEvents } from '../utils/CalendarHelpers';

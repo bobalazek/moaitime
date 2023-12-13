@@ -1,12 +1,11 @@
-import { useMemo } from 'react';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   ScrollArea,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { useMemo } from 'react';
 
 type TimeRangesDropdownMenuProps = {
   onSelect: (value: string | null) => void;

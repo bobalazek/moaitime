@@ -18,8 +18,8 @@ export default defineConfig({
     alias: {
       // We need to do that it we want to have HMR working with the monorepo.
       // Make sure the order is correct! We first need to match the files and then the global namespace!
-      '@myzenbuddy/web-core/globals.css': resolve('../../packages/web-core/src/globals.css'),
-      '@myzenbuddy/web-core': resolve('../../packages/web-core/src/index.ts'),
+      '@moaitime/web-core/globals.css': resolve('../../packages/web-core/src/globals.css'),
+      '@moaitime/web-core': resolve('../../packages/web-core/src/index.ts'),
     },
   },
 });

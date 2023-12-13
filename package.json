@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/root",
+  "name": "@moaitime/root",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -25,9 +25,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@myzenbuddy/eslint-config": "workspace:*",
-    "@myzenbuddy/prettier-config": "workspace:*",
-    "@myzenbuddy/tsconfig-config": "workspace:*",
+    "@moaitime/eslint-config": "workspace:*",
+    "@moaitime/prettier-config": "workspace:*",
+    "@moaitime/tsconfig-config": "workspace:*",
     "@swc/core": "^1.3.100",
     "@types/node": "^20.10.2",
     "@vitejs/plugin-react-swc": "^3.5.0",

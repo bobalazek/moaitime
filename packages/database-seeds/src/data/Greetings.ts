@@ -1,4 +1,4 @@
-import { NewGreeting } from '@myzenbuddy/database-core';
+import { NewGreeting } from '@moaitime/database-core';
 
 export const getGreetingSeeds = async (): Promise<NewGreeting[]> => {
   return [

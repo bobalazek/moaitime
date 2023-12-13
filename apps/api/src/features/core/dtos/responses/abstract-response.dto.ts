@@ -1,4 +1,4 @@
-import { ResponseInterface } from '@myzenbuddy/shared-common';
+import { ResponseInterface } from '@moaitime/shared-common';
 
 export abstract class AbstractResponseDto<TData = unknown, TMeta = unknown>
   implements ResponseInterface

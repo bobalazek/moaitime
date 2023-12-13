@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss';
 
-import sharedConfig from '@myzenbuddy/tailwind-config/tailwind.config';
+import sharedConfig from '@moaitime/tailwind-config/tailwind.config';
 
 const config: Pick<Config, 'presets'> = {
   presets: [sharedConfig],

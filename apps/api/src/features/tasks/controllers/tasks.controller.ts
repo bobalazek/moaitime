@@ -1,3 +1,6 @@
+import { Task } from '@moaitime/database-core';
+import { listsManager, tasksManager } from '@moaitime/database-services';
+import { SortDirectionEnum } from '@moaitime/shared-common';
 import {
   Body,
   Controller,
@@ -11,10 +14,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-
-import { Task } from '@myzenbuddy/database-core';
-import { listsManager, tasksManager } from '@myzenbuddy/database-services';
-import { SortDirectionEnum } from '@myzenbuddy/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { DeleteDto } from '../../core/dtos/delete.dto';

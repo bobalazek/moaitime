@@ -1,6 +1,6 @@
-import { User } from '@myzenbuddy/database-core';
-import { authManager } from '@myzenbuddy/database-services';
-import { UserRoleEnum } from '@myzenbuddy/shared-common';
+import { User } from '@moaitime/database-core';
+import { authManager } from '@moaitime/database-services';
+import { UserRoleEnum } from '@moaitime/shared-common';
 
 const now = new Date();
 

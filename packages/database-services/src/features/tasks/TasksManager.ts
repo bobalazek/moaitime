@@ -1,8 +1,7 @@
+import { getDatabase, lists, NewTask, Task, tasks } from '@moaitime/database-core';
+import { SortDirectionEnum } from '@moaitime/shared-common';
 import { format } from 'date-fns';
 import { and, asc, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
-
-import { getDatabase, lists, NewTask, Task, tasks } from '@myzenbuddy/database-core';
-import { SortDirectionEnum } from '@myzenbuddy/shared-common';
 
 export type TasksManagerFindManyByListIdOptions = {
   includeCompleted?: boolean;

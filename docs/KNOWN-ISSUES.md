@@ -1,4 +1,4 @@
-# MyZenBuddy - Known Issues
+# MoaiTime - Known Issues
 
 ## Zod dependency across multiple packages
 

@@ -2,11 +2,11 @@ version: '3.8'
 
 # Here we will have all the services that are needed for the project to run
 
-name: myzenbuddy
+name: moaitime
 
 services:
   postgres:
-    container_name: myzenbuddy_postgres
+    container_name: moaitime_postgres
     image: postgres:15.4
     restart: unless-stopped
     environment:
@@ -20,10 +20,10 @@ services:
     ports:
       - 5432:5432
     networks:
-      - myzenbuddy-network
+      - moaitime-network
 
   redis:
-    container_name: myzenbuddy_redis
+    container_name: moaitime_redis
     image: redis:7.2.0
     restart: unless-stopped
     volumes:
@@ -31,11 +31,11 @@ services:
     ports:
       - 6379:6379
     networks:
-      - myzenbuddy-network
+      - moaitime-network
 
 networks:
-  myzenbuddy-network:
-    name: myzenbuddy_network
+  moaitime-network:
+    name: moaitime_network
     driver: bridge
 
 volumes:

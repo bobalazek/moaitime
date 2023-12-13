@@ -1,5 +1,5 @@
 {
-  "name": "@myzenbuddy/database-testing",
+  "name": "@moaitime/database-testing",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -24,10 +24,10 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@myzenbuddy/database-core": "workspace:*",
-    "@myzenbuddy/database-fixtures": "workspace:*",
-    "@myzenbuddy/database-seeds": "workspace:*",
-    "@myzenbuddy/shared-logging": "workspace:*"
+    "@moaitime/database-core": "workspace:*",
+    "@moaitime/database-fixtures": "workspace:*",
+    "@moaitime/database-seeds": "workspace:*",
+    "@moaitime/shared-logging": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

@@ -1,6 +1,6 @@
-# MyZenBuddy
+# MoaiTime
 
-This is the MyZenBuddy project.
+This is the MoaiTime project.
 
 ## Stack
 

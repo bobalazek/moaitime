@@ -1,7 +1,4 @@
-import { memo, useState } from 'react';
-import { FaEdit, FaEllipsisV, FaHistory, FaInfoCircle, FaList, FaTrash } from 'react-icons/fa';
-
-import { Task } from '@myzenbuddy/shared-common';
+import { Task } from '@moaitime/shared-common';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +7,9 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@myzenbuddy/web-ui';
+} from '@moaitime/web-ui';
+import { memo, useState } from 'react';
+import { FaEdit, FaEllipsisV, FaHistory, FaInfoCircle, FaList, FaTrash } from 'react-icons/fa';
 
 import { useTasksStore } from '../../state/tasksStore';
 import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDropdownMenuContent';

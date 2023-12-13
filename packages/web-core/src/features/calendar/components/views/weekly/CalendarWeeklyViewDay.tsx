@@ -23,6 +23,9 @@ export default function CalendarWeeklyViewDay({
   const currentTimeLineRef = useRef<HTMLDivElement>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const currentDay = utcToZonedTime(new Date(date), generalTimezone);
+  const startOfCurrentDay = startOfDay(currentDay);
+  const endOfCurrentDay = endOfDay(currentDay);
   const totalHeight = hourHeightPx * 24;
 
   useEffect(() => {
@@ -75,17 +78,15 @@ export default function CalendarWeeklyViewDay({
       data-date={date}
     >
       {events.map((event) => {
-        const currentDay = utcToZonedTime(new Date(date), generalTimezone);
-
         let eventStartsAt = utcToZonedTime(event.startsAt, generalTimezone);
         let eventEndsAt = utcToZonedTime(event.endsAt, generalTimezone);
 
-        if (eventStartsAt < startOfDay(currentDay)) {
-          eventStartsAt = startOfDay(currentDay);
+        if (eventStartsAt < startOfCurrentDay) {
+          eventStartsAt = startOfCurrentDay;
         }
 
-        if (eventEndsAt > endOfDay(currentDay)) {
-          eventEndsAt = endOfDay(currentDay);
+        if (eventEndsAt > endOfCurrentDay) {
+          eventEndsAt = endOfCurrentDay;
         }
 
         const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;

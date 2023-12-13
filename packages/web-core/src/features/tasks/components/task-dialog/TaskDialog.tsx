@@ -103,7 +103,7 @@ export default function TaskDialog() {
             id="task-name"
             value={data.name}
             onChange={(event) => {
-              setData((current) => ({ ...current, description: event.target.value }));
+              setData((current) => ({ ...current, name: event.target.value }));
             }}
           />
         </div>

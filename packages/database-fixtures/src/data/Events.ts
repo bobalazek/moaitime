@@ -12,6 +12,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
     const calendarId = calendar.id;
     const timezone = calendar.timezone ?? 'UTC';
     const todaysDate = format(now, 'yyyy-MM-dd');
+    const tomorrowsDate = format(new Date(now.getTime() + 86400000), 'yyyy-MM-dd');
 
     events.push(
       ...[
@@ -56,8 +57,8 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           description: 'Event Full Day Description',
           timezone,
           isAllDay: true,
-          startsAt: zonedTimeToUtc(`${todaysDate}T00:00:00.000`, timezone),
-          endsAt: zonedTimeToUtc(`${todaysDate}T23:59:59.999`, timezone),
+          startsAt: new Date(`${todaysDate}T00:00:00.000`),
+          endsAt: new Date(`${todaysDate}T23:59:59.999`),
           calendarId,
         },
         {
@@ -65,8 +66,26 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           description: 'Second Event Full Day Description',
           timezone,
           isAllDay: true,
-          startsAt: zonedTimeToUtc(`${todaysDate}T00:00:00.000`, timezone),
-          endsAt: zonedTimeToUtc(`${todaysDate}T23:59:59.999`, timezone),
+          startsAt: new Date(`${todaysDate}T00:00:00.000`),
+          endsAt: new Date(`${todaysDate}T23:59:59.999`),
+          calendarId,
+        },
+        {
+          title: 'Event 5 Two Day Overlap',
+          description: 'Event 5 Two Day Overlap Description',
+          timezone,
+          isAllDay: false,
+          startsAt: zonedTimeToUtc(`${todaysDate}T20:00:00.000`, timezone),
+          endsAt: zonedTimeToUtc(`${tomorrowsDate}T10:00:00.000`, timezone),
+          calendarId,
+        },
+        {
+          title: 'Event 6 Two Day Overlap',
+          description: 'Event 6 Two Day Overlap Description',
+          timezone,
+          isAllDay: false,
+          startsAt: zonedTimeToUtc(`${todaysDate}T16:00:00.000`, timezone),
+          endsAt: zonedTimeToUtc(`${tomorrowsDate}T18:00:00.000`, timezone),
           calendarId,
         },
       ]

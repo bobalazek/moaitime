@@ -1,8 +1,10 @@
 import { format } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 import { useEffect, useRef, useState } from 'react';
 
 import { EventWithVerticalPosition } from '@moaitime/shared-common';
 
+import { useAuthStore } from '../../../../auth/state/authStore';
 import CalendarEvent from '../../events/CalendarEvent';
 
 export default function CalendarWeeklyViewDay({
@@ -16,8 +18,11 @@ export default function CalendarWeeklyViewDay({
   events: EventWithVerticalPosition[];
   hourHeightPx: number;
 }) {
+  const { auth } = useAuthStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
   const currentTimeLineRef = useRef<HTMLDivElement>(null);
+
+  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const totalHeight = hourHeightPx * 24;
   const date = format(day, 'yyyy-MM-dd');
 
@@ -71,8 +76,16 @@ export default function CalendarWeeklyViewDay({
       data-date={date}
     >
       {events.map((event) => {
-        const eventStartsAt = new Date(event.startsAt);
-        const eventEndsAt = new Date(event.endsAt);
+        const startDate = format(new Date(event.startsAt), 'yyyy-MM-dd');
+        const endDate = format(new Date(event.endsAt), 'yyyy-MM-dd');
+
+        const eventStartsAt = utcToZonedTime(event.startsAt, generalTimezone);
+        let eventEndsAt = utcToZonedTime(event.endsAt, generalTimezone);
+
+        if (startDate !== endDate) {
+          eventEndsAt = new Date(new Date(date).setHours(23, 59, 59, 999));
+        }
+
         const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
         const height =
           ((eventEndsAt.getTime() - eventStartsAt.getTime()) / 1000 / 60 / 60) * hourHeightPx;

@@ -13,7 +13,6 @@ export default function CalendarMonthlyView() {
   const { events, selectedDate } = useCalendarStore();
   const { auth } = useAuthStore();
   const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const weeks = useMemo(() => {
     return getWeeksForMonth(selectedDate, calendarStartDayOfWeek);
   }, [selectedDate, calendarStartDayOfWeek]);
@@ -22,14 +21,14 @@ export default function CalendarMonthlyView() {
     weeks.forEach((week) => {
       week.forEach((day) => {
         const dayKey = format(day, 'yyyy-MM-dd');
-        const eventsForDay = getEventsForDay(day, events, generalTimezone, 'all');
+        const eventsForDay = getEventsForDay(day, events, 'all');
 
         newEventsPerDay.set(dayKey, eventsForDay);
       });
     });
 
     return newEventsPerDay;
-  }, [weeks, generalTimezone, events]);
+  }, [weeks, events]);
   const daysOfWeek = useMemo(() => {
     return weeks?.[0]?.map((day) => format(day, 'eee.')) ?? [];
   }, [weeks]);

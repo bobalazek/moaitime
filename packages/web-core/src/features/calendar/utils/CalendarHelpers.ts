@@ -6,15 +6,14 @@ import {
   endOfMonth,
   endOfWeek,
   endOfYear,
+  format,
   getDay,
-  isSameDay,
   startOfDay,
   startOfMonth,
   startOfWeek,
   startOfYear,
   subDays,
 } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
 
 import {
   API_URL,
@@ -71,32 +70,37 @@ type EventWithDateObjects = Omit<EventInterface, 'startsAt' | 'endsAt'> & {
 export const getEventsForDay = (
   day: Date,
   events: EventInterface[],
-  timezone: string,
   type: 'all' | 'without-full-day' | 'full-day-only' = 'all'
 ): EventWithVerticalPosition[] => {
+  const dayDate = format(day, 'yyyy-MM-dd');
   const start = startOfDay(day);
   const end = endOfDay(day);
-
   const optimizedEvents: EventWithDateObjects[] = events
     .map((event) => ({
       ...event,
-      startsAt: utcToZonedTime(new Date(event.startsAt), timezone),
-      endsAt: utcToZonedTime(new Date(event.endsAt), timezone),
+      startsAt: new Date(event.startsAt),
+      endsAt: new Date(event.endsAt),
     }))
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
   const filteredEvents = optimizedEvents.filter((event) => {
+    // TODO: not working with multiple days events
+    const eventDate = format(event.startsAt, 'yyyy-MM-dd');
+    if (dayDate !== eventDate) {
+      return false;
+    }
+
     const eventStart = event.startsAt;
     const eventEnd = event.endsAt;
-    const isFullDayEvent = isSameDay(eventStart, eventEnd) && event.isAllDay;
+    const isFullDayEvent = event.isAllDay;
 
     const overlaps = areIntervalsOverlapping({ start: eventStart, end: eventEnd }, { start, end });
-    const typeCheck =
+    const check =
       type === 'all' ||
       (type === 'without-full-day' && !isFullDayEvent) ||
       (type === 'full-day-only' && isFullDayEvent);
 
-    return overlaps && typeCheck;
+    return overlaps && check;
   });
 
   const layoutEvents = (events: EventWithDateObjects[]): EventWithVerticalPosition[] => {

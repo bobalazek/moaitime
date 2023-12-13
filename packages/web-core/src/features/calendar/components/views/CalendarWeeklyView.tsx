@@ -12,7 +12,7 @@ import CalendarEvent from '../events/CalendarEvent';
 import CalendarWeeklyViewDay from './weekly/CalendarWeeklyViewDay';
 
 type EventsPerDay = {
-  all: EventWithVerticalPosition[];
+  withouFullDay: EventWithVerticalPosition[];
   fullDayOnly: EventWithVerticalPosition[];
 };
 
@@ -38,14 +38,14 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     const newEventsPerDay = new Map<string, EventsPerDay>();
     for (const day of days ?? []) {
       const date = format(day, 'yyyy-MM-dd');
-      const all = getEventsForDay(day, events, generalTimezone, 'without-full-day');
-      const fullDayOnly = getEventsForDay(day, events, generalTimezone, 'full-day-only');
+      const withouFullDay = getEventsForDay(day, events, 'without-full-day');
+      const fullDayOnly = getEventsForDay(day, events, 'full-day-only');
 
-      newEventsPerDay.set(date, { fullDayOnly, all });
+      newEventsPerDay.set(date, { fullDayOnly, withouFullDay });
     }
 
     return newEventsPerDay;
-  }, [generalTimezone, days, events]);
+  }, [days, events]);
 
   const now = new Date();
   const timezone = getGmtOffset(generalTimezone);
@@ -188,7 +188,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
           {days.map((day) => {
             const date = format(day, 'yyyy-MM-dd');
             const isActive = isSameDay(day, now);
-            const eventsForDay = eventsPerDay.get(date)?.all ?? [];
+            const eventsForDay = eventsPerDay.get(date)?.withouFullDay ?? [];
 
             return (
               <CalendarWeeklyViewDay

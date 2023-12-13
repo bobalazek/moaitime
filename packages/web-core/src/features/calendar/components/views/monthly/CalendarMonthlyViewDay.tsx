@@ -6,6 +6,8 @@ import { CalendarViewEnum, EventInterface } from '@moaitime/shared-common';
 import { useCalendarStore } from '../../../state/calendarStore';
 import CalendarEvent from '../../events/CalendarEvent';
 
+const CALENDAR_MONTHLY_VIEW_DAY_EVENTS_COUNT_LIMIT = 4;
+
 export default function CalendarMonthlyViewDay({
   day,
   now,
@@ -29,6 +31,9 @@ export default function CalendarMonthlyViewDay({
     setSelectedView(CalendarViewEnum.DAY);
   };
 
+  const shownEvents = events.slice(0, CALENDAR_MONTHLY_VIEW_DAY_EVENTS_COUNT_LIMIT);
+  const remainingEventsCount = events.length - shownEvents.length;
+
   return (
     <div className="flex-grow border p-2 lg:w-0" data-test="calendar--monthly-view--day">
       <div className="mb-2 text-center">
@@ -45,16 +50,24 @@ export default function CalendarMonthlyViewDay({
           <span>{dateText}</span>
         </button>
       </div>
-      {events.length === 0 && (
+      {shownEvents.length === 0 && (
         <div className="flex flex-grow flex-col items-center justify-center text-xs text-gray-600">
           <span className="text-center">No events</span>
         </div>
       )}
-      {events.length > 0 && (
+      {shownEvents.length > 0 && (
         <div className="flex flex-col gap-1">
-          {events.map((event) => (
+          {shownEvents.map((event) => (
             <CalendarEvent key={event.id} event={event} />
           ))}
+          {remainingEventsCount > 0 && (
+            <div
+              className="cursor-pointer p-2 text-center text-sm text-gray-400 hover:text-gray-500"
+              onClick={onDayClick}
+            >
+              + {remainingEventsCount} more
+            </div>
+          )}
         </div>
       )}
     </div>

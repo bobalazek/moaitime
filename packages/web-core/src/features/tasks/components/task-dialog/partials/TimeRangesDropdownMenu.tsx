@@ -5,19 +5,20 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  ScrollArea,
 } from '@moaitime/web-ui';
 
 type TimeRangesDropdownMenuProps = {
   onSelect: (value: string | null) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  filterValue?: string;
 };
 
 export default function TimeRangesDropdownMenu({
   onSelect,
   open,
   onOpenChange,
+  filterValue,
 }: TimeRangesDropdownMenuProps) {
   const times = useMemo(() => {
     const times = [];
@@ -49,11 +50,12 @@ export default function TimeRangesDropdownMenu({
     return [...timesAfter, ...timesBefore];
   }, []);
 
-  // The reason we need that empty div is, because the dropdown menu needs a child to be able to position itself.
+  const timesFiltered = filterValue ? times.filter((time) => time.startsWith(filterValue)) : times;
 
   return (
-    <DropdownMenu open={open} onOpenChange={onOpenChange}>
+    <DropdownMenu open={open} onOpenChange={onOpenChange} modal={false}>
       <DropdownMenuTrigger asChild>
+        {/* The reason we need that empty div is, because the dropdown menu needs a child to be able to position itself */}
         <div />
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -61,8 +63,13 @@ export default function TimeRangesDropdownMenu({
         className="w-32"
         data-test="tasks--time-ranges--dropdown-menu"
       >
-        <ScrollArea className="h-64">
-          {times.map((time) => (
+        <div className="h-64 overflow-scroll">
+          {timesFiltered.length === 0 && (
+            <DropdownMenuItem className="text-muted-foreground m-0 text-xs">
+              No ranges found
+            </DropdownMenuItem>
+          )}
+          {timesFiltered.map((time) => (
             <DropdownMenuItem
               key={time}
               onClick={() => {
@@ -74,7 +81,7 @@ export default function TimeRangesDropdownMenu({
               {time}
             </DropdownMenuItem>
           ))}
-        </ScrollArea>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

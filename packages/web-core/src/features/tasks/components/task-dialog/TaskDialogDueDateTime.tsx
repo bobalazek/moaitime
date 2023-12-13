@@ -12,8 +12,6 @@ import {
   useToast,
 } from '@moaitime/web-ui';
 
-import TimeRangesDropdownMenu from './partials/TimeRangesDropdownMenu';
-
 type TaskDialogDueDateTimeProps = {
   dateTime: string | null;
   onDateTimeChange: (value: string | null) => void;
@@ -25,7 +23,6 @@ export default function TaskDialogDueDateTime({
 }: TaskDialogDueDateTimeProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [timeRangesDropdownMenuOpen, setTimeRangesDropdownMenuOpen] = useState(false);
   const [timeValue, setTimeValue] = useState(dateTime ?? '');
 
   const onClearButtonClick = (event: MouseEvent) => {
@@ -92,13 +89,9 @@ export default function TaskDialogDueDateTime({
             value={timeValue}
             onChange={(event) => setTimeValue(event.target.value)}
             onKeyDown={onKeyPress}
-            onFocus={() => setTimeRangesDropdownMenuOpen(true)}
+            autoComplete="off"
           />
-          <TimeRangesDropdownMenu
-            open={timeRangesDropdownMenuOpen}
-            onOpenChange={setTimeRangesDropdownMenuOpen}
-            onSelect={(value) => setTimeValue(value ?? '')}
-          />
+          {/* Add TimeRangesDropdownMenu here, once we sort out the focus issue */}
         </div>
         <div>
           <Button variant="default" className="w-full" onClick={onSaveButtonClick}>

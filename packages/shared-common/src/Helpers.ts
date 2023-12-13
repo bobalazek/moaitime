@@ -20,6 +20,10 @@ export const isValidTime = (time: string) => {
     return false;
   }
 
+  if (hours.length > 2 || minutes.length > 2) {
+    return false;
+  }
+
   const hoursNumber = Number(hours);
   const minutesNumber = Number(minutes);
 

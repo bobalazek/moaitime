@@ -91,8 +91,12 @@ export default function TaskDialogDueDate({
           onSelect={onSelectDate}
           weekStartsOn={calendarStartDayOfWeek}
         />
-        <hr className="border-gray-700" />
-        <TaskDialogDueDateTime dateTime={dateTime} onDateTimeChange={onDateTimeChange} />
+        {date && (
+          <>
+            <hr className="border-gray-700" />
+            <TaskDialogDueDateTime dateTime={dateTime} onDateTimeChange={onDateTimeChange} />
+          </>
+        )}
       </PopoverContent>
     </Popover>
   );

@@ -9,20 +9,26 @@ import TaskDialogDueDateTime from './TaskDialogDueDateTime';
 
 type TaskDialogDueDateProps = {
   date: string | null;
-  onDateChange: (value: string | null) => void;
   dateTime: string | null;
+  dateTimeZone: string | null;
+  onDateChange: (value: string | null) => void;
   onDateTimeChange: (value: string | null) => void;
+  onDateTimeZoneChange: (value: string | null) => void;
 };
 
 export const TaskDialogDueDateText = ({
   date,
   dateTime,
-}: Pick<TaskDialogDueDateProps, 'date' | 'dateTime'>) => {
+  dateTimeZone,
+}: Pick<TaskDialogDueDateProps, 'date' | 'dateTime' | 'dateTimeZone'>) => {
   return (
-    <span>
+    <span className="text-xs">
       {!date && <span className="text-muted-foreground">Pick a date</span>}
       {date && format(new Date(date), 'PPP')}
       {date && dateTime && <> at {dateTime}</>}
+      {date && dateTime && dateTimeZone && (
+        <span className="ml-2 text-gray-400">({dateTimeZone})</span>
+      )}
     </span>
   );
 };
@@ -30,18 +36,31 @@ export const TaskDialogDueDateText = ({
 export default function TaskDialogDueDate({
   date,
   dateTime,
+  dateTimeZone,
   onDateChange,
   onDateTimeChange,
+  onDateTimeZoneChange,
 }: TaskDialogDueDateProps) {
   const { auth } = useAuthStore();
   const [open, setOpen] = useState(false);
+  const [dateValue, setDateValue] = useState(date ?? null);
+  const [dateTimeValue, setDateTimeValue] = useState(dateTime ?? null);
+  const [dateTimeZoneValue, setDateTimeZoneValue] = useState(dateTimeZone ?? null);
 
   const onSelectDate = (value?: Date) => {
     onDateChange(value ? format(value, 'yyyy-MM-dd') : null);
 
     if (!value) {
-      onDateTimeChange(null);
+      setDateValue(null);
     }
+
+    setOpen(false);
+  };
+
+  const onSaveButtonClick = () => {
+    onDateChange(dateValue);
+    onDateTimeChange(dateTimeValue);
+    onDateTimeZoneChange(dateTimeZoneValue);
 
     setOpen(false);
   };
@@ -67,7 +86,7 @@ export default function TaskDialogDueDate({
         >
           <span className="flex">
             <FaCalendar className="mr-2 h-4 w-4" />
-            <TaskDialogDueDateText date={date} dateTime={dateTime} />
+            <TaskDialogDueDateText date={date} dateTime={dateTime} dateTimeZone={dateTimeZone} />
           </span>
           {date && (
             <span
@@ -94,9 +113,24 @@ export default function TaskDialogDueDate({
         {date && (
           <>
             <hr className="border-gray-700" />
-            <TaskDialogDueDateTime dateTime={dateTime} onDateTimeChange={onDateTimeChange} />
+            <TaskDialogDueDateTime
+              dateTime={dateTimeValue}
+              dateTimeZone={dateTimeZoneValue}
+              onDateTimeChange={setDateTimeValue}
+              onDateTimeZoneChange={setDateTimeZoneValue}
+            />
           </>
         )}
+        <div>
+          <Button
+            variant="default"
+            className="w-full"
+            onClick={onSaveButtonClick}
+            data-test="tasks--due-date--save-button"
+          >
+            Save
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

@@ -1,7 +1,7 @@
 import { useAuthStore } from '../../../auth/state/authStore';
+import TimezoneSelector from '../../../core/components/partials/TimezoneSelector';
 import GeneralSettingsSectionHeaderText from './GeneralSettingsSectionHeaderText';
 import GeneralStartDayOfWeekSetting from './settings/GeneralStartDayOfWeekSetting';
-import GeneralTimezoneSetting from './settings/GeneralTimezoneSetting';
 
 export default function GeneralSettingsSection() {
   const { auth, updateAccountSettings } = useAuthStore();
@@ -34,11 +34,11 @@ export default function GeneralSettingsSection() {
       <div className="mb-4">
         <h4 className="mb-2 font-bold">Timezone</h4>
         <div>
-          <GeneralTimezoneSetting
+          <TimezoneSelector
             value={settings.generalTimezone}
             onValueChange={(value) => {
               updateAccountSettings({
-                generalTimezone: value,
+                generalTimezone: value ?? undefined,
               });
             }}
           />

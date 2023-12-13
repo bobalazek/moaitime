@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { FaCheck } from 'react-icons/fa';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
 import { getTimezones } from '@moaitime/shared-common';
 import {
@@ -19,16 +19,24 @@ import {
 
 const timezones = getTimezones();
 
-export type GeneralTimezoneSettingProps = {
-  value: string;
-  onValueChange: (value: string) => void;
+export type TimezoneSelectorProps = {
+  value: string | null;
+  onValueChange: (value: string | null) => void;
+  placeholderText?: string;
+  allowClear?: boolean;
 };
 
-export default function GeneralTimezoneSetting({
+export default function TimezoneSelector({
   value,
   onValueChange,
-}: GeneralTimezoneSettingProps) {
+  placeholderText,
+  allowClear,
+}: TimezoneSelectorProps) {
   const [open, setOpen] = useState(false);
+
+  const onClearButtonClick = () => {
+    onValueChange(null);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
@@ -38,12 +46,25 @@ export default function GeneralTimezoneSetting({
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
+          data-test="timezone-selector--trigger-button"
         >
-          {value ?? 'Select timezone ...'}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {value ?? (
+            <span className="text-muted-foreground">
+              {placeholderText ?? 'Select timezone ...'}
+            </span>
+          )}
+          {(!allowClear || !value) && <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />}
+          {allowClear && value && (
+            <span
+              className="text-muted-foreground rounded-full p-1 hover:bg-slate-600"
+              onClick={onClearButtonClick}
+            >
+              <FaTimes />
+            </span>
+          )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="absolute z-50 p-0" align="start">
+      <PopoverContent className="absolute z-50 p-0" align="start" data-test="timezone-selector">
         <GeneralTimezoneSettingContent
           value={value}
           onValueChange={(newValue) => {
@@ -56,13 +77,14 @@ export default function GeneralTimezoneSetting({
   );
 }
 
-export const GeneralTimezoneSettingContent = ({
-  value,
-  onValueChange,
-}: GeneralTimezoneSettingProps) => {
+export const GeneralTimezoneSettingContent = ({ value, onValueChange }: TimezoneSelectorProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!value) {
+      return;
+    }
+
     const selectedValueLowercased = value.toLowerCase();
     const selectedElement = scrollAreaRef.current?.querySelector(
       `div[data-value="${selectedValueLowercased}"]`
@@ -80,7 +102,7 @@ export const GeneralTimezoneSettingContent = ({
   return (
     <Command>
       <CommandInput placeholder="Search timezone ..." />
-      <ScrollArea className="h-64" ref={scrollAreaRef}>
+      <ScrollArea ref={scrollAreaRef} className="h-64" data-test="timezone-selector--content">
         <CommandEmpty>No timezone found</CommandEmpty>
         <CommandGroup>
           {timezones.map((timezone) => (

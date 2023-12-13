@@ -131,12 +131,16 @@ export default function TaskDialog() {
           <Label htmlFor="task-list">Due Date</Label>
           <TaskDialogDueDate
             date={data.dueDate ?? null}
+            dateTime={data.dueDateTime ?? null}
+            dateTimeZone={data.dueDateTimeZone ?? null}
             onDateChange={(value) => {
               setData((current) => ({ ...current, dueDate: value }));
             }}
-            dateTime={data.dueDateTime ?? null}
             onDateTimeChange={(value) => {
               setData((current) => ({ ...current, dueDateTime: value }));
+            }}
+            onDateTimeZoneChange={(value) => {
+              setData((current) => ({ ...current, dueDateTimeZone: value }));
             }}
           />
         </div>

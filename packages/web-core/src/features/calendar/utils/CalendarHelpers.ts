@@ -5,8 +5,8 @@ import {
   endOfMonth,
   endOfWeek,
   endOfYear,
+  format,
   getDay,
-  isSameDay,
   startOfDay,
   startOfMonth,
   startOfWeek,
@@ -60,9 +60,7 @@ export const getWeeksForMonth = (month: Date, calendarStartDayOfWeek: number) =>
 
   return weeks;
 };
-type EventWithDateObjects = Omit<EventInterface, 'startsAt' | 'endsAt'> & {
-  startsAt: Date;
-  endsAt: Date;
+type EventWithDateObjects = EventInterface & {
   left?: number;
   width?: number;
 };
@@ -76,32 +74,28 @@ export const getEventsForDay = (
   const day = new Date(date);
   const start = startOfDay(day);
   const end = endOfDay(day);
-  const optimizedEvents: EventWithDateObjects[] = events
-    .map((event) => ({
-      ...event,
-      startsAt: new Date(event.startsAt),
-      endsAt: new Date(event.endsAt),
-    }))
-    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
-  const filteredEvents = optimizedEvents.filter((event) => {
-    const localStart = utcToZonedTime(event.startsAt, timezone);
-    const localEnd = utcToZonedTime(event.endsAt, timezone);
+  const filteredEvents = events
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+    .filter((event) => {
+      if (event.isAllDay) {
+        const eventDate = format(new Date(event.startsAt), 'yyyy-MM-dd');
 
-    const eventStart = event.isAllDay ? startOfDay(localStart) : localStart;
-    const eventEnd = event.isAllDay ? endOfDay(localEnd) : localEnd;
+        return eventDate === date;
+      }
 
-    const overlaps = eventStart < end && eventEnd > start;
+      const eventStart = utcToZonedTime(event.startsAt, timezone);
+      const eventEnd = utcToZonedTime(event.endsAt, timezone);
 
-    const isFullDayEvent = event.isAllDay && isSameDay(eventStart, day);
-
-    const check =
-      type === 'all' ||
-      (type === 'without-full-day' && !isFullDayEvent) ||
-      (type === 'full-day-only' && isFullDayEvent);
-
-    return overlaps && check;
-  });
+      return eventStart < end && eventEnd > start;
+    })
+    .filter((event) => {
+      return (
+        type === 'all' ||
+        (type === 'without-full-day' && !event.isAllDay) ||
+        (type === 'full-day-only' && event.isAllDay)
+      );
+    });
 
   const layoutEvents = (events: EventWithDateObjects[]): EventWithVerticalPosition[] => {
     const eventStacks: EventWithDateObjects[][] = [];
@@ -130,8 +124,6 @@ export const getEventsForDay = (
 
         positionedEvents.push({
           ...event,
-          startsAt: event.startsAt.toISOString(),
-          endsAt: event.endsAt.toISOString(),
           left,
           width,
         });

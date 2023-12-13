@@ -69,12 +69,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     const { selectedDate, selectedView } = get();
     const { auth } = useAuthStore.getState();
 
-    const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+    const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
     const now = new Date();
 
     let selectedDays = [selectedDate];
     if (selectedView === CalendarViewEnum.WEEK) {
-      selectedDays = eachDayOfInterval(getWeekRange(selectedDate, calendarStartDayOfWeek));
+      selectedDays = eachDayOfInterval(getWeekRange(selectedDate, generalStartDayOfWeek));
     } else if (selectedView === CalendarViewEnum.MONTH) {
       selectedDays = eachDayOfInterval(getMonthRange(selectedDate));
     } else if (selectedView === CalendarViewEnum.YEAR) {

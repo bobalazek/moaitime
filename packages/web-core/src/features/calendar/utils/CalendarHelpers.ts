@@ -17,7 +17,7 @@ import { utcToZonedTime } from 'date-fns-tz';
 
 import {
   API_URL,
-  CalendarDayOfWeek,
+  DayOfWeek,
   EventInterface,
   EventWithVerticalPosition,
   ResponseInterface,
@@ -36,11 +36,11 @@ export const loadEvents = async () => {
   return response;
 };
 
-export const getWeeksForMonth = (month: Date, calendarStartDayOfWeek: number) => {
+export const getWeeksForMonth = (month: Date, startDayOfWeek: number) => {
   const startDay = startOfMonth(month);
   const endDay = endOfMonth(month);
   const daysInMonth = eachDayOfInterval({ start: startDay, end: endDay });
-  const adjustedStartDay = getDay(startDay) - calendarStartDayOfWeek;
+  const adjustedStartDay = getDay(startDay) - startDayOfWeek;
   const startPadding = adjustedStartDay < 0 ? 7 - Math.abs(adjustedStartDay) : adjustedStartDay;
   const emptyStartDays = Array.from({ length: startPadding }, (_, i) =>
     subDays(startDay, startPadding - i)
@@ -136,7 +136,7 @@ export const getEventsForDay = (
   return layoutEvents(filteredEvents);
 };
 
-export const getWeekRange = (date: Date, weekStartsOn: CalendarDayOfWeek) => {
+export const getWeekRange = (date: Date, weekStartsOn: DayOfWeek) => {
   const start = startOfWeek(date, { weekStartsOn });
   const end = endOfWeek(date, { weekStartsOn });
 

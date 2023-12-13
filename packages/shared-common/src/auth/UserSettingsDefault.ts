@@ -3,6 +3,7 @@ import { UserSettings } from './UserSchema';
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   generalTimezone: 'UTC',
+  generalStartDayOfWeek: 0,
   commandsEnabled: true,
   commandsSearchButtonEnabled: true,
   weatherEnabled: true,
@@ -22,5 +23,4 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   quoteEnabled: true,
   tasksEnabled: true,
   calendarEnabled: true,
-  calendarStartDayOfWeek: 0,
 };

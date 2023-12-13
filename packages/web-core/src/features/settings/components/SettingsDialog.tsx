@@ -22,12 +22,19 @@ import TasksSettingsSectionHeaderText from '../../tasks/components/settings/Task
 import WeatherSettingsSection from '../../weather/components/settings/WeatherSettingsSection';
 import WeatherSettingsSectionHeaderText from '../../weather/components/settings/WeatherSettingsSectionHeaderText';
 import { useSettingsStore } from '../state/settingsStore';
+import GeneralSettingsSection from './general/GeneralSettingsSection';
+import GeneralSettingsSectionHeaderText from './general/GeneralSettingsSectionHeaderText';
 
 const tabs = [
   {
     id: 'auth',
     label: <AuthSettingsSectionHeaderText />,
     content: <AuthSettingsSection />,
+  },
+  {
+    id: 'general',
+    label: <GeneralSettingsSectionHeaderText />,
+    content: <GeneralSettingsSection />,
   },
   {
     id: 'weather',

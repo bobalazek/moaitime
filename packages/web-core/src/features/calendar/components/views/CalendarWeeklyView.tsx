@@ -22,17 +22,17 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
   const { events, selectedDate, selectedView, setSelectedDate, setSelectedView } =
     useCalendarStore();
   const { auth } = useAuthStore();
-  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const prevSelectedDateRef = useRef(selectedDate);
   const days = useMemo(() => {
     return singleDay
       ? [singleDay]
       : eachDayOfInterval({
-          start: startOfWeek(selectedDate, { weekStartsOn: calendarStartDayOfWeek }),
-          end: endOfWeek(selectedDate, { weekStartsOn: calendarStartDayOfWeek }),
+          start: startOfWeek(selectedDate, { weekStartsOn: generalStartDayOfWeek }),
+          end: endOfWeek(selectedDate, { weekStartsOn: generalStartDayOfWeek }),
         });
-  }, [singleDay, calendarStartDayOfWeek, selectedDate]);
+  }, [singleDay, generalStartDayOfWeek, selectedDate]);
 
   const eventsPerDay = useMemo(() => {
     const newEventsPerDay = new Map<string, EventsPerDay>();

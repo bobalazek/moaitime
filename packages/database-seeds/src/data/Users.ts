@@ -14,6 +14,7 @@ export const getUserSeeds = async (): Promise<NewUser[]> => {
       emailConfirmedAt: new Date(),
       settings: {
         generalTimezone: 'Europe/Ljubljana',
+        generalStartDayOfWeek: 1,
       } as UserSettings,
     },
     {
@@ -24,6 +25,7 @@ export const getUserSeeds = async (): Promise<NewUser[]> => {
       emailConfirmedAt: new Date(),
       settings: {
         generalTimezone: 'Europe/Ljubljana',
+        generalStartDayOfWeek: 1,
       } as UserSettings,
     },
   ];

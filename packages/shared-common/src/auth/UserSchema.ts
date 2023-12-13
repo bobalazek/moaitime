@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
-import { CalendarDayOfWeek } from '../calendar/CalendarDayOfWeek';
+import { DayOfWeek } from '../core/DayOfWeek';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 
 // User Settings
 export const UserSettingsSchema = z.object({
   // General
   generalTimezone: z.string(),
+  generalStartDayOfWeek: z.number().min(0).max(6) as z.ZodType<DayOfWeek>,
 
   // Commands
   commandsEnabled: z.boolean(),
@@ -42,7 +43,6 @@ export const UserSettingsSchema = z.object({
 
   // Calendar
   calendarEnabled: z.boolean(),
-  calendarStartDayOfWeek: z.number().min(0).max(6) as z.ZodType<CalendarDayOfWeek>,
 });
 
 export const UpdateUserSettingsSchema = UserSettingsSchema.partial();

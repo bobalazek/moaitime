@@ -9,7 +9,7 @@ function CalendarDialogHeaderCalendar() {
   const { auth } = useAuthStore();
   const { selectedDays, selectedDate, setSelectedDate } = useCalendarStore();
 
-  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const now = new Date();
 
   return (
@@ -31,7 +31,7 @@ function CalendarDialogHeaderCalendar() {
           fromYear={now.getFullYear() - 30}
           toYear={now.getFullYear() + 5}
           selected={selectedDate}
-          weekStartsOn={calendarStartDayOfWeek}
+          weekStartsOn={generalStartDayOfWeek}
           onSelect={(value) => {
             setSelectedDate(value ?? selectedDate);
           }}

@@ -14,11 +14,11 @@ export default function CalendarMonthlyView() {
   const { auth } = useAuthStore();
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
 
   const weeks = useMemo(() => {
-    return getWeeksForMonth(selectedDate, calendarStartDayOfWeek);
-  }, [selectedDate, calendarStartDayOfWeek]);
+    return getWeeksForMonth(selectedDate, generalStartDayOfWeek);
+  }, [selectedDate, generalStartDayOfWeek]);
   const eventsPerDay = useMemo(() => {
     const newEventsPerDay = new Map<string, EventInterface[]>();
     weeks.forEach((week) => {

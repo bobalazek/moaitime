@@ -55,7 +55,7 @@ export default function TaskDialogDueDate({
     setOpen(false);
   };
 
-  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -89,7 +89,7 @@ export default function TaskDialogDueDate({
           disabled={[{ before: new Date() }]}
           selected={date ? new Date(date) : undefined}
           onSelect={onSelectDate}
-          weekStartsOn={calendarStartDayOfWeek}
+          weekStartsOn={generalStartDayOfWeek}
         />
         {date && (
           <>

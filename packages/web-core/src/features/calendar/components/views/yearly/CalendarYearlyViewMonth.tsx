@@ -10,9 +10,9 @@ import { getWeeksForMonth } from '../../../utils/CalendarHelpers';
 export default function CalendarYearlyViewMonth({ month, now }: { month: Date; now: Date }) {
   const { setSelectedDate, setSelectedView } = useCalendarStore();
   const { auth } = useAuthStore();
-  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const monthName = format(month, 'MMMM');
-  const weeks = getWeeksForMonth(month, calendarStartDayOfWeek);
+  const weeks = getWeeksForMonth(month, generalStartDayOfWeek);
   const daysOfWeek = weeks[0].map((day) => format(day, 'eee'));
 
   const onDayClick = (day: Date) => {

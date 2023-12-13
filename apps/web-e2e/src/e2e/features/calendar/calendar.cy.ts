@@ -35,11 +35,11 @@ describe('calendar.cy.ts', () => {
 
     cy.wait(200);
 
-    cy.getBySel(`settings--dialog--sidebar`).find('button').contains('Calendar').click();
+    cy.getBySel(`settings--dialog--sidebar`).find('button').contains('General').click();
 
-    cy.get('#settings-calendarStartDayOfWeek').click();
+    cy.get('#settings-generalStartDayOfWeek').click();
 
-    cy.getBySel('calendar--settings--startDayOfWeek')
+    cy.getBySel('general--settings--startDayOfWeek')
       .find('div[role="option"]')
       .contains(DAYS_OPTION.name)
       .click();

@@ -15,10 +15,10 @@ export * from './background/Background';
 
 // Calendar
 export * from './calendar/CalendarViewOptions';
-export * from './calendar/CalendarDayOfWeek';
 export * from './calendar/Event';
 
 // Core
+export * from './core/DayOfWeek';
 export * from './core/SortDirectionEnum';
 export * from './core/Response';
 export * from './core/ErrorResponse';

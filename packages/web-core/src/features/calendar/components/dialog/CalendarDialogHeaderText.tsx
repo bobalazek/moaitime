@@ -9,7 +9,7 @@ function CalendarDialogHeaderText() {
   const { auth } = useAuthStore();
   const { selectedDate, selectedView } = useCalendarStore();
 
-  const calendarStartDayOfWeek = auth?.user?.settings?.calendarStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const year = selectedDate.getFullYear();
   const date = selectedDate.toLocaleString('default', {
     month: 'long',
@@ -30,8 +30,8 @@ function CalendarDialogHeaderText() {
     text = <span>{day}</span>;
   } else if (selectedView === CalendarViewEnum.WEEK) {
     const week = getWeek(selectedDate);
-    const startDayOfWeek = startOfWeek(selectedDate, { weekStartsOn: calendarStartDayOfWeek });
-    const endDayOfWeek = endOfWeek(selectedDate, { weekStartsOn: calendarStartDayOfWeek });
+    const startDayOfWeek = startOfWeek(selectedDate, { weekStartsOn: generalStartDayOfWeek });
+    const endDayOfWeek = endOfWeek(selectedDate, { weekStartsOn: generalStartDayOfWeek });
     const startDate = startDayOfWeek.toLocaleString('default', {
       month: !isSameMonth(startDayOfWeek, endDayOfWeek) ? 'long' : undefined,
       day: 'numeric',

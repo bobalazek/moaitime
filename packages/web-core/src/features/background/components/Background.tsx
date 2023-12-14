@@ -35,7 +35,7 @@ export default function Background() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
               className="full-screen bg-cover bg-fixed bg-center bg-no-repeat"
-              style={{ backgroundImage: `url("${currentImage}")` }}
+              style={{ backgroundImage: `url("${currentImage}")`, filter: 'contrast(0.8)' }}
             />
           )}
         </AnimatePresence>

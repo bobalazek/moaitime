@@ -40,7 +40,7 @@ export default function Tasks() {
       >
         <PopoverTrigger asChild>
           <button
-            className="text-xl transition-all hover:text-gray-200"
+            className="text-xl text-white transition-all"
             data-test="tasks--popover--trigger-button"
           >
             <FaTasks className="text-3xl" />

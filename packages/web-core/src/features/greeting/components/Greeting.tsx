@@ -48,7 +48,7 @@ export default function Greeting() {
   return (
     <ErrorBoundary>
       <div
-        className="text-shadow cursor-default select-none px-4 text-3xl font-bold md:text-5xl lg:text-6xl"
+        className="text-shadow cursor-default select-none px-4 text-3xl font-bold text-white md:text-5xl lg:text-6xl"
         onDoubleClick={() => {
           setRandomGreeting();
         }}

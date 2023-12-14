@@ -31,7 +31,7 @@ export default function TasksBodyHeaderFilterSelector() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="rounded-full p-1 text-sm hover:bg-gray-600"
+          className="rounded-full p-1 text-sm"
           data-test="tasks--body-header--list-selector--dropdown-menu--trigger-button"
         >
           <FaFilter />

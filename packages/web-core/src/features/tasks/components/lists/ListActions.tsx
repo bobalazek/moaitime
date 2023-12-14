@@ -19,14 +19,14 @@ const ListActions = memo(({ list }: { list: List }) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            className="rounded-full p-1 text-sm hover:bg-gray-600"
+            className="rounded-full p-1 text-sm"
             data-test="tasks--list-actions--dropdown-menu--trigger-button"
           >
             <FaEllipsisV className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-56 bg-gray-700"
+          className="w-56"
           align="end"
           data-test="tasks--list-actions--dropdown-menu"
         >

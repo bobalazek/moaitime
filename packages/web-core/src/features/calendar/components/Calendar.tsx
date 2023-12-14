@@ -10,7 +10,7 @@ export default function Calendar() {
   return (
     <ErrorBoundary>
       <button
-        className="text-xl transition-all hover:text-gray-200"
+        className="text-xl text-white transition-all"
         data-test="calendar--dialog--trigger-button"
         onClick={() => {
           setDialogOpen(true);

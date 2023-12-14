@@ -54,7 +54,7 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
                   <div key={dayKey} className="w-0 flex-grow p-2">
                     <button
                       className={clsx(
-                        'hover:text-primary rounded-full px-2 py-1 text-sm transition-all hover:bg-gray-600',
+                        'hover:text-primary rounded-full px-2 py-1 text-sm transition-all',
                         !isSameMonth && 'text-gray-500',
                         isActive && 'bg-primary text-accent'
                       )}

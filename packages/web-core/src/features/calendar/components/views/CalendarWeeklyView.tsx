@@ -134,7 +134,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                   <div className="mt-1" data-test="calendar--monthly-view--day-of-month">
                     <button
                       className={clsx(
-                        'hover:text-primary rounded-full px-2 py-1 text-2xl transition-all hover:bg-gray-600',
+                        'hover:text-secondary rounded-full px-2 py-1 text-2xl transition-all hover:bg-gray-600',
                         isActive && 'bg-primary text-accent'
                       )}
                       onClick={() => onDayClick(day)}

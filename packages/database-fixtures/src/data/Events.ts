@@ -72,6 +72,15 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           calendarId,
         },
         {
+          title: 'Third Event 2-Full Day',
+          description: 'Third Event 2-Full Day Description',
+          timezone,
+          isAllDay: true,
+          startsAt: new Date(`${todaysDate}T00:00:00.000`),
+          endsAt: new Date(`${tomorrowsDate}T23:59:59.999`),
+          calendarId,
+        },
+        {
           title: 'Event 5 Two Day Overlap',
           description: 'Event 5 Two Day Overlap Description',
           timezone,

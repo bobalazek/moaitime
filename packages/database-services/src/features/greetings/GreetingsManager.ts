@@ -1,10 +1,17 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { DBQueryConfig, eq, sql } from 'drizzle-orm';
 
 import { getDatabase, Greeting, greetings, NewGreeting } from '@moaitime/database-core';
 
 export class GreetingsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Greeting[]> {
     return getDatabase().query.greetings.findMany(options);
+  }
+
+  async findManyRandom(limit = 25): Promise<Greeting[]> {
+    return getDatabase().query.greetings.findMany({
+      limit,
+      orderBy: sql`RANDOM()`,
+    });
   }
 
   async findOneById(id: string): Promise<Greeting | null> {

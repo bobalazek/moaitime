@@ -24,7 +24,7 @@ export default function TasksBodyHeaderListSelector() {
           </span>
           <button
             type="button"
-            className="rounded-full p-1 text-sm hover:bg-gray-600"
+            className="rounded-full p-1 text-sm"
             data-test="tasks--body-header--lists-list--dropdown-menu--trigger-button"
           >
             <FaCaretDown />

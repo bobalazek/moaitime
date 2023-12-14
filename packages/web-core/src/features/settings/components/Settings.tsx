@@ -10,7 +10,7 @@ export default function Settings() {
   return (
     <ErrorBoundary>
       <button
-        className="text-xl transition-all hover:text-gray-200"
+        className="text-xl text-white transition-all"
         data-test="settings--dialog--trigger-button"
         onClick={() => {
           setDialogOpen(true);

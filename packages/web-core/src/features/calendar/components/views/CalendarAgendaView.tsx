@@ -48,32 +48,39 @@ export default function CalendarAgendaView() {
                 <div className="py-4 text-lg font-bold">{dateReadable}</div>
                 <div className="flex flex-col space-y-4">
                   {dayEvents.map((event) => {
-                    const startTime = utcToZonedTime(
-                      new Date(event.startsAt),
-                      generalTimezone
-                    ).toLocaleString('default', {
-                      minute: '2-digit',
-                      hour: '2-digit',
-                      hour12: !clockUse24HourClock,
-                    });
-                    const endTime = utcToZonedTime(
-                      new Date(event.endsAt),
-                      generalTimezone
-                    ).toLocaleString('default', {
+                    const start = utcToZonedTime(event.startsAt, generalTimezone);
+                    const startDate = format(start, 'yyyy-MM-dd');
+                    const startTime = start.toLocaleString('default', {
                       minute: '2-digit',
                       hour: '2-digit',
                       hour12: !clockUse24HourClock,
                     });
 
+                    const end = utcToZonedTime(event.endsAt, generalTimezone);
+                    const endDate = format(end, 'yyyy-MM-dd');
+                    const endTime = end.toLocaleString('default', {
+                      minute: '2-digit',
+                      hour: '2-digit',
+                      hour12: !clockUse24HourClock,
+                    });
+                    const endDateReadable = end.toLocaleString('default', {
+                      weekday: 'long',
+                      month: 'short',
+                      day: 'numeric',
+                    });
+
                     return (
                       <div key={event.id} className="v flex justify-between border p-4">
                         <div className="font-bold">{event.title}</div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-right">
                           {event.isAllDay && <>All-Day</>}
                           {!event.isAllDay && (
                             <>
                               <div>{startTime}</div>
-                              <div>{endTime}</div>
+                              <div>
+                                {startDate !== endDate ? `${endDateReadable} ` : ''}
+                                {endTime}
+                              </div>
                             </>
                           )}
                         </div>

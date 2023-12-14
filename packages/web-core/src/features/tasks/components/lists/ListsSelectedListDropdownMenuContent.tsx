@@ -28,7 +28,7 @@ export default function ListsSelectedListDropdownMenuContent({
   const showListActions = !isSubContent;
 
   return (
-    <Content className="w-56 bg-gray-700" align="end" data-test="tasks--lists-list--dropdown-menu">
+    <Content className="w-56" align="end" data-test="tasks--lists-list--dropdown-menu">
       {showHeader && (
         <>
           <DropdownMenuLabel className="flex items-center justify-between">
@@ -36,7 +36,7 @@ export default function ListsSelectedListDropdownMenuContent({
             <DropdownMenuItem asChild>
               <button
                 type="button"
-                className="cursor-pointer hover:text-gray-300"
+                className="cursor-pointer rounded-full"
                 data-test="tasks--selected-list--dropdown-menu--add-new-button"
                 onClick={() => {
                   setListFormDialogOpen(true, null);
@@ -65,7 +65,7 @@ export default function ListsSelectedListDropdownMenuContent({
           <DropdownMenuRadioItem
             key={list.id}
             value={list.id}
-            className="relative flex cursor-pointer justify-between border-l-4 border-l-transparent hover:bg-gray-600"
+            className="relative flex cursor-pointer justify-between border-l-4 border-l-transparent"
             style={{ borderColor: list.color ?? 'transparent' }}
             onClick={(event) => {
               if (onListSelect) {

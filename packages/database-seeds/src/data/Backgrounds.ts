@@ -837,13 +837,6 @@ export const getBackgroundsSeeds = async (): Promise<NewBackground[]> => {
     },
     {
       imageUrl:
-        'https://images.unsplash.com/photo-1675516773116-d60902b982e1?q=80&w=2664&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      title: 'The sun is setting over the mountains with birds flying in the sky',
-      author: 'Milan Vishwakarma',
-      url: 'https://unsplash.com/photos/the-sun-is-setting-over-the-mountains-with-birds-flying-in-the-sky-UsO6-YL1E7w',
-    },
-    {
-      imageUrl:
         'https://images.unsplash.com/photo-1696009228202-70bd4c22f4b7?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       title: 'A lone tree in the middle of the night',
       author: 'clement proust',

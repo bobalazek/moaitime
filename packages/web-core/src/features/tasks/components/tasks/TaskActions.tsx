@@ -24,7 +24,7 @@ const TaskActions = memo(({ task, onEditAndFocus }: { task: Task; onEditAndFocus
       <DropdownMenu open={dropdownMenuOpen} onOpenChange={setDropdownMenuOpen}>
         <DropdownMenuTrigger asChild>
           <button
-            className="rounded-full p-1 text-sm hover:bg-gray-600"
+            className="rounded-full p-1 text-sm"
             data-test="tasks--task--actions-dropdown-menu--trigger-button"
           >
             <FaEllipsisV />

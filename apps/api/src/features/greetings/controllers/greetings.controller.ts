@@ -9,7 +9,7 @@ import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response
 export class GreetingsController {
   @Get()
   async list(): Promise<AbstractResponseDto<Greeting[]>> {
-    const data = await greetingsManager.findMany();
+    const data = await greetingsManager.findManyRandom();
 
     return {
       success: true,

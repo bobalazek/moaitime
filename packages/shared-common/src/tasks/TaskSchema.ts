@@ -8,6 +8,24 @@ export const TaskSchema = z.object({
   order: z.number(),
   description: z.string().nullable(),
   priority: z.number().nullable(),
+  dueDate: z.string().nullable(),
+  dueDateTime: z.string().nullable(),
+  dueDateTimeZone: z.string().nullable(),
+  completedAt: z.string().nullable(),
+  deletedAt: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  listId: z.string(),
+});
+
+export const CreateTaskSchema = z.object({
+  name: z
+    .string()
+    .min(1, {
+      message: 'Task name must be provided',
+    })
+    .optional(),
+  description: z.string().nullable().optional(),
   dueDate: z
     .string()
     .refine(
@@ -25,7 +43,8 @@ export const TaskSchema = z.object({
         message: 'Due date must be in the future',
       }
     )
-    .nullable(),
+    .nullable()
+    .optional(),
   dueDateTime: z
     .string()
     .refine(
@@ -40,7 +59,8 @@ export const TaskSchema = z.object({
         message: 'You must provide a valid due date time',
       }
     )
-    .nullable(),
+    .nullable()
+    .optional(),
   dueDateTimeZone: z
     .string()
     .refine(
@@ -57,25 +77,8 @@ export const TaskSchema = z.object({
         message: 'You must provide a valid timezone',
       }
     )
-    .nullable(),
-  completedAt: z.string().nullable(),
-  deletedAt: z.string().nullable(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  listId: z.string(),
-});
-
-export const CreateTaskSchema = z.object({
-  name: z
-    .string()
-    .min(1, {
-      message: 'Task name must be provided',
-    })
+    .nullable()
     .optional(),
-  description: z.string().nullable().optional(),
-  dueDate: z.string().nullable().optional(),
-  dueDateTime: z.string().nullable().optional(),
-  dueDateTimeZone: z.string().nullable().optional(),
   listId: z.string().optional(),
 });
 

@@ -15,7 +15,7 @@ export * from './background/Background';
 
 // Calendar
 export * from './calendar/CalendarViewOptions';
-export * from './calendar/Event';
+export * from './calendar/EventSchema';
 
 // Core
 export * from './core/DayOfWeek';

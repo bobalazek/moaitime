@@ -245,5 +245,134 @@ describe('CalendarHelpers.ts', () => {
       expect(finalEvents).toHaveLength(2);
       expect(finalEvents.map((event) => event.id)).toEqual(['event-1', 'event-2']);
     });
+
+    it('should return all matching full day events', () => {
+      const finalEvents = getEventsForDay(
+        '2023-12-20',
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T00:00:00.000Z',
+            endsAt: '2023-12-20T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+          {
+            id: 'event-2',
+            title: 'Event 2',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T00:00:00.000Z',
+            endsAt: '2023-12-20T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+          {
+            id: 'event-3',
+            title: 'Event 3',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-19T00:00:00.000Z',
+            endsAt: '2023-12-22T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+        ],
+        'Europe/Berlin',
+        'full-day-only'
+      );
+
+      expect(finalEvents).toHaveLength(3);
+      expect(finalEvents.map((event) => event.id)).toEqual(['event-3', 'event-1', 'event-2']);
+    });
+
+    it('should return only the correct full day events before 20th december', () => {
+      const finalEvents = getEventsForDay(
+        '2023-12-19',
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T00:00:00.000Z',
+            endsAt: '2023-12-20T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+          {
+            id: 'event-2',
+            title: 'Event 2',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T00:00:00.000Z',
+            endsAt: '2023-12-20T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+          {
+            id: 'event-3',
+            title: 'Event 3',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-19T00:00:00.000Z',
+            endsAt: '2023-12-22T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+        ],
+        'Europe/Berlin',
+        'full-day-only'
+      );
+
+      expect(finalEvents).toHaveLength(1);
+      expect(finalEvents.map((event) => event.id)).toEqual(['event-3']);
+    });
+
+    it('should return only the correct full day events after 20th december', () => {
+      const finalEvents = getEventsForDay(
+        '2023-12-21',
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T00:00:00.000Z',
+            endsAt: '2023-12-20T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+          {
+            id: 'event-2',
+            title: 'Event 2',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T00:00:00.000Z',
+            endsAt: '2023-12-20T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+          {
+            id: 'event-3',
+            title: 'Event 3',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-19T00:00:00.000Z',
+            endsAt: '2023-12-22T23:59:59.999Z',
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+          },
+        ],
+        'Europe/Berlin',
+        'full-day-only'
+      );
+
+      expect(finalEvents).toHaveLength(1);
+      expect(finalEvents.map((event) => event.id)).toEqual(['event-3']);
+    });
   });
 });

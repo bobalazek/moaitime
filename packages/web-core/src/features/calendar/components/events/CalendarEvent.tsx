@@ -1,13 +1,13 @@
 import { clsx } from 'clsx';
 
-import { EventInterface } from '@moaitime/shared-common';
+import { Event } from '@moaitime/shared-common';
 
 export default function CalendarEvent({
   event,
   style,
   className,
 }: {
-  event: EventInterface;
+  event: Event;
   style?: Record<string, unknown>;
   className?: string;
 }) {

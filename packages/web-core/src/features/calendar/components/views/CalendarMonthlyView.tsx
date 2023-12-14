@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef } from 'react';
 
-import { EventInterface } from '@moaitime/shared-common';
+import { Event } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
@@ -20,7 +20,7 @@ export default function CalendarMonthlyView() {
     return getWeeksForMonth(selectedDate, generalStartDayOfWeek);
   }, [selectedDate, generalStartDayOfWeek]);
   const eventsPerDay = useMemo(() => {
-    const newEventsPerDay = new Map<string, EventInterface[]>();
+    const newEventsPerDay = new Map<string, Event[]>();
     weeks.forEach((week) => {
       week.forEach((day) => {
         const date = format(day, 'yyyy-MM-dd');

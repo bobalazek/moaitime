@@ -18,20 +18,28 @@ import { utcToZonedTime } from 'date-fns-tz';
 import {
   API_URL,
   DayOfWeek,
-  EventInterface,
+  Event,
   EventWithVerticalPosition,
   ResponseInterface,
 } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
+export const getDatesForRange = (start: string, end: string) => {
+  const range: string[] = [];
+  const endDate = new Date(end);
+  let currentDate = new Date(start);
+  for (; currentDate <= endDate; currentDate = addDays(currentDate, 1)) {
+    range.push(format(currentDate, 'yyyy-MM-dd'));
+  }
+
+  return range;
+};
+
 export const loadEvents = async () => {
-  const response = await fetchJson<ResponseInterface<EventInterface[]>>(
-    `${API_URL}/api/v1/events`,
-    {
-      method: 'GET',
-    }
-  );
+  const response = await fetchJson<ResponseInterface<Event[]>>(`${API_URL}/api/v1/events`, {
+    method: 'GET',
+  });
 
   return response;
 };
@@ -70,7 +78,7 @@ export const getWeeksForMonth = (month: Date, startDayOfWeek: number) => {
  */
 export const getEventsForDay = (
   date: string,
-  events: EventInterface[],
+  events: Event[],
   timezone: string,
   type: 'all' | 'without-full-day' | 'full-day-only' = 'all'
 ): EventWithVerticalPosition[] => {
@@ -85,11 +93,9 @@ export const getEventsForDay = (
       const eventEnd = utcToZonedTime(event.endsAt, timezone);
 
       if (event.isAllDay) {
-        const eventStartDate = format(eventStart, 'yyyy-MM-dd');
-        const eventEndDate = format(eventEnd, 'yyyy-MM-dd');
-        const queriedDate = format(day, 'yyyy-MM-dd');
+        const dates = getDatesForRange(event.startsAt, event.endsAt);
 
-        return queriedDate >= eventStartDate && queriedDate <= eventEndDate;
+        return dates.some((single) => single === date);
       }
 
       return eventStart < end && eventEnd > start;
@@ -102,8 +108,8 @@ export const getEventsForDay = (
       );
     });
 
-  const layoutEvents = (events: EventInterface[]): EventWithVerticalPosition[] => {
-    const eventStacks: EventInterface[][] = [];
+  const layoutEvents = (events: Event[]): EventWithVerticalPosition[] => {
+    const eventStacks: Event[][] = [];
     const positionedEvents: EventWithVerticalPosition[] = [];
 
     events.forEach((event) => {

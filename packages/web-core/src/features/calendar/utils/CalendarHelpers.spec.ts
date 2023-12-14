@@ -409,7 +409,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-20T08:00:00.000Z',
             endsAt: '2023-12-20T09:00:00.000Z',
             deletedAt: null,
@@ -436,7 +436,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-19T23:00:00.000Z',
             endsAt: '2023-12-20T02:00:00.000Z',
             deletedAt: null,
@@ -463,7 +463,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-20T23:00:00.000Z',
             endsAt: '2023-12-21T02:00:00.000Z',
             deletedAt: null,
@@ -490,7 +490,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-19T23:00:00.000Z', // That is 20th Dec 2am Moscow time
             endsAt: '2023-12-20T02:00:00.000Z',
             deletedAt: null,
@@ -517,7 +517,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-20T20:00:00.000Z', // That is 20th Dec 11pm Moscow time
             endsAt: '2023-12-21T02:00:00.000Z',
             deletedAt: null,
@@ -544,7 +544,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-20T02:00:00.000Z', // That is 19th Dec 8pm Los Angeles time
             endsAt: '2023-12-20T12:00:00.000Z', // That is 20th Dec 4am Los Angeles time
             deletedAt: null,
@@ -571,7 +571,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-21T04:00:00.000Z', // That is 20th Dec 8pm Los Angeles time
             endsAt: '2023-12-21T12:00:00.000Z', // That is 21th Dec 4am Los Angeles time
             deletedAt: null,
@@ -598,7 +598,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-19T10:00:00.000Z', // That is 19th Dec 9pm Sydney time
             endsAt: '2023-12-19T17:00:00.000Z', // That is 20th Dec 4am Sydney time
             deletedAt: null,
@@ -625,7 +625,7 @@ describe('CalendarHelpers.ts', () => {
             id: 'event-1',
             title: 'Event 1',
             description: '',
-            isAllDay: true,
+            isAllDay: false,
             startsAt: '2023-12-20T09:00:00.000Z', // That is 20th Dec 9pm Sydney time
             endsAt: '2023-12-20T18:00:00.000Z', // That is 21th Dec 4am Sydney time
             deletedAt: null,

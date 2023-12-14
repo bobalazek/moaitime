@@ -1,4 +1,4 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { and, DBQueryConfig, eq, gt, gte, lt, lte, or, SQL } from 'drizzle-orm';
 
 import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
 
@@ -13,12 +13,29 @@ export class EventsManager {
     });
   }
 
-  async findManyByUserId(userId: string): Promise<Event[]> {
+  async findManyByUserId(userId: string, from?: Date, to?: Date): Promise<Event[]> {
+    let where = eq(calendars.userId, userId);
+
+    if (from && to) {
+      where = and(
+        where,
+        or(
+          and(gte(events.startsAt, from), lte(events.startsAt, to)),
+          and(gte(events.endsAt, from), lte(events.endsAt, to)),
+          and(lt(events.startsAt, from), gt(events.endsAt, to))
+        )
+      ) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(events.startsAt, from)) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(events.endsAt, to)) as SQL<unknown>;
+    }
+
     const result = await getDatabase()
       .select()
       .from(events)
       .leftJoin(calendars, eq(events.calendarId, calendars.id))
-      .where(eq(calendars.userId, userId))
+      .where(where)
       .execute();
 
     return result.map((row) => {

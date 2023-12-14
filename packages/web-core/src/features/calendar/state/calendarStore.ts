@@ -1,4 +1,4 @@
-import { addDays, areIntervalsOverlapping, eachDayOfInterval } from 'date-fns';
+import { addDays, areIntervalsOverlapping, eachDayOfInterval, format } from 'date-fns';
 import { create } from 'zustand';
 
 import { CalendarViewEnum, Event } from '@moaitime/shared-common';
@@ -18,7 +18,7 @@ export type CalendarStore = {
   setSelectedView: (selectedView: CalendarViewEnum) => void;
   // Selected Days
   selectedDays: Date[];
-  reloadSelectedDays: () => void;
+  reloadSelectedDays: () => Promise<void>;
   isTodayInSelectedDaysRange: boolean;
   /********** Events **********/
   events: Event[];
@@ -29,14 +29,14 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   /********** General **********/
   dialogOpen: false,
   setDialogOpen: (dialogOpen: boolean) => {
-    const { reloadSelectedDays, loadEvents } = get();
+    const { reloadSelectedDays } = get();
 
     set({
       dialogOpen,
     });
 
-    if (dialogOpen) {
-      loadEvents();
+    if (!dialogOpen) {
+      return;
     }
 
     reloadSelectedDays();
@@ -65,8 +65,8 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   // Selected Days
   selectedDays: [],
-  reloadSelectedDays: () => {
-    const { selectedDate, selectedView } = get();
+  reloadSelectedDays: async () => {
+    const { selectedDate, selectedView, loadEvents } = get();
     const { auth } = useAuthStore.getState();
 
     const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
@@ -95,16 +95,26 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
               end: addDays(selectedDays[selectedDays.length - 1], 1),
             }
           );
+
     set({
       selectedDays,
       isTodayInSelectedDaysRange,
     });
+
+    await loadEvents();
   },
   isTodayInSelectedDaysRange: false,
   /********** Events **********/
   events: [],
   loadEvents: async () => {
-    const response = await loadEvents();
+    const { selectedDays } = get();
+
+    const from = selectedDays[0] ? format(selectedDays[0], 'yyyy-MM-dd') : undefined;
+    const to = selectedDays[selectedDays.length - 1]
+      ? format(selectedDays[selectedDays.length - 1], 'yyyy-MM-dd')
+      : undefined;
+
+    const response = await loadEvents(from, to);
     const events = response.data ?? [];
 
     set({ events });

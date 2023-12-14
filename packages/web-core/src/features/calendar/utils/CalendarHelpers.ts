@@ -36,8 +36,17 @@ export const getDatesForRange = (start: string, end: string) => {
   return range;
 };
 
-export const loadEvents = async () => {
-  const response = await fetchJson<ResponseInterface<Event[]>>(`${API_URL}/api/v1/events`, {
+export const loadEvents = async (from?: Date | string, to?: Date | string) => {
+  const url = new URL(`${API_URL}/api/v1/events`);
+  if (from) {
+    url.searchParams.append('from', from instanceof Date ? from.toISOString() : from);
+  }
+
+  if (to) {
+    url.searchParams.append('to', to instanceof Date ? to.toISOString() : to);
+  }
+
+  const response = await fetchJson<ResponseInterface<Event[]>>(url.toString(), {
     method: 'GET',
   });
 

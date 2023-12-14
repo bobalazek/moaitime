@@ -31,6 +31,7 @@ export class AuthMiddleware implements NestMiddleware {
 
         req.user = {
           ...user,
+          settings: authManager.getUserSettings(user),
           _accessToken: userAccessToken,
         };
       }

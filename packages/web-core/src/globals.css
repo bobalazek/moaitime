@@ -81,9 +81,4 @@
   .full-screen {
     @apply absolute bottom-0 left-0 right-0 top-0 h-screen max-h-full min-h-full w-full overflow-hidden;
   }
-
-  /* Calendar */
-  .rdp-vhidden {
-    @apply hidden;
-  }
 }

@@ -1,4 +1,4 @@
-import { and, DBQueryConfig, eq, gt, gte, lt, lte, or, SQL } from 'drizzle-orm';
+import { and, asc, DBQueryConfig, desc, eq, gt, gte, lt, lte, or, SQL } from 'drizzle-orm';
 
 import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
 
@@ -36,6 +36,7 @@ export class EventsManager {
       .from(events)
       .leftJoin(calendars, eq(events.calendarId, calendars.id))
       .where(where)
+      .orderBy(desc(events.isAllDay), asc(events.startsAt))
       .execute();
 
     return result.map((row) => {

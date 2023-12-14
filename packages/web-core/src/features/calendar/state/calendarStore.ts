@@ -4,7 +4,13 @@ import { create } from 'zustand';
 import { CalendarViewEnum, Event } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
-import { getMonthRange, getWeekRange, getYearRange, loadEvents } from '../utils/CalendarHelpers';
+import {
+  getAgendaRange,
+  getMonthRange,
+  getWeekRange,
+  getYearRange,
+  loadEvents,
+} from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
   /********** General **********/
@@ -79,6 +85,8 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       selectedDays = eachDayOfInterval(getMonthRange(selectedDate));
     } else if (selectedView === CalendarViewEnum.YEAR) {
       selectedDays = eachDayOfInterval(getYearRange(selectedDate));
+    } else if (selectedView === CalendarViewEnum.AGENDA) {
+      selectedDays = eachDayOfInterval(getAgendaRange(selectedDate));
     }
 
     const isTodayInSelectedDaysRange =

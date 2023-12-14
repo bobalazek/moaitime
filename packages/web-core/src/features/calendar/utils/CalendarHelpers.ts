@@ -1,5 +1,6 @@
 import {
   addDays,
+  addMonths,
   eachDayOfInterval,
   endOfDay,
   endOfMonth,
@@ -217,6 +218,13 @@ export const getMonthRange = (date: Date) => {
 export const getYearRange = (date: Date) => {
   const start = startOfYear(date);
   const end = endOfYear(date);
+
+  return { start, end };
+};
+
+export const getAgendaRange = (date: Date) => {
+  const start = startOfMonth(date);
+  const end = endOfMonth(addMonths(start, 3));
 
   return { start, end };
 };

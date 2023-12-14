@@ -4,6 +4,7 @@ import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 import { Dialog, DialogContent, DialogHeader } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
+import CalendarAgendaView from '../views/CalendarAgendaView';
 import CalendarDailyView from '../views/CalendarDailyView';
 import CalendarMonthlyView from '../views/CalendarMonthlyView';
 import CalendarWeeklyView from '../views/CalendarWeeklyView';
@@ -61,6 +62,7 @@ export default function CalendarDialog() {
           {selectedView === CalendarViewEnum.WEEK && <CalendarWeeklyView />}
           {selectedView === CalendarViewEnum.MONTH && <CalendarMonthlyView />}
           {selectedView === CalendarViewEnum.YEAR && <CalendarYearlyView />}
+          {selectedView === CalendarViewEnum.AGENDA && <CalendarAgendaView />}
         </div>
       </DialogContent>
     </Dialog>

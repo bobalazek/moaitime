@@ -11,6 +11,8 @@ function CalendarDialogHeaderTodayButtonText() {
     return <>This month</>;
   } else if (selectedView === CalendarViewEnum.YEAR) {
     return <>This year</>;
+  } else if (selectedView === CalendarViewEnum.AGENDA) {
+    return <>This quarter</>;
   }
 
   return <>Today</>;

@@ -13,6 +13,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
     const timezone = calendar.timezone ?? 'UTC';
     const todaysDate = format(now, 'yyyy-MM-dd');
     const tomorrowsDate = format(new Date(now.getTime() + 86400000), 'yyyy-MM-dd');
+    const nextWeeksDate = format(new Date(now.getTime() + 604800000), 'yyyy-MM-dd');
 
     events.push(
       ...[
@@ -86,6 +87,15 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           isAllDay: false,
           startsAt: zonedTimeToUtc(`${todaysDate}T16:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${tomorrowsDate}T18:00:00.000`, timezone),
+          calendarId,
+        },
+        {
+          title: 'Event 7 Next Week',
+          description: 'Event 7 Next Week Description',
+          timezone,
+          isAllDay: false,
+          startsAt: zonedTimeToUtc(`${nextWeeksDate}T16:00:00.000`, timezone),
+          endsAt: zonedTimeToUtc(`${nextWeeksDate}T18:00:00.000`, timezone),
           calendarId,
         },
       ]

@@ -39,6 +39,8 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
       setSelectedDate(subMonths(selectedDate, 1));
     } else if (selectedView === CalendarViewEnum.YEAR) {
       setSelectedDate(subYears(selectedDate, 1));
+    } else if (selectedView === CalendarViewEnum.AGENDA) {
+      setSelectedDate(subMonths(selectedDate, 3));
     }
   };
 
@@ -55,6 +57,8 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
       setSelectedDate(addMonths(selectedDate, 1));
     } else if (selectedView === CalendarViewEnum.YEAR) {
       setSelectedDate(addYears(selectedDate, 1));
+    } else if (selectedView === CalendarViewEnum.AGENDA) {
+      setSelectedDate(addMonths(selectedDate, 3));
     }
   };
 

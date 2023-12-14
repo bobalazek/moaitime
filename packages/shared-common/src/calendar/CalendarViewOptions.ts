@@ -3,6 +3,7 @@ export enum CalendarViewEnum {
   WEEK = 'week',
   MONTH = 'month',
   YEAR = 'year',
+  AGENDA = 'agenda',
 }
 
 export const calendarViewOptions = [
@@ -32,5 +33,10 @@ export const calendarViewOptions = [
     label: 'Year',
     value: CalendarViewEnum.YEAR,
     keyboardShortcutKey: 'y',
+  },
+  {
+    label: 'Agenda',
+    value: CalendarViewEnum.AGENDA,
+    keyboardShortcutKey: 'a',
   },
 ];

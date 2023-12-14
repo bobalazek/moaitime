@@ -56,6 +56,7 @@ function Calendar({
         dropdown: 'form-select block w-full bg-transparent',
         dropdown_month: 'inline-flex items-center space-x-2',
         dropdown_year: 'inline-flex items-center space-x-2',
+        vhidden: 'hidden',
         ...classNames,
       }}
       components={{

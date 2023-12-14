@@ -4,6 +4,7 @@ import { CalendarViewEnum } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
+import { getAgendaRange } from '../../utils/CalendarHelpers';
 
 function CalendarDialogHeaderText() {
   const { auth } = useAuthStore();
@@ -57,6 +58,18 @@ function CalendarDialogHeaderText() {
     );
   } else if (selectedView === CalendarViewEnum.YEAR) {
     text = <span>{year}</span>;
+  } else if (selectedView === CalendarViewEnum.AGENDA) {
+    const agendaRange = getAgendaRange(selectedDate);
+
+    const startMonth = agendaRange.start.toLocaleString('default', { month: 'long' });
+    const endMonth = agendaRange.end.toLocaleString('default', { month: 'long' });
+    const endYear = agendaRange.end.getFullYear();
+
+    text = (
+      <span>
+        {startMonth} {year} to {endMonth} {endYear}
+      </span>
+    );
   }
 
   return <span data-test="calendar--dialog--header--text">{text}</span>;

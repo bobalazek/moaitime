@@ -43,7 +43,6 @@ export const getTimezones = () => {
   const timezones = new Set<string>();
 
   timezones.add('UTC');
-  timezones.add('GMT');
 
   for (const timezone of Intl.supportedValuesOf('timeZone')) {
     timezones.add(timezone);

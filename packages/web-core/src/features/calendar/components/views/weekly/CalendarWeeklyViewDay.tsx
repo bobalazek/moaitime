@@ -1,10 +1,9 @@
-import { endOfDay, startOfDay } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { EventWithVerticalPosition } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../../auth/state/authStore';
+import { getEventsWithStyles } from '../../../utils/CalendarHelpers';
 import CalendarEvent from '../../events/CalendarEvent';
 
 export default function CalendarWeeklyViewDay({
@@ -23,10 +22,10 @@ export default function CalendarWeeklyViewDay({
   const currentTimeLineRef = useRef<HTMLDivElement>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const currentDay = utcToZonedTime(new Date(date), generalTimezone);
-  const startOfCurrentDay = startOfDay(currentDay);
-  const endOfCurrentDay = endOfDay(currentDay);
   const totalHeight = hourHeightPx * 24;
+  const eventsWithStyles = useMemo(() => {
+    return getEventsWithStyles(events, date, generalTimezone, hourHeightPx);
+  }, [events, date, generalTimezone, hourHeightPx]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -77,32 +76,7 @@ export default function CalendarWeeklyViewDay({
       data-test="calendar--weekly-view--day"
       data-date={date}
     >
-      {events.map((event) => {
-        let eventStartsAt = utcToZonedTime(event.startsAt, generalTimezone);
-        let eventEndsAt = utcToZonedTime(event.endsAt, generalTimezone);
-
-        if (eventStartsAt < startOfCurrentDay) {
-          eventStartsAt = startOfCurrentDay;
-        }
-
-        if (eventEndsAt > endOfCurrentDay) {
-          eventEndsAt = endOfCurrentDay;
-        }
-
-        // TODO: Not workingfor american timezones at the moment
-
-        const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
-        const durationInHours =
-          (eventEndsAt.getTime() - eventStartsAt.getTime()) / (1000 * 60 * 60);
-        const height = durationInHours * hourHeightPx;
-
-        const style = {
-          top,
-          height,
-          left: `${event.left}%`,
-          width: `${event.width}%`,
-        };
-
+      {eventsWithStyles.map(({ style, ...event }) => {
         return <CalendarEvent key={event.id} event={event} className="absolute" style={style} />;
       })}
       {currentTimeLineTop !== null && (

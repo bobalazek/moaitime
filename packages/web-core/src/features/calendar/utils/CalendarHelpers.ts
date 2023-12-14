@@ -147,6 +147,48 @@ export const getEventsForDay = (
   return layoutEvents(filteredEvents);
 };
 
+export const getEventsWithStyles = (
+  events: EventWithVerticalPosition[],
+  date: string,
+  timezone: string,
+  hourHeightPx: number
+) => {
+  const currentDay = utcToZonedTime(new Date(date), timezone);
+  const startOfCurrentDay = startOfDay(currentDay);
+  const endOfCurrentDay = endOfDay(currentDay);
+
+  return events.map((event) => {
+    let eventStartsAt = utcToZonedTime(event.startsAt, timezone);
+    let eventEndsAt = utcToZonedTime(event.endsAt, timezone);
+
+    if (eventStartsAt < startOfCurrentDay) {
+      eventStartsAt = startOfCurrentDay;
+    }
+
+    if (eventEndsAt > endOfCurrentDay) {
+      eventEndsAt = endOfCurrentDay;
+    }
+
+    // TODO: Not working for american timezones at the moment
+
+    const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
+    const durationInHours = (eventEndsAt.getTime() - eventStartsAt.getTime()) / (1000 * 60 * 60);
+    const height = Math.ceil(durationInHours * hourHeightPx);
+
+    const style = {
+      top,
+      height,
+      left: `${event.left}%`,
+      width: `${event.width}%`,
+    };
+
+    return {
+      ...event,
+      style,
+    };
+  });
+};
+
 export const getWeekRange = (date: Date, weekStartsOn: DayOfWeek) => {
   const start = startOfWeek(date, { weekStartsOn });
   const end = endOfWeek(date, { weekStartsOn });

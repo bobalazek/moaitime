@@ -1,11 +1,11 @@
 /// <reference types="vitest" />
 
-import { getEventsForDay } from './CalendarHelpers';
+import { getEventsForDay, getEventsWithStyles } from './CalendarHelpers';
 
 describe('CalendarHelpers.ts', () => {
   describe('getEventsForDay()', () => {
     it('should return all events for the day', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-20',
         [
           {
@@ -46,14 +46,14 @@ describe('CalendarHelpers.ts', () => {
         'all'
       );
 
-      expect(finalEvents).toHaveLength(3);
-      expect(finalEvents[0].id).toBe('event-1');
-      expect(finalEvents[1].id).toBe('event-2');
-      expect(finalEvents[2].id).toBe('event-3');
+      expect(result).toHaveLength(3);
+      expect(result[0].id).toBe('event-1');
+      expect(result[1].id).toBe('event-2');
+      expect(result[2].id).toBe('event-3');
     });
 
     it('should return all events for the day in the correct order', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-20',
         [
           {
@@ -94,14 +94,14 @@ describe('CalendarHelpers.ts', () => {
         'all'
       );
 
-      expect(finalEvents).toHaveLength(3);
-      expect(finalEvents[0].id).toBe('event-2');
-      expect(finalEvents[1].id).toBe('event-1');
-      expect(finalEvents[2].id).toBe('event-3');
+      expect(result).toHaveLength(3);
+      expect(result[0].id).toBe('event-2');
+      expect(result[1].id).toBe('event-1');
+      expect(result[2].id).toBe('event-3');
     });
 
     it('should return full day only events', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-20',
         [
           {
@@ -142,12 +142,12 @@ describe('CalendarHelpers.ts', () => {
         'full-day-only'
       );
 
-      expect(finalEvents).toHaveLength(2);
-      expect(finalEvents.map((event) => event.id)).toEqual(['event-1', 'event-2']);
+      expect(result).toHaveLength(2);
+      expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2']);
     });
 
     it('should return non full day events only', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-20',
         [
           {
@@ -188,12 +188,12 @@ describe('CalendarHelpers.ts', () => {
         'without-full-day'
       );
 
-      expect(finalEvents).toHaveLength(1);
-      expect(finalEvents.map((event) => event.id)).toEqual(['event-3']);
+      expect(result).toHaveLength(1);
+      expect(result.map((event) => event.id)).toEqual(['event-3']);
     });
 
     it('should correctly return the event if adjusted for the EST timezone early day', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-20',
         [
           {
@@ -223,12 +223,12 @@ describe('CalendarHelpers.ts', () => {
         'without-full-day'
       );
 
-      expect(finalEvents).toHaveLength(1);
-      expect(finalEvents.map((event) => event.id)).toEqual(['event-2']);
+      expect(result).toHaveLength(1);
+      expect(result.map((event) => event.id)).toEqual(['event-2']);
     });
 
     it('should correctly return the event if adjusted for the EST timezone late day', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-20',
         [
           {
@@ -258,12 +258,12 @@ describe('CalendarHelpers.ts', () => {
         'without-full-day'
       );
 
-      expect(finalEvents).toHaveLength(2);
-      expect(finalEvents.map((event) => event.id)).toEqual(['event-1', 'event-2']);
+      expect(result).toHaveLength(2);
+      expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2']);
     });
 
     it('should return all matching full day events', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-20',
         [
           {
@@ -304,12 +304,12 @@ describe('CalendarHelpers.ts', () => {
         'full-day-only'
       );
 
-      expect(finalEvents).toHaveLength(3);
-      expect(finalEvents.map((event) => event.id)).toEqual(['event-3', 'event-1', 'event-2']);
+      expect(result).toHaveLength(3);
+      expect(result.map((event) => event.id)).toEqual(['event-3', 'event-1', 'event-2']);
     });
 
     it('should return only the correct full day events before 20th december', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-19',
         [
           {
@@ -350,12 +350,12 @@ describe('CalendarHelpers.ts', () => {
         'full-day-only'
       );
 
-      expect(finalEvents).toHaveLength(1);
-      expect(finalEvents.map((event) => event.id)).toEqual(['event-3']);
+      expect(result).toHaveLength(1);
+      expect(result.map((event) => event.id)).toEqual(['event-3']);
     });
 
     it('should return only the correct full day events after 20th december', () => {
-      const finalEvents = getEventsForDay(
+      const result = getEventsForDay(
         '2023-12-21',
         [
           {
@@ -396,8 +396,91 @@ describe('CalendarHelpers.ts', () => {
         'full-day-only'
       );
 
-      expect(finalEvents).toHaveLength(1);
-      expect(finalEvents.map((event) => event.id)).toEqual(['event-3']);
+      expect(result).toHaveLength(1);
+      expect(result.map((event) => event.id)).toEqual(['event-3']);
+    });
+  });
+
+  describe('getEventsWithStyles()', () => {
+    it('should correctly calculate the height', () => {
+      const result = getEventsWithStyles(
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T08:00:00.000Z',
+            endsAt: '2023-12-20T09:00:00.000Z',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            left: 0,
+            width: 100,
+          },
+        ],
+        '2023-12-20',
+        'UTC',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe(800);
+      expect(result[0].style.height).toBe(100);
+    });
+
+    it('should correctly calculate the height if overflowing from the previous day', () => {
+      const result = getEventsWithStyles(
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-19T23:00:00.000Z',
+            endsAt: '2023-12-20T02:00:00.000Z',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            left: 0,
+            width: 100,
+          },
+        ],
+        '2023-12-20',
+        'UTC',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe(0);
+      expect(result[0].style.height).toBe(200);
+    });
+
+    it('should correctly calculate the height if overflowing to the next day', () => {
+      const result = getEventsWithStyles(
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T23:00:00.000Z',
+            endsAt: '2023-12-21T02:00:00.000Z',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            left: 0,
+            width: 100,
+          },
+        ],
+        '2023-12-20',
+        'UTC',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe(2300);
+      expect(result[0].style.height).toBe(100);
     });
   });
 });

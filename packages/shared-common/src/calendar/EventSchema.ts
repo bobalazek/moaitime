@@ -3,11 +3,11 @@ import { z } from 'zod';
 export const EventSchema = z.object({
   id: z.string(),
   title: z.string(),
-  description: z.string().optional(), // TODO: should be nullable, not optional. Same below.
+  description: z.string().nullable(),
   isAllDay: z.boolean(),
   startsAt: z.string(),
   endsAt: z.string(),
-  deletedAt: z.string().optional(),
+  deletedAt: z.string().nullable(),
   updatedAt: z.string(),
   createdAt: z.string(),
 });

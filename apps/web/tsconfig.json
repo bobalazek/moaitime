@@ -1,4 +1,7 @@
 {
   "extends": "@moaitime/tsconfig-config/tsconfig.frontend.json",
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "types": ["vite/client"]
+  }
 }

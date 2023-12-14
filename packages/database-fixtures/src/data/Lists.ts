@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 
 import { getDatabase, NewList, users } from '@moaitime/database-core';
-import { DEFAULT_LIST_NAMES } from '@moaitime/shared-backend';
+import { LIST_DEFAULT_NAMES } from '@moaitime/shared-backend';
 import { TASK_LIST_COLORS } from '@moaitime/shared-common';
 
 import { getUserFixtures } from './Users';
@@ -18,8 +18,8 @@ export const getListFixtures = async (): Promise<NewList[]> => {
       throw new Error(`User "${single.email}" not found!`);
     }
 
-    for (let i = 0; i < DEFAULT_LIST_NAMES.length; i++) {
-      const name = DEFAULT_LIST_NAMES[i];
+    for (let i = 0; i < LIST_DEFAULT_NAMES.length; i++) {
+      const name = LIST_DEFAULT_NAMES[i];
       const color = TASK_LIST_COLORS[i % TASK_LIST_COLORS.length].value;
 
       lists.push({

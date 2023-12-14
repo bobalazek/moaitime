@@ -14,6 +14,7 @@ import { Request } from 'express';
 
 import { List } from '@moaitime/database-core';
 import { listsManager } from '@moaitime/database-services';
+import { LISTS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
@@ -59,6 +60,13 @@ export class ListsController {
     @Body() body: CreateListDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<List>> {
+    const listsCount = await listsManager.countByUserId(req.user.id);
+    if (listsCount >= LISTS_MAX_PER_USER_COUNT) {
+      throw new Error(
+        `You have reached the maximum number of lists per user (${LISTS_MAX_PER_USER_COUNT}).`
+      );
+    }
+
     const data = await listsManager.insertOne({ ...body, userId: req.user.id });
 
     return {

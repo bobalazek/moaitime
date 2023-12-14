@@ -15,6 +15,13 @@
       "when": 1702376609295,
       "tag": "0001_solid_rhodey",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1702556929228,
+      "tag": "0002_concerned_skrulls",
+      "breakpoints": true
     }
   ]
 }

@@ -16,5 +16,7 @@ export const AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS = 60 * 15;
 // Mailer
 export const MAILER_FROM = 'MoaiTime <mailer@bobalazek.com>';
 
-// Lists
-export const DEFAULT_LIST_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];
+// Tasks & Lists
+export const TASKS_MAX_PER_LIST_COUNT = 50;
+export const LISTS_MAX_PER_USER_COUNT = 10;
+export const LIST_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];

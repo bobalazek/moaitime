@@ -21,12 +21,17 @@ export const tasks = pgTable('tasks', {
   listId: uuid('list_id')
     .notNull()
     .references(() => lists.id),
+  parentId: uuid('parent_id'), // Relationship to self
 });
 
 export const tasksRelations = relations(tasks, ({ one }) => ({
   list: one(lists, {
     fields: [tasks.listId],
     references: [lists.id],
+  }),
+  parent: one(tasks, {
+    fields: [tasks.parentId],
+    references: [tasks.id],
   }),
 }));
 

@@ -67,6 +67,18 @@ export class ListsManager {
     return row ?? null;
   }
 
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(lists.id).mapWith(Number),
+      })
+      .from(lists)
+      .where(eq(lists.userId, userId))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
   async insertOne(data: NewList): Promise<List> {
     const rows = await getDatabase().insert(lists).values(data).returning();
 

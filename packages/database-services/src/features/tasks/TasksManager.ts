@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { and, asc, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, lists, NewTask, Task, tasks } from '@moaitime/database-core';
 import { SortDirectionEnum } from '@moaitime/shared-common';
@@ -89,6 +89,18 @@ export class TasksManager {
     }
 
     return rows[0].order;
+  }
+
+  async countByListId(listId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(tasks.id).mapWith(Number),
+      })
+      .from(tasks)
+      .where(eq(tasks.listId, listId))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 
   async insertOne(data: NewTask): Promise<Task> {

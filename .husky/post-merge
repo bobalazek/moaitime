@@ -3,10 +3,18 @@
 
 pnpm install
 
+# If migrations were changed from the last merged commits, run them
+if git diff --exit-code --quiet -- ./packages/database-core/migrations; then
+    echo "No changes to migrations"
+else
+    echo "Running migrations ..."
+    pnpm cli database:reload
+fi
+
 # If pnpm-lock.yaml was changed as a result, revert those changes
-if git diff --exit-code pnpm-lock.yaml >/dev/null; then
+if git diff --exit-code pnpm-lock.yaml > /dev/null; then
     echo "pnpm-lock.yaml unchanged"
 else
-    echo "Reverting changes to pnpm-lock.yaml"
+    echo "Reverting changes to pnpm-lock.yaml ..."
     git checkout pnpm-lock.yaml
 fi

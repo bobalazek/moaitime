@@ -4,7 +4,7 @@ import { subHours, subMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 import { reloadDatabase } from '@moaitime/database-testing';
-import { DEFAULT_LIST_NAMES } from '@moaitime/shared-backend';
+import { LIST_DEFAULT_NAMES } from '@moaitime/shared-backend';
 
 import { calendarsManager } from '../calendars/CalendarsManager';
 import { listsManager } from '../tasks/ListsManager';
@@ -406,7 +406,7 @@ describe('AuthManager.ts', () => {
       const lists = await listsManager.findManyByUserId(user.id);
       const calendars = await calendarsManager.findManyByUserId(user.id);
 
-      expect(lists.length).toBe(DEFAULT_LIST_NAMES.length);
+      expect(lists.length).toBe(LIST_DEFAULT_NAMES.length);
       expect(calendars.length).toBe(1);
     });
   });

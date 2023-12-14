@@ -14,6 +14,7 @@ import { Request } from 'express';
 
 import { Task } from '@moaitime/database-core';
 import { listsManager, tasksManager } from '@moaitime/database-services';
+import { TASKS_MAX_PER_LIST_COUNT } from '@moaitime/shared-backend';
 import { SortDirectionEnum } from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
@@ -113,12 +114,20 @@ export class TasksController {
     @Body() body: CreateTaskDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Task>> {
-    const list = listsManager.findOneByIdAndUserId(body.listId, req.user.id);
+    const list = await listsManager.findOneByIdAndUserId(body.listId, req.user.id);
     if (!list) {
-      throw new NotFoundException('Task not found');
+      throw new NotFoundException('List not found');
     }
 
-    const order = (await tasksManager.findMaxOrderByListId(body.listId)) + 1;
+    const tasksCount = await tasksManager.countByListId(list.id);
+    if (tasksCount >= TASKS_MAX_PER_LIST_COUNT) {
+      throw new Error(
+        `You have reached the maximum number of tasks per list (${TASKS_MAX_PER_LIST_COUNT}).`
+      );
+    }
+
+    const maxOrderForListId = await tasksManager.findMaxOrderByListId(body.listId);
+    const order = maxOrderForListId + 1;
 
     const data = await tasksManager.insertOne({ ...body, order });
 

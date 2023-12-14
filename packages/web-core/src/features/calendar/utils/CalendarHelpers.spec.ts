@@ -509,32 +509,59 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].style.top).toBe(200);
       expect(result[0].style.height).toBe(300);
     });
-  });
 
-  it('should correctly calculate the height if overflowing to the next day if moscow time', () => {
-    const result = getEventsWithStyles(
-      [
-        {
-          id: 'event-1',
-          title: 'Event 1',
-          description: '',
-          isAllDay: true,
-          startsAt: '2023-12-20T20:00:00.000Z', // That is 20th Dec 11pm Moscow time
-          endsAt: '2023-12-21T02:00:00.000Z',
-          deletedAt: null,
-          createdAt: '2023-12-20T00:00:00.000Z',
-          updatedAt: '2023-12-20T00:00:00.000Z',
-          left: 0,
-          width: 100,
-        },
-      ],
-      '2023-12-20',
-      'Europe/Moscow',
-      100
-    );
+    it('should correctly calculate the height if overflowing to the next day if moscow time', () => {
+      const result = getEventsWithStyles(
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T20:00:00.000Z', // That is 20th Dec 11pm Moscow time
+            endsAt: '2023-12-21T02:00:00.000Z',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            left: 0,
+            width: 100,
+          },
+        ],
+        '2023-12-20',
+        'Europe/Moscow',
+        100
+      );
 
-    expect(result).toHaveLength(1);
-    expect(result[0].style.top).toBe(2300);
-    expect(result[0].style.height).toBe(100);
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe(2300);
+      expect(result[0].style.height).toBe(100);
+    });
+
+    it.skip('should correctly calculate the height if overflowing from the previous day if los angeles time', () => {
+      const result = getEventsWithStyles(
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T02:00:00.000Z', // That is 19th Dec 6pm Los Angeles time
+            endsAt: '2023-12-20T12:00:00.000Z', // That is 20th Dec 2am Los Angeles time
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            left: 0,
+            width: 100,
+          },
+        ],
+        '2023-12-20',
+        'America/Los_Angeles',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe(0);
+      expect(result[0].style.height).toBe(200);
+    });
   });
 });

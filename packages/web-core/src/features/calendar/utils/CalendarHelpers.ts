@@ -169,8 +169,6 @@ export const getEventsWithStyles = (
       eventEndsAt = endOfCurrentDay;
     }
 
-    // TODO: Not working for american timezones at the moment
-
     const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
     const durationInHours = (eventEndsAt.getTime() - eventStartsAt.getTime()) / (1000 * 60 * 60);
     const height = Math.ceil(durationInHours * hourHeightPx);

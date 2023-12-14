@@ -1,4 +1,4 @@
-import { ThemeEnum } from '..';
+import { ThemeEnum } from '../core/ThemeEnum';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 import { UserSettings } from './UserSchema';
 

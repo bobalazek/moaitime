@@ -590,5 +590,59 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].style.top).toBe(2000);
       expect(result[0].style.height).toBe(400);
     });
+
+    it('should correctly calculate the height if overflowing from the previous day if sydney time', () => {
+      const result = getEventsWithStyles(
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-19T10:00:00.000Z', // That is 19th Dec 9pm Sydney time
+            endsAt: '2023-12-19T17:00:00.000Z', // That is 20th Dec 4am Sydney time
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            left: 0,
+            width: 100,
+          },
+        ],
+        '2023-12-20',
+        'Australia/Sydney',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe(0);
+      expect(result[0].style.height).toBe(400);
+    });
+
+    it('should correctly calculate the height if overflowing from the next day if sydney time', () => {
+      const result = getEventsWithStyles(
+        [
+          {
+            id: 'event-1',
+            title: 'Event 1',
+            description: '',
+            isAllDay: true,
+            startsAt: '2023-12-20T09:00:00.000Z', // That is 20th Dec 9pm Sydney time
+            endsAt: '2023-12-20T18:00:00.000Z', // That is 21th Dec 4am Sydney time
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            left: 0,
+            width: 100,
+          },
+        ],
+        '2023-12-20',
+        'Australia/Sydney',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe(2000);
+      expect(result[0].style.height).toBe(400);
+    });
   });
 });

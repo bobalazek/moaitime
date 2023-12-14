@@ -9,7 +9,7 @@ const content = [
 ];
 
 const config: Config = {
-  darkMode: ['class', '[data-mode="dark"]'],
+  darkMode: 'class',
   content,
   theme: {
     container: {

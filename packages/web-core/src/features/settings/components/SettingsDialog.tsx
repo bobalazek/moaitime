@@ -97,13 +97,13 @@ export default function SettingsDialog() {
         className="max-h-[90%] max-w-screen-lg overflow-auto p-0 shadow-lg md:flex"
         data-test="settings--dialog"
       >
-        <div className="w-full bg-gray-900 p-4 md:w-1/4" data-test="settings--dialog--sidebar">
+        <div className="w-full p-4 md:w-1/4" data-test="settings--dialog--sidebar">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               className={clsx(
-                `w-full rounded-lg px-4 py-2 text-left text-gray-400 hover:bg-gray-800`,
-                tab.id === activeTab && 'text-white'
+                `w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
+                tab.id === activeTab && 'font-extrabold dark:text-white'
               )}
               onClick={() => setActiveTab(tab.id)}
             >

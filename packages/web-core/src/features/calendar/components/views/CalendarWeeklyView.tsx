@@ -22,9 +22,10 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
   const { events, selectedDate, selectedView, setSelectedDate, setSelectedView } =
     useCalendarStore();
   const { auth } = useAuthStore();
+  const prevSelectedDateRef = useRef(selectedDate);
+
   const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const prevSelectedDateRef = useRef(selectedDate);
   const days = useMemo(() => {
     return singleDay
       ? [singleDay]

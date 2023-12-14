@@ -20,6 +20,7 @@ export * from './calendar/EventSchema';
 // Core
 export * from './core/DayOfWeek';
 export * from './core/SortDirectionEnum';
+export * from './core/ThemeEnum';
 export * from './core/Response';
 export * from './core/ErrorResponse';
 

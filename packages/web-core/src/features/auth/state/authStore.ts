@@ -61,6 +61,7 @@ export type AuthStore = {
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
   // App Data
   loadAppData: () => Promise<void>;
+  reloadTheme: () => void;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -191,7 +192,7 @@ export const useAuthStore = create<AuthStore>()(
         return response;
       },
       updateAccountSettings: async (data: UpdateUserSettings) => {
-        const { auth } = get();
+        const { auth, reloadTheme } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
@@ -205,6 +206,8 @@ export const useAuthStore = create<AuthStore>()(
           description: 'Your settings have been updated.',
         });
 
+        reloadTheme();
+
         return response;
       },
       // Account Password Settings Dialog
@@ -214,7 +217,7 @@ export const useAuthStore = create<AuthStore>()(
       },
       // App Data
       loadAppData: async () => {
-        const { auth } = get();
+        const { auth, reloadTheme } = get();
         const { loadLists } = useTasksStore.getState();
         const { loadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
         const { loadGreetings, setRandomGreeting } = useGreetingStore.getState();
@@ -223,6 +226,8 @@ export const useAuthStore = create<AuthStore>()(
         if (!auth?.userAccessToken?.token) {
           return;
         }
+
+        reloadTheme();
 
         loadLists();
 
@@ -248,6 +253,15 @@ export const useAuthStore = create<AuthStore>()(
           setRandomQuote();
           setTimeout(setRandomQuote, 1000 * 60 * 2);
         })();
+      },
+      reloadTheme: () => {
+        const { auth } = get();
+
+        if (auth?.user?.settings?.generalTheme === 'dark') {
+          document.body.classList.add('dark');
+        } else {
+          document.body.classList.remove('dark');
+        }
       },
     }),
     {

@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
 import { Event } from '@moaitime/shared-common';
@@ -14,7 +15,7 @@ export default function CalendarAgendaView() {
 
   const eventsPerDay = events.reduce(
     (acc, event) => {
-      const date = event.startsAt.split('T')[0];
+      const date = format(utcToZonedTime(event.startsAt, generalTimezone), 'yyyy-MM-dd');
       if (!acc[date]) {
         acc[date] = [];
       }

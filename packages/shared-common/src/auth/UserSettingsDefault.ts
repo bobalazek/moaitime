@@ -1,8 +1,10 @@
+import { ThemeEnum } from '..';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 import { UserSettings } from './UserSchema';
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   generalTimezone: 'UTC',
+  generalTheme: ThemeEnum.LIGHT,
   generalStartDayOfWeek: 0,
   commandsEnabled: true,
   commandsSearchButtonEnabled: true,

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { DayOfWeek } from '../core/DayOfWeek';
+import { ThemeEnum } from '../core/ThemeEnum';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 
 // User Settings
@@ -8,6 +9,7 @@ export const UserSettingsSchema = z.object({
   // General
   generalTimezone: z.string(),
   generalStartDayOfWeek: z.number().min(0).max(6) as z.ZodType<DayOfWeek>,
+  generalTheme: z.nativeEnum(ThemeEnum),
 
   // Commands
   commandsEnabled: z.boolean(),

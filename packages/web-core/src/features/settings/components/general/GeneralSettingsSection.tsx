@@ -2,6 +2,7 @@ import { useAuthStore } from '../../../auth/state/authStore';
 import TimezoneSelector from '../../../core/components/partials/TimezoneSelector';
 import GeneralSettingsSectionHeaderText from './GeneralSettingsSectionHeaderText';
 import GeneralStartDayOfWeekSetting from './settings/GeneralStartDayOfWeekSetting';
+import GeneralThemeSetting from './settings/GeneralThemeSetting';
 
 export default function GeneralSettingsSection() {
   const { auth, updateAccountSettings } = useAuthStore();
@@ -44,6 +45,20 @@ export default function GeneralSettingsSection() {
           />
         </div>
         <p className="mt-2 text-xs text-gray-400">Which time zone are we at?</p>
+      </div>
+      <div className="mb-4">
+        <h4 className="mb-2 font-bold">Theme</h4>
+        <div>
+          <GeneralThemeSetting
+            value={settings.generalTheme}
+            onValueChange={(value) => {
+              updateAccountSettings({
+                generalTheme: value,
+              });
+            }}
+          />
+        </div>
+        <p className="mt-2 text-xs text-gray-400">Fancy some colours? Or not. You decide.</p>
       </div>
     </div>
   );

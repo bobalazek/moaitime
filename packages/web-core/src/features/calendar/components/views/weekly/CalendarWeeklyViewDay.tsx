@@ -89,6 +89,8 @@ export default function CalendarWeeklyViewDay({
           eventEndsAt = endOfCurrentDay;
         }
 
+        // TODO: Not workingfor american timezones at the moment
+
         const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
         const durationInHours =
           (eventEndsAt.getTime() - eventStartsAt.getTime()) / (1000 * 60 * 60);

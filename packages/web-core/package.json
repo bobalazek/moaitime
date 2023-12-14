@@ -22,6 +22,7 @@
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
+    "test": "vitest run",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {

@@ -60,11 +60,14 @@ export const getWeeksForMonth = (month: Date, startDayOfWeek: number) => {
 
   return weeks;
 };
-type EventWithDateObjects = EventInterface & {
-  left?: number;
-  width?: number;
-};
 
+/**
+ * @param date this is the zone-adjusted date that we want to get the events for
+ * @param events the collection of the events that we want to filter
+ * @param timezone the timezone that we want to use to adjust the dates
+ * @param type the type of the events that we want to get
+ * @returns the sorted collection of the events for the given day
+ */
 export const getEventsForDay = (
   date: string,
   events: EventInterface[],
@@ -78,14 +81,16 @@ export const getEventsForDay = (
   const filteredEvents = events
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
     .filter((event) => {
-      if (event.isAllDay) {
-        const eventDate = format(new Date(event.startsAt), 'yyyy-MM-dd');
-
-        return eventDate === date;
-      }
-
       const eventStart = utcToZonedTime(event.startsAt, timezone);
       const eventEnd = utcToZonedTime(event.endsAt, timezone);
+
+      if (event.isAllDay) {
+        const eventStartDate = format(eventStart, 'yyyy-MM-dd');
+        const eventEndDate = format(eventEnd, 'yyyy-MM-dd');
+        const queriedDate = format(day, 'yyyy-MM-dd');
+
+        return queriedDate >= eventStartDate && queriedDate <= eventEndDate;
+      }
 
       return eventStart < end && eventEnd > start;
     })
@@ -97,8 +102,8 @@ export const getEventsForDay = (
       );
     });
 
-  const layoutEvents = (events: EventWithDateObjects[]): EventWithVerticalPosition[] => {
-    const eventStacks: EventWithDateObjects[][] = [];
+  const layoutEvents = (events: EventInterface[]): EventWithVerticalPosition[] => {
+    const eventStacks: EventInterface[][] = [];
     const positionedEvents: EventWithVerticalPosition[] = [];
 
     events.forEach((event) => {

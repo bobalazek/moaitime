@@ -531,8 +531,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(800);
-      expect(result[0].style.height).toBe(100);
+      expect(result[0].style.top).toBe('800px');
+      expect(result[0].style.height).toBe('100px');
     });
 
     it('should correctly calculate the height if overflowing from the previous day', () => {
@@ -562,8 +562,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(0);
-      expect(result[0].style.height).toBe(200);
+      expect(result[0].style.top).toBe('0px');
+      expect(result[0].style.height).toBe('200px');
     });
 
     it('should correctly calculate the height if overflowing to the next day', () => {
@@ -593,8 +593,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(2300);
-      expect(result[0].style.height).toBe(100);
+      expect(result[0].style.top).toBe('2300px');
+      expect(result[0].style.height).toBe('100px');
     });
 
     it('should correctly calculate the height if overflowing from the previous day if moscow time', () => {
@@ -624,8 +624,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(200);
-      expect(result[0].style.height).toBe(300);
+      expect(result[0].style.top).toBe('200px');
+      expect(result[0].style.height).toBe('300px');
     });
 
     it('should correctly calculate the height if overflowing to the next day if moscow time', () => {
@@ -655,8 +655,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(2300);
-      expect(result[0].style.height).toBe(100);
+      expect(result[0].style.top).toBe('2300px');
+      expect(result[0].style.height).toBe('100px');
     });
 
     it('should correctly calculate the height if overflowing from the previous day if los angeles time', () => {
@@ -686,8 +686,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(0);
-      expect(result[0].style.height).toBe(400);
+      expect(result[0].style.top).toBe('0px');
+      expect(result[0].style.height).toBe('400px');
     });
 
     it('should correctly calculate the height if overflowing from the next day if los angeles time', () => {
@@ -717,8 +717,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(2000);
-      expect(result[0].style.height).toBe(400);
+      expect(result[0].style.top).toBe('2000px');
+      expect(result[0].style.height).toBe('400px');
     });
 
     it('should correctly calculate the height if overflowing from the previous day if sydney time', () => {
@@ -748,8 +748,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(0);
-      expect(result[0].style.height).toBe(400);
+      expect(result[0].style.top).toBe('0px');
+      expect(result[0].style.height).toBe('400px');
     });
 
     it('should correctly calculate the height if overflowing from the next day if sydney time', () => {
@@ -779,8 +779,8 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
-      expect(result[0].style.top).toBe(2000);
-      expect(result[0].style.height).toBe(400);
+      expect(result[0].style.top).toBe('2000px');
+      expect(result[0].style.height).toBe('400px');
     });
   });
 });

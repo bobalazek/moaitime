@@ -7,7 +7,7 @@ import {
 
 import { useAuthStore } from '../../../../auth/state/authStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
-import CalendarEntry from '../../calendar-entries/CalendarEntry';
+import CalendarEntry from '../../CalendarEntry';
 
 export default function CalendarWeeklyViewDay({
   date,

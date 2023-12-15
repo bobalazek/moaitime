@@ -13,7 +13,7 @@ import {
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
-import CalendarEntry from '../calendar-entries/CalendarEntry';
+import CalendarEntry from '../CalendarEntry';
 import CalendarWeeklyViewDay from './weekly/CalendarWeeklyViewDay';
 
 type CalendarEntriesPerDay = {

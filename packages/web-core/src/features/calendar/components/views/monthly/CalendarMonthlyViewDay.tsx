@@ -8,7 +8,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../../state/calendarStore';
-import CalendarEntry from '../../calendar-entries/CalendarEntry';
+import CalendarEntry from '../../CalendarEntry';
 
 export default function CalendarMonthlyViewDay({
   day,

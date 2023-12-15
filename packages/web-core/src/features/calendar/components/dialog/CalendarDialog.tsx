@@ -12,13 +12,19 @@ import CalendarYearlyView from '../views/CalendarYearlyView';
 import CalendarDialogHeader, { CalendarDialogHeaderRef } from './CalendarDialogHeader';
 
 export default function CalendarDialog() {
-  const { dialogOpen, selectedView, setDialogOpen, setSelectedView, setSelectedDate } =
-    useCalendarStore();
+  const {
+    dialogOpen,
+    selectedView,
+    setDialogOpen,
+    setSelectedView,
+    setSelectedDate,
+    selectedCalendarEntryDialogOpen,
+  } = useCalendarStore();
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
 
   useEffect(() => {
     const onKeydown = (e: KeyboardEvent) => {
-      if (!dialogOpen) {
+      if (!dialogOpen || selectedCalendarEntryDialogOpen) {
         return;
       }
 
@@ -50,7 +56,7 @@ export default function CalendarDialog() {
     return () => document.removeEventListener('keydown', onKeydown);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dialogOpen]);
+  }, [dialogOpen, selectedCalendarEntryDialogOpen]);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

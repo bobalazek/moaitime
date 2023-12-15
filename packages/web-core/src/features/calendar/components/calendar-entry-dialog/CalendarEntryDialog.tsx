@@ -5,7 +5,16 @@ import {
   UpdateCalendarEntrySchema,
   zodErrorToString,
 } from '@moaitime/shared-common';
-import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  Input,
+  Label,
+  Switch,
+  Textarea,
+  useToast,
+} from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
 
@@ -61,11 +70,11 @@ export default function CalendarEntryDialog() {
       open={selectedCalendarEntryDialogOpen}
       onOpenChange={setSelectedCalendarEntryDialogOpen}
     >
-      <DialogContent data-test="calendar--calendar-entry-dialog">
+      <DialogContent data-test="calendarEntry--calendar-entry-dialog">
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendar-title">Title</Label>
+          <Label htmlFor="calendarEntry-title">Title</Label>
           <Input
-            id="calendar-title"
+            id="calendarEntry-title"
             value={data?.title ?? ''}
             onChange={(event) => {
               setData((current) => ({ ...current, title: event.target.value }));
@@ -73,9 +82,9 @@ export default function CalendarEntryDialog() {
           />
         </div>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendar-description">Description</Label>
+          <Label htmlFor="calendarEntry-description">Description</Label>
           <Textarea
-            id="calendar-description"
+            id="calendarEntry-description"
             rows={5}
             value={data?.description ?? ''}
             onChange={(event) => {
@@ -83,13 +92,17 @@ export default function CalendarEntryDialog() {
             }}
           />
         </div>
-        <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendar-startsAt">Starts At</Label>
-          <div>TODO</div>
+        <div className="mb-4 flex items-center space-x-2">
+          <Switch id="calendarEntry-isAllDay" checked={data?.isAllDay} />
+          <Label htmlFor="calendarEntry-isAllDay">Is All Day?</Label>
         </div>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendar-endsAt">Ends At</Label>
-          <div>TODO</div>
+          <Label htmlFor="calendarEntry-startsAt">Starts At</Label>
+          <Input value={data?.startsAt ?? ''} readOnly />
+        </div>
+        <div className="mb-4 flex flex-col gap-2">
+          <Label htmlFor="calendarEntry-endsAt">Ends At</Label>
+          <Input value={data?.endsAt ?? ''} readOnly />
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>

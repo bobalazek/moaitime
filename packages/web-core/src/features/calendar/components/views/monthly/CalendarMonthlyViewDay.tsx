@@ -41,12 +41,12 @@ export default function CalendarMonthlyViewDay({
 
   return (
     <div className="flex-grow border p-2 lg:w-0" data-test="calendar--monthly-view--day">
-      <div className="mb-2 text-center">
+      <div className="text-center">
         <button
           className={clsx(
             'hover:text-primary rounded-full px-2 py-1 text-sm font-bold transition-all',
             isActive && 'bg-primary text-accent',
-            !isActiveMonth && 'text-gray-500',
+            !isActiveMonth && 'text-gray-300',
             isFirst && 'rounded-lg'
           )}
           onClick={onDayClick}
@@ -55,26 +55,23 @@ export default function CalendarMonthlyViewDay({
           <span>{dateText}</span>
         </button>
       </div>
-      {shownCalendarEntries.length === 0 && (
-        <div className="flex flex-grow flex-col items-center justify-center text-xs text-gray-600">
-          <span className="text-center">No entries</span>
-        </div>
-      )}
-      {shownCalendarEntries.length > 0 && (
-        <div className="flex flex-col gap-1">
-          {shownCalendarEntries.map((calendarEntry) => (
-            <CalendarEntry key={calendarEntry.id} calendarEntry={calendarEntry} />
-          ))}
-          {remainingCalendarEntriesCount > 0 && (
-            <div
-              className="cursor-pointer p-2 text-center text-sm text-gray-400 hover:text-gray-500"
-              onClick={onDayClick}
-            >
-              + {remainingCalendarEntriesCount} more
-            </div>
-          )}
-        </div>
-      )}
+      <div className="flex flex-col">
+        {shownCalendarEntries.length > 0 && (
+          <div className="mt-2 flex flex-col gap-1">
+            {shownCalendarEntries.map((calendarEntry) => (
+              <CalendarEntry key={calendarEntry.id} calendarEntry={calendarEntry} />
+            ))}
+            {remainingCalendarEntriesCount > 0 && (
+              <div
+                className="cursor-pointer p-2 text-center text-sm text-gray-400 hover:text-gray-500"
+                onClick={onDayClick}
+              >
+                + {remainingCalendarEntriesCount} more
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

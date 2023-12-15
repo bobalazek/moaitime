@@ -119,7 +119,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     <div className="flex w-full flex-col border" data-test="calendar--weekly-view">
       <div className="flex">
         <div
-          className="flex w-28 flex-col justify-end border p-2 text-right text-xs"
+          className="flex w-28 flex-col justify-end border border-l-0 border-t-0 p-2 text-right text-xs"
           data-test="calendar--weekly-view--timezone"
         >
           {timezone}
@@ -140,7 +140,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                className="flex-1 border p-2"
+                className="flex-1 p-2"
               >
                 <div className="text-center text-xs font-bold uppercase">
                   <div data-test="calendar--monthly-view--day-of-week">{dayOfWeek}</div>
@@ -173,7 +173,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
           {hours.map((hour) => {
             return (
               <div
-                className="border-b-2"
+                className="border-b"
                 key={hour}
                 style={{ height: CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX }}
               />

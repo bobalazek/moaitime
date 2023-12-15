@@ -88,7 +88,7 @@ export class TasksManager {
       return 0;
     }
 
-    return rows[0].order;
+    return rows[0].order ?? 0;
   }
 
   async countByListId(listId: string): Promise<number> {

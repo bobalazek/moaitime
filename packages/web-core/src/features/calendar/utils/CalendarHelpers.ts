@@ -197,8 +197,8 @@ export const getCalendarEntriesWithStyles = (
     const height = Math.ceil(durationInHours * hourHeightPx);
 
     const style = {
-      top,
-      height,
+      top: `${top}px`,
+      height: `${height}px`,
       left: calendarEntry.left,
       width: calendarEntry.width,
     };

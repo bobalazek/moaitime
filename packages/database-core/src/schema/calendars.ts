@@ -8,6 +8,7 @@ export const calendars = pgTable('calendars', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
+  color: text('color'),
   timezone: text('timezone').notNull(),
   isPublic: text('is_public').notNull().default('false'),
   deletedAt: timestamp('deleted_at'),

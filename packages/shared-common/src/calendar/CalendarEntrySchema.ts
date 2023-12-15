@@ -22,3 +22,8 @@ export const CalendarEntrySchema = z.object({
 export type CalendarEntry = z.infer<typeof CalendarEntrySchema>;
 
 export type CalendarEntryWithVerticalPosition = CalendarEntry & { left: string; width: string };
+
+export type CalendarEntryWithPosition = CalendarEntryWithVerticalPosition & {
+  top: string;
+  height: string;
+};

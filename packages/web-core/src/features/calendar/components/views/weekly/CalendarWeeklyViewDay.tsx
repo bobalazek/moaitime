@@ -75,7 +75,7 @@ export default function CalendarWeeklyViewDay({
 
   return (
     <div
-      className="relative w-0 flex-1 flex-grow border"
+      className="relative ml-[-1px] mt-[-1px] w-0 flex-1 flex-grow border border-b-0 border-r-0"
       style={{
         height: totalHeight,
       }}

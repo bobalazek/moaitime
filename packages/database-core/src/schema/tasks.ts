@@ -6,8 +6,9 @@ import { lists } from './lists';
 export const tasks = pgTable('tasks', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
-  order: integer('order').notNull(),
   description: text('description'),
+  order: integer('order').default(0),
+  color: text('color'),
   priority: integer('priority'),
   dueDate: date('due_date', {
     mode: 'string',

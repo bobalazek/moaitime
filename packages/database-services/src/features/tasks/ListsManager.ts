@@ -1,4 +1,4 @@
-import { and, asc, count, DBQueryConfig, eq, inArray, isNull, SQL } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks } from '@moaitime/database-core';
 
@@ -18,33 +18,10 @@ export class ListsManager {
   ): Promise<List[]> {
     const result = await getDatabase().query.lists.findMany({
       where: and(eq(lists.userId, userId), isNull(lists.deletedAt)),
-      orderBy: asc(lists.createdAt),
+      orderBy: [desc(lists.order), asc(lists.createdAt)],
     });
     const ids = result.map((list) => list.id);
-
-    const tasksCountMap = new Map<string, number>();
-    if (ids.length > 0) {
-      let where = inArray(tasks.listId, ids);
-
-      if (!options?.includeCompleted) {
-        where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
-      }
-
-      if (!options?.includeDeleted) {
-        where = and(where, isNull(tasks.deletedAt)) as SQL<unknown>;
-      }
-
-      const tasksCountData = await getDatabase()
-        .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
-        .from(tasks)
-        .leftJoin(lists, eq(tasks.listId, lists.id))
-        .where(where)
-        .groupBy(tasks.listId)
-        .execute();
-      for (const item of tasksCountData) {
-        tasksCountMap.set(item.listId, item.tasksCount);
-      }
-    }
+    const tasksCountMap = await this.getTasksCountMap(ids, options);
 
     return result.map((list) => ({
       ...list,
@@ -78,6 +55,34 @@ export class ListsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  async getTasksCountMap(ids: string[], options?: ListsManagerFindManyByUserIdOptions) {
+    const tasksCountMap = new Map<string, number>();
+    if (ids.length > 0) {
+      let where = inArray(tasks.listId, ids);
+
+      if (!options?.includeCompleted) {
+        where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
+      }
+
+      if (!options?.includeDeleted) {
+        where = and(where, isNull(tasks.deletedAt)) as SQL<unknown>;
+      }
+
+      const tasksCountData = await getDatabase()
+        .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
+        .from(tasks)
+        .leftJoin(lists, eq(tasks.listId, lists.id))
+        .where(where)
+        .groupBy(tasks.listId)
+        .execute();
+      for (const item of tasksCountData) {
+        tasksCountMap.set(item.listId, item.tasksCount);
+      }
+    }
+
+    return tasksCountMap;
   }
 
   async insertOne(data: NewList): Promise<List> {

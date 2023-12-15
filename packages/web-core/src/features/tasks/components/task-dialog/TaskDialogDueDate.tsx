@@ -2,65 +2,50 @@ import { format } from 'date-fns';
 import { MouseEvent, useState } from 'react';
 import { FaCalendar, FaTimes } from 'react-icons/fa';
 
+import { UpdateTask } from '@moaitime/shared-common';
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import TaskDialogDueDateTime from './TaskDialogDueDateTime';
 
 type TaskDialogDueDateProps = {
-  date: string | null;
-  dateTime: string | null;
-  dateTimeZone: string | null;
-  onDateChange: (value: string | null) => void;
-  onDateTimeChange: (value: string | null) => void;
-  onDateTimeZoneChange: (value: string | null) => void;
+  data: UpdateTask;
+  setData: (value: UpdateTask) => void;
 };
 
-export const TaskDialogDueDateText = ({
-  date,
-  dateTime,
-  dateTimeZone,
-}: Pick<TaskDialogDueDateProps, 'date' | 'dateTime' | 'dateTimeZone'>) => {
+export const TaskDialogDueDateText = ({ data }: { data: UpdateTask }) => {
   return (
     <span className="text-xs">
-      {!date && <span className="text-muted-foreground">Pick a date</span>}
-      {date && format(new Date(date), 'PPP')}
-      {date && dateTime && <> at {dateTime}</>}
-      {date && dateTime && dateTimeZone && (
-        <span className="ml-2 text-gray-400">({dateTimeZone})</span>
+      {!data.dueDate && <span className="text-muted-foreground">Pick a date</span>}
+      {data.dueDate && format(new Date(data.dueDate), 'PPP')}
+      {data.dueDate && data.dueDateTime && <> at {data.dueDateTime}</>}
+      {data.dueDate && data.dueDateTime && data.dueDateTimeZone && (
+        <span className="ml-2 text-gray-400">({data.dueDateTimeZone})</span>
       )}
     </span>
   );
 };
 
-export default function TaskDialogDueDate({
-  date,
-  dateTime,
-  dateTimeZone,
-  onDateChange,
-  onDateTimeChange,
-  onDateTimeZoneChange,
-}: TaskDialogDueDateProps) {
+export default function TaskDialogDueDate({ data, setData }: TaskDialogDueDateProps) {
   const { auth } = useAuthStore();
   const [open, setOpen] = useState(false);
-  const [dateValue, setDateValue] = useState(date ?? null);
-  const [dateTimeValue, setDateTimeValue] = useState(dateTime ?? null);
-  const [dateTimeZoneValue, setDateTimeZoneValue] = useState(dateTimeZone ?? null);
+  const [dateValue, setDateValue] = useState(data.dueDate ?? null);
+  const [dateTimeValue, setDateTimeValue] = useState(data.dueDateTime ?? null);
+  const [dateTimeZoneValue, setDateTimeZoneValue] = useState(data.dueDateTimeZone ?? null);
 
   const onSelectDate = (value?: Date) => {
-    onDateChange(value ? format(value, 'yyyy-MM-dd') : null);
-
-    if (!value) {
-      setDateValue(null);
-    }
-
-    setOpen(false);
+    setDateValue(value ? format(value, 'yyyy-MM-dd') : null);
   };
 
-  const onSaveButtonClick = () => {
-    onDateChange(dateValue);
-    onDateTimeChange(dateTimeValue);
-    onDateTimeZoneChange(dateTimeZoneValue);
+  const onSaveButtonClick = (event: MouseEvent) => {
+    event.preventDefault();
+
+    setData({
+      ...data,
+      dueDate: dateValue,
+      dueDateTime: dateTimeValue,
+      dueDateTimeZone: dateTimeZoneValue,
+    });
 
     setOpen(false);
   };
@@ -68,8 +53,12 @@ export default function TaskDialogDueDate({
   const onClearButtonClick = (event: MouseEvent) => {
     event.preventDefault();
 
-    onDateChange(null);
-    onDateTimeChange(null);
+    setData({
+      ...data,
+      dueDate: null,
+      dueDateTime: null,
+      dueDateTimeZone: null,
+    });
 
     setOpen(false);
   };
@@ -86,9 +75,9 @@ export default function TaskDialogDueDate({
         >
           <span className="flex">
             <FaCalendar className="mr-2 h-4 w-4" />
-            <TaskDialogDueDateText date={date} dateTime={dateTime} dateTimeZone={dateTimeZone} />
+            <TaskDialogDueDateText data={data} />
           </span>
-          {date && (
+          {dateValue && (
             <span
               className="text-muted-foreground rounded-full p-1 hover:bg-slate-600"
               onClick={onClearButtonClick}
@@ -106,13 +95,13 @@ export default function TaskDialogDueDate({
         <Calendar
           mode="single"
           disabled={[{ before: new Date() }]}
-          selected={date ? new Date(date) : undefined}
+          selected={dateValue ? new Date(dateValue) : undefined}
           onSelect={onSelectDate}
           weekStartsOn={generalStartDayOfWeek}
         />
-        {date && (
+        {dateValue && (
           <>
-            <hr className="border-gray-700" />
+            <hr className="border-gray-300" />
             <TaskDialogDueDateTime
               dateTime={dateTimeValue}
               dateTimeZone={dateTimeZoneValue}

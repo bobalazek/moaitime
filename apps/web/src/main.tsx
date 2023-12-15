@@ -36,11 +36,19 @@ if (import.meta.hot) {
   };
 
   checkIfApiIsAvailable();
-
-  import.meta.hot.on('vite:beforeFullReload', () => {
-    console.log('beforefullrel');
-  });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const preloader = document.getElementById('preloader');
+  if (!preloader) {
+    return;
+  }
+
+  preloader.style.opacity = '0';
+  setTimeout(() => {
+    preloader.remove();
+  }, 1000);
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(

@@ -81,4 +81,10 @@
   .full-screen {
     @apply absolute bottom-0 left-0 right-0 top-0 h-screen max-h-full min-h-full w-full overflow-hidden;
   }
+
+  /* Preloader */
+  #preloader {
+    @apply absolute bottom-0 left-0 right-0 top-0 flex h-screen max-h-full min-h-full w-full flex-col items-center justify-center overflow-hidden bg-black text-3xl text-white transition-opacity duration-1000;
+    z-index: 999999;
+  }
 }

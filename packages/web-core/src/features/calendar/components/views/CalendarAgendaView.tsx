@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { differenceInDays, format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
 import { Event } from '@moaitime/shared-common';
@@ -69,11 +69,21 @@ export default function CalendarAgendaView() {
                       day: 'numeric',
                     });
 
+                    const daysDifference = differenceInDays(new Date(endDate), new Date(startDate));
+
                     return (
                       <div key={event.id} className="v flex justify-between border p-4">
-                        <div className="font-bold">{event.title}</div>
+                        <div>
+                          <div className="font-bold">{event.title}</div>
+                          {event.description && <div className="text-sm">{event.description}</div>}
+                        </div>
                         <div className="space-y-2 text-right">
-                          {event.isAllDay && <>All-Day</>}
+                          {event.isAllDay && (
+                            <>
+                              {daysDifference <= 1 && <span>All-Day</span>}
+                              {daysDifference > 1 && <span>{daysDifference} Full-Days</span>}
+                            </>
+                          )}
                           {!event.isAllDay && (
                             <>
                               <div>{startTime}</div>

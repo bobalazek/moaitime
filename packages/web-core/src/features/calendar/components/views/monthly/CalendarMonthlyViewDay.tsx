@@ -3,12 +3,12 @@ import { format, isSameDay, isSameMonth } from 'date-fns';
 
 import {
   CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT,
-  CalendarEntry,
+  CalendarEntry as CalendarEntryType, // We can't have the same name, as it's already used by the component
   CalendarViewEnum,
 } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../../state/calendarStore';
-import CalendarEntryComponent from '../../calendar-entries/CalendarEntry';
+import CalendarEntry from '../../calendar-entries/CalendarEntry';
 
 export default function CalendarMonthlyViewDay({
   day,
@@ -18,7 +18,7 @@ export default function CalendarMonthlyViewDay({
 }: {
   day: Date;
   now: Date;
-  calendarEntries: CalendarEntry[];
+  calendarEntries: CalendarEntryType[];
   isFirstWeeksDay: boolean;
 }) {
   const { selectedDate, setSelectedDate, setSelectedView } = useCalendarStore();
@@ -63,7 +63,7 @@ export default function CalendarMonthlyViewDay({
       {shownCalendarEntries.length > 0 && (
         <div className="flex flex-col gap-1">
           {shownCalendarEntries.map((calendarEntry) => (
-            <CalendarEntryComponent key={calendarEntry.id} calendarEntry={calendarEntry} />
+            <CalendarEntry key={calendarEntry.id} calendarEntry={calendarEntry} />
           ))}
           {remainingCalendarEntriesCount > 0 && (
             <div

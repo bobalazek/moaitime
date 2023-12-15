@@ -1,13 +1,15 @@
 import { clsx } from 'clsx';
 
-import { CalendarEntry } from '@moaitime/shared-common';
+import {
+  CalendarEntry as CalendarEntryType, // Needs to be a different name to the component name itself
+} from '@moaitime/shared-common';
 
 export default function CalendarEntry({
   calendarEntry,
   style,
   className,
 }: {
-  calendarEntry: CalendarEntry;
+  calendarEntry: CalendarEntryType;
   style?: Record<string, unknown>;
   className?: string;
 }) {

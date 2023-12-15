@@ -50,5 +50,3 @@ export const CreateEventSchema = z
 export type Event = z.infer<typeof EventSchema>;
 
 export type CreateEvent = z.infer<typeof CreateEventSchema>;
-
-export type EventWithVerticalPosition = Event & { left: number; width: number };

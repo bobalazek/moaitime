@@ -3,7 +3,12 @@ import { eachDayOfInterval, endOfWeek, format, isSameDay, startOfWeek } from 'da
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { CalendarViewEnum, EventWithVerticalPosition, getGmtOffset } from '@moaitime/shared-common';
+import {
+  CALENDAR_WEEKLY_HOUR_HEIGHT_PX,
+  CalendarViewEnum,
+  EventWithVerticalPosition,
+  getGmtOffset,
+} from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
@@ -15,8 +20,6 @@ type EventsPerDay = {
   withouFullDay: EventWithVerticalPosition[];
   fullDayOnly: EventWithVerticalPosition[];
 };
-
-const HOUR_HEIGHT_PX = 64;
 
 export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) {
   const { events, selectedDate, selectedView, setSelectedDate, setSelectedView } =
@@ -158,7 +161,13 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
       <div className="relative flex flex-1">
         <div className="absolute left-0 top-0 h-full w-full">
           {hours.map((hour) => {
-            return <div className="border-b-2" key={hour} style={{ height: HOUR_HEIGHT_PX }} />;
+            return (
+              <div
+                className="border-b-2"
+                key={hour}
+                style={{ height: CALENDAR_WEEKLY_HOUR_HEIGHT_PX }}
+              />
+            );
           })}
         </div>
         <div className="w-28 flex-shrink-0">
@@ -168,14 +177,14 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 key={hour}
                 className="flex border-b text-xs"
                 style={{
-                  height: HOUR_HEIGHT_PX,
+                  height: CALENDAR_WEEKLY_HOUR_HEIGHT_PX,
                 }}
               >
                 <div className="flex w-28 items-center justify-end">
                   <div
                     className="bg-background mr-4 w-full text-right"
                     style={{
-                      transform: `translateY(-${HOUR_HEIGHT_PX / 2}px)`,
+                      transform: `translateY(-${CALENDAR_WEEKLY_HOUR_HEIGHT_PX / 2}px)`,
                     }}
                   >
                     {index !== 0 ? hour : ''}
@@ -197,7 +206,6 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 date={date}
                 isActive={isActive}
                 events={eventsForDay}
-                hourHeightPx={HOUR_HEIGHT_PX}
               />
             );
           })}

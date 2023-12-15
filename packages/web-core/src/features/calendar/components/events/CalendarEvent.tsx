@@ -13,6 +13,8 @@ export default function CalendarEvent({
 }) {
   const hasAbsoluteClassName = className?.includes('absolute');
 
+  const backgroundColor = '#3b82f6'; // TODO: either per event or per calendar
+
   return (
     <div
       key={event.id}
@@ -21,12 +23,19 @@ export default function CalendarEvent({
       data-test="calendar--weekly-view--day--event"
       data-event-id={event.id}
       data-event-title={event.title}
+      title={event.title}
     >
       <div
-        className="h-full cursor-pointer rounded-lg border border-blue-300 bg-blue-500 px-2 py-1 text-xs text-white transition-all hover:bg-blue-400"
+        className="h-full cursor-pointer rounded-lg border border-transparent px-2 py-1 text-xs text-white transition-all hover:bg-blue-400"
         data-test="calendar--weekly-view--day--event--content"
+        style={{
+          backgroundColor,
+        }}
       >
-        <h4 className="font-bold " data-test="calendar--weekly-view--day--event--title">
+        <h4
+          className="overflow-auto break-words font-bold"
+          data-test="calendar--weekly-view--day--event--title"
+        >
           {event.title}
         </h4>
       </div>

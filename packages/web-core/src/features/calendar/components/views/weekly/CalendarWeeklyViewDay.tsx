@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { EventWithVerticalPosition } from '@moaitime/shared-common';
+import { CALENDAR_WEEKLY_HOUR_HEIGHT_PX, EventWithVerticalPosition } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../../auth/state/authStore';
 import { getEventsWithStyles } from '../../../utils/CalendarHelpers';
@@ -10,22 +10,20 @@ export default function CalendarWeeklyViewDay({
   date,
   isActive,
   events,
-  hourHeightPx,
 }: {
   date: string;
   isActive: boolean;
   events: EventWithVerticalPosition[];
-  hourHeightPx: number;
 }) {
   const { auth } = useAuthStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
   const currentTimeLineRef = useRef<HTMLDivElement>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const totalHeight = hourHeightPx * 24;
+  const totalHeight = CALENDAR_WEEKLY_HOUR_HEIGHT_PX * 24;
   const eventsWithStyles = useMemo(() => {
-    return getEventsWithStyles(events, date, generalTimezone, hourHeightPx);
-  }, [events, date, generalTimezone, hourHeightPx]);
+    return getEventsWithStyles(events, date, generalTimezone, CALENDAR_WEEKLY_HOUR_HEIGHT_PX);
+  }, [events, date, generalTimezone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;

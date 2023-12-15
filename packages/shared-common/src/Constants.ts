@@ -1,3 +1,8 @@
+// General
+// Calendar
+export const CALENDAR_WEEKLY_HOUR_HEIGHT_PX = 48;
+
+// URLs
 // Web URL
 export const WEB_URL =
   typeof window !== 'undefined' && window?.location

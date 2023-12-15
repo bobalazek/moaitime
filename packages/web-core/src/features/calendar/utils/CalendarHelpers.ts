@@ -147,8 +147,8 @@ export const getCalendarEntriesForDay = (
 
         positionedCalendarEntries.push({
           ...calendarEntry,
-          left,
-          width,
+          left: `${left}%`,
+          width: `${width}%`,
         });
       });
     });
@@ -199,8 +199,8 @@ export const getCalendarEntriesWithStyles = (
     const style = {
       top,
       height,
-      left: `${calendarEntry.left}%`,
-      width: `${calendarEntry.width}%`,
+      left: calendarEntry.left,
+      width: calendarEntry.width,
     };
 
     return {

@@ -4,18 +4,23 @@ export const EventSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  timezone: z.string(),
+  endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),
   startsAt: z.string(),
   endsAt: z.string(),
   deletedAt: z.string().nullable(),
   updatedAt: z.string(),
   createdAt: z.string(),
+  calendarId: z.string(),
 });
 
 export const CreateEventSchema = z
   .object({
     title: z.string(),
     description: z.string().optional(),
+    timezone: z.string(),
+    endTimezone: z.string().optional(),
     isAllDay: z.boolean(),
     startsAt: z.string(),
     endsAt: z.string(),

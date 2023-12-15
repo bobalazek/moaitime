@@ -29,6 +29,13 @@ export type CalendarStore = {
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   loadCalendarEnries: () => Promise<CalendarEntry[]>;
+  // Selected
+  selectedCalendarEntryDialogOpen: boolean;
+  selectedCalendarEntry: CalendarEntry | null;
+  setSelectedCalendarEntryDialogOpen: (
+    selectedCalendarEntryDialogOpen: boolean,
+    selectedCalendarEntry?: CalendarEntry | null
+  ) => void;
 };
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
@@ -128,5 +135,17 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     set({ calendarEntries });
 
     return calendarEntries;
+  },
+  // Selected
+  selectedCalendarEntryDialogOpen: false,
+  selectedCalendarEntry: null,
+  setSelectedCalendarEntryDialogOpen: (
+    selectedCalendarEntryDialogOpen: boolean,
+    selectedCalendarEntry?: CalendarEntry | null
+  ) => {
+    set({
+      selectedCalendarEntryDialogOpen,
+      selectedCalendarEntry,
+    });
   },
 }));

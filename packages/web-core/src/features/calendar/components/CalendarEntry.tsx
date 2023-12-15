@@ -1,9 +1,13 @@
 import { clsx } from 'clsx';
+import { colord } from 'colord';
+import { useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
   CalendarEntry as CalendarEntryType, // Needs to be a different name to the component name itself
 } from '@moaitime/shared-common';
+
+import { useCalendarStore } from '../state/calendarStore';
 
 export default function CalendarEntry({
   calendarEntry,
@@ -14,8 +18,23 @@ export default function CalendarEntry({
   style?: Record<string, unknown>;
   className?: string;
 }) {
+  const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
+  const [isHover, setIsHover] = useState(false);
+
   const hasAbsoluteClassName = className?.includes('absolute');
-  const finalStyle = style
+  const defaultBackgroundColor = '#ffffff';
+  const backgroundColor = isHover
+    ? colord(defaultBackgroundColor).darken(0.1).toHex()
+    : defaultBackgroundColor;
+  const color = colord(backgroundColor).isDark() ? '#ffffff' : '#000000';
+  const borderColor = colord(backgroundColor).darken(0.2).toHex();
+  const innerStyle = {
+    borderColor,
+    backgroundColor,
+    color,
+  };
+
+  const containerStyle = style
     ? {
         ...style,
         height: `${
@@ -23,26 +42,26 @@ export default function CalendarEntry({
         }px`, // We don't want to overlap with the next entry
       }
     : undefined;
-  const borderColor = '#cccccc'; // TODO: either per calendar entry or per calendar
-  const backgroundColor = '#ffffff';
-  const color = '#000000';
+
+  const onClick = (calendarEntry: CalendarEntryType) => {
+    setSelectedCalendarEntryDialogOpen(true, calendarEntry);
+  };
 
   return (
     <div
       key={calendarEntry.id}
       className={clsx('px-[2px]', !hasAbsoluteClassName && 'relative', className)}
-      style={finalStyle}
-      data-test="calendar--weekly-view--day--calendar-entry"
+      style={containerStyle}
       title={calendarEntry.title}
+      onClick={() => onClick(calendarEntry)}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+      data-test="calendar--weekly-view--day--calendar-entry"
     >
       <div
         className="h-full cursor-pointer rounded-lg border border-transparent px-2 py-1 text-xs transition-all"
         data-test="calendar--weekly-view--day--calendar-entry--content"
-        style={{
-          borderColor,
-          backgroundColor,
-          color,
-        }}
+        style={innerStyle}
       >
         <h4
           className="overflow-auto break-words font-bold"

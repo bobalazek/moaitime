@@ -18,8 +18,21 @@ export const CalendarEntrySchema = z.object({
   calendarId: z.string().nullable(),
 });
 
+export const UpdateCalendarEntrySchema = z.object({
+  title: z.string().optional(),
+  description: z.string().nullable().optional(),
+  timezone: z.string().optional(),
+  endTimezone: z.string().nullable().optional(),
+  isAllDay: z.boolean().optional(),
+  startsAt: z.string().optional(),
+  endsAt: z.string().optional(),
+  calendarId: z.string().nullable().optional(),
+});
+
 // Types
 export type CalendarEntry = z.infer<typeof CalendarEntrySchema>;
+
+export type UpdateCalendarEntry = z.infer<typeof UpdateCalendarEntrySchema>;
 
 export type CalendarEntryWithVerticalPosition = CalendarEntry & { left: string; width: string };
 

@@ -101,7 +101,7 @@ export default function TaskDialog() {
           <Label htmlFor="task-name">Name</Label>
           <Input
             id="task-name"
-            value={data.name}
+            value={data.name ?? ''}
             onChange={(event) => {
               setData((current) => ({ ...current, name: event.target.value }));
             }}

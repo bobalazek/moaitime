@@ -1,14 +1,14 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
 import { AppMiddleware } from '../core/middlewares/app.middleware';
-import { EventsController } from './controllers/events.controller';
+import { CalendarEntriesController } from './controllers/calendar-entries.controller';
 
 @Module({
   imports: [],
-  controllers: [EventsController],
+  controllers: [CalendarEntriesController],
   providers: [],
 })
-export class EventsModule implements NestModule {
+export class CalendarsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AppMiddleware).forRoutes('*');
   }

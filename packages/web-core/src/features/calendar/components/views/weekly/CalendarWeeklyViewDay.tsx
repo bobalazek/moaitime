@@ -1,29 +1,37 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { CALENDAR_WEEKLY_HOUR_HEIGHT_PX, EventWithVerticalPosition } from '@moaitime/shared-common';
+import {
+  CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
+  CalendarEntryWithVerticalPosition,
+} from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../../auth/state/authStore';
-import { getEventsWithStyles } from '../../../utils/CalendarHelpers';
-import CalendarEvent from '../../events/CalendarEvent';
+import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
+import CalendarEntry from '../../calendar-entries/CalendarEntry';
 
 export default function CalendarWeeklyViewDay({
   date,
   isActive,
-  events,
+  calendarEntries,
 }: {
   date: string;
   isActive: boolean;
-  events: EventWithVerticalPosition[];
+  calendarEntries: CalendarEntryWithVerticalPosition[];
 }) {
   const { auth } = useAuthStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
   const currentTimeLineRef = useRef<HTMLDivElement>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const totalHeight = CALENDAR_WEEKLY_HOUR_HEIGHT_PX * 24;
-  const eventsWithStyles = useMemo(() => {
-    return getEventsWithStyles(events, date, generalTimezone, CALENDAR_WEEKLY_HOUR_HEIGHT_PX);
-  }, [events, date, generalTimezone]);
+  const totalHeight = CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX * 24;
+  const calendarEntriesWithStyles = useMemo(() => {
+    return getCalendarEntriesWithStyles(
+      calendarEntries,
+      date,
+      generalTimezone,
+      CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX
+    );
+  }, [calendarEntries, date, generalTimezone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -74,8 +82,15 @@ export default function CalendarWeeklyViewDay({
       data-test="calendar--weekly-view--day"
       data-date={date}
     >
-      {eventsWithStyles.map(({ style, ...event }) => {
-        return <CalendarEvent key={event.id} event={event} className="absolute" style={style} />;
+      {calendarEntriesWithStyles.map(({ style, ...calendarEntry }) => {
+        return (
+          <CalendarEntry
+            key={calendarEntry.id}
+            calendarEntry={calendarEntry}
+            className="absolute"
+            style={style}
+          />
+        );
       })}
       {currentTimeLineTop !== null && (
         <div

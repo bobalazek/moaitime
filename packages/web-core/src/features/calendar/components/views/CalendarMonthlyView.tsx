@@ -2,15 +2,15 @@ import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef } from 'react';
 
-import { Event } from '@moaitime/shared-common';
+import { CalendarEntry } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
-import { getEventsForDay, getWeeksForMonth } from '../../utils/CalendarHelpers';
+import { getCalendarEntriesForDay, getWeeksForMonth } from '../../utils/CalendarHelpers';
 import CalendarMonthlyViewDay from './monthly/CalendarMonthlyViewDay';
 
 export default function CalendarMonthlyView() {
-  const { events, selectedDate } = useCalendarStore();
+  const { calendarEntries, selectedDate } = useCalendarStore();
   const { auth } = useAuthStore();
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
@@ -19,19 +19,24 @@ export default function CalendarMonthlyView() {
   const weeks = useMemo(() => {
     return getWeeksForMonth(selectedDate, generalStartDayOfWeek);
   }, [selectedDate, generalStartDayOfWeek]);
-  const eventsPerDay = useMemo(() => {
-    const newEventsPerDay = new Map<string, Event[]>();
+  const calendarEntriesPerDay = useMemo(() => {
+    const newCalendarEntriesPerDay = new Map<string, CalendarEntry[]>();
     weeks.forEach((week) => {
       week.forEach((day) => {
         const date = format(day, 'yyyy-MM-dd');
-        const eventsForDay = getEventsForDay(date, events, generalTimezone, 'all');
+        const calendarEntriesForDay = getCalendarEntriesForDay(
+          date,
+          calendarEntries,
+          generalTimezone,
+          'all'
+        );
 
-        newEventsPerDay.set(date, eventsForDay);
+        newCalendarEntriesPerDay.set(date, calendarEntriesForDay);
       });
     });
 
-    return newEventsPerDay;
-  }, [weeks, events, generalTimezone]);
+    return newCalendarEntriesPerDay;
+  }, [weeks, calendarEntries, generalTimezone]);
   const daysOfWeek = useMemo(() => {
     return weeks?.[0]?.map((day) => format(day, 'eee.')) ?? [];
   }, [weeks]);
@@ -93,14 +98,14 @@ export default function CalendarMonthlyView() {
               {week.map((day, weekDayIndex) => {
                 const dayKey = format(day, 'yyyy-MM-dd');
                 const isFirstWeeksDay = weekIndex === 0 && weekDayIndex === 0;
-                const eventsForDay = eventsPerDay.get(dayKey) || [];
+                const calendarEntriesForDay = calendarEntriesPerDay.get(dayKey) || [];
 
                 return (
                   <CalendarMonthlyViewDay
                     key={dayKey}
                     day={day}
                     now={now}
-                    events={eventsForDay}
+                    calendarEntries={calendarEntriesForDay}
                     isFirstWeeksDay={isFirstWeeksDay}
                   />
                 );

@@ -4,25 +4,25 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
-  CALENDAR_WEEKLY_HOUR_HEIGHT_PX,
+  CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
+  CalendarEntryWithVerticalPosition,
   CalendarViewEnum,
-  EventWithVerticalPosition,
   getGmtOffset,
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
-import { getEventsForDay } from '../../utils/CalendarHelpers';
-import CalendarEvent from '../events/CalendarEvent';
+import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
+import CalendarEntry from '../calendar-entries/CalendarEntry';
 import CalendarWeeklyViewDay from './weekly/CalendarWeeklyViewDay';
 
-type EventsPerDay = {
-  withouFullDay: EventWithVerticalPosition[];
-  fullDayOnly: EventWithVerticalPosition[];
+type CalendarEntriesPerDay = {
+  withouFullDay: CalendarEntryWithVerticalPosition[];
+  fullDayOnly: CalendarEntryWithVerticalPosition[];
 };
 
 export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) {
-  const { events, selectedDate, selectedView, setSelectedDate, setSelectedView } =
+  const { calendarEntries, selectedDate, selectedView, setSelectedDate, setSelectedView } =
     useCalendarStore();
   const { auth } = useAuthStore();
   const prevSelectedDateRef = useRef(selectedDate);
@@ -38,18 +38,28 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
         });
   }, [singleDay, generalStartDayOfWeek, selectedDate]);
 
-  const eventsPerDay = useMemo(() => {
-    const newEventsPerDay = new Map<string, EventsPerDay>();
+  const calendarEntriesPerDay = useMemo(() => {
+    const newCalendarEntriesPerDay = new Map<string, CalendarEntriesPerDay>();
     for (const day of days ?? []) {
       const date = format(day, 'yyyy-MM-dd');
-      const withouFullDay = getEventsForDay(date, events, generalTimezone, 'without-full-day');
-      const fullDayOnly = getEventsForDay(date, events, generalTimezone, 'full-day-only');
+      const withouFullDay = getCalendarEntriesForDay(
+        date,
+        calendarEntries,
+        generalTimezone,
+        'without-full-day'
+      );
+      const fullDayOnly = getCalendarEntriesForDay(
+        date,
+        calendarEntries,
+        generalTimezone,
+        'full-day-only'
+      );
 
-      newEventsPerDay.set(date, { fullDayOnly, withouFullDay });
+      newCalendarEntriesPerDay.set(date, { fullDayOnly, withouFullDay });
     }
 
-    return newEventsPerDay;
-  }, [days, events, generalTimezone]);
+    return newCalendarEntriesPerDay;
+  }, [days, calendarEntries, generalTimezone]);
 
   const now = new Date();
   const timezone = getGmtOffset(generalTimezone);
@@ -120,7 +130,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             const dayOfMonth = day.getDate();
             const date = format(day, 'yyyy-MM-dd');
             const isActive = date === format(now, 'yyyy-MM-dd');
-            const fullDayEvents = eventsPerDay.get(date)?.fullDayOnly ?? [];
+            const fullDayCalendarEntries = calendarEntriesPerDay.get(date)?.fullDayOnly ?? [];
 
             return (
               <motion.div
@@ -146,10 +156,10 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                     </button>
                   </div>
                 </div>
-                {fullDayEvents.length > 0 && (
+                {fullDayCalendarEntries.length > 0 && (
                   <div className="mt-2 flex flex-col gap-1">
-                    {fullDayEvents.map((event) => {
-                      return <CalendarEvent key={event.id} event={event} />;
+                    {fullDayCalendarEntries.map((calendarEntry) => {
+                      return <CalendarEntry key={calendarEntry.id} calendarEntry={calendarEntry} />;
                     })}
                   </div>
                 )}
@@ -165,7 +175,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
               <div
                 className="border-b-2"
                 key={hour}
-                style={{ height: CALENDAR_WEEKLY_HOUR_HEIGHT_PX }}
+                style={{ height: CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX }}
               />
             );
           })}
@@ -177,14 +187,14 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 key={hour}
                 className="flex border-b text-xs"
                 style={{
-                  height: CALENDAR_WEEKLY_HOUR_HEIGHT_PX,
+                  height: CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
                 }}
               >
                 <div className="flex w-28 items-center justify-end">
                   <div
                     className="bg-background mr-4 w-full text-right"
                     style={{
-                      transform: `translateY(-${CALENDAR_WEEKLY_HOUR_HEIGHT_PX / 2}px)`,
+                      transform: `translateY(-${CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX / 2}px)`,
                     }}
                   >
                     {index !== 0 ? hour : ''}
@@ -198,14 +208,14 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
           {days.map((day) => {
             const date = format(day, 'yyyy-MM-dd');
             const isActive = isSameDay(day, now);
-            const eventsForDay = eventsPerDay.get(date)?.withouFullDay ?? [];
+            const calendarEntriesForDay = calendarEntriesPerDay.get(date)?.withouFullDay ?? [];
 
             return (
               <CalendarWeeklyViewDay
                 key={date}
                 date={date}
                 isActive={isActive}
-                events={eventsForDay}
+                calendarEntries={calendarEntriesForDay}
               />
             );
           })}

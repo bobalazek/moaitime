@@ -18,9 +18,9 @@ import { utcToZonedTime } from 'date-fns-tz';
 
 import {
   API_URL,
+  CalendarEntry,
+  CalendarEntryWithVerticalPosition,
   DayOfWeek,
-  Event,
-  EventWithVerticalPosition,
   ResponseInterface,
 } from '@moaitime/shared-common';
 
@@ -37,8 +37,8 @@ export const getDatesForRange = (start: string, end: string) => {
   return range;
 };
 
-export const loadEvents = async (from?: Date | string, to?: Date | string) => {
-  const url = new URL(`${API_URL}/api/v1/events`);
+export const loadCalendarEntries = async (from?: Date | string, to?: Date | string) => {
+  const url = new URL(`${API_URL}/api/v1/calendar-entries`);
   if (from) {
     url.searchParams.append('from', from instanceof Date ? from.toISOString() : from);
   }
@@ -47,7 +47,7 @@ export const loadEvents = async (from?: Date | string, to?: Date | string) => {
     url.searchParams.append('to', to instanceof Date ? to.toISOString() : to);
   }
 
-  const response = await fetchJson<ResponseInterface<Event[]>>(url.toString(), {
+  const response = await fetchJson<ResponseInterface<CalendarEntry[]>>(url.toString(), {
     method: 'GET',
   });
 
@@ -80,85 +80,87 @@ export const getWeeksForMonth = (month: Date, startDayOfWeek: number) => {
 };
 
 /**
- * @param date this is the zone-adjusted date that we want to get the events for
- * @param events the collection of the events that we want to filter
+ * @param date this is the zone-adjusted date that we want to get the calendar entries for
+ * @param calendarEntries the collection of the calendar entries that we want to filter
  * @param timezone the timezone that we want to use to adjust the dates
- * @param type the type of the events that we want to get
- * @returns the sorted collection of the events for the given day
+ * @param type the type of the calendar entries that we want to get
+ * @returns the sorted collection of the calendar entries for the given day
  */
-export const getEventsForDay = (
+export const getCalendarEntriesForDay = (
   date: string,
-  events: Event[],
+  calendarEntries: CalendarEntry[],
   timezone: string,
   type: 'all' | 'without-full-day' | 'full-day-only' = 'all'
-): EventWithVerticalPosition[] => {
+): CalendarEntryWithVerticalPosition[] => {
   const day = new Date(date);
   const start = startOfDay(day);
   const end = endOfDay(day);
 
-  const filteredEvents = events
+  const filteredCalendarEntries = calendarEntries
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
-    .filter((event) => {
-      const eventStart = utcToZonedTime(event.startsAt, timezone);
-      const eventEnd = utcToZonedTime(event.endsAt, timezone);
+    .filter((calendarEntry) => {
+      const calendarEntryStart = utcToZonedTime(calendarEntry.startsAt, timezone);
+      const calendarEntryEnd = utcToZonedTime(calendarEntry.endsAt, timezone);
 
-      if (event.isAllDay) {
-        const dates = getDatesForRange(event.startsAt, event.endsAt);
+      if (calendarEntry.isAllDay) {
+        const dates = getDatesForRange(calendarEntry.startsAt, calendarEntry.endsAt);
 
         return dates.some((single) => single === date);
       }
 
-      return eventStart < end && eventEnd > start;
+      return calendarEntryStart < end && calendarEntryEnd > start;
     })
-    .filter((event) => {
+    .filter((calendarEntry) => {
       return (
         type === 'all' ||
-        (type === 'without-full-day' && !event.isAllDay) ||
-        (type === 'full-day-only' && event.isAllDay)
+        (type === 'without-full-day' && !calendarEntry.isAllDay) ||
+        (type === 'full-day-only' && calendarEntry.isAllDay)
       );
     });
 
-  const layoutEvents = (events: Event[]): EventWithVerticalPosition[] => {
-    const eventStacks: Event[][] = [];
-    const positionedEvents: EventWithVerticalPosition[] = [];
+  const layoutCalendarEntries = (
+    calendarEntries: CalendarEntry[]
+  ): CalendarEntryWithVerticalPosition[] => {
+    const stacks: CalendarEntry[][] = [];
+    const positionedCalendarEntries: CalendarEntryWithVerticalPosition[] = [];
 
-    events.forEach((event) => {
+    calendarEntries.forEach((calendarEntry) => {
       let placed = false;
-      for (const stack of eventStacks) {
-        const lastEventInStack = stack[stack.length - 1];
-        if (lastEventInStack.endsAt <= event.startsAt) {
-          stack.push(event);
+      for (const stack of stacks) {
+        const lastInStack = stack[stack.length - 1];
+        if (lastInStack.endsAt <= calendarEntry.startsAt) {
+          stack.push(calendarEntry);
           placed = true;
           break;
         }
       }
 
       if (!placed) {
-        eventStacks.push([event]);
+        stacks.push([calendarEntry]);
       }
     });
 
-    eventStacks.forEach((stack, stackIndex) => {
-      stack.forEach((event) => {
-        const width = 100 / eventStacks.length;
+    stacks.forEach((stack, stackIndex) => {
+      stack.forEach((calendarEntry) => {
+        const width = 100 / stacks.length;
         const left = width * stackIndex;
 
-        positionedEvents.push({
-          ...event,
+        positionedCalendarEntries.push({
+          ...calendarEntry,
           left,
           width,
         });
       });
     });
 
-    return positionedEvents;
+    return positionedCalendarEntries;
   };
 
-  return layoutEvents(filteredEvents);
+  return layoutCalendarEntries(filteredCalendarEntries);
 };
 
-export const getEventsWithStyles = (
-  events: EventWithVerticalPosition[],
+export const getCalendarEntriesWithStyles = (
+  calendarEntries: CalendarEntryWithVerticalPosition[],
   date: string,
   timezone: string,
   hourHeightPx: number
@@ -172,31 +174,37 @@ export const getEventsWithStyles = (
   const timezoneOffsetEnd =
     new Date(utcToZonedTime(endOfUtcDay, timezone)).getTime() - endOfUtcDay.getTime();
 
-  return events.map((event) => {
-    let eventStartsAt = new Date(new Date(event.startsAt).getTime() + timezoneOffsetStart);
-    let eventEndsAt = new Date(new Date(event.endsAt).getTime() + timezoneOffsetEnd);
+  return calendarEntries.map((calendarEntry) => {
+    let calendarEntryStartsAt = new Date(
+      new Date(calendarEntry.startsAt).getTime() + timezoneOffsetStart
+    );
+    let calendarEntryEndsAt = new Date(
+      new Date(calendarEntry.endsAt).getTime() + timezoneOffsetEnd
+    );
 
-    if (eventStartsAt < startOfUtcDay) {
-      eventStartsAt = startOfUtcDay;
+    if (calendarEntryStartsAt < startOfUtcDay) {
+      calendarEntryStartsAt = startOfUtcDay;
     }
 
-    if (eventEndsAt > endOfUtcDay) {
-      eventEndsAt = endOfUtcDay;
+    if (calendarEntryEndsAt > endOfUtcDay) {
+      calendarEntryEndsAt = endOfUtcDay;
     }
 
-    const top = (eventStartsAt.getHours() + eventStartsAt.getMinutes() / 60) * hourHeightPx;
-    const durationInHours = (eventEndsAt.getTime() - eventStartsAt.getTime()) / (1000 * 60 * 60);
+    const top =
+      (calendarEntryStartsAt.getHours() + calendarEntryStartsAt.getMinutes() / 60) * hourHeightPx;
+    const durationInHours =
+      (calendarEntryEndsAt.getTime() - calendarEntryStartsAt.getTime()) / (1000 * 60 * 60);
     const height = Math.ceil(durationInHours * hourHeightPx);
 
     const style = {
       top,
       height,
-      left: `${event.left}%`,
-      width: `${event.width}%`,
+      left: `${calendarEntry.left}%`,
+      width: `${calendarEntry.width}%`,
     };
 
     return {
-      ...event,
+      ...calendarEntry,
       style,
     };
   });

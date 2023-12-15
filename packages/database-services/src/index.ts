@@ -8,9 +8,7 @@ export * from './features/backgrounds/BackgroundsManager';
 
 // Calendars
 export * from './features/calendars/CalendarsManager';
-
-// Events
-export * from './features/events/EventsManager';
+export * from './features/calendars/EventsManager';
 
 // Greetings
 export * from './features/greetings/GreetingsManager';

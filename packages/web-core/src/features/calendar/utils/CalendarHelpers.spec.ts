@@ -1,15 +1,19 @@
 /// <reference types="vitest" />
 
-import { getEventsForDay, getEventsWithStyles } from './CalendarHelpers';
+import { CalendarEntryTypeEnum } from '@moaitime/shared-common';
+
+import { getCalendarEntriesForDay, getCalendarEntriesWithStyles } from './CalendarHelpers';
 
 describe('CalendarHelpers.ts', () => {
-  describe('getEventsForDay()', () => {
-    it('should return all events for the day', () => {
-      const result = getEventsForDay(
+  describe('getCalendarEntriesForDay()', () => {
+    it('should return all calendar entries for the day', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-20',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -21,6 +25,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: false,
@@ -32,6 +38,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 3',
             description: '',
             isAllDay: false,
@@ -52,12 +60,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result[2].id).toBe('event-3');
     });
 
-    it('should return all events for the day in the correct order', () => {
-      const result = getEventsForDay(
+    it('should return all calendar entries for the day in the correct order', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-20',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -69,6 +79,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: false,
@@ -80,6 +92,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 3',
             description: '',
             isAllDay: false,
@@ -100,12 +114,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result[2].id).toBe('event-3');
     });
 
-    it('should return full day only events', () => {
-      const result = getEventsForDay(
+    it('should return full day only calendar entries', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-20',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: true,
@@ -117,6 +133,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: true,
@@ -128,6 +146,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 3',
             description: '',
             isAllDay: false,
@@ -146,12 +166,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2']);
     });
 
-    it('should return non full day events only', () => {
-      const result = getEventsForDay(
+    it('should return non full day calendar entries only', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-20',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: true,
@@ -163,6 +185,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: true,
@@ -174,6 +198,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 3',
             description: '',
             isAllDay: false,
@@ -192,12 +218,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result.map((event) => event.id)).toEqual(['event-3']);
     });
 
-    it('should correctly return the event if adjusted for the EST timezone early day', () => {
-      const result = getEventsForDay(
+    it('should correctly return the calendar entry if adjusted for the EST timezone early day', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-20',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -209,6 +237,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: false,
@@ -227,12 +257,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result.map((event) => event.id)).toEqual(['event-2']);
     });
 
-    it('should correctly return the event if adjusted for the EST timezone late day', () => {
-      const result = getEventsForDay(
+    it('should correctly return the calendar entry if adjusted for the EST timezone late day', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-20',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -244,6 +276,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: false,
@@ -262,12 +296,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2']);
     });
 
-    it('should return all matching full day events', () => {
-      const result = getEventsForDay(
+    it('should return all matching full day calendar etnries', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-20',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: true,
@@ -279,6 +315,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: true,
@@ -290,6 +328,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 3',
             description: '',
             isAllDay: true,
@@ -308,12 +348,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result.map((event) => event.id)).toEqual(['event-3', 'event-1', 'event-2']);
     });
 
-    it('should return only the correct full day events before 20th december', () => {
-      const result = getEventsForDay(
+    it('should return only the correct full day calendar entries before 20th december', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-19',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: true,
@@ -325,6 +367,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: true,
@@ -336,6 +380,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 3',
             description: '',
             isAllDay: true,
@@ -354,12 +400,14 @@ describe('CalendarHelpers.ts', () => {
       expect(result.map((event) => event.id)).toEqual(['event-3']);
     });
 
-    it('should return only the correct full day events after 20th december', () => {
-      const result = getEventsForDay(
+    it('should return only the correct full day calendar entries after 20th december', () => {
+      const result = getCalendarEntriesForDay(
         '2023-12-21',
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: true,
@@ -371,6 +419,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 2',
             description: '',
             isAllDay: true,
@@ -382,6 +432,8 @@ describe('CalendarHelpers.ts', () => {
           },
           {
             id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 3',
             description: '',
             isAllDay: true,
@@ -401,12 +453,14 @@ describe('CalendarHelpers.ts', () => {
     });
   });
 
-  describe('getEventsWithStyles()', () => {
+  describe('getCalendarEntriesWithStyles()', () => {
     it('should correctly calculate the height', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -430,10 +484,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing from the previous day', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -457,10 +513,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing to the next day', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -484,10 +542,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing from the previous day if moscow time', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -511,10 +571,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing to the next day if moscow time', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -538,10 +600,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing from the previous day if los angeles time', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -565,10 +629,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing from the next day if los angeles time', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -592,10 +658,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing from the previous day if sydney time', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,
@@ -619,10 +687,12 @@ describe('CalendarHelpers.ts', () => {
     });
 
     it('should correctly calculate the height if overflowing from the next day if sydney time', () => {
-      const result = getEventsWithStyles(
+      const result = getCalendarEntriesWithStyles(
         [
           {
             id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            calendarId: 'calendar-1',
             title: 'Event 1',
             description: '',
             isAllDay: false,

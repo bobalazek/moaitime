@@ -1,7 +1,7 @@
 import { addDays, areIntervalsOverlapping, eachDayOfInterval, format } from 'date-fns';
 import { create } from 'zustand';
 
-import { CalendarViewEnum, Event } from '@moaitime/shared-common';
+import { CalendarEntry, CalendarViewEnum } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import {
@@ -9,7 +9,7 @@ import {
   getMonthRange,
   getWeekRange,
   getYearRange,
-  loadEvents,
+  loadCalendarEntries,
 } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -26,9 +26,9 @@ export type CalendarStore = {
   selectedDays: Date[];
   reloadSelectedDays: () => Promise<void>;
   isTodayInSelectedDaysRange: boolean;
-  /********** Events **********/
-  events: Event[];
-  loadEvents: () => Promise<Event[]>;
+  /********** Calendar Entries **********/
+  calendarEntries: CalendarEntry[];
+  loadCalendarEnries: () => Promise<CalendarEntry[]>;
 };
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
@@ -72,7 +72,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   // Selected Days
   selectedDays: [],
   reloadSelectedDays: async () => {
-    const { selectedDate, selectedView, loadEvents } = get();
+    const { selectedDate, selectedView, loadCalendarEnries } = get();
     const { auth } = useAuthStore.getState();
 
     const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
@@ -109,12 +109,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       isTodayInSelectedDaysRange,
     });
 
-    await loadEvents();
+    await loadCalendarEnries();
   },
   isTodayInSelectedDaysRange: false,
-  /********** Events **********/
-  events: [],
-  loadEvents: async () => {
+  /********** Calendar Entries **********/
+  calendarEntries: [],
+  loadCalendarEnries: async () => {
     const { selectedDays } = get();
 
     const from = selectedDays[0] ? format(selectedDays[0], 'yyyy-MM-dd') : undefined;
@@ -122,11 +122,11 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       ? format(selectedDays[selectedDays.length - 1], 'yyyy-MM-dd')
       : undefined;
 
-    const response = await loadEvents(from, to);
-    const events = response.data ?? [];
+    const response = await loadCalendarEntries(from, to);
+    const calendarEntries = response.data ?? [];
 
-    set({ events });
+    set({ calendarEntries });
 
-    return events;
+    return calendarEntries;
   },
 }));

@@ -1,22 +1,24 @@
 import { clsx } from 'clsx';
 import { format, isSameDay, isSameMonth } from 'date-fns';
 
-import { CalendarViewEnum, Event } from '@moaitime/shared-common';
+import {
+  CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT,
+  CalendarEntry,
+  CalendarViewEnum,
+} from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../../state/calendarStore';
-import CalendarEvent from '../../events/CalendarEvent';
-
-const CALENDAR_MONTHLY_VIEW_DAY_EVENTS_COUNT_LIMIT = 4;
+import CalendarEntryComponent from '../../calendar-entries/CalendarEntry';
 
 export default function CalendarMonthlyViewDay({
   day,
   now,
-  events,
+  calendarEntries,
   isFirstWeeksDay,
 }: {
   day: Date;
   now: Date;
-  events: Event[];
+  calendarEntries: CalendarEntry[];
   isFirstWeeksDay: boolean;
 }) {
   const { selectedDate, setSelectedDate, setSelectedView } = useCalendarStore();
@@ -31,8 +33,11 @@ export default function CalendarMonthlyViewDay({
     setSelectedView(CalendarViewEnum.DAY);
   };
 
-  const shownEvents = events.slice(0, CALENDAR_MONTHLY_VIEW_DAY_EVENTS_COUNT_LIMIT);
-  const remainingEventsCount = events.length - shownEvents.length;
+  const shownCalendarEntries = calendarEntries.slice(
+    0,
+    CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT
+  );
+  const remainingCalendarEntriesCount = calendarEntries.length - shownCalendarEntries.length;
 
   return (
     <div className="flex-grow border p-2 lg:w-0" data-test="calendar--monthly-view--day">
@@ -50,22 +55,22 @@ export default function CalendarMonthlyViewDay({
           <span>{dateText}</span>
         </button>
       </div>
-      {shownEvents.length === 0 && (
+      {shownCalendarEntries.length === 0 && (
         <div className="flex flex-grow flex-col items-center justify-center text-xs text-gray-600">
-          <span className="text-center">No events</span>
+          <span className="text-center">No entries</span>
         </div>
       )}
-      {shownEvents.length > 0 && (
+      {shownCalendarEntries.length > 0 && (
         <div className="flex flex-col gap-1">
-          {shownEvents.map((event) => (
-            <CalendarEvent key={event.id} event={event} />
+          {shownCalendarEntries.map((calendarEntry) => (
+            <CalendarEntryComponent key={calendarEntry.id} calendarEntry={calendarEntry} />
           ))}
-          {remainingEventsCount > 0 && (
+          {remainingCalendarEntriesCount > 0 && (
             <div
               className="cursor-pointer p-2 text-center text-sm text-gray-400 hover:text-gray-500"
               onClick={onDayClick}
             >
-              + {remainingEventsCount} more
+              + {remainingCalendarEntriesCount} more
             </div>
           )}
         </div>

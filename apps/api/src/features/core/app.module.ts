@@ -4,7 +4,7 @@ import { destroyDatabase } from '@moaitime/database-core';
 
 import { AuthModule } from '../auth/auth.module';
 import { BackgroundsModule } from '../backgrounds/backgrounds.module';
-import { EventsModule } from '../events/events.module';
+import { CalendarsModule } from '../calendar/calendar.module';
 import { GreetingsModule } from '../greetings/greetings.module';
 import { QuotesModule } from '../quotes/quotes.module';
 import { TasksModule } from '../tasks/tasks.module';
@@ -19,7 +19,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
     GreetingsModule,
     QuotesModule,
     TasksModule,
-    EventsModule,
+    CalendarsModule,
     TestingModule,
   ],
   controllers: [AppController],

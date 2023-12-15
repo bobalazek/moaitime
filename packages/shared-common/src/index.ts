@@ -14,6 +14,8 @@ export * from './auth/OrganizationUserRoleEnum';
 export * from './background/Background';
 
 // Calendar
+export * from './calendar/CalendarEntrySchema';
+export * from './calendar/CalendarEntryTypeEnum';
 export * from './calendar/CalendarViewOptions';
 export * from './calendar/EventSchema';
 

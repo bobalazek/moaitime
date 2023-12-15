@@ -27,16 +27,20 @@ export default function CalendarDialog() {
       )?.value;
       if (selectedViewByKey) {
         e.preventDefault();
+
         setSelectedDate(new Date());
         setSelectedView(selectedViewByKey);
       } else if (e.key === 'PageUp') {
         e.preventDefault();
+
         headerRef.current?.onPrevButtonClick();
       } else if (e.key === 'PageDown') {
         e.preventDefault();
+
         headerRef.current?.onNextButtonClick();
       } else if (e.key === 'Home') {
         e.preventDefault();
+
         headerRef.current?.onTodayButtonClick();
       }
     };

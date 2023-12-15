@@ -78,10 +78,7 @@ export default function TaskDialogDueDate({ data, setData }: TaskDialogDueDatePr
             <TaskDialogDueDateText data={data} />
           </span>
           {dateValue && (
-            <span
-              className="text-muted-foreground rounded-full p-1 hover:bg-slate-600"
-              onClick={onClearButtonClick}
-            >
+            <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
               <FaTimes />
             </span>
           )}

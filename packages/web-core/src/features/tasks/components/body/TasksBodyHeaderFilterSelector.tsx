@@ -38,7 +38,7 @@ export default function TasksBodyHeaderFilterSelector() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-56 bg-gray-700"
+        className="w-56"
         align="end"
         data-test="tasks--body-header--list-selector--dropdown-menu"
       >

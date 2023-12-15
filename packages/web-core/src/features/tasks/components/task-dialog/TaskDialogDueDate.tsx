@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { FaCalendar, FaTimes } from 'react-icons/fa';
 
 import { UpdateTask } from '@moaitime/shared-common';
@@ -29,9 +29,15 @@ export const TaskDialogDueDateText = ({ data }: { data: UpdateTask }) => {
 export default function TaskDialogDueDate({ data, setData }: TaskDialogDueDateProps) {
   const { auth } = useAuthStore();
   const [open, setOpen] = useState(false);
-  const [dateValue, setDateValue] = useState(data.dueDate ?? null);
-  const [dateTimeValue, setDateTimeValue] = useState(data.dueDateTime ?? null);
-  const [dateTimeZoneValue, setDateTimeZoneValue] = useState(data.dueDateTimeZone ?? null);
+  const [dateValue, setDateValue] = useState<string | null>(null);
+  const [dateTimeValue, setDateTimeValue] = useState<string | null>(null);
+  const [dateTimeZoneValue, setDateTimeZoneValue] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDateValue(data.dueDate ?? null);
+    setDateTimeValue(data.dueDateTime ?? null);
+    setDateTimeZoneValue(data.dueDateTimeZone ?? null);
+  }, [data]);
 
   const onSelectDate = (value?: Date) => {
     setDateValue(value ? format(value, 'yyyy-MM-dd') : null);

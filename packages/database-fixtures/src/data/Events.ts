@@ -59,7 +59,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           timezone,
           isAllDay: true,
           startsAt: new Date(`${todaysDate}T00:00:00.000`),
-          endsAt: new Date(`${todaysDate}T23:59:59.999`),
+          endsAt: new Date(`${todaysDate}T00:00:00.000`),
           calendarId,
         },
         {
@@ -68,7 +68,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           timezone,
           isAllDay: true,
           startsAt: new Date(`${todaysDate}T00:00:00.000`),
-          endsAt: new Date(`${todaysDate}T23:59:59.999`),
+          endsAt: new Date(`${todaysDate}T00:00:00.000`),
           calendarId,
         },
         {
@@ -77,7 +77,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           timezone,
           isAllDay: true,
           startsAt: new Date(`${todaysDate}T00:00:00.000`),
-          endsAt: new Date(`${tomorrowsDate}T23:59:59.999`),
+          endsAt: new Date(`${tomorrowsDate}T00:00:00.000`),
           calendarId,
         },
         {

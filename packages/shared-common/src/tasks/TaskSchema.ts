@@ -38,7 +38,7 @@ export const CreateTaskSchema = z.object({
         let dueDate = new Date(data);
 
         if (data.length === 10) {
-          dueDate = new Date(`${data}T23:59:59.999`);
+          dueDate = new Date(`${data}T00:00:00.000`);
         }
 
         return dueDate >= now;

@@ -23,7 +23,7 @@ export const getEventSeeds = async (): Promise<NewEvent[]> => {
       calendarId: calendar.id,
       isAllDay: true,
       startsAt: new Date(`${date}T00:00:00.000`),
-      endsAt: new Date(`${date}T23:59:59.999`),
+      endsAt: new Date(`${date}T00:00:00.000`),
       ...event,
     });
   }

@@ -35,6 +35,10 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
     const startsAt = new Date(data.startsAt);
     const endsAt = new Date(data.endsAt);
 
+    if (data.isAllDay && startsAt.getTime() === endsAt.getTime()) {
+      return true;
+    }
+
     return startsAt < endsAt;
   },
   {
@@ -47,15 +51,15 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
       return true;
     }
 
-    return data.startsAt.endsWith('T00:00:00.000Z') && data.endsAt.endsWith('T23:59:59.999Z');
+    return data.startsAt.endsWith('T00:00:00.000Z') && data.endsAt.endsWith('T00:00:00.000Z');
   },
   {
-    message: 'All day events must start at T00:00:00.000Z and end at T23:59:59.999Z',
+    message: 'All day events must start at T00:00:00.000Z and end at T00:00:00.000Z',
     path: ['isAllDay'],
   }
 );
 
-export const UpdateEventSchema = CreateEventBaseSchema.partial();
+export const UpdateEventSchema = CreateEventBaseSchema;
 
 // Types
 export type Event = z.infer<typeof EventSchema>;

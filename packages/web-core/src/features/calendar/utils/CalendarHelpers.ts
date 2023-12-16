@@ -227,13 +227,11 @@ export const getCalendarEntriesWithStyles = (
   hourHeightPx: number
 ) => {
   const day = new Date(date);
-  const startOfUtcDay = startOfDay(day);
-  const endOfUtcDay = endOfDay(day);
+  const start = startOfDay(day);
+  const end = endOfDay(day);
 
-  const timezoneOffsetStart =
-    new Date(utcToZonedTime(startOfUtcDay, timezone)).getTime() - startOfUtcDay.getTime();
-  const timezoneOffsetEnd =
-    new Date(utcToZonedTime(endOfUtcDay, timezone)).getTime() - endOfUtcDay.getTime();
+  const timezoneOffsetStart = new Date(utcToZonedTime(start, timezone)).getTime() - start.getTime();
+  const timezoneOffsetEnd = new Date(utcToZonedTime(end, timezone)).getTime() - end.getTime();
 
   return calendarEntries.map((calendarEntry) => {
     let calendarEntryStartsAt = new Date(
@@ -243,12 +241,12 @@ export const getCalendarEntriesWithStyles = (
       new Date(calendarEntry.endsAt).getTime() + timezoneOffsetEnd
     );
 
-    if (calendarEntryStartsAt < startOfUtcDay) {
-      calendarEntryStartsAt = startOfUtcDay;
+    if (calendarEntryStartsAt < start) {
+      calendarEntryStartsAt = start;
     }
 
-    if (calendarEntryEndsAt > endOfUtcDay) {
-      calendarEntryEndsAt = endOfUtcDay;
+    if (calendarEntryEndsAt > end) {
+      calendarEntryEndsAt = end;
     }
 
     const top =
@@ -296,4 +294,34 @@ export const getAgendaRange = (date: Date) => {
   const end = endOfMonth(addMonths(start, 2));
 
   return { start, end };
+};
+
+export const convertIsoToObject = (isoString?: string, showDateTime?: boolean) => {
+  if (!isoString) {
+    return {
+      date: null,
+      dateTime: null,
+      dateTimeZone: null,
+    };
+  }
+
+  const dateObject = new Date(isoString);
+
+  return {
+    date: format(dateObject, 'yyyy-MM-dd'),
+    dateTime: showDateTime ? format(dateObject, 'HH:mm') : null,
+    dateTimeZone: null,
+  };
+};
+
+export const convertObjectToIso = <T extends Record<string, string | null>>(object: T) => {
+  if (!object.date) {
+    return undefined;
+  }
+
+  if (object.dateTime) {
+    return { iso: `${object.date}T${object.dateTime}Z`, timezone: undefined };
+  }
+
+  return { iso: `${object.date}T00:00:00.000Z`, timezone: undefined };
 };

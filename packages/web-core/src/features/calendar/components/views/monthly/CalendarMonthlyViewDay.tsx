@@ -6,8 +6,6 @@ import {
   CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT,
   CalendarEntry as CalendarEntryType, // We can't have the same name, as it's already used by the component
   CalendarViewEnum,
-  getTimezonedEndOfDay,
-  getTimezonedStartOfDay,
 } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../../state/calendarStore';
@@ -18,13 +16,11 @@ export default function CalendarMonthlyViewDay({
   now,
   calendarEntries,
   isFirstWeeksDay,
-  timezone,
 }: {
   day: Date;
   now: Date;
   calendarEntries: CalendarEntryType[];
   isFirstWeeksDay: boolean;
-  timezone: string;
 }) {
   const { selectedDate, setSelectedDate, setSelectedView, setSelectedCalendarEntryDialogOpen } =
     useCalendarStore();
@@ -46,12 +42,11 @@ export default function CalendarMonthlyViewDay({
     event.preventDefault();
     event.stopPropagation();
 
-    const startsAt = getTimezonedStartOfDay(timezone, day.toISOString())?.toISOString();
-    const endsAt = getTimezonedEndOfDay(timezone, day.toISOString())?.toISOString();
+    const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000Z`;
 
     setSelectedCalendarEntryDialogOpen(true, {
-      startsAt,
-      endsAt,
+      startsAt: dayMidnight,
+      endsAt: dayMidnight,
       isAllDay: true,
       // TODO: figure out a more optimal way for this
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

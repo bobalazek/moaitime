@@ -1,11 +1,12 @@
-import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import {
   convertObjectNullPropertiesToUndefined,
   CreateCalendarEntry,
+  CreateEvent,
   UpdateCalendarEntry,
   UpdateCalendarEntrySchema,
+  UpdateEvent,
   zodErrorToString,
 } from '@moaitime/shared-common';
 import {
@@ -22,38 +23,7 @@ import {
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
 import { useCalendarStore } from '../../state/calendarStore';
-
-const convertIsoToObject = (isoString?: string, showDateTime?: boolean): DateSelectorData => {
-  if (!isoString) {
-    return {
-      date: null,
-      dateTime: null,
-      dateTimeZone: null,
-    };
-  }
-
-  const dateObject = new Date(isoString);
-
-  return {
-    date: format(dateObject, 'yyyy-MM-dd'),
-    dateTime: showDateTime ? format(dateObject, 'HH:mm') : null,
-    dateTimeZone: null,
-  };
-};
-
-const convertObjectToIso = (
-  object: DateSelectorData
-): { iso: string; timezone: string | undefined } | undefined => {
-  if (!object.date) {
-    return undefined;
-  }
-
-  if (object.dateTime) {
-    return { iso: `${object.date}T${object.dateTime}Z`, timezone: undefined };
-  }
-
-  return { iso: object.date, timezone: undefined };
-};
+import { convertIsoToObject, convertObjectToIso } from '../../utils/CalendarHelpers';
 
 export default function CalendarEntryDialog() {
   const { toast } = useToast();
@@ -99,8 +69,8 @@ export default function CalendarEntryDialog() {
 
     try {
       const editedEvent = selectedCalendarEntry?.id
-        ? await editEvent(selectedCalendarEntry.id.replace('events:', ''), data)
-        : await addEvent(data as CreateCalendarEntry);
+        ? await editEvent(selectedCalendarEntry.id.replace('events:', ''), data as UpdateEvent)
+        : await addEvent(data as CreateEvent);
 
       toast({
         title: `Event "${editedEvent.title}" save`,
@@ -156,7 +126,7 @@ export default function CalendarEntryDialog() {
             includeTime={!data?.isAllDay}
             data={convertIsoToObject(data?.startsAt, !data?.isAllDay)}
             onSaveData={(saveData) => {
-              const result = convertObjectToIso(saveData);
+              const result = convertObjectToIso<DateSelectorData>(saveData);
 
               setData((current) => ({ ...current, startsAt: result?.iso }));
             }}
@@ -168,7 +138,7 @@ export default function CalendarEntryDialog() {
             includeTime={!data?.isAllDay}
             data={convertIsoToObject(data?.endsAt, !data?.isAllDay)}
             onSaveData={(saveData) => {
-              const result = convertObjectToIso(saveData);
+              const result = convertObjectToIso<DateSelectorData>(saveData);
 
               setData((current) => ({ ...current, endsAt: result?.iso }));
             }}

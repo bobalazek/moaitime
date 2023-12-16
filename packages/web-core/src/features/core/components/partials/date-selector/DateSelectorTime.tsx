@@ -14,7 +14,7 @@ import {
 
 import TimezoneSelector from '../TimezoneSelector';
 
-type DateSelectorTimeProps = {
+export type DateSelectorTimeProps = {
   dateTime: string | null;
   onDateTimeChange: (value: string | null) => void;
   dateTimeZone: string | null;

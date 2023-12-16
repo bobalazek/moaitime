@@ -7,15 +7,17 @@ import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moai
 import { useAuthStore } from '../../../../auth/state/authStore';
 import TaskDialogDueDateTime from './DateSelectorTime';
 
-type DateSelectorData = {
+export type DateSelectorData = {
   date: string | null;
   dateTime: string | null;
   dateTimeZone: string | null;
 };
 
-type DateSelectorProps = {
+export type DateSelectorProps = {
   data: DateSelectorData;
   onSaveData: (value: DateSelectorData) => void;
+  includeTime?: boolean;
+  disablePast?: boolean;
 };
 
 export const DateSelectorText = ({ data }: { data: DateSelectorData }) => {
@@ -31,7 +33,12 @@ export const DateSelectorText = ({ data }: { data: DateSelectorData }) => {
   );
 };
 
-export default function DateSelector({ data, onSaveData }: DateSelectorProps) {
+export default function DateSelector({
+  data,
+  onSaveData,
+  includeTime,
+  disablePast,
+}: DateSelectorProps) {
   const { auth } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [dateValue, setDateValue] = useState<string | null>(null);
@@ -100,14 +107,14 @@ export default function DateSelector({ data, onSaveData }: DateSelectorProps) {
       >
         <Calendar
           mode="single"
-          disabled={[{ before: new Date() }]}
+          disabled={disablePast ? [{ before: new Date() }] : undefined}
           selected={dateValue ? new Date(dateValue) : undefined}
           onSelect={onSelectDate}
           weekStartsOn={generalStartDayOfWeek}
         />
-        {dateValue && (
+        {includeTime && dateValue && (
           <>
-            <hr className="border-gray-300" />
+            <hr className="border-gray-300 dark:border-gray-600" />
             <TaskDialogDueDateTime
               dateTime={dateTimeValue}
               dateTimeZone={dateTimeZoneValue}

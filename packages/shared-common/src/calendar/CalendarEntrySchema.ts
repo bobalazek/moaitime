@@ -15,22 +15,30 @@ export const CalendarEntrySchema = z.object({
   deletedAt: z.string().nullable(),
   updatedAt: z.string(),
   createdAt: z.string(),
-  calendarId: z.string().nullable(),
+  calendarId: z.string(),
 });
 
-export const UpdateCalendarEntrySchema = z.object({
-  title: z.string().optional(),
-  description: z.string().nullable().optional(),
-  timezone: z.string().optional(),
-  endTimezone: z.string().nullable().optional(),
-  isAllDay: z.boolean().optional(),
-  startsAt: z.string().optional(),
-  endsAt: z.string().optional(),
-  calendarId: z.string().nullable().optional(),
+export const CreateCalendarEntrySchema = z.object({
+  type: z.nativeEnum(CalendarEntryTypeEnum),
+  title: z.string(),
+  description: z.string().nullable(),
+  timezone: z.string(),
+  endTimezone: z.string().nullable(),
+  isAllDay: z.boolean(),
+  startsAt: z.string(),
+  endsAt: z.string(),
+  calendarId: z.string(),
+});
+
+export const UpdateCalendarEntrySchema = CreateCalendarEntrySchema.partial().omit({
+  type: true,
+  calendarId: true,
 });
 
 // Types
 export type CalendarEntry = z.infer<typeof CalendarEntrySchema>;
+
+export type CreateCalendarEntry = z.infer<typeof CreateCalendarEntrySchema>;
 
 export type UpdateCalendarEntry = z.infer<typeof UpdateCalendarEntrySchema>;
 

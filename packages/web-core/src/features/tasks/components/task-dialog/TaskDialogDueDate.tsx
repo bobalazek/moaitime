@@ -10,6 +10,8 @@ type TaskDialogDueDateProps = {
 export default function TaskDialogDueDate({ data, setData }: TaskDialogDueDateProps) {
   return (
     <DateSelector
+      includeTime
+      disablePast
       data={{
         date: data.dueDate ?? null,
         dateTime: data.dueDateTime ?? null,

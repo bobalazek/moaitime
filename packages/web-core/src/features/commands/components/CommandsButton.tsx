@@ -17,7 +17,7 @@ export default function CommandsButton() {
       data-test="commands-trigger-button"
     >
       <span>Search commands ...</span>
-      <kbd className="bg-muted pointer-events-none absolute right-2 top-2 hidden select-none items-center gap-1 rounded border px-2 font-mono text-[10px] opacity-100 sm:flex">
+      <kbd className="bg-muted pointer-events-none absolute right-2 top-1.5 hidden select-none items-center gap-1 rounded border px-2 font-mono text-[10px] opacity-100 sm:flex">
         {shortcutText}
       </kbd>
     </Button>

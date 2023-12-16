@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import {
@@ -16,7 +17,42 @@ import {
   useToast,
 } from '@moaitime/web-ui';
 
+import DateSelector, {
+  DateSelectorData,
+} from '../../../core/components/partials/date-selector/DateSelector';
 import { useCalendarStore } from '../../state/calendarStore';
+
+const convertIsoToObject = (isoString?: string, showDateTime?: boolean): DateSelectorData => {
+  if (!isoString) {
+    return {
+      date: null,
+      dateTime: null,
+      dateTimeZone: null,
+    };
+  }
+
+  const dateObject = new Date(isoString);
+
+  return {
+    date: format(dateObject, 'yyyy-MM-dd'),
+    dateTime: showDateTime ? format(dateObject, 'HH:mm') : null,
+    dateTimeZone: null,
+  };
+};
+
+const convertObjectToIso = (
+  object: DateSelectorData
+): { iso: string; timezone: string | undefined } | undefined => {
+  if (!object.date) {
+    return undefined;
+  }
+
+  if (object.dateTime) {
+    return { iso: `${object.date}T${object.dateTime}Z`, timezone: undefined };
+  }
+
+  return { iso: object.date, timezone: undefined };
+};
 
 export default function CalendarEntryDialog() {
   const { toast } = useToast();
@@ -93,16 +129,38 @@ export default function CalendarEntryDialog() {
           />
         </div>
         <div className="mb-4 flex items-center space-x-2">
-          <Switch id="calendarEntry-isAllDay" checked={data?.isAllDay} />
+          <Switch
+            id="calendarEntry-isAllDay"
+            checked={data?.isAllDay}
+            onCheckedChange={(value) => {
+              setData((current) => ({ ...current, isAllDay: value }));
+            }}
+          />
           <Label htmlFor="calendarEntry-isAllDay">Is All Day?</Label>
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-startsAt">Starts At</Label>
-          <Input value={data?.startsAt ?? ''} readOnly />
+          <DateSelector
+            includeTime={!data?.isAllDay}
+            data={convertIsoToObject(data?.startsAt, !data?.isAllDay)}
+            onSaveData={(saveData) => {
+              const result = convertObjectToIso(saveData);
+
+              setData((current) => ({ ...current, startsAt: result?.iso }));
+            }}
+          />
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-endsAt">Ends At</Label>
-          <Input value={data?.endsAt ?? ''} readOnly />
+          <DateSelector
+            includeTime={!data?.isAllDay}
+            data={convertIsoToObject(data?.endsAt, !data?.isAllDay)}
+            onSaveData={(saveData) => {
+              const result = convertObjectToIso(saveData);
+
+              setData((current) => ({ ...current, endsAt: result?.iso }));
+            }}
+          />
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>

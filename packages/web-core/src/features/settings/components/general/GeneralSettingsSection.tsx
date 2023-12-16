@@ -1,5 +1,5 @@
 import { useAuthStore } from '../../../auth/state/authStore';
-import TimezoneSelector from '../../../core/components/partials/TimezoneSelector';
+import TimezoneSelector from '../../../core/components/selectors/TimezoneSelector';
 import GeneralSettingsSectionHeaderText from './GeneralSettingsSectionHeaderText';
 import GeneralStartDayOfWeekSetting from './settings/GeneralStartDayOfWeekSetting';
 import GeneralThemeSetting from './settings/GeneralThemeSetting';

@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 
 import { getTimezones } from '@moaitime/shared-common';
@@ -34,7 +34,9 @@ export default function TimezoneSelector({
 }: TimezoneSelectorProps) {
   const [open, setOpen] = useState(false);
 
-  const onClearButtonClick = () => {
+  const onClearButtonClick = (event: MouseEvent) => {
+    event.preventDefault();
+
     onValueChange(null);
   };
 

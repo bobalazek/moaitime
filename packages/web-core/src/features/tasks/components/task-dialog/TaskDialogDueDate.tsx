@@ -1,6 +1,6 @@
 import { UpdateTask } from '@moaitime/shared-common';
 
-import DateSelector from '../../../core/components/partials/date-selector/DateSelector';
+import DateSelector from '../../../core/components/selectors/DateSelector';
 
 type TaskDialogDueDateProps = {
   data: UpdateTask;

@@ -17,9 +17,7 @@ import {
   useToast,
 } from '@moaitime/web-ui';
 
-import DateSelector, {
-  DateSelectorData,
-} from '../../../core/components/partials/date-selector/DateSelector';
+import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
 import { useCalendarStore } from '../../state/calendarStore';
 
 const convertIsoToObject = (isoString?: string, showDateTime?: boolean): DateSelectorData => {

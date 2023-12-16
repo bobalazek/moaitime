@@ -1,11 +1,21 @@
 import { format } from 'date-fns';
-import { MouseEvent, useEffect, useState } from 'react';
+import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 import { FaCalendar, FaTimes } from 'react-icons/fa';
 
-import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
+import { isValidTime } from '@moaitime/shared-common';
+import {
+  Button,
+  Calendar,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  useToast,
+} from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../../auth/state/authStore';
-import TaskDialogDueDateTime from './DateSelectorTime';
+import { useAuthStore } from '../../../auth/state/authStore';
+import TimezoneSelector from './TimezoneSelector';
 
 export type DateSelectorData = {
   date: string | null;
@@ -39,6 +49,7 @@ export default function DateSelector({
   includeTime,
   disablePast,
 }: DateSelectorProps) {
+  const { toast } = useToast();
   const { auth } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [dateValue, setDateValue] = useState<string | null>(null);
@@ -49,14 +60,32 @@ export default function DateSelector({
     setDateValue(data.date ?? null);
     setDateTimeValue(data.dateTime ?? null);
     setDateTimeZoneValue(data.dateTimeZone ?? null);
-  }, [data]);
+  }, [data.date, data.dateTime, data.dateTimeZone]);
 
   const onSelectDate = (value?: Date) => {
     setDateValue(value ? format(value, 'yyyy-MM-dd') : null);
   };
 
-  const onSaveButtonClick = (event: MouseEvent) => {
-    event.preventDefault();
+  const onKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    onSaveButtonClick(event);
+  };
+
+  const onSaveButtonClick = (event?: MouseEvent | KeyboardEvent) => {
+    event?.preventDefault();
+
+    if (dateTimeValue && !isValidTime(dateTimeValue)) {
+      toast({
+        title: 'Invalid time',
+        description: 'Please enter a valid time',
+        variant: 'destructive',
+      });
+
+      return;
+    }
 
     onSaveData({
       date: dateValue,
@@ -87,7 +116,7 @@ export default function DateSelector({
         <Button
           variant="outline"
           className="flex justify-between font-normal"
-          data-test="tasks--due-date--trigger-button"
+          data-test="date-selector--trigger-button"
         >
           <span className="flex">
             <FaCalendar className="mr-2 h-4 w-4" />
@@ -103,7 +132,7 @@ export default function DateSelector({
       <PopoverContent
         side="top"
         className="w-auto flex-col space-y-4 p-2"
-        data-test="tasks--due-date"
+        data-test="date-selector"
       >
         <Calendar
           mode="single"
@@ -114,13 +143,29 @@ export default function DateSelector({
         />
         {includeTime && dateValue && (
           <>
-            <hr className="border-gray-300 dark:border-gray-600" />
-            <TaskDialogDueDateTime
-              dateTime={dateTimeValue}
-              dateTimeZone={dateTimeZoneValue}
-              onDateTimeChange={setDateTimeValue}
-              onDateTimeZoneChange={setDateTimeZoneValue}
-            />
+            <hr className="border-gray-300 dark:border-gray-700" />
+            <div className="space-y-2">
+              <Label htmlFor="date-selector--time">Time</Label>
+              <Input
+                id="dae-selector--time"
+                value={dateTimeValue ?? ''}
+                onChange={(event) => setDateTimeValue(event.target.value)}
+                onKeyDown={onKeyPress}
+                autoComplete="off"
+              />
+              {/* Add TimeRangesDropdownMenu here, once we sort out the focus issue */}
+            </div>
+            {dateTimeValue && (
+              <div>
+                <Label htmlFor="date-selector--timezone">Timezone</Label>
+                <TimezoneSelector
+                  value={dateTimeZoneValue}
+                  onValueChange={setDateTimeZoneValue}
+                  placeholderText="Floating timezone"
+                  allowClear={true}
+                />
+              </div>
+            )}
           </>
         )}
         <div>
@@ -128,7 +173,7 @@ export default function DateSelector({
             variant="default"
             className="w-full"
             onClick={onSaveButtonClick}
-            data-test="tasks--due-date--save-button"
+            data-test="date-selector--save-button"
           >
             Save
           </Button>

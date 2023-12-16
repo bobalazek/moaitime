@@ -47,7 +47,7 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
       return true;
     }
 
-    return data.startsAt.startsWith('T00:00:00.000Z') && data.endsAt.endsWith('T23:59:59.999Z');
+    return data.startsAt.endsWith('T00:00:00.000Z') && data.endsAt.endsWith('T23:59:59.999Z');
   },
   {
     message: 'All day events must start at T00:00:00.000Z and end at T23:59:59.999Z',

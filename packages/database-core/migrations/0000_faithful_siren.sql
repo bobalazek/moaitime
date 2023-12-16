@@ -15,8 +15,9 @@ CREATE TABLE IF NOT EXISTS "calendars" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"description" text,
-	"timezone" text NOT NULL,
-	"is_public" text DEFAULT 'false' NOT NULL,
+	"color" text,
+	"timezone" text,
+	"is_public" boolean DEFAULT false NOT NULL,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
@@ -27,7 +28,7 @@ CREATE TABLE IF NOT EXISTS "events" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
 	"description" text,
-	"timezone" text NOT NULL,
+	"timezone" text,
 	"end_timezone" text,
 	"is_all_day" boolean DEFAULT false NOT NULL,
 	"starts_at" timestamp,
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS "lists" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"description" text,
+	"order" integer DEFAULT 0,
 	"color" text,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
@@ -107,15 +109,19 @@ CREATE TABLE IF NOT EXISTS "quotes" (
 CREATE TABLE IF NOT EXISTS "tasks" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
-	"order" integer NOT NULL,
 	"description" text,
+	"order" integer DEFAULT 0,
+	"color" text,
 	"priority" integer,
-	"due_at" timestamp,
+	"due_date" date,
+	"due_date_time" time,
+	"due_date_time_zone" text,
 	"completed_at" timestamp,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	"list_id" uuid NOT NULL
+	"list_id" uuid NOT NULL,
+	"parent_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teams" (

@@ -2,10 +2,11 @@ import { eq } from 'drizzle-orm';
 
 import { getDatabase, NewCalendar, users } from '@moaitime/database-core';
 
+import { publicCalendars } from './calendars/PublicCalendars';
 import { getUserSeeds } from './Users';
 
 export const getCalendarSeeds = async (): Promise<NewCalendar[]> => {
-  const caledars: NewCalendar[] = [];
+  const caledars = [...publicCalendars];
 
   const userSeeds = await getUserSeeds();
   for (const single of userSeeds) {

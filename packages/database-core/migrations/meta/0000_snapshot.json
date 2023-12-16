@@ -1,5 +1,5 @@
 {
-  "id": "d14464fb-2549-430a-b683-f29e5d690982",
+  "id": "f8801908-4fd4-4dd1-8241-1583111fa9ab",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -110,18 +110,24 @@
           "primaryKey": false,
           "notNull": false
         },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "timezone": {
           "name": "timezone",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "is_public": {
           "name": "is_public",
-          "type": "text",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": "'false'"
+          "default": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -192,7 +198,7 @@
           "name": "timezone",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "end_timezone": {
           "name": "end_timezone",
@@ -425,6 +431,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
         },
         "color": {
           "name": "color",
@@ -725,14 +738,21 @@
           "primaryKey": false,
           "notNull": true
         },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "order": {
           "name": "order",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": 0
         },
-        "description": {
-          "name": "description",
+        "color": {
+          "name": "color",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -743,9 +763,21 @@
           "primaryKey": false,
           "notNull": false
         },
-        "due_at": {
-          "name": "due_at",
-          "type": "timestamp",
+        "due_date": {
+          "name": "due_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_date_time": {
+          "name": "due_date_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_date_time_zone": {
+          "name": "due_date_time_zone",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -780,6 +812,12 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},

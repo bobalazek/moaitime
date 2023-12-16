@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { events } from './events';
 import { users } from './users';
@@ -9,8 +9,8 @@ export const calendars = pgTable('calendars', {
   name: text('name').notNull(),
   description: text('description'),
   color: text('color'),
-  timezone: text('timezone').notNull(),
-  isPublic: text('is_public').notNull().default('false'),
+  timezone: text('timezone'),
+  isPublic: boolean('is_public').notNull().default(false),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import {
   backgrounds,
   calendars,
+  events,
   getMigrationDatabase,
   greetings,
   interests,
@@ -12,6 +13,7 @@ import {
 } from '@moaitime/database-core';
 import { logger } from '@moaitime/shared-logging';
 
+import { getEventSeeds } from '.';
 import { getBackgroundsSeeds } from './data/Backgrounds';
 import { getCalendarSeeds } from './data/Calendars';
 import { getGreetingSeeds } from './data/Greetings';
@@ -33,6 +35,10 @@ export const insertDatabaseSeedData = async () => {
     logger.debug('Inserting calendar seeds ...');
     const calendarSeeds = await getCalendarSeeds();
     await database.insert(calendars).values(calendarSeeds).execute();
+
+    logger.debug('Inserting event seeds ...');
+    const eventSeeds = await getEventSeeds();
+    await database.insert(events).values(eventSeeds).execute();
 
     logger.debug('Inserting background seeds ...');
     const backgroundSeeds = await getBackgroundsSeeds();

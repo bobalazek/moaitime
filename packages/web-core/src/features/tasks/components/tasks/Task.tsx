@@ -19,6 +19,35 @@ function setCursorToEnd(element: HTMLElement) {
   selection?.addRange(range);
 }
 
+const TaskDueDate = ({ task }: { task: TaskType }) => {
+  if (!task.dueDate) {
+    return null;
+  }
+
+  const now = new Date();
+  const date =
+    task.dueDate && task.dueDateTime
+      ? new Date(task.dueDate + 'T' + task.dueDateTime)
+      : new Date(task.dueDate);
+  const isAlmostDue = date < new Date(now.getTime() + 1000 * 60 * 60 * 6); // 6 hours
+  const isOverDue = date < now;
+
+  // TODO: take into account the timezone
+
+  return (
+    <div
+      className={clsx(
+        'ml-6 mt-1 text-xs text-yellow-400',
+        isAlmostDue && 'text-orange-400',
+        isOverDue && 'text-red-400'
+      )}
+      data-test="tasks--task--due-text"
+    >
+      Due on {date.toLocaleString()}
+    </div>
+  );
+};
+
 const Task = memo(({ task }: { task: TaskType }) => {
   const { editTask, completeTask, uncompleteTask } = useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
@@ -125,6 +154,7 @@ const Task = memo(({ task }: { task: TaskType }) => {
         >
           {task.name}
         </div>
+        <TaskDueDate task={task} />
         {task.deletedAt && (
           <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
             (deleted at {new Date(task.deletedAt).toLocaleString()})

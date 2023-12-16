@@ -15,10 +15,10 @@ import { Request } from 'express';
 import { Event } from '@moaitime/database-core';
 import { calendarsManager, eventsManager } from '@moaitime/database-services';
 import { CALENDAR_EVENTS_MAX_COUNT } from '@moaitime/shared-backend';
+import { getTimezonedEndOfDay, getTimezonedStartOfDay } from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
-import { getTimezonedEndOfDay, getTimezonedStartOfDay } from '../../core/utils/time-helpers';
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { UpdateEventDto } from '../dtos/update-task.dto';
 

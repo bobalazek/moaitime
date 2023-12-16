@@ -36,7 +36,7 @@ export default function CalendarWeeklyViewDay({
     );
   }, [calendarEntries, date, generalTimezone]);
 
-  const onClick = (event: MouseEvent) => {
+  const onDayContainerClick = (event: MouseEvent) => {
     event.preventDefault();
 
     const { clientY, target } = event;
@@ -61,6 +61,7 @@ export default function CalendarWeeklyViewDay({
     setSelectedCalendarEntryDialogOpen(true, {
       startsAt,
       endsAt,
+      // TODO: figure out a more optimal way for this
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
   };
@@ -99,9 +100,9 @@ export default function CalendarWeeklyViewDay({
       style={{
         height: totalHeight,
       }}
+      onClick={onDayContainerClick}
       data-test="calendar--weekly-view--day"
       data-date={date}
-      onClick={onClick}
     >
       {calendarEntriesWithStyles.map(({ style, ...calendarEntry }) => {
         return (

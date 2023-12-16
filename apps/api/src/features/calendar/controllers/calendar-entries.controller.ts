@@ -2,11 +2,15 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { eventsManager } from '@moaitime/database-services';
-import { CalendarEntry, CalendarEntryTypeEnum } from '@moaitime/shared-common';
+import {
+  CalendarEntry,
+  CalendarEntryTypeEnum,
+  getTimezonedEndOfDay,
+  getTimezonedStartOfDay,
+} from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
-import { getTimezonedEndOfDay, getTimezonedStartOfDay } from '../../core/utils/time-helpers';
 
 @Controller('/api/v1/calendar-entries')
 export class CalendarEntriesController {

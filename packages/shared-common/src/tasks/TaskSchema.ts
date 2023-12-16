@@ -35,7 +35,11 @@ export const CreateTaskSchema = z.object({
         }
 
         const now = new Date();
-        const dueDate = new Date(data);
+        let dueDate = new Date(data);
+
+        if (data.length === 10) {
+          dueDate = new Date(`${data}T23:59:59.999`);
+        }
 
         return dueDate >= now;
       },

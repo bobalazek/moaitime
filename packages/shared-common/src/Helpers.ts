@@ -1,4 +1,5 @@
-import { format, utcToZonedTime } from 'date-fns-tz';
+import { endOfDay, startOfDay } from 'date-fns';
+import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 // Time
 export const getGmtOffset = (timezone: string) => {
@@ -89,4 +90,22 @@ export const convertObjectNullPropertiesToUndefined = <T extends Record<string, 
   }
 
   return newObj;
+};
+
+export const getTimezonedStartOfDay = (timezone: string, date?: string): Date | null => {
+  if (!date) {
+    return null;
+  }
+
+  const zonedToDate = utcToZonedTime(date, timezone);
+  return zonedTimeToUtc(startOfDay(zonedToDate), timezone);
+};
+
+export const getTimezonedEndOfDay = (timezone: string, date: string): Date | null => {
+  if (!date) {
+    return null;
+  }
+
+  const zonedToDate = utcToZonedTime(date, timezone);
+  return zonedTimeToUtc(endOfDay(zonedToDate), timezone);
 };

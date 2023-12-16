@@ -107,6 +107,7 @@ export default function CalendarMonthlyView() {
                     now={now}
                     calendarEntries={calendarEntriesForDay}
                     isFirstWeeksDay={isFirstWeeksDay}
+                    timezone={generalTimezone}
                   />
                 );
               })}

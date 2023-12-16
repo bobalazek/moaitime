@@ -1,10 +1,13 @@
 import { clsx } from 'clsx';
 import { format, isSameDay, isSameMonth } from 'date-fns';
+import { MouseEvent } from 'react';
 
 import {
   CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT,
   CalendarEntry as CalendarEntryType, // We can't have the same name, as it's already used by the component
   CalendarViewEnum,
+  getTimezonedEndOfDay,
+  getTimezonedStartOfDay,
 } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../../state/calendarStore';
@@ -15,22 +18,44 @@ export default function CalendarMonthlyViewDay({
   now,
   calendarEntries,
   isFirstWeeksDay,
+  timezone,
 }: {
   day: Date;
   now: Date;
   calendarEntries: CalendarEntryType[];
   isFirstWeeksDay: boolean;
+  timezone: string;
 }) {
-  const { selectedDate, setSelectedDate, setSelectedView } = useCalendarStore();
+  const { selectedDate, setSelectedDate, setSelectedView, setSelectedCalendarEntryDialogOpen } =
+    useCalendarStore();
   const isActive = isSameDay(day, now);
   const isActiveMonth = isSameMonth(day, selectedDate);
   const isFirst = day.getDate() === 1;
   const dateText = format(day, isFirst || isFirstWeeksDay ? 'd. MMM.' : 'd').toLowerCase();
   const dayOfWeek = format(day, 'eee');
 
-  const onDayClick = () => {
+  const onDayClick = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     setSelectedDate(day);
     setSelectedView(CalendarViewEnum.DAY);
+  };
+
+  const onDayContainerClick = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const startsAt = getTimezonedStartOfDay(timezone, day.toISOString())?.toISOString();
+    const endsAt = getTimezonedEndOfDay(timezone, day.toISOString())?.toISOString();
+
+    setSelectedCalendarEntryDialogOpen(true, {
+      startsAt,
+      endsAt,
+      isAllDay: true,
+      // TODO: figure out a more optimal way for this
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
   };
 
   const shownCalendarEntries = calendarEntries.slice(
@@ -40,7 +65,11 @@ export default function CalendarMonthlyViewDay({
   const remainingCalendarEntriesCount = calendarEntries.length - shownCalendarEntries.length;
 
   return (
-    <div className="flex-grow border p-2 lg:w-0" data-test="calendar--monthly-view--day">
+    <div
+      className="flex-grow border p-2 lg:w-0"
+      onClick={onDayContainerClick}
+      data-test="calendar--monthly-view--day"
+    >
       <div className="text-center">
         <button
           className={clsx(

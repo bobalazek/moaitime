@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import {
+  CalendarEntryTypeEnum,
   convertObjectNullPropertiesToUndefined,
   CreateCalendarEntry,
   CreateEvent,
@@ -32,6 +33,7 @@ export default function CalendarEntryDialog() {
     selectedCalendarEntry,
     addEvent,
     editEvent,
+    deleteEvent,
     setSelectedCalendarEntryDialogOpen,
   } = useCalendarStore();
   const [data, setData] = useState<CreateCalendarEntry | UpdateCalendarEntry>();
@@ -58,6 +60,29 @@ export default function CalendarEntryDialog() {
     setData(parsedSelectedTask.data);
   }, [selectedCalendarEntry, toast]);
 
+  const onDeleteButtonClick = async () => {
+    if (!selectedCalendarEntry) {
+      return;
+    }
+
+    try {
+      if (selectedCalendarEntry?.type !== CalendarEntryTypeEnum.EVENT) {
+        throw new Error('The selected calendar entry is not an event');
+      }
+
+      await deleteEvent(selectedCalendarEntry.id.replace('events:', ''));
+
+      toast({
+        title: `Event "${selectedCalendarEntry.title}" deleted`,
+        description: 'You have successfully deleted the event',
+      });
+
+      setSelectedCalendarEntryDialogOpen(false, null);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
   const onCancelButtonClick = () => {
     setSelectedCalendarEntryDialogOpen(false, null);
   };
@@ -68,6 +93,10 @@ export default function CalendarEntryDialog() {
     }
 
     try {
+      if (selectedCalendarEntry?.type !== CalendarEntryTypeEnum.EVENT) {
+        throw new Error('The selected calendar entry is not an event');
+      }
+
       const editedEvent = selectedCalendarEntry?.id
         ? await editEvent(selectedCalendarEntry.id.replace('events:', ''), data as UpdateEvent)
         : await addEvent(data as CreateEvent);
@@ -153,13 +182,20 @@ export default function CalendarEntryDialog() {
             }}
           />
         </div>
-        <div className="flex flex-row justify-end gap-2">
-          <Button type="button" variant="secondary" onClick={onCancelButtonClick}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="default" onClick={onSaveButtonClick}>
-            Save
-          </Button>
+        <div className="flex flex-row justify-between gap-2">
+          <div>
+            <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
+              Delete
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="secondary" onClick={onCancelButtonClick}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="default" onClick={onSaveButtonClick}>
+              Save
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

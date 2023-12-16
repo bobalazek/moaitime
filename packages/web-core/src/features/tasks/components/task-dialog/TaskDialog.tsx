@@ -64,7 +64,7 @@ export default function TaskDialog() {
     await deleteTask(selectedTask.id);
 
     toast({
-      title: `Task "${data.name}" deleted`,
+      title: `Task "${selectedTask.name}" deleted`,
       description: 'You have successfully deleted the task',
     });
 

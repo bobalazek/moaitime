@@ -87,7 +87,7 @@ export default function CalendarEntry({
       data-test="calendar--weekly-view--day--calendar-entry"
     >
       <div
-        className="h-full cursor-pointer rounded-lg border border-transparent px-2 py-1 text-xs transition-all"
+        className="h-full cursor-pointer overflow-hidden rounded-lg border border-transparent px-2 py-1 text-xs transition-all"
         data-test="calendar--weekly-view--day--calendar-entry--content"
         style={innerStyle}
       >

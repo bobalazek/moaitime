@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { addMinutes } from 'date-fns';
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
@@ -6,6 +7,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../../auth/state/authStore';
+import { useCalendarStore } from '../../../state/calendarStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../CalendarEntry';
 
@@ -19,6 +21,7 @@ export default function CalendarWeeklyViewDay({
   calendarEntries: CalendarEntryWithVerticalPosition[];
 }) {
   const { auth } = useAuthStore();
+  const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
   const currentTimeLineRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +35,35 @@ export default function CalendarWeeklyViewDay({
       CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX
     );
   }, [calendarEntries, date, generalTimezone]);
+
+  const onClick = (event: MouseEvent) => {
+    event.preventDefault();
+
+    const { clientY, target } = event;
+    const container = (target as HTMLDivElement).parentElement;
+    if (!container) {
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const relativeTop = clientY - rect.top;
+    const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
+    const minutes =
+      Math.round((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
+
+    const date = new Date();
+    date.setHours(hour);
+    date.setMinutes(minutes);
+
+    const startsAt = date.toISOString();
+    const endsAt = addMinutes(date, 30).toISOString();
+
+    setSelectedCalendarEntryDialogOpen(true, {
+      startsAt,
+      endsAt,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -52,18 +84,6 @@ export default function CalendarWeeklyViewDay({
       }, 1000 * 60);
     }
 
-    // TODO: Do we really need or want this?
-    /*
-    if (currentTimeLineRef.current) {
-      setTimeout(() => {
-        currentTimeLineRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }, 100);
-    }
-    */
-
     return () => {
       if (interval) {
         clearInterval(interval);
@@ -81,6 +101,7 @@ export default function CalendarWeeklyViewDay({
       }}
       data-test="calendar--weekly-view--day"
       data-date={date}
+      onClick={onClick}
     >
       {calendarEntriesWithStyles.map(({ style, ...calendarEntry }) => {
         return (

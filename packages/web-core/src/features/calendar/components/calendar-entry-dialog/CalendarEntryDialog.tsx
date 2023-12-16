@@ -2,6 +2,8 @@ import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import {
+  convertObjectNullPropertiesToUndefined,
+  CreateCalendarEntry,
   UpdateCalendarEntry,
   UpdateCalendarEntrySchema,
   zodErrorToString,
@@ -57,16 +59,22 @@ export default function CalendarEntryDialog() {
   const {
     selectedCalendarEntryDialogOpen,
     selectedCalendarEntry,
+    addEvent,
+    editEvent,
     setSelectedCalendarEntryDialogOpen,
   } = useCalendarStore();
-  const [data, setData] = useState<UpdateCalendarEntry>();
+  const [data, setData] = useState<CreateCalendarEntry | UpdateCalendarEntry>();
 
   useEffect(() => {
     if (!selectedCalendarEntry) {
+      setData(undefined);
+
       return;
     }
 
-    const parsedSelectedTask = UpdateCalendarEntrySchema.safeParse(selectedCalendarEntry);
+    const parsedSelectedTask = UpdateCalendarEntrySchema.safeParse(
+      convertObjectNullPropertiesToUndefined(selectedCalendarEntry)
+    );
     if (!parsedSelectedTask.success) {
       toast({
         title: 'Oops!',
@@ -79,24 +87,29 @@ export default function CalendarEntryDialog() {
     setData(parsedSelectedTask.data);
   }, [selectedCalendarEntry, toast]);
 
-  const onDeleteButtonClick = async () => {
-    if (!selectedCalendarEntry) {
-      return;
-    }
-
-    alert('TODO: To be implemented');
-  };
-
   const onCancelButtonClick = () => {
     setSelectedCalendarEntryDialogOpen(false);
   };
 
   const onSaveButtonClick = async () => {
-    if (!selectedCalendarEntry) {
+    if (!data) {
       return;
     }
 
-    alert('TODO: To be implemented');
+    try {
+      const editedEvent = selectedCalendarEntry?.id
+        ? await editEvent(selectedCalendarEntry.id.replace('events:', ''), data)
+        : await addEvent(data as CreateCalendarEntry);
+
+      toast({
+        title: `Event "${editedEvent.title}" save`,
+        description: 'You have successfully saved the event',
+      });
+
+      setSelectedCalendarEntryDialogOpen(false);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (
@@ -160,20 +173,13 @@ export default function CalendarEntryDialog() {
             }}
           />
         </div>
-        <div className="flex flex-row justify-between gap-2">
-          <div>
-            <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
-              Delete
-            </Button>
-          </div>
-          <div className="flex gap-2">
-            <Button type="button" variant="secondary" onClick={onCancelButtonClick}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="default" onClick={onSaveButtonClick}>
-              Save
-            </Button>
-          </div>
+        <div className="flex flex-row justify-end gap-2">
+          <Button type="button" variant="secondary" onClick={onCancelButtonClick}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="default" onClick={onSaveButtonClick}>
+            Save
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

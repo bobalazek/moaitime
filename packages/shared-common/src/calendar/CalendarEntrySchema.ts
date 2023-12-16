@@ -7,7 +7,7 @@ export const CalendarEntrySchema = z.object({
   type: z.nativeEnum(CalendarEntryTypeEnum),
   title: z.string(),
   description: z.string().nullable(),
-  timezone: z.string(),
+  timezone: z.string().nullable(),
   endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),
   startsAt: z.string(),
@@ -21,9 +21,9 @@ export const CalendarEntrySchema = z.object({
 export const CreateCalendarEntrySchema = z.object({
   type: z.nativeEnum(CalendarEntryTypeEnum),
   title: z.string(),
-  description: z.string().nullable(),
-  timezone: z.string(),
-  endTimezone: z.string().nullable(),
+  description: z.string().optional(),
+  timezone: z.string().optional(),
+  endTimezone: z.string().optional(),
   isAllDay: z.boolean(),
   startsAt: z.string(),
   endsAt: z.string(),
@@ -32,7 +32,6 @@ export const CreateCalendarEntrySchema = z.object({
 
 export const UpdateCalendarEntrySchema = CreateCalendarEntrySchema.partial().omit({
   type: true,
-  calendarId: true,
 });
 
 // Types

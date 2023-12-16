@@ -76,3 +76,17 @@ export const zodErrorToString = (error: unknown) => {
 
   return 'Something went wrong';
 };
+
+export const convertObjectNullPropertiesToUndefined = <T extends Record<string, unknown>>(
+  obj: T
+) => {
+  const newObj: Partial<T> = { ...obj };
+
+  for (const key of Object.keys(newObj)) {
+    if (newObj[key] === null) {
+      delete newObj[key];
+    }
+  }
+
+  return newObj;
+};

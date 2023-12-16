@@ -2,6 +2,7 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { create } from 'zustand';
 
 import {
+  CreateTask,
   List,
   SortDirectionEnum,
   Task,
@@ -54,7 +55,7 @@ export type TasksStore = {
     selectedListDeleteAlertDialog?: List | null
   ) => void;
   /********** Tasks **********/
-  addTask: (task: Task) => Promise<Task>;
+  addTask: (task: CreateTask) => Promise<Task>;
   editTask: (taskId: string, task: UpdateTask) => Promise<Task>;
   moveTask: (taskId: string, newListId: string) => Promise<Task>;
   deleteTask: (taskId: string, isHardDelete?: boolean) => Promise<Task>;
@@ -217,7 +218,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
   },
   /********** Tasks **********/
-  addTask: async (task: Task) => {
+  addTask: async (task: CreateTask) => {
     const { reloadSelectedList, loadLists } = get();
 
     const addedTask = await addTask(task);

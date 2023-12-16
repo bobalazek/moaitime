@@ -11,11 +11,11 @@ export const ListSchema = z.object({
 });
 
 export const CreateListSchema = z.object({
-  name: z.string().min(1).optional(),
-  color: z.string().nullable().optional(),
+  name: z.string().min(1),
+  color: z.string().optional(),
 });
 
-export const UpdateListSchema = CreateListSchema;
+export const UpdateListSchema = CreateListSchema.partial();
 
 // Types
 export type List = z.infer<typeof ListSchema>;

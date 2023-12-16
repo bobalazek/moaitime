@@ -1,5 +1,6 @@
 import {
   API_URL,
+  CreateTask,
   List,
   ResponseInterface,
   SortDirectionEnum,
@@ -104,7 +105,7 @@ export const getTask = async (taskId: string): Promise<Task | null> => {
   return response.data as Task;
 };
 
-export const addTask = async (task: Task): Promise<Task> => {
+export const addTask = async (task: CreateTask): Promise<Task> => {
   const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks`, {
     method: 'POST',
     body: JSON.stringify(task),

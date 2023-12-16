@@ -46,9 +46,7 @@ function TasksForm() {
       await addTask({
         name: finalName,
         listId: selectedList.id,
-        // TODO: fix this bit, so we don't use any!
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      });
 
       setName('');
 

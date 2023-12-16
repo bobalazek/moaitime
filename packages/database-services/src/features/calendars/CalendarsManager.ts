@@ -22,6 +22,14 @@ export class CalendarsManager {
     return row ?? null;
   }
 
+  async userHasAccess(userId: string, calendarId: string): Promise<boolean> {
+    const row = await getDatabase().query.calendars.findFirst({
+      where: and(eq(calendars.id, calendarId), eq(calendars.userId, userId)),
+    });
+
+    return row !== null;
+  }
+
   async insertOne(data: NewCalendar): Promise<Calendar> {
     const rows = await getDatabase().insert(calendars).values(data).returning();
 

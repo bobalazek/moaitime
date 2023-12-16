@@ -20,23 +20,16 @@ import {
   API_URL,
   CalendarEntry,
   CalendarEntryWithVerticalPosition,
+  CreateEvent,
   DayOfWeek,
+  Event,
   ResponseInterface,
+  UpdateEvent,
 } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-export const getDatesForRange = (start: string, end: string) => {
-  const range: string[] = [];
-  const endDate = new Date(end);
-  let currentDate = new Date(start);
-  for (; currentDate <= endDate; currentDate = addDays(currentDate, 1)) {
-    range.push(format(currentDate, 'yyyy-MM-dd'));
-  }
-
-  return range;
-};
-
+/********** Calendar **********/
 export const loadCalendarEntries = async (from?: Date | string, to?: Date | string) => {
   const url = new URL(`${API_URL}/api/v1/calendar-entries`);
   if (from) {
@@ -52,6 +45,17 @@ export const loadCalendarEntries = async (from?: Date | string, to?: Date | stri
   });
 
   return response;
+};
+
+export const getDatesForRange = (start: string, end: string) => {
+  const range: string[] = [];
+  const endDate = new Date(end);
+  let currentDate = new Date(start);
+  for (; currentDate <= endDate; currentDate = addDays(currentDate, 1)) {
+    range.push(format(currentDate, 'yyyy-MM-dd'));
+  }
+
+  return range;
 };
 
 export const getWeeksForMonth = (month: Date, startDayOfWeek: number) => {
@@ -235,4 +239,50 @@ export const getAgendaRange = (date: Date) => {
   const end = endOfMonth(addMonths(start, 2));
 
   return { start, end };
+};
+
+/********** Events **********/
+export const addEvent = async (event: CreateEvent): Promise<Event> => {
+  const response = await fetchJson<ResponseInterface<Event>>(`${API_URL}/api/v1/events`, {
+    method: 'POST',
+    body: JSON.stringify(event),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data as Event;
+};
+
+export const editEvent = async (eventId: string, event: UpdateEvent): Promise<Event> => {
+  const response = await fetchJson<ResponseInterface<Event>>(
+    `${API_URL}/api/v1/events/${eventId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(event),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Event;
+};
+
+export const deleteEvent = async (eventId: string, isHardDelete?: boolean): Promise<Event> => {
+  const response = await fetchJson<ResponseInterface<Event>>(
+    `${API_URL}/api/v1/events/${eventId}`,
+    {
+      method: 'DELETE',
+      body: isHardDelete ? JSON.stringify({ isHardDelete }) : undefined,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Event;
 };

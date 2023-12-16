@@ -20,3 +20,6 @@ export const MAILER_FROM = 'MoaiTime <mailer@bobalazek.com>';
 export const TASKS_MAX_PER_LIST_COUNT = 50;
 export const LISTS_MAX_PER_USER_COUNT = 10;
 export const LIST_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];
+
+// Calendar
+export const CALENDAR_EVENTS_MAX_COUNT = 500;

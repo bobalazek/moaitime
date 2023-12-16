@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
@@ -43,17 +43,20 @@ export default function CalendarEntry({
       }
     : undefined;
 
-  const onClick = (calendarEntry: CalendarEntryType) => {
+  const onClick = (event: MouseEvent, calendarEntry: CalendarEntryType) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     setSelectedCalendarEntryDialogOpen(true, calendarEntry);
   };
 
   return (
     <div
       key={calendarEntry.id}
-      className={clsx('px-[2px]', !hasAbsoluteClassName && 'relative', className)}
+      className={clsx('select-none px-[2px]', !hasAbsoluteClassName && 'relative', className)}
       style={containerStyle}
       title={calendarEntry.title}
-      onClick={() => onClick(calendarEntry)}
+      onClick={(event) => onClick(event, calendarEntry)}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       data-test="calendar--weekly-view--day--calendar-entry"

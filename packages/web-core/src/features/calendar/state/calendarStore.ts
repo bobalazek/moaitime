@@ -1,10 +1,19 @@
 import { addDays, areIntervalsOverlapping, eachDayOfInterval, format } from 'date-fns';
 import { create } from 'zustand';
 
-import { CalendarEntry, CalendarViewEnum } from '@moaitime/shared-common';
+import {
+  CalendarEntry,
+  CalendarViewEnum,
+  CreateEvent,
+  Event,
+  UpdateEvent,
+} from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import {
+  addEvent,
+  deleteEvent,
+  editEvent,
   getAgendaRange,
   getMonthRange,
   getWeekRange,
@@ -36,6 +45,10 @@ export type CalendarStore = {
     selectedCalendarEntryDialogOpen: boolean,
     selectedCalendarEntry?: CalendarEntry | null
   ) => void;
+  /********** Events **********/
+  addEvent: (event: CreateEvent) => Promise<Event>;
+  editEvent: (eventId: string, event: UpdateEvent) => Promise<Event>;
+  deleteEvent: (eventId: string) => Promise<Event>;
 };
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
@@ -147,5 +160,33 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       selectedCalendarEntryDialogOpen,
       selectedCalendarEntry,
     });
+  },
+  /********** Events **********/
+  addEvent: async (event: CreateEvent) => {
+    const { loadCalendarEnries } = get();
+
+    const addedTask = await addEvent(event);
+
+    await loadCalendarEnries();
+
+    return addedTask;
+  },
+  editEvent: async (eventId: string, event: UpdateEvent) => {
+    const { loadCalendarEnries } = get();
+
+    const editedTask = await editEvent(eventId, event);
+
+    await loadCalendarEnries();
+
+    return editedTask;
+  },
+  deleteEvent: async (eventId: string) => {
+    const { loadCalendarEnries } = get();
+
+    const deletedTask = await deleteEvent(eventId);
+
+    await loadCalendarEnries();
+
+    return deletedTask;
   },
 }));

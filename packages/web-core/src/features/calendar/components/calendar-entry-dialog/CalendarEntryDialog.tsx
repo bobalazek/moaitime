@@ -173,6 +173,10 @@ export default function CalendarEntryDialog() {
             }}
           />
         </div>
+        <div className="mb-4 flex flex-col gap-2">
+          <Label htmlFor="calendarEntry-calendar">Calendar</Label>
+          TODO
+        </div>
         <div className="flex flex-row justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onCancelButtonClick}>
             Cancel

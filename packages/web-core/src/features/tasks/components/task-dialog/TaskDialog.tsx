@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@moaitime/shared-common';
 import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
 
+import { ListSelector } from '../../../core/components/selectors/ListsSelector';
 import { useTasksStore } from '../../state/tasksStore';
-import { ListsSelect } from '../lists/ListsSelect';
 import TaskDialogDueDate from './TaskDialogDueDate';
 
 export default function TaskDialog() {
@@ -120,7 +120,7 @@ export default function TaskDialog() {
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-list">List</Label>
-          <ListsSelect
+          <ListSelector
             value={data.listId ?? ''}
             onChangeValue={(value) => {
               setData((current) => ({ ...current, listId: value }));

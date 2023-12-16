@@ -14,9 +14,9 @@ import {
   PopoverTrigger,
 } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../state/tasksStore';
+import { useTasksStore } from '../../../tasks/state/tasksStore';
 
-export function ListsSelect({
+export function ListSelector({
   value,
   onChangeValue,
 }: {
@@ -36,7 +36,7 @@ export function ListsSelect({
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
-          data-test="tasks--list-select--trigger-button"
+          data-test="list-selector--trigger-button"
         >
           <div>
             <span
@@ -50,7 +50,7 @@ export function ListsSelect({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" data-test="tasks--list-select">
+      <PopoverContent className="p-0" data-test="list-selector">
         <Command>
           <CommandInput placeholder="Search lists ..." />
           <CommandEmpty>No list found.</CommandEmpty>

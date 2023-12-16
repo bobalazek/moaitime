@@ -186,14 +186,11 @@ describe('tasks-tasks.cy.ts', () => {
       .contains('More')
       .click();
 
-    cy.getBySel('tasks--list-select--trigger-button').click();
+    cy.getBySel('list-selector--trigger-button').click();
 
-    cy.getBySel('tasks--list-select').find('div').contains('Errands').click();
+    cy.getBySel('list-selector').find('div').contains('Errands').click();
 
-    cy.getBySel('tasks--list-select--trigger-button')
-      .find('div')
-      .contains('Errands')
-      .should('exist');
+    cy.getBySel('list-selector--trigger-button').find('div').contains('Errands').should('exist');
   });
 
   it('should check if success message is displayed when clicking Save task in expanded edit options', () => {

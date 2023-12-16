@@ -226,6 +226,8 @@ export const getCalendarEntriesWithStyles = (
   timezone: string,
   hourHeightPx: number
 ) => {
+  // TODO: NOT WORKING AT ALL YET
+
   const day = new Date(date);
   const start = startOfDay(day);
   const end = endOfDay(day);

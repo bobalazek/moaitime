@@ -43,7 +43,7 @@ export default function CalendarMonthlyViewDay({
     event.preventDefault();
     event.stopPropagation();
 
-    const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000Z`;
+    const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 
     setSelectedCalendarEntryDialogOpen(true, {
       startsAt: dayMidnight,

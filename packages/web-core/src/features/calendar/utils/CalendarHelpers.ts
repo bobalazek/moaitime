@@ -324,8 +324,8 @@ export const convertObjectToIsoString = <T extends Record<string, string | null>
   }
 
   if (object.dateTime) {
-    return { iso: `${object.date}T${object.dateTime}Z`, timezone: undefined };
+    return { iso: `${object.date}T${object.dateTime}`, timezone: undefined };
   }
 
-  return { iso: `${object.date}T00:00:00.000Z`, timezone: undefined };
+  return { iso: `${object.date}T00:00:00.000`, timezone: undefined };
 };

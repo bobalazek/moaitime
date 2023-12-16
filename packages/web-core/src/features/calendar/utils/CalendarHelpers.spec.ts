@@ -605,7 +605,7 @@ describe('CalendarHelpers.ts', () => {
             type: CalendarEntryTypeEnum.EVENT,
             title: 'Event 1',
             description: '',
-            timezone: 'Europe/Berlin',
+            timezone: 'Europe/Moscow',
             endTimezone: null,
             isAllDay: false,
             startsAt: '2023-12-19T23:00:00.000Z', // That is 20th Dec 2am Moscow time
@@ -636,7 +636,7 @@ describe('CalendarHelpers.ts', () => {
             type: CalendarEntryTypeEnum.EVENT,
             title: 'Event 1',
             description: '',
-            timezone: 'Europe/Berlin',
+            timezone: 'Europe/Moscow',
             endTimezone: null,
             isAllDay: false,
             startsAt: '2023-12-20T20:00:00.000Z', // That is 20th Dec 11pm Moscow time
@@ -667,7 +667,7 @@ describe('CalendarHelpers.ts', () => {
             type: CalendarEntryTypeEnum.EVENT,
             title: 'Event 1',
             description: '',
-            timezone: 'Europe/Berlin',
+            timezone: 'America/Los_Angeles',
             endTimezone: null,
             isAllDay: false,
             startsAt: '2023-12-20T02:00:00.000Z', // That is 19th Dec 8pm Los Angeles time
@@ -698,7 +698,7 @@ describe('CalendarHelpers.ts', () => {
             type: CalendarEntryTypeEnum.EVENT,
             title: 'Event 1',
             description: '',
-            timezone: 'Europe/Berlin',
+            timezone: 'America/Los_Angeles',
             endTimezone: null,
             isAllDay: false,
             startsAt: '2023-12-21T04:00:00.000Z', // That is 20th Dec 8pm Los Angeles time
@@ -729,7 +729,7 @@ describe('CalendarHelpers.ts', () => {
             type: CalendarEntryTypeEnum.EVENT,
             title: 'Event 1',
             description: '',
-            timezone: 'Europe/Berlin',
+            timezone: 'Australia/Sydney',
             endTimezone: null,
             isAllDay: false,
             startsAt: '2023-12-19T10:00:00.000Z', // That is 19th Dec 9pm Sydney time
@@ -760,7 +760,7 @@ describe('CalendarHelpers.ts', () => {
             type: CalendarEntryTypeEnum.EVENT,
             title: 'Event 1',
             description: '',
-            timezone: 'Europe/Berlin',
+            timezone: 'Australia/Sydney',
             endTimezone: null,
             isAllDay: false,
             startsAt: '2023-12-20T09:00:00.000Z', // That is 20th Dec 9pm Sydney time

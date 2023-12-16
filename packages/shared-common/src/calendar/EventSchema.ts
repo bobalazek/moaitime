@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { TimezoneSchema } from '../core/TimezoneSchema';
+
 export const EventSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -18,7 +20,7 @@ export const EventSchema = z.object({
 export const CreateEventBaseSchema = z.object({
   title: z.string({ required_error: 'Title is required' }),
   description: z.string().optional(),
-  timezone: z.string().optional(),
+  timezone: TimezoneSchema.optional(),
   endTimezone: z.string().optional(),
   isAllDay: z.boolean().optional(),
   startsAt: z.string({

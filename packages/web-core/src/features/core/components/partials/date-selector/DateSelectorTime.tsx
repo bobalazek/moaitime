@@ -12,21 +12,21 @@ import {
   useToast,
 } from '@moaitime/web-ui';
 
-import TimezoneSelector from '../../../core/components/partials/TimezoneSelector';
+import TimezoneSelector from '../TimezoneSelector';
 
-type TaskDialogDueDateTimeProps = {
+type DateSelectorTimeProps = {
   dateTime: string | null;
   onDateTimeChange: (value: string | null) => void;
   dateTimeZone: string | null;
   onDateTimeZoneChange: (value: string | null) => void;
 };
 
-export default function TaskDialogDueDateTime({
+export default function DateSelectorTime({
   dateTime,
   onDateTimeChange,
   dateTimeZone,
   onDateTimeZoneChange,
-}: TaskDialogDueDateTimeProps) {
+}: DateSelectorTimeProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [timeValue, setTimeValue] = useState(dateTime ?? '');

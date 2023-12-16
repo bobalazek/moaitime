@@ -9,6 +9,7 @@ export default function CommandsButton() {
 
   return (
     <Button
+      variant="outline"
       className="border-input text-muted-foreground relative inline-flex h-9 w-full items-center justify-start rounded-md px-4 py-2 text-sm shadow-sm transition-colors sm:pr-12 md:w-56 lg:w-80"
       onClick={() => {
         setCommandsDialogOpen(true);

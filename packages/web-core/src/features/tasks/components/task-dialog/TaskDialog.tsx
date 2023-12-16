@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@moaitime/shared-common';
 import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
 
-import { ListSelector } from '../../../core/components/selectors/ListsSelector';
+import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { useTasksStore } from '../../state/tasksStore';
 import TaskDialogDueDate from './TaskDialogDueDate';
 

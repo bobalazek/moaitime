@@ -19,6 +19,7 @@ import {
   useToast,
 } from '@moaitime/web-ui';
 
+import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
 import { useCalendarStore } from '../../state/calendarStore';
 
@@ -175,7 +176,12 @@ export default function CalendarEntryDialog() {
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-calendar">Calendar</Label>
-          TODO
+          <CalendarSelector
+            value={data?.calendarId}
+            onChangeValue={(value) => {
+              setData((current) => ({ ...current, calendarId: value }));
+            }}
+          />
         </div>
         <div className="flex flex-row justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onCancelButtonClick}>

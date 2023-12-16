@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const CalendarSchema = z.object({
   id: z.string(),
   name: z.string(),
+  color: z.string().nullable(),
   description: z.string().nullable(),
   timezone: z.string().nullable(),
   isPublic: z.boolean(),
@@ -15,6 +16,7 @@ export const CalendarSchema = z.object({
 export const CreateCalendarSchema = z.object({
   name: z.string({ required_error: 'Name is required' }),
   description: z.string().optional(),
+  color: z.string().optional(),
   timezone: z.string().optional(),
   isPublic: z.boolean().optional(),
 });

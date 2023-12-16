@@ -9,7 +9,7 @@ export const calendars = pgTable('calendars', {
   name: text('name').notNull(),
   description: text('description'),
   color: text('color'),
-  timezone: text('timezone'),
+  timezone: text('timezone').notNull().default('UTC'),
   isPublic: boolean('is_public').notNull().default(false),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),

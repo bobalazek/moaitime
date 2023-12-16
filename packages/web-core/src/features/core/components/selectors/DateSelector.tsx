@@ -32,8 +32,8 @@ export type DateSelectorProps = {
 
 export const DateSelectorText = ({ data }: { data: DateSelectorData }) => {
   let timezonedDate: string | null = null;
-  if (data.date && data.dateTime && data.dateTimeZone) {
-    timezonedDate = format(new Date(`${data.date}T${data.dateTime}`), 'PPP');
+  if (data.date && data.dateTime) {
+    timezonedDate = format(new Date(`${data.date}T${data.dateTime}`), 'PPP p');
   } else if (data.date) {
     timezonedDate = format(new Date(data.date), 'PPP');
   }

@@ -1,5 +1,5 @@
 {
-  "id": "f8801908-4fd4-4dd1-8241-1583111fa9ab",
+  "id": "edcce2f9-a111-4e36-ab65-f719d00346cf",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -120,7 +120,8 @@
           "name": "timezone",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "'UTC'"
         },
         "is_public": {
           "name": "is_public",
@@ -198,7 +199,8 @@
           "name": "timezone",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "'UTC'"
         },
         "end_timezone": {
           "name": "end_timezone",

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import {
-  CalendarEntryTypeEnum,
   convertObjectNullPropertiesToUndefined,
   CreateCalendarEntry,
   CreateEvent,
@@ -62,14 +61,15 @@ export default function CalendarEntryDialog() {
 
   const onDeleteButtonClick = async () => {
     if (!selectedCalendarEntry) {
+      toast({
+        title: 'Oops!',
+        description: 'No calendar entry selected',
+      });
+
       return;
     }
 
     try {
-      if (selectedCalendarEntry?.type !== CalendarEntryTypeEnum.EVENT) {
-        throw new Error('The selected calendar entry is not an event');
-      }
-
       await deleteEvent(selectedCalendarEntry.id.replace('events:', ''));
 
       toast({
@@ -89,14 +89,15 @@ export default function CalendarEntryDialog() {
 
   const onSaveButtonClick = async () => {
     if (!data) {
+      toast({
+        title: 'Oops!',
+        description: 'No data to save',
+      });
+
       return;
     }
 
     try {
-      if (selectedCalendarEntry?.type !== CalendarEntryTypeEnum.EVENT) {
-        throw new Error('The selected calendar entry is not an event');
-      }
-
       const editedEvent = selectedCalendarEntry?.id
         ? await editEvent(selectedCalendarEntry.id.replace('events:', ''), data as UpdateEvent)
         : await addEvent(data as CreateEvent);
@@ -186,8 +187,12 @@ export default function CalendarEntryDialog() {
           <Label htmlFor="calendarEntry-calendar">Calendar</Label>
           <CalendarSelector
             value={data?.calendarId}
-            onChangeValue={(value) => {
-              setData((current) => ({ ...current, calendarId: value }));
+            onChangeValue={(value, calendar) => {
+              setData((current) => ({
+                ...current,
+                calendarId: value,
+                timezone: calendar?.timezone ?? undefined,
+              }));
             }}
           />
         </div>

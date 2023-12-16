@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 
+import { Calendar } from '@moaitime/shared-common';
 import {
   Button,
   Command,
@@ -21,7 +22,7 @@ export function CalendarSelector({
   onChangeValue,
 }: {
   value?: string;
-  onChangeValue: (value?: string) => void;
+  onChangeValue: (value?: string, calendar?: Calendar) => void;
 }) {
   const { calendars } = useCalendarStore();
   const [open, setOpen] = useState(false);
@@ -60,7 +61,7 @@ export function CalendarSelector({
                 key={calendar.id}
                 value={calendar.id}
                 onSelect={(currentValue) => {
-                  onChangeValue(currentValue === value ? '' : currentValue);
+                  onChangeValue(currentValue === value ? '' : currentValue, calendar);
                   setOpen(false);
                 }}
                 className="cursor-pointer border-l-4 border-l-transparent"

@@ -7,7 +7,7 @@ export const events = pgTable('events', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
-  timezone: text('timezone'),
+  timezone: text('timezone').notNull().default('UTC'),
   endTimezone: text('end_timezone'), // In case the endsAt is in a different timezone
   isAllDay: boolean('is_all_day').notNull().default(false),
   startsAt: timestamp('starts_at'),

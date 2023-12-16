@@ -24,7 +24,7 @@ import {
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
 import { useCalendarStore } from '../../state/calendarStore';
-import { convertIsoToObject, convertObjectToIso } from '../../utils/CalendarHelpers';
+import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
 
 export default function CalendarEntryDialog() {
   const { toast } = useToast();
@@ -153,9 +153,14 @@ export default function CalendarEntryDialog() {
           <Label htmlFor="calendarEntry-startsAt">Starts At</Label>
           <DateSelector
             includeTime={!data?.isAllDay}
-            data={convertIsoToObject(data?.startsAt, !data?.isAllDay)}
+            data={convertIsoStringToObject(
+              data?.startsAt,
+              !data?.isAllDay,
+              // TODO: we should probably use the timezone of the calendar
+              data?.timezone ?? undefined
+            )}
             onSaveData={(saveData) => {
-              const result = convertObjectToIso<DateSelectorData>(saveData);
+              const result = convertObjectToIsoString<DateSelectorData>(saveData);
 
               setData((current) => ({ ...current, startsAt: result?.iso }));
             }}
@@ -165,9 +170,13 @@ export default function CalendarEntryDialog() {
           <Label htmlFor="calendarEntry-endsAt">Ends At</Label>
           <DateSelector
             includeTime={!data?.isAllDay}
-            data={convertIsoToObject(data?.endsAt, !data?.isAllDay)}
+            data={convertIsoStringToObject(
+              data?.endsAt,
+              !data?.isAllDay,
+              data?.endTimezone ?? undefined
+            )}
             onSaveData={(saveData) => {
-              const result = convertObjectToIso<DateSelectorData>(saveData);
+              const result = convertObjectToIsoString<DateSelectorData>(saveData);
 
               setData((current) => ({ ...current, endsAt: result?.iso }));
             }}

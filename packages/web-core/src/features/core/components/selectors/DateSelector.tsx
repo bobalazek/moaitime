@@ -31,14 +31,17 @@ export type DateSelectorProps = {
 };
 
 export const DateSelectorText = ({ data }: { data: DateSelectorData }) => {
+  let timezonedDate: string | null = null;
+  if (data.date && data.dateTime && data.dateTimeZone) {
+    timezonedDate = format(new Date(`${data.date}T${data.dateTime}`), 'PPP');
+  } else if (data.date) {
+    timezonedDate = format(new Date(data.date), 'PPP');
+  }
+
   return (
     <span className="text-xs">
-      {!data.date && <span className="text-muted-foreground">Pick a date</span>}
-      {data.date && format(new Date(data.date), 'PPP')}
-      {data.date && data.dateTime && <> at {data.dateTime}</>}
-      {data.date && data.dateTime && data.dateTimeZone && (
-        <span className="ml-2 text-gray-400">({data.dateTimeZone})</span>
-      )}
+      {!timezonedDate && <span className="text-muted-foreground">Pick a date</span>}
+      {timezonedDate && timezonedDate}
     </span>
   );
 };
@@ -155,17 +158,15 @@ export default function DateSelector({
               />
               {/* Add TimeRangesDropdownMenu here, once we sort out the focus issue */}
             </div>
-            {dateTimeValue && (
-              <div>
-                <Label htmlFor="date-selector--timezone">Timezone</Label>
-                <TimezoneSelector
-                  value={dateTimeZoneValue}
-                  onValueChange={setDateTimeZoneValue}
-                  placeholderText="Floating timezone"
-                  allowClear={true}
-                />
-              </div>
-            )}
+            <div>
+              <Label htmlFor="date-selector--timezone">Timezone</Label>
+              <TimezoneSelector
+                value={dateTimeZoneValue}
+                onValueChange={setDateTimeZoneValue}
+                placeholderText="Floating timezone"
+                allowClear={true}
+              />
+            </div>
           </>
         )}
         <div>

@@ -24,6 +24,7 @@ export const getEventSeeds = async (): Promise<NewEvent[]> => {
       isAllDay: true,
       startsAt: new Date(`${date}T00:00:00.000`),
       endsAt: new Date(`${date}T00:00:00.000`),
+      timezone: calendar.timezone,
       ...event,
     });
   }

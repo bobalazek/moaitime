@@ -296,7 +296,11 @@ export const getAgendaRange = (date: Date) => {
   return { start, end };
 };
 
-export const convertIsoToObject = (isoString?: string, showDateTime?: boolean) => {
+export const convertIsoStringToObject = (
+  isoString?: string,
+  showDateTime?: boolean,
+  timezone?: string
+) => {
   if (!isoString) {
     return {
       date: null,
@@ -310,11 +314,11 @@ export const convertIsoToObject = (isoString?: string, showDateTime?: boolean) =
   return {
     date: format(dateObject, 'yyyy-MM-dd'),
     dateTime: showDateTime ? format(dateObject, 'HH:mm') : null,
-    dateTimeZone: null,
+    dateTimeZone: timezone ?? null,
   };
 };
 
-export const convertObjectToIso = <T extends Record<string, string | null>>(object: T) => {
+export const convertObjectToIsoString = <T extends Record<string, string | null>>(object: T) => {
   if (!object.date) {
     return undefined;
   }

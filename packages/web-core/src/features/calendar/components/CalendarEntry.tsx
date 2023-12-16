@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
+import { formatInTimeZone } from 'date-fns-tz';
 import { MouseEvent, useState } from 'react';
 
 import {
@@ -7,20 +8,44 @@ import {
   CalendarEntry as CalendarEntryType, // Needs to be a different name to the component name itself
 } from '@moaitime/shared-common';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { useCalendarStore } from '../state/calendarStore';
+
+const shouldShowContinuedText = (
+  calendarEntry: CalendarEntryType,
+  timezone: string,
+  dayDate?: string
+) => {
+  if (!dayDate) {
+    return false;
+  }
+
+  if (calendarEntry.isAllDay) {
+    return !calendarEntry.startsAt.includes(dayDate);
+  }
+
+  const timezonedFormat = formatInTimeZone(calendarEntry.startsAt, timezone, 'yyyy-MM-dd');
+
+  return timezonedFormat !== dayDate;
+};
 
 export default function CalendarEntry({
   calendarEntry,
+  dayDate,
   style,
   className,
 }: {
   calendarEntry: CalendarEntryType;
+  dayDate?: string;
   style?: Record<string, unknown>;
   className?: string;
 }) {
+  const { auth } = useAuthStore();
   const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
   const [isHover, setIsHover] = useState(false);
 
+  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
   const hasAbsoluteClassName = className?.includes('absolute');
   const defaultBackgroundColor = '#ffffff';
   const backgroundColor = isHover
@@ -71,6 +96,9 @@ export default function CalendarEntry({
           data-test="calendar--weekly-view--day--calendar-entry--title"
         >
           {calendarEntry.title}
+          {showContinuedText && (
+            <span className="text-muted-foreground text-[0.65rem]"> (cont.)</span>
+          )}
         </h4>
       </div>
     </div>

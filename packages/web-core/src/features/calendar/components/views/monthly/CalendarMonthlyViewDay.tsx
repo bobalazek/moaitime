@@ -29,6 +29,7 @@ export default function CalendarMonthlyViewDay({
   const isFirst = day.getDate() === 1;
   const dateText = format(day, isFirst || isFirstWeeksDay ? 'd. MMM.' : 'd').toLowerCase();
   const dayOfWeek = format(day, 'eee');
+  const date = format(day, 'yyyy-MM-dd');
 
   const onDayClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -83,7 +84,7 @@ export default function CalendarMonthlyViewDay({
         {shownCalendarEntries.length > 0 && (
           <div className="mt-2 flex flex-col gap-1">
             {shownCalendarEntries.map((calendarEntry) => (
-              <CalendarEntry key={calendarEntry.id} calendarEntry={calendarEntry} />
+              <CalendarEntry key={calendarEntry.id} dayDate={date} calendarEntry={calendarEntry} />
             ))}
             {remainingCalendarEntriesCount > 0 && (
               <div

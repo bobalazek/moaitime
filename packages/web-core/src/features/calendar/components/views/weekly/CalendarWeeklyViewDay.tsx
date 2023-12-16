@@ -51,12 +51,12 @@ export default function CalendarWeeklyViewDay({
     const minutes =
       Math.round((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
 
-    const date = new Date();
-    date.setHours(hour);
-    date.setMinutes(minutes);
+    const dateObject = new Date(date);
+    dateObject.setHours(hour);
+    dateObject.setMinutes(minutes);
 
-    const startsAt = date.toISOString();
-    const endsAt = addMinutes(date, 30).toISOString();
+    const startsAt = dateObject.toISOString();
+    const endsAt = addMinutes(dateObject, 30).toISOString();
 
     setSelectedCalendarEntryDialogOpen(true, {
       startsAt,
@@ -108,6 +108,7 @@ export default function CalendarWeeklyViewDay({
         return (
           <CalendarEntry
             key={calendarEntry.id}
+            dayDate={date}
             calendarEntry={calendarEntry}
             className="absolute"
             style={style}

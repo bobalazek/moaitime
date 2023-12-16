@@ -59,7 +59,7 @@ export default function CalendarEntryDialog() {
   }, [selectedCalendarEntry, toast]);
 
   const onCancelButtonClick = () => {
-    setSelectedCalendarEntryDialogOpen(false);
+    setSelectedCalendarEntryDialogOpen(false, null);
   };
 
   const onSaveButtonClick = async () => {
@@ -77,7 +77,7 @@ export default function CalendarEntryDialog() {
         description: 'You have successfully saved the event',
       });
 
-      setSelectedCalendarEntryDialogOpen(false);
+      setSelectedCalendarEntryDialogOpen(false, null);
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }

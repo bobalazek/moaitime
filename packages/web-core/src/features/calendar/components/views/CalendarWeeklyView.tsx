@@ -159,7 +159,13 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 {fullDayCalendarEntries.length > 0 && (
                   <div className="mt-2 flex flex-col gap-1">
                     {fullDayCalendarEntries.map((calendarEntry) => {
-                      return <CalendarEntry key={calendarEntry.id} calendarEntry={calendarEntry} />;
+                      return (
+                        <CalendarEntry
+                          key={calendarEntry.id}
+                          dayDate={date}
+                          calendarEntry={calendarEntry}
+                        />
+                      );
                     })}
                   </div>
                 )}

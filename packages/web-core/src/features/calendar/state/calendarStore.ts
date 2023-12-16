@@ -2,6 +2,7 @@ import { addDays, areIntervalsOverlapping, eachDayOfInterval, format } from 'dat
 import { create } from 'zustand';
 
 import {
+  Calendar,
   CalendarEntry,
   CalendarViewEnum,
   CreateEvent,
@@ -19,6 +20,7 @@ import {
   getWeekRange,
   getYearRange,
   loadCalendarEntries,
+  loadCalendars,
 } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -35,6 +37,9 @@ export type CalendarStore = {
   selectedDays: Date[];
   reloadSelectedDays: () => Promise<void>;
   isTodayInSelectedDaysRange: boolean;
+  /********** Calendars **********/
+  calendars: Calendar[];
+  loadCalendars: () => Promise<Calendar[]>;
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   loadCalendarEnries: () => Promise<CalendarEntry[]>;
@@ -55,17 +60,16 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   /********** General **********/
   dialogOpen: false,
   setDialogOpen: (dialogOpen: boolean) => {
-    const { reloadSelectedDays } = get();
+    const { loadCalendars, reloadSelectedDays } = get();
 
     set({
       dialogOpen,
     });
 
-    if (!dialogOpen) {
-      return;
+    if (dialogOpen) {
+      loadCalendars();
+      reloadSelectedDays();
     }
-
-    reloadSelectedDays();
   },
   // Selected Date
   selectedDate: new Date(),
@@ -132,6 +136,15 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendarEnries();
   },
   isTodayInSelectedDaysRange: false,
+  /********** Calendars **********/
+  calendars: [],
+  loadCalendars: async () => {
+    const calendars = await loadCalendars();
+
+    set({ calendars });
+
+    return calendars;
+  },
   /********** Calendar Entries **********/
   calendarEntries: [],
   loadCalendarEnries: async () => {

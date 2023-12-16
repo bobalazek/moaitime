@@ -18,6 +18,7 @@ import { utcToZonedTime } from 'date-fns-tz';
 
 import {
   API_URL,
+  Calendar,
   CalendarEntry,
   CalendarEntryWithVerticalPosition,
   CreateEvent,
@@ -29,7 +30,16 @@ import {
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-/********** Calendar **********/
+/********** Calendars **********/
+export const loadCalendars = async () => {
+  const response = await fetchJson<ResponseInterface<Calendar[]>>(`${API_URL}/api/v1/calendars`, {
+    method: 'GET',
+  });
+
+  return response.data as Calendar[];
+};
+
+/********** Calendar Entries **********/
 export const loadCalendarEntries = async (from?: Date | string, to?: Date | string) => {
   const url = new URL(`${API_URL}/api/v1/calendar-entries`);
   if (from) {
@@ -47,6 +57,53 @@ export const loadCalendarEntries = async (from?: Date | string, to?: Date | stri
   return response;
 };
 
+/********** Events **********/
+export const addEvent = async (event: CreateEvent): Promise<Event> => {
+  const response = await fetchJson<ResponseInterface<Event>>(`${API_URL}/api/v1/events`, {
+    method: 'POST',
+    body: JSON.stringify(event),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data as Event;
+};
+
+export const editEvent = async (eventId: string, event: UpdateEvent): Promise<Event> => {
+  const response = await fetchJson<ResponseInterface<Event>>(
+    `${API_URL}/api/v1/events/${eventId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(event),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Event;
+};
+
+export const deleteEvent = async (eventId: string, isHardDelete?: boolean): Promise<Event> => {
+  const response = await fetchJson<ResponseInterface<Event>>(
+    `${API_URL}/api/v1/events/${eventId}`,
+    {
+      method: 'DELETE',
+      body: isHardDelete ? JSON.stringify({ isHardDelete }) : undefined,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Event;
+};
+
+/********** Misc **********/
 export const getDatesForRange = (start: string, end: string) => {
   const range: string[] = [];
   const endDate = new Date(end);
@@ -239,50 +296,4 @@ export const getAgendaRange = (date: Date) => {
   const end = endOfMonth(addMonths(start, 2));
 
   return { start, end };
-};
-
-/********** Events **********/
-export const addEvent = async (event: CreateEvent): Promise<Event> => {
-  const response = await fetchJson<ResponseInterface<Event>>(`${API_URL}/api/v1/events`, {
-    method: 'POST',
-    body: JSON.stringify(event),
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  });
-
-  return response.data as Event;
-};
-
-export const editEvent = async (eventId: string, event: UpdateEvent): Promise<Event> => {
-  const response = await fetchJson<ResponseInterface<Event>>(
-    `${API_URL}/api/v1/events/${eventId}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(event),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return response.data as Event;
-};
-
-export const deleteEvent = async (eventId: string, isHardDelete?: boolean): Promise<Event> => {
-  const response = await fetchJson<ResponseInterface<Event>>(
-    `${API_URL}/api/v1/events/${eventId}`,
-    {
-      method: 'DELETE',
-      body: isHardDelete ? JSON.stringify({ isHardDelete }) : undefined,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return response.data as Event;
 };

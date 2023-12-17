@@ -14,7 +14,7 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   API_URL,
@@ -229,42 +229,44 @@ export const getCalendarEntriesWithStyles = (
   const dayStartUtc = new Date(`${date}T00:00:00.000Z`);
   const dayEndUtc = new Date(`${date}T23:59:59.999Z`);
   const localTimezoneOffset = dayStartUtc.getTimezoneOffset() * 60 * 1000;
-  const calendarTimezoneOffset = getTimezoneOffset(calendarTimezone, dayStartUtc);
 
   return calendarEntries.map((calendarEntry) => {
     const eventStartTimezone = calendarEntry.timezone;
-    const eventEndTimezone = calendarEntry.endTimezone ?? calendarEntry.timezone;
+    const eventEndTimezone = calendarEntry.endTimezone ?? eventStartTimezone;
 
-    let eventStartUtc = new Date(
+    const eventStartUtc = new Date(
       utcToZonedTime(zonedTimeToUtc(calendarEntry.startsAt, 'UTC'), eventStartTimezone).getTime() -
         localTimezoneOffset
     );
-    let eventEndUtc = new Date(
+    const eventEndUtc = new Date(
       utcToZonedTime(zonedTimeToUtc(calendarEntry.endsAt, 'UTC'), eventEndTimezone).getTime() -
         localTimezoneOffset
     );
 
-    if (eventStartUtc < dayStartUtc) {
-      eventStartUtc = dayStartUtc;
-    }
-    if (eventEndUtc > dayEndUtc) {
-      eventEndUtc = dayEndUtc;
-    }
+    const eventStartLocal = eventStartUtc < dayStartUtc ? dayStartUtc : eventStartUtc;
+    const eventEndLocal = eventEndUtc > dayEndUtc ? dayEndUtc : eventEndUtc;
 
-    const topTimeDiff = eventStartUtc.getTime() - dayStartUtc.getTime();
-    const heightTimeDiff = eventEndUtc.getTime() - eventStartUtc.getTime();
+    const eventStartWithCalendarTimezone = utcToZonedTime(eventStartUtc, calendarTimezone);
+    const eventEndWithCalendarTimezone = utcToZonedTime(eventEndUtc, calendarTimezone);
+
+    const topTimeDiff = eventStartLocal.getTime() - dayStartUtc.getTime();
+    const heightTimeDiff = eventEndLocal.getTime() - eventStartLocal.getTime();
 
     const top = Math.ceil((topTimeDiff / (1000 * 60 * 60)) * hourHeightPx);
     const height = Math.ceil((heightTimeDiff / (1000 * 60 * 60)) * hourHeightPx);
 
     console.log({
-      calendarTimezoneOffset,
+      calendarEntry,
 
       dayStartUtc,
       eventStartUtc,
+      eventStartLocal,
+      eventStartWithCalendarTimezone,
 
       dayEndUtc,
       eventEndUtc,
+      eventEndLocal,
+      eventEndWithCalendarTimezone,
 
       topTimeDiff,
       heightTimeDiff,

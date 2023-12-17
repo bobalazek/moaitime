@@ -21,4 +21,9 @@ export const publicCalendars: NewCalendar[] = [
     timezone: 'Europe/Berlin',
     isPublic: true,
   },
+  {
+    name: 'Italian Holidays',
+    timezone: 'Europe/Rome',
+    isPublic: true,
+  },
 ];

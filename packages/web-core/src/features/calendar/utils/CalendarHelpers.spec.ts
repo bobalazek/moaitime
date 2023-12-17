@@ -628,7 +628,7 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].style.height).toBe('300px');
     });
 
-    it.only('should correctly calculate the height if overflowing to the next day if moscow time', () => {
+    it('should correctly calculate the height if overflowing to the next day if moscow time', () => {
       const result = getCalendarEntriesWithStyles(
         [
           {

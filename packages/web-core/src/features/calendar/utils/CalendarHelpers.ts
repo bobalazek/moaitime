@@ -14,7 +14,7 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   API_URL,
@@ -226,48 +226,52 @@ export const getCalendarEntriesWithStyles = (
   calendarTimezone: string,
   hourHeightPx: number
 ) => {
-  const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  const dayStartDate = new Date(
+  const calendarTimezoneOffset = getTimezoneOffset(calendarTimezone);
+  const localTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+  const dayStart = new Date(
     utcToZonedTime(zonedTimeToUtc(`${date}T00:00:00.000`, 'UTC'), calendarTimezone).getTime() -
-      timezoneOffset
+      localTimezoneOffset
   );
-  const dayEndDate = new Date(
+  const dayEnd = new Date(
     utcToZonedTime(zonedTimeToUtc(`${date}T23:59:59.999`, 'UTC'), calendarTimezone).getTime() -
-      timezoneOffset
+      localTimezoneOffset
   );
 
   return calendarEntries.map((calendarEntry) => {
-    let eventStartDate = new Date(
+    const eventStart = new Date(
       utcToZonedTime(
         zonedTimeToUtc(calendarEntry.startsAt, 'UTC'),
         calendarEntry.timezone
-      ).getTime() - timezoneOffset
+      ).getTime() - localTimezoneOffset
     );
-    let eventEndDate = new Date(
+    const eventEnd = new Date(
       utcToZonedTime(
         zonedTimeToUtc(calendarEntry.endsAt, 'UTC'),
         calendarEntry.endTimezone ?? calendarEntry.timezone
-      ).getTime() - timezoneOffset
+      ).getTime() - localTimezoneOffset
+    );
+    const eventStartInCalendarTimezone = new Date(eventStart.getTime() + calendarTimezoneOffset);
+    const eventEndInCalendarTimezone = new Date(eventEnd.getTime() + calendarTimezoneOffset);
+
+    const eventStartsPreviousDay = eventStart.getTime() < dayStart.getTime();
+    const eventEndsNextDay = eventEnd.getTime() > dayEnd.getTime();
+
+    console.log(
+      calendarTimezoneOffset,
+      eventStartInCalendarTimezone,
+      eventEndInCalendarTimezone,
+      eventStartsPreviousDay,
+      eventEndsNextDay
     );
 
-    // TODO: we want to make sure that it does NOT overlow on the calendar timezone time,
-    // not utc start and end dates
-
-    if (eventStartDate < dayStartDate) {
-      eventStartDate = dayStartDate;
-    }
-
-    if (eventEndDate > dayEndDate) {
-      eventEndDate = dayEndDate;
-    }
-
-    const top = Math.max(
-      0,
-      ((eventStartDate.getTime() - dayStartDate.getTime()) / (1000 * 60 * 60)) * hourHeightPx
-    );
-
-    const durationInHours = (eventEndDate.getTime() - eventStartDate.getTime()) / (1000 * 60 * 60);
-    const height = Math.max(0, durationInHours * hourHeightPx);
+    const startHours = eventStartInCalendarTimezone.getUTCHours();
+    const startMinutes = eventStartInCalendarTimezone.getUTCMinutes();
+    const endHours = eventEndInCalendarTimezone.getUTCHours();
+    const endMinutes = eventEndInCalendarTimezone.getUTCMinutes();
+    const top = eventStartsPreviousDay ? 0 : (startHours + startMinutes / 60) * hourHeightPx;
+    const height = eventEndsNextDay
+      ? 24 * hourHeightPx - top
+      : (endHours + endMinutes / 60) * hourHeightPx - top;
 
     const style = {
       top: `${Math.round(top)}px`,

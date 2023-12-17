@@ -227,52 +227,43 @@ export const getCalendarEntriesWithStyles = (
   hourHeightPx: number
 ) => {
   const calendarTimezoneOffset = getTimezoneOffset(calendarTimezone);
-  const localTimezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-  const dayStart = new Date(
-    utcToZonedTime(zonedTimeToUtc(`${date}T00:00:00.000`, 'UTC'), calendarTimezone).getTime() -
-      localTimezoneOffset
-  );
-  const dayEnd = new Date(
-    utcToZonedTime(zonedTimeToUtc(`${date}T23:59:59.999`, 'UTC'), calendarTimezone).getTime() -
-      localTimezoneOffset
-  );
+  const dayStartUtc = new Date(`${date}T00:00:00.000Z`);
+  const dayEndUtc = new Date(`${date}T23:59:59.999Z`);
+  const localTimezoneOffset = dayStartUtc.getTimezoneOffset() * 60 * 1000;
 
   return calendarEntries.map((calendarEntry) => {
-    const eventStart = new Date(
+    const eventStartUtc = new Date(
       utcToZonedTime(
         zonedTimeToUtc(calendarEntry.startsAt, 'UTC'),
         calendarEntry.timezone
       ).getTime() - localTimezoneOffset
     );
-    const eventEnd = new Date(
+    const eventEndUtc = new Date(
       utcToZonedTime(
         zonedTimeToUtc(calendarEntry.endsAt, 'UTC'),
         calendarEntry.endTimezone ?? calendarEntry.timezone
       ).getTime() - localTimezoneOffset
     );
-    const eventStartInCalendarTimezone = new Date(
-      eventStart.getTime() + calendarTimezoneOffset - localTimezoneOffset
-    );
-    const eventEndInCalendarTimezone = new Date(
-      eventEnd.getTime() + calendarTimezoneOffset - localTimezoneOffset
-    );
 
-    const eventOnCalendarStart =
-      eventStartInCalendarTimezone.getTime() < dayStart.getTime() ? dayStart : eventStart;
-    const eventOnCalendarEnd =
-      eventEndInCalendarTimezone.getTime() > dayEnd.getTime() ? dayEnd : eventEnd;
+    const eventStartCalendarLocal = new Date(
+      eventStartUtc.getTime() + calendarTimezoneOffset + localTimezoneOffset
+    );
+    const eventEndInCalendarLocal = new Date(
+      eventEndUtc.getTime() + calendarTimezoneOffset + localTimezoneOffset
+    );
 
     console.log({
-      dayStart,
-      eventStart,
-      eventOnCalendarStart,
+      dayStart: dayStartUtc,
+      eventStart: eventStartUtc,
+      eventStartInCalendarTimezone: eventStartCalendarLocal,
     });
 
-    // TODO
-    // top should be relative to the calendar timezone. For example, if timezone is UTC+2, then we need to calculate the top relative to UTC+2
-    // to get the correct hour and minute, then we can calculate the top relative to the local timezone
-    const top = 0;
-    const height = 0;
+    const top =
+      (eventStartCalendarLocal.getHours() + eventStartCalendarLocal.getMinutes() / 60) *
+      hourHeightPx;
+    const durationInHours =
+      (eventEndInCalendarLocal.getTime() - eventStartCalendarLocal.getTime()) / (1000 * 60 * 60);
+    const height = Math.ceil(durationInHours * hourHeightPx);
 
     const style = {
       top: `${Math.round(top)}px`,

@@ -244,42 +244,35 @@ export const getCalendarEntriesWithStyles = (
         localTimezoneOffset
     );
 
-    const eventStartUtcClamed = eventStartUtc < dayStartUtc ? dayStartUtc : eventStartUtc;
-    const eventEndUtcClamed = eventEndUtc > dayEndUtc ? dayEndUtc : eventEndUtc;
+    const eventStartUtcClamped = eventStartUtc < dayStartUtc ? dayStartUtc : eventStartUtc;
+    const eventEndUtcClamped = eventEndUtc > dayEndUtc ? dayEndUtc : eventEndUtc;
 
     const eventStartWithCalendarTimezone = new Date(
       eventStartUtc.getTime() + calendarTimezoneOffset
     );
     const eventEndWithCalendarTimezone = new Date(eventEndUtc.getTime() + calendarTimezoneOffset);
 
-    let topTimeDiff = eventStartUtcClamed.getTime() - dayStartUtc.getTime();
-    if (calendarTimezoneOffset > 0) {
-      topTimeDiff += eventStartWithCalendarTimezone.getTime() - eventStartUtcClamed.getTime();
-    }
+    const topTimeDelta = eventStartUtcClamped.getTime() - dayStartUtc.getTime();
+    const heightTimeDelta = eventEndUtcClamped.getTime() - eventStartUtcClamped.getTime();
 
-    let heightTimeDiff = eventEndUtcClamed.getTime() - eventStartUtcClamed.getTime();
-    if (calendarTimezoneOffset > 0) {
-      heightTimeDiff = eventEndWithCalendarTimezone.getTime() - eventEndUtcClamed.getTime();
-    }
-
-    const top = Math.round((topTimeDiff / (1000 * 60 * 60)) * hourHeightPx);
-    const height = Math.round((heightTimeDiff / (1000 * 60 * 60)) * hourHeightPx);
+    const top = Math.round((topTimeDelta / (1000 * 60 * 60)) * hourHeightPx);
+    const height = Math.round((heightTimeDelta / (1000 * 60 * 60)) * hourHeightPx);
 
     console.log({
       calendarTimezoneOffset,
 
       dayStartUtc,
       eventStartUtc,
-      eventStartUtcClamed,
+      eventStartUtcClamped,
       eventStartWithCalendarTimezone,
 
       dayEndUtc,
       eventEndUtc,
-      eventEndUtcClamed,
+      eventEndUtcClamped,
       eventEndWithCalendarTimezone,
 
-      topTimeDiff,
-      heightTimeDiff,
+      topTimeDelta,
+      heightTimeDelta,
 
       top,
       height,

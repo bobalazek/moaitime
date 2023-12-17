@@ -223,16 +223,16 @@ export const getCalendarEntriesForDay = (
 export const getCalendarEntriesWithStyles = (
   calendarEntries: CalendarEntryWithVerticalPosition[],
   date: string,
-  timezone: string,
+  calendarTimezone: string,
   hourHeightPx: number
 ) => {
   const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
   const dayStartDate = new Date(
-    utcToZonedTime(zonedTimeToUtc(`${date}T00:00:00.000`, 'UTC'), timezone).getTime() -
+    utcToZonedTime(zonedTimeToUtc(`${date}T00:00:00.000`, 'UTC'), calendarTimezone).getTime() -
       timezoneOffset
   );
   const dayEndDate = new Date(
-    utcToZonedTime(zonedTimeToUtc(`${date}T23:59:59.999`, 'UTC'), timezone).getTime() -
+    utcToZonedTime(zonedTimeToUtc(`${date}T23:59:59.999`, 'UTC'), calendarTimezone).getTime() -
       timezoneOffset
   );
 
@@ -250,11 +250,13 @@ export const getCalendarEntriesWithStyles = (
       ).getTime() - timezoneOffset
     );
 
-    console.log(dayStartDate, dayEndDate, eventStartDate, eventEndDate);
+    // TODO: we want to make sure that it does NOT overlow on the calendar timezone time,
+    // not utc start and end dates
 
     if (eventStartDate < dayStartDate) {
       eventStartDate = dayStartDate;
     }
+
     if (eventEndDate > dayEndDate) {
       eventEndDate = dayEndDate;
     }

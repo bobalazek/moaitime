@@ -256,13 +256,17 @@ export const getCalendarEntriesWithStyles = (
     const eventStartsPreviousDay = eventStart.getTime() < dayStart.getTime();
     const eventEndsNextDay = eventEnd.getTime() > dayEnd.getTime();
 
-    console.log(
+    console.log({
+      dayStart,
+      eventStart,
+      eventStartsPreviousDay,
+      dayEnd,
+      eventEnd,
+      eventEndsNextDay,
       calendarTimezoneOffset,
       eventStartInCalendarTimezone,
       eventEndInCalendarTimezone,
-      eventStartsPreviousDay,
-      eventEndsNextDay
-    );
+    });
 
     const startHours = eventStartInCalendarTimezone.getUTCHours();
     const startMinutes = eventStartInCalendarTimezone.getUTCMinutes();

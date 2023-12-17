@@ -243,14 +243,14 @@ export const getCalendarEntriesWithStyles = (
         localTimezoneOffset
     );
 
-    const eventStartLocal = eventStartUtc < dayStartUtc ? dayStartUtc : eventStartUtc;
-    const eventEndLocal = eventEndUtc > dayEndUtc ? dayEndUtc : eventEndUtc;
+    const eventStartUtcClamed = eventStartUtc < dayStartUtc ? dayStartUtc : eventStartUtc;
+    const eventEndUtcClamed = eventEndUtc > dayEndUtc ? dayEndUtc : eventEndUtc;
 
     const eventStartWithCalendarTimezone = utcToZonedTime(eventStartUtc, calendarTimezone);
     const eventEndWithCalendarTimezone = utcToZonedTime(eventEndUtc, calendarTimezone);
 
-    const topTimeDiff = eventStartLocal.getTime() - dayStartUtc.getTime();
-    const heightTimeDiff = eventEndLocal.getTime() - eventStartLocal.getTime();
+    const topTimeDiff = eventStartUtcClamed.getTime() - dayStartUtc.getTime();
+    const heightTimeDiff = eventEndUtcClamed.getTime() - eventStartUtcClamed.getTime();
 
     const top = Math.ceil((topTimeDiff / (1000 * 60 * 60)) * hourHeightPx);
     const height = Math.ceil((heightTimeDiff / (1000 * 60 * 60)) * hourHeightPx);
@@ -260,12 +260,12 @@ export const getCalendarEntriesWithStyles = (
 
       dayStartUtc,
       eventStartUtc,
-      eventStartLocal,
+      eventStartUtcClamed,
       eventStartWithCalendarTimezone,
 
       dayEndUtc,
       eventEndUtc,
-      eventEndLocal,
+      eventEndUtcClamed,
       eventEndWithCalendarTimezone,
 
       topTimeDiff,

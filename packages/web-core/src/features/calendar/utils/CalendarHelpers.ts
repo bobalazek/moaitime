@@ -14,7 +14,7 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   API_URL,
@@ -226,6 +226,12 @@ export const getCalendarEntriesWithStyles = (
   calendarTimezone: string,
   hourHeightPx: number
 ) => {
+  // TODO: with this change things are now working, but why do they work? Why do we need to add a day here?
+  const calendarTimezoneOffset = getTimezoneOffset(calendarTimezone);
+  if (calendarTimezoneOffset < 0) {
+    date = format(addDays(new Date(`${date}T00:00:00.000Z`), 1), 'yyyy-MM-dd');
+  }
+
   const dayStartCalendarTZ = utcToZonedTime(new Date(`${date}T00:00:00.000Z`), calendarTimezone);
   dayStartCalendarTZ.setHours(0, 0, 0, 0); // Reset hours, minutes, seconds, and milliseconds to 00:00:00.000
 

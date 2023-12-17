@@ -689,7 +689,7 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].style.top).toBe('0px');
       expect(result[0].style.height).toBe('400px');
     });
-    /*
+
     it('should correctly calculate the height if overflowing from the next day if los angeles time', () => {
       const result = getCalendarEntriesWithStyles(
         [
@@ -782,6 +782,5 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].style.top).toBe('2000px');
       expect(result[0].style.height).toBe('400px');
     });
-    */
   });
 });

@@ -14,7 +14,7 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   API_URL,
@@ -226,50 +226,58 @@ export const getCalendarEntriesWithStyles = (
   timezone: string,
   hourHeightPx: number
 ) => {
-  // TODO: NOT WORKING AT ALL YET
-
-  const day = new Date(date);
-  const start = startOfDay(day);
-  const end = endOfDay(day);
-
-  const timezoneOffsetStart = new Date(utcToZonedTime(start, timezone)).getTime() - start.getTime();
-  const timezoneOffsetEnd = new Date(utcToZonedTime(end, timezone)).getTime() - end.getTime();
+  const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+  const dayStartDate = new Date(
+    utcToZonedTime(zonedTimeToUtc(`${date}T00:00:00.000`, 'UTC'), timezone).getTime() -
+      timezoneOffset
+  );
+  const dayEndDate = new Date(
+    utcToZonedTime(zonedTimeToUtc(`${date}T23:59:59.999`, 'UTC'), timezone).getTime() -
+      timezoneOffset
+  );
 
   return calendarEntries.map((calendarEntry) => {
-    let calendarEntryStartsAt = new Date(
-      new Date(calendarEntry.startsAt).getTime() + timezoneOffsetStart
+    let eventStartDate = new Date(
+      utcToZonedTime(
+        zonedTimeToUtc(calendarEntry.startsAt, 'UTC'),
+        calendarEntry.timezone
+      ).getTime() - timezoneOffset
     );
-    let calendarEntryEndsAt = new Date(
-      new Date(calendarEntry.endsAt).getTime() + timezoneOffsetEnd
+    let eventEndDate = new Date(
+      utcToZonedTime(
+        zonedTimeToUtc(calendarEntry.endsAt, 'UTC'),
+        calendarEntry.endTimezone ?? calendarEntry.timezone
+      ).getTime() - timezoneOffset
     );
 
-    if (calendarEntryStartsAt < start) {
-      calendarEntryStartsAt = start;
+    console.log(dayStartDate, dayEndDate, eventStartDate, eventEndDate);
+
+    if (eventStartDate < dayStartDate) {
+      eventStartDate = dayStartDate;
+    }
+    if (eventEndDate > dayEndDate) {
+      eventEndDate = dayEndDate;
     }
 
-    if (calendarEntryEndsAt > end) {
-      calendarEntryEndsAt = end;
-    }
+    const top = Math.max(
+      0,
+      ((eventStartDate.getTime() - dayStartDate.getTime()) / (1000 * 60 * 60)) * hourHeightPx
+    );
 
-    const top =
-      (calendarEntryStartsAt.getHours() + calendarEntryStartsAt.getMinutes() / 60) * hourHeightPx;
-    const durationInHours =
-      (calendarEntryEndsAt.getTime() - calendarEntryStartsAt.getTime()) / (1000 * 60 * 60);
-    const height = Math.ceil(durationInHours * hourHeightPx);
+    const durationInHours = (eventEndDate.getTime() - eventStartDate.getTime()) / (1000 * 60 * 60);
+    const height = Math.max(0, durationInHours * hourHeightPx);
 
     const style = {
-      top: `${top}px`,
-      height: `${height}px`,
+      top: `${Math.round(top)}px`,
+      height: `${Math.round(height)}px`,
       left: calendarEntry.left,
       width: calendarEntry.width,
     };
 
-    return {
-      ...calendarEntry,
-      style,
-    };
+    return { ...calendarEntry, style };
   });
 };
+
 export const getWeekRange = (date: Date, weekStartsOn: DayOfWeek) => {
   const start = startOfWeek(date, { weekStartsOn });
   const end = endOfWeek(date, { weekStartsOn });

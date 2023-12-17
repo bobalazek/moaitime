@@ -253,14 +253,14 @@ export const getCalendarEntriesWithStyles = (
     );
 
     const eventStartFinal = new Date(
-      (eventStartCalendarLocal < dayStartUtc ? dayStartUtc : eventStartUtc).getTime() +
-        localTimezoneOffset
+      (eventStartCalendarLocal < dayStartUtc ? dayStartUtc : eventStartUtc).getTime()
     );
     const eventEndFinal = new Date(
-      (eventEndCalendarLocal > dayEndUtc ? dayEndUtc : eventEndUtc).getTime() + localTimezoneOffset
+      (eventEndCalendarLocal > dayEndUtc ? dayEndUtc : eventEndUtc).getTime()
     );
 
-    const top = (eventStartFinal.getHours() + eventStartFinal.getMinutes() / 60) * hourHeightPx;
+    const top =
+      (eventStartFinal.getUTCHours() + eventStartFinal.getUTCMinutes() / 60) * hourHeightPx;
     const durationInHours =
       (eventEndFinal.getTime() - eventStartFinal.getTime()) / (1000 * 60 * 60);
     const height = Math.ceil(durationInHours * hourHeightPx);
@@ -269,11 +269,14 @@ export const getCalendarEntriesWithStyles = (
       dayStartUtc,
       eventStartUtc,
       eventStartCalendarLocal,
-      eventStartFinal,
-      eventStartFinalHours: eventStartFinal.getHours(),
-      eventStartFinalMinutes: eventStartFinal.getMinutes(),
+      eventStartFinal: eventStartFinal.toISOString(),
+      eventStartFinalHours: eventStartFinal.getUTCHours(),
+      eventStartFinalMinutes: eventStartFinal.getUTCMinutes(),
 
-      eventEndFinal,
+      dayEndUtc,
+      eventEndUtc,
+      eventEndCalendarLocal,
+      eventEndFinal: eventEndFinal.toISOString(),
       eventEndFinalHours: eventEndFinal.getHours(),
       eventEndFinalMinutes: eventEndFinal.getMinutes(),
 

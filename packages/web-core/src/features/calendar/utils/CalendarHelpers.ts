@@ -248,22 +248,39 @@ export const getCalendarEntriesWithStyles = (
     const eventStartCalendarLocal = new Date(
       eventStartUtc.getTime() + calendarTimezoneOffset + localTimezoneOffset
     );
-    const eventEndInCalendarLocal = new Date(
+    const eventEndCalendarLocal = new Date(
       eventEndUtc.getTime() + calendarTimezoneOffset + localTimezoneOffset
     );
 
-    console.log({
-      dayStart: dayStartUtc,
-      eventStart: eventStartUtc,
-      eventStartInCalendarTimezone: eventStartCalendarLocal,
-    });
+    const eventStartFinal = new Date(
+      (eventStartCalendarLocal < dayStartUtc ? dayStartUtc : eventStartUtc).getTime() +
+        localTimezoneOffset
+    );
+    const eventEndFinal = new Date(
+      (eventEndCalendarLocal > dayEndUtc ? dayEndUtc : eventEndUtc).getTime() + localTimezoneOffset
+    );
 
-    const top =
-      (eventStartCalendarLocal.getHours() + eventStartCalendarLocal.getMinutes() / 60) *
-      hourHeightPx;
+    const top = (eventStartFinal.getHours() + eventStartFinal.getMinutes() / 60) * hourHeightPx;
     const durationInHours =
-      (eventEndInCalendarLocal.getTime() - eventStartCalendarLocal.getTime()) / (1000 * 60 * 60);
+      (eventEndFinal.getTime() - eventStartFinal.getTime()) / (1000 * 60 * 60);
     const height = Math.ceil(durationInHours * hourHeightPx);
+
+    console.log({
+      dayStartUtc,
+      eventStartUtc,
+      eventStartCalendarLocal,
+      eventStartFinal,
+      eventStartFinalHours: eventStartFinal.getHours(),
+      eventStartFinalMinutes: eventStartFinal.getMinutes(),
+
+      eventEndFinal,
+      eventEndFinalHours: eventEndFinal.getHours(),
+      eventEndFinalMinutes: eventEndFinal.getMinutes(),
+
+      top,
+      durationInHours,
+      height,
+    });
 
     const style = {
       top: `${Math.round(top)}px`,

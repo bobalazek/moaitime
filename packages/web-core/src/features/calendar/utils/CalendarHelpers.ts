@@ -14,7 +14,7 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   API_URL,
@@ -226,62 +226,46 @@ export const getCalendarEntriesWithStyles = (
   calendarTimezone: string,
   hourHeightPx: number
 ) => {
-  const calendarTimezoneOffset = getTimezoneOffset(calendarTimezone);
   const dayStartUtc = new Date(`${date}T00:00:00.000Z`);
   const dayEndUtc = new Date(`${date}T23:59:59.999Z`);
   const localTimezoneOffset = dayStartUtc.getTimezoneOffset() * 60 * 1000;
 
   return calendarEntries.map((calendarEntry) => {
+    const eventStartTimezone = calendarEntry.timezone;
+    const eventEndTimezone = calendarEntry.endTimezone ?? calendarEntry.timezone;
+
     const eventStartUtc = new Date(
-      utcToZonedTime(
-        zonedTimeToUtc(calendarEntry.startsAt, 'UTC'),
-        calendarEntry.timezone
-      ).getTime() - localTimezoneOffset
+      utcToZonedTime(zonedTimeToUtc(calendarEntry.startsAt, 'UTC'), eventStartTimezone).getTime() -
+        localTimezoneOffset
     );
     const eventEndUtc = new Date(
-      utcToZonedTime(
-        zonedTimeToUtc(calendarEntry.endsAt, 'UTC'),
-        calendarEntry.endTimezone ?? calendarEntry.timezone
-      ).getTime() - localTimezoneOffset
+      utcToZonedTime(zonedTimeToUtc(calendarEntry.endsAt, 'UTC'), eventEndTimezone).getTime() -
+        localTimezoneOffset
     );
 
-    const eventStartCalendarLocal = new Date(
-      eventStartUtc.getTime() + calendarTimezoneOffset + localTimezoneOffset
-    );
-    const eventEndCalendarLocal = new Date(
-      eventEndUtc.getTime() + calendarTimezoneOffset + localTimezoneOffset
-    );
+    const eventStartFinal = eventStartUtc < dayStartUtc ? dayStartUtc : eventStartUtc;
+    const eventEndFinal = eventEndUtc > dayEndUtc ? dayEndUtc : eventEndUtc;
 
-    const eventStartFinal = new Date(
-      (eventStartCalendarLocal < dayStartUtc ? dayStartUtc : eventStartUtc).getTime()
-    );
-    const eventEndFinal = new Date(
-      (eventEndCalendarLocal > dayEndUtc ? dayEndUtc : eventEndUtc).getTime()
-    );
+    // TODO
+    // Shomehow calculate the top and height based on the "calendarTimezone", so we can show the correct top and height
+    // Currently it work good for utc timezone, but it's not working for other timezones
 
     const top =
-      (eventStartFinal.getUTCHours() + eventStartFinal.getUTCMinutes() / 60) * hourHeightPx;
-    const durationInHours =
-      (eventEndFinal.getTime() - eventStartFinal.getTime()) / (1000 * 60 * 60);
-    const height = Math.ceil(durationInHours * hourHeightPx);
+      ((eventStartFinal.getTime() - dayStartUtc.getTime()) / (1000 * 60 * 60)) * hourHeightPx;
+    const height = Math.ceil(
+      ((eventEndFinal.getTime() - eventStartFinal.getTime()) / (1000 * 60 * 60)) * hourHeightPx
+    );
 
     console.log({
       dayStartUtc,
       eventStartUtc,
-      eventStartCalendarLocal,
-      eventStartFinal: eventStartFinal.toISOString(),
-      eventStartFinalHours: eventStartFinal.getUTCHours(),
-      eventStartFinalMinutes: eventStartFinal.getUTCMinutes(),
+      eventStartFinal,
 
       dayEndUtc,
       eventEndUtc,
-      eventEndCalendarLocal,
-      eventEndFinal: eventEndFinal.toISOString(),
-      eventEndFinalHours: eventEndFinal.getHours(),
-      eventEndFinalMinutes: eventEndFinal.getMinutes(),
+      eventEndFinal,
 
       top,
-      durationInHours,
       height,
     });
 

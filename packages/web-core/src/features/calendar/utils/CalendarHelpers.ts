@@ -14,7 +14,7 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   API_URL,
@@ -226,57 +226,47 @@ export const getCalendarEntriesWithStyles = (
   calendarTimezone: string,
   hourHeightPx: number
 ) => {
-  const dayStartUtc = new Date(`${date}T00:00:00.000Z`);
-  const dayEndUtc = addDays(dayStartUtc, 1);
-  const localTimezoneOffset = dayStartUtc.getTimezoneOffset() * 60 * 1000;
-  const calendarTimezoneOffset = getTimezoneOffset(calendarTimezone);
+  const dayStartCalendarTZ = utcToZonedTime(new Date(`${date}T00:00:00.000Z`), calendarTimezone);
+  dayStartCalendarTZ.setHours(0, 0, 0, 0); // Reset hours, minutes, seconds, and milliseconds to 00:00:00.000
+
+  const dayEndCalendarTZ = new Date(dayStartCalendarTZ);
+  dayEndCalendarTZ.setDate(dayEndCalendarTZ.getDate() + 1);
+
+  console.log(`Calendar Day Start (Calendar TZ): ${dayStartCalendarTZ}`);
+  console.log(`Calendar Day End (Calendar TZ): ${dayEndCalendarTZ}`);
 
   return calendarEntries.map((calendarEntry) => {
     const eventStartTimezone = calendarEntry.timezone;
     const eventEndTimezone = calendarEntry.endTimezone ?? eventStartTimezone;
 
-    const eventStartUtc = new Date(
-      utcToZonedTime(zonedTimeToUtc(calendarEntry.startsAt, 'UTC'), eventStartTimezone).getTime() -
-        localTimezoneOffset
+    const eventStartCalendarTZ = utcToZonedTime(
+      zonedTimeToUtc(calendarEntry.startsAt, eventStartTimezone),
+      calendarTimezone
     );
-    const eventEndUtc = new Date(
-      utcToZonedTime(zonedTimeToUtc(calendarEntry.endsAt, 'UTC'), eventEndTimezone).getTime() -
-        localTimezoneOffset
+    const eventEndCalendarTZ = utcToZonedTime(
+      zonedTimeToUtc(calendarEntry.endsAt, eventEndTimezone),
+      calendarTimezone
     );
 
-    const eventStartUtcClamped = eventStartUtc < dayStartUtc ? dayStartUtc : eventStartUtc;
-    const eventEndUtcClamped = eventEndUtc > dayEndUtc ? dayEndUtc : eventEndUtc;
+    console.log(`Event Start (Calendar TZ): ${eventStartCalendarTZ}`);
+    console.log(`Event End (Calendar TZ): ${eventEndCalendarTZ}`);
 
-    const eventStartWithCalendarTimezone = new Date(
-      eventStartUtc.getTime() + calendarTimezoneOffset
-    );
-    const eventEndWithCalendarTimezone = new Date(eventEndUtc.getTime() + calendarTimezoneOffset);
+    const eventStartClamped =
+      eventStartCalendarTZ < dayStartCalendarTZ ? dayStartCalendarTZ : eventStartCalendarTZ;
+    const eventEndClamped =
+      eventEndCalendarTZ > dayEndCalendarTZ ? dayEndCalendarTZ : eventEndCalendarTZ;
 
-    const topTimeDelta = eventStartUtcClamped.getTime() - dayStartUtc.getTime();
-    const heightTimeDelta = eventEndUtcClamped.getTime() - eventStartUtcClamped.getTime();
+    console.log(`Clamped Start: ${eventStartClamped}`);
+    console.log(`Clamped End: ${eventEndClamped}`);
 
+    const topTimeDelta = eventStartClamped.getTime() - dayStartCalendarTZ.getTime();
     const top = Math.round((topTimeDelta / (1000 * 60 * 60)) * hourHeightPx);
+
+    const heightTimeDelta = eventEndClamped.getTime() - eventStartClamped.getTime();
     const height = Math.round((heightTimeDelta / (1000 * 60 * 60)) * hourHeightPx);
 
-    console.log({
-      calendarTimezoneOffset,
-
-      dayStartUtc,
-      eventStartUtc,
-      eventStartUtcClamped,
-      eventStartWithCalendarTimezone,
-
-      dayEndUtc,
-      eventEndUtc,
-      eventEndUtcClamped,
-      eventEndWithCalendarTimezone,
-
-      topTimeDelta,
-      heightTimeDelta,
-
-      top,
-      height,
-    });
+    console.log(`Calculated Top: ${top}px`);
+    console.log(`Calculated Height: ${height}px`);
 
     const style = {
       top: `${top}px`,

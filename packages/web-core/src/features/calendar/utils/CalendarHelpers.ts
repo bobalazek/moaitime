@@ -250,32 +250,29 @@ export const getCalendarEntriesWithStyles = (
         calendarEntry.endTimezone ?? calendarEntry.timezone
       ).getTime() - localTimezoneOffset
     );
-    const eventStartInCalendarTimezone = new Date(eventStart.getTime() + calendarTimezoneOffset);
-    const eventEndInCalendarTimezone = new Date(eventEnd.getTime() + calendarTimezoneOffset);
+    const eventStartInCalendarTimezone = new Date(
+      eventStart.getTime() + calendarTimezoneOffset - localTimezoneOffset
+    );
+    const eventEndInCalendarTimezone = new Date(
+      eventEnd.getTime() + calendarTimezoneOffset - localTimezoneOffset
+    );
 
-    const eventStartsPreviousDay = eventStart.getTime() < dayStart.getTime();
-    const eventEndsNextDay = eventEnd.getTime() > dayEnd.getTime();
+    const eventOnCalendarStart =
+      eventStartInCalendarTimezone.getTime() < dayStart.getTime() ? dayStart : eventStart;
+    const eventOnCalendarEnd =
+      eventEndInCalendarTimezone.getTime() > dayEnd.getTime() ? dayEnd : eventEnd;
 
     console.log({
       dayStart,
       eventStart,
-      eventStartsPreviousDay,
-      dayEnd,
-      eventEnd,
-      eventEndsNextDay,
-      calendarTimezoneOffset,
-      eventStartInCalendarTimezone,
-      eventEndInCalendarTimezone,
+      eventOnCalendarStart,
     });
 
-    const startHours = eventStartInCalendarTimezone.getUTCHours();
-    const startMinutes = eventStartInCalendarTimezone.getUTCMinutes();
-    const endHours = eventEndInCalendarTimezone.getUTCHours();
-    const endMinutes = eventEndInCalendarTimezone.getUTCMinutes();
-    const top = eventStartsPreviousDay ? 0 : (startHours + startMinutes / 60) * hourHeightPx;
-    const height = eventEndsNextDay
-      ? 24 * hourHeightPx - top
-      : (endHours + endMinutes / 60) * hourHeightPx - top;
+    // TODO
+    // top should be relative to the calendar timezone. For example, if timezone is UTC+2, then we need to calculate the top relative to UTC+2
+    // to get the correct hour and minute, then we can calculate the top relative to the local timezone
+    const top = 0;
+    const height = 0;
 
     const style = {
       top: `${Math.round(top)}px`,

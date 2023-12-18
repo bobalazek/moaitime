@@ -122,6 +122,7 @@ export class Logger implements BaseLogger {
         options: {
           minimumLevel: this.level,
           colorize: true,
+          sync: true,
         },
       });
     } else {

@@ -14,7 +14,6 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
     const todaysDate = format(now, 'yyyy-MM-dd');
     const tomorrowsDate = format(new Date(now.getTime() + 86400000), 'yyyy-MM-dd');
     const nextWeeksDate = format(new Date(now.getTime() + 604800000), 'yyyy-MM-dd');
-
     events.push(
       ...[
         {
@@ -80,6 +79,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           endsAt: new Date(`${tomorrowsDate}T00:00:00.000`),
           calendarId,
         },
+
         {
           title: 'Event 5 Two Day Overlap',
           description: 'Event 5 Two Day Overlap Description',

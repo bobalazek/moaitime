@@ -5,10 +5,10 @@ import { getDatabase, NewCalendar, users } from '@moaitime/database-core';
 import { getUserFixtures } from './Users';
 
 export const getCalendarFixtures = async (): Promise<NewCalendar[]> => {
-  const caledars: NewCalendar[] = [];
+  const calendars: NewCalendar[] = [];
 
-  const userSeeds = await getUserFixtures();
-  for (const single of userSeeds) {
+  const userFixtures = await getUserFixtures();
+  for (const single of userFixtures) {
     const user = await getDatabase().query.users.findFirst({
       where: eq(users.email, single.email),
     });
@@ -16,12 +16,12 @@ export const getCalendarFixtures = async (): Promise<NewCalendar[]> => {
       throw new Error(`User "${single.email}" not found!`);
     }
 
-    caledars.push({
+    calendars.push({
       name: `${user.displayName}'s Calendar`,
-      timezone: 'Europe/Ljubljana',
+      timezone: user.settings?.generalTimezone ?? 'UTC',
       userId: user.id,
     });
   }
 
-  return caledars;
+  return calendars;
 };

@@ -6,7 +6,7 @@ import { publicCalendars } from './calendars/PublicCalendars';
 import { getUserSeeds } from './Users';
 
 export const getCalendarSeeds = async (): Promise<NewCalendar[]> => {
-  const caledars = [...publicCalendars];
+  const calendars = [...publicCalendars];
 
   const userSeeds = await getUserSeeds();
   for (const single of userSeeds) {
@@ -17,12 +17,12 @@ export const getCalendarSeeds = async (): Promise<NewCalendar[]> => {
       throw new Error(`User "${single.email}" not found!`);
     }
 
-    caledars.push({
+    calendars.push({
       name: `${user.displayName}'s Calendar`,
-      timezone: 'Europe/Ljubljana',
+      timezone: user.settings?.generalTimezone ?? 'UTC',
       userId: user.id,
     });
   }
 
-  return caledars;
+  return calendars;
 };

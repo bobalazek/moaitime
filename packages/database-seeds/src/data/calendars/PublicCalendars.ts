@@ -38,7 +38,7 @@ export const publicCalendars: NewCalendar[] = [
   },
   {
     name: 'Switzerland Holidays',
-    timezone: 'Europe/Zürich',
+    timezone: 'Europe/Zurich',
     isPublic: true,
   },
   {

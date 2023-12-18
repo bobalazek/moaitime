@@ -19,11 +19,16 @@ export const getEventSeeds = async (): Promise<NewEvent[]> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { calendarName, date, ...event } = single;
 
+    const dateObject = new Date(`${date}T00:00:00.000`);
+    if (!dateObject || isNaN(dateObject.getTime())) {
+      throw new Error(`Invalid date "${date}"!`);
+    }
+
     events.push({
       calendarId: calendar.id,
       isAllDay: true,
-      startsAt: new Date(`${date}T00:00:00.000`),
-      endsAt: new Date(`${date}T00:00:00.000`),
+      startsAt: dateObject,
+      endsAt: dateObject,
       timezone: calendar.timezone,
       ...event,
     });

@@ -22,6 +22,7 @@ const timezones = getTimezones();
 export type TimezoneSelectorProps = {
   value: string | null;
   onValueChange: (value: string | null) => void;
+  isReadonly?: boolean;
   placeholderText?: string;
   allowClear?: boolean;
 };
@@ -29,6 +30,7 @@ export type TimezoneSelectorProps = {
 export default function TimezoneSelector({
   value,
   onValueChange,
+  isReadonly,
   placeholderText,
   allowClear,
 }: TimezoneSelectorProps) {
@@ -48,6 +50,7 @@ export default function TimezoneSelector({
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
+          disabled={isReadonly}
           data-test="timezone-selector--trigger-button"
         >
           {value ?? (

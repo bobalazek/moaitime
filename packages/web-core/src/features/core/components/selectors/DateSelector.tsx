@@ -28,6 +28,8 @@ export type DateSelectorProps = {
   onSaveData: (value: DateSelectorData) => void;
   includeTime?: boolean;
   disablePast?: boolean;
+  isTimezoneReadonly?: boolean;
+  timezonePlaceholderText?: string;
 };
 
 export const DateSelectorText = ({ data }: { data: DateSelectorData }) => {
@@ -42,6 +44,7 @@ export const DateSelectorText = ({ data }: { data: DateSelectorData }) => {
     <span className="text-xs">
       {!timezonedDate && <span className="text-muted-foreground">Pick a date</span>}
       {timezonedDate && timezonedDate}
+      {data.dateTimeZone && ` (${data.dateTimeZone})`}
     </span>
   );
 };
@@ -51,6 +54,8 @@ export default function DateSelector({
   onSaveData,
   includeTime,
   disablePast,
+  isTimezoneReadonly,
+  timezonePlaceholderText,
 }: DateSelectorProps) {
   const { toast } = useToast();
   const { auth } = useAuthStore();
@@ -163,7 +168,8 @@ export default function DateSelector({
               <TimezoneSelector
                 value={dateTimeZoneValue}
                 onValueChange={setDateTimeZoneValue}
-                placeholderText="Floating timezone"
+                isReadonly={isTimezoneReadonly}
+                placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
                 allowClear={true}
               />
             </div>

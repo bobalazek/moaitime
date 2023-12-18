@@ -165,6 +165,8 @@ export default function CalendarEntryDialog() {
 
               setData((current) => ({ ...current, startsAt: result?.iso }));
             }}
+            isTimezoneReadonly={!!selectedCalendarEntry?.id}
+            timezonePlaceholderText="Select timezone ..."
           />
         </div>
         <div className="mb-4 flex flex-col gap-2">
@@ -181,17 +183,18 @@ export default function CalendarEntryDialog() {
 
               setData((current) => ({ ...current, endsAt: result?.iso }));
             }}
+            isTimezoneReadonly={!!selectedCalendarEntry?.id}
+            timezonePlaceholderText="Same as start date"
           />
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-calendar">Calendar</Label>
           <CalendarSelector
             value={data?.calendarId}
-            onChangeValue={(value, calendar) => {
+            onChangeValue={(value) => {
               setData((current) => ({
                 ...current,
                 calendarId: value,
-                timezone: calendar?.timezone ?? undefined,
               }));
             }}
           />

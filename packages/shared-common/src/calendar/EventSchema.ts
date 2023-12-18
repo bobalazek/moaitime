@@ -61,7 +61,12 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
   }
 );
 
-export const UpdateEventSchema = CreateEventBaseSchema;
+export const UpdateEventSchema = CreateEventBaseSchema.omit({
+  timezone: true,
+  endTimezone: true,
+  isAllDay: true,
+  calendarId: true,
+});
 
 // Types
 export type Event = z.infer<typeof EventSchema>;

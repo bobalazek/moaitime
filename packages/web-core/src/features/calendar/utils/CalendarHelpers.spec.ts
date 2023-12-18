@@ -61,9 +61,18 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(3);
+
       expect(result[0].id).toBe('event-1');
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
+
       expect(result[1].id).toBe('event-2');
+      expect(result[1].left).toBe('0%');
+      expect(result[1].width).toBe('100%');
+
       expect(result[2].id).toBe('event-3');
+      expect(result[2].left).toBe('0%');
+      expect(result[2].width).toBe('100%');
     });
 
     it('should return all calendar entries for the day in the correct order', () => {
@@ -121,9 +130,18 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(3);
+
       expect(result[0].id).toBe('event-2');
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
+
       expect(result[1].id).toBe('event-1');
+      expect(result[1].left).toBe('0%');
+      expect(result[1].width).toBe('100%');
+
       expect(result[2].id).toBe('event-3');
+      expect(result[2].left).toBe('0%');
+      expect(result[2].width).toBe('100%');
     });
 
     it('should return full day only calendar entries', () => {
@@ -181,7 +199,14 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(2);
+
       expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
+
+      expect(result[1].left).toBe('0%');
+      expect(result[1].width).toBe('100%');
     });
 
     it('should return non full day calendar entries only', () => {
@@ -239,7 +264,11 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
+
       expect(result.map((event) => event.id)).toEqual(['event-3']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
     });
 
     it('should correctly return the calendar entry if adjusted for the EST timezone early day', () => {
@@ -282,7 +311,11 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
+
       expect(result.map((event) => event.id)).toEqual(['event-2']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
     });
 
     it('should correctly return the calendar entry if adjusted for the EST timezone late day', () => {
@@ -325,7 +358,14 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(2);
+
       expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
+
+      expect(result[1].left).toBe('0%');
+      expect(result[1].width).toBe('100%');
     });
 
     it('should return all matching full day calendar etnries', () => {
@@ -383,7 +423,17 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(3);
+
       expect(result.map((event) => event.id)).toEqual(['event-3', 'event-1', 'event-2']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
+
+      expect(result[1].left).toBe('0%');
+      expect(result[1].width).toBe('100%');
+
+      expect(result[2].left).toBe('0%');
+      expect(result[2].width).toBe('100%');
     });
 
     it('should return only the correct full day calendar entries before 20th december', () => {
@@ -441,7 +491,11 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
+
       expect(result.map((event) => event.id)).toEqual(['event-3']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
     });
 
     it('should return only the correct full day calendar entries after 20th december', () => {
@@ -499,7 +553,11 @@ describe('CalendarHelpers.ts', () => {
       );
 
       expect(result).toHaveLength(1);
+
       expect(result.map((event) => event.id)).toEqual(['event-3']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
     });
   });
 

@@ -203,8 +203,8 @@ export const getCalendarEntriesForDay = (
 
     stacks.forEach((stack, stackIndex) => {
       stack.forEach((calendarEntry) => {
-        const width = 100 / stacks.length;
-        const left = width * stackIndex;
+        const width = calendarEntry.isAllDay ? 100 : 100 / stacks.length;
+        const left = calendarEntry ? 0 : width * stackIndex;
 
         positionedCalendarEntries.push({
           ...calendarEntry,

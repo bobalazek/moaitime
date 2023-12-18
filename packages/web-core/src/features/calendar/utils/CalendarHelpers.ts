@@ -226,20 +226,16 @@ export const getCalendarEntriesWithStyles = (
   calendarTimezone: string,
   hourHeightPx: number
 ) => {
-  // TODO: with this change things are now working, but why do they work? Why do we need to add a day here?
   const calendarTimezoneOffset = getTimezoneOffset(calendarTimezone);
   if (calendarTimezoneOffset < 0) {
     date = format(addDays(new Date(`${date}T00:00:00.000Z`), 1), 'yyyy-MM-dd');
   }
 
   const dayStartCalendarTZ = utcToZonedTime(new Date(`${date}T00:00:00.000Z`), calendarTimezone);
-  dayStartCalendarTZ.setHours(0, 0, 0, 0); // Reset hours, minutes, seconds, and milliseconds to 00:00:00.000
+  dayStartCalendarTZ.setHours(0, 0, 0, 0);
 
   const dayEndCalendarTZ = new Date(dayStartCalendarTZ);
   dayEndCalendarTZ.setDate(dayEndCalendarTZ.getDate() + 1);
-
-  console.log(`Calendar Day Start (Calendar TZ): ${dayStartCalendarTZ}`);
-  console.log(`Calendar Day End (Calendar TZ): ${dayEndCalendarTZ}`);
 
   return calendarEntries.map((calendarEntry) => {
     const eventStartTimezone = calendarEntry.timezone;
@@ -254,25 +250,16 @@ export const getCalendarEntriesWithStyles = (
       calendarTimezone
     );
 
-    console.log(`Event Start (Calendar TZ): ${eventStartCalendarTZ}`);
-    console.log(`Event End (Calendar TZ): ${eventEndCalendarTZ}`);
-
     const eventStartClamped =
       eventStartCalendarTZ < dayStartCalendarTZ ? dayStartCalendarTZ : eventStartCalendarTZ;
     const eventEndClamped =
       eventEndCalendarTZ > dayEndCalendarTZ ? dayEndCalendarTZ : eventEndCalendarTZ;
-
-    console.log(`Clamped Start: ${eventStartClamped}`);
-    console.log(`Clamped End: ${eventEndClamped}`);
 
     const topTimeDelta = eventStartClamped.getTime() - dayStartCalendarTZ.getTime();
     const top = Math.round((topTimeDelta / (1000 * 60 * 60)) * hourHeightPx);
 
     const heightTimeDelta = eventEndClamped.getTime() - eventStartClamped.getTime();
     const height = Math.round((heightTimeDelta / (1000 * 60 * 60)) * hourHeightPx);
-
-    console.log(`Calculated Top: ${top}px`);
-    console.log(`Calculated Height: ${height}px`);
 
     const style = {
       top: `${top}px`,

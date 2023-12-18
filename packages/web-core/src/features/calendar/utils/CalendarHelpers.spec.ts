@@ -721,6 +721,37 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].style.height).toBe('400px');
     });
 
+    it('should correctly calculate the height if it is los angeles time and event also being los angeles time', () => {
+      const result = getCalendarEntriesWithStyles(
+        [
+          {
+            id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            title: 'Event 1',
+            description: '',
+            timezone: 'America/Los_Angeles',
+            endTimezone: null,
+            isAllDay: false,
+            startsAt: '2023-12-20T04:00:00.000',
+            endsAt: '2023-12-20T12:00:00.000',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            calendarId: 'calendar-1',
+            left: '0%',
+            width: '100%',
+          },
+        ],
+        '2023-12-20',
+        'America/Los_Angeles',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe('400px');
+      expect(result[0].style.height).toBe('800px');
+    });
+
     it('should correctly calculate the height if overflowing from the previous day if sydney time', () => {
       const result = getCalendarEntriesWithStyles(
         [
@@ -781,6 +812,37 @@ describe('CalendarHelpers.ts', () => {
       expect(result).toHaveLength(1);
       expect(result[0].style.top).toBe('2000px');
       expect(result[0].style.height).toBe('400px');
+    });
+
+    it('should correctly calculate the height if it is sydney time and the event also being sydney time', () => {
+      const result = getCalendarEntriesWithStyles(
+        [
+          {
+            id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            title: 'Event 1',
+            description: '',
+            timezone: 'Australia/Sydney',
+            endTimezone: null,
+            isAllDay: false,
+            startsAt: '2023-12-20T09:00:00.000',
+            endsAt: '2023-12-20T18:00:00.000',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            calendarId: 'calendar-1',
+            left: '0%',
+            width: '100%',
+          },
+        ],
+        '2023-12-20',
+        'Australia/Sydney',
+        100
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].style.top).toBe('900px');
+      expect(result[0].style.height).toBe('900px');
     });
   });
 });

@@ -179,43 +179,77 @@ export const getCalendarEntriesForDay = (
       );
     });
 
-  const layoutCalendarEntries = (
-    calendarEntries: CalendarEntry[]
-  ): CalendarEntryWithVerticalPosition[] => {
-    const stacks: CalendarEntry[][] = [];
-    const positionedCalendarEntries: CalendarEntryWithVerticalPosition[] = [];
+  // Original idea from:
+  // https://stackoverflow.com/questions/11311410/visualization-of-calendar-events-algorithm-to-layout-events-with-maximum-width
+  // Has a bunch of tweaks and changes to make it work in typescript
+  function layoutCalendarEntries(entries: CalendarEntry[]): CalendarEntryWithVerticalPosition[] {
+    // Helpers
+    function collidesWith(entry1: CalendarEntry, entry2: CalendarEntry): boolean {
+      return (
+        new Date(entry1.endsAtUtc).getTime() > new Date(entry2.startsAtUtc).getTime() &&
+        new Date(entry1.startsAtUtc).getTime() < new Date(entry2.endsAtUtc).getTime()
+      );
+    }
 
-    calendarEntries.forEach((calendarEntry) => {
+    function packEvents(columns: CalendarEntryWithVerticalPosition[][]): void {
+      const numColumns = columns.length;
+      columns.forEach((col, iColumn) => {
+        col.forEach((entry) => {
+          const colSpan = expandEvent(entry, iColumn, columns);
+          entry.left = ((iColumn / numColumns) * 100).toString() + '%';
+          entry.width = ((colSpan / numColumns) * 100).toString() + '%';
+        });
+      });
+    }
+
+    function expandEvent(
+      entry: CalendarEntry,
+      iColumn: number,
+      columns: CalendarEntry[][]
+    ): number {
+      let colSpan = 1;
+      for (let i = iColumn + 1; i < columns.length; i++) {
+        if (columns[i].some((e) => collidesWith(e, entry))) {
+          break;
+        }
+        colSpan++;
+      }
+      return colSpan;
+    }
+
+    // Core logic
+    const columns: CalendarEntryWithVerticalPosition[][] = [];
+    const columnEndTimes: Date[] = [];
+
+    entries.forEach((entry) => {
+      const clonedEntry: CalendarEntryWithVerticalPosition = {
+        ...entry,
+        left: '0%',
+        width: '100%',
+      };
+
       let placed = false;
-      for (const stack of stacks) {
-        const lastInStack = stack[stack.length - 1];
-        if (lastInStack.endsAt <= calendarEntry.startsAt) {
-          stack.push(calendarEntry);
+      for (let i = 0; i < columns.length; i++) {
+        if (new Date(clonedEntry.startsAtUtc) >= columnEndTimes[i]) {
+          columns[i].push(clonedEntry);
+          columnEndTimes[i] = new Date(clonedEntry.endsAtUtc);
           placed = true;
           break;
         }
       }
 
       if (!placed) {
-        stacks.push([calendarEntry]);
+        columns.push([clonedEntry]);
+        columnEndTimes.push(new Date(clonedEntry.endsAtUtc));
       }
     });
 
-    stacks.forEach((stack, stackIndex) => {
-      stack.forEach((calendarEntry) => {
-        const width = calendarEntry.isAllDay ? 100 : 100 / stacks.length;
-        const left = calendarEntry.isAllDay ? 0 : width * stackIndex;
+    if (columns.length > 0) {
+      packEvents(columns);
+    }
 
-        positionedCalendarEntries.push({
-          ...calendarEntry,
-          left: `${left}%`,
-          width: `${width}%`,
-        });
-      });
-    });
-
-    return positionedCalendarEntries;
-  };
+    return columns.flat();
+  }
 
   return layoutCalendarEntries(filteredCalendarEntries);
 };

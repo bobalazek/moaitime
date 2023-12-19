@@ -611,6 +611,80 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].left).toBe('0%');
       expect(result[0].width).toBe('100%');
     });
+
+    it.only('should correctly group events together', () => {
+      const result = getCalendarEntriesForDay(
+        '2023-12-20',
+        [
+          {
+            id: 'event-1',
+            type: CalendarEntryTypeEnum.EVENT,
+            title: 'Event 1',
+            description: '',
+            timezone: 'UTC',
+            endTimezone: null,
+            isAllDay: false,
+            startsAt: '2023-12-20T12:00:00.000',
+            startsAtUtc: '2023-12-20T12:00:00.000Z',
+            endsAt: '2023-12-20T13:00:00.000',
+            endsAtUtc: '2023-12-20T13:00:00.000Z',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            calendarId: 'calendar-1',
+          },
+          {
+            id: 'event-2',
+            type: CalendarEntryTypeEnum.EVENT,
+            title: 'Event 2',
+            description: '',
+            timezone: 'UTC',
+            endTimezone: null,
+            isAllDay: false,
+            startsAt: '2023-12-20T16:00:00.000',
+            startsAtUtc: '2023-12-20T16:00:00.000Z',
+            endsAt: '2023-12-20T18:00:00.000',
+            endsAtUtc: '2023-12-20T18:00:00.000Z',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            calendarId: 'calendar-1',
+          },
+          {
+            id: 'event-3',
+            type: CalendarEntryTypeEnum.EVENT,
+            title: 'Event 3',
+            description: '',
+            timezone: 'UTC',
+            endTimezone: null,
+            isAllDay: false,
+            startsAt: '2023-12-20T16:00:00.000',
+            startsAtUtc: '2023-12-20T16:00:00.000Z',
+            endsAt: '2023-12-20T18:00:00.000',
+            endsAtUtc: '2023-12-20T18:00:00.000Z',
+            deletedAt: null,
+            createdAt: '2023-12-20T00:00:00.000Z',
+            updatedAt: '2023-12-20T00:00:00.000Z',
+            calendarId: 'calendar-1',
+          },
+        ],
+        'Europe/Berlin',
+        'all'
+      );
+
+      expect(result).toHaveLength(3);
+
+      expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2', 'event-3']);
+
+      expect(result[0].left).toBe('0%');
+      expect(result[0].width).toBe('100%');
+
+      expect(result[1].left).toBe('0%');
+      expect(result[1].width).toBe('50%');
+
+      expect(result[2].left).toBe('50%');
+      expect(result[2].width).toBe('50%');
+    });
   });
 
   describe('getCalendarEntriesWithStyles()', () => {

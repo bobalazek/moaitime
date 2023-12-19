@@ -27,6 +27,7 @@ export type DateSelectorProps = {
   data: DateSelectorData;
   onSaveData: (value: DateSelectorData) => void;
   includeTime?: boolean;
+  disableClear?: boolean;
   disablePast?: boolean;
   isTimezoneReadonly?: boolean;
   timezonePlaceholderText?: string;
@@ -53,6 +54,7 @@ export default function DateSelector({
   data,
   onSaveData,
   includeTime,
+  disableClear,
   disablePast,
   isTimezoneReadonly,
   timezonePlaceholderText,
@@ -116,6 +118,33 @@ export default function DateSelector({
     setOpen(false);
   };
 
+  const addMinutes = (minutes: number) => {
+    if (!dateTimeValue) {
+      setDateTimeValue('00:00');
+
+      return;
+    }
+
+    const [hours, mins] = dateTimeValue.split(':').map(Number);
+    const totalMinutes = hours * 60 + mins + minutes;
+
+    let newHours = Math.floor(totalMinutes / 60);
+    let newMins = totalMinutes % 60;
+
+    if (newHours < 0) {
+      newHours = 0;
+      newMins = 0;
+    } else if (newHours >= 24) {
+      newHours = 0;
+      newMins = 0;
+    }
+
+    const paddedHours = String(newHours).padStart(2, '0');
+    const paddedMins = String(newMins).padStart(2, '0');
+
+    setDateTimeValue(`${paddedHours}:${paddedMins}`);
+  };
+
   const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
 
   return (
@@ -130,7 +159,7 @@ export default function DateSelector({
             <FaCalendar className="mr-2 h-4 w-4" />
             <DateSelectorText data={data} />
           </span>
-          {data.date && (
+          {data.date && !disableClear && (
             <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
               <FaTimes />
             </span>
@@ -153,9 +182,27 @@ export default function DateSelector({
           <>
             <hr className="border-gray-300 dark:border-gray-700" />
             <div className="space-y-2">
-              <Label htmlFor="date-selector--time">Time</Label>
+              <div className="flex justify-between align-bottom">
+                <div>
+                  <Label htmlFor="date-selector--time">Time</Label>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className="rounded-md border p-1 text-[0.65rem]"
+                    onClick={() => addMinutes(-15)}
+                  >
+                    -15m
+                  </button>
+                  <button
+                    className="rounded-md border p-1 text-[0.65rem]"
+                    onClick={() => addMinutes(15)}
+                  >
+                    +15m
+                  </button>
+                </div>
+              </div>
               <Input
-                id="dae-selector--time"
+                id="date-selector--time"
                 value={dateTimeValue ?? ''}
                 onChange={(event) => setDateTimeValue(event.target.value)}
                 onKeyDown={onKeyPress}
@@ -164,13 +211,13 @@ export default function DateSelector({
               {/* Add TimeRangesDropdownMenu here, once we sort out the focus issue */}
             </div>
             <div>
-              <Label htmlFor="date-selector--timezone">Timezone</Label>
+              <Label>Timezone</Label>
               <TimezoneSelector
                 value={dateTimeZoneValue}
                 onValueChange={setDateTimeZoneValue}
                 isReadonly={isTimezoneReadonly}
                 placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
-                allowClear={true}
+                allowClear={!isTimezoneReadonly}
               />
             </div>
           </>

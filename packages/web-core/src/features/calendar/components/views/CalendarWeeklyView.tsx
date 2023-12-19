@@ -62,7 +62,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
   }, [days, calendarEntries, generalTimezone]);
 
   const now = new Date();
-  const timezone = getGmtOffset(generalTimezone);
+  const gmtOffset = getGmtOffset(generalTimezone);
   const hours = Array.from({ length: 24 }, (_, i) => (i < 10 ? `0${i}:00` : `${i}:00`));
   const isFuture = selectedDate > prevSelectedDateRef.current;
   const animationVariants = {
@@ -119,10 +119,14 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     <div className="flex w-full flex-col border" data-test="calendar--weekly-view">
       <div className="flex">
         <div
-          className="flex w-28 flex-col justify-end border border-l-0 border-t-0 p-2 text-right text-xs"
+          className="flex w-28 flex-col justify-end border border-l-0 border-t-0 p-2 text-right text-[0.65rem]"
           data-test="calendar--weekly-view--timezone"
         >
-          {timezone}
+          <div className="truncate" title={generalTimezone}>
+            {generalTimezone}
+            <br />
+            {gmtOffset}
+          </div>
         </div>
         <AnimatePresence>
           {days.map((day) => {

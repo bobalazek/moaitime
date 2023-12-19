@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { useEffect, useState } from 'react';
 
 import {
@@ -20,6 +22,7 @@ import {
   useToast,
 } from '@moaitime/web-ui';
 
+import { useAuthStore } from '../../../auth/state/authStore';
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
 import { useCalendarStore } from '../../state/calendarStore';
@@ -27,6 +30,7 @@ import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/
 
 export default function CalendarEntryDialog() {
   const { toast } = useToast();
+  const { auth } = useAuthStore();
   const {
     selectedCalendarEntryDialogOpen,
     selectedCalendarEntry,
@@ -58,6 +62,27 @@ export default function CalendarEntryDialog() {
 
     setData(parsedSelectedTask.data);
   }, [selectedCalendarEntry, toast]);
+
+  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+
+  const calendarEntryExists = !!selectedCalendarEntry?.id;
+  const dataTimezone = data?.timezone ?? 'UTC';
+  const dataEndTimezone = data?.endTimezone ?? dataTimezone;
+
+  const startDateInCurrentTimezone =
+    !data?.isAllDay && data?.startsAt && dataTimezone !== generalTimezone
+      ? format(
+          utcToZonedTime(zonedTimeToUtc(data.startsAt, dataTimezone), generalTimezone),
+          'PPP p'
+        )
+      : null;
+  const endDateInCurrentTimezone =
+    !data?.isAllDay && data?.endsAt && dataEndTimezone !== generalTimezone
+      ? format(
+          utcToZonedTime(zonedTimeToUtc(data.endsAt, dataEndTimezone), generalTimezone),
+          'PPP p'
+        )
+      : null;
 
   const onDeleteButtonClick = async () => {
     if (!selectedCalendarEntry) {
@@ -98,7 +123,7 @@ export default function CalendarEntryDialog() {
     }
 
     try {
-      const editedEvent = selectedCalendarEntry?.id
+      const editedEvent = calendarEntryExists
         ? await editEvent(selectedCalendarEntry.id.replace('events:', ''), data as UpdateEvent)
         : await addEvent(data as CreateEvent);
 
@@ -154,10 +179,10 @@ export default function CalendarEntryDialog() {
           <Label htmlFor="calendarEntry-startsAt">Starts At</Label>
           <DateSelector
             includeTime={!data?.isAllDay}
+            disableClear={calendarEntryExists}
             data={convertIsoStringToObject(
               data?.startsAt,
               !data?.isAllDay,
-              // TODO: we should probably use the timezone of the calendar
               data?.timezone ?? undefined
             )}
             onSaveData={(saveData) => {
@@ -165,14 +190,24 @@ export default function CalendarEntryDialog() {
 
               setData((current) => ({ ...current, startsAt: result?.iso }));
             }}
-            isTimezoneReadonly={!!selectedCalendarEntry?.id}
+            isTimezoneReadonly={calendarEntryExists}
             timezonePlaceholderText="Select timezone ..."
           />
+          {startDateInCurrentTimezone && (
+            <div className="text-muted-foreground text-xs">
+              Translates to{' '}
+              <b>
+                {startDateInCurrentTimezone}, {generalTimezone}
+              </b>{' '}
+              timezone
+            </div>
+          )}
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-endsAt">Ends At</Label>
           <DateSelector
             includeTime={!data?.isAllDay}
+            disableClear={calendarEntryExists}
             data={convertIsoStringToObject(
               data?.endsAt,
               !data?.isAllDay,
@@ -183,9 +218,20 @@ export default function CalendarEntryDialog() {
 
               setData((current) => ({ ...current, endsAt: result?.iso }));
             }}
-            isTimezoneReadonly={!!selectedCalendarEntry?.id}
-            timezonePlaceholderText="Same as start date"
+            isTimezoneReadonly={calendarEntryExists}
+            timezonePlaceholderText={
+              calendarEntryExists ? selectedCalendarEntry.timezone : 'Same as start date'
+            }
           />
+          {endDateInCurrentTimezone && (
+            <div className="text-muted-foreground text-xs">
+              Translates to{' '}
+              <b>
+                {endDateInCurrentTimezone}, {generalTimezone}
+              </b>{' '}
+              timezone
+            </div>
+          )}
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-calendar">Calendar</Label>

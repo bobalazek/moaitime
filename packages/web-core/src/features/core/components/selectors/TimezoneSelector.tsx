@@ -58,8 +58,10 @@ export default function TimezoneSelector({
               {placeholderText ?? 'Select timezone ...'}
             </span>
           )}
-          {(!allowClear || !value) && <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />}
-          {allowClear && value && (
+          {!isReadonly && (!allowClear || !value) && (
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          )}
+          {!isReadonly && allowClear && value && (
             <span
               className="text-muted-foreground rounded-full p-1 hover:bg-slate-600"
               onClick={onClearButtonClick}

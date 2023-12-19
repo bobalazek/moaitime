@@ -1,4 +1,5 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { Request } from 'express';
 
 import { eventsManager } from '@moaitime/database-services';
@@ -17,7 +18,7 @@ export class CalendarEntriesController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<CalendarEntry[]>> {
-    const nowString = new Date().toISOString();
+    const nowString = new Date().toISOString().slice(0, -1);
     const timezone = req.user?.settings?.generalTimezone ?? 'UTC';
     const from = getTimezonedStartOfDay(timezone, req.query.from) ?? undefined;
     const to = getTimezonedEndOfDay(timezone, req.query.to) ?? undefined;
@@ -25,12 +26,23 @@ export class CalendarEntriesController {
     const events = await eventsManager.findManyByUserId(req.user.id, from, to);
 
     const data = events.map((event) => {
+      const startTimezone = event.timezone ?? 'UTC';
+      const endTimezone = event.endTimezone ?? startTimezone;
+
+      const startsAt = event.startsAt?.toISOString().slice(0, -1) ?? nowString;
+      const endsAt = event.endsAt?.toISOString().slice(0, -1) ?? nowString;
+
+      const startsAtUtc = zonedTimeToUtc(startsAt, startTimezone).toISOString();
+      const endsAtUtc = zonedTimeToUtc(endsAt, endTimezone).toISOString();
+
       return {
         ...event,
         id: `events:${event.id}`,
         type: CalendarEntryTypeEnum.EVENT,
-        startsAt: event.startsAt?.toISOString().slice(0, -1) ?? nowString,
-        endsAt: event.endsAt?.toISOString().slice(0, -1) ?? nowString,
+        startsAt,
+        startsAtUtc,
+        endsAt,
+        endsAtUtc,
         deletedAt: event.deletedAt?.toISOString() ?? null,
         createdAt: event.createdAt?.toISOString() ?? nowString,
         updatedAt: event.updatedAt?.toISOString() ?? nowString,

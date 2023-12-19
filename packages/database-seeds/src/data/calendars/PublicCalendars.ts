@@ -101,4 +101,19 @@ export const publicCalendars: NewCalendar[] = [
     timezone: 'Europe/Zagreb',
     isPublic: true,
   },
+  {
+    name: 'Finland Holidays',
+    timezone: 'Europe/Helsinki',
+    isPublic: true,
+  },
+  {
+    name: 'Czech Republic Holidays',
+    timezone: 'Europe/Prague',
+    isPublic: true,
+  },
+  {
+    name: 'Albania Holidays',
+    timezone: 'Europe/Tirana',
+    isPublic: true,
+  },
 ];

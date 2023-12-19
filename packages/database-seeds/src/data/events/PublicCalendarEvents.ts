@@ -924,7 +924,7 @@ export const publicCalendarEvents: (Omit<NewEvent, 'calendarId' | 'startsAt' | '
     calendarName: 'Slovenian Holidays',
   },
   {
-    title: 'Day of Remembrance for the Dead',
+    title: "All Saints' Day",
     date: '2023-11-01',
     calendarName: 'Slovenian Holidays',
   },
@@ -989,7 +989,7 @@ export const publicCalendarEvents: (Omit<NewEvent, 'calendarId' | 'startsAt' | '
     calendarName: 'Slovenian Holidays',
   },
   {
-    title: 'Day of Remembrance for the Dead',
+    title: "All Saints' Day",
     date: '2024-11-01',
     calendarName: 'Slovenian Holidays',
   },
@@ -2015,5 +2015,1058 @@ export const publicCalendarEvents: (Omit<NewEvent, 'calendarId' | 'startsAt' | '
     title: 'Christmas Day',
     date: '2024-12-25',
     calendarName: 'Belgium Holidays',
+  },
+  // Autrian Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Epiphany',
+    date: '2023-01-06',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2023-04-10',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2023-05-01',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2023-05-18',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2023-05-29',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Corpus Christi',
+    date: '2023-06-08',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Assumption of the Virgin Mary',
+    date: '2023-08-15',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'National Day',
+    date: '2023-10-26',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: "All Saints' Day",
+    date: '2023-11-01',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Immaculate Conception',
+    date: '2023-12-08',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: "St Stephen's Day",
+    date: '2023-12-26',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Epiphany',
+    date: '2024-01-06',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2024-04-01',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2024-05-01',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2024-05-09',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2024-05-20',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Corpus Christi',
+    date: '2024-06-30',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Assumption of the Virgin Mary',
+    date: '2024-08-15',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'National Day',
+    date: '2024-10-26',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: "All Saints' Day",
+    date: '2024-11-01',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Immaculate Conception',
+    date: '2024-12-08',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Astrian Holidays',
+  },
+  {
+    title: "St Stephen's Day",
+    date: '2024-12-26',
+    calendarName: 'Astrian Holidays',
+  },
+  // Norway Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Maundy Thursday',
+    date: '2023-04-06',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2023-04-07',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2023-04-09',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2023-04-10',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2023-05-01',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Constitution Day',
+    date: '2023-05-17',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2023-05-18',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2023-05-28',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2023-05-29',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2023-12-26',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Maundy Thursday',
+    date: '2024-03-28',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2024-03-29',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2024-03-31',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2024-04-01',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2024-05-01',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2024-05-09',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Constitution Day',
+    date: '2024-05-17',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2024-05-19',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2024-05-20',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Norway Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2024-12-26',
+    calendarName: 'Norway Holidays',
+  },
+  // Sweden Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Epiphany',
+    date: '2023-01-06',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2023-04-07',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2023-04-09',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2023-04-10',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'May Day',
+    date: '2023-05-01',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2023-05-18',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2023-05-28',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'National Day',
+    date: '2023-06-06',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Midsummer Day',
+    date: '2023-06-24',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: "All Saints' Day",
+    date: '2023-11-04',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2023-12-26',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Epiphany',
+    date: '2024-01-06',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2024-03-29',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2024-03-31',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2024-04-01',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'May Day',
+    date: '2024-05-01',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2024-05-09',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2024-05-19',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'National Day',
+    date: '2023-06-06',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Midsummer Day',
+    date: '2023-06-22',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: "All Saints' Day",
+    date: '2023-11-02',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Sweden Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2024-12-26',
+    calendarName: 'Sweden Holidays',
+  },
+  // Ireland Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: "St Brigid's Day",
+    date: '2023-02-06',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: "Saint Patrick's Day",
+    date: '2023-03-17',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2023-04-10',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'May Day',
+    date: '2023-05-01',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'June Bank Holiday',
+    date: '2023-06-05',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'August Bank Holiday',
+    date: '2023-08-07',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'October Bank Holiday',
+    date: '2023-10-30',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: "St Stephen's Day",
+    date: '2023-12-26',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: "St Brigid's Day",
+    date: '2024-02-05',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: "Saint Patrick's Day",
+    date: '2024-03-17',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2024-04-01',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'May Day',
+    date: '2024-05-01',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'June Bank Holiday',
+    date: '2024-06-03',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'August Bank Holiday',
+    date: '2024-08-05',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'October Bank Holiday',
+    date: '2024-10-28',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Ireland Holidays',
+  },
+  {
+    title: "St Stephen's Day",
+    date: '2024-12-26',
+    calendarName: 'Ireland Holidays',
+  },
+  // Romanian Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'New Year Holiday',
+    date: '2023-01-02',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Union of the Romanian Principalities',
+    date: '2023-01-24',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Good Friday',
+    date: '2023-04-14',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Easter Sunday',
+    date: '2023-04-16',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Easter Monday',
+    date: '2023-04-17',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Labor Day',
+    date: '2023-05-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: "Children's Day",
+    date: '2023-06-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Whit Sunday',
+    date: '2023-06-04',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Whit Monday',
+    date: '2023-06-05',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Assumption Day',
+    date: '2023-08-15',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Feast of Saint Andrew',
+    date: '2023-11-30',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Great Union Day',
+    date: '2023-12-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2023-12-26',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'New Year Holiday',
+    date: '2024-01-02',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Epiphany',
+    date: '2024-01-06',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Synaxis of St. John the Baptist',
+    date: '2024-01-07',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Union of the Romanian Principalities',
+    date: '2024-01-24',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Labor Day',
+    date: '2024-05-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Good Friday',
+    date: '2024-05-03',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Easter Sunday',
+    date: '2024-05-05',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Easter Monday',
+    date: '2024-05-06',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: "Children's Day",
+    date: '2024-06-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Whit Sunday',
+    date: '2024-06-23',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Orthodox Whit Monday',
+    date: '2024-06-24',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Assumption Day',
+    date: '2024-08-15',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Feast of Saint Andrew',
+    date: '2024-11-30',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Great Union Day',
+    date: '2024-12-01',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Romanian Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2024-12-26',
+    calendarName: 'Romanian Holidays',
+  },
+  // Denmark Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Maundy Thursday',
+    date: '2023-04-06',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2023-04-07',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2023-04-09',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2023-04-10',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Prayer Day',
+    date: '2023-05-05',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2023-05-18',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2023-05-28',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2023-05-29',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2023-12-26',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Maundy Thursday',
+    date: '2024-03-28',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2024-03-29',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2024-03-31',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2024-04-01',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2024-05-09',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2024-05-19',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2024-05-20',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Denmark Holidays',
+  },
+  {
+    title: '2nd Day of Christmas',
+    date: '2024-12-26',
+    calendarName: 'Denmark Holidays',
+  },
+  // Iceland Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Maundy Thursday',
+    date: '2023-04-06',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2023-04-07',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2023-04-09',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2023-04-10',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'First Day of Summer',
+    date: '2023-04-20',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2023-05-01',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2023-05-18',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2023-05-28',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2023-05-29',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Independence Day',
+    date: '2023-06-17',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Commerce Day',
+    date: '2023-08-07',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Christmas Eve',
+    date: '2023-12-24',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Second Day of Christmas',
+    date: '2023-12-26',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: "New Year's Eve",
+    date: '2023-12-31',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Maundy Thursday',
+    date: '2024-03-28',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Good Friday',
+    date: '2024-03-29',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2024-03-31',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2024-04-01',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'First Day of Summer',
+    date: '2024-04-25',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2024-05-01',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Ascension Day',
+    date: '2024-05-09',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Whit Sunday',
+    date: '2024-05-19',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Whit Monday',
+    date: '2024-05-20',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Independence Day',
+    date: '2024-06-17',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Commerce Day',
+    date: '2024-08-05',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Christmas Eve',
+    date: '2024-12-24',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: 'Second Day of Christmas',
+    date: '2024-12-26',
+    calendarName: 'Iceland Holidays',
+  },
+  {
+    title: "New Year's Eve",
+    date: '2024-12-31',
+    calendarName: 'Iceland Holidays',
+  },
+  // Croatia Holidays
+  {
+    title: "New Year's Day",
+    date: '2023-01-01',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Epiphany',
+    date: '2023-01-06',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2023-04-09',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2023-04-10',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2023-05-01',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Statehood Day',
+    date: '2023-05-30',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Corpus Christi',
+    date: '2023-06-08',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Anti-Fascist Resistance Day',
+    date: '2023-06-22',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Victory and Homeland Thanksgiving Day',
+    date: '2023-08-05',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Assumption Day',
+    date: '2023-08-15',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: "All Saints' Day",
+    date: '2023-11-01',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Remembrance Day',
+    date: '2023-11-18',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2023-12-25',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: "St Stephen's Day",
+    date: '2023-12-26',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: "New Year's Day",
+    date: '2024-01-01',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Epiphany',
+    date: '2024-01-06',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Easter Sunday',
+    date: '2024-03-31',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Easter Monday',
+    date: '2024-04-01',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Labour Day',
+    date: '2024-05-01',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Corpus Christi',
+    date: '2024-05-30',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Statehood Day',
+    date: '2024-05-30',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Anti-Fascist Resistance Day',
+    date: '2024-06-22',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Victory and Homeland Thanksgiving Day',
+    date: '2024-08-05',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Assumption Day',
+    date: '2024-08-15',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: "All Saints' Day",
+    date: '2024-11-01',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Remembrance Day',
+    date: '2024-11-18',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: 'Christmas Day',
+    date: '2024-12-25',
+    calendarName: 'Croatia Holidays',
+  },
+  {
+    title: "St Stephen's Day",
+    date: '2024-12-26',
+    calendarName: 'Croatia Holidays',
   },
 ];

@@ -61,4 +61,44 @@ export const publicCalendars: NewCalendar[] = [
     timezone: 'Europe/Brussels',
     isPublic: true,
   },
+  {
+    name: 'Austrian Holidays',
+    timezone: 'Europe/Vienna',
+    isPublic: true,
+  },
+  {
+    name: 'Norway Holidays',
+    timezone: 'Europe/Oslo',
+    isPublic: true,
+  },
+  {
+    name: 'Sweden Holidays',
+    timezone: 'Europe/Stockholm',
+    isPublic: true,
+  },
+  {
+    name: 'Ireland Holidays',
+    timezone: 'Europe/Dublin',
+    isPublic: true,
+  },
+  {
+    name: 'Romanian Holidays',
+    timezone: 'Europe/Bucharest',
+    isPublic: true,
+  },
+  {
+    name: 'Denmark Holidays',
+    timezone: 'Europe/Copenhagen',
+    isPublic: true,
+  },
+  {
+    name: 'Iceland Holidays',
+    timezone: 'Europe/Reykjavik',
+    isPublic: true,
+  },
+  {
+    name: 'Croatia Holidays',
+    timezone: 'Europe/Zagreb',
+    isPublic: true,
+  },
 ];

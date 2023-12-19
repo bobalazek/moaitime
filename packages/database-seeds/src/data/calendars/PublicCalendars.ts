@@ -116,4 +116,9 @@ export const publicCalendars: NewCalendar[] = [
     timezone: 'Europe/Tirana',
     isPublic: true,
   },
+  {
+    name: 'Malta Holidays',
+    timezone: 'Europe/Valleta',
+    isPublic: true,
+  },
 ];

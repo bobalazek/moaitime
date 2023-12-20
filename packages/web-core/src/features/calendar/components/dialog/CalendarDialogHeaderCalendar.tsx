@@ -19,12 +19,12 @@ function CalendarDialogHeaderCalendar() {
           className="border"
           variant="ghost"
           size="sm"
-          data-test="calendar--dialog--header--calendar-button"
+          data-test="calendar--dialog--header--calendar--trigger-button"
         >
           <FaCalendarAlt />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-0" data-test="calendar--dialog--header--calendar">
         <Calendar
           captionLayout="dropdown-buttons"
           mode="single"

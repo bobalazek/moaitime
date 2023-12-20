@@ -57,8 +57,11 @@ export class EventsController {
       throw new NotFoundException('Calendar not found');
     }
 
+    const timezone = body.timezone ?? req.user?.settings?.generalTimezone ?? 'UTC';
+
     const insertData = {
       ...body,
+      timezone,
       startsAt: new Date(body.startsAt),
       endsAt: new Date(body.endsAt),
     };

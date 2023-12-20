@@ -15,6 +15,13 @@
       "when": 1703091847448,
       "tag": "0001_living_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1703097500224,
+      "tag": "0002_greedy_mockingbird",
+      "breakpoints": true
     }
   ]
 }

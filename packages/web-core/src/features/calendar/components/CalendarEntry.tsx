@@ -42,6 +42,7 @@ export default function CalendarEntry({
 }) {
   const { auth } = useAuthStore();
   const {
+    calendars,
     setSelectedCalendarEntryDialogOpen,
     setHighlightedCalendarEntry,
     highlightedCalendarEntry,
@@ -50,13 +51,14 @@ export default function CalendarEntry({
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
   const hasAbsoluteClassName = className?.includes('absolute');
-  const defaultBackgroundColor = '#ffffff';
+  const calendar = calendars.find((c) => c.id === calendarEntry.calendarId);
+  const defaultBackgroundColor = calendarEntry.color ?? calendar?.color ?? '#ffffff';
   const backgroundColor =
     highlightedCalendarEntry?.id === calendarEntry.id
       ? colord(defaultBackgroundColor).darken(0.1).toHex()
       : defaultBackgroundColor;
   const color = colord(backgroundColor).isDark() ? '#ffffff' : '#000000';
-  const borderColor = colord(backgroundColor).darken(0.2).toHex();
+  const borderColor = colord(backgroundColor).darken(0.1).toHex();
   const innerStyle = {
     borderColor,
     backgroundColor,

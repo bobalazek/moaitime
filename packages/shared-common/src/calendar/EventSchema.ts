@@ -6,6 +6,7 @@ export const EventSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  color: z.string().nullable(),
   timezone: z.string().nullable(),
   endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),

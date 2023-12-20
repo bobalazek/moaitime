@@ -1,17 +1,19 @@
 import { differenceInDays, format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
-import { CalendarEntry } from '@moaitime/shared-common';
+import { Calendar, CalendarEntry } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../../auth/state/authStore';
 import { useCalendarStore } from '../../../state/calendarStore';
 
 export type CalendarAgendaViewDayEventEntryProps = {
   calendarEntry: CalendarEntry;
+  calendar?: Calendar;
 };
 
 export default function CalendarAgendaViewDayEventEntry({
   calendarEntry,
+  calendar,
 }: CalendarAgendaViewDayEventEntryProps) {
   const { auth } = useAuthStore();
   const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
@@ -39,20 +41,36 @@ export default function CalendarAgendaViewDayEventEntry({
     month: 'short',
     day: 'numeric',
   });
+  const calendarColor = calendar?.color ?? 'transparent';
+  const entryColor = calendarEntry.color ?? calendarColor;
 
   const daysDifference = differenceInDays(new Date(endDate), new Date(startDate));
 
   return (
     <div
       key={calendarEntry.id}
-      className="flex cursor-pointer justify-between border p-4"
+      className="flex cursor-pointer justify-between rounded-lg border p-4"
       onClick={() => {
         setSelectedCalendarEntryDialogOpen(true, calendarEntry);
+      }}
+      style={{
+        borderColor: entryColor,
       }}
     >
       <div>
         <div className="font-bold">{calendarEntry.title}</div>
         {calendarEntry.description && <div className="text-xs">{calendarEntry.description}</div>}
+        {calendar && (
+          <div className="mt-2 leading-4">
+            <span
+              className="mr-1 inline-block h-2 w-2 rounded-full"
+              style={{
+                backgroundColor: calendarColor,
+              }}
+            />
+            <span className="text-xs">{calendar.name}</span>
+          </div>
+        )}
       </div>
       <div className="space-y-2 text-right text-sm">
         {calendarEntry.isAllDay && (

@@ -72,6 +72,7 @@ export class AuthAccountController {
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
   }
 
+  // Private
   private async _getUpdatedUserAndAccessTokenResponse(
     token: string,
     res: Response

@@ -3,7 +3,6 @@ import {
   asc,
   count,
   DBQueryConfig,
-  desc,
   eq,
   gt,
   gte,
@@ -60,7 +59,7 @@ export class EventsManager {
       .from(events)
       .leftJoin(calendars, eq(events.calendarId, calendars.id))
       .where(where)
-      .orderBy(desc(events.isAllDay), asc(events.startsAt))
+      .orderBy(asc(events.startsAt))
       .execute();
 
     return result.map((row) => {

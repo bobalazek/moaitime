@@ -183,7 +183,7 @@ export default function CalendarEntryDialog() {
             data={convertIsoStringToObject(
               data?.startsAt,
               !data?.isAllDay,
-              data?.timezone ?? undefined
+              !data?.isAllDay ? data?.timezone ?? undefined : undefined
             )}
             onSaveData={(saveData) => {
               const result = convertObjectToIsoString<DateSelectorData>(saveData);
@@ -211,7 +211,7 @@ export default function CalendarEntryDialog() {
             data={convertIsoStringToObject(
               data?.endsAt,
               !data?.isAllDay,
-              data?.endTimezone ?? undefined
+              !data?.isAllDay ? data?.endTimezone ?? undefined : undefined
             )}
             onSaveData={(saveData) => {
               const result = convertObjectToIsoString<DateSelectorData>(saveData);

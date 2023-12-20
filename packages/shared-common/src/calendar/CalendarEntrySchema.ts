@@ -7,6 +7,7 @@ export const CalendarEntrySchema = z.object({
   type: z.nativeEnum(CalendarEntryTypeEnum),
   title: z.string(),
   description: z.string().nullable(),
+  color: z.string().nullable(),
   timezone: z.string(),
   endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),

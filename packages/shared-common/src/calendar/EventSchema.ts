@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
+import { HexSchema } from '../core/HexSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
 
 export const EventSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string().nullable(),
-  color: z.string().nullable(),
+  color: HexSchema.nullable(),
   timezone: z.string().nullable(),
   endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),
@@ -21,6 +22,7 @@ export const EventSchema = z.object({
 export const CreateEventBaseSchema = z.object({
   title: z.string({ required_error: 'Title is required' }),
   description: z.string().optional(),
+  color: HexSchema.optional(),
   timezone: TimezoneSchema.optional(),
   endTimezone: z.string().optional(),
   isAllDay: z.boolean().optional(),

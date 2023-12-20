@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { HexSchema } from '../core/HexSchema';
 import { CalendarEntryTypeEnum } from './CalendarEntryTypeEnum';
 
 export const CalendarEntrySchema = z.object({
@@ -7,7 +8,7 @@ export const CalendarEntrySchema = z.object({
   type: z.nativeEnum(CalendarEntryTypeEnum),
   title: z.string(),
   description: z.string().nullable(),
-  color: z.string().nullable(),
+  color: HexSchema.nullable(),
   timezone: z.string(),
   endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),

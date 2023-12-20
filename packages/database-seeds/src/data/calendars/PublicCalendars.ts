@@ -93,7 +93,7 @@ export const publicCalendars: NewCalendar[] = [
   },
   {
     name: 'Iceland Holidays',
-    timezone: 'Europe/Reykjavik',
+    timezone: 'Atlantic/Reykjavik',
     isPublic: true,
   },
   {
@@ -113,12 +113,12 @@ export const publicCalendars: NewCalendar[] = [
   },
   {
     name: 'Albania Holidays',
-    timezone: 'Europe/Tirana',
+    timezone: 'Europe/Tirane',
     isPublic: true,
   },
   {
     name: 'Malta Holidays',
-    timezone: 'Europe/Valleta',
+    timezone: 'Europe/Malta',
     isPublic: true,
   },
 ];

@@ -9,7 +9,7 @@ export default function BackgroundInformation() {
   return (
     <div className="text-left text-xs text-white" data-test="background-information">
       <h5
-        className="cursor-default font-bold"
+        className="cursor-default select-none font-bold"
         onDoubleClick={() => {
           setRandomBackground();
         }}

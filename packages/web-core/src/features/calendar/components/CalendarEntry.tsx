@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
 import { formatInTimeZone } from 'date-fns-tz';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
@@ -41,16 +41,20 @@ export default function CalendarEntry({
   className?: string;
 }) {
   const { auth } = useAuthStore();
-  const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
-  const [isHover, setIsHover] = useState(false);
+  const {
+    setSelectedCalendarEntryDialogOpen,
+    setHighlightedCalendarEntry,
+    highlightedCalendarEntry,
+  } = useCalendarStore();
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
   const hasAbsoluteClassName = className?.includes('absolute');
   const defaultBackgroundColor = '#ffffff';
-  const backgroundColor = isHover
-    ? colord(defaultBackgroundColor).darken(0.1).toHex()
-    : defaultBackgroundColor;
+  const backgroundColor =
+    highlightedCalendarEntry?.id === calendarEntry.id
+      ? colord(defaultBackgroundColor).darken(0.1).toHex()
+      : defaultBackgroundColor;
   const color = colord(backgroundColor).isDark() ? '#ffffff' : '#000000';
   const borderColor = colord(backgroundColor).darken(0.2).toHex();
   const innerStyle = {
@@ -75,6 +79,14 @@ export default function CalendarEntry({
     setSelectedCalendarEntryDialogOpen(true, calendarEntry);
   };
 
+  const onMouseEnter = () => {
+    setHighlightedCalendarEntry(calendarEntry);
+  };
+
+  const onMouseLeave = () => {
+    setHighlightedCalendarEntry(null);
+  };
+
   return (
     <div
       key={calendarEntry.id}
@@ -82,8 +94,8 @@ export default function CalendarEntry({
       style={containerStyle}
       title={calendarEntry.title}
       onClick={(event) => onClick(event, calendarEntry)}
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       data-test="calendar--weekly-view--day--calendar-entry"
     >
       <div

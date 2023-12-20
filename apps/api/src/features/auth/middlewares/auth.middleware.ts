@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
-import { authManager } from '@moaitime/database-services';
+import { authManager, usersManager } from '@moaitime/database-services';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -31,7 +31,7 @@ export class AuthMiddleware implements NestMiddleware {
 
         req.user = {
           ...user,
-          settings: authManager.getUserSettings(user),
+          settings: usersManager.getUserSettings(user),
           _accessToken: userAccessToken,
         };
       }

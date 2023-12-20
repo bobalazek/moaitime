@@ -11,11 +11,10 @@ import {
   LIST_DEFAULT_NAMES,
 } from '@moaitime/shared-backend';
 import {
-  DEFAULT_USER_SETTINGS,
   TASK_LIST_COLORS,
   UserPasswordSchema,
   UserRoleEnum,
-  UserSettings,
+  UserSettingsSchema,
   WEB_URL,
 } from '@moaitime/shared-common';
 
@@ -97,7 +96,7 @@ export class AuthManager {
       });
     }
 
-    const userSetings = this.getUserSettings(newUser);
+    const userSetings = this._usersManager.getUserSettings(newUser);
 
     await this._calendarsManager.insertOne({
       name: `${newUser.displayName}'s Calendar`,
@@ -429,14 +428,14 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
-    const userSetings = this.getUserSettings(user);
+    const userSetings = this._usersManager.getUserSettings(user);
 
     const settings = {
       ...userSetings,
       ...data,
     };
 
-    // TODO: do validation
+    UserSettingsSchema.parse(settings);
 
     const updatedUser = await this._usersManager.updateOneById(id, {
       settings,
@@ -487,13 +486,6 @@ export class AuthManager {
     });
 
     return userAccessToken;
-  }
-
-  getUserSettings(user: User): UserSettings {
-    return {
-      ...DEFAULT_USER_SETTINGS,
-      ...(user.settings ?? {}),
-    };
   }
 
   async validateAndHashPassword(rawPassword: string): Promise<string> {

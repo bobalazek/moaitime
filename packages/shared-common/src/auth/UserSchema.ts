@@ -45,6 +45,7 @@ export const UserSettingsSchema = z.object({
 
   // Calendar
   calendarEnabled: z.boolean(),
+  calendarVisibleCalendarIds: z.array(z.string()),
 });
 
 export const UpdateUserSettingsSchema = UserSettingsSchema.partial();

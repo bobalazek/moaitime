@@ -25,4 +25,5 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   quoteEnabled: true,
   tasksEnabled: true,
   calendarEnabled: true,
+  calendarVisibleCalendarIds: ['*'],
 };

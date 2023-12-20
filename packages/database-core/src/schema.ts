@@ -13,3 +13,4 @@ export * from './schema/teamUsers';
 export * from './schema/testingEmails';
 export * from './schema/userAccessTokens';
 export * from './schema/users';
+export * from './schema/userCalendars';

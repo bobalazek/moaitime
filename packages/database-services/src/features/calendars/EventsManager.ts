@@ -7,6 +7,7 @@ import {
   eq,
   gt,
   gte,
+  inArray,
   isNull,
   lt,
   lte,
@@ -16,7 +17,11 @@ import {
 
 import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
 
+import { usersManager, UsersManager } from '../auth/UsersManager';
+
 export class EventsManager {
+  constructor(private _usersManager: UsersManager) {}
+
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
     return getDatabase().query.events.findMany(options);
   }
@@ -28,7 +33,12 @@ export class EventsManager {
   }
 
   async findManyByUserId(userId: string, from?: Date, to?: Date): Promise<Event[]> {
-    let where = and(eq(calendars.userId, userId), isNull(events.deletedAt));
+    const calendarIds = await this._usersManager.getVisibleCalendarIdsByUserId(userId);
+    if (calendarIds.length === 0) {
+      return [];
+    }
+
+    let where = and(inArray(calendars.id, calendarIds), isNull(events.deletedAt));
 
     if (from && to) {
       where = and(
@@ -101,4 +111,4 @@ export class EventsManager {
   }
 }
 
-export const eventsManager = new EventsManager();
+export const eventsManager = new EventsManager(usersManager);

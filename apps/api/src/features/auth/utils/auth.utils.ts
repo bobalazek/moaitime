@@ -1,5 +1,5 @@
 import { User, UserAccessToken } from '@moaitime/database-core';
-import { authManager } from '@moaitime/database-services';
+import { usersManager } from '@moaitime/database-services';
 
 import { UserAccessTokenLiteDto } from '../dtos/user-access-token-lite.dto';
 import { UserDto } from '../dtos/user.dto';
@@ -20,7 +20,7 @@ export const convertToUserAndAccessTokenDto = (
       email: user.email,
       newEmail: user.newEmail ?? null,
       roles: user.roles,
-      settings: authManager.getUserSettings(user),
+      settings: usersManager.getUserSettings(user),
       birthDate: user.birthDate,
       emailConfirmedAt: user.emailConfirmedAt?.toISOString() ?? null,
       createdAt: user.createdAt?.toISOString() ?? now.toISOString(),

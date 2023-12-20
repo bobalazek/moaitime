@@ -1,7 +1,15 @@
 import { format } from 'date-fns';
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
-import { getDatabase, NewUser, User, users } from '@moaitime/database-core';
+import {
+  calendars,
+  getDatabase,
+  NewUser,
+  User,
+  userCalendars,
+  users,
+} from '@moaitime/database-core';
+import { DEFAULT_USER_SETTINGS, UserSettings } from '@moaitime/shared-common';
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
@@ -72,6 +80,62 @@ export class UsersManager {
     }
 
     return this._fixBirthDateColumn(row);
+  }
+
+  getUserSettings(user: User): UserSettings {
+    return {
+      ...DEFAULT_USER_SETTINGS,
+      ...(user.settings ?? {}),
+    };
+  }
+
+  async getVisibleCalendarIdsByUserId(userId: string): Promise<string[]> {
+    const user = await this.findOneById(userId);
+    if (!user) {
+      return [];
+    }
+
+    const userSettings = this.getUserSettings(user);
+    const userCalendarIds = userSettings.calendarVisibleCalendarIds ?? [];
+    const calendarIdsSet = new Set<string>();
+
+    // Calendars
+    const calendarRows = await getDatabase().query.calendars.findMany({
+      columns: {
+        id: true,
+      },
+      where: eq(calendars.userId, userId),
+    });
+
+    for (const row of calendarRows) {
+      calendarIdsSet.add(row.id);
+    }
+
+    // User Calendars
+    const userCalendarRows = await getDatabase().query.userCalendars.findMany({
+      columns: {
+        calendarId: true,
+      },
+      where: eq(userCalendars.userId, userId),
+    });
+
+    for (const row of userCalendarRows) {
+      calendarIdsSet.add(row.calendarId);
+    }
+
+    if (!userCalendarIds.includes('*')) {
+      const finalCalendarIds = new Set(userCalendarIds);
+
+      for (const calendarId of calendarIdsSet) {
+        if (finalCalendarIds.has(calendarId)) {
+          continue;
+        }
+
+        calendarIdsSet.delete(calendarId);
+      }
+    }
+
+    return Array.from(calendarIdsSet);
   }
 
   async insertOne(data: NewUser): Promise<User> {

@@ -11,6 +11,7 @@ import { organizationUsers } from './organizationUsers';
 import { quotes } from './quotes';
 import { teamUsers } from './teamUsers';
 import { userAccessTokens } from './userAccessTokens';
+import { userCalendars } from './userCalendars';
 
 export const users = pgTable(
   'users',
@@ -60,6 +61,7 @@ export const users = pgTable(
 );
 
 export const usersRelations = relations(users, ({ many }) => ({
+  userCalendars: many(userCalendars),
   organizationUsers: many(organizationUsers),
   teamUsers: many(teamUsers),
   calendars: many(calendars),

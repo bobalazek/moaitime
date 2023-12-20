@@ -8,6 +8,13 @@
       "when": 1702748941638,
       "tag": "0000_faulty_alice",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1703091847448,
+      "tag": "0001_living_black_crow",
+      "breakpoints": true
     }
   ]
 }

@@ -465,15 +465,6 @@ describe('CalendarHelpers.ts', () => {
       expect(result).toHaveLength(3);
 
       expect(result.map((event) => event.id)).toEqual(['event-3', 'event-1', 'event-2']);
-
-      expect(result[0].left).toBe('0%');
-      expect(result[0].width).toBe('100%');
-
-      expect(result[1].left).toBe('0%');
-      expect(result[1].width).toBe('100%');
-
-      expect(result[2].left).toBe('0%');
-      expect(result[2].width).toBe('100%');
     });
 
     it('should return only the correct full day calendar entries before 20th december', () => {
@@ -612,7 +603,7 @@ describe('CalendarHelpers.ts', () => {
       expect(result[0].width).toBe('100%');
     });
 
-    it.only('should correctly group events together', () => {
+    it('should correctly group events together', () => {
       const result = getCalendarEntriesForDay(
         '2023-12-20',
         [

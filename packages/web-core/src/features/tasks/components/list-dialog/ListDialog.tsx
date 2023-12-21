@@ -35,6 +35,8 @@ export default function ListDialog() {
 
   useEffect(() => {
     if (!selectedListDialog) {
+      setData(undefined);
+
       return;
     }
 

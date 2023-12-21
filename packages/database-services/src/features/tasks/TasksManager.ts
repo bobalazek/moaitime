@@ -97,7 +97,7 @@ export class TasksManager {
         count: count(tasks.id).mapWith(Number),
       })
       .from(tasks)
-      .where(eq(tasks.listId, listId))
+      .where(and(eq(tasks.listId, listId), isNull(tasks.deletedAt)))
       .execute();
 
     return result[0].count ?? 0;

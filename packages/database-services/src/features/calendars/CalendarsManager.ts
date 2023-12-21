@@ -35,7 +35,7 @@ export class CalendarsManager {
         count: count(calendars.id).mapWith(Number),
       })
       .from(calendars)
-      .where(eq(calendars.userId, userId))
+      .where(and(eq(calendars.userId, userId), isNull(calendars.deletedAt)))
       .execute();
 
     return result[0].count ?? 0;

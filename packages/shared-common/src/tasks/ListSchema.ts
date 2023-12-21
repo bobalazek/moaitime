@@ -13,7 +13,9 @@ export const ListSchema = z.object({
 });
 
 export const CreateListSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, {
+    message: 'List name must be provided',
+  }),
   color: ColorSchema.nullable().optional(),
 });
 

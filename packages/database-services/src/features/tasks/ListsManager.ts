@@ -51,7 +51,7 @@ export class ListsManager {
         count: count(lists.id).mapWith(Number),
       })
       .from(lists)
-      .where(eq(lists.userId, userId))
+      .where(and(eq(lists.userId, userId), isNull(lists.deletedAt)))
       .execute();
 
     return result[0].count ?? 0;

@@ -81,7 +81,7 @@ export class EventsManager {
         count: count(events.id).mapWith(Number),
       })
       .from(events)
-      .where(eq(events.calendarId, calendarId))
+      .where(and(eq(events.calendarId, calendarId), isNull(events.deletedAt)))
       .execute();
 
     return result[0].count ?? 0;

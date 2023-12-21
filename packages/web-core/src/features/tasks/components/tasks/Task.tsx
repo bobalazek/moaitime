@@ -121,7 +121,10 @@ const Task = memo(({ task }: { task: TaskType }) => {
   const isDeleted = !!task.deletedAt;
 
   return (
-    <div className="rounded-lg p-1 outline-none" data-test="tasks--task">
+    <div
+      className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+      data-test="tasks--task"
+    >
       <div className="relative w-full">
         {showConfetti && (
           <ConfettiExplosion

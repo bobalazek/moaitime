@@ -15,6 +15,7 @@ import { CalendarViewEnum } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
+import CalendarSettingsSheet from '../settings-sheet/CalendarSettingsSheet';
 import CalendarDialogHeaderCalendar from './CalendarDialogHeaderCalendar';
 import CalendarDialogHeaderText from './CalendarDialogHeaderText';
 import CalendarDialogHeaderTodayButtonText from './CalendarDialogHeaderTodayButtonText';
@@ -75,6 +76,7 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
     >
       <CalendarDialogHeaderText />
       <div className="mt-2 justify-center gap-2 sm:flex md:mt-0">
+        <CalendarSettingsSheet />
         <CalendarDialogHeaderCalendar />
         <Button
           className="border"

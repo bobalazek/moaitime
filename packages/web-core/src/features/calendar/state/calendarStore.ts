@@ -5,15 +5,20 @@ import {
   Calendar,
   CalendarEntry,
   CalendarViewEnum,
+  CreateCalendar,
   CreateEvent,
   Event,
+  UpdateCalendar,
   UpdateEvent,
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import {
+  addCalendar,
   addEvent,
+  deleteCalendar,
   deleteEvent,
+  editCalendar,
   editEvent,
   getAgendaRange,
   getMonthRange,
@@ -39,7 +44,17 @@ export type CalendarStore = {
   isTodayInSelectedDaysRange: boolean;
   /********** Calendars **********/
   calendars: Calendar[];
+  addCalendar: (calendar: CreateCalendar) => Promise<Calendar>;
+  editCalendar: (calendarId: string, calendar: UpdateCalendar) => Promise<Calendar>;
+  deleteCalendar: (calendarId: string) => Promise<Calendar>;
   loadCalendars: () => Promise<Calendar[]>;
+  // Selected
+  selectedCalendarDialogOpen: boolean;
+  selectedCalendar: Calendar | null;
+  setSelectedCalendarDialogOpen: (
+    selectedCalendarDialogOpen: boolean,
+    selectedCalendar?: Calendar | null
+  ) => void;
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   loadCalendarEnries: () => Promise<CalendarEntry[]>;
@@ -147,6 +162,45 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     set({ calendars });
 
     return calendars;
+  },
+  addCalendar: async (calendar: CreateCalendar) => {
+    const { loadCalendarEnries } = get();
+
+    const addedTask = await addCalendar(calendar);
+
+    await loadCalendarEnries();
+
+    return addedTask;
+  },
+  editCalendar: async (calendarId: string, calendar: UpdateCalendar) => {
+    const { loadCalendarEnries } = get();
+
+    const editedTask = await editCalendar(calendarId, calendar);
+
+    await loadCalendarEnries();
+
+    return editedTask;
+  },
+  deleteCalendar: async (calendarId: string) => {
+    const { loadCalendarEnries } = get();
+
+    const deletedTask = await deleteCalendar(calendarId);
+
+    await loadCalendarEnries();
+
+    return deletedTask;
+  },
+  // Seleced
+  selectedCalendarDialogOpen: false,
+  selectedCalendar: null,
+  setSelectedCalendarDialogOpen: (
+    selectedCalendarDialogOpen: boolean,
+    selectedCalendar?: Calendar | null
+  ) => {
+    set({
+      selectedCalendarDialogOpen,
+      selectedCalendar,
+    });
   },
   /********** Calendar Entries **********/
   calendarEntries: [],

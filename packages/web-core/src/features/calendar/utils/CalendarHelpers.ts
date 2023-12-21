@@ -21,10 +21,12 @@ import {
   Calendar,
   CalendarEntry,
   CalendarEntryWithVerticalPosition,
+  CreateCalendar,
   CreateEvent,
   DayOfWeek,
   Event,
   ResponseInterface,
+  UpdateCalendar,
   UpdateEvent,
 } from '@moaitime/shared-common';
 
@@ -37,6 +39,57 @@ export const loadCalendars = async () => {
   });
 
   return response.data as Calendar[];
+};
+
+export const addCalendar = async (calendar: CreateCalendar): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(`${API_URL}/api/v1/calendars`, {
+    method: 'POST',
+    body: JSON.stringify(calendar),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data as Calendar;
+};
+
+export const editCalendar = async (
+  calendarId: string,
+  calendar: UpdateCalendar
+): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(calendar),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
+};
+
+export const deleteCalendar = async (
+  calendarId: string,
+  isHardDelete?: boolean
+): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}`,
+    {
+      method: 'DELETE',
+      body: isHardDelete ? JSON.stringify({ isHardDelete }) : undefined,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
 };
 
 /********** Calendar Entries **********/

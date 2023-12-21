@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -90,42 +91,52 @@ export default function ListDialog() {
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
-          <Input
-            type="text"
-            value={data?.name ?? ''}
-            placeholder="Name"
-            onChange={(event) => setData((current) => ({ ...current, name: event.target.value }))}
-            autoFocus
-            data-test="tasks--list-dialog--name-input"
-          />
-          <Select
-            value={data?.color ?? __EMPTY_VALUE_PLACEHOLDER}
-            onValueChange={(value) =>
-              setData((current) => ({
-                ...current,
-                color: value !== __EMPTY_VALUE_PLACEHOLDER ? value : '',
-              }))
-            }
-          >
-            <SelectTrigger
-              className="w-full"
-              data-test="tasks--list-dialog--color-select--trigger-button"
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="list-name">Name</Label>
+            <Input
+              id="list-name"
+              type="text"
+              value={data?.name ?? ''}
+              placeholder="Name"
+              onChange={(event) => setData((current) => ({ ...current, name: event.target.value }))}
+              autoFocus
+              data-test="tasks--list-dialog--name-input"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="list-color">Color</Label>
+            <Select
+              value={data?.color ?? __EMPTY_VALUE_PLACEHOLDER}
+              onValueChange={(value) =>
+                setData((current) => ({
+                  ...current,
+                  color: value !== __EMPTY_VALUE_PLACEHOLDER ? value : '',
+                }))
+              }
             >
-              <SelectValue placeholder="Color" />
-            </SelectTrigger>
-            <SelectContent data-test="tasks--list-dialog--color-select">
-              <SelectItem value={__EMPTY_VALUE_PLACEHOLDER}>Transparent</SelectItem>
-              {TASK_LIST_COLORS.map((color) => (
-                <SelectItem key={color.value} value={color.value}>
-                  <span className="inline-block">{color.name}</span>
-                  <span
-                    className="ml-2 inline-block h-2 w-2 rounded-full"
-                    style={{ backgroundColor: color.value }}
-                  ></span>
+              <SelectTrigger
+                id="list-color"
+                className="w-full"
+                data-test="tasks--list-dialog--color-select--trigger-button"
+              >
+                <SelectValue placeholder="Color" />
+              </SelectTrigger>
+              <SelectContent data-test="tasks--list-dialog--color-select">
+                <SelectItem value={__EMPTY_VALUE_PLACEHOLDER}>
+                  <i>None</i>
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                {TASK_LIST_COLORS.map((color) => (
+                  <SelectItem key={color.value} value={color.value}>
+                    <span className="inline-block">{color.name}</span>
+                    <span
+                      className="ml-2 inline-block h-2 w-2 rounded-full"
+                      style={{ backgroundColor: color.value }}
+                    ></span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <DialogFooter>
           <DialogClose asChild>

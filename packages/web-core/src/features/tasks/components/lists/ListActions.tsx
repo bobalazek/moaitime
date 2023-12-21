@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
 import { List } from '@moaitime/shared-common';
@@ -13,10 +13,11 @@ import { useTasksStore } from '../../state/tasksStore';
 
 const ListActions = memo(({ list }: { list: List }) => {
   const { setSelectedListDialogOpen, setListDeleteAlertDialogOpen } = useTasksStore();
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="absolute right-1 top-1 ml-2">
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <button
             className="rounded-full p-1 text-sm"
@@ -37,6 +38,8 @@ const ListActions = memo(({ list }: { list: List }) => {
               event.stopPropagation();
 
               setSelectedListDialogOpen(true, list);
+
+              setOpen(false);
             }}
           >
             <FaEdit className="mr-2 h-4 w-4" />
@@ -49,6 +52,8 @@ const ListActions = memo(({ list }: { list: List }) => {
               event.stopPropagation();
 
               setListDeleteAlertDialogOpen(true, list);
+
+              setOpen(false);
             }}
           >
             <FaTrash className="mr-2 h-4 w-4" />

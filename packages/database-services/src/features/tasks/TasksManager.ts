@@ -133,6 +133,7 @@ export class TasksManager {
     return this._fixDueDateColumn(rows[0]);
   }
 
+  // Private
   private _fixDueDateColumn(task: Task) {
     // TODO
     // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.

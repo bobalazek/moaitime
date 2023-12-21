@@ -37,7 +37,11 @@ export class EventsManager {
       return [];
     }
 
-    let where = and(inArray(calendars.id, calendarIds), isNull(events.deletedAt));
+    let where = and(
+      inArray(calendars.id, calendarIds),
+      isNull(calendars.deletedAt),
+      isNull(events.deletedAt)
+    );
 
     if (from && to) {
       where = and(

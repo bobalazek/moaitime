@@ -6,11 +6,13 @@ const __EMPTY_VALUE_PLACEHOLDER = '__empty';
 export function ColorSelector({
   value,
   onChangeValue,
+  placeholderText,
   triggerProps,
   contentProps,
 }: {
   value?: string;
   onChangeValue: (value?: string) => void;
+  placeholderText?: string;
   triggerProps?: Record<string, string>;
   contentProps?: Record<string, string>;
 }) {
@@ -26,7 +28,7 @@ export function ColorSelector({
       </SelectTrigger>
       <SelectContent {...contentProps}>
         <SelectItem value={__EMPTY_VALUE_PLACEHOLDER}>
-          <i>None</i>
+          <i>{placeholderText ?? 'None'}</i>
         </SelectItem>
         {MAIN_COLORS.map((color) => (
           <SelectItem key={color.value} value={color.value}>

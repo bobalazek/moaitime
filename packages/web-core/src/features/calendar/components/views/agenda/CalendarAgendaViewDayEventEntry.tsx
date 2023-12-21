@@ -49,7 +49,7 @@ export default function CalendarAgendaViewDayEventEntry({
   return (
     <div
       key={calendarEntry.id}
-      className="flex cursor-pointer justify-between rounded-lg border p-4"
+      className="flex cursor-pointer justify-between rounded-lg border-2 p-4"
       onClick={() => {
         setSelectedCalendarEntryDialogOpen(true, calendarEntry);
       }}

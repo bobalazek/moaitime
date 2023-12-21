@@ -25,6 +25,10 @@ export const login = async (email: string, password: string) => {
 export const logout = async () => {
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/logout`, {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return response;
@@ -72,6 +76,10 @@ export const resendEmailConfirmation = async (isNewEmail?: boolean) => {
 export const cancelNewEmail = async () => {
   const response = await fetchJson<ResponseInterface>(`${API_URL}/api/v1/auth/cancel-new-email`, {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return response;
@@ -144,6 +152,10 @@ export const refreshToken = async (token: string) => {
 export const loadAccount = async () => {
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/account`, {
     method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return response;

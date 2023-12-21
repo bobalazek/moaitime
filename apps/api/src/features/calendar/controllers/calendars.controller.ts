@@ -13,9 +13,9 @@ import {
 import { Request } from 'express';
 
 import { Calendar } from '@moaitime/database-core';
-import { calendarsManager } from '@moaitime/database-services';
+import { calendarsManager, usersManager } from '@moaitime/database-services';
 import { CALENDARS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
-import { CreateCalendar } from '@moaitime/shared-common';
+import { CreateCalendar, User } from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
@@ -66,6 +66,8 @@ export class CalendarsController {
 
     const data = await calendarsManager.insertOne(insertData);
 
+    await usersManager.addVisibleCalendarIdByUserId(req.user.id, data.id);
+
     return {
       success: true,
       data,
@@ -110,6 +112,63 @@ export class CalendarsController {
     return {
       success: true,
       data: updatedData,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/undelete')
+  async undelete(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<Calendar>> {
+    const canDelete = await calendarsManager.userCanDelete(req.user.id, id);
+    if (!canDelete) {
+      throw new ForbiddenException('You cannot undelete this calendar');
+    }
+
+    const updatedData = await calendarsManager.updateOneById(id, {
+      deletedAt: null,
+    });
+
+    return {
+      success: true,
+      data: updatedData,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/add-visible')
+  async setVisible(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await calendarsManager.userCanView(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this calendar');
+    }
+
+    await usersManager.addVisibleCalendarIdByUserId(req.user.id, id);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/remove-visible')
+  async removeVisible(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await calendarsManager.userCanView(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this calendar');
+    }
+
+    await usersManager.removeVisibleCalendarIdByUserId(req.user.id, id);
+
+    return {
+      success: true,
     };
   }
 }

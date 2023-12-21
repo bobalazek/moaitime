@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 
 import { getDatabase, NewCalendar, users } from '@moaitime/database-core';
+import { MAIN_COLORS } from '@moaitime/shared-common';
 
 import { getUserFixtures } from './Users';
 
@@ -20,6 +21,7 @@ export const getCalendarFixtures = async (): Promise<NewCalendar[]> => {
       name: `${user.displayName}'s Calendar`,
       timezone: user.settings?.generalTimezone ?? 'UTC',
       userId: user.id,
+      color: MAIN_COLORS[0].value,
     });
   }
 

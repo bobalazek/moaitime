@@ -92,6 +92,51 @@ export const deleteCalendar = async (
   return response.data as Calendar;
 };
 
+export const undeleteCalendar = async (calendarId: string): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}/undelete`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
+};
+
+export const addVisibleCalendar = async (calendarId: string): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}/add-visible`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
+};
+
+export const removeVisibleCalendar = async (calendarId: string): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}/remove-visible`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
+};
+
 /********** Calendar Entries **********/
 export const loadCalendarEntries = async (from?: Date | string, to?: Date | string) => {
   const url = new URL(`${API_URL}/api/v1/calendar-entries`);

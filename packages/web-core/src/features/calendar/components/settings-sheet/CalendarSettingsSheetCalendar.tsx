@@ -2,6 +2,7 @@ import { Calendar } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
+import { useCalendarStore } from '../../state/calendarStore';
 import CalendarSettingsSheetCalendarActions from './CalendarSettingsSheetCalendarActions';
 
 export interface CalendarSettingsSheetCalendarProps {
@@ -12,13 +13,20 @@ export default function CalendarSettingsSheetCalendar({
   calendar,
 }: CalendarSettingsSheetCalendarProps) {
   const { auth } = useAuthStore();
+  const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
 
   const visibleCalendarIds = auth?.user?.settings?.calendarVisibleCalendarIds || [];
 
   const isChecked = visibleCalendarIds.includes('*') || visibleCalendarIds.includes(calendar.id);
 
-  const onCheckedChange = () => {
-    // TODO
+  const onCheckedChange = async () => {
+    if (isChecked) {
+      await removeVisibleCalendar(calendar.id);
+
+      return;
+    }
+
+    await addVisibleCalendar(calendar.id);
   };
 
   return (

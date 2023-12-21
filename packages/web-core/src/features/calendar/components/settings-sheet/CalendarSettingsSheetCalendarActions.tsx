@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { FaEdit, FaEllipsisV } from 'react-icons/fa';
+import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
 import { Calendar } from '@moaitime/shared-common';
 import {
@@ -12,7 +12,7 @@ import {
 import { useCalendarStore } from '../../state/calendarStore';
 
 const CalendarSettingsSheetCalendarActions = memo(({ calendar }: { calendar: Calendar }) => {
-  const { setSelectedCalendarDialogOpen } = useCalendarStore();
+  const { setSelectedCalendarDialogOpen, deleteCalendar } = useCalendarStore();
   const [open, setOpen] = useState(false);
 
   return (
@@ -44,6 +44,20 @@ const CalendarSettingsSheetCalendarActions = memo(({ calendar }: { calendar: Cal
           >
             <FaEdit className="mr-2 h-4 w-4" />
             <span>Edit</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer text-red-500"
+            onClick={async (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              deleteCalendar(calendar.id);
+
+              setOpen(false);
+            }}
+          >
+            <FaTrash className="mr-2 h-4 w-4" />
+            <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

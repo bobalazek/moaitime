@@ -142,9 +142,11 @@ export default function CalendarEditDialog() {
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>
-            <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
-              Delete
-            </Button>
+            {calendarExists && (
+              <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
+                Delete
+              </Button>
+            )}
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="secondary" onClick={onCancelButtonClick}>

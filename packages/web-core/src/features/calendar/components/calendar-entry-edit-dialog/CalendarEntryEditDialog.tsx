@@ -24,6 +24,7 @@ import {
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
+import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
 import { useCalendarStore } from '../../state/calendarStore';
 import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
@@ -245,6 +246,14 @@ export default function CalendarEntryEditDialog() {
               }));
             }}
             isReadonly={calendarEntryExists}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="calendarEntry-color">Color</Label>
+          <ColorSelector
+            value={data?.color ?? undefined}
+            onChangeValue={(value) => setData((current) => ({ ...current, color: value ?? null }))}
+            placeholderText="Inherit from calendar"
           />
         </div>
         <div className="flex flex-row justify-between gap-2">

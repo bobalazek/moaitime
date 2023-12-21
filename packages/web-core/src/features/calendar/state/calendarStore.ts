@@ -16,6 +16,7 @@ import { useAuthStore } from '../../auth/state/authStore';
 import {
   addCalendar,
   addEvent,
+  addVisibleCalendar,
   deleteCalendar,
   deleteEvent,
   editCalendar,
@@ -26,6 +27,8 @@ import {
   getYearRange,
   loadCalendarEntries,
   loadCalendars,
+  removeVisibleCalendar,
+  undeleteCalendar,
 } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -47,10 +50,13 @@ export type CalendarStore = {
   setSettingsSheetOpen: (settingsSheetOpen: boolean) => void;
   /********** Calendars **********/
   calendars: Calendar[];
+  loadCalendars: () => Promise<Calendar[]>;
   addCalendar: (calendar: CreateCalendar) => Promise<Calendar>;
   editCalendar: (calendarId: string, calendar: UpdateCalendar) => Promise<Calendar>;
   deleteCalendar: (calendarId: string) => Promise<Calendar>;
-  loadCalendars: () => Promise<Calendar[]>;
+  undeleteCalendar: (calendarId: string) => Promise<Calendar>;
+  addVisibleCalendar: (calendarId: string) => Promise<void>;
+  removeVisibleCalendar: (calendarId: string) => Promise<void>;
   // Selected
   selectedCalendarDialogOpen: boolean;
   selectedCalendar: Calendar | null;
@@ -181,6 +187,9 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendars();
     await loadCalendarEnries();
 
+    // We update the settings, so we need to refresh the account
+    await useAuthStore.getState().loadAccount();
+
     return addedTask;
   },
   editCalendar: async (calendarId: string, calendar: UpdateCalendar) => {
@@ -201,7 +210,43 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendars();
     await loadCalendarEnries();
 
+    // Same as above
+    await useAuthStore.getState().loadAccount();
+
     return deletedTask;
+  },
+  undeleteCalendar: async (calendarId: string) => {
+    const { loadCalendars, loadCalendarEnries } = get();
+
+    const undeletedTask = await undeleteCalendar(calendarId);
+
+    await loadCalendars();
+    await loadCalendarEnries();
+
+    // Same as above
+    await useAuthStore.getState().loadAccount();
+
+    return undeletedTask;
+  },
+  addVisibleCalendar: async (calendarId: string) => {
+    const { loadCalendarEnries } = get();
+
+    await addVisibleCalendar(calendarId);
+
+    // We update the settings, so we need to refresh the account
+    await useAuthStore.getState().loadAccount();
+
+    await loadCalendarEnries();
+  },
+  removeVisibleCalendar: async (calendarId: string) => {
+    const { loadCalendarEnries } = get();
+
+    await removeVisibleCalendar(calendarId);
+
+    // Same as above
+    await useAuthStore.getState().loadAccount();
+
+    await loadCalendarEnries();
   },
   // Seleced
   selectedCalendarDialogOpen: false,

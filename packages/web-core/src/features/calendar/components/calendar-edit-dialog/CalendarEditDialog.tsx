@@ -11,7 +11,7 @@ import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from 
 
 import { useCalendarStore } from '../../state/calendarStore';
 
-export default function CalendarDialog() {
+export default function CalendarEditDialog() {
   const { toast } = useToast();
   const {
     selectedCalendarDialogOpen,
@@ -103,11 +103,11 @@ export default function CalendarDialog() {
 
   return (
     <Dialog open={selectedCalendarDialogOpen} onOpenChange={setSelectedCalendarDialogOpen}>
-      <DialogContent data-test="calendar--dialog">
+      <DialogContent data-test="calendar--edit-dialog">
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendar-name">Name</Label>
           <Input
-            id="calendar-name"
+            id="calendar-edit-name"
             value={data?.name ?? ''}
             onChange={(event) => {
               setData((current) => ({ ...current, name: event.target.value }));
@@ -115,9 +115,9 @@ export default function CalendarDialog() {
           />
         </div>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendar-description">Description</Label>
+          <Label htmlFor="calendar-edit-description">Description</Label>
           <Textarea
-            id="calendar-description"
+            id="calendar-edit-description"
             rows={5}
             value={data?.description ?? ''}
             onChange={(event) => {

@@ -28,7 +28,7 @@ import DateSelector, { DateSelectorData } from '../../../core/components/selecto
 import { useCalendarStore } from '../../state/calendarStore';
 import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
 
-export default function CalendarEntryDialog() {
+export default function CalendarEntryEditDialog() {
   const { toast } = useToast();
   const { auth } = useAuthStore();
   const {
@@ -143,7 +143,7 @@ export default function CalendarEntryDialog() {
       open={selectedCalendarEntryDialogOpen}
       onOpenChange={setSelectedCalendarEntryDialogOpen}
     >
-      <DialogContent data-test="calendarEntry--calendar-entry-dialog">
+      <DialogContent data-test="calendar--calendar-entry-edit-dialog">
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-title">Title</Label>
           <Input
@@ -247,9 +247,11 @@ export default function CalendarEntryDialog() {
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>
-            <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
-              Delete
-            </Button>
+            {calendarEntryExists && (
+              <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
+                Delete
+              </Button>
+            )}
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="secondary" onClick={onCancelButtonClick}>

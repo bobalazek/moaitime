@@ -22,7 +22,7 @@ import {
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useTasksStore } from '../../state/tasksStore';
 
-export default function ListDialog() {
+export default function ListEditDialog() {
   const { toast } = useToast();
   const {
     selectedListDialogOpen,
@@ -79,7 +79,7 @@ export default function ListDialog() {
 
   return (
     <Dialog open={selectedListDialogOpen} onOpenChange={setSelectedListDialogOpen}>
-      <DialogContent data-test="tasks--list-dialog">
+      <DialogContent data-test="tasks--list-edit-dialog">
         <DialogHeader>
           <DialogTitle>
             {selectedListDialog ? `Edit "${selectedListDialog.name}" List` : 'New List'}
@@ -95,7 +95,7 @@ export default function ListDialog() {
               placeholder="Name"
               onChange={(event) => setData((current) => ({ ...current, name: event.target.value }))}
               autoFocus
-              data-test="tasks--list-dialog--name-input"
+              data-test="tasks--list-edit-dialog--name-input"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -105,10 +105,10 @@ export default function ListDialog() {
               onChangeValue={(value) => setData((current) => ({ ...current, color: value }))}
               triggerProps={{
                 id: 'list-color',
-                'data-test': 'tasks--list-dialog--color-select--trigger-button',
+                'data-test': 'tasks--list-edit-dialog--color-select--trigger-button',
               }}
               contentProps={{
-                'data-test': 'tasks--list-dialog--color-select',
+                'data-test': 'tasks--list-edit-dialog--color-select',
               }}
             />
           </div>

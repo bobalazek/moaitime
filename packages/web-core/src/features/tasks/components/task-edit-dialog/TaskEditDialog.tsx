@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@moaitime/shared-common';
 import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
 
+import DateSelector from '../../../core/components/selectors/DateSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { useTasksStore } from '../../state/tasksStore';
-import TaskDialogDueDate from './TaskDialogDueDate';
 
-export default function TaskDialog() {
+export default function TaskEditDialog() {
   const { toast } = useToast();
   const {
     selectedTaskDialogOpen,
@@ -96,7 +96,7 @@ export default function TaskDialog() {
 
   return (
     <Dialog open={selectedTaskDialogOpen} onOpenChange={setSelectedTaskDialogOpen}>
-      <DialogContent data-test="tasks--task-dialog">
+      <DialogContent data-test="tasks--task-edit-dialog">
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-name">Name</Label>
           <Input
@@ -129,10 +129,21 @@ export default function TaskDialog() {
         </div>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="task-list">Due Date</Label>
-          <TaskDialogDueDate
-            data={data}
-            setData={(newData) => {
-              setData(newData);
+          <DateSelector
+            includeTime
+            disablePast
+            data={{
+              date: data.dueDate ?? null,
+              dateTime: data.dueDateTime ?? null,
+              dateTimeZone: data.dueDateTimeZone ?? null,
+            }}
+            onSaveData={(saveData) => {
+              setData({
+                ...data,
+                dueDate: saveData.date,
+                dueDateTime: saveData.dateTime,
+                dueDateTimeZone: saveData.dateTimeZone,
+              });
             }}
           />
         </div>

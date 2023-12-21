@@ -56,7 +56,7 @@ describe('commands.cy.ts', () => {
 
     cy.get('[data-value="new list"]').click();
 
-    cy.getBySel('tasks--list-dialog').should('exist');
+    cy.getBySel('tasks--list-edit-dialog').should('exist');
   });
 
   it('should open Open Inbox List from commands dialog', () => {

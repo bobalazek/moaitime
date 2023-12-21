@@ -107,7 +107,7 @@ describe('tasks-tasks.cy.ts', () => {
       .contains('More')
       .click();
 
-    cy.getBySel('tasks--task-dialog').should('exist');
+    cy.getBySel('tasks--task-edit-dialog').should('exist');
   });
 
   it('should edit task name in expanded edit options', () => {
@@ -230,7 +230,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.get('button').contains('Cancel').click();
 
-    cy.getBySel('tasks--task-dialog').should('not.exist');
+    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
   });
 
   it('should close More dialog when clicking on the x (close) button in the right top corner in expanded edit options', () => {
@@ -250,7 +250,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.get('[data-test="dialog--close"]').click();
 
-    cy.getBySel('tasks--task-dialog').should('not.exist');
+    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
   });
 
   it('should close More dialog when clicking outside the dialog', () => {
@@ -270,6 +270,6 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.clickOutside();
 
-    cy.getBySel('tasks--task-dialog').should('not.exist');
+    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
   });
 });

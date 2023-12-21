@@ -51,13 +51,13 @@ describe('tasks-lists.cy.ts', () => {
       .contains('Edit')
       .click({ force: true });
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').click();
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').click();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').clear();
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').clear();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').type('New list {enter}');
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').type('New list {enter}');
 
-    cy.getBySel('tasks--list-dialog').find('button').contains('Save').click();
+    cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
     cy.getBySel('tasks--body-header--title').contains('New list');
   });
@@ -72,13 +72,13 @@ describe('tasks-lists.cy.ts', () => {
       .contains('Edit')
       .click({ force: true });
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').click();
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').click();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').clear();
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').clear();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').type('New list {enter}');
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').type('New list {enter}');
 
-    cy.getBySel('tasks--list-dialog').find('button').contains('Save').click();
+    cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
     cy.contains('You have successfully saved the list.').should('exist');
   });
@@ -103,14 +103,14 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.wait(100);
 
-    cy.getBySel('tasks--list-dialog--color-select--trigger-button').click();
+    cy.getBySel('tasks--list-edit-dialog--color-select--trigger-button').click();
 
-    cy.getBySel('tasks--list-dialog--color-select')
+    cy.getBySel('tasks--list-edit-dialog--color-select')
       .find('div[role="option"]')
       .contains(LIST_COLOR_OPTION.name)
       .click();
 
-    cy.getBySel('tasks--list-dialog').find('button').contains('Save').click();
+    cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
     cy.getBySel('tasks--body-header--title').should(
       'have.attr',
@@ -124,9 +124,9 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksNewListDropdownMenu();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').type('New list {enter}');
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').type('New list {enter}');
 
-    cy.getBySel('tasks--list-dialog').find('button').contains('Save').click();
+    cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
     cy.getBySel('tasks--body-header--title').contains('New list');
   });
@@ -136,9 +136,9 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksNewListDropdownMenu();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').type('New list {enter}');
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').type('New list {enter}');
 
-    cy.getBySel('tasks--list-dialog').find('button').contains('Save').click();
+    cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
     cy.contains('You have successfully saved the list.').should('exist');
   });
@@ -148,9 +148,9 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksNewListDropdownMenu();
 
-    cy.getBySel('tasks--list-dialog').find('div').contains('Close').click();
+    cy.getBySel('tasks--list-edit-dialog').find('div').contains('Close').click();
 
-    cy.getBySel('tasks--list-dialog').should('not.exist');
+    cy.getBySel('tasks--list-edit-dialog').should('not.exist');
   });
 
   it('should exit the add new task list dialog when clicking on the x (close) button in the right top corner', () => {
@@ -158,9 +158,9 @@ describe('tasks-lists.cy.ts', () => {
 
     openTasksNewListDropdownMenu();
 
-    cy.getBySel('tasks--list-dialog').find('[data-test="dialog--close"]').click();
+    cy.getBySel('tasks--list-edit-dialog').find('[data-test="dialog--close"]').click();
 
-    cy.getBySel('tasks--list-dialog').should('not.exist');
+    cy.getBySel('tasks--list-edit-dialog').should('not.exist');
   });
 
   it('should move a task to another list', () => {
@@ -203,18 +203,18 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--selected-list--dropdown-menu--add-new-button').click();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').click();
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').click();
 
-    cy.getBySel('tasks--list-dialog').find('input[type="text"]').type('New list {enter}');
+    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').type('New list {enter}');
 
-    cy.getBySel('tasks--list-dialog--color-select--trigger-button').click();
+    cy.getBySel('tasks--list-edit-dialog--color-select--trigger-button').click();
 
-    cy.getBySel('tasks--list-dialog--color-select')
+    cy.getBySel('tasks--list-edit-dialog--color-select')
       .find('div[role="option"]')
       .contains(LIST_COLOR_OPTION.name)
       .click();
 
-    cy.getBySel('tasks--list-dialog').find('button').contains('Save').click();
+    cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
     cy.getBySel('tasks--body-header--title').should(
       'have.attr',

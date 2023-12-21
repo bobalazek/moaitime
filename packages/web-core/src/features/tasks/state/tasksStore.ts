@@ -139,14 +139,23 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return deletedList;
   },
   loadLists: async () => {
-    const { selectedListTasksIncludeCompleted, selectedListTasksIncludeDeleted } = get();
+    const { selectedListTasksIncludeCompleted, selectedListTasksIncludeDeleted, selectedList } =
+      get();
 
     const lists = await loadLists({
       includeCompleted: selectedListTasksIncludeCompleted,
       includeDeleted: selectedListTasksIncludeDeleted,
     });
 
-    set({ lists });
+    const newSelectedList =
+      lists.find((list) => {
+        return list.id === selectedList?.id;
+      }) ?? null;
+
+    set({
+      lists,
+      selectedList: newSelectedList,
+    });
 
     return lists;
   },

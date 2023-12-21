@@ -23,14 +23,17 @@ export default function CalendarSettingsSheetCalendar({
 
   return (
     <div
-      className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+      className="min-h-[2rem] rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
       data-test="calendar--settings-sheet--calendar"
     >
-      <div className="relative w-full">
+      <div className="relative h-full w-full">
         <Checkbox
           className="absolute left-0 top-1"
           checked={isChecked}
           onCheckedChange={onCheckedChange}
+          style={{
+            backgroundColor: calendar.color ?? '',
+          }}
           data-test="calendar--settings-sheet--calendar--visible-checkbox"
         />
         <div className="break-words px-6" data-test="calendar--settings-sheet--calendar--name">

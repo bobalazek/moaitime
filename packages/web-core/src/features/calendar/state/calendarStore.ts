@@ -42,6 +42,9 @@ export type CalendarStore = {
   selectedDays: Date[];
   reloadSelectedDays: () => Promise<void>;
   isTodayInSelectedDaysRange: boolean;
+  // Settings Sheet
+  settingsSheetOpen: boolean;
+  setSettingsSheetOpen: (settingsSheetOpen: boolean) => void;
   /********** Calendars **********/
   calendars: Calendar[];
   addCalendar: (calendar: CreateCalendar) => Promise<Calendar>;
@@ -154,6 +157,13 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendarEnries();
   },
   isTodayInSelectedDaysRange: false,
+  // Settings Sheet
+  settingsSheetOpen: false,
+  setSettingsSheetOpen: (settingsSheetOpen: boolean) => {
+    set({
+      settingsSheetOpen,
+    });
+  },
   /********** Calendars **********/
   calendars: [],
   loadCalendars: async () => {
@@ -164,28 +174,31 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return calendars;
   },
   addCalendar: async (calendar: CreateCalendar) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendars, loadCalendarEnries } = get();
 
     const addedTask = await addCalendar(calendar);
 
+    await loadCalendars();
     await loadCalendarEnries();
 
     return addedTask;
   },
   editCalendar: async (calendarId: string, calendar: UpdateCalendar) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendars, loadCalendarEnries } = get();
 
     const editedTask = await editCalendar(calendarId, calendar);
 
+    await loadCalendars();
     await loadCalendarEnries();
 
     return editedTask;
   },
   deleteCalendar: async (calendarId: string) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendars, loadCalendarEnries } = get();
 
     const deletedTask = await deleteCalendar(calendarId);
 
+    await loadCalendars();
     await loadCalendarEnries();
 
     return deletedTask;

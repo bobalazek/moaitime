@@ -1,4 +1,4 @@
-export const TASK_LIST_COLORS = [
+export const MAIN_COLORS = [
   {
     name: 'Red',
     value: '#EF4444',

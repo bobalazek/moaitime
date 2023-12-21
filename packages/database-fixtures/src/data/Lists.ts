@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 
 import { getDatabase, NewList, users } from '@moaitime/database-core';
 import { LISTS_DEFAULT_NAMES } from '@moaitime/shared-backend';
-import { TASK_LIST_COLORS } from '@moaitime/shared-common';
+import { MAIN_COLORS } from '@moaitime/shared-common';
 
 import { getUserFixtures } from './Users';
 
@@ -20,7 +20,7 @@ export const getListFixtures = async (): Promise<NewList[]> => {
 
     for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
       const name = LISTS_DEFAULT_NAMES[i];
-      const color = TASK_LIST_COLORS[i % TASK_LIST_COLORS.length].value;
+      const color = MAIN_COLORS[i % MAIN_COLORS.length].value;
 
       lists.push({
         name,

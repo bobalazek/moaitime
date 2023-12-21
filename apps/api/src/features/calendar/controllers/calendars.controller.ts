@@ -15,6 +15,7 @@ import { Request } from 'express';
 import { Calendar } from '@moaitime/database-core';
 import { calendarsManager } from '@moaitime/database-services';
 import { CALENDARS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
+import { CreateCalendar } from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
@@ -58,7 +59,12 @@ export class CalendarsController {
       );
     }
 
-    const data = await calendarsManager.insertOne(body);
+    const insertData = {
+      ...body,
+      userId: req.user.id,
+    } as CreateCalendar;
+
+    const data = await calendarsManager.insertOne(insertData);
 
     return {
       success: true,

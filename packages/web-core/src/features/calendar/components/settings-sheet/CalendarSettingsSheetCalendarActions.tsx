@@ -16,7 +16,7 @@ const CalendarSettingsSheetCalendarActions = memo(({ calendar }: { calendar: Cal
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="absolute right-1 top-1 ml-2">
+    <div className="absolute right-1 top-0 ml-2">
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <button

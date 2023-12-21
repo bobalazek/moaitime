@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
 
+import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useCalendarStore } from '../../state/calendarStore';
 
 export default function CalendarEditDialog() {
@@ -122,6 +123,20 @@ export default function CalendarEditDialog() {
             value={data?.description ?? ''}
             onChange={(event) => {
               setData((current) => ({ ...current, description: event.target.value }));
+            }}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="calendar-edit-color">Color</Label>
+          <ColorSelector
+            value={data?.color ?? undefined}
+            onChangeValue={(value) => setData((current) => ({ ...current, color: value }))}
+            triggerProps={{
+              id: 'calendar-edit-color',
+              'data-test': 'calendar--edit-dialog--color-select--trigger-button',
+            }}
+            contentProps={{
+              'data-test': 'tasks--edit-dialog--color-select',
             }}
           />
         </div>

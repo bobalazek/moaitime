@@ -21,6 +21,10 @@ export * from './calendar/CalendarViewOptions';
 export * from './calendar/EventSchema';
 
 // Core
+export * from './core/MainColors';
+export * from './core/TimezoneSchema';
+export * from './core/HexSchema';
+export * from './core/ColorSchema';
 export * from './core/DayOfWeek';
 export * from './core/SortDirectionEnum';
 export * from './core/ThemeEnum';
@@ -40,7 +44,6 @@ export * from './search/SearchEnginesMap';
 // Tasks
 export * from './tasks/ListSchema';
 export * from './tasks/TaskSchema';
-export * from './tasks/ListColors';
 export * from './tasks/ListSortOptions';
 
 // Weather

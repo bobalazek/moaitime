@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 
 import {
   CreateList,
-  TASK_LIST_COLORS,
   UpdateList,
   UpdateListSchema,
   zodErrorToString,
@@ -17,17 +16,11 @@ import {
   DialogTitle,
   Input,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   useToast,
 } from '@moaitime/web-ui';
 
+import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useTasksStore } from '../../state/tasksStore';
-
-const __EMPTY_VALUE_PLACEHOLDER = '__empty';
 
 export default function ListDialog() {
   const { toast } = useToast();
@@ -105,37 +98,17 @@ export default function ListDialog() {
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="list-color">Color</Label>
-            <Select
-              value={data?.color ?? __EMPTY_VALUE_PLACEHOLDER}
-              onValueChange={(value) =>
-                setData((current) => ({
-                  ...current,
-                  color: value !== __EMPTY_VALUE_PLACEHOLDER ? value : '',
-                }))
-              }
-            >
-              <SelectTrigger
-                id="list-color"
-                className="w-full"
-                data-test="tasks--list-dialog--color-select--trigger-button"
-              >
-                <SelectValue placeholder="Color" />
-              </SelectTrigger>
-              <SelectContent data-test="tasks--list-dialog--color-select">
-                <SelectItem value={__EMPTY_VALUE_PLACEHOLDER}>
-                  <i>None</i>
-                </SelectItem>
-                {TASK_LIST_COLORS.map((color) => (
-                  <SelectItem key={color.value} value={color.value}>
-                    <span className="inline-block">{color.name}</span>
-                    <span
-                      className="ml-2 inline-block h-2 w-2 rounded-full"
-                      style={{ backgroundColor: color.value }}
-                    ></span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ColorSelector
+              value={data?.color ?? undefined}
+              onChangeValue={(value) => setData((current) => ({ ...current, color: value }))}
+              triggerProps={{
+                id: 'list-color',
+                'data-test': 'tasks--list-dialog--color-select--trigger-button',
+              }}
+              contentProps={{
+                'data-test': 'tasks--list-dialog--color-select',
+              }}
+            />
           </div>
         </div>
         <DialogFooter>

@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { HexSchema } from '../core/HexSchema';
+import { ColorSchema } from '../core/ColorSchema';
 
 export const ListSchema = z.object({
   id: z.string(),
   name: z.string(),
-  color: HexSchema.nullable(),
+  color: ColorSchema.nullable(),
   tasksCount: z.number().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
@@ -14,7 +14,7 @@ export const ListSchema = z.object({
 
 export const CreateListSchema = z.object({
   name: z.string().min(1),
-  color: HexSchema.nullable().optional(),
+  color: ColorSchema.nullable().optional(),
 });
 
 export const UpdateListSchema = CreateListSchema.partial();

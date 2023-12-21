@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { HexSchema } from '../core/HexSchema';
+import { ColorSchema } from '../core/ColorSchema';
 
 export const CalendarSchema = z.object({
   id: z.string(),
   name: z.string(),
-  color: HexSchema.nullable(),
+  color: ColorSchema.nullable(),
   description: z.string().nullable(),
   timezone: z.string().nullable(),
   isPublic: z.boolean(),
@@ -18,7 +18,7 @@ export const CalendarSchema = z.object({
 export const CreateCalendarSchema = z.object({
   name: z.string({ required_error: 'Name is required' }),
   description: z.string().optional(),
-  color: HexSchema.optional(),
+  color: ColorSchema.optional(),
   timezone: z.string().optional(),
   isPublic: z.boolean().optional(),
 });

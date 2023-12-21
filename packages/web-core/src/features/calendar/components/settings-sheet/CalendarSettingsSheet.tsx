@@ -14,14 +14,15 @@ import { useCalendarStore } from '../../state/calendarStore';
 import CalendarSettingsSheetCalendar from './CalendarSettingsSheetCalendar';
 
 export default function CalendarSettingsSheet() {
-  const { calendars, setSelectedCalendarDialogOpen } = useCalendarStore();
+  const { settingsSheetOpen, setSettingsSheetOpen, calendars, setSelectedCalendarDialogOpen } =
+    useCalendarStore();
 
   const onNewCalendarButtonClick = () => {
     setSelectedCalendarDialogOpen(true, null);
   };
 
   return (
-    <Sheet>
+    <Sheet open={settingsSheetOpen} onOpenChange={setSettingsSheetOpen}>
       <SheetTrigger asChild>
         <Button
           className="border"
@@ -32,7 +33,7 @@ export default function CalendarSettingsSheet() {
           <FaCog />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+      <SheetContent side="right" className="sm:w-max-[420px] w-full">
         <SheetHeader>
           <SheetTitle>Settings</SheetTitle>
           <SheetDescription>Here we will have the main calendar settings.</SheetDescription>

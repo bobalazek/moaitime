@@ -58,6 +58,7 @@ export default function CalendarEntry({
       ? colord(defaultBackgroundColor).darken(0.1).toHex()
       : defaultBackgroundColor;
   const color = colord(backgroundColor).isDark() ? '#ffffff' : '#000000';
+  const colorLighter = colord(color).lighten(0.3).toHex();
   const borderColor = colord(backgroundColor).darken(0.1).toHex();
   const innerStyle = {
     borderColor,
@@ -111,7 +112,15 @@ export default function CalendarEntry({
         >
           {calendarEntry.title}
           {showContinuedText && (
-            <span className="text-muted-foreground text-[0.65rem]"> (cont.)</span>
+            <span
+              className="text-[0.65rem] transition-all"
+              style={{
+                color: colorLighter,
+              }}
+            >
+              {' '}
+              (cont.)
+            </span>
           )}
         </h4>
       </div>

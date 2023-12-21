@@ -11,7 +11,7 @@ import {
   LISTS_DEFAULT_NAMES,
 } from '@moaitime/shared-backend';
 import {
-  TASK_LIST_COLORS,
+  MAIN_COLORS,
   UserPasswordSchema,
   UserRoleEnum,
   UserSettingsSchema,
@@ -87,7 +87,7 @@ export class AuthManager {
 
     for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
       const name = LISTS_DEFAULT_NAMES[i];
-      const color = TASK_LIST_COLORS[i % TASK_LIST_COLORS.length].value;
+      const color = MAIN_COLORS[i % MAIN_COLORS.length].value;
 
       await this._listsManager.insertOne({
         name,

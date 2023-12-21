@@ -15,16 +15,23 @@ export default function CalendarDialog() {
   const {
     dialogOpen,
     selectedView,
+    settingsSheetOpen,
+    selectedCalendarDialogOpen,
+    selectedCalendarEntryDialogOpen,
     setDialogOpen,
     setSelectedView,
     setSelectedDate,
-    selectedCalendarEntryDialogOpen,
   } = useCalendarStore();
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
 
   useEffect(() => {
     const onKeydown = (e: KeyboardEvent) => {
-      if (!dialogOpen || selectedCalendarEntryDialogOpen) {
+      if (
+        !dialogOpen ||
+        settingsSheetOpen ||
+        selectedCalendarDialogOpen ||
+        selectedCalendarEntryDialogOpen
+      ) {
         return;
       }
 
@@ -56,7 +63,7 @@ export default function CalendarDialog() {
     return () => document.removeEventListener('keydown', onKeydown);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dialogOpen, selectedCalendarEntryDialogOpen]);
+  }, [dialogOpen, settingsSheetOpen, selectedCalendarDialogOpen, selectedCalendarEntryDialogOpen]);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

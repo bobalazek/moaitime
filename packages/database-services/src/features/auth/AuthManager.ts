@@ -8,7 +8,7 @@ import {
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
   compareHash,
   generateHash,
-  LIST_DEFAULT_NAMES,
+  LISTS_DEFAULT_NAMES,
 } from '@moaitime/shared-backend';
 import {
   TASK_LIST_COLORS,
@@ -85,8 +85,8 @@ export class AuthManager {
       emailConfirmationLastSentAt: new Date(),
     } as NewUser);
 
-    for (let i = 0; i < LIST_DEFAULT_NAMES.length; i++) {
-      const name = LIST_DEFAULT_NAMES[i];
+    for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
+      const name = LISTS_DEFAULT_NAMES[i];
       const color = TASK_LIST_COLORS[i % TASK_LIST_COLORS.length].value;
 
       await this._listsManager.insertOne({

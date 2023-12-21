@@ -74,7 +74,7 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
       data-test="calendar--dialog--header"
     >
       <CalendarDialogHeaderText />
-      <div className="mt-2 flex justify-center gap-2 md:mt-0 md:flex">
+      <div className="mt-2 justify-center gap-2 sm:flex md:mt-0">
         <CalendarDialogHeaderCalendar />
         <Button
           className="border"

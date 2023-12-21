@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -54,7 +54,7 @@ export class CalendarsController {
   ): Promise<AbstractResponseDto<Calendar>> {
     const calendarsCount = await calendarsManager.countByUserId(req.user.id);
     if (calendarsCount >= CALENDARS_MAX_PER_USER_COUNT) {
-      throw new Error(
+      throw new ForbiddenException(
         `You have reached the maximum number of calendars per user (${CALENDARS_MAX_PER_USER_COUNT}).`
       );
     }
@@ -79,9 +79,9 @@ export class CalendarsController {
     @Param('id') id: string,
     @Body() body: UpdateCalendarDto
   ): Promise<AbstractResponseDto<Calendar>> {
-    const calendar = await calendarsManager.findOneById(id);
-    if (!calendar || calendar.userId !== req.user.id) {
-      throw new NotFoundException('Calendar not found');
+    const canUpdate = await calendarsManager.userCanUpdate(req.user.id, id);
+    if (!canUpdate) {
+      throw new ForbiddenException('You cannot update this calendar');
     }
 
     const updatedData = await calendarsManager.updateOneById(id, body);
@@ -98,9 +98,9 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<Calendar>> {
-    const hasAccess = await calendarsManager.userHasAccess(req.user.id, id);
-    if (!hasAccess) {
-      throw new NotFoundException('Calendar not found');
+    const canDelete = await calendarsManager.userCanDelete(req.user.id, id);
+    if (!canDelete) {
+      throw new ForbiddenException('You cannot delete this calendar');
     }
 
     const updatedData = await calendarsManager.updateOneById(id, {

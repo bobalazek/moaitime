@@ -75,18 +75,6 @@ export class EventsManager {
     return row ?? null;
   }
 
-  async countByCalendarId(calendarId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(events.id).mapWith(Number),
-      })
-      .from(events)
-      .where(and(eq(events.calendarId, calendarId), isNull(events.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
   async insertOne(data: NewEvent): Promise<Event> {
     const rows = await getDatabase().insert(events).values(data).returning();
 
@@ -107,6 +95,39 @@ export class EventsManager {
     const rows = await getDatabase().delete(events).where(eq(events.id, id)).returning();
 
     return rows[0];
+  }
+
+  // Helpers
+  async countByCalendarId(calendarId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(events.id).mapWith(Number),
+      })
+      .from(events)
+      .where(and(eq(events.calendarId, calendarId), isNull(events.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  async userCanView(userId: string, eventId: string): Promise<boolean> {
+    const result = await getDatabase()
+      .select()
+      .from(events)
+      .leftJoin(calendars, eq(events.calendarId, calendars.id))
+      .where(and(eq(events.id, eventId), eq(calendars.userId, userId)))
+      .limit(1)
+      .execute();
+
+    return result.length > 0;
+  }
+
+  async userCanUpdate(userId: string, calendarId: string): Promise<boolean> {
+    return this.userCanView(userId, calendarId);
+  }
+
+  async userCanDelete(userId: string, calendarId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, calendarId);
   }
 }
 

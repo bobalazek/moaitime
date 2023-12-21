@@ -172,6 +172,7 @@ export default function CalendarEntryEditDialog() {
             onCheckedChange={(value) => {
               setData((current) => ({ ...current, isAllDay: value }));
             }}
+            disabled={calendarEntryExists}
           />
           <Label htmlFor="calendarEntry-isAllDay">Is All Day?</Label>
         </div>
@@ -243,6 +244,7 @@ export default function CalendarEntryEditDialog() {
                 calendarId: value,
               }));
             }}
+            isReadonly={calendarEntryExists}
           />
         </div>
         <div className="flex flex-row justify-between gap-2">

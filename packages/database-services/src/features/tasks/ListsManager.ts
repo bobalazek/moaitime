@@ -57,6 +57,29 @@ export class ListsManager {
     return result[0].count ?? 0;
   }
 
+  async insertOne(data: NewList): Promise<List> {
+    const rows = await getDatabase().insert(lists).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(id: string, data: Partial<NewList>): Promise<List> {
+    const rows = await getDatabase()
+      .update(lists)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(lists.id, id))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(id: string): Promise<List> {
+    const rows = await getDatabase().delete(lists).where(eq(lists.id, id)).returning();
+
+    return rows[0];
+  }
+
+  // Helpers
   async getTasksCountMap(ids: string[], options?: ListsManagerFindManyByUserIdOptions) {
     const tasksCountMap = new Map<string, number>();
     if (ids.length > 0) {
@@ -85,26 +108,20 @@ export class ListsManager {
     return tasksCountMap;
   }
 
-  async insertOne(data: NewList): Promise<List> {
-    const rows = await getDatabase().insert(lists).values(data).returning();
+  async userCanView(userId: string, listId: string): Promise<boolean> {
+    const row = await getDatabase().query.lists.findFirst({
+      where: and(eq(lists.id, listId), eq(lists.userId, userId)),
+    });
 
-    return rows[0];
+    return row !== null;
   }
 
-  async updateOneById(id: string, data: Partial<NewList>): Promise<List> {
-    const rows = await getDatabase()
-      .update(lists)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(lists.id, id))
-      .returning();
-
-    return rows[0];
+  async userCanUpdate(userId: string, listId: string): Promise<boolean> {
+    return this.userCanView(userId, listId);
   }
 
-  async deleteOneById(id: string): Promise<List> {
-    const rows = await getDatabase().delete(lists).where(eq(lists.id, id)).returning();
-
-    return rows[0];
+  async userCanDelete(userId: string, listId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, listId);
   }
 }
 

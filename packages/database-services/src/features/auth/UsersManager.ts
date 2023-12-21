@@ -82,6 +82,29 @@ export class UsersManager {
     return this._fixBirthDateColumn(row);
   }
 
+  async insertOne(data: NewUser): Promise<User> {
+    const rows = await getDatabase().insert(users).values(data).returning();
+
+    return this._fixBirthDateColumn(rows[0]);
+  }
+
+  async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
+    const rows = await getDatabase()
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+
+    return this._fixBirthDateColumn(rows[0]);
+  }
+
+  async deleteOneById(id: string): Promise<User> {
+    const rows = await getDatabase().delete(users).where(eq(users.id, id)).returning();
+
+    return this._fixBirthDateColumn(rows[0]);
+  }
+
+  // Custom
   getUserSettings(user: User): UserSettings {
     return {
       ...DEFAULT_USER_SETTINGS,
@@ -138,28 +161,54 @@ export class UsersManager {
     return Array.from(calendarIdsSet);
   }
 
-  async insertOne(data: NewUser): Promise<User> {
-    const rows = await getDatabase().insert(users).values(data).returning();
+  async addVisibleCalendarIdByUserId(userId: string, calendarId: string) {
+    const user = await this.findOneById(userId);
+    if (!user) {
+      return;
+    }
 
-    return this._fixBirthDateColumn(rows[0]);
+    const userSettings = this.getUserSettings(user);
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+
+    if (userCalendarIds.includes(calendarId)) {
+      return user;
+    }
+
+    userCalendarIds.push(calendarId);
+
+    return this.updateOneById(userId, {
+      settings: {
+        ...userSettings,
+        calendarVisibleCalendarIds: userCalendarIds,
+      },
+    });
   }
 
-  async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
-    const rows = await getDatabase()
-      .update(users)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(users.id, id))
-      .returning();
+  async removeVisibleCalendarIdByUserId(userId: string, calendarId: string) {
+    const user = await this.findOneById(userId);
+    if (!user) {
+      return;
+    }
 
-    return this._fixBirthDateColumn(rows[0]);
+    const userSettings = this.getUserSettings(user);
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+
+    if (!userCalendarIds.includes(calendarId)) {
+      return user;
+    }
+
+    const index = userCalendarIds.indexOf(calendarId);
+    userCalendarIds.splice(index, 1);
+
+    return this.updateOneById(userId, {
+      settings: {
+        ...userSettings,
+        calendarVisibleCalendarIds: userCalendarIds,
+      },
+    });
   }
 
-  async deleteOneById(id: string): Promise<User> {
-    const rows = await getDatabase().delete(users).where(eq(users.id, id)).returning();
-
-    return this._fixBirthDateColumn(rows[0]);
-  }
-
+  // Helpers
   private _fixBirthDateColumn(user: User) {
     // TODO
     // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.

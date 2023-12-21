@@ -107,10 +107,11 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   /********** Lists **********/
   lists: [],
   addList: async (list: CreateList) => {
-    const { loadLists } = get();
+    const { loadLists, setSelectedList } = get();
     const addedList = await addList(list);
 
     await loadLists();
+    await setSelectedList(addedList);
 
     return addedList;
   },

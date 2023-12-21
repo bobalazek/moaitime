@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -52,8 +53,8 @@ export class EventsController {
       );
     }
 
-    const hasAccess = await calendarsManager.userHasAccess(req.user.id, body.calendarId);
-    if (!hasAccess) {
+    const canView = await calendarsManager.userCanView(req.user.id, body.calendarId);
+    if (!canView) {
       throw new NotFoundException('Calendar not found');
     }
 
@@ -81,21 +82,21 @@ export class EventsController {
     @Param('id') id: string,
     @Body() body: UpdateEventDto
   ): Promise<AbstractResponseDto<Event>> {
-    const hasAccess = await calendarsManager.userHasAccess(req.user.id, id);
-    if (!hasAccess) {
-      throw new NotFoundException('Calendar not found');
+    const canView = await eventsManager.userCanView(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this event');
     }
 
-    const event = await eventsManager.findOneById(id);
-    if (!event) {
+    const data = await eventsManager.findOneById(id);
+    if (!data) {
       throw new NotFoundException('Event not found');
     }
 
     const now = new Date();
     const startsAt = body.startsAt ? new Date(body.startsAt) : undefined;
     const endsAt = body.endsAt ? new Date(body.endsAt) : undefined;
-    const finalStartsAt = startsAt ?? event.startsAt ?? now;
-    const finalEndsAt = endsAt ?? event.endsAt ?? now;
+    const finalStartsAt = startsAt ?? data.startsAt ?? now;
+    const finalEndsAt = endsAt ?? data.endsAt ?? now;
     if (finalStartsAt > finalEndsAt) {
       throw new Error('Start date must be before end date');
     }
@@ -117,7 +118,7 @@ export class EventsController {
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
   async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Event>> {
-    const hasAccess = await calendarsManager.userHasAccess(req.user.id, id);
+    const hasAccess = await calendarsManager.userCanView(req.user.id, id);
     if (!hasAccess) {
       throw new NotFoundException('Calendar not found');
     }

@@ -20,9 +20,11 @@ import { useCalendarStore } from '../../../calendar/state/calendarStore';
 export function CalendarSelector({
   value,
   onChangeValue,
+  isReadonly,
 }: {
   value?: string;
   onChangeValue: (value?: string, calendar?: Calendar) => void;
+  isReadonly?: boolean;
 }) {
   const { calendars } = useCalendarStore();
   const [open, setOpen] = useState(false);
@@ -37,6 +39,7 @@ export function CalendarSelector({
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
+          disabled={isReadonly}
           data-test="calendar-selector--trigger-button"
         >
           <div>

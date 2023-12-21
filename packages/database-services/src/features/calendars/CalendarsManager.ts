@@ -41,14 +41,6 @@ export class CalendarsManager {
     return result[0].count ?? 0;
   }
 
-  async userHasAccess(userId: string, calendarId: string): Promise<boolean> {
-    const row = await getDatabase().query.calendars.findFirst({
-      where: and(eq(calendars.id, calendarId), eq(calendars.userId, userId)),
-    });
-
-    return row !== null;
-  }
-
   async insertOne(data: NewCalendar): Promise<Calendar> {
     const rows = await getDatabase().insert(calendars).values(data).returning();
 
@@ -69,6 +61,23 @@ export class CalendarsManager {
     const rows = await getDatabase().delete(calendars).where(eq(calendars.id, id)).returning();
 
     return rows[0];
+  }
+
+  // Helpers
+  async userCanView(userId: string, calendarId: string): Promise<boolean> {
+    const row = await getDatabase().query.calendars.findFirst({
+      where: and(eq(calendars.id, calendarId), eq(calendars.userId, userId)),
+    });
+
+    return row !== null;
+  }
+
+  async userCanUpdate(userId: string, calendarId: string): Promise<boolean> {
+    return this.userCanView(userId, calendarId);
+  }
+
+  async userCanDelete(userId: string, calendarId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, calendarId);
   }
 }
 

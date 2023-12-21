@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -43,6 +44,11 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   @Get(':id')
   async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<List>> {
+    const canView = await listsManager.userCanView(id, req.user.id);
+    if (!canView) {
+      throw new NotFoundException('You cannot view this list');
+    }
+
     const data = await listsManager.findOneByIdAndUserId(id, req.user.id);
     if (!data) {
       throw new NotFoundException('List not found');
@@ -62,7 +68,7 @@ export class ListsController {
   ): Promise<AbstractResponseDto<List>> {
     const listsCount = await listsManager.countByUserId(req.user.id);
     if (listsCount >= LISTS_MAX_PER_USER_COUNT) {
-      throw new Error(
+      throw new ForbiddenException(
         `You have reached the maximum number of lists per user (${LISTS_MAX_PER_USER_COUNT}).`
       );
     }
@@ -82,9 +88,9 @@ export class ListsController {
     @Param('id') id: string,
     @Body() body: UpdateListDto
   ): Promise<AbstractResponseDto<List>> {
-    const data = await listsManager.findOneByIdAndUserId(id, req.user.id);
-    if (!data) {
-      throw new NotFoundException('List not found');
+    const canUpdate = await listsManager.userCanUpdate(id, req.user.id);
+    if (!canUpdate) {
+      throw new NotFoundException('You cannot update this list');
     }
 
     const updatedData = await listsManager.updateOneById(id, body);
@@ -98,9 +104,9 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
   async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<List>> {
-    const data = await listsManager.findOneByIdAndUserId(id, req.user.id);
-    if (!data) {
-      throw new NotFoundException('List not found');
+    const canDelete = await listsManager.userCanDelete(id, req.user.id);
+    if (!canDelete) {
+      throw new ForbiddenException('You cannot delete this list');
     }
 
     const updatedData = await listsManager.updateOneById(id, {

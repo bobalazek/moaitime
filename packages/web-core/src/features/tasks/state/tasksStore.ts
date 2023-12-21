@@ -2,11 +2,13 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { create } from 'zustand';
 
 import {
+  CreateList,
   CreateTask,
   List,
   SortDirectionEnum,
   Task,
   TasksListSortFieldEnum,
+  UpdateList,
   UpdateTask,
 } from '@moaitime/shared-common';
 
@@ -34,19 +36,21 @@ export type TasksStore = {
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Lists **********/
   lists: List[];
-  addList: (list: List) => Promise<List>;
-  editList: (listId: string, list: Partial<List>) => Promise<List>;
+  addList: (list: CreateList) => Promise<List>;
+  editList: (listId: string, list: UpdateList) => Promise<List>;
   deleteList: (listId: string) => Promise<List | null>;
   loadLists: () => Promise<List[]>;
   // Selected
   selectedList: List | null;
   setSelectedList: (selectedList: List | null) => Promise<void>;
   reloadSelectedList: () => Promise<void>;
-  // Form Dialog
-  listFormDialogOpen: boolean;
-  selectedListFormDialog: List | null;
-  setListFormDialogOpen: (listDialogOpen: boolean, selectedListFormDialog?: List | null) => void;
-  saveListFormDialog: (list: Partial<List>) => Promise<List>;
+  // List Dialog
+  selectedListDialogOpen: boolean;
+  selectedListDialog: List | null;
+  setSelectedListDialogOpen: (
+    selectedListDialogOpen: boolean,
+    selectedListDialog?: List | null
+  ) => void;
   // Delete Alert Dialog
   listDeleteAlertDialogOpen: boolean;
   selectedListDeleteAlertDialog: List | null;
@@ -102,7 +106,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   /********** Lists **********/
   lists: [],
-  addList: async (list: List) => {
+  addList: async (list: CreateList) => {
     const { loadLists } = get();
     const addedList = await addList(list);
 
@@ -111,10 +115,11 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return addedList;
   },
   editList: async (listId: string, list: Partial<List>) => {
-    const { loadLists } = get();
+    const { loadLists, reloadSelectedList } = get();
     const editedList = await editList(listId, list);
 
     await loadLists();
+    await reloadSelectedList();
 
     return editedList;
   },
@@ -178,32 +183,17 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       selectedListTasks,
     });
   },
-  // Form Dialog
-  listFormDialogOpen: false,
-  selectedListFormDialog: null,
-  setListFormDialogOpen: (listFormDialogOpen: boolean, selectedListFormDialog?: List | null) => {
+  // List Dialog
+  selectedListDialogOpen: false,
+  selectedListDialog: null,
+  setSelectedListDialogOpen: (
+    selectedListDialogOpen: boolean,
+    selectedListDialog?: List | null
+  ) => {
     set({
-      listFormDialogOpen,
-      selectedListFormDialog,
+      selectedListDialogOpen,
+      selectedListDialog,
     });
-  },
-  saveListFormDialog: async (list: Partial<List>) => {
-    const { selectedListFormDialog, reloadSelectedList, loadLists } = get();
-
-    const savedList = selectedListFormDialog
-      ? await editList(selectedListFormDialog.id, list)
-      : await addList(list as List);
-
-    set({
-      listFormDialogOpen: false,
-      popoverOpen: true,
-      selectedList: savedList,
-      lists: await loadLists(),
-    });
-
-    await reloadSelectedList();
-
-    return savedList;
   },
   // Delete Alert Dialog
   listDeleteAlertDialogOpen: false,

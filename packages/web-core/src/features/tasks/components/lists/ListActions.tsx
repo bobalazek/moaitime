@@ -12,7 +12,7 @@ import {
 import { useTasksStore } from '../../state/tasksStore';
 
 const ListActions = memo(({ list }: { list: List }) => {
-  const { setListFormDialogOpen, setListDeleteAlertDialogOpen } = useTasksStore();
+  const { setSelectedListDialogOpen, setListDeleteAlertDialogOpen } = useTasksStore();
 
   return (
     <div className="absolute right-1 top-1 ml-2">
@@ -36,7 +36,7 @@ const ListActions = memo(({ list }: { list: List }) => {
               event.preventDefault();
               event.stopPropagation();
 
-              setListFormDialogOpen(true, list);
+              setSelectedListDialogOpen(true, list);
             }}
           >
             <FaEdit className="mr-2 h-4 w-4" />

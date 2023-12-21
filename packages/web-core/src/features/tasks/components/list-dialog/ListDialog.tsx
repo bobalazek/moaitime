@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { TASK_LIST_COLORS } from '@moaitime/shared-common';
+import {
+  CreateList,
+  TASK_LIST_COLORS,
+  UpdateList,
+  UpdateListSchema,
+  zodErrorToString,
+} from '@moaitime/shared-common';
 import {
   Button,
   Dialog,
@@ -22,27 +28,49 @@ import { useTasksStore } from '../../state/tasksStore';
 
 const __EMPTY_VALUE_PLACEHOLDER = '__empty';
 
-export default function ListFormDialog() {
+export default function ListDialog() {
   const { toast } = useToast();
-  const { listFormDialogOpen, setListFormDialogOpen, selectedListFormDialog, saveListFormDialog } =
-    useTasksStore();
-  const [name, setName] = useState('');
-  const [color, setColor] = useState('');
+  const {
+    selectedListDialogOpen,
+    setSelectedListDialogOpen,
+    selectedListDialog,
+    addList,
+    editList,
+  } = useTasksStore();
+  const [data, setData] = useState<UpdateList>();
+
+  useEffect(() => {
+    if (!selectedListDialog) {
+      return;
+    }
+
+    const parsedSelectedList = UpdateListSchema.safeParse(selectedListDialog);
+    if (!parsedSelectedList.success) {
+      console.log(parsedSelectedList.error);
+      toast({
+        title: 'Oops!',
+        description: zodErrorToString(parsedSelectedList.error),
+      });
+
+      return;
+    }
+
+    setData(parsedSelectedList.data);
+  }, [selectedListDialog, toast]);
 
   const onSaveButtonClick = async () => {
     try {
-      const savedList = await saveListFormDialog({
-        name,
-        color,
-      });
+      const editedList = selectedListDialog
+        ? await editList(selectedListDialog.id, data as UpdateList)
+        : await addList(data as CreateList);
 
       toast({
-        title: `List "${savedList.name}" saved`,
+        title: `List "${editedList.name}" saved`,
         description: `You have successfully saved the list.`,
       });
 
-      setName('');
-      setColor('');
+      setSelectedListDialogOpen(false);
+      setData(undefined);
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -53,41 +81,39 @@ export default function ListFormDialog() {
     }
   };
 
-  useEffect(() => {
-    setName(selectedListFormDialog?.name || '');
-    setColor(selectedListFormDialog?.color || '');
-  }, [selectedListFormDialog]);
-
   return (
-    <Dialog open={listFormDialogOpen} onOpenChange={setListFormDialogOpen}>
-      <DialogContent data-test="tasks--list-form-dialog">
+    <Dialog open={selectedListDialogOpen} onOpenChange={setSelectedListDialogOpen}>
+      <DialogContent data-test="tasks--list-dialog">
         <DialogHeader>
           <DialogTitle>
-            {selectedListFormDialog ? `Edit "${selectedListFormDialog.name}" List` : 'New List'}
+            {selectedListDialog ? `Edit "${selectedListDialog.name}" List` : 'New List'}
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <Input
             type="text"
-            value={name}
+            value={data?.name ?? ''}
             placeholder="Name"
-            onChange={(event) => setName(event.target.value)}
+            onChange={(event) => setData((current) => ({ ...current, name: event.target.value }))}
             autoFocus
-            data-test="tasks--list-form-dialog--name-input"
+            data-test="tasks--list-dialog--name-input"
           />
           <Select
-            value={color}
-            onValueChange={(value) => {
-              setColor(value !== __EMPTY_VALUE_PLACEHOLDER ? value : '');
-            }}
+            value={data?.color ?? __EMPTY_VALUE_PLACEHOLDER}
+            onValueChange={(value) =>
+              setData((current) => ({
+                ...current,
+                color: value !== __EMPTY_VALUE_PLACEHOLDER ? value : '',
+              }))
+            }
           >
             <SelectTrigger
               className="w-full"
-              data-test="tasks--list-form-dialog--color-select--trigger-button"
+              data-test="tasks--list-dialog--color-select--trigger-button"
             >
               <SelectValue placeholder="Color" />
             </SelectTrigger>
-            <SelectContent data-test="tasks--list-form-dialog--color-select">
+            <SelectContent data-test="tasks--list-dialog--color-select">
               <SelectItem value={__EMPTY_VALUE_PLACEHOLDER}>Transparent</SelectItem>
               {TASK_LIST_COLORS.map((color) => (
                 <SelectItem key={color.value} value={color.value}>

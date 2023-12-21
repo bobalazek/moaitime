@@ -6,8 +6,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useTasksStore } from '../state/tasksStore';
 import TasksBody from './body/TasksBody';
+import ListDialog from './list-dialog/ListDialog';
 import ListDeleteAlertDialog from './lists/ListDeleteAlertDialog';
-import ListFormDialog from './lists/ListFormDialog';
 import TaskDialog from './task-dialog/TaskDialog';
 
 export default function Tasks() {
@@ -51,7 +51,7 @@ export default function Tasks() {
         </PopoverContent>
       </Popover>
       <TaskDialog />
-      <ListFormDialog />
+      <ListDialog />
       <ListDeleteAlertDialog />
     </ErrorBoundary>
   );

@@ -21,7 +21,7 @@ export default function ListsSelectedListDropdownMenuContent({
   isSubContent?: boolean;
   onListSelect?: (list: List) => void;
 }) {
-  const { selectedList, lists, setSelectedList, setListFormDialogOpen } = useTasksStore();
+  const { selectedList, lists, setSelectedList, setSelectedListDialogOpen } = useTasksStore();
 
   const Content = isSubContent ? DropdownMenuSubContent : DropdownMenuContent;
   const showHeader = !isSubContent;
@@ -39,7 +39,7 @@ export default function ListsSelectedListDropdownMenuContent({
                 className="cursor-pointer rounded-full"
                 data-test="tasks--selected-list--dropdown-menu--add-new-button"
                 onClick={() => {
-                  setListFormDialogOpen(true, null);
+                  setSelectedListDialogOpen(true, null);
                 }}
               >
                 <FaPlus className="h-4 w-4" />

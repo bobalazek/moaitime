@@ -14,7 +14,7 @@ export const ListSchema = z.object({
 
 export const CreateListSchema = z.object({
   name: z.string().min(1),
-  color: HexSchema.optional(),
+  color: HexSchema.nullable().optional(),
 });
 
 export const UpdateListSchema = CreateListSchema.partial();

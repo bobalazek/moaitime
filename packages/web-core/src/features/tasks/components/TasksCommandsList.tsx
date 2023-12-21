@@ -8,7 +8,7 @@ import { useTasksStore } from '../state/tasksStore';
 
 export default function TasksCommandsList() {
   const { auth } = useAuthStore();
-  const { setListFormDialogOpen, setPopoverOpen, setSelectedList, lists } = useTasksStore();
+  const { setSelectedListDialogOpen, setPopoverOpen, setSelectedList, lists } = useTasksStore();
   const { setCommandsDialogOpen } = useCommandsStore();
 
   const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
@@ -42,7 +42,7 @@ export default function TasksCommandsList() {
       <CommandItem
         className="cursor-pointer"
         onSelect={() => {
-          setListFormDialogOpen(true);
+          setSelectedListDialogOpen(true);
 
           setCommandsDialogOpen(false);
         }}

@@ -1,5 +1,6 @@
 import {
   API_URL,
+  CreateList,
   CreateTask,
   List,
   ResponseInterface,
@@ -36,7 +37,7 @@ export const getList = async (listId: string): Promise<List> => {
   return response.data as List;
 };
 
-export const addList = async (list: List): Promise<List> => {
+export const addList = async (list: CreateList): Promise<List> => {
   const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists`, {
     method: 'POST',
     body: JSON.stringify(list),

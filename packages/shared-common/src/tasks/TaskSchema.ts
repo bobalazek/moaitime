@@ -20,12 +20,9 @@ export const TaskSchema = z.object({
 });
 
 export const CreateTaskSchema = z.object({
-  name: z
-    .string()
-    .min(1, {
-      message: 'Task name must be provided',
-    })
-    .optional(),
+  name: z.string().min(1, {
+    message: 'Task name must be provided',
+  }),
   description: z.string().nullable().optional(),
   dueDate: z
     .string()
@@ -67,10 +64,10 @@ export const CreateTaskSchema = z.object({
     .nullable()
     .optional(),
   dueDateTimeZone: TimezoneSchema.nullable().optional(),
-  listId: z.string().optional(),
+  listId: z.string(),
 });
 
-export const UpdateTaskSchema = CreateTaskSchema;
+export const UpdateTaskSchema = CreateTaskSchema.partial();
 
 // Types
 export type Task = z.infer<typeof TaskSchema>;

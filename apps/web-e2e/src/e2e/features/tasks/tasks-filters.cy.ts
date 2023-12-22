@@ -308,7 +308,7 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Delete')
       .click({ force: true });
 
-    cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').eq(1).click();
+    cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').first().click();
 
     cy.getBySel('tasks--task--actions-dropdown-menu')
       .find('div[role="menuitem"]')
@@ -319,7 +319,7 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.getBySel('tasks--tasks-list').contains('ccc').should('not.exist');
 
-    cy.getBySel('tasks--tasks-list').contains('ddd').should('not.exist');
+    cy.getBySel('tasks--tasks-list').contains('aaa').should('not.exist');
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 

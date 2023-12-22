@@ -165,7 +165,7 @@ export const getInterestsSeeds = async (): Promise<(NewInterest & { parentSlug?:
     {
       slug: 'outdoor-activities',
       name: 'Outdoor Activities',
-      parentSlug: 'travel-and-outdoors',
+      parentSlug: 'sports',
     },
     {
       slug: 'mind-sports',

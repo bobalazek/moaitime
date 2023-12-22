@@ -42,6 +42,17 @@ export const loadCalendars = async () => {
   return response.data as Calendar[];
 };
 
+export const loadDeletedCalendars = async () => {
+  const response = await fetchJson<ResponseInterface<Calendar[]>>(
+    `${API_URL}/api/v1/calendars/deleted`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as Calendar[];
+};
+
 export const addCalendar = async (calendar: CreateCalendar): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(`${API_URL}/api/v1/calendars`, {
     method: 'POST',

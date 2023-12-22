@@ -1,4 +1,4 @@
-import { FaCog, FaPlus } from 'react-icons/fa';
+import { FaCog } from 'react-icons/fa';
 
 import {
   Button,
@@ -11,15 +11,11 @@ import {
 } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
-import CalendarSettingsSheetCalendar from './CalendarSettingsSheetCalendar';
+import CalendarItem from '../common/CalendarItem';
+import CalendarSettingsSheetMyCalendarsActions from './CalendarSettingsSheetMyCalendarsActions';
 
 export default function CalendarSettingsSheet() {
-  const { settingsSheetOpen, setSettingsSheetOpen, calendars, setSelectedCalendarDialogOpen } =
-    useCalendarStore();
-
-  const onNewCalendarButtonClick = () => {
-    setSelectedCalendarDialogOpen(true, null);
-  };
+  const { settingsSheetOpen, setSettingsSheetOpen, calendars } = useCalendarStore();
 
   return (
     <Sheet open={settingsSheetOpen} onOpenChange={setSettingsSheetOpen}>
@@ -41,17 +37,10 @@ export default function CalendarSettingsSheet() {
         <div className="mt-4">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-bold">My Calendars</h3>
-            <button
-              type="button"
-              className="cursor-pointer rounded-full"
-              data-test="calendar--settings-sheet--my-calendars--add-new-button"
-              onClick={onNewCalendarButtonClick}
-            >
-              <FaPlus className="h-4 w-4" />
-            </button>
+            <CalendarSettingsSheetMyCalendarsActions />
           </div>
           {calendars.map((calendar) => (
-            <CalendarSettingsSheetCalendar key={calendar.id} calendar={calendar} />
+            <CalendarItem key={calendar.id} calendar={calendar} />
           ))}
         </div>
       </SheetContent>

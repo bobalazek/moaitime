@@ -1,4 +1,4 @@
-import { and, asc, count, DBQueryConfig, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 
 import { Calendar, calendars, getDatabase, NewCalendar } from '@moaitime/database-core';
 
@@ -11,6 +11,13 @@ export class CalendarsManager {
     return getDatabase().query.calendars.findMany({
       where: and(eq(calendars.userId, userId), isNull(calendars.deletedAt)),
       orderBy: asc(calendars.createdAt),
+    });
+  }
+
+  async findManyDeletedByUserId(userId: string): Promise<Calendar[]> {
+    return getDatabase().query.calendars.findMany({
+      where: and(eq(calendars.userId, userId), isNotNull(calendars.deletedAt)),
+      orderBy: desc(calendars.deletedAt),
     });
   }
 

@@ -18,6 +18,7 @@ import { CALENDARS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 import { CreateCalendar, User } from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
+import { DeleteDto } from '../../core/dtos/delete.dto';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateCalendarDto } from '../dtos/create-calendar.dto';
 import { UpdateCalendarDto } from '../dtos/update-calendar.dto';
@@ -28,6 +29,17 @@ export class CalendarsController {
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Calendar[]>> {
     const data = await calendarsManager.findManyByUserId(req.user.id);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('deleted')
+  async listDeleted(@Req() req: Request): Promise<AbstractResponseDto<Calendar[]>> {
+    const data = await calendarsManager.findManyDeletedByUserId(req.user.id);
 
     return {
       success: true,
@@ -98,16 +110,19 @@ export class CalendarsController {
   @Delete(':id')
   async delete(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('id') id: string,
+    @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Calendar>> {
     const canDelete = await calendarsManager.userCanDelete(req.user.id, id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot delete this calendar');
     }
 
-    const updatedData = await calendarsManager.updateOneById(id, {
-      deletedAt: new Date(),
-    });
+    const updatedData = body.isHardDelete
+      ? await calendarsManager.deleteOneById(id)
+      : await calendarsManager.updateOneById(id, {
+          deletedAt: new Date(),
+        });
 
     return {
       success: true,

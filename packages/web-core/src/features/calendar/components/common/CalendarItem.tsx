@@ -3,14 +3,16 @@ import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
-import CalendarSettingsSheetCalendarActions from './CalendarSettingsSheetCalendarActions';
+import CalendarItemActions from './CalendarIemActions';
 
 export interface CalendarSettingsSheetCalendarProps {
   calendar: Calendar;
+  hideCheckbox?: boolean;
 }
 
-export default function CalendarSettingsSheetCalendar({
+export default function CalendarItem({
   calendar,
+  hideCheckbox,
 }: CalendarSettingsSheetCalendarProps) {
   const { auth } = useAuthStore();
   const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
@@ -32,22 +34,24 @@ export default function CalendarSettingsSheetCalendar({
   return (
     <div
       className="min-h-[2rem] rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
-      data-test="calendar--settings-sheet--calendar"
+      data-test="calendar--calendar-item"
     >
       <div className="relative h-full w-full">
-        <Checkbox
-          className="absolute left-0 top-1"
-          checked={isChecked}
-          onCheckedChange={onCheckedChange}
-          style={{
-            backgroundColor: calendar.color ?? '',
-          }}
-          data-test="calendar--settings-sheet--calendar--visible-checkbox"
-        />
+        {!hideCheckbox && (
+          <Checkbox
+            className="absolute left-0 top-1"
+            checked={isChecked}
+            onCheckedChange={onCheckedChange}
+            style={{
+              backgroundColor: calendar.color ?? '',
+            }}
+            data-test="calendar--calendar-item--visible-checkbox"
+          />
+        )}
         <div className="break-words px-6" data-test="calendar--settings-sheet--calendar--name">
           {calendar.name}
         </div>
-        <CalendarSettingsSheetCalendarActions calendar={calendar} />
+        <CalendarItemActions calendar={calendar} />
       </div>
     </div>
   );

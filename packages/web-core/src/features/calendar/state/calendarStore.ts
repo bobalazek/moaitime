@@ -29,6 +29,7 @@ import {
   loadCalendarEntries,
   loadCalendarEntriesYearly,
   loadCalendars,
+  loadDeletedCalendars,
   removeVisibleCalendar,
   undeleteCalendar,
 } from '../utils/CalendarHelpers';
@@ -55,7 +56,7 @@ export type CalendarStore = {
   loadCalendars: () => Promise<Calendar[]>;
   addCalendar: (calendar: CreateCalendar) => Promise<Calendar>;
   editCalendar: (calendarId: string, calendar: UpdateCalendar) => Promise<Calendar>;
-  deleteCalendar: (calendarId: string) => Promise<Calendar>;
+  deleteCalendar: (calendarId: string, isHardDelete?: boolean) => Promise<Calendar>;
   undeleteCalendar: (calendarId: string) => Promise<Calendar>;
   addVisibleCalendar: (calendarId: string) => Promise<void>;
   removeVisibleCalendar: (calendarId: string) => Promise<void>;
@@ -66,6 +67,11 @@ export type CalendarStore = {
     selectedCalendarDialogOpen: boolean,
     selectedCalendar?: Calendar | null
   ) => void;
+  // Deleted
+  deletedCalendarsDialogOpen: boolean;
+  setDeletedCalendarsDialogOpen: (deletedCalendarsDialogOpen: boolean) => void;
+  deletedCalendars: Calendar[];
+  loadDeletedCalendars: () => Promise<Calendar[]>;
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   loadCalendarEntries: () => Promise<CalendarEntry[]>;
@@ -206,10 +212,10 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     return editedTask;
   },
-  deleteCalendar: async (calendarId: string) => {
+  deleteCalendar: async (calendarId: string, isHardDelete?: boolean) => {
     const { loadCalendars, loadCalendarEntries } = get();
 
-    const deletedTask = await deleteCalendar(calendarId);
+    const deletedTask = await deleteCalendar(calendarId, isHardDelete);
 
     await loadCalendars();
     await loadCalendarEntries();
@@ -220,12 +226,13 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return deletedTask;
   },
   undeleteCalendar: async (calendarId: string) => {
-    const { loadCalendars, loadCalendarEntries } = get();
+    const { loadCalendars, loadCalendarEntries, loadDeletedCalendars } = get();
 
     const undeletedTask = await undeleteCalendar(calendarId);
 
     await loadCalendars();
     await loadCalendarEntries();
+    await loadDeletedCalendars();
 
     // Same as above
     await useAuthStore.getState().loadAccount();
@@ -252,7 +259,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     await loadCalendarEntries();
   },
-  // Seleced
+  // Selected
   selectedCalendarDialogOpen: false,
   selectedCalendar: null,
   setSelectedCalendarDialogOpen: (
@@ -263,6 +270,27 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       selectedCalendarDialogOpen,
       selectedCalendar,
     });
+  },
+  // Deleted
+  deletedCalendarsDialogOpen: false,
+  setDeletedCalendarsDialogOpen: (deletedCalendarsDialogOpen: boolean) => {
+    const { loadDeletedCalendars } = get();
+
+    if (deletedCalendarsDialogOpen) {
+      loadDeletedCalendars();
+    }
+
+    set({
+      deletedCalendarsDialogOpen,
+    });
+  },
+  deletedCalendars: [],
+  loadDeletedCalendars: async () => {
+    const deletedCalendars = await loadDeletedCalendars();
+
+    set({ deletedCalendars });
+
+    return deletedCalendars;
   },
   /********** Calendar Entries **********/
   calendarEntries: [],

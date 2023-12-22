@@ -4,6 +4,7 @@ import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useCalendarStore } from '../state/calendarStore';
 import CalendarEditDialog from './calendar-edit-dialog/CalendarEditDialog';
 import CalendarEntryEditDialog from './calendar-entry-edit-dialog/CalendarEntryEditDialog';
+import DeletedCalendarsDialog from './deleted-calendars-dialog/DeletedCalendarsDialog';
 import CalendarDialog from './dialog/CalendarDialog';
 
 export default function Calendar() {
@@ -23,6 +24,7 @@ export default function Calendar() {
       <CalendarDialog />
       <CalendarEditDialog />
       <CalendarEntryEditDialog />
+      <DeletedCalendarsDialog />
     </ErrorBoundary>
   );
 }

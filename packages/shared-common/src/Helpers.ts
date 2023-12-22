@@ -10,6 +10,11 @@ export const getGmtOffset = (timezone: string) => {
   return `GMT${offset}`;
 };
 
+export const isValidDate = (date: string) => {
+  const dateObject = new Date(date);
+  return !isNaN(dateObject.getTime());
+};
+
 export const isValidTime = (time: string) => {
   const [hours, minutes] = time.split(':');
   if (!hours || !minutes) {

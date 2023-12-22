@@ -52,3 +52,8 @@ export type CalendarEntryWithPosition = CalendarEntryWithVerticalPosition & {
   top: string;
   height: string;
 };
+
+export type CalendarEntryYearlyEntry = {
+  date: string;
+  count: number;
+};

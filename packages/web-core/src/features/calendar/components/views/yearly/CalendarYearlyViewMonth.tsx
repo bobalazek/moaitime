@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { format, isSameDay } from 'date-fns';
+import { useMemo } from 'react';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
 
@@ -8,12 +9,30 @@ import { useCalendarStore } from '../../../state/calendarStore';
 import { getWeeksForMonth } from '../../../utils/CalendarHelpers';
 
 export default function CalendarYearlyViewMonth({ month, now }: { month: Date; now: Date }) {
-  const { setSelectedDate, setSelectedView } = useCalendarStore();
+  const { calendarEntriesYearly, setSelectedDate, setSelectedView } = useCalendarStore();
   const { auth } = useAuthStore();
+
   const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const monthName = format(month, 'MMMM');
   const weeks = getWeeksForMonth(month, generalStartDayOfWeek);
   const daysOfWeek = weeks[0].map((day) => format(day, 'eee'));
+
+  const monthlyEntriesMap = useMemo(() => {
+    const entriesMap = new Map<string, number>();
+
+    calendarEntriesYearly.forEach((entry) => {
+      const entryDate = new Date(entry.date);
+      const entryDateKey = format(entryDate, 'yyyy-MM-dd');
+
+      if (entryDate.getMonth() === month.getMonth()) {
+        entriesMap.set(entryDateKey, entry.count);
+      }
+    });
+
+    return entriesMap;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calendarEntriesYearly]);
 
   const onDayClick = (day: Date) => {
     setSelectedDate(day);
@@ -49,19 +68,25 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
                 const dayKey = format(day, 'yyyy-MM-dd');
                 const isSameMonth = day.getMonth() === month.getMonth();
                 const isActive = isSameDay(day, now);
+                const count = monthlyEntriesMap.get(dayKey) ?? 0;
+                const hasEntries = count > 0;
+                const title = hasEntries ? `${dayKey} - ${count} entries` : dayKey;
 
                 return (
-                  <div key={dayKey} className="w-0 flex-grow p-2">
+                  <div key={dayKey} className="relative w-0 flex-grow p-2" title={title}>
                     <button
                       className={clsx(
-                        'hover:text-primary rounded-full px-2 py-1 text-sm transition-all',
+                        'rounded-full px-2 py-1 text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
                         !isSameMonth && 'text-gray-500',
-                        isActive && 'bg-primary text-accent'
+                        isActive && '!bg-primary !text-accent'
                       )}
                       onClick={() => onDayClick(day)}
                     >
                       {day.getDate()}
                     </button>
+                    {hasEntries && (
+                      <div className="absolute left-[50%] h-[6px] w-[6px] -translate-x-[50%] rounded-full bg-red-400"></div>
+                    )}
                   </div>
                 );
               })}

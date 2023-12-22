@@ -33,7 +33,7 @@ export default function CalendarYearlyView() {
   };
 
   return (
-    <div className="flex w-full flex-wrap border" data-test="calendar--yearly-view">
+    <div className="flex w-full select-none flex-wrap border" data-test="calendar--yearly-view">
       <AnimatePresence>
         {months.map((month) => {
           const monthKey = `${month.getFullYear()}-${month.getMonth()}`;

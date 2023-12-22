@@ -21,6 +21,7 @@ import {
   Calendar,
   CalendarEntry,
   CalendarEntryWithVerticalPosition,
+  CalendarEntryYearlyEntry,
   CreateCalendar,
   CreateEvent,
   DayOfWeek,
@@ -151,6 +152,17 @@ export const loadCalendarEntries = async (from?: Date | string, to?: Date | stri
   const response = await fetchJson<ResponseInterface<CalendarEntry[]>>(url.toString(), {
     method: 'GET',
   });
+
+  return response;
+};
+
+export const loadCalendarEntriesYearly = async (year: number) => {
+  const response = await fetchJson<ResponseInterface<CalendarEntryYearlyEntry[]>>(
+    `${API_URL}/api/v1/calendar-entries/yearly?year=${year}`,
+    {
+      method: 'GET',
+    }
+  );
 
   return response;
 };

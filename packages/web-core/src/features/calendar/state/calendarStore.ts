@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import {
   Calendar,
   CalendarEntry,
+  CalendarEntryYearlyEntry,
   CalendarViewEnum,
   CreateCalendar,
   CreateEvent,
@@ -26,6 +27,7 @@ import {
   getWeekRange,
   getYearRange,
   loadCalendarEntries,
+  loadCalendarEntriesYearly,
   loadCalendars,
   removeVisibleCalendar,
   undeleteCalendar,
@@ -66,7 +68,9 @@ export type CalendarStore = {
   ) => void;
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
-  loadCalendarEnries: () => Promise<CalendarEntry[]>;
+  loadCalendarEntries: () => Promise<CalendarEntry[]>;
+  calendarEntriesYearly: CalendarEntryYearlyEntry[];
+  loadCalendarEntriesYearly: () => Promise<CalendarEntryYearlyEntry[]>;
   // Selected
   selectedCalendarEntryDialogOpen: boolean;
   selectedCalendarEntry: CalendarEntry | null;
@@ -123,7 +127,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   // Selected Days
   selectedDays: [],
   reloadSelectedDays: async () => {
-    const { selectedDate, selectedView, loadCalendarEnries } = get();
+    const { selectedDate, selectedView, loadCalendarEntries } = get();
     const { auth } = useAuthStore.getState();
 
     const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
@@ -160,7 +164,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       isTodayInSelectedDaysRange,
     });
 
-    await loadCalendarEnries();
+    await loadCalendarEntries();
   },
   isTodayInSelectedDaysRange: false,
   // Settings Sheet
@@ -180,12 +184,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return calendars;
   },
   addCalendar: async (calendar: CreateCalendar) => {
-    const { loadCalendars, loadCalendarEnries } = get();
+    const { loadCalendars, loadCalendarEntries } = get();
 
     const addedTask = await addCalendar(calendar);
 
     await loadCalendars();
-    await loadCalendarEnries();
+    await loadCalendarEntries();
 
     // We update the settings, so we need to refresh the account
     await useAuthStore.getState().loadAccount();
@@ -193,22 +197,22 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return addedTask;
   },
   editCalendar: async (calendarId: string, calendar: UpdateCalendar) => {
-    const { loadCalendars, loadCalendarEnries } = get();
+    const { loadCalendars, loadCalendarEntries } = get();
 
     const editedTask = await editCalendar(calendarId, calendar);
 
     await loadCalendars();
-    await loadCalendarEnries();
+    await loadCalendarEntries();
 
     return editedTask;
   },
   deleteCalendar: async (calendarId: string) => {
-    const { loadCalendars, loadCalendarEnries } = get();
+    const { loadCalendars, loadCalendarEntries } = get();
 
     const deletedTask = await deleteCalendar(calendarId);
 
     await loadCalendars();
-    await loadCalendarEnries();
+    await loadCalendarEntries();
 
     // Same as above
     await useAuthStore.getState().loadAccount();
@@ -216,12 +220,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return deletedTask;
   },
   undeleteCalendar: async (calendarId: string) => {
-    const { loadCalendars, loadCalendarEnries } = get();
+    const { loadCalendars, loadCalendarEntries } = get();
 
     const undeletedTask = await undeleteCalendar(calendarId);
 
     await loadCalendars();
-    await loadCalendarEnries();
+    await loadCalendarEntries();
 
     // Same as above
     await useAuthStore.getState().loadAccount();
@@ -229,24 +233,24 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return undeletedTask;
   },
   addVisibleCalendar: async (calendarId: string) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendarEntries } = get();
 
     await addVisibleCalendar(calendarId);
 
     // We update the settings, so we need to refresh the account
     await useAuthStore.getState().loadAccount();
 
-    await loadCalendarEnries();
+    await loadCalendarEntries();
   },
   removeVisibleCalendar: async (calendarId: string) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendarEntries } = get();
 
     await removeVisibleCalendar(calendarId);
 
     // Same as above
     await useAuthStore.getState().loadAccount();
 
-    await loadCalendarEnries();
+    await loadCalendarEntries();
   },
   // Seleced
   selectedCalendarDialogOpen: false,
@@ -262,8 +266,14 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   /********** Calendar Entries **********/
   calendarEntries: [],
-  loadCalendarEnries: async () => {
-    const { selectedDays } = get();
+  loadCalendarEntries: async () => {
+    const { selectedDays, selectedView, loadCalendarEntriesYearly } = get();
+
+    if (selectedView === CalendarViewEnum.YEAR) {
+      await loadCalendarEntriesYearly();
+
+      return [];
+    }
 
     const from = selectedDays[0] ? format(selectedDays[0], 'yyyy-MM-dd') : undefined;
     const to = selectedDays[selectedDays.length - 1]
@@ -276,6 +286,19 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     set({ calendarEntries });
 
     return calendarEntries;
+  },
+  calendarEntriesYearly: [],
+  loadCalendarEntriesYearly: async () => {
+    const { selectedDate } = get();
+
+    const year = selectedDate.getFullYear();
+
+    const response = await loadCalendarEntriesYearly(year);
+    const calendarEntriesYearly = response.data ?? [];
+
+    set({ calendarEntriesYearly });
+
+    return calendarEntriesYearly;
   },
   // Selected
   selectedCalendarEntryDialogOpen: false,
@@ -298,29 +321,29 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   /********** Events **********/
   addEvent: async (event: CreateEvent) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendarEntries } = get();
 
     const addedTask = await addEvent(event);
 
-    await loadCalendarEnries();
+    await loadCalendarEntries();
 
     return addedTask;
   },
   editEvent: async (eventId: string, event: UpdateEvent) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendarEntries } = get();
 
     const editedTask = await editEvent(eventId, event);
 
-    await loadCalendarEnries();
+    await loadCalendarEntries();
 
     return editedTask;
   },
   deleteEvent: async (eventId: string) => {
-    const { loadCalendarEnries } = get();
+    const { loadCalendarEntries } = get();
 
     const deletedTask = await deleteEvent(eventId);
 
-    await loadCalendarEnries();
+    await loadCalendarEntries();
 
     return deletedTask;
   },

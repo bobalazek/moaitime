@@ -1,6 +1,8 @@
+import { format } from 'date-fns';
 import {
   and,
   asc,
+  between,
   count,
   DBQueryConfig,
   eq,
@@ -11,6 +13,7 @@ import {
   lt,
   lte,
   or,
+  sql,
   SQL,
 } from 'drizzle-orm';
 
@@ -102,6 +105,42 @@ export class EventsManager {
   }
 
   // Helpers
+  async getCountsByYearByUserId(userId: string, year: number) {
+    const startOfYear = new Date(year, 0, 1);
+    const endOfYear = new Date(year + 1, 0, 1);
+
+    const calendarIds = await this._usersManager.getVisibleCalendarIdsByUserId(userId);
+    if (calendarIds.length === 0) {
+      return [];
+    }
+
+    const where = and(
+      inArray(calendars.id, calendarIds),
+      isNull(calendars.deletedAt),
+      isNull(events.deletedAt),
+      between(events.startsAt, startOfYear, endOfYear)
+    );
+
+    const startsAtDate = sql<Date>`DATE(${events.startsAt})`;
+    const result = await getDatabase()
+      .select({
+        count: count(events.id).mapWith(Number),
+        date: startsAtDate,
+      })
+      .from(events)
+      .leftJoin(calendars, eq(events.calendarId, calendars.id))
+      .where(where)
+      .groupBy(startsAtDate)
+      .execute();
+
+    return result.map((row) => {
+      return {
+        date: format(row.date, 'yyyy-MM-dd'),
+        count: row.count,
+      };
+    });
+  }
+
   async countByCalendarId(calendarId: string): Promise<number> {
     const result = await getDatabase()
       .select({

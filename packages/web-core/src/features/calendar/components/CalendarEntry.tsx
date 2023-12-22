@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
-import { formatInTimeZone } from 'date-fns-tz';
+import { formatInTimeZone, utcToZonedTime } from 'date-fns-tz';
 import { MouseEvent } from 'react';
 
 import {
@@ -29,17 +29,21 @@ const shouldShowContinuedText = (
   return timezonedFormat !== dayDate;
 };
 
+export type CalendarEntryProps = {
+  calendarEntry: CalendarEntryType;
+  dayDate?: string;
+  style?: Record<string, unknown>;
+  className?: string;
+  showTimes?: boolean;
+};
+
 export default function CalendarEntry({
   calendarEntry,
   dayDate,
   style,
   className,
-}: {
-  calendarEntry: CalendarEntryType;
-  dayDate?: string;
-  style?: Record<string, unknown>;
-  className?: string;
-}) {
+  showTimes,
+}: CalendarEntryProps) {
   const { auth } = useAuthStore();
   const {
     calendars,
@@ -49,6 +53,7 @@ export default function CalendarEntry({
   } = useCalendarStore();
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
   const hasAbsoluteClassName = className?.includes('absolute');
   const calendar = calendars.find((c) => c.id === calendarEntry.calendarId);
@@ -65,6 +70,23 @@ export default function CalendarEntry({
     backgroundColor,
     color,
   };
+
+  const startTime = utcToZonedTime(calendarEntry.startsAtUtc, generalTimezone).toLocaleString(
+    'default',
+    {
+      minute: '2-digit',
+      hour: '2-digit',
+      hour12: !clockUse24HourClock,
+    }
+  );
+  const endTime = utcToZonedTime(calendarEntry.endsAtUtc, generalTimezone).toLocaleString(
+    'default',
+    {
+      minute: '2-digit',
+      hour: '2-digit',
+      hour12: !clockUse24HourClock,
+    }
+  );
 
   const containerStyle = style
     ? {
@@ -123,6 +145,11 @@ export default function CalendarEntry({
             </span>
           )}
         </h4>
+        {showTimes && (
+          <div className="break-words text-[0.65rem] font-semibold">
+            {startTime} - {endTime}
+          </div>
+        )}
       </div>
     </div>
   );

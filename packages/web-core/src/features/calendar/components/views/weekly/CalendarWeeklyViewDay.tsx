@@ -11,15 +11,17 @@ import { useCalendarStore } from '../../../state/calendarStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../CalendarEntry';
 
+export type CalendarWeeklyViewDayProps = {
+  date: string;
+  isActive: boolean;
+  calendarEntries: CalendarEntryWithVerticalPosition[];
+};
+
 export default function CalendarWeeklyViewDay({
   date,
   isActive,
   calendarEntries,
-}: {
-  date: string;
-  isActive: boolean;
-  calendarEntries: CalendarEntryWithVerticalPosition[];
-}) {
+}: CalendarWeeklyViewDayProps) {
   const { auth } = useAuthStore();
   const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
@@ -49,7 +51,7 @@ export default function CalendarWeeklyViewDay({
     const relativeTop = clientY - rect.top;
     const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
     const minutes =
-      Math.round((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
+      Math.floor((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
 
     let startDate = new Date(date);
     startDate.setHours(hour, minutes, 0, 0);
@@ -97,7 +99,7 @@ export default function CalendarWeeklyViewDay({
 
   return (
     <div
-      className="relative ml-[-1px] mt-[-1px] w-0 flex-1 flex-grow border border-b-0 border-r-0"
+      className="relative ml-[-1px] mt-[-1px] w-0 flex-1 flex-grow cursor-pointer border border-b-0 border-r-0"
       style={{
         height: totalHeight,
       }}
@@ -113,6 +115,7 @@ export default function CalendarWeeklyViewDay({
             calendarEntry={calendarEntry}
             className="absolute"
             style={style}
+            showTimes
           />
         );
       })}

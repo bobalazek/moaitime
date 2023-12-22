@@ -70,13 +70,14 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
                 const isActive = isSameDay(day, now);
                 const count = monthlyEntriesMap.get(dayKey) ?? 0;
                 const hasEntries = count > 0;
-                const title = hasEntries ? `${dayKey} - ${count} entries` : dayKey;
+                const dateLocal = format(day, 'PPP');
+                const title = hasEntries ? `${dateLocal} - ${count} entries` : dateLocal;
 
                 return (
-                  <div key={dayKey} className="relative w-0 flex-grow p-2" title={title}>
+                  <div key={dayKey} className="relative w-0 flex-grow py-2" title={title}>
                     <button
                       className={clsx(
-                        'rounded-full px-2 py-1 text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
+                        'h-8 w-8 rounded-full text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
                         !isSameMonth && 'text-gray-500',
                         isActive && '!bg-primary !text-accent'
                       )}

@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { eachDayOfInterval, endOfWeek, format, isSameDay, startOfWeek } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
@@ -22,8 +22,14 @@ type CalendarEntriesPerDay = {
 };
 
 export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) {
-  const { calendarEntries, selectedDate, selectedView, setSelectedDate, setSelectedView } =
-    useCalendarStore();
+  const {
+    calendarEntries,
+    selectedDate,
+    selectedView,
+    setSelectedDate,
+    setSelectedView,
+    setSelectedCalendarEntryDialogOpen,
+  } = useCalendarStore();
   const { auth } = useAuthStore();
   const prevSelectedDateRef = useRef(selectedDate);
 
@@ -93,7 +99,10 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [singleDay]);
 
-  const onDayClick = (day: Date) => {
+  const onDayClick = (day: Date, event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     setSelectedDate(day);
     setSelectedView(CalendarViewEnum.DAY);
   };
@@ -136,6 +145,21 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             const isActive = date === format(now, 'yyyy-MM-dd');
             const fullDayCalendarEntries = calendarEntriesPerDay.get(date)?.fullDayOnly ?? [];
 
+            const onDayContainerClick = (event: MouseEvent) => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
+
+              setSelectedCalendarEntryDialogOpen(true, {
+                startsAt: dayMidnight,
+                endsAt: dayMidnight,
+                isAllDay: true,
+                // TODO: figure out a more optimal way for this
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              } as any);
+            };
+
             return (
               <motion.div
                 key={date}
@@ -144,17 +168,20 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                className="flex-1 p-2"
+                className="flex-1 cursor-pointer p-2"
+                data-date={date}
+                onClick={onDayContainerClick}
+                data-test="calendar--weekly-view--day"
               >
                 <div className="text-center text-xs font-bold uppercase">
                   <div data-test="calendar--monthly-view--day-of-week">{dayOfWeek}</div>
-                  <div className="mt-1" data-test="calendar--monthly-view--day-of-month">
+                  <div className="mt-1">
                     <button
                       className={clsx(
-                        'hover:text-secondary rounded-full px-2 py-1 text-2xl transition-all hover:bg-gray-600',
+                        'hover:text-secondary h-10 w-10 rounded-full text-2xl transition-all hover:bg-gray-600',
                         isActive && 'bg-primary text-accent'
                       )}
-                      onClick={() => onDayClick(day)}
+                      onClick={(event) => onDayClick(day, event)}
                     >
                       {dayOfMonth}
                     </button>

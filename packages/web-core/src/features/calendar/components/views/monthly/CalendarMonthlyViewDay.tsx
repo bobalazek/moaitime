@@ -11,17 +11,19 @@ import {
 import { useCalendarStore } from '../../../state/calendarStore';
 import CalendarEntry from '../../CalendarEntry';
 
+export type CalendarMonthlyViewDayProps = {
+  day: Date;
+  now: Date;
+  calendarEntries: CalendarEntryType[];
+  isFirstWeeksDay: boolean;
+};
+
 export default function CalendarMonthlyViewDay({
   day,
   now,
   calendarEntries,
   isFirstWeeksDay,
-}: {
-  day: Date;
-  now: Date;
-  calendarEntries: CalendarEntryType[];
-  isFirstWeeksDay: boolean;
-}) {
+}: CalendarMonthlyViewDayProps) {
   const { selectedDate, setSelectedDate, setSelectedView, setSelectedCalendarEntryDialogOpen } =
     useCalendarStore();
   const isActive = isSameDay(day, now);
@@ -62,17 +64,17 @@ export default function CalendarMonthlyViewDay({
 
   return (
     <div
-      className="flex-grow border p-2 lg:w-0"
+      className="flex-grow cursor-pointer border p-2 lg:w-0"
       onClick={onDayContainerClick}
       data-test="calendar--monthly-view--day"
     >
       <div className="text-center">
         <button
           className={clsx(
-            'rounded-full px-2 py-1 text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
-            isActive && 'bg-primary text-accent',
+            'h-7 w-7 rounded-full text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
+            isActive && '!bg-primary !text-accent',
             !isActiveMonth && 'text-gray-300',
-            isFirst && 'rounded-lg'
+            isFirst && 'h-auto w-auto rounded-lg px-2 py-1'
           )}
           onClick={onDayClick}
         >

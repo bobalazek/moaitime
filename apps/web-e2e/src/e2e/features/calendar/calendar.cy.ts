@@ -51,6 +51,34 @@ describe('calendar.cy.ts', () => {
     cy.getBySel('calendar--monthly-view--day-of-week').first().contains('Fri.');
   });
 
+  it('should change the timezone', () => {
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.wait(200);
+
+    cy.getBySel(`settings--dialog--sidebar`).find('button').contains('General').click();
+
+    cy.getBySel('timezone-selector--trigger-button').click();
+
+    cy.getBySel('timezone-selector--content').find('div[data-value="europe/london"]').click();
+
+    cy.getBySel('timezone-selector--trigger-button').contains('Europe/London').should('exist');
+  });
+
+  it('should search in the timezone selector', () => {
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.wait(200);
+
+    cy.getBySel(`settings--dialog--sidebar`).find('button').contains('General').click();
+
+    cy.getBySel('timezone-selector--trigger-button').click();
+
+    cy.getBySel('timezone-selector').find('input').click().type('Africa/Abidjan{enter}');
+
+    cy.getBySel('timezone-selector--trigger-button').contains('Africa/Abidjan').should('exist');
+  });
+
   it('should switch to a Year in calendar dialog dropdown menu', () => {
     cy.getBySel('calendar--dialog--trigger-button').click();
 
@@ -126,6 +154,23 @@ describe('calendar.cy.ts', () => {
       .should('exist');
   });
 
+  it('should switch to an Agenda in calendar dialog dropdown menu', () => {
+    cy.getBySel('calendar--dialog--trigger-button').click();
+
+    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu')
+      .find('div')
+      .contains('Agenda')
+      .click();
+
+    cy.getBySel('calendar--agenda-view').should('exist');
+
+    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button')
+      .contains('Agenda')
+      .should('exist');
+  });
+
   it('should close the calendar', () => {
     cy.getBySel('calendar--dialog--trigger-button').click();
 
@@ -134,15 +179,67 @@ describe('calendar.cy.ts', () => {
     cy.getBySel('calendar--dialog').should('not.exist');
   });
 
-  it.skip('should switch to next month in calendar Month view', () => {
-    cy.get('[data-test="calendar--dialog--trigger-button"]').click();
+  it('should calendar settings dialog in calendar', () => {
+    cy.getBySel('calendar--dialog--trigger-button').click();
 
-    cy.get(
-      '[data-test="calendar--dialog--header--view-selector--dropdown-menu--trigger-button"]'
-    ).click();
+    cy.getBySel('calendar--dialog--header--settings-button').click();
 
-    cy.get('[data-test="calendar--dialog--header--view-selector--dropdown-menu"] div')
-      .contains('Month')
+    cy.getBySel('calendar--settings-sheet').should('exist');
+  });
+
+  it('should add a new calendar in calendar settings dialog', () => {
+    cy.getBySel('calendar--dialog--trigger-button').click();
+
+    cy.getBySel('calendar--dialog--header--settings-button').click();
+
+    cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
+
+    cy.getBySel('calendar--settings--my-calendars--actions').contains('Add New Calendar').click();
+
+    cy.getBySel('calendar--edit-dialog')
+      .find('input[id="calendar-edit-name"]')
+      .click()
+      .type('New Calendar');
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
+
+    cy.getBySel('calendar--settings-sheet--calendar--name')
+      .contains('New Calendar')
+      .should('exist');
+  });
+
+  it('should add description to a new calendar in calendar settings dialog', () => {
+    cy.getBySel('calendar--dialog--trigger-button').click();
+
+    cy.getBySel('calendar--dialog--header--settings-button').click();
+
+    cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
+
+    cy.getBySel('calendar--settings--my-calendars--actions').contains('Add New Calendar').click();
+
+    cy.wait(200);
+
+    cy.getBySel('calendar--edit-dialog')
+      .find('input[id="calendar-edit-name"]')
+      .click()
+      .type('New Calendar');
+
+    cy.getBySel('calendar--edit-dialog')
+      .find('textarea[id="calendar-edit-description"]')
+      .click()
+      .type('This is my New Calendar');
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
+
+    cy.wait(200);
+
+    cy.getBySel('calendar--calendar-item')
+      .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .eq(1)
       .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
+
+    cy.get('#calendar-edit-description').contains('This is my New Calendar').should('exist');
   });
 });

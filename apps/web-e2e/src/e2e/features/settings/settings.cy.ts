@@ -39,4 +39,16 @@ describe('settings.cy.ts', () => {
 
     cy.get('settings--dialog').should('not.exist');
   });
+
+  it('should change Theme color from Light to Dark', () => {
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.getBySel(`settings--dialog--sidebar`).find('button').contains('General').click();
+
+    cy.get('#settings-generalTheme').click();
+
+    cy.getBySel('general--settings--theme').find('div[role="option"]').contains('Dark').click();
+
+    cy.get('body').should('have.class', 'dark');
+  });
 });

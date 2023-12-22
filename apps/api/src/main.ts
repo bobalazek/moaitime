@@ -17,8 +17,6 @@ export async function bootstrap() {
   const { API_PORT, NODE_ENV } = getEnv();
   const port = API_PORT || 3636;
 
-  app.enableCors();
-
   // Shutdown
   app.enableShutdownHooks();
 

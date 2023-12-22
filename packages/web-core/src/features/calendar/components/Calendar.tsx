@@ -2,6 +2,7 @@ import { FaCalendarAlt } from 'react-icons/fa';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useCalendarStore } from '../state/calendarStore';
+import CalendarDeleteAlertDialog from './calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
 import CalendarEditDialog from './calendar-edit-dialog/CalendarEditDialog';
 import CalendarEntryEditDialog from './calendar-entry-edit-dialog/CalendarEntryEditDialog';
 import DeletedCalendarsDialog from './deleted-calendars-dialog/DeletedCalendarsDialog';
@@ -25,6 +26,7 @@ export default function Calendar() {
       <CalendarEditDialog />
       <CalendarEntryEditDialog />
       <DeletedCalendarsDialog />
+      <CalendarDeleteAlertDialog />
     </ErrorBoundary>
   );
 }

@@ -69,7 +69,7 @@ export default function CalendarMonthlyViewDay({
       <div className="text-center">
         <button
           className={clsx(
-            'hover:text-primary rounded-full px-2 py-1 text-sm font-bold transition-all',
+            'rounded-full px-2 py-1 text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
             isActive && 'bg-primary text-accent',
             !isActiveMonth && 'text-gray-300',
             isFirst && 'rounded-lg'

@@ -1,6 +1,6 @@
 import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 
-import { Calendar, calendars, getDatabase, NewCalendar } from '@moaitime/database-core';
+import { Calendar, calendars, events, getDatabase, NewCalendar } from '@moaitime/database-core';
 
 export class CalendarsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Calendar[]> {
@@ -65,9 +65,13 @@ export class CalendarsManager {
   }
 
   async deleteOneById(id: string): Promise<Calendar> {
-    const rows = await getDatabase().delete(calendars).where(eq(calendars.id, id)).returning();
+    return getDatabase().transaction(async (tx) => {
+      await tx.delete(events).where(eq(events.calendarId, id)).returning();
 
-    return rows[0];
+      const rows = await tx.delete(calendars).where(eq(calendars.id, id)).returning();
+
+      return rows[0];
+    });
   }
 
   // Helpers

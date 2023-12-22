@@ -104,6 +104,15 @@ export class EventsManager {
     return rows[0];
   }
 
+  async deleteManyByCalendarId(calendarId: string): Promise<Event[]> {
+    const rows = await getDatabase()
+      .delete(events)
+      .where(eq(events.calendarId, calendarId))
+      .returning();
+
+    return rows;
+  }
+
   // Helpers
   async getCountsByYearByUserId(userId: string, year: number) {
     const startOfYear = new Date(year, 0, 1);

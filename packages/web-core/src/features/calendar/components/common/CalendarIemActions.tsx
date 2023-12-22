@@ -12,7 +12,12 @@ import {
 import { useCalendarStore } from '../../state/calendarStore';
 
 const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
-  const { setSelectedCalendarDialogOpen, deleteCalendar, undeleteCalendar } = useCalendarStore();
+  const {
+    setSelectedCalendarDialogOpen,
+    deleteCalendar,
+    undeleteCalendar,
+    setCalendarDeleteAlertDialogOpen,
+  } = useCalendarStore();
   const [open, setOpen] = useState(false);
 
   const onEditButtonClick = async (event: MouseEvent) => {
@@ -46,7 +51,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     event.preventDefault();
     event.stopPropagation();
 
-    deleteCalendar(calendar.id, true);
+    setCalendarDeleteAlertDialogOpen(true, calendar);
 
     setOpen(false);
   };

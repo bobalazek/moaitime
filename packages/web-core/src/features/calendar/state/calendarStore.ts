@@ -72,6 +72,13 @@ export type CalendarStore = {
   setDeletedCalendarsDialogOpen: (deletedCalendarsDialogOpen: boolean) => void;
   deletedCalendars: Calendar[];
   loadDeletedCalendars: () => Promise<Calendar[]>;
+  // Delete Alert Dialog
+  calendarDeleteAlertDialogOpen: boolean;
+  selectedCalendarDeleteAlertDialog: Calendar | null;
+  setCalendarDeleteAlertDialogOpen: (
+    calendarDeleteAlertDialogOpen: boolean,
+    selectedCalendarDeleteAlertDialog?: Calendar | null
+  ) => void;
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   loadCalendarEntries: () => Promise<CalendarEntry[]>;
@@ -213,7 +220,8 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return editedTask;
   },
   deleteCalendar: async (calendarId: string, isHardDelete?: boolean) => {
-    const { loadCalendars, loadCalendarEntries } = get();
+    const { loadCalendars, loadCalendarEntries, loadDeletedCalendars, deletedCalendarsDialogOpen } =
+      get();
 
     const deletedTask = await deleteCalendar(calendarId, isHardDelete);
 
@@ -223,19 +231,27 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     // Same as above
     await useAuthStore.getState().loadAccount();
 
+    if (deletedCalendarsDialogOpen) {
+      await loadDeletedCalendars();
+    }
+
     return deletedTask;
   },
   undeleteCalendar: async (calendarId: string) => {
-    const { loadCalendars, loadCalendarEntries, loadDeletedCalendars } = get();
+    const { loadCalendars, loadCalendarEntries, loadDeletedCalendars, deletedCalendarsDialogOpen } =
+      get();
 
     const undeletedTask = await undeleteCalendar(calendarId);
 
     await loadCalendars();
     await loadCalendarEntries();
-    await loadDeletedCalendars();
 
     // Same as above
     await useAuthStore.getState().loadAccount();
+
+    if (deletedCalendarsDialogOpen) {
+      await loadDeletedCalendars();
+    }
 
     return undeletedTask;
   },
@@ -291,6 +307,18 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     set({ deletedCalendars });
 
     return deletedCalendars;
+  },
+  // Delete Alert Dialog
+  calendarDeleteAlertDialogOpen: false,
+  selectedCalendarDeleteAlertDialog: null,
+  setCalendarDeleteAlertDialogOpen: (
+    calendarDeleteAlertDialogOpen: boolean,
+    selectedCalendarDeleteAlertDialog?: Calendar | null
+  ) => {
+    set({
+      calendarDeleteAlertDialogOpen,
+      selectedCalendarDeleteAlertDialog,
+    });
   },
   /********** Calendar Entries **********/
   calendarEntries: [],

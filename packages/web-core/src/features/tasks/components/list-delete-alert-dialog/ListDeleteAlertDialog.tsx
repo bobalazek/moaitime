@@ -34,12 +34,8 @@ export default function ListDeleteAlertDialog() {
   };
 
   return (
-    <AlertDialog
-      open={listDeleteAlertDialogOpen}
-      onOpenChange={setListDeleteAlertDialogOpen}
-      data-test="tasks--list-delete-alert-dialog"
-    >
-      <AlertDialogContent>
+    <AlertDialog open={listDeleteAlertDialogOpen} onOpenChange={setListDeleteAlertDialogOpen}>
+      <AlertDialogContent data-test="tasks--list-delete-alert-dialog">
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>

@@ -29,7 +29,11 @@ export default function CalendarSettingsSheet() {
           <FaCog />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="sm:w-max-[420px] w-full">
+      <SheetContent
+        side="right"
+        className="sm:w-max-[420px] w-full"
+        data-test="calendar--settings-sheet"
+      >
         <SheetHeader>
           <SheetTitle>Settings</SheetTitle>
           <SheetDescription>Here we will have the main calendar settings.</SheetDescription>

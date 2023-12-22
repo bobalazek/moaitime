@@ -15,6 +15,7 @@ import Settings from '../../settings/components/Settings';
 import Tasks from '../../tasks/components/Tasks';
 import Weather from '../../weather/components/Weather';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { HomePageSync } from './HomePageSync';
 
 const animationVariants = {
   initial: { opacity: 0, y: -100 },
@@ -37,6 +38,7 @@ export default function HomePage() {
 
   return (
     <ErrorBoundary>
+      <HomePageSync />
       <Auth />
       <Background />
       <motion.div

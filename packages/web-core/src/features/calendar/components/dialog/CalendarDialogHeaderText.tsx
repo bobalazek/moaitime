@@ -61,13 +61,20 @@ function CalendarDialogHeaderText() {
   } else if (selectedView === CalendarViewEnum.AGENDA) {
     const agendaRange = getAgendaRange(selectedDate);
 
-    const startMonth = agendaRange.start.toLocaleString('default', { month: 'long' });
-    const endMonth = agendaRange.end.toLocaleString('default', { month: 'long' });
-    const endYear = agendaRange.end.getFullYear();
+    const startDate = agendaRange.start.toLocaleString('default', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+    const endDate = agendaRange.end.toLocaleString('default', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
 
     text = (
       <span>
-        {startMonth} {year} to {endMonth} {endYear}
+        {startDate} to {endDate}
       </span>
     );
   }

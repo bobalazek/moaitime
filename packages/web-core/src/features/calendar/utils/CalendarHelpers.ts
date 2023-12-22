@@ -426,8 +426,8 @@ export const getYearRange = (date: Date) => {
 };
 
 export const getAgendaRange = (date: Date) => {
-  const start = startOfMonth(date);
-  const end = endOfMonth(addMonths(start, 2));
+  const start = new Date(date);
+  const end = addMonths(start, 3);
 
   return { start, end };
 };

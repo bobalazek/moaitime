@@ -3,6 +3,7 @@ import {
   addMonths,
   addWeeks,
   addYears,
+  isToday,
   subDays,
   subMonths,
   subWeeks,
@@ -69,6 +70,9 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
     onNextButtonClick,
   }));
 
+  const isTodayButtonDisabled =
+    selectedView === CalendarViewEnum.AGENDA ? isToday(selectedDate) : isTodayInSelectedDaysRange;
+
   return (
     <div
       className="items-center gap-4 text-center text-2xl md:flex md:justify-between md:pr-8"
@@ -101,7 +105,7 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           variant="outline"
           size="sm"
           onClick={onTodayButtonClick}
-          disabled={isTodayInSelectedDaysRange}
+          disabled={isTodayButtonDisabled}
           data-test="calendar--dialog--header--today-button"
         >
           <CalendarDialogHeaderTodayButtonText />

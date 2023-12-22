@@ -16,8 +16,7 @@ export default function DeletedCalendarsDialog() {
         {deletedCalendars.length === 0 && (
           <div className="flex flex-col items-center justify-center p-4">
             <div className="text-center">
-              <div className="mb-2 text-3xl">🎉</div>
-              <div className="text-xl">No deleted calendars at the moment</div>
+              <div className="text-xl">No deleted calendars</div>
             </div>
           </div>
         )}

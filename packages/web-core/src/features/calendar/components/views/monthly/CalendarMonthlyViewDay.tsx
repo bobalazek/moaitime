@@ -71,14 +71,14 @@ export default function CalendarMonthlyViewDay({
       <div className="text-center">
         <button
           className={clsx(
-            'h-7 w-7 rounded-full text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
+            'rounded-full px-2 py-1 text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white lg:h-8 lg:w-8',
             isActive && '!bg-primary !text-accent',
             !isActiveMonth && 'text-gray-300',
-            isFirst && 'h-auto w-auto rounded-lg px-2 py-1'
+            isFirst && 'lg:h-auto lg:w-auto'
           )}
           onClick={onDayClick}
         >
-          <span className="inline-block lg:hidden">{dayOfWeek}, </span>
+          <span className="mr-0.5 inline-block lg:hidden">{dayOfWeek},</span>
           <span>{dateText}</span>
         </button>
       </div>

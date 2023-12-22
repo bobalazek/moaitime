@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -9,14 +9,14 @@ import { useTasksStore } from '../../tasks/state/tasksStore';
 export const useSyncUrlWithState = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [targetPathname, setTargetPathname] = useState(pathname);
 
-  // Getters and setters
-  const calendarGetter = useCalendarStore().dialogOpen;
-  const tasksGetter = useTasksStore().popoverOpen;
-  const settingsGetter = useSettingsStore().dialogOpen;
-  const calendarSetter = useCalendarStore().setDialogOpen;
-  const tasksSetter = useTasksStore().setPopoverOpen;
-  const settingsSetter = useSettingsStore().setDialogOpen;
+  const { dialogOpen: calendarGetter } = useCalendarStore();
+  const { popoverOpen: tasksGetter } = useTasksStore();
+  const { dialogOpen: settingsGetter } = useSettingsStore();
+  const { setDialogOpen: calendarSetter } = useCalendarStore();
+  const { setPopoverOpen: tasksSetter } = useTasksStore();
+  const { setDialogOpen: settingsSetter } = useSettingsStore();
 
   // Paths
   const paths = useMemo(
@@ -34,41 +34,46 @@ export const useSyncUrlWithState = () => {
         setter: settingsSetter,
       },
     }),
-    [calendarGetter, calendarSetter, settingsGetter, settingsSetter, tasksGetter, tasksSetter]
+    // Setters do no change, so no point to add them to the deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [calendarGetter, tasksGetter, settingsGetter]
   );
 
   const debouncedNavigate = useDebouncedCallback((targetPathname) => {
     navigate(targetPathname);
   }, 100);
 
-  // For the initial load
+  const updatePathStates = useCallback(
+    (newPath: string) => {
+      Object.entries(paths).forEach(([key, value]) => {
+        value.setter(key === newPath);
+      });
+    },
+    [paths]
+  );
+
   useEffect(() => {
-    for (const [key, value] of Object.entries(paths)) {
-      value.setter(pathname === key);
-    }
+    updatePathStates(pathname);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // When we change the state, we also want to change the URL
   useEffect(() => {
-    let targetPathname = '/';
+    if (targetPathname && targetPathname !== pathname) {
+      debouncedNavigate(targetPathname);
+    }
+  }, [debouncedNavigate, targetPathname, pathname]);
 
+  useEffect(() => {
     for (const [key, value] of Object.entries(paths)) {
-      console.log(key, value.getter);
-
       if (!value.getter) {
         continue;
       }
 
-      targetPathname = key;
-      break;
-    }
-
-    if (pathname === targetPathname) {
+      setTargetPathname(key);
       return;
     }
 
-    debouncedNavigate(targetPathname);
-  }, [debouncedNavigate, pathname, paths]);
+    setTargetPathname('/');
+  }, [setTargetPathname, paths, calendarGetter, tasksGetter, settingsGetter]);
 };

@@ -13,6 +13,9 @@ export * from './features/calendars/EventsManager';
 // Greetings
 export * from './features/greetings/GreetingsManager';
 
+// Notes
+export * from './features/notes/NotesManager';
+
 // Quotes
 export * from './features/quotes/QuotesManager';
 

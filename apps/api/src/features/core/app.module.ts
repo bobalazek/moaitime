@@ -6,6 +6,7 @@ import { AuthModule } from '../auth/auth.module';
 import { BackgroundsModule } from '../backgrounds/backgrounds.module';
 import { CalendarsModule } from '../calendar/calendar.module';
 import { GreetingsModule } from '../greetings/greetings.module';
+import { NotesModule } from '../notes/notes.module';
 import { QuotesModule } from '../quotes/quotes.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { TestingModule } from '../testing/testing.module';
@@ -17,6 +18,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
     AuthModule,
     BackgroundsModule,
     GreetingsModule,
+    NotesModule,
     QuotesModule,
     TasksModule,
     CalendarsModule,

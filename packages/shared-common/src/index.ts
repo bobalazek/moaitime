@@ -32,10 +32,13 @@ export * from './core/Response';
 export * from './core/ErrorResponse';
 
 // Greeting
-export * from './greeting/Greeting';
+export * from './greetings/Greeting';
+
+// Notes
+export * from './notes/NoteSchema';
 
 // Quote
-export * from './quote/Quote';
+export * from './quotes/Quote';
 
 // Search
 export * from './search/SearchEnginesEnum';

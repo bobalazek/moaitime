@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { ColorSchema } from '../core/ColorSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
 import { isValidTime } from '../Helpers';
 
@@ -7,6 +8,7 @@ export const TaskSchema = z.object({
   id: z.string(),
   name: z.string(),
   order: z.number(),
+  color: z.string().nullable(),
   description: z.string().nullable(),
   priority: z.number().nullable(),
   dueDate: z.string().nullable(),
@@ -23,6 +25,7 @@ export const CreateTaskSchema = z.object({
   name: z.string().min(1, {
     message: 'Task name must be provided',
   }),
+  color: ColorSchema.nullable().optional(),
   description: z.string().nullable().optional(),
   dueDate: z
     .string()

@@ -32,7 +32,7 @@ export default function CalendarAgendaView() {
           <span className="text-gray-500">No entries found for this range</span>
         </div>
       )}
-      {calendarEntries.length && (
+      {calendarEntries.length > 0 && (
         <div className="flex flex-1 flex-col space-y-4">
           {Object.keys(calendarEntriesPerDay).map((date) => {
             return (

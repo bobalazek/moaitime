@@ -5,6 +5,7 @@ import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotP
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
+import CalendarPage from './features/calendar/components/pages/CalendarPage';
 import ProtectedRoute from './features/core/components/ProtectedRoute';
 import PublicOnlyRoute from './features/core/components/PublicOnlyRoute';
 import HomePage from './features/core/pages/HomePage';
@@ -26,7 +27,7 @@ export function AppRoutes() {
           path="/calendar"
           element={
             <ProtectedRoute>
-              <HomePage />
+              <CalendarPage />
             </ProtectedRoute>
           }
         />

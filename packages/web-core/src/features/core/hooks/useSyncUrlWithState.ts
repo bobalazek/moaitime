@@ -2,29 +2,24 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useSettingsStore } from '../../settings/state/settingsStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 
 export const useSyncUrlWithState = () => {
+  // TODO: remove once we implement all with the router
+
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [targetPathname, setTargetPathname] = useState(pathname);
 
-  const { dialogOpen: calendarGetter } = useCalendarStore();
   const { popoverOpen: tasksGetter } = useTasksStore();
   const { dialogOpen: settingsGetter } = useSettingsStore();
-  const { setDialogOpen: calendarSetter } = useCalendarStore();
   const { setPopoverOpen: tasksSetter } = useTasksStore();
   const { setDialogOpen: settingsSetter } = useSettingsStore();
 
   // Paths
   const paths = useMemo(
     () => ({
-      '/calendar': {
-        getter: calendarGetter,
-        setter: calendarSetter,
-      },
       '/tasks': {
         getter: tasksGetter,
         setter: tasksSetter,
@@ -36,7 +31,7 @@ export const useSyncUrlWithState = () => {
     }),
     // Setters do no change, so no point to add them to the deps array
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [calendarGetter, tasksGetter, settingsGetter]
+    [tasksGetter, settingsGetter]
   );
 
   const debouncedNavigate = useDebouncedCallback((targetPathname) => {
@@ -75,5 +70,5 @@ export const useSyncUrlWithState = () => {
     }
 
     setTargetPathname('/');
-  }, [setTargetPathname, paths, calendarGetter, tasksGetter, settingsGetter]);
+  }, [setTargetPathname, paths, tasksGetter, settingsGetter]);
 };

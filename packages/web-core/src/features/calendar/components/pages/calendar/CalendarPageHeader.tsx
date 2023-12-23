@@ -10,17 +10,18 @@ import {
   subYears,
 } from 'date-fns';
 import { forwardRef, useImperativeHandle } from 'react';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { FaAngleLeft, FaAngleRight, FaHome } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
-import { useCalendarStore } from '../../state/calendarStore';
-import CalendarSettingsSheet from '../settings-sheet/CalendarSettingsSheet';
-import CalendarDialogHeaderCalendar from './CalendarDialogHeaderCalendar';
-import CalendarDialogHeaderText from './CalendarDialogHeaderText';
-import CalendarDialogHeaderTodayButtonText from './CalendarDialogHeaderTodayButtonText';
-import CalendarDialogHeaderViewSelector from './CalendarDialogHeaderViewSelector';
+import { useCalendarStore } from '../../../state/calendarStore';
+import CalendarSettingsSheet from '../../settings-sheet/CalendarSettingsSheet';
+import CalendarPageHeaderCalendar from './CalendarPageHeaderCalendar';
+import CalendarPageHeaderText from './CalendarPageHeaderText';
+import CalendarPageHeaderTodayButtonText from './CalendarPageHeaderTodayButtonText';
+import CalendarPageHeaderViewSelector from './CalendarPageHeaderViewSelector';
 
 export interface CalendarDialogHeaderRef {
   onPrevButtonClick: () => void;
@@ -28,9 +29,10 @@ export interface CalendarDialogHeaderRef {
   onNextButtonClick: () => void;
 }
 
-const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
+const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
   const { setSelectedDate, selectedDate, selectedView, isTodayInSelectedDaysRange } =
     useCalendarStore();
+  const navigate = useNavigate();
 
   const onPrevButtonClick = () => {
     if (selectedView === CalendarViewEnum.DAY) {
@@ -75,13 +77,22 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
 
   return (
     <div
-      className="items-center gap-4 text-center text-2xl md:flex md:justify-between md:pr-8"
+      className="items-center gap-4 text-center text-2xl md:flex md:justify-between"
       data-test="calendar--dialog--header"
     >
-      <CalendarDialogHeaderText />
+      <div className="flex space-x-2 align-middle">
+        <button
+          onClick={() => {
+            navigate('/');
+          }}
+        >
+          <FaHome />
+        </button>
+        <CalendarPageHeaderText />
+      </div>
       <div className="mt-2 justify-center gap-2 sm:flex md:mt-0">
         <CalendarSettingsSheet />
-        <CalendarDialogHeaderCalendar />
+        <CalendarPageHeaderCalendar />
         <Button
           className="border"
           variant="ghost"
@@ -108,12 +119,12 @@ const CalendarDialogHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           disabled={isTodayButtonDisabled}
           data-test="calendar--dialog--header--today-button"
         >
-          <CalendarDialogHeaderTodayButtonText />
+          <CalendarPageHeaderTodayButtonText />
         </Button>
-        <CalendarDialogHeaderViewSelector />
+        <CalendarPageHeaderViewSelector />
       </div>
     </div>
   );
 });
 
-export default CalendarDialogHeader;
+export default CalendarPageHeader;

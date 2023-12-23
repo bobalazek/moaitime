@@ -2,10 +2,10 @@ import { FaCalendarAlt } from 'react-icons/fa';
 
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
-import { useCalendarStore } from '../../state/calendarStore';
+import { useAuthStore } from '../../../../auth/state/authStore';
+import { useCalendarStore } from '../../../state/calendarStore';
 
-function CalendarDialogHeaderCalendar() {
+function CalendarPageHeaderCalendar() {
   const { auth } = useAuthStore();
   const { selectedDays, selectedDate, setSelectedDate } = useCalendarStore();
 
@@ -49,4 +49,4 @@ function CalendarDialogHeaderCalendar() {
   );
 }
 
-export default CalendarDialogHeaderCalendar;
+export default CalendarPageHeaderCalendar;

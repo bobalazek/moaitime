@@ -1,37 +1,50 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
-import { Dialog, DialogContent, DialogHeader } from '@moaitime/web-ui';
 
+import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { useCalendarStore } from '../../state/calendarStore';
+import CalendarDeleteAlertDialog from '../calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
+import CalendarEditDialog from '../calendar-edit-dialog/CalendarEditDialog';
+import CalendarEntryEditDialog from '../calendar-entry-edit-dialog/CalendarEntryEditDialog';
+import DeletedCalendarsDialog from '../deleted-calendars-dialog/DeletedCalendarsDialog';
 import CalendarAgendaView from '../views/CalendarAgendaView';
 import CalendarDailyView from '../views/CalendarDailyView';
 import CalendarMonthlyView from '../views/CalendarMonthlyView';
 import CalendarWeeklyView from '../views/CalendarWeeklyView';
 import CalendarYearlyView from '../views/CalendarYearlyView';
-import CalendarDialogHeader, { CalendarDialogHeaderRef } from './CalendarDialogHeader';
+import CalendarPageHeader, { CalendarDialogHeaderRef } from './calendar/CalendarPageHeader';
 
-export default function CalendarDialog() {
+export default function CalendarPage() {
   const {
-    dialogOpen,
     selectedView,
     settingsSheetOpen,
     selectedCalendarDialogOpen,
     selectedCalendarEntryDialogOpen,
-    setDialogOpen,
     setSelectedView,
     setSelectedDate,
+    loadCalendars,
+    reloadSelectedDays,
   } = useCalendarStore();
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
+  const isInitialized = useRef(false); // Prevents react to trigger useEffect twice
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isInitialized.current) {
+      return;
+    }
+
+    isInitialized.current = true;
+
+    loadCalendars();
+    reloadSelectedDays();
+  }, [loadCalendars, reloadSelectedDays]);
 
   useEffect(() => {
     const onKeydown = (e: KeyboardEvent) => {
-      if (
-        !dialogOpen ||
-        settingsSheetOpen ||
-        selectedCalendarDialogOpen ||
-        selectedCalendarEntryDialogOpen
-      ) {
+      if (settingsSheetOpen || selectedCalendarDialogOpen || selectedCalendarEntryDialogOpen) {
         return;
       }
 
@@ -55,6 +68,10 @@ export default function CalendarDialog() {
         e.preventDefault();
 
         headerRef.current?.onTodayButtonClick();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+
+        navigate('/');
       }
     };
 
@@ -63,17 +80,17 @@ export default function CalendarDialog() {
     return () => document.removeEventListener('keydown', onKeydown);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dialogOpen, settingsSheetOpen, selectedCalendarDialogOpen, selectedCalendarEntryDialogOpen]);
+  }, [settingsSheetOpen, selectedCalendarDialogOpen, selectedCalendarEntryDialogOpen]);
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent
+    <ErrorBoundary>
+      <div
         className="flex h-screen max-w-none flex-col overflow-auto p-4"
         data-test="calendar--dialog"
       >
-        <DialogHeader>
-          <CalendarDialogHeader ref={headerRef} />
-        </DialogHeader>
+        <div className="pb-2">
+          <CalendarPageHeader ref={headerRef} />
+        </div>
         <div className="flex flex-grow">
           {selectedView === CalendarViewEnum.DAY && <CalendarDailyView />}
           {selectedView === CalendarViewEnum.WEEK && <CalendarWeeklyView />}
@@ -81,7 +98,11 @@ export default function CalendarDialog() {
           {selectedView === CalendarViewEnum.YEAR && <CalendarYearlyView />}
           {selectedView === CalendarViewEnum.AGENDA && <CalendarAgendaView />}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+      <CalendarEditDialog />
+      <CalendarEntryEditDialog />
+      <DeletedCalendarsDialog />
+      <CalendarDeleteAlertDialog />
+    </ErrorBoundary>
   );
 }

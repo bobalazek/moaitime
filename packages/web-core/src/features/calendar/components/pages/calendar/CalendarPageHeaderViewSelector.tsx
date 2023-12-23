@@ -12,9 +12,9 @@ import {
   DropdownMenuTrigger,
 } from '@moaitime/web-ui';
 
-import { useCalendarStore } from '../../state/calendarStore';
+import { useCalendarStore } from '../../../state/calendarStore';
 
-export default function CalendarDialogHeaderViewSelector() {
+export default function CalendarPageHeaderViewSelector() {
   const { selectedView, setSelectedView } = useCalendarStore();
 
   const calendarViewOption = calendarViewOptions.find((option) => option.value === selectedView);

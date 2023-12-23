@@ -1,8 +1,8 @@
 import { CalendarViewEnum } from '@moaitime/shared-common';
 
-import { useCalendarStore } from '../../state/calendarStore';
+import { useCalendarStore } from '../../../state/calendarStore';
 
-function CalendarDialogHeaderTodayButtonText() {
+function CalendarPageHeaderTodayButtonText() {
   const { selectedView } = useCalendarStore();
 
   if (selectedView === CalendarViewEnum.WEEK) {
@@ -16,4 +16,4 @@ function CalendarDialogHeaderTodayButtonText() {
   return <>Today</>;
 }
 
-export default CalendarDialogHeaderTodayButtonText;
+export default CalendarPageHeaderTodayButtonText;

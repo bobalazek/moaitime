@@ -2,11 +2,11 @@ import { endOfWeek, getWeek, isSameMonth, startOfWeek } from 'date-fns';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../../auth/state/authStore';
-import { useCalendarStore } from '../../state/calendarStore';
-import { getAgendaRange } from '../../utils/CalendarHelpers';
+import { useAuthStore } from '../../../../auth/state/authStore';
+import { useCalendarStore } from '../../../state/calendarStore';
+import { getAgendaRange } from '../../../utils/CalendarHelpers';
 
-function CalendarDialogHeaderText() {
+function CalendarPageHeaderText() {
   const { auth } = useAuthStore();
   const { selectedDate, selectedView } = useCalendarStore();
 
@@ -82,4 +82,4 @@ function CalendarDialogHeaderText() {
   return <span data-test="calendar--dialog--header--text">{text}</span>;
 }
 
-export default CalendarDialogHeaderText;
+export default CalendarPageHeaderText;

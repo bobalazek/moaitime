@@ -36,8 +36,6 @@ import {
 
 export type CalendarStore = {
   /********** General **********/
-  dialogOpen: boolean;
-  setDialogOpen: (dialogOpen: boolean) => void;
   // Selected Date
   selectedDate: Date;
   setSelectedDate: (selectedDate: Date) => void;
@@ -102,19 +100,6 @@ export type CalendarStore = {
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   /********** General **********/
-  dialogOpen: false,
-  setDialogOpen: (dialogOpen: boolean) => {
-    const { loadCalendars, reloadSelectedDays } = get();
-
-    set({
-      dialogOpen,
-    });
-
-    if (dialogOpen) {
-      loadCalendars();
-      reloadSelectedDays();
-    }
-  },
   // Selected Date
   selectedDate: new Date(),
   setSelectedDate: (selectedDate: Date) => {

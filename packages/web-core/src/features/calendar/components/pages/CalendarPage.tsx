@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 
@@ -30,6 +30,18 @@ export default function CalendarPage() {
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitialized = useRef(false); // Prevents react to trigger useEffect twice
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [targetPathname, setTargetPathname] = useState(pathname);
+
+  const updateSelectedView = () => {
+    const newSelectedView = pathname.replace('/calendar/', '') as CalendarViewEnum;
+    if (
+      Object.values(CalendarViewEnum).includes(newSelectedView) &&
+      newSelectedView !== selectedView
+    ) {
+      setSelectedView(newSelectedView);
+    }
+  };
 
   useEffect(() => {
     if (isInitialized.current) {
@@ -38,9 +50,32 @@ export default function CalendarPage() {
 
     isInitialized.current = true;
 
+    updateSelectedView();
     loadCalendars();
     reloadSelectedDays();
-  }, [loadCalendars, reloadSelectedDays]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // If URL changes
+  useEffect(() => {
+    updateSelectedView();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pathname !== targetPathname) {
+      navigate(targetPathname);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetPathname]);
+
+  // If State changes
+  useEffect(() => {
+    setTargetPathname(`/calendar/${selectedView}`);
+  }, [setTargetPathname, selectedView]);
 
   useEffect(() => {
     const onKeydown = (e: KeyboardEvent) => {

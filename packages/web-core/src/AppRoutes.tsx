@@ -25,7 +25,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/calendar"
+          path="/calendar/*"
           element={
             <ProtectedRoute>
               <CalendarPage />

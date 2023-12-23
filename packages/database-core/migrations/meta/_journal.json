@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1702748941638,
-      "tag": "0000_faulty_alice",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1703091847448,
-      "tag": "0001_living_black_crow",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1703097500224,
-      "tag": "0002_greedy_mockingbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1703273151004,
-      "tag": "0003_watery_moonstone",
+      "when": 1703330944490,
+      "tag": "0000_daffy_maggott",
       "breakpoints": true
     }
   ]

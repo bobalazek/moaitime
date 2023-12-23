@@ -58,7 +58,7 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
           </div>
         ))}
       </div>
-      <div className="flex flex-col text-center text-xs">
+      <div className="flex flex-col py-2 text-center text-xs">
         {weeks.map((week) => {
           const weekKey = `${format(week[0], 'yyyy-MM-dd')}---${format(month, 'yyyy-MM-dd')}`;
 
@@ -78,7 +78,7 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
                     <button
                       className={clsx(
                         'h-8 w-8 rounded-full text-sm transition-all hover:bg-gray-100 hover:text-black hover:dark:bg-gray-700 hover:dark:text-white',
-                        !isSameMonth && 'text-gray-500',
+                        !isSameMonth && 'text-gray-300 dark:text-gray-500',
                         isActive && '!bg-primary !text-accent'
                       )}
                       onClick={() => onDayClick(day)}
@@ -86,7 +86,7 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
                       {day.getDate()}
                     </button>
                     {hasEntries && (
-                      <div className="absolute left-[50%] h-[6px] w-[6px] -translate-x-[50%] rounded-full bg-red-400"></div>
+                      <div className="absolute left-[50%] mt-1 h-[6px] w-[6px] -translate-x-[50%] rounded-full bg-red-400"></div>
                     )}
                   </div>
                 );

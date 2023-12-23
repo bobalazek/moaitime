@@ -33,7 +33,7 @@ export default function CalendarYearlyView() {
   };
 
   return (
-    <div className="flex w-full select-none flex-wrap border" data-test="calendar--yearly-view">
+    <div className="flex w-full select-none flex-wrap" data-test="calendar--yearly-view">
       <AnimatePresence>
         {months.map((month) => {
           const monthKey = `${month.getFullYear()}-${month.getMonth()}`;
@@ -46,7 +46,7 @@ export default function CalendarYearlyView() {
               animate="animate"
               exit="exit"
               variants={animationVariants}
-              className="flex w-full p-4 md:w-1/3 lg:w-1/4"
+              className="flex w-full p-2 md:w-1/3 lg:w-1/4"
             >
               <CalendarYearlyViewMonth month={month} now={now} />
             </motion.div>

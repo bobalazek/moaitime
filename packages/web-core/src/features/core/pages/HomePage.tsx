@@ -146,37 +146,36 @@ export default function HomePage() {
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                className="mt-12"
               >
                 <Quote />
               </motion.div>
             )}
-            {notesEnabled && (
-              <motion.div
-                key="notes"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-                className="mt-12"
-              >
-                <Notes />
-              </motion.div>
-            )}
-            {tasksEnabled && (
-              <motion.div
-                key="tasks"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-                className="mt-12"
-              >
-                <Tasks />
-              </motion.div>
-            )}
+            <div className="flex gap-4">
+              {notesEnabled && (
+                <motion.div
+                  key="notes"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <Notes />
+                </motion.div>
+              )}
+              {tasksEnabled && (
+                <motion.div
+                  key="tasks"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <Tasks />
+                </motion.div>
+              )}
+            </div>
           </AnimatePresence>
         </div>
       </motion.div>

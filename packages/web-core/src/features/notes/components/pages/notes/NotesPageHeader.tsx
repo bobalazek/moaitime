@@ -6,7 +6,7 @@ const NotesPageHeader = () => {
 
   return (
     <div
-      className="items-center gap-4 text-center text-2xl md:flex md:justify-between"
+      className="items-center gap-4 border-b px-4 py-3 text-center text-2xl md:flex md:justify-between"
       data-test="notes--header"
     >
       <div className="flex space-x-2 align-middle">

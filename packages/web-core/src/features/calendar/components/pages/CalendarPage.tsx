@@ -84,11 +84,11 @@ export default function CalendarPage() {
 
   return (
     <ErrorBoundary>
-      <div className="flex h-screen max-w-none flex-col overflow-auto p-4" data-test="calendar">
+      <div className="flex h-screen max-w-none flex-col overflow-auto" data-test="calendar">
         <div className="pb-2">
           <CalendarPageHeader ref={headerRef} />
         </div>
-        <div className="flex flex-grow">
+        <div className="flex flex-grow p-4">
           {selectedView === CalendarViewEnum.DAY && <CalendarDailyView />}
           {selectedView === CalendarViewEnum.WEEK && <CalendarWeeklyView />}
           {selectedView === CalendarViewEnum.MONTH && <CalendarMonthlyView />}

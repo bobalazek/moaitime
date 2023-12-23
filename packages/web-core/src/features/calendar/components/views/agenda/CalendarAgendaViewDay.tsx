@@ -24,8 +24,8 @@ export default function CalendarAgendaViewDay({
 
   return (
     <div className="flex flex-col">
-      <div className="py-4 text-lg font-bold">{dateReadable}</div>
-      <div className="flex flex-col space-y-4">
+      <div className="mb-2 text-lg font-bold">{dateReadable}</div>
+      <div className="mb-4 flex flex-col space-y-4">
         {calendarEntries.map((calendarEntry) => {
           return (
             <CalendarAgendaViewDayEventEntry

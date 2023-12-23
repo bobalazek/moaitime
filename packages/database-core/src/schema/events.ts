@@ -8,7 +8,7 @@ export const events = pgTable('events', {
   title: text('title').notNull(),
   description: text('description'),
   color: text('color'),
-  timezone: text('timezone').notNull().default('UTC'),
+  timezone: text('timezone').default('UTC'),
   endTimezone: text('end_timezone'), // In case the endsAt is in a different timezone
   isAllDay: boolean('is_all_day').notNull().default(false),
   startsAt: timestamp('starts_at'),

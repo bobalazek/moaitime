@@ -8,6 +8,7 @@ export const notes = pgTable('notes', {
   title: text('title').notNull(),
   content: text('content').notNull(),
   color: text('color'),
+  directory: text('directory'),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

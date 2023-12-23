@@ -25,9 +25,9 @@ export default function NotesPage() {
 
   return (
     <ErrorBoundary>
-      <div className="flex flex-col p-4" data-test="notes">
+      <div className="flex flex-col" data-test="notes">
         <NotesPageHeader />
-        <div className="mt-4">TODO</div>
+        <div className="p-4">TODO</div>
       </div>
     </ErrorBoundary>
   );

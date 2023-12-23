@@ -5,6 +5,7 @@ export const NoteSchema = z.object({
   title: z.string(),
   content: z.string(),
   color: z.string().nullable(),
+  directory: z.string().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -16,6 +17,7 @@ export const CreateNoteSchema = z.object({
     message: 'Note title must be provided',
   }),
   conent: z.string().optional(),
+  color: z.string().nullable().optional(),
 });
 
 export const UpdateNoteSchema = CreateNoteSchema.partial();

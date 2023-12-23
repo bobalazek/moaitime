@@ -34,8 +34,16 @@ export class EventsManager {
     });
   }
 
-  async findManyByUserId(userId: string, from?: Date, to?: Date): Promise<Event[]> {
-    const calendarIds = await this._usersManager.getVisibleCalendarIdsByUserId(userId);
+  async findManyByUserId(
+    userId: string,
+    from?: Date,
+    to?: Date,
+    calendarIds?: string[]
+  ): Promise<Event[]> {
+    if (!calendarIds) {
+      calendarIds = await this._usersManager.getVisibleCalendarIdsByUserId(userId);
+    }
+
     if (calendarIds.length === 0) {
       return [];
     }

@@ -29,11 +29,16 @@ export class CalendarEntriesController {
       throw new Error('Invalid to date');
     }
 
+    let calendarIds: string[] | undefined = undefined;
+    if (req.query.calendarIds) {
+      calendarIds = req.query.calendarIds.split(',');
+    }
+
     const timezone = req.user?.settings?.generalTimezone ?? 'UTC';
     const from = getTimezonedStartOfDay(timezone, req.query.from) ?? undefined;
     const to = getTimezonedEndOfDay(timezone, req.query.to) ?? undefined;
 
-    const events = await eventsManager.findManyByUserId(req.user.id, from, to);
+    const events = await eventsManager.findManyByUserId(req.user.id, from, to, calendarIds);
 
     const data = this._convertEventsToCalendarEntries(events);
 

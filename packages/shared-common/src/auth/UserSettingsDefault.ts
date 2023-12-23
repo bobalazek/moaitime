@@ -24,6 +24,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   greetingEnabled: true,
   quoteEnabled: true,
   tasksEnabled: true,
+  notesEnabled: true,
   calendarEnabled: true,
   calendarVisibleCalendarIds: ['*'],
 };

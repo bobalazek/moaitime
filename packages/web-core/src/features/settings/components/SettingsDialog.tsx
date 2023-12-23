@@ -13,6 +13,8 @@ import CommandsSettingsSection from '../../commands/components/settings/Commands
 import CommandsSettingsSectionHeaderText from '../../commands/components/settings/CommandsSettingsSectionHeaderText';
 import GreetingSettingsSection from '../../greeting/components/settings/GreetingSettingsSection';
 import GreetingSettingsSectionHeaderText from '../../greeting/components/settings/GreetingSettingsSectionHeaderText';
+import NotesSettingsSection from '../../notes/components/settings/NotesSettingsSection';
+import NotesSettingsSectionHeaderText from '../../notes/components/settings/NotesSettingsSectionHeaderText';
 import QuoteSettingsSection from '../../quote/components/settings/QuoteSettingsSection';
 import QuoteSettingsSectionHeaderText from '../../quote/components/settings/QuoteSettingsSectionHeaderText';
 import SearchSettingsSection from '../../search/components/settings/SearchSettingsSection';
@@ -45,6 +47,11 @@ const tabs = [
     id: 'calendar',
     label: <CalendarSettingsSectionHeaderText />,
     content: <CalendarSettingsSection />,
+  },
+  {
+    id: 'notes',
+    label: <NotesSettingsSectionHeaderText />,
+    content: <NotesSettingsSection />,
   },
   {
     id: 'clock',

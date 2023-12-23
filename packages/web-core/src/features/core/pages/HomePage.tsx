@@ -9,13 +9,13 @@ import Clock from '../../clock/components/Clock';
 import CommandsButton from '../../commands/components/CommandsButton';
 import CommandsDialog from '../../commands/components/CommandsDialog';
 import Greeting from '../../greeting/components/Greeting';
+import Notes from '../../notes/components/Notes';
 import Quote from '../../quote/components/Quote';
 import Search from '../../search/components/Search';
 import Settings from '../../settings/components/Settings';
 import Tasks from '../../tasks/components/Tasks';
 import Weather from '../../weather/components/Weather';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { HomePageSync } from './HomePageSync';
 
 const animationVariants = {
   initial: { opacity: 0, y: -100 },
@@ -35,10 +35,10 @@ export default function HomePage() {
   const searchEnabled = auth?.user?.settings?.searchEnabled ?? false;
   const quoteEnabled = auth?.user?.settings?.quoteEnabled ?? false;
   const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
+  const notesEnabled = auth?.user?.settings?.notesEnabled ?? false;
 
   return (
     <ErrorBoundary>
-      <HomePageSync />
       <Auth />
       <Background />
       <motion.div
@@ -149,6 +149,19 @@ export default function HomePage() {
                 className="mt-12"
               >
                 <Quote />
+              </motion.div>
+            )}
+            {notesEnabled && (
+              <motion.div
+                key="notes"
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+                className="mt-12"
+              >
+                <Notes />
               </motion.div>
             )}
             {tasksEnabled && (

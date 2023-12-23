@@ -10,6 +10,7 @@ import ProtectedRoute from './features/core/components/ProtectedRoute';
 import PublicOnlyRoute from './features/core/components/PublicOnlyRoute';
 import HomePage from './features/core/pages/HomePage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
+import NotesPage from './features/notes/components/pages/NotesPage';
 
 export function AppRoutes() {
   return (
@@ -32,18 +33,10 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/tasks"
+          path="/notes"
           element={
             <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <HomePage />
+              <NotesPage />
             </ProtectedRoute>
           }
         />

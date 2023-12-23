@@ -1,5 +1,7 @@
+import { format } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 
@@ -19,6 +21,7 @@ import CalendarPageHeader, { CalendarDialogHeaderRef } from './calendar/Calendar
 export default function CalendarPage() {
   const {
     selectedView,
+    selectedDate,
     settingsSheetOpen,
     selectedCalendarDialogOpen,
     selectedCalendarEntryDialogOpen,
@@ -30,10 +33,10 @@ export default function CalendarPage() {
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitialized = useRef(false); // Prevents react to trigger useEffect twice
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search, key } = useLocation();
   const [targetPathname, setTargetPathname] = useState(pathname);
 
-  const updateSelectedView = () => {
+  const updateStateByUrl = useDebouncedCallback(() => {
     const newSelectedView = pathname.replace('/calendar/', '') as CalendarViewEnum;
     if (
       Object.values(CalendarViewEnum).includes(newSelectedView) &&
@@ -41,7 +44,13 @@ export default function CalendarPage() {
     ) {
       setSelectedView(newSelectedView);
     }
-  };
+
+    const params = new URLSearchParams(search);
+    const newSelectedDate = params.get('selectedDate');
+    if (newSelectedDate && newSelectedDate !== format(selectedDate, 'yyyy-MM-dd')) {
+      setSelectedDate(new Date(newSelectedDate));
+    }
+  }, 100);
 
   useEffect(() => {
     if (isInitialized.current) {
@@ -50,7 +59,7 @@ export default function CalendarPage() {
 
     isInitialized.current = true;
 
-    updateSelectedView();
+    updateStateByUrl();
     loadCalendars();
     reloadSelectedDays();
 
@@ -59,10 +68,10 @@ export default function CalendarPage() {
 
   // If URL changes
   useEffect(() => {
-    updateSelectedView();
+    updateStateByUrl();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [pathname, search, key]);
 
   useEffect(() => {
     if (pathname !== targetPathname) {
@@ -74,38 +83,40 @@ export default function CalendarPage() {
 
   // If State changes
   useEffect(() => {
-    setTargetPathname(`/calendar/${selectedView}`);
-  }, [setTargetPathname, selectedView]);
+    setTargetPathname(
+      `/calendar/${selectedView}?selectedDate=${format(selectedDate, 'yyyy-MM-dd')}`
+    );
+  }, [setTargetPathname, selectedView, selectedDate]);
 
   // Keyboard shortcuts
   useEffect(() => {
-    const onKeydown = (e: KeyboardEvent) => {
+    const onKeydown = (event: KeyboardEvent) => {
       if (settingsSheetOpen || selectedCalendarDialogOpen || selectedCalendarEntryDialogOpen) {
         return;
       }
 
       const selectedViewByKey = calendarViewOptions.find(
-        (option) => option.keyboardShortcutKey === e.key
+        (option) => option.keyboardShortcutKey === event.key
       )?.value;
       if (selectedViewByKey) {
-        e.preventDefault();
+        event.preventDefault();
 
         setSelectedDate(new Date());
         setSelectedView(selectedViewByKey);
-      } else if (e.key === 'PageUp') {
-        e.preventDefault();
+      } else if (event.key === 'PageUp') {
+        event.preventDefault();
 
         headerRef.current?.onPrevButtonClick();
-      } else if (e.key === 'PageDown') {
-        e.preventDefault();
+      } else if (event.key === 'PageDown') {
+        event.preventDefault();
 
         headerRef.current?.onNextButtonClick();
-      } else if (e.key === 'Home') {
-        e.preventDefault();
+      } else if (event.key === 'Home') {
+        event.preventDefault();
 
         headerRef.current?.onTodayButtonClick();
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
 
         navigate('/');
       }

@@ -77,6 +77,7 @@ export default function CalendarPage() {
     setTargetPathname(`/calendar/${selectedView}`);
   }, [setTargetPathname, selectedView]);
 
+  // Keyboard shortcuts
   useEffect(() => {
     const onKeydown = (e: KeyboardEvent) => {
       if (settingsSheetOpen || selectedCalendarDialogOpen || selectedCalendarEntryDialogOpen) {

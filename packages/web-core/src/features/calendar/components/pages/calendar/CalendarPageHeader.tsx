@@ -85,6 +85,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           onClick={() => {
             navigate('/');
           }}
+          data-test="calendar--dialog--header--home-button"
         >
           <FaHome />
         </button>

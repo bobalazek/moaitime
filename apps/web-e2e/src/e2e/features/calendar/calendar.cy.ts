@@ -174,7 +174,9 @@ describe('calendar.cy.ts', () => {
   it('should close the calendar', () => {
     cy.getBySel('calendar--dialog--trigger-button').click();
 
-    cy.getBySel('calendar--dialog').find('[data-test="dialog--close"]').click();
+    cy.getBySel('calendar--dialog')
+      .find('[data-test="calendar--dialog--header--home-button"]')
+      .click();
 
     cy.getBySel('calendar--dialog').should('not.exist');
   });
@@ -196,9 +198,12 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--settings--my-calendars--actions').contains('Add New Calendar').click();
 
+    cy.getBySel('calendar--edit-dialog').find('input[id="calendar-edit-name"]').click();
+
+    cy.wait(1000);
+
     cy.getBySel('calendar--edit-dialog')
       .find('input[id="calendar-edit-name"]')
-      .click()
       .type('New Calendar');
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
@@ -217,11 +222,12 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--settings--my-calendars--actions').contains('Add New Calendar').click();
 
-    cy.wait(200);
+    cy.getBySel('calendar--edit-dialog').find('input[id="calendar-edit-name"]').click();
+
+    cy.wait(1000);
 
     cy.getBySel('calendar--edit-dialog')
       .find('input[id="calendar-edit-name"]')
-      .click()
       .type('New Calendar');
 
     cy.getBySel('calendar--edit-dialog')
@@ -241,5 +247,53 @@ describe('calendar.cy.ts', () => {
     cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
 
     cy.get('#calendar-edit-description').contains('This is my New Calendar').should('exist');
+  });
+
+  it('should add color to a new calendar in calendar settings dialog', () => {
+    const LIST_COLOR_OPTION = {
+      name: 'Pink',
+      value: '#EC4899',
+    };
+
+    cy.getBySel('calendar--dialog--trigger-button').click();
+
+    cy.getBySel('calendar--dialog--header--settings-button').click();
+
+    cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
+
+    cy.getBySel('calendar--settings--my-calendars--actions').contains('Add New Calendar').click();
+
+    cy.getBySel('calendar--edit-dialog').find('input[id="calendar-edit-name"]').click();
+
+    cy.wait(1000);
+
+    cy.getBySel('calendar--edit-dialog')
+      .find('input[id="calendar-edit-name"]')
+      .type('New Calendar');
+
+    cy.getBySel('calendar--edit-dialog')
+      .find('[data-test="calendar--edit-dialog--color-select--trigger-button"]')
+      .click();
+
+    cy.get('[data-test="tasks--edit-dialog--color-select"]')
+      .contains(LIST_COLOR_OPTION.name)
+      .click();
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
+
+    cy.wait(1000);
+
+    cy.getBySel('calendar--settings-sheet').should('exist');
+
+    cy.getBySel('calendar--calendar-item')
+      .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .eq(1)
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
+
+    cy.getBySel('calendar--edit-dialog--color-select--trigger-button')
+      .contains('Pink')
+      .should('exist');
   });
 });

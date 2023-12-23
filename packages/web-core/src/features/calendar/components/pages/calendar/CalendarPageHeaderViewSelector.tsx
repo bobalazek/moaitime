@@ -25,16 +25,13 @@ export default function CalendarPageHeaderViewSelector() {
         <Button
           variant="outline"
           size="sm"
-          data-test="calendar--dialog--header--view-selector--dropdown-menu--trigger-button"
+          data-test="calendar--header--view-selector--dropdown-menu--trigger-button"
         >
           <span className="mr-2 inline-block">{calendarViewOption?.label ?? selectedView}</span>
           <FaCaretDown />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        data-test="calendar--dialog--header--view-selector--dropdown-menu"
-      >
+      <DropdownMenuContent align="end" data-test="calendar--header--view-selector--dropdown-menu">
         <DropdownMenuRadioGroup
           value={selectedView}
           onValueChange={(value) => {

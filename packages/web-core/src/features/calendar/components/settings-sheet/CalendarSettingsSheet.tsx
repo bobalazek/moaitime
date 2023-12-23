@@ -24,7 +24,7 @@ export default function CalendarSettingsSheet() {
           className="border"
           variant="ghost"
           size="sm"
-          data-test="calendar--dialog--header--settings-button"
+          data-test="calendar--header--settings-button"
         >
           <FaCog />
         </Button>

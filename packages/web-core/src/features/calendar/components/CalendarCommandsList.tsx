@@ -1,15 +1,15 @@
 import { FaCalendarAlt, FaCog } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
-import { useCalendarStore } from '../state/calendarStore';
 
 export default function CalendarCommandsList() {
   const { auth } = useAuthStore();
-  const { setDialogOpen } = useCalendarStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+  const navigate = useNavigate();
 
   const calendarEnabled = !!auth?.user?.settings?.calendarEnabled;
 
@@ -29,7 +29,7 @@ export default function CalendarCommandsList() {
       <CommandItem
         className="cursor-pointer"
         onSelect={() => {
-          setDialogOpen(true);
+          navigate('/calendar');
 
           setCommandsDialogOpen(false);
         }}

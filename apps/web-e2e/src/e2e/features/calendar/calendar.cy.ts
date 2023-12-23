@@ -8,21 +8,21 @@ describe('calendar.cy.ts', () => {
   });
 
   it('should be shown by default', () => {
-    cy.getBySel('calendar--dialog--trigger-button').should('exist');
+    cy.getBySel('calendar--open-button').should('exist');
   });
 
   it('should be hidden if disabled in the settings', () => {
-    cy.get('[data-test="calendar--dialog--trigger-button"]').should('exist');
+    cy.get('[data-test="calendar--open-button"]').should('exist');
 
     cy.toggleSettingsSwitch('Calendar', { calendarEnabled: false });
 
-    cy.getBySel('calendar--dialog--trigger-button').should('not.exist');
+    cy.getBySel('calendar--open-button').should('not.exist');
   });
 
   it('should open calendar', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog').should('exist');
+    cy.getBySel('calendar').should('exist');
   });
 
   it('should change the start of the week', () => {
@@ -46,7 +46,7 @@ describe('calendar.cy.ts', () => {
 
     cy.clickOutside();
 
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
     cy.getBySel('calendar--monthly-view--day-of-week').first().contains('Fri.');
   });
@@ -80,119 +80,117 @@ describe('calendar.cy.ts', () => {
   });
 
   it('should switch to a Year in calendar dialog dropdown menu', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button').click();
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu')
       .find('div')
       .contains('Year')
       .click();
 
     cy.getBySel('calendar--yearly-view').should('exist');
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
       .contains('Year')
       .should('exist');
   });
 
   it('should switch from yearly view to monthly', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button').click();
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu')
       .find('div')
       .contains('Year')
       .click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button').click();
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu')
       .find('div')
       .contains('Month')
       .click();
 
     cy.getBySel('calendar--monthly-view').should('exist');
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
       .contains('Month')
       .should('exist');
   });
 
   it('should switch to a Week in calendar dialog dropdown menu', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button').click();
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu')
       .find('div')
       .contains('Week')
       .click();
 
     cy.getBySel('calendar--weekly-view').should('exist');
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
       .contains('Week')
       .should('exist');
   });
 
   it('should switch to a Day in calendar dialog dropdown menu', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button').click();
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu')
       .find('div')
       .contains('Day')
       .click();
 
     cy.getBySel('calendar--weekly-view').should('exist');
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
       .contains('Day')
       .should('exist');
   });
 
   it('should switch to an Agenda in calendar dialog dropdown menu', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button').click();
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu')
       .find('div')
       .contains('Agenda')
       .click();
 
     cy.getBySel('calendar--agenda-view').should('exist');
 
-    cy.getBySel('calendar--dialog--header--view-selector--dropdown-menu--trigger-button')
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
       .contains('Agenda')
       .should('exist');
   });
 
   it('should close the calendar', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog')
-      .find('[data-test="calendar--dialog--header--home-button"]')
-      .click();
+    cy.getBySel('calendar').find('[data-test="calendar--header--home-button"]').click();
 
-    cy.getBySel('calendar--dialog').should('not.exist');
+    cy.getBySel('calendar').should('not.exist');
   });
 
   it('should calendar settings dialog in calendar', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--settings-button').click();
+    cy.getBySel('calendar--header--settings-button').click();
 
     cy.getBySel('calendar--settings-sheet').should('exist');
   });
 
   it('should add a new calendar in calendar settings dialog', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--settings-button').click();
+    cy.getBySel('calendar--header--settings-button').click();
 
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
@@ -214,9 +212,9 @@ describe('calendar.cy.ts', () => {
   });
 
   it('should add description to a new calendar in calendar settings dialog', () => {
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--settings-button').click();
+    cy.getBySel('calendar--header--settings-button').click();
 
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
@@ -255,9 +253,9 @@ describe('calendar.cy.ts', () => {
       value: '#EC4899',
     };
 
-    cy.getBySel('calendar--dialog--trigger-button').click();
+    cy.getBySel('calendar--open-button').click();
 
-    cy.getBySel('calendar--dialog--header--settings-button').click();
+    cy.getBySel('calendar--header--settings-button').click();
 
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 

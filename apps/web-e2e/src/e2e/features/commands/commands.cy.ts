@@ -72,7 +72,7 @@ describe('commands.cy.ts', () => {
 
     cy.get('[data-value="open calendar"]').click();
 
-    cy.getBySel('calendar--dialog').should('exist');
+    cy.getBySel('calendar').should('exist');
   });
 
   it('should open Weather from commands dialog', () => {

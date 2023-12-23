@@ -1,21 +1,21 @@
-import { FaCalendarAlt } from 'react-icons/fa';
+import { FaBook } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 
-export default function Calendar() {
+export default function Notes() {
   const navigate = useNavigate();
 
   return (
     <ErrorBoundary>
       <button
         className="text-xl text-white transition-all"
-        data-test="calendar--open-button"
+        data-test="notes--open-button"
         onClick={() => {
-          navigate('/calendar');
+          navigate('/notes');
         }}
       >
-        <FaCalendarAlt className="text-3xl" />
+        <FaBook className="text-3xl" />
       </button>
     </ErrorBoundary>
   );

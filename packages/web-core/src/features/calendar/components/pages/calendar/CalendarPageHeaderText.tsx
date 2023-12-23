@@ -79,7 +79,7 @@ function CalendarPageHeaderText() {
     );
   }
 
-  return <span data-test="calendar--dialog--header--text">{text}</span>;
+  return <span data-test="calendar--header--text">{text}</span>;
 }
 
 export default CalendarPageHeaderText;

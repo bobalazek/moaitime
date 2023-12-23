@@ -78,14 +78,14 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
   return (
     <div
       className="items-center gap-4 text-center text-2xl md:flex md:justify-between"
-      data-test="calendar--dialog--header"
+      data-test="calendar--header"
     >
       <div className="flex space-x-2 align-middle">
         <button
           onClick={() => {
             navigate('/');
           }}
-          data-test="calendar--dialog--header--home-button"
+          data-test="calendar--header--home-button"
         >
           <FaHome />
         </button>
@@ -99,7 +99,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           variant="ghost"
           size="sm"
           onClick={onPrevButtonClick}
-          data-test="calendar--dialog--header--prev-button"
+          data-test="calendar--header--prev-button"
         >
           <FaAngleLeft />
         </Button>
@@ -108,7 +108,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           variant="ghost"
           size="sm"
           onClick={onNextButtonClick}
-          data-test="calendar--dialog--header--next-button"
+          data-test="calendar--header--next-button"
         >
           <FaAngleRight />
         </Button>
@@ -118,7 +118,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           size="sm"
           onClick={onTodayButtonClick}
           disabled={isTodayButtonDisabled}
-          data-test="calendar--dialog--header--today-button"
+          data-test="calendar--header--today-button"
         >
           <CalendarPageHeaderTodayButtonText />
         </Button>

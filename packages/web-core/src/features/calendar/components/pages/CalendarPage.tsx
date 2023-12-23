@@ -33,8 +33,8 @@ export default function CalendarPage() {
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitialized = useRef(false); // Prevents react to trigger useEffect twice
   const navigate = useNavigate();
-  const { pathname, search, key } = useLocation();
-  const [targetPathname, setTargetPathname] = useState(pathname);
+  const { pathname, search } = useLocation();
+  const [targetUri, setTargetUri] = useState(pathname);
 
   const updateStateByUrl = useDebouncedCallback(() => {
     const newSelectedView = pathname.replace('/calendar/', '') as CalendarViewEnum;
@@ -68,25 +68,35 @@ export default function CalendarPage() {
 
   // If URL changes
   useEffect(() => {
-    updateStateByUrl();
+    const onPopState = () => {
+      updateStateByUrl();
+    };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, search, key]);
+    window.addEventListener('popstate', onPopState);
+
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+    };
+  }, [updateStateByUrl]);
 
   useEffect(() => {
-    if (pathname !== targetPathname) {
-      navigate(targetPathname);
+    const currentUri = `${pathname}${search}`;
+    if (currentUri !== targetUri) {
+      navigate(targetUri);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetPathname]);
+  }, [targetUri]);
 
   // If State changes
   useEffect(() => {
-    setTargetPathname(
-      `/calendar/${selectedView}?selectedDate=${format(selectedDate, 'yyyy-MM-dd')}`
-    );
-  }, [setTargetPathname, selectedView, selectedDate]);
+    const newTargetUri = `/calendar/${selectedView}?selectedDate=${format(
+      selectedDate,
+      'yyyy-MM-dd'
+    )}`;
+
+    setTargetUri(newTargetUri);
+  }, [setTargetUri, selectedView, selectedDate, targetUri]);
 
   // Keyboard shortcuts
   useEffect(() => {

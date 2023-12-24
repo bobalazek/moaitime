@@ -42,7 +42,7 @@ export type TasksStore = {
   loadLists: () => Promise<List[]>;
   // Selected
   selectedList: List | null;
-  setSelectedList: (selectedList: List | null) => Promise<void>;
+  setSelectedList: (selectedList: List | null) => Promise<List | null>;
   reloadSelectedList: () => Promise<void>;
   // List Dialog
   selectedListDialogOpen: boolean;
@@ -170,6 +170,8 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     await reloadSelectedList();
+
+    return selectedList;
   },
   reloadSelectedList: async () => {
     const {

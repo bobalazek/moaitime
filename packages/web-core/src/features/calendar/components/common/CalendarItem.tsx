@@ -35,6 +35,7 @@ export default function CalendarItem({
     <div
       className="min-h-[2rem] rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
       data-test="calendar--calendar-item"
+      data-calendar-id={calendar.id}
     >
       <div className="relative h-full w-full">
         {!hideCheckbox && (

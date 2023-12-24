@@ -9,7 +9,7 @@ export const NoteSchema = z.object({
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  listId: z.string(),
+  userId: z.string(),
 });
 
 export const CreateNoteSchema = z.object({

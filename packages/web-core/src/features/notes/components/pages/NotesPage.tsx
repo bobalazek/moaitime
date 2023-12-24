@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import NotesPageHeader from './notes/NotesPageHeader';
+import NotesPageMain from './notes/NotesPageMain';
 import NotesPageSidebar from './notes/NotesPageSidebar';
 
 export default function NotesPage() {
@@ -30,7 +31,7 @@ export default function NotesPage() {
         <NotesPageHeader />
         <div className="flex h-full flex-grow">
           <NotesPageSidebar />
-          <main className="p-4">No note selected</main>
+          <NotesPageMain />
         </div>
       </div>
     </ErrorBoundary>

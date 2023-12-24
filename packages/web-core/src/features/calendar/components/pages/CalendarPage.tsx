@@ -50,7 +50,7 @@ export default function CalendarPage() {
     if (newSelectedDate && newSelectedDate !== format(selectedDate, 'yyyy-MM-dd')) {
       setSelectedDate(new Date(newSelectedDate));
     }
-  }, 100);
+  }, 50);
 
   useEffect(() => {
     if (isInitialized.current) {

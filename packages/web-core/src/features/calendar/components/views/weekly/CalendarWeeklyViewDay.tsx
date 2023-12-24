@@ -18,6 +18,8 @@ export type CalendarWeeklyViewDayProps = {
   calendarEntries: CalendarEntryWithVerticalPosition[];
 };
 
+const totalHeight = CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX * 24;
+
 export default function CalendarWeeklyViewDay({
   date,
   isActive,
@@ -28,7 +30,7 @@ export default function CalendarWeeklyViewDay({
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const totalHeight = CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX * 24;
+
   const calendarEntriesWithStyles = useMemo(() => {
     return getCalendarEntriesWithStyles(
       calendarEntries,

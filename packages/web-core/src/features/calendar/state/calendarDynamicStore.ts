@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { CalendarEntry } from '@moaitime/shared-common';
 
 export type CalendarHighlightedCalendarEntryStore = {
+  // Highlighted calendar entry
   highlightedCalendarEntry: CalendarEntry | null;
   setHighlightedCalendarEntry: (highlightedCalendarEntry: CalendarEntry | null) => void;
 };
@@ -12,6 +13,7 @@ export type CalendarHighlightedCalendarEntryStore = {
 
 export const useCalendarHighlightedCalendarEntryStore =
   create<CalendarHighlightedCalendarEntryStore>()((set) => ({
+    // Highlighted calendar entry
     highlightedCalendarEntry: null,
     setHighlightedCalendarEntry: (highlightedCalendarEntry: CalendarEntry | null) => {
       set({

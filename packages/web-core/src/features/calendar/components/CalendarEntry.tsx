@@ -9,25 +9,25 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
-import { useCalendarHighlightedCalendarEntryStore } from '../state/calendarHighlightedCalendarEntryStore';
+import { useCalendarHighlightedCalendarEntryStore } from '../state/calendarDynamicStore';
 import { useCalendarStore } from '../state/calendarStore';
 
 const shouldShowContinuedText = (
   calendarEntry: CalendarEntryType,
   timezone: string,
-  dayDate?: string
+  date?: string
 ) => {
-  if (!dayDate) {
+  if (!date) {
     return false;
   }
 
   if (calendarEntry.isAllDay) {
-    return !calendarEntry.startsAt.includes(dayDate);
+    return !calendarEntry.startsAt.includes(date);
   }
 
-  const timezonedFormat = formatInTimeZone(calendarEntry.startsAt, timezone, 'yyyy-MM-dd');
+  const timezonedDate = formatInTimeZone(calendarEntry.startsAt, timezone, 'yyyy-MM-dd');
 
-  return timezonedFormat !== dayDate;
+  return timezonedDate !== date;
 };
 
 export type CalendarEntryProps = {

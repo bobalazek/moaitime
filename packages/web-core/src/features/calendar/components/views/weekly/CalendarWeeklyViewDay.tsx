@@ -1,5 +1,5 @@
 import { addMinutes } from 'date-fns';
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
@@ -10,6 +10,7 @@ import { useAuthStore } from '../../../../auth/state/authStore';
 import { useCalendarStore } from '../../../state/calendarStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../CalendarEntry';
+import CalendarWeeklyViewDayCurrentTimeLine from './CalendarWeeklyViewDayCurrentTimeLine';
 
 export type CalendarWeeklyViewDayProps = {
   date: string;
@@ -25,7 +26,6 @@ export default function CalendarWeeklyViewDay({
   const { auth } = useAuthStore();
   const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
-  const currentTimeLineRef = useRef<HTMLDivElement>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const totalHeight = CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX * 24;
@@ -120,18 +120,7 @@ export default function CalendarWeeklyViewDay({
         );
       })}
       {currentTimeLineTop !== null && (
-        <div
-          ref={currentTimeLineRef}
-          className="absolute w-full"
-          style={{
-            top: currentTimeLineTop,
-          }}
-          data-test="calendar--weekly-view--day--current-time-line"
-        >
-          <div className="relative h-[2px] bg-red-500">
-            <div className="absolute left-0 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500" />
-          </div>
-        </div>
+        <CalendarWeeklyViewDayCurrentTimeLine top={currentTimeLineTop} />
       )}
     </div>
   );

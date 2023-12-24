@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
+import { useCalendarHighlightedCalendarEntryStore } from '../state/calendarHighlightedCalendarEntryStore';
 import { useCalendarStore } from '../state/calendarStore';
 
 const shouldShowContinuedText = (
@@ -45,12 +46,9 @@ export default function CalendarEntry({
   showTimes,
 }: CalendarEntryProps) {
   const { auth } = useAuthStore();
-  const {
-    calendars,
-    setSelectedCalendarEntryDialogOpen,
-    setHighlightedCalendarEntry,
-    highlightedCalendarEntry,
-  } = useCalendarStore();
+  const { calendars, setSelectedCalendarEntryDialogOpen } = useCalendarStore();
+  const { setHighlightedCalendarEntry, highlightedCalendarEntry } =
+    useCalendarHighlightedCalendarEntryStore();
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;

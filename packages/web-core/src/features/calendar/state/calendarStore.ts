@@ -89,9 +89,6 @@ export type CalendarStore = {
     selectedCalendarEntryDialogOpen: boolean,
     selectedCalendarEntry?: CalendarEntry | null
   ) => void;
-  // Highlighted
-  highlightedCalendarEntry: CalendarEntry | null;
-  setHighlightedCalendarEntry: (highlightedCalendarEntry: CalendarEntry | null) => void;
   /********** Events **********/
   addEvent: (event: CreateEvent) => Promise<Event>;
   editEvent: (eventId: string, event: UpdateEvent) => Promise<Event>;
@@ -351,13 +348,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     set({
       selectedCalendarEntryDialogOpen,
       selectedCalendarEntry,
-    });
-  },
-  // Highlighted
-  highlightedCalendarEntry: null,
-  setHighlightedCalendarEntry: (highlightedCalendarEntry: CalendarEntry | null) => {
-    set({
-      highlightedCalendarEntry,
     });
   },
   /********** Events **********/

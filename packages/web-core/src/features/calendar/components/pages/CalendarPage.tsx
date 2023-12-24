@@ -33,11 +33,11 @@ export default function CalendarPage() {
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitialized = useRef(false); // Prevents react to trigger useEffect twice
   const navigate = useNavigate();
-  const { pathname, search } = useLocation();
-  const [targetUri, setTargetUri] = useState(pathname);
+  const location = useLocation();
+  const [targetUri, setTargetUri] = useState(location.pathname);
 
   const updateStateByUrl = useDebouncedCallback(() => {
-    const newSelectedView = pathname.replace('/calendar/', '') as CalendarViewEnum;
+    const newSelectedView = location.pathname.replace('/calendar/', '') as CalendarViewEnum;
     if (
       Object.values(CalendarViewEnum).includes(newSelectedView) &&
       newSelectedView !== selectedView
@@ -45,7 +45,7 @@ export default function CalendarPage() {
       setSelectedView(newSelectedView);
     }
 
-    const params = new URLSearchParams(search);
+    const params = new URLSearchParams(location.search);
     const newSelectedDate = params.get('selectedDate');
     if (newSelectedDate && newSelectedDate !== format(selectedDate, 'yyyy-MM-dd')) {
       setSelectedDate(new Date(newSelectedDate));
@@ -80,7 +80,7 @@ export default function CalendarPage() {
   }, [updateStateByUrl]);
 
   useEffect(() => {
-    const currentUri = `${pathname}${search}`;
+    const currentUri = `${location.pathname}${location.search}`;
     if (currentUri !== targetUri) {
       navigate(targetUri);
     }

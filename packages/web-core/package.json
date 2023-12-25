@@ -33,7 +33,6 @@
     "@moaitime/shared-common": "workspace:*",
     "@moaitime/tsconfig-config": "workspace:*",
     "@moaitime/web-ui": "workspace:*",
-    "@udecode/plate-common": "^28.0.0",
     "clsx": "^2.0.0",
     "colord": "^2.9.3",
     "date-fns": "^2.30.0",
@@ -46,10 +45,6 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
     "react-router-dom": "6.20.0",
-    "slate": "^0.101.5",
-    "slate-history": "^0.100.0",
-    "slate-hyperscript": "^0.100.0",
-    "slate-react": "^0.101.5",
     "use-debounce": "^10.0.0",
     "zustand": "^4.4.6"
   },

@@ -1,12 +1,12 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { users } from './users';
 
 export const notes = pgTable('notes', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
-  content: text('content').notNull(),
+  content: json('content').notNull(),
   color: text('color'),
   directory: text('directory'),
   deletedAt: timestamp('deleted_at'),

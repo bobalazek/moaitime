@@ -1,19 +1,7 @@
-import { Plate, PlateContent } from '@udecode/plate-common';
 import { useEffect, useState } from 'react';
 
 import { Note } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
-
-const initialValue = [
-  {
-    type: 'p',
-    children: [
-      {
-        text: 'This is editable plain text with react and history plugins, just like a <textarea>!',
-      },
-    ],
-  },
-];
 
 export const NoteEditor = ({ note }: { note: Note }) => {
   const [data, setData] = useState(note);
@@ -39,9 +27,7 @@ export const NoteEditor = ({ note }: { note: Note }) => {
           }}
         />
       </div>
-      <Plate initialValue={initialValue}>
-        <PlateContent />
-      </Plate>
+      <div>TODO: add editor</div>
     </div>
   );
 };

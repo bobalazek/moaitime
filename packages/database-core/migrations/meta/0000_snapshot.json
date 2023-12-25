@@ -1,5 +1,5 @@
 {
-  "id": "c0d6325b-4cde-4851-8db9-bfb3dddecfde",
+  "id": "c0bf8784-204d-403a-bbb9-400f77bb20a4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -529,7 +529,7 @@
         },
         "content": {
           "name": "content",
-          "type": "text",
+          "type": "json",
           "primaryKey": false,
           "notNull": true
         },

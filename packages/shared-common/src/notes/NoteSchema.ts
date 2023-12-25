@@ -1,9 +1,17 @@
 import { z } from 'zod';
 
+const JsonBaseSchema = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null()]));
+
+const JsonSchema = z.lazy(() =>
+  z.union([JsonBaseSchema, z.array(JsonBaseSchema), z.record(z.string(), JsonBaseSchema)])
+);
+
+export const NoteContentSchema = z.array(z.record(z.string(), JsonSchema));
+
 export const NoteSchema = z.object({
   id: z.string(),
   title: z.string(),
-  content: z.string(),
+  content: NoteContentSchema,
   color: z.string().nullable(),
   directory: z.string().nullable(),
   deletedAt: z.string().nullable(),

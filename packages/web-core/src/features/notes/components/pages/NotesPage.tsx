@@ -27,7 +27,7 @@ export default function NotesPage() {
 
   return (
     <ErrorBoundary>
-      <div className="flex flex-col" data-test="notes">
+      <div className="flex h-screen flex-col" data-test="notes">
         <NotesPageHeader />
         <div className="flex h-full flex-grow">
           <NotesPageSidebar />

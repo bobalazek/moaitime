@@ -10,7 +10,7 @@ import { cn } from '../lib/utils';
 const editorVariants = cva(
   cn(
     'relative overflow-x-auto whitespace-pre-wrap break-words',
-    'bg-background ring-offset-background placeholder:text-muted-foreground min-h-[80px] w-full rounded-md px-3 py-2 text-sm focus-visible:outline-none',
+    'bg-background ring-offset-background placeholder:text-muted-foreground min-h-[80px] w-full rounded-md px-6 py-4 text-sm focus-visible:outline-none',
     '[&_[data-slate-placeholder]]:text-muted-foreground [&_[data-slate-placeholder]]:!opacity-100',
     '[&_[data-slate-placeholder]]:top-[auto_!important]',
     '[&_strong]:font-bold'

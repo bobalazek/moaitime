@@ -7,6 +7,7 @@ import {
 } from '@udecode/plate-basic-marks';
 import { useEditorReadOnly } from '@udecode/plate-common';
 
+import { EmojiDropdownMenu } from './emoji-dropdown-menu';
 import { Icons } from './icons';
 import { InsertDropdownMenu } from './insert-dropdown-menu';
 import { MarkToolbarButton } from './mark-toolbar-button';
@@ -31,7 +32,6 @@ export function FixedToolbarButtons() {
               <InsertDropdownMenu />
               <TurnIntoDropdownMenu />
             </ToolbarGroup>
-
             <ToolbarGroup>
               <MarkToolbarButton tooltip="Bold (⌘+B)" nodeType={MARK_BOLD}>
                 <Icons.bold />
@@ -42,7 +42,6 @@ export function FixedToolbarButtons() {
               <MarkToolbarButton tooltip="Underline (⌘+U)" nodeType={MARK_UNDERLINE}>
                 <Icons.underline />
               </MarkToolbarButton>
-
               <MarkToolbarButton tooltip="Strikethrough (⌘+⇧+M)" nodeType={MARK_STRIKETHROUGH}>
                 <Icons.strikethrough />
               </MarkToolbarButton>
@@ -50,6 +49,7 @@ export function FixedToolbarButtons() {
                 <Icons.code />
               </MarkToolbarButton>
             </ToolbarGroup>
+            <EmojiDropdownMenu />
           </>
         )}
 

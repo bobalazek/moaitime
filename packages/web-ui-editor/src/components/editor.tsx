@@ -18,17 +18,17 @@ const editorVariants = cva(
   {
     variants: {
       variant: {
-        outline: 'border border-input',
+        outline: 'border-input border',
         ghost: '',
       },
       focused: {
-        true: 'ring-2 ring-ring ring-offset-2',
+        true: 'ring-ring ring-2 ring-offset-2',
       },
       disabled: {
         true: 'cursor-not-allowed opacity-50',
       },
       focusRing: {
-        true: 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        true: 'focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2',
         false: '',
       },
       size: {

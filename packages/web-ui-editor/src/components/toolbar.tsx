@@ -9,7 +9,7 @@ import { ToggleProps, toggleVariants } from './toggle';
 import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from './tooltip';
 
 const toolbarVariants = cva(
-  'relative flex select-none items-stretch gap-1 bg-background align-middle'
+  'bg-background relative flex select-none items-stretch gap-1 align-middle'
 );
 
 export const linkVariants = cva('font-medium underline underline-offset-4');

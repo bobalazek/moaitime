@@ -3,6 +3,7 @@ import { ELEMENT_BLOCKQUOTE } from '@udecode/plate-block-quote';
 import { focusEditor, insertEmptyElement, useEditorRef } from '@udecode/plate-common';
 import { ELEMENT_H1, ELEMENT_H2, ELEMENT_H3 } from '@udecode/plate-heading';
 import { ELEMENT_PARAGRAPH } from '@udecode/plate-paragraph';
+import { Fragment } from 'react';
 
 import {
   DropdownMenu,
@@ -135,7 +136,7 @@ export function InsertDropdownMenu(props: DropdownMenuProps) {
         className="flex max-h-[500px] min-w-0 flex-col gap-0.5 overflow-y-auto"
       >
         {items.map(({ items: nestedItems, label }, index) => (
-          <React.Fragment key={label}>
+          <Fragment key={label}>
             {index !== 0 && <DropdownMenuSeparator />}
 
             <DropdownMenuLabel>{label}</DropdownMenuLabel>
@@ -204,7 +205,7 @@ export function InsertDropdownMenu(props: DropdownMenuProps) {
                 {itemLabel}
               </DropdownMenuItem>
             ))}
-          </React.Fragment>
+          </Fragment>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

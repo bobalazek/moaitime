@@ -1,4 +1,5 @@
 import { PlateElement, PlateElementProps } from '@udecode/plate-common';
+import { forwardRef } from 'react';
 
 import { cn } from '../lib/utils';
 
@@ -6,7 +7,7 @@ export interface PlateTableRowElementProps extends PlateElementProps {
   hideBorder?: boolean;
 }
 
-const TableRowElement = React.forwardRef<
+const TableRowElement = forwardRef<
   React.ElementRef<typeof PlateElement>,
   PlateTableRowElementProps
 >(({ hideBorder, children, ...props }, ref) => {

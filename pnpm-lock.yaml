@@ -615,6 +615,9 @@ importers:
       '@moaitime/web-ui':
         specifier: workspace:*
         version: link:../web-ui
+      '@moaitime/web-ui-editor':
+        specifier: workspace:*
+        version: link:../web-ui-editor
       clsx:
         specifier: ^2.0.0
         version: 2.0.0
@@ -938,6 +941,9 @@ importers:
       cmdk:
         specifier: ^0.2.0
         version: 0.2.0(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
       lucide-react:
         specifier: ^0.292.0
         version: 0.292.0(react@18.2.0)

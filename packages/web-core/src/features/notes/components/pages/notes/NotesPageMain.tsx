@@ -11,7 +11,7 @@ const NotesPageMain = () => {
   };
 
   return (
-    <main className="w-full p-4" data-test="notes--main">
+    <main className="h-full w-full overflow-auto p-4" data-test="notes--main">
       {!selectedNote && (
         <div className="flex h-full flex-col items-center justify-center text-center text-3xl text-gray-400">
           <div>No note selected</div>

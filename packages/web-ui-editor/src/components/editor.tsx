@@ -3,6 +3,7 @@ import type { VariantProps } from 'class-variance-authority';
 
 import { PlateContent } from '@udecode/plate-common';
 import { cva } from 'class-variance-authority';
+import { forwardRef } from 'react';
 
 import { cn } from '../lib/utils';
 
@@ -45,7 +46,7 @@ const editorVariants = cva(
 
 export type EditorProps = PlateContentProps & VariantProps<typeof editorVariants>;
 
-const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
+const Editor = forwardRef<HTMLDivElement, EditorProps>(
   ({ className, disabled, focused, focusRing, readOnly, size, variant, ...props }, ref) => {
     return (
       <div ref={ref} className="relative w-full">
@@ -68,7 +69,8 @@ const Editor = React.forwardRef<HTMLDivElement, EditorProps>(
       </div>
     );
   }
-);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+) as any;
 Editor.displayName = 'Editor';
 
 export { Editor };

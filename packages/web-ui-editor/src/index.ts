@@ -1,2 +1,2 @@
 // Editor
-// TODO
+export * from './components/plate-editor';

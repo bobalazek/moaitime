@@ -3,7 +3,7 @@ import {
   ResizeHandle as ResizeHandlePrimitive,
 } from '@udecode/plate-resizable';
 import { cva, VariantProps } from 'class-variance-authority';
-import React, { ComponentProps } from 'react';
+import React, { ComponentProps, forwardRef } from 'react';
 
 import { cn } from '../lib/utils';
 
@@ -33,7 +33,7 @@ const resizeHandleVariants = cva(cn('absolute z-40'), {
   },
 });
 
-const ResizeHandle = React.forwardRef<
+const ResizeHandle = forwardRef<
   React.ElementRef<typeof ResizeHandlePrimitive>,
   ComponentProps<typeof ResizeHandlePrimitive> &
     Omit<VariantProps<typeof resizeHandleVariants>, 'direction'>
@@ -56,7 +56,7 @@ const resizableVariants = cva('', {
   },
 });
 
-const Resizable = React.forwardRef<
+const Resizable = forwardRef<
   React.ElementRef<typeof ResizablePrimitive>,
   ComponentProps<typeof ResizablePrimitive> & VariantProps<typeof resizableVariants>
 >(({ className, align, ...props }, ref) => (

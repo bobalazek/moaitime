@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { Note } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
+import { PlateEditor } from '@moaitime/web-ui-editor';
 
 export const NoteEditor = ({ note }: { note: Note }) => {
   const [data, setData] = useState(note);
@@ -27,7 +28,17 @@ export const NoteEditor = ({ note }: { note: Note }) => {
           }}
         />
       </div>
-      <div>TODO: add editor</div>
+      <PlateEditor
+        value={data.content}
+        onChange={(value) => {
+          setData((current) => {
+            return {
+              ...current,
+              content: value,
+            };
+          });
+        }}
+      />
     </div>
   );
 };

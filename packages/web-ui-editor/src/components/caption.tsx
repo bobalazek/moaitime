@@ -3,7 +3,7 @@ import {
   CaptionTextarea as CaptionTextareaPrimitive,
 } from '@udecode/plate-caption';
 import { cva, VariantProps } from 'class-variance-authority';
-import React, { ComponentProps } from 'react';
+import { ComponentProps, forwardRef } from 'react';
 
 import { cn } from '../lib/utils';
 
@@ -20,7 +20,7 @@ const captionVariants = cva('max-w-full', {
   },
 });
 
-const Caption = React.forwardRef<
+const Caption = forwardRef<
   React.ElementRef<typeof CaptionPrimitive>,
   ComponentProps<typeof CaptionPrimitive> & VariantProps<typeof captionVariants>
 >(({ className, align, ...props }, ref) => (
@@ -28,7 +28,7 @@ const Caption = React.forwardRef<
 ));
 Caption.displayName = 'Caption';
 
-const CaptionTextarea = React.forwardRef<
+const CaptionTextarea = forwardRef<
   React.ElementRef<typeof CaptionTextareaPrimitive>,
   ComponentProps<typeof CaptionTextareaPrimitive>
 >(({ className, ...props }, ref) => (
@@ -42,7 +42,8 @@ const CaptionTextarea = React.forwardRef<
     )}
     {...props}
   />
-));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+)) as any;
 CaptionTextarea.displayName = 'CaptionTextarea';
 
 export { Caption, CaptionTextarea };

@@ -33,6 +33,7 @@
     "@moaitime/shared-common": "workspace:*",
     "@moaitime/tsconfig-config": "workspace:*",
     "@moaitime/web-ui": "workspace:*",
+    "@moaitime/web-ui-editor": "workspace:*",
     "clsx": "^2.0.0",
     "colord": "^2.9.3",
     "date-fns": "^2.30.0",

@@ -18,7 +18,7 @@ import {
   useTableElementState,
   useTableMergeState,
 } from '@udecode/plate-table';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { useReadOnly, useSelected } from 'slate-react';
 
 import { cn } from '../lib/utils';
@@ -107,7 +107,7 @@ const TableBordersDropdownMenuContent = forwardRef<
 });
 TableBordersDropdownMenuContent.displayName = 'TableBordersDropdownMenuContent';
 
-const TableFloatingToolbar = React.forwardRef<
+const TableFloatingToolbar = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   PopoverContentProps
 >(({ children, ...props }, ref) => {
@@ -186,7 +186,7 @@ const TableFloatingToolbar = React.forwardRef<
 });
 TableFloatingToolbar.displayName = 'TableFloatingToolbar';
 
-const TableElement = React.forwardRef<React.ElementRef<typeof PlateElement>, PlateElementProps>(
+const TableElement = forwardRef<React.ElementRef<typeof PlateElement>, PlateElementProps>(
   ({ className, children, ...props }, ref) => {
     const { colSizes, isSelectingCell, minColumnWidth, marginLeft } = useTableElementState();
     const { props: tableProps, colGroupProps } = useTableElement();

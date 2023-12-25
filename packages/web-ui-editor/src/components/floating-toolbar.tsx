@@ -6,6 +6,7 @@ import {
   useFloatingToolbar,
   useFloatingToolbarState,
 } from '@udecode/plate-floating';
+import { forwardRef } from 'react';
 
 import { cn } from '../lib/utils';
 import { Toolbar, ToolbarProps } from './toolbar';
@@ -14,7 +15,7 @@ export interface FloatingToolbarProps extends ToolbarProps {
   state?: FloatingToolbarState;
 }
 
-const FloatingToolbar = React.forwardRef<React.ElementRef<typeof Toolbar>, FloatingToolbarProps>(
+const FloatingToolbar = forwardRef<React.ElementRef<typeof Toolbar>, FloatingToolbarProps>(
   ({ state, children, ...props }, componentRef) => {
     const floatingToolbarState = useFloatingToolbarState({
       ...state,

@@ -1,5 +1,3 @@
-'use client';
-
 import {
   CODE_BLOCK_LANGUAGES,
   CODE_BLOCK_LANGUAGES_POPULAR,

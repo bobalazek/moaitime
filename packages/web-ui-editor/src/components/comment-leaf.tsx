@@ -1,5 +1,3 @@
-'use client';
-
 import { TCommentText, useCommentLeaf, useCommentLeafState } from '@udecode/plate-comments';
 import { PlateLeaf, PlateLeafProps, Value } from '@udecode/plate-common';
 

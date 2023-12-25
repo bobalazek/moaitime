@@ -6,6 +6,7 @@ import {
 } from '@udecode/plate-common';
 import { ELEMENT_H1 } from '@udecode/plate-heading';
 import { ELEMENT_PARAGRAPH } from '@udecode/plate-paragraph';
+import { Children, cloneElement } from 'react';
 
 import { cn } from '../lib/utils';
 
@@ -14,8 +15,8 @@ export const Placeholder = (props: PlaceholderProps) => {
 
   const { enabled } = usePlaceholderState(props);
 
-  return React.Children.map(children, (child) => {
-    return React.cloneElement(child, {
+  return Children.map(children, (child) => {
+    return cloneElement(child, {
       className: child.props.className,
       nodeProps: {
         ...nodeProps,
@@ -29,9 +30,13 @@ export const Placeholder = (props: PlaceholderProps) => {
   });
 };
 
-export const withPlaceholder = createNodeHOC(Placeholder);
-export const withPlaceholdersPrimitive = createNodesHOC(Placeholder);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const withPlaceholder = createNodeHOC(Placeholder) as any;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const withPlaceholdersPrimitive = createNodesHOC(Placeholder) as any;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const withPlaceholders = (components: any) =>
   withPlaceholdersPrimitive(components, [
     {

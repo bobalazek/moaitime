@@ -10,6 +10,7 @@ export interface MentionElementProps extends PlateElementProps<Value, TMentionEl
    * Prefix rendered before mention
    */
   prefix?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onClick?: (mentionNode: any) => void;
   renderLabel?: (mentionable: TMentionElement) => string;
 }

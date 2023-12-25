@@ -1,5 +1,3 @@
-'use client';
-
 import { CommentEditActions, CommentEditTextarea } from '@udecode/plate-comments';
 
 import { cn } from '../lib/utils';

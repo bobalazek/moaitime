@@ -1,8 +1,7 @@
-'use client';
-
 import { ClassNames, PlateElementProps, TEditor } from '@udecode/plate-common';
 import { DragItemNode, useDraggable, useDraggableState } from '@udecode/plate-dnd';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
+// eslint-disable-next-line import/named
 import { DropTargetMonitor } from 'react-dnd';
 
 import { cn } from '../lib/utils';
@@ -66,6 +65,7 @@ export interface DraggableProps
     props: {
       monitor: DropTargetMonitor<DragItemNode, unknown>;
       dragItem: DragItemNode;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       nodeRef: any;
       id: string;
     }

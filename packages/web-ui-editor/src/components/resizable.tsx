@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Resizable as ResizablePrimitive,
   ResizeHandle as ResizeHandlePrimitive,

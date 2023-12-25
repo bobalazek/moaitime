@@ -1,14 +1,16 @@
 import { getHandler, PlateElement, PlateElementProps, Value } from '@udecode/plate-common';
 import { TMentionElement } from '@udecode/plate-mention';
+import { forwardRef } from 'react';
 import { useFocused, useSelected } from 'slate-react';
 
 import { cn } from '../lib/utils';
 
 export interface MentionInputElementProps extends PlateElementProps<Value, TMentionElement> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onClick?: (mentionNode: any) => void;
 }
 
-const MentionInputElement = React.forwardRef<
+const MentionInputElement = forwardRef<
   React.ElementRef<typeof PlateElement>,
   MentionInputElementProps
 >(({ className, onClick, ...props }, ref) => {

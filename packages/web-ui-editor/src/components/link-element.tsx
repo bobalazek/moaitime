@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { PlateElement, PlateElementProps, Value } from '@udecode/plate-common';
 import { TLinkElement, useLink } from '@udecode/plate-link';
+import { forwardRef } from 'react';
 
 import { cn } from '../lib/utils';
 
-const LinkElement = React.forwardRef<
+const LinkElement = forwardRef<
   React.ElementRef<typeof PlateElement>,
   PlateElementProps<Value, TLinkElement>
 >(({ className, children, ...props }, ref) => {

@@ -15,7 +15,7 @@ export function ExcalidrawElement({
     <PlateElement {...props}>
       <div contentEditable={false}>
         <div className="h-[600px]">
-          {Excalidraw && <Excalidraw {...nodeProps} {...(excalidrawProps as any)} />}
+          {Excalidraw && <Excalidraw {...nodeProps} {...excalidrawProps} />}
         </div>
       </div>
       {children}

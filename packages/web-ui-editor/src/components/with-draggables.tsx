@@ -19,10 +19,13 @@ import { Draggable, DraggableProps } from './draggable';
 export const withDraggable = (
   Component: FC,
   options?: WithDraggableOptions<Partial<Omit<DraggableProps, 'editor' | 'element' | 'children'>>>
-) => withDraggablePrimitive<DraggableProps>(Draggable, Component, options as any);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+) => withDraggablePrimitive<DraggableProps>(Draggable, Component, options as any) as any;
 
-export const withDraggablesPrimitive = createNodesWithHOC(withDraggable);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const withDraggablesPrimitive = createNodesWithHOC(withDraggable) as any;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const withDraggables = (components: any) => {
   return withDraggablesPrimitive(components, [
     {

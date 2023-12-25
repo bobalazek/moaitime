@@ -1,5 +1,3 @@
-'use client';
-
 import {
   CommentResolveButton as CommentResolveButtonPrimitive,
   useComment,

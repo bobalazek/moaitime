@@ -1,5 +1,3 @@
-'use client';
-
 import './code-block-element.css';
 
 import { TCodeBlockElement, useCodeBlockElementState } from '@udecode/plate-code-block';

@@ -1,5 +1,3 @@
-'use client';
-
 import { PortalBody, useComposedRef } from '@udecode/plate-common';
 import {
   flip,

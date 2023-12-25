@@ -1,5 +1,3 @@
-'use client';
-
 import { useUserById } from '@udecode/plate-comments';
 
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';

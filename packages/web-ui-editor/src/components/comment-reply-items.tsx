@@ -1,5 +1,3 @@
-'use client';
-
 import { SCOPE_ACTIVE_COMMENT, useCommentReplies } from '@udecode/plate-comments';
 
 import { CommentItem } from './comment-item';

@@ -57,5 +57,5 @@ export * from './components/textarea';
 
 // Toast
 export * from './components/toast';
-export * from './components/toast/toaster';
-export * from './components/toast/use-toast';
+export * from './components/toaster';
+export * from './components/use-toast';

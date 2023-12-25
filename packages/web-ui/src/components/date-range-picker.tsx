@@ -3,14 +3,14 @@ import type { FC } from 'react';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { cn } from '../../utils';
-import { Button } from '../button';
-import { Calendar } from '../calendar';
-import { DateInput } from '../date-input';
-import { Label } from '../label';
-import { Popover, PopoverContent, PopoverTrigger } from '../popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../select';
-import { Switch } from '../switch';
+import { cn } from '../lib/utils';
+import { Button } from './button';
+import { Calendar } from './calendar';
+import { DateInput } from './date-input';
+import { Label } from './label';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import { Switch } from './switch';
 
 export interface DateRangePickerProps {
   /** Click handler for applying the updates from DateRangePicker. */

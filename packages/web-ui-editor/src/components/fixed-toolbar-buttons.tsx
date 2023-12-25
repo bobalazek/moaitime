@@ -6,9 +6,11 @@ import {
   MARK_UNDERLINE,
 } from '@udecode/plate-basic-marks';
 import { useEditorReadOnly } from '@udecode/plate-common';
+import { MARK_BG_COLOR, MARK_COLOR } from '@udecode/plate-font';
 
+import { ColorDropdownMenu } from './color-dropdown-menu';
 import { EmojiDropdownMenu } from './emoji-dropdown-menu';
-import { Icons } from './icons';
+import { Icons, iconVariants } from './icons';
 import { InsertDropdownMenu } from './insert-dropdown-menu';
 import { MarkToolbarButton } from './mark-toolbar-button';
 import { ModeDropdownMenu } from './mode-dropdown-menu';
@@ -48,6 +50,14 @@ export function FixedToolbarButtons() {
               <MarkToolbarButton tooltip="Code (⌘+E)" nodeType={MARK_CODE}>
                 <Icons.code />
               </MarkToolbarButton>
+            </ToolbarGroup>
+            <ToolbarGroup>
+              <ColorDropdownMenu nodeType={MARK_COLOR} tooltip="Text Color">
+                <Icons.color className={iconVariants({ variant: 'toolbar' })} />
+              </ColorDropdownMenu>
+              <ColorDropdownMenu nodeType={MARK_BG_COLOR} tooltip="Highlight Color">
+                <Icons.bg className={iconVariants({ variant: 'toolbar' })} />
+              </ColorDropdownMenu>
             </ToolbarGroup>
             <EmojiDropdownMenu />
           </>

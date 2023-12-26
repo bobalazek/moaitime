@@ -31,7 +31,7 @@ export default function CalendarPage() {
     reloadSelectedDays,
   } = useCalendarStore();
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
-  const isInitialized = useRef(false); // Prevents react to trigger useEffect twice
+  const isInitializedRef = useRef(false); // Prevents react to trigger useEffect twice
   const navigate = useNavigate();
   const location = useLocation();
   const [targetUri, setTargetUri] = useState(location.pathname);
@@ -53,11 +53,11 @@ export default function CalendarPage() {
   }, 50);
 
   useEffect(() => {
-    if (isInitialized.current) {
+    if (isInitializedRef.current) {
       return;
     }
 
-    isInitialized.current = true;
+    isInitializedRef.current = true;
 
     updateStateByUrl();
     loadCalendars();

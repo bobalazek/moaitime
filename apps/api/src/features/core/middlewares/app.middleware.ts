@@ -1,7 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
-import { APP_VERSION, APP_VERSION_HEADER } from '../app.constants';
+import { APP_VERSION } from '@moaitime/shared-common';
+
+import { APP_VERSION_HEADER } from '../app.constants';
 
 @Injectable()
 export class AppMiddleware implements NestMiddleware {

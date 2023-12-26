@@ -318,8 +318,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       ? format(selectedDays[selectedDays.length - 1], 'yyyy-MM-dd')
       : undefined;
 
-    const response = await loadCalendarEntries(from, to);
-    const calendarEntries = response.data ?? [];
+    const calendarEntries = await loadCalendarEntries(from, to);
 
     set({ calendarEntries });
 

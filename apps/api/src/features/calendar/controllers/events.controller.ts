@@ -21,7 +21,7 @@ import { getTimezonedEndOfDay, getTimezonedStartOfDay } from '@moaitime/shared-c
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateEventDto } from '../dtos/create-event.dto';
-import { UpdateEventDto } from '../dtos/update-task.dto';
+import { UpdateEventDto } from '../dtos/update-event.dto';
 
 @Controller('/api/v1/events')
 export class EventsController {
@@ -82,7 +82,7 @@ export class EventsController {
     @Param('id') id: string,
     @Body() body: UpdateEventDto
   ): Promise<AbstractResponseDto<Event>> {
-    const canView = await eventsManager.userCanView(req.user.id, id);
+    const canView = await eventsManager.userCanUpdate(req.user.id, id);
     if (!canView) {
       throw new ForbiddenException('You cannot view this event');
     }
@@ -118,7 +118,7 @@ export class EventsController {
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
   async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Event>> {
-    const hasAccess = await calendarsManager.userCanView(req.user.id, id);
+    const hasAccess = await calendarsManager.userCanDelete(req.user.id, id);
     if (!hasAccess) {
       throw new NotFoundException('Calendar not found');
     }

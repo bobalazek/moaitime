@@ -164,7 +164,7 @@ export const loadCalendarEntries = async (from?: Date | string, to?: Date | stri
     method: 'GET',
   });
 
-  return response;
+  return response.data as CalendarEntry[];
 };
 
 export const loadCalendarEntriesYearly = async (year: number) => {

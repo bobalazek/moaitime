@@ -2,14 +2,16 @@ import { create } from 'zustand';
 
 import { CreateNote, Note, UpdateNote } from '@moaitime/shared-common';
 
-import { addNote, editNote, loadNotes } from '../utils/NotesHelpers';
+import { addNote, deleteNote, editNote, getNote, loadNotes } from '../utils/NotesHelpers';
 
 export type NotesStore = {
   /********** Notes **********/
   notes: Note[];
   loadNotes: () => Promise<Note[]>;
+  getNote: (noteId: string) => Promise<Note>;
   addNote: (note: CreateNote) => Promise<Note>;
   editNote: (noteId: string, note: UpdateNote) => Promise<Note>;
+  deleteNote: (noteId: string) => Promise<Note>;
   // Selected
   selectedNote: Note | null;
   selectedNoteData: CreateNote | UpdateNote | null; // The cloned object of the selectedNote, so we don't mutate the original
@@ -31,6 +33,11 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return notes;
   },
+  getNote: async (noteId: string) => {
+    const note = await getNote(noteId);
+
+    return note;
+  },
   addNote: async (note: CreateNote) => {
     const { loadNotes, setSelectedNoteData } = get();
     const addedNote = await addNote(note);
@@ -48,11 +55,24 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return editedNote;
   },
+  deleteNote: async (noteId: string) => {
+    const { loadNotes, setSelectedNote } = get();
+    const deletedNote = await deleteNote(noteId);
+
+    setSelectedNote(null);
+
+    await loadNotes();
+
+    return deletedNote;
+  },
   // Selected
   selectedNote: null,
   selectedNoteData: null,
   setSelectedNote: async (selectedNote: Note | null) => {
-    set({ selectedNote });
+    set({
+      selectedNote,
+      selectedNoteData: selectedNote,
+    });
 
     return selectedNote;
   },
@@ -62,19 +82,22 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     return selectedNoteData;
   },
   saveSelectedNoteData: async () => {
-    const { selectedNoteData } = get();
+    const { selectedNote, selectedNoteData, editNote, addNote } = get();
 
     if (!selectedNoteData) {
       return null;
     }
 
-    // TODO
+    const savedNote = selectedNote
+      ? await editNote(selectedNote.id, selectedNoteData)
+      : await addNote(selectedNoteData as CreateNote);
 
-    return null;
+    set({ selectedNote: savedNote });
+
+    return savedNote;
   },
   setDraftAsSelectedNoteData: async () => {
     const selectedNoteData = {
-      id: '',
       title: '',
     } as CreateNote;
 

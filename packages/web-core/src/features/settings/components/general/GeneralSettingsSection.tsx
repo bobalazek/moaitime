@@ -1,3 +1,5 @@
+import { APP_VERSION } from '@moaitime/shared-common';
+
 import { useAuthStore } from '../../../auth/state/authStore';
 import TimezoneSelector from '../../../core/components/selectors/TimezoneSelector';
 import GeneralSettingsSectionHeaderText from './GeneralSettingsSectionHeaderText';
@@ -60,6 +62,9 @@ export default function GeneralSettingsSection() {
         </div>
         <p className="mt-2 text-xs text-gray-400">Fancy some colours? Or not. You decide.</p>
       </div>
+      <hr className="my-4" />
+      <h4 className="text-lg font-bold">Version</h4>
+      <p className="mb-4 text-sm text-gray-400">MoaiTime v{APP_VERSION}</p>
     </div>
   );
 }

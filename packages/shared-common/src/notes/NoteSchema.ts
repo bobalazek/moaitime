@@ -1,12 +1,17 @@
 import { z } from 'zod';
 
-const JsonBaseSchema = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null()]));
+export const NoteNodeSchema = z.object({
+  type: z.string().optional(),
+  text: z.string().optional(),
+});
 
-const JsonSchema = z.lazy(() =>
-  z.union([JsonBaseSchema, z.array(JsonBaseSchema), z.record(z.string(), JsonBaseSchema)])
-);
+export const NodeNodeWithChildrenSchema = NoteNodeSchema.extend({
+  children: z.array(NoteNodeSchema).optional(),
+});
 
-export const NoteContentSchema = z.array(z.record(z.string(), JsonSchema));
+export const NoteContentSchema = z.array(NodeNodeWithChildrenSchema, {
+  required_error: 'Note content must be provided',
+});
 
 export const NoteSchema = z.object({
   id: z.string(),
@@ -24,7 +29,7 @@ export const CreateNoteSchema = z.object({
   title: z.string().min(1, {
     message: 'Note title must be provided',
   }),
-  content: NoteContentSchema.optional(),
+  content: NoteContentSchema,
   color: z.string().nullable().optional(),
 });
 

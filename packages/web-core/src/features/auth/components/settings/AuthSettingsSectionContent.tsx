@@ -80,7 +80,8 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
   return (
     <div>
       <div className="mb-4">
-        <h4 className="mb-2 text-lg font-bold">Display Name</h4>
+        <h4 className="text-lg font-bold">Display Name</h4>
+        <p className="mb-2 text-xs text-gray-400">What shall we call you?</p>
         <Input
           value={userDisplayName}
           onChange={(event) => {
@@ -89,7 +90,8 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
         />
       </div>
       <div className="mb-4">
-        <h4 className="mb-2 text-lg font-bold">Email</h4>
+        <h4 className="text-lg font-bold">Email</h4>
+        <p className="mb-2 text-xs text-gray-400">What is your email?</p>
         <Input
           value={userEmail}
           onChange={(event) => {
@@ -135,7 +137,8 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
         )}
       </div>
       <div className="mb-4">
-        <h4 className="mb-2 text-lg font-bold">Password</h4>
+        <h4 className="text-lg font-bold">Password</h4>
+        <p className="mb-2 text-xs text-gray-400">What is your password?</p>
         <Button
           size="sm"
           variant="outline"
@@ -154,7 +157,8 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
       </div>
       <hr className="mb-4" />
       <div className="mb-4">
-        <h4 className="mb-2 text-lg font-bold">Logout</h4>
+        <h4 className="text-lg font-bold">Logout</h4>
+        <p className="mb-2 text-xs text-gray-400">Want to get a breath of fresh air?</p>
         <Button
           size="sm"
           variant="destructive"
@@ -162,7 +166,24 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
             await logout();
           }}
         >
-          Logout
+          Log me out
+        </Button>
+      </div>
+      <hr className="mb-4" />
+      <div className="mb-4">
+        <h4 className="text-lg font-bold">Delete Account</h4>
+        <p className="mb-2 text-xs text-gray-400">
+          Ayou you really sure you want to leave us? After pressing the button below, we will send
+          you the last email to confirm your choice. Your account will then be premanetely deleted.
+        </p>
+        <Button
+          size="sm"
+          variant="destructive"
+          onClick={async () => {
+            alert('TODO');
+          }}
+        >
+          Delete my account
         </Button>
       </div>
     </div>

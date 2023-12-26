@@ -6,6 +6,7 @@ import {
   ResponseInterface,
   SortDirectionEnum,
   Task,
+  UpdateList,
   UpdateTask,
 } from '@moaitime/shared-common';
 
@@ -50,7 +51,7 @@ export const addList = async (list: CreateList): Promise<List> => {
   return response.data as List;
 };
 
-export const editList = async (listId: string, list: Partial<List>): Promise<List> => {
+export const editList = async (listId: string, list: UpdateList): Promise<List> => {
   const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists/${listId}`, {
     method: 'PUT',
     body: JSON.stringify(list),

@@ -175,7 +175,7 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await calendarsManager.userCanView(req.user.id, id);
+    const canView = await calendarsManager.userCanDelete(req.user.id, id);
     if (!canView) {
       throw new ForbiddenException('You cannot view this calendar');
     }

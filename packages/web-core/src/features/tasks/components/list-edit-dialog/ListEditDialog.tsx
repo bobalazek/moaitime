@@ -55,12 +55,12 @@ export default function ListEditDialog() {
 
   const onSaveButtonClick = async () => {
     try {
-      const editedList = selectedListDialog
+      const savedList = selectedListDialog
         ? await editList(selectedListDialog.id, data as UpdateList)
         : await addList(data as CreateList);
 
       toast({
-        title: `List "${editedList.name}" saved`,
+        title: `List "${savedList.name}" saved`,
         description: `You have successfully saved the list.`,
       });
 

@@ -24,3 +24,6 @@ export const LISTS_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];
 // Calendar
 export const CALENDARS_MAX_PER_USER_COUNT = 10;
 export const CALENDARS_MAX_EVENTS_PER_CALENDAR_COUNT = 500;
+
+// Notes
+export const NOTES_MAX_PER_USER_COUNT = 100;

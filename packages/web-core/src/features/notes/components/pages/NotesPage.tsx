@@ -1,13 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
+import { useNotesStore } from '../../state/notesStore';
 import NotesPageHeader from './notes/NotesPageHeader';
 import NotesPageMain from './notes/NotesPageMain';
 import NotesPageSidebar from './notes/NotesPageSidebar';
 
 export default function NotesPage() {
+  const { loadNotes } = useNotesStore();
+  const isInitializedRef = useRef(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isInitializedRef.current) {
+      return;
+    }
+
+    isInitializedRef.current = true;
+
+    loadNotes();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const onKeydown = (e: KeyboardEvent) => {

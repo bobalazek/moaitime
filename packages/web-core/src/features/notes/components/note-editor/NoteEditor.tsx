@@ -4,12 +4,13 @@ import { PlateEditor } from '@moaitime/web-ui-editor';
 import { useNotesStore } from '../../state/notesStore';
 
 export const NoteEditor = () => {
-  const { selectedNoteData, setSelectedNoteData } = useNotesStore();
+  const { selectedNote, selectedNoteData, setSelectedNoteData } = useNotesStore();
 
   return (
     <div className="flex h-full flex-col">
       <div className="mb-4">
         <Input
+          autoFocus
           className="p-8 text-2xl"
           placeholder="Title"
           value={selectedNoteData?.title ?? ''}
@@ -22,6 +23,7 @@ export const NoteEditor = () => {
         />
       </div>
       <PlateEditor
+        key={selectedNote?.id}
         value={selectedNoteData?.content}
         onChange={(value) => {
           setSelectedNoteData({

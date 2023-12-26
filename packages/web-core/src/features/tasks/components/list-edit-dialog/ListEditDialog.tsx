@@ -42,7 +42,6 @@ export default function ListEditDialog() {
 
     const parsedSelectedList = UpdateListSchema.safeParse(selectedListDialog);
     if (!parsedSelectedList.success) {
-      console.log(parsedSelectedList.error);
       toast({
         title: 'Oops!',
         description: zodErrorToString(parsedSelectedList.error),

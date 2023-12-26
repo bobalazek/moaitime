@@ -15,28 +15,26 @@ import { TurnIntoDropdownMenu } from './turn-into-dropdown-menu';
 export function FloatingToolbarButtons() {
   const readOnly = useEditorReadOnly();
 
+  if (readOnly) return null;
+
   return (
     <>
-      {!readOnly && (
-        <>
-          <TurnIntoDropdownMenu />
-          <MarkToolbarButton nodeType={MARK_BOLD} tooltip="Bold (⌘+B)">
-            <Icons.bold />
-          </MarkToolbarButton>
-          <MarkToolbarButton nodeType={MARK_ITALIC} tooltip="Italic (⌘+I)">
-            <Icons.italic />
-          </MarkToolbarButton>
-          <MarkToolbarButton nodeType={MARK_UNDERLINE} tooltip="Underline (⌘+U)">
-            <Icons.underline />
-          </MarkToolbarButton>
-          <MarkToolbarButton nodeType={MARK_STRIKETHROUGH} tooltip="Strikethrough (⌘+⇧+M)">
-            <Icons.strikethrough />
-          </MarkToolbarButton>
-          <MarkToolbarButton nodeType={MARK_CODE} tooltip="Code (⌘+E)">
-            <Icons.code />
-          </MarkToolbarButton>
-        </>
-      )}
+      <TurnIntoDropdownMenu />
+      <MarkToolbarButton nodeType={MARK_BOLD} tooltip="Bold (⌘+B)">
+        <Icons.bold />
+      </MarkToolbarButton>
+      <MarkToolbarButton nodeType={MARK_ITALIC} tooltip="Italic (⌘+I)">
+        <Icons.italic />
+      </MarkToolbarButton>
+      <MarkToolbarButton nodeType={MARK_UNDERLINE} tooltip="Underline (⌘+U)">
+        <Icons.underline />
+      </MarkToolbarButton>
+      <MarkToolbarButton nodeType={MARK_STRIKETHROUGH} tooltip="Strikethrough (⌘+⇧+M)">
+        <Icons.strikethrough />
+      </MarkToolbarButton>
+      <MarkToolbarButton nodeType={MARK_CODE} tooltip="Code (⌘+E)">
+        <Icons.code />
+      </MarkToolbarButton>
       <MoreDropdownMenu />
     </>
   );

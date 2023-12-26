@@ -18,6 +18,7 @@ import {
   ExternalLink,
   Eye,
   FileCode,
+  Film,
   GripVertical,
   Heading1,
   Heading2,
@@ -40,6 +41,7 @@ import {
   MoreHorizontal,
   Outdent,
   PaintBucket,
+  PenTool,
   Pilcrow,
   Plus,
   Quote,
@@ -194,6 +196,7 @@ export const Icons = {
   h4: Heading4,
   h5: Heading5,
   h6: Heading6,
+  hr: Minus,
   image: Image,
   indent: Indent,
   italic: Italic,
@@ -220,6 +223,8 @@ export const Icons = {
   unlink: Link2Off,
   ungroup: Ungroup,
   viewing: Eye,
+  embed: Film,
+  excalidraw: PenTool,
 
   // www
   gitHub: (props: LucideProps) => (

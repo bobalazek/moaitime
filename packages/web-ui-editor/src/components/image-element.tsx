@@ -24,10 +24,12 @@ const ImageElement = withHOC(
                 readOnly,
               }}
             >
-              <ResizeHandle
-                options={{ direction: 'left' }}
-                className={mediaResizeHandleVariants({ direction: 'left' })}
-              />
+              {!readOnly && (
+                <ResizeHandle
+                  options={{ direction: 'left' }}
+                  className={mediaResizeHandleVariants({ direction: 'left' })}
+                />
+              )}
               <Image
                 className={cn(
                   'block w-full max-w-full cursor-pointer object-cover px-0',
@@ -37,17 +39,17 @@ const ImageElement = withHOC(
                 alt=""
                 {...nodeProps}
               />
-              <ResizeHandle
-                options={{ direction: 'right' }}
-                className={mediaResizeHandleVariants({ direction: 'right' })}
-              />
+              {!readOnly && (
+                <ResizeHandle
+                  options={{ direction: 'right' }}
+                  className={mediaResizeHandleVariants({ direction: 'right' })}
+                />
+              )}
             </Resizable>
-
             <Caption align={align} style={{ width }}>
               <CaptionTextarea placeholder="Write a caption..." readOnly={readOnly} />
             </Caption>
           </figure>
-
           {children}
         </PlateElement>
       </MediaPopover>

@@ -13,6 +13,9 @@ importers:
 
   .:
     dependencies:
+      '@udecode/plate-indent-list':
+        specifier: ^28.0.0
+        version: 28.0.0(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.23.0)(slate-history@0.100.0)(slate-hyperscript@0.100.0)(slate-react@0.101.5)(slate@0.101.5)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -870,6 +873,9 @@ importers:
         specifier: ^28.0.0
         version: 28.0.0(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.23.0)(slate-history@0.100.0)(slate-hyperscript@0.100.0)(slate-react@0.101.5)(slate@0.101.5)
       '@udecode/plate-indent':
+        specifier: ^28.0.0
+        version: 28.0.0(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.23.0)(slate-history@0.100.0)(slate-hyperscript@0.100.0)(slate-react@0.101.5)(slate@0.101.5)
+      '@udecode/plate-indent-list':
         specifier: ^28.0.0
         version: 28.0.0(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.23.0)(slate-history@0.100.0)(slate-hyperscript@0.100.0)(slate-react@0.101.5)(slate@0.101.5)
       '@udecode/plate-juice':

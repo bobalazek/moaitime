@@ -11,7 +11,15 @@ import {
   useEditorRef,
   useEditorSelector,
 } from '@udecode/plate-common';
-import { ELEMENT_H1, ELEMENT_H2, ELEMENT_H3 } from '@udecode/plate-heading';
+import {
+  ELEMENT_H1,
+  ELEMENT_H2,
+  ELEMENT_H3,
+  ELEMENT_H4,
+  ELEMENT_H5,
+  ELEMENT_H6,
+} from '@udecode/plate-heading';
+import { toggleList, unwrapList } from '@udecode/plate-list';
 import { ELEMENT_PARAGRAPH } from '@udecode/plate-paragraph';
 
 import {
@@ -52,23 +60,41 @@ const items = [
     icon: Icons.h3,
   },
   {
+    value: ELEMENT_H4,
+    label: 'Heading 4',
+    description: 'Heading 4',
+    icon: Icons.h4,
+  },
+  {
+    value: ELEMENT_H5,
+    label: 'Heading 5',
+    description: 'Heading 5',
+    icon: Icons.h5,
+  },
+  {
+    value: ELEMENT_H6,
+    label: 'Heading 6',
+    description: 'Heading 6',
+    icon: Icons.h6,
+  },
+  {
+    value: 'ul',
+    label: 'Bulleted list',
+    description: 'Bulleted list',
+    icon: Icons.ul,
+  },
+  {
+    value: 'ol',
+    label: 'Numbered list',
+    description: 'Numbered list',
+    icon: Icons.ol,
+  },
+  {
     value: ELEMENT_BLOCKQUOTE,
     label: 'Quote',
     description: 'Quote (⌘+⇧+.)',
     icon: Icons.blockquote,
   },
-  // {
-  //   value: 'ul',
-  //   label: 'Bulleted list',
-  //   description: 'Bulleted list',
-  //   icon: Icons.ul,
-  // },
-  // {
-  //   value: 'ol',
-  //   label: 'Numbered list',
-  //   description: 'Numbered list',
-  //   icon: Icons.ol,
-  // },
 ];
 
 const defaultItem = items.find((item) => item.value === ELEMENT_PARAGRAPH)!;
@@ -115,18 +141,12 @@ export function TurnIntoDropdownMenu(props: DropdownMenuProps) {
           className="flex flex-col gap-0.5"
           value={value}
           onValueChange={(type) => {
-            // if (type === 'ul' || type === 'ol') {
-            //   if (settingsStore.get.checkedId(KEY_LIST_STYLE_TYPE)) {
-            //     toggleIndentList(editor, {
-            //       listStyleType: type === 'ul' ? 'disc' : 'decimal',
-            //     });
-            //   } else if (settingsStore.get.checkedId('list')) {
-            //     toggleList(editor, { type });
-            //   }
-            // } else {
-            //   unwrapList(editor);
-            toggleNodeType(editor, { activeType: type });
-            // }
+            if (type === 'ul' || type === 'ol') {
+              toggleList(editor, { type });
+            } else {
+              unwrapList(editor);
+              toggleNodeType(editor, { activeType: type });
+            }
 
             collapseSelection(editor);
             focusEditor(editor);

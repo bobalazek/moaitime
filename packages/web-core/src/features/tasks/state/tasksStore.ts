@@ -115,7 +115,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return addedList;
   },
-  editList: async (listId: string, list: Partial<List>) => {
+  editList: async (listId: string, list: UpdateList) => {
     const { loadLists, reloadSelectedList } = get();
     const editedList = await editList(listId, list);
 

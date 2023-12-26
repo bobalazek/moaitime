@@ -24,7 +24,7 @@ export const CreateNoteSchema = z.object({
   title: z.string().min(1, {
     message: 'Note title must be provided',
   }),
-  conent: z.string().optional(),
+  content: NoteContentSchema.optional(),
   color: z.string().nullable().optional(),
 });
 

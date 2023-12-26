@@ -1,4 +1,4 @@
-import { API_URL, Note, ResponseInterface } from '@moaitime/shared-common';
+import { API_URL, CreateNote, Note, ResponseInterface } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
@@ -9,4 +9,30 @@ export const loadNotes = async () => {
   });
 
   return response.data as Note[];
+};
+
+export const addNote = async (note: CreateNote): Promise<Note> => {
+  const response = await fetchJson<ResponseInterface<Note>>(`${API_URL}/api/v1/notes`, {
+    method: 'POST',
+    body: JSON.stringify(note),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data as Note;
+};
+
+export const editNote = async (noteId: string, note: Partial<Note>): Promise<Note> => {
+  const response = await fetchJson<ResponseInterface<Note>>(`${API_URL}/api/v1/notes/${noteId}`, {
+    method: 'PUT',
+    body: JSON.stringify(note),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data as Note;
 };

@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
-
-import { Note } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
 import { PlateEditor } from '@moaitime/web-ui-editor';
 
-export const NoteEditor = ({ note }: { note: Note }) => {
-  const [data, setData] = useState(note);
+import { useNotesStore } from '../../state/notesStore';
 
-  useEffect(() => {
-    setData(note);
-  }, [note]);
+export const NoteEditor = () => {
+  const { selectedNoteData, setSelectedNoteData } = useNotesStore();
 
   return (
     <div className="flex h-full flex-col">
@@ -17,25 +12,21 @@ export const NoteEditor = ({ note }: { note: Note }) => {
         <Input
           className="p-8 text-2xl"
           placeholder="Title"
-          value={data.title}
+          value={selectedNoteData?.title ?? ''}
           onChange={(event) => {
-            setData((current) => {
-              return {
-                ...current,
-                title: event.target.value,
-              };
+            setSelectedNoteData({
+              ...selectedNoteData,
+              title: event.target.value,
             });
           }}
         />
       </div>
       <PlateEditor
-        value={data.content}
+        value={selectedNoteData?.content}
         onChange={(value) => {
-          setData((current) => {
-            return {
-              ...current,
-              content: value,
-            };
+          setSelectedNoteData({
+            ...selectedNoteData,
+            content: value,
           });
         }}
       />

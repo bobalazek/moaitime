@@ -194,6 +194,54 @@ describe('calendar.cy.ts', () => {
       .should('exist');
   });
 
+  it('should open edit dialog in calendar settings dialog', () => {
+    openCalendar();
+
+    openCalendarHeaderSettings();
+
+    addNewCalendar();
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
+
+    cy.getBySel('calendar--settings-sheet--calendar--name')
+      .contains('New Calendar')
+      .should('exist');
+
+    cy.getBySel('calendar--calendar-item')
+      .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .eq(1)
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
+
+    cy.getBySel('calendar--edit-dialog').should('exist');
+  });
+
+  it('should cancel edit dialog in calendar settings dialog', () => {
+    openCalendar();
+
+    openCalendarHeaderSettings();
+
+    addNewCalendar();
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
+
+    cy.getBySel('calendar--settings-sheet--calendar--name')
+      .contains('New Calendar')
+      .should('exist');
+
+    cy.getBySel('calendar--calendar-item')
+      .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .eq(1)
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="button"]').contains('Cancel').click();
+
+    cy.getBySel('calendar--edit-dialog').should('not.exist');
+  });
+
   it('should add description to a new calendar in calendar settings dialog', () => {
     openCalendar();
 
@@ -281,6 +329,21 @@ describe('calendar.cy.ts', () => {
     cy.getBySel('calendar--settings-sheet').contains('New Calendar').should('not.exist');
   });
 
+  it('should open deleted calendars dialog', () => {
+    openCalendar();
+
+    openCalendarHeaderSettings();
+
+    cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click({ force: true });
+
+    cy.getBySel('calendar--settings--my-calendars--actions')
+      .find('div[role="menuitem"]')
+      .contains('Show Deleted Calendars')
+      .click({ force: true });
+
+    cy.getBySel('calendar--deleted-calendars-dialog').should('exist');
+  });
+
   it('should show deleted calendar in calendar settings dialog', () => {
     openCalendar();
 
@@ -352,9 +415,87 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--deleted-calendars-dialog').find('[data-test="dialog--close"]').click();
 
+    cy.wait(1000);
+
     cy.getBySel('calendar--settings-sheet')
       .find('div[data-test="calendar--calendar-item"]')
       .contains('New Calendar')
       .should('exist');
+  });
+
+  it('should permanently delete calendar in Deleted Calendars', () => {
+    openCalendar();
+
+    openCalendarHeaderSettings();
+
+    addNewCalendar();
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
+
+    cy.getBySel('calendar--settings-sheet--calendar--name')
+      .contains('New Calendar')
+      .should('exist');
+
+    cy.getBySel('calendar--calendar-item')
+      .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .eq(1)
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Delete').click();
+
+    cy.getBySel('calendar--settings-sheet').contains('New Calendar').should('not.exist');
+
+    cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
+
+    cy.getBySel('calendar--settings--my-calendars--actions')
+      .contains('Show Deleted Calendars')
+      .click();
+
+    cy.getBySel('calendar--deleted-calendars-dialog')
+      .find('div[data-test="calendar--calendar-item"]')
+      .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Hard Delete')
+      .click({ force: true });
+
+    cy.getBySel('calendar--calendar-delete-alert-dialog').contains('Confirm').click();
+
+    cy.getBySel('calendar--deleted-calendars-dialog').find('[data-test="dialog--close"]').click();
+
+    cy.wait(1000);
+
+    cy.getBySel('calendar--settings-sheet')
+      .find('div[data-test="calendar--calendar-item"]')
+      .contains('New Calendar')
+      .should('not.exist');
+  });
+
+  it('should delete calendar in Edit Dialog', () => {
+    openCalendar();
+
+    openCalendarHeaderSettings();
+
+    addNewCalendar();
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
+
+    cy.getBySel('calendar--calendar-item')
+      .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .eq(1)
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
+
+    cy.getBySel('calendar--edit-dialog').find('button[type="button"]').contains('Delete').click();
+
+    cy.wait(1000);
+
+    cy.getBySel('calendar--settings-sheet')
+      .find('div[data-test="calendar--calendar-item"]')
+      .contains('New Calendar')
+      .should('not.exist');
   });
 });

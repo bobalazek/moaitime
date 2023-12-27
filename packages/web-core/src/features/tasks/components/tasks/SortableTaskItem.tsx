@@ -3,9 +3,9 @@ import { CSS } from '@dnd-kit/utilities';
 
 import { Task } from '@moaitime/shared-common';
 
-import TaskComponent from './Task';
+import TaskItem from './TaskItem';
 
-const SortableTask = ({ task }: { task: Task }) => {
+const SortableTaskItem = ({ task }: { task: Task }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: task.id,
   });
@@ -22,9 +22,9 @@ const SortableTask = ({ task }: { task: Task }) => {
       {...attributes}
       {...listeners}
     >
-      <TaskComponent task={task} />
+      <TaskItem task={task} />
     </div>
   );
 };
 
-export default SortableTask;
+export default SortableTaskItem;

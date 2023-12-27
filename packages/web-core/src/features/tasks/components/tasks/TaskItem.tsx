@@ -6,7 +6,7 @@ import { Task as TaskType } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
-import TaskActions from './TaskActions';
+import TaskItemActions from './TaskItemActions';
 
 function setCursorToEnd(element: HTMLElement) {
   const range = document.createRange();
@@ -19,7 +19,7 @@ function setCursorToEnd(element: HTMLElement) {
   selection?.addRange(range);
 }
 
-const TaskDueDate = ({ task }: { task: TaskType }) => {
+const TaskItemDueDate = ({ task }: { task: TaskType }) => {
   if (!task.dueDate) {
     return null;
   }
@@ -48,7 +48,7 @@ const TaskDueDate = ({ task }: { task: TaskType }) => {
   );
 };
 
-const Task = memo(({ task }: { task: TaskType }) => {
+const TaskItem = memo(({ task }: { task: TaskType }) => {
   const { editTask, completeTask, uncompleteTask } = useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
@@ -157,16 +157,16 @@ const Task = memo(({ task }: { task: TaskType }) => {
         >
           {task.name}
         </div>
-        <TaskDueDate task={task} />
+        <TaskItemDueDate task={task} />
         {task.deletedAt && (
           <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
             (deleted at {new Date(task.deletedAt).toLocaleString()})
           </p>
         )}
-        <TaskActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
+        <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
       </div>
     </div>
   );
 });
 
-export default Task;
+export default TaskItem;

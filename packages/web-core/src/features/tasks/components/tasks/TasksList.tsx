@@ -20,7 +20,7 @@ import { useEffect, useRef, useState } from 'react';
 import { TasksListSortFieldEnum } from '@moaitime/shared-common';
 
 import { useTasksStore } from '../../state/tasksStore';
-import SortableTask from './SortableTask';
+import SortableTaskItem from './SortableTaskItem';
 
 const modifiers = [restrictToVerticalAxis];
 const collisionDetection = closestCenter;
@@ -93,7 +93,7 @@ export default function TasksList() {
             )}
             {selectedListTasks.map((task) => (
               <motion.div key={task.id} layout={allowAnimations}>
-                <SortableTask task={task} />
+                <SortableTaskItem task={task} />
               </motion.div>
             ))}
           </AnimatePresence>

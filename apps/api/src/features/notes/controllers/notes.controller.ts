@@ -16,6 +16,7 @@ import { Request } from 'express';
 import { Note } from '@moaitime/database-core';
 import { notesManager } from '@moaitime/database-services';
 import { NOTES_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
+import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
@@ -27,10 +28,15 @@ export class NotesController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Note[]>> {
-    const data = await notesManager.findManyByUserIdAndSearch(
-      req.user.id,
-      req.query.search as string
-    );
+    const search = req.query.search as string;
+    const sortField = req.query.sortField as NotesListSortFieldEnum;
+    const sortDirection = req.query.sortDirection as SortDirectionEnum;
+
+    const data = await notesManager.findManyByUserIdWithOptions(req.user.id, {
+      search,
+      sortField,
+      sortDirection,
+    });
 
     return {
       success: true,

@@ -1,6 +1,7 @@
-import { and, count, DBQueryConfig, desc, eq, ilike, isNull } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, ilike, isNull } from 'drizzle-orm';
 
 import { getDatabase, NewNote, Note, notes } from '@moaitime/database-core';
+import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
 export class NotesManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Note[]> {
@@ -14,22 +15,31 @@ export class NotesManager {
     });
   }
 
-  async findManyByUserIdAndSearch(userId: string, search?: string): Promise<Note[]> {
-    search = search?.trim().toLowerCase();
+  async findManyByUserIdWithOptions(
+    userId: string,
+    options?: {
+      search?: string;
+      sortField?: NotesListSortFieldEnum;
+      sortDirection?: SortDirectionEnum;
+    }
+  ): Promise<Note[]> {
+    let where = and(eq(notes.userId, userId), isNull(notes.deletedAt));
+    let orderBy = desc(notes.createdAt);
 
-    if (!search) {
-      return this.findManyByUserId(userId);
+    if (options?.search) {
+      where = and(ilike(notes.title, `%${options.search}%`));
     }
 
-    const where = and(
-      eq(notes.userId, userId),
-      isNull(notes.deletedAt),
-      ilike(notes.title, `%${search}%`)
-    );
+    if (options?.sortField) {
+      const direction = options?.sortDirection ?? SortDirectionEnum.ASC;
+      const field = notes[options.sortField] ?? notes.title;
+
+      orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
+    }
 
     return getDatabase().query.notes.findMany({
       where,
-      orderBy: desc(notes.createdAt),
+      orderBy,
     });
   }
 

@@ -1,7 +1,13 @@
 import { debounce } from 'lodash';
 import { create } from 'zustand';
 
-import { CreateNote, Note, UpdateNote } from '@moaitime/shared-common';
+import {
+  CreateNote,
+  Note,
+  NotesListSortFieldEnum,
+  SortDirectionEnum,
+  UpdateNote,
+} from '@moaitime/shared-common';
 
 import { addNote, deleteNote, editNote, getNote, loadNotes } from '../utils/NotesHelpers';
 
@@ -13,6 +19,11 @@ export type NotesStore = {
   addNote: (note: CreateNote) => Promise<Note>;
   editNote: (noteId: string, note: UpdateNote) => Promise<Note>;
   deleteNote: (noteId: string) => Promise<Note>;
+  // Sort
+  notesSortField: NotesListSortFieldEnum;
+  notesSortDirection: SortDirectionEnum;
+  setNotesSortField: (notesSortField: NotesListSortFieldEnum) => void;
+  setNotesSortDirection: (notesSortDirection: SortDirectionEnum) => void;
   // Search
   notesSearch: string;
   setNotesSearch: (notesSearch: string) => Promise<string>;
@@ -33,9 +44,13 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   /********** Notes **********/
   notes: [],
   loadNotes: async () => {
-    const { notesSearch } = get();
+    const { notesSearch, notesSortField, notesSortDirection } = get();
 
-    const notes = await loadNotes(notesSearch);
+    const notes = await loadNotes({
+      search: notesSearch,
+      sortField: notesSortField,
+      sortDirection: notesSortDirection,
+    });
 
     set({ notes });
 
@@ -72,6 +87,23 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     await loadNotes();
 
     return deletedNote;
+  },
+  // Sort
+  notesSortField: NotesListSortFieldEnum.CREATED_AT,
+  notesSortDirection: SortDirectionEnum.DESC,
+  setNotesSortField: (notesSortField: NotesListSortFieldEnum) => {
+    const { loadNotes } = get();
+
+    set({ notesSortField });
+
+    loadNotes();
+  },
+  setNotesSortDirection: (notesSortDirection: SortDirectionEnum) => {
+    const { loadNotes } = get();
+
+    set({ notesSortDirection });
+
+    loadNotes();
   },
   // Search
   notesSearch: '',

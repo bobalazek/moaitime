@@ -1,12 +1,36 @@
-import { API_URL, CreateNote, Note, ResponseInterface, UpdateNote } from '@moaitime/shared-common';
+import {
+  API_URL,
+  CreateNote,
+  Note,
+  NotesListSortFieldEnum,
+  ResponseInterface,
+  SortDirectionEnum,
+  UpdateNote,
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Notes **********/
-export const loadNotes = async (search?: string): Promise<Note[]> => {
+export const loadNotes = async (options?: {
+  search?: string;
+  sortField?: NotesListSortFieldEnum;
+  sortDirection?: SortDirectionEnum;
+}): Promise<Note[]> => {
+  const search = options?.search ?? '';
+  const sortField = options?.sortField ?? NotesListSortFieldEnum.CREATED_AT;
+  const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
+
   const url = new URL(`${API_URL}/api/v1/notes`);
   if (search) {
     url.searchParams.append('search', search);
+  }
+
+  if (sortField) {
+    url.searchParams.append('sortField', sortField);
+  }
+
+  if (sortDirection) {
+    url.searchParams.append('sortDirection', sortDirection);
   }
 
   const response = await fetchJson<ResponseInterface<Note[]>>(url.toString(), {

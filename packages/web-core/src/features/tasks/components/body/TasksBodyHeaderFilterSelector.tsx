@@ -1,6 +1,10 @@
 import { FaFilter } from 'react-icons/fa';
 
-import { SortDirectionEnum, sortOptions, TasksListSortFieldEnum } from '@moaitime/shared-common';
+import {
+  listSortOptions,
+  SortDirectionEnum,
+  TasksListSortFieldEnum,
+} from '@moaitime/shared-common';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -52,7 +56,7 @@ export default function TasksBodyHeaderFilterSelector() {
             setSelectedListTasksSortField(value as TasksListSortFieldEnum);
           }}
         >
-          {sortOptions.map((sortOption) => (
+          {listSortOptions.map((sortOption) => (
             <DropdownMenuRadioItem
               key={sortOption.value}
               className="cursor-pointer"

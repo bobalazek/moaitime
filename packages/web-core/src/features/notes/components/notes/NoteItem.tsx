@@ -18,11 +18,8 @@ const NoteItem = ({ note, isSelected }: { note: Note; isSelected?: boolean }) =>
       }}
       data-test="notes--note"
     >
-      <div className="truncate text-sm" title={note.title} data-test="notes--note--title">
+      <div className="truncate" title={note.title} data-test="notes--note--title">
         {note.title}
-      </div>
-      <div className="text-[0.65rem] text-gray-400" data-test="notes--note--created-at">
-        {new Date(note.createdAt).toLocaleDateString()}
       </div>
     </div>
   );

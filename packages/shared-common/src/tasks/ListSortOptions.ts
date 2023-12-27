@@ -6,7 +6,7 @@ export enum TasksListSortFieldEnum {
   UPDATED_AT = 'updatedAt',
 }
 
-export const sortOptions = [
+export const listSortOptions = [
   {
     label: 'Order',
     value: TasksListSortFieldEnum.ORDER,

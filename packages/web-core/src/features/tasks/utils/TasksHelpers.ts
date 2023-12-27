@@ -6,6 +6,7 @@ import {
   ResponseInterface,
   SortDirectionEnum,
   Task,
+  TasksListSortFieldEnum,
   UpdateList,
   UpdateTask,
 } from '@moaitime/shared-common';
@@ -78,13 +79,13 @@ export const getTasksForList = async (
   options?: {
     includeCompleted?: boolean;
     includeDeleted?: boolean;
-    sortField?: string;
+    sortField?: TasksListSortFieldEnum;
     sortDirection?: SortDirectionEnum;
   }
 ): Promise<Task[]> => {
   const includeCompleted = options?.includeCompleted ?? true;
   const includeDeleted = options?.includeDeleted ?? false;
-  const sortField = options?.sortField ?? 'createdAt';
+  const sortField = options?.sortField ?? TasksListSortFieldEnum.CREATED_AT;
   const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
   const url = `${API_URL}/api/v1/tasks?listId=${listId}&includeCompleted=${
     includeCompleted ? 'true' : 'false'

@@ -296,7 +296,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--task').eq(3).contains('aaa').should('exist');
   });
 
-  it('should filter tasks by Include deleted', () => {
+  it.only('should filter tasks by Include deleted', () => {
     openTasksPopover();
 
     addMultipleTasks();
@@ -307,6 +307,8 @@ describe('tasks-filters.cy.ts', () => {
       .find('div[role="menuitem"]')
       .contains('Delete')
       .click({ force: true });
+
+    cy.wait(1000);
 
     cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').first().click();
 

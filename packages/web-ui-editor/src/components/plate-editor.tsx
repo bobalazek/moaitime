@@ -342,7 +342,17 @@ export function PlateEditor({
     <DndProvider backend={HTML5Backend}>
       <TooltipProvider>
         <CommentsProvider>
-          <Plate plugins={plugins} value={value} onChange={onChange}>
+          <Plate
+            plugins={plugins}
+            value={value}
+            onChange={(newValue) => {
+              // There is an issue with Plate or Slate, where it will trigger a change event on focus,
+              // so this is a workaround to prevent that.
+              if (onChange && newValue !== value) {
+                onChange(newValue);
+              }
+            }}
+          >
             <FixedToolbar className="mb-2">
               <FixedToolbarButtons />
             </FixedToolbar>

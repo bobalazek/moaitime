@@ -1,11 +1,26 @@
-import { Button, useToast } from '@moaitime/web-ui';
+import { FaEllipsisV, FaTrash } from 'react-icons/fa';
+
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  useToast,
+} from '@moaitime/web-ui';
 
 import { useNotesStore } from '../../../state/notesStore';
 
 const NotesPageHeaderButtons = () => {
   const { toast } = useToast();
-  const { selectedNote, selectedNoteData, setSelectedNote, saveSelectedNoteData, deleteNote } =
-    useNotesStore();
+  const {
+    selectedNote,
+    selectedNoteData,
+    selectedNoteDataChanged,
+    setSelectedNote,
+    saveSelectedNoteData,
+    deleteNote,
+  } = useNotesStore();
 
   if (!selectedNoteData) {
     return null;
@@ -29,6 +44,15 @@ const NotesPageHeaderButtons = () => {
   };
 
   const onCancelButtonClick = () => {
+    if (selectedNoteDataChanged) {
+      const response = confirm(
+        'You have unsaved changes. Are you sure you want to stop editing this note?'
+      );
+      if (!response) {
+        return;
+      }
+    }
+
     setSelectedNote(null);
   };
 
@@ -47,16 +71,37 @@ const NotesPageHeaderButtons = () => {
 
   return (
     <div className="flex gap-2">
+      {selectedNoteDataChanged && (
+        <div className="text-muted-foreground flex items-center text-xs">(unsaved changes)</div>
+      )}
       {selectedNote && (
-        <Button size="sm" variant="destructive" className="h-8" onClick={onDeleteButtonClick}>
-          Delete
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="rounded-full p-1 text-sm"
+              data-test="notes--header--note-actions--dropdown-menu--trigger-button"
+            >
+              <FaEllipsisV className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent data-test="notes--header--note-actions--dropdown-menu">
+            <DropdownMenuItem
+              variant="destructive"
+              className="cursor-pointer"
+              onClick={onDeleteButtonClick}
+            >
+              <FaTrash className="mr-2 h-4 w-4" />
+              <span>Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
       <Button size="sm" variant="outline" className="h-8" onClick={onCancelButtonClick}>
         Cancel
       </Button>
       <Button size="sm" className="h-8" onClick={onSaveButtonClick}>
-        {selectedNote?.id ? 'Save Note' : 'Create Note'}
+        {selectedNote && <>Save Note</>}
+        {!selectedNote && <>Create Note</>}
       </Button>
     </div>
   );

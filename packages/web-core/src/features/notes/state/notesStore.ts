@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import { create } from 'zustand';
 
 import { CreateNote, Note, UpdateNote } from '@moaitime/shared-common';
@@ -12,9 +13,14 @@ export type NotesStore = {
   addNote: (note: CreateNote) => Promise<Note>;
   editNote: (noteId: string, note: UpdateNote) => Promise<Note>;
   deleteNote: (noteId: string) => Promise<Note>;
+  // Search
+  notesSearch: string;
+  setNotesSearch: (notesSearch: string) => Promise<string>;
+  loadNotesDebounced: () => Promise<void>;
   // Selected
   selectedNote: Note | null;
   selectedNoteData: CreateNote | UpdateNote | null; // The cloned object of the selectedNote, so we don't mutate the original
+  selectedNoteDataChanged: boolean;
   setSelectedNote: (note: Note | null) => Promise<Note | null>;
   setSelectedNoteData: (
     noteData: CreateNote | UpdateNote | null
@@ -27,7 +33,9 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   /********** Notes **********/
   notes: [],
   loadNotes: async () => {
-    const notes = await loadNotes();
+    const { notesSearch } = get();
+
+    const notes = await loadNotes(notesSearch);
 
     set({ notes });
 
@@ -65,19 +73,49 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return deletedNote;
   },
+  // Search
+  notesSearch: '',
+  setNotesSearch: async (notesSearch: string) => {
+    const { loadNotesDebounced } = get();
+
+    set({ notesSearch });
+
+    loadNotesDebounced();
+
+    return notesSearch;
+  },
+  loadNotesDebounced: (() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let debouncedFn: any = null;
+
+    return async () => {
+      const { loadNotes } = get();
+
+      if (!debouncedFn) {
+        debouncedFn = debounce(loadNotes, 500);
+      }
+
+      debouncedFn();
+    };
+  })(),
   // Selected
   selectedNote: null,
   selectedNoteData: null,
+  selectedNoteDataChanged: false,
   setSelectedNote: async (selectedNote: Note | null) => {
     set({
       selectedNote,
       selectedNoteData: selectedNote,
+      selectedNoteDataChanged: false,
     });
 
     return selectedNote;
   },
   setSelectedNoteData: async (selectedNoteData: CreateNote | UpdateNote | null) => {
-    set({ selectedNoteData });
+    set({
+      selectedNoteData,
+      selectedNoteDataChanged: true,
+    });
 
     return selectedNoteData;
   },
@@ -92,7 +130,10 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
       ? await editNote(selectedNote.id, selectedNoteData)
       : await addNote(selectedNoteData as CreateNote);
 
-    set({ selectedNote: savedNote });
+    set({
+      selectedNote: savedNote,
+      selectedNoteDataChanged: false,
+    });
 
     return savedNote;
   },
@@ -104,6 +145,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     set({
       selectedNoteData,
       selectedNote: null,
+      selectedNoteDataChanged: false,
     });
 
     return selectedNoteData;

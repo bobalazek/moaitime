@@ -667,6 +667,9 @@ importers:
       '@moaitime/tailwind-config':
         specifier: workspace:*
         version: link:../../configs/tailwind-config
+      '@types/lodash':
+        specifier: ^4.14.202
+        version: 4.14.202
       '@types/react':
         specifier: 18.2.33
         version: 18.2.33
@@ -4428,7 +4431,6 @@ packages:
 
   /@types/lodash@4.14.202:
     resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
-    dev: false
 
   /@types/mdast@3.0.15:
     resolution: {integrity: sha512-LnwD+mUEfxWMa1QpDraczIn6k0Ee3SMicuYSSzS6ZYl2gKS09EClnJYGd8Du6rfc5r/GZEk5o1mRb8TaTj03sQ==}

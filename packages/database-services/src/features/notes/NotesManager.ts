@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, DBQueryConfig, desc, eq, ilike, isNull } from 'drizzle-orm';
 
 import { getDatabase, NewNote, Note, notes } from '@moaitime/database-core';
 
@@ -10,6 +10,25 @@ export class NotesManager {
   async findManyByUserId(userId: string): Promise<Note[]> {
     return getDatabase().query.notes.findMany({
       where: and(eq(notes.userId, userId), isNull(notes.deletedAt)),
+      orderBy: desc(notes.createdAt),
+    });
+  }
+
+  async findManyByUserIdAndSearch(userId: string, search?: string): Promise<Note[]> {
+    search = search?.trim().toLowerCase();
+
+    if (!search) {
+      return this.findManyByUserId(userId);
+    }
+
+    const where = and(
+      eq(notes.userId, userId),
+      isNull(notes.deletedAt),
+      ilike(notes.title, `%${search}%`)
+    );
+
+    return getDatabase().query.notes.findMany({
+      where,
       orderBy: desc(notes.createdAt),
     });
   }

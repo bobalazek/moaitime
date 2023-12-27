@@ -27,7 +27,10 @@ export class NotesController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Note[]>> {
-    const data = await notesManager.findManyByUserId(req.user.id);
+    const data = await notesManager.findManyByUserIdAndSearch(
+      req.user.id,
+      req.query.search as string
+    );
 
     return {
       success: true,

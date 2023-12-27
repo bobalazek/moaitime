@@ -8,8 +8,9 @@ import NotesPageMain from './notes/NotesPageMain';
 import NotesPageSidebar from './notes/NotesPageSidebar';
 
 export default function NotesPage() {
-  const { loadNotes } = useNotesStore();
+  const { loadNotes, selectedNoteDataChanged } = useNotesStore();
   const isInitializedRef = useRef(false);
+  const selectedNoteDataChangedRef = useRef(selectedNoteDataChanged);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,9 +26,19 @@ export default function NotesPage() {
   }, []);
 
   useEffect(() => {
+    // Not really sure why we need separate effect for this,
+    // but otherwise it doesn't work.
+
     const onKeydown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
+
+        if (selectedNoteDataChangedRef.current) {
+          const response = confirm('You have unsaved changes. Are you sure you want to leave?');
+          if (!response) {
+            return;
+          }
+        }
 
         navigate('/');
       }
@@ -39,6 +50,10 @@ export default function NotesPage() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    selectedNoteDataChangedRef.current = selectedNoteDataChanged;
+  }, [selectedNoteDataChanged]);
 
   return (
     <ErrorBoundary>

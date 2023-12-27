@@ -1,13 +1,20 @@
 import { clsx } from 'clsx';
 
-import { Button } from '@moaitime/web-ui';
+import { Button, Input } from '@moaitime/web-ui';
 
 import { useBreakpoint } from '../../../../core/hooks/useBreakpoint';
 import { useNotesStore } from '../../../state/notesStore';
 import NoteItem from '../../notes/NoteItem';
 
 const NotesPageSidebar = () => {
-  const { notes, selectedNote, selectedNoteData, setDraftAsSelectedNoteData } = useNotesStore();
+  const {
+    notes,
+    selectedNote,
+    selectedNoteData,
+    notesSearch,
+    setNotesSearch,
+    setDraftAsSelectedNoteData,
+  } = useNotesStore();
   const isBreakpoint = useBreakpoint('md');
 
   const isVisible = isBreakpoint || (!isBreakpoint && !selectedNoteData);
@@ -24,10 +31,20 @@ const NotesPageSidebar = () => {
       )}
       data-test="notes--sidebar"
     >
+      <div className="p-2">
+        <Input
+          placeholder="Search"
+          className="text-xs"
+          type="search"
+          value={notesSearch}
+          onChange={(event) => setNotesSearch(event.target.value)}
+          data-test="notes--sidebar--search-input"
+        />
+      </div>
       <div data-test="notes--sidebar--inner">
         {notes.length === 0 && (
-          <div className="flex items-center justify-center p-4 text-sm text-gray-400">
-            No notes yet
+          <div className="flex items-center justify-center p-2 text-sm text-gray-400">
+            No notes found
           </div>
         )}
         {notes.length > 0 && (

@@ -3,8 +3,13 @@ import { API_URL, CreateNote, Note, ResponseInterface, UpdateNote } from '@moait
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Notes **********/
-export const loadNotes = async (): Promise<Note[]> => {
-  const response = await fetchJson<ResponseInterface<Note[]>>(`${API_URL}/api/v1/notes`, {
+export const loadNotes = async (search?: string): Promise<Note[]> => {
+  const url = new URL(`${API_URL}/api/v1/notes`);
+  if (search) {
+    url.searchParams.append('search', search);
+  }
+
+  const response = await fetchJson<ResponseInterface<Note[]>>(url.toString(), {
     method: 'GET',
   });
 

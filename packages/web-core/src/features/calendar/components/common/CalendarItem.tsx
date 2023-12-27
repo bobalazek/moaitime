@@ -3,7 +3,7 @@ import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
-import CalendarItemActions from './CalendarIemActions';
+import CalendarItemActions from './CalendarItemActions';
 
 export interface CalendarSettingsSheetCalendarProps {
   calendar: Calendar;

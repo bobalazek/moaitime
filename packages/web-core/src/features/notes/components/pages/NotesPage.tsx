@@ -44,7 +44,7 @@ export default function NotesPage() {
     <ErrorBoundary>
       <div className="flex h-screen flex-col" data-test="notes">
         <NotesPageHeader />
-        <div className="flex h-full flex-grow">
+        <div className="flex h-full flex-grow overflow-hidden">
           <NotesPageSidebar />
           <NotesPageMain />
         </div>

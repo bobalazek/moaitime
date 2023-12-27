@@ -72,19 +72,21 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
           align="end"
           data-test="calendar--calendar-item--actions--dropdown-menu"
         >
-          <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
-            <FaEdit className="mr-2 h-4 w-4" />
-            <span>Edit</span>
-          </DropdownMenuItem>
           {!calendar.deletedAt && (
-            <DropdownMenuItem
-              variant="destructive"
-              className="cursor-pointer"
-              onClick={onDeleteButtonClick}
-            >
-              <FaTrash className="mr-2 h-4 w-4" />
-              <span>Delete</span>
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
+                <FaEdit className="mr-2 h-4 w-4" />
+                <span>Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                className="cursor-pointer"
+                onClick={onDeleteButtonClick}
+              >
+                <FaTrash className="mr-2 h-4 w-4" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </>
           )}
           {calendar.deletedAt && (
             <>

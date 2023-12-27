@@ -101,7 +101,10 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
       title: '',
     } as CreateNote;
 
-    set({ selectedNoteData });
+    set({
+      selectedNoteData,
+      selectedNote: null,
+    });
 
     return selectedNoteData;
   },

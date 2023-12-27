@@ -6,9 +6,9 @@ import {
   ToastTitle,
   ToastViewport,
 } from './toast';
-import { useToast } from './use-toast';
+import { ToastPosition, useToast } from './use-toast';
 
-export function Toaster() {
+export function Toaster({ position }: { position?: ToastPosition }) {
   const { toasts } = useToast();
 
   return (
@@ -25,7 +25,7 @@ export function Toaster() {
           </Toast>
         );
       })}
-      <ToastViewport />
+      <ToastViewport position={position} />
     </ToastProvider>
   );
 }

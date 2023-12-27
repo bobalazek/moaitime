@@ -15,17 +15,24 @@ const ToastProvider = ToastPrimitives.Provider;
 
 const ToastViewport = forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
->(({ className, ...props }, ref) => (
-  <ToastPrimitives.Viewport
-    ref={ref}
-    className={cn(
-      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:bottom-auto sm:right-0 sm:top-0 sm:flex-col md:max-w-[420px]',
-      className
-    )}
-    {...props}
-  />
-));
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport> & { position?: ToastPosition }
+>(({ className, position, ...props }, ref) => {
+  if (!position) {
+    position = 'bottom-right';
+  }
+
+  return (
+    <ToastPrimitives.Viewport
+      ref={ref}
+      className={cn(
+        'fixed z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:flex-col md:max-w-[420px]',
+        toastPositions(position),
+        className
+      )}
+      {...props}
+    />
+  );
+});
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
@@ -44,6 +51,17 @@ const toastVariants = cva(
   }
 );
 
+const toastPositions = (position: ToastPosition) => {
+  return cn({
+    'left-0 top-0': position === 'top-left',
+    'left-1/2 top-0 -translate-x-1/2 transform': position === 'top-center',
+    'right-0 top-0': position === 'top-right',
+    'bottom-0 left-0': position === 'bottom-left',
+    'bottom-0 left-1/2 -translate-x-1/2 transform': position === 'bottom-center',
+    'bottom-0 right-0': position === 'bottom-right',
+  });
+};
+
 const Toast = forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
@@ -56,16 +74,7 @@ const Toast = forwardRef<
   return (
     <ToastPrimitives.Root
       ref={ref}
-      className={cn(
-        toastVariants({ variant }),
-        position === 'top-left' && 'left-0 top-0',
-        position === 'top-center' && 'left-1/2 top-0 -translate-x-1/2 transform',
-        position === 'top-right' && 'right-0 top-0',
-        position === 'bottom-left' && 'bottom-0 left-0',
-        position === 'bottom-center' && 'bottom-0 left-1/2 -translate-x-1/2 transform',
-        position === 'bottom-right' && 'bottom-0 right-0',
-        className
-      )}
+      className={cn(toastVariants({ variant }), toastPositions(position), className)}
       {...props}
     />
   );

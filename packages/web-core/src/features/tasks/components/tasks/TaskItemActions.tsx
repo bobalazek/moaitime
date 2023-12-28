@@ -33,6 +33,11 @@ const TaskItemActions = memo(
     const onUndeleteButtonClick = async () => {
       try {
         await undeleteTask(task.id);
+
+        toast({
+          title: `Task "${task.name}" Undeleted`,
+          description: 'The task was successfully undeleted!',
+        });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function
       }
@@ -59,6 +64,11 @@ const TaskItemActions = memo(
     const onHardDeleteButtonClick = async () => {
       try {
         await deleteTask(task.id, true);
+
+        toast({
+          title: `Task "${task.name}" Deleted`,
+          description: 'The task was successfully deleted!',
+        });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function
       }

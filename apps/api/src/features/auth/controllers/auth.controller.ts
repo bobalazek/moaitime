@@ -37,7 +37,6 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (!req.user) {
       return {
         success: false,
@@ -151,6 +150,43 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully reset your password',
+    };
+  }
+
+  @Post('request-account-deletion')
+  async requestAccountDeletion(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
+    if (!req.user) {
+      return {
+        success: false,
+      };
+    }
+
+    await authManager.requestAccountDeletion(req.user.id);
+
+    res.status(200);
+
+    return {
+      success: true,
+      message:
+        'You have successfully requested the accont deletion. Check your email and click the link to confirm.',
+    };
+  }
+
+  @Post('delete-account')
+  async deleteAccount(
+    @Body() body: TokenDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
+    await authManager.deleteAccount(body.token);
+
+    res.status(200);
+
+    return {
+      success: true,
+      message: 'You have successfully deleted your account',
     };
   }
 

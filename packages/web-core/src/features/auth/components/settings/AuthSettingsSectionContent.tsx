@@ -10,6 +10,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
   const {
     logout,
     updateAccount,
+    requestAccountDeletion,
     resendEmailConfirmation,
     cancelNewEmail,
     setAccountPasswordSettingsDialogOpen,
@@ -69,8 +70,25 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
       });
 
       toast({
-        title: `Accound saved`,
+        title: `Account saved`,
         description: `You have successfully saved your account.`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
+  const onLogoutButtonClick = async () => {
+    await logout();
+  };
+
+  const onRequestAccountDeletionClick = async () => {
+    try {
+      await requestAccountDeletion();
+
+      toast({
+        title: `Account deletion requested`,
+        description: `You have successfully requested your account deletion. Please check your inbox and follow the instructions to confirm it.`,
       });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
@@ -159,13 +177,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
       <div className="mb-4">
         <h4 className="text-lg font-bold">Logout</h4>
         <p className="mb-2 text-xs text-gray-400">Want to get a breath of fresh air?</p>
-        <Button
-          size="sm"
-          variant="destructive"
-          onClick={async () => {
-            await logout();
-          }}
-        >
+        <Button size="sm" variant="destructive" onClick={onLogoutButtonClick}>
           Log me out
         </Button>
       </div>
@@ -176,14 +188,8 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
           Ayou you really sure you want to leave us? After pressing the button below, we will send
           you the last email to confirm your choice. Your account will then be premanetely deleted.
         </p>
-        <Button
-          size="sm"
-          variant="destructive"
-          onClick={async () => {
-            alert('TODO');
-          }}
-        >
-          Delete my account
+        <Button size="sm" variant="destructive" onClick={onRequestAccountDeletionClick}>
+          Request account deletion
         </Button>
       </div>
     </div>

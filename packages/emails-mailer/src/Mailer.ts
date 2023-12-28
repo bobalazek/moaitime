@@ -5,6 +5,7 @@ import * as nodemailer from 'nodemailer';
 
 import { TestingEmailsManager, testingEmailsManager } from '@moaitime/database-services-testing';
 import {
+  AuthAccountDeletionEmail,
   AuthConfirmEmailEmail,
   AuthConfirmNewEmailEmail,
   AuthPasswordChangedEmail,
@@ -36,6 +37,12 @@ export type MailerSendAuthResetPasswordEmailOptions = {
 export type MailerSendAuthPasswordChangedEmailOptions = {
   userEmail: string;
   userDisplayName: string;
+};
+
+export type MailerSendAuthAccountDeletionEmailOptions = {
+  userEmail: string;
+  userDisplayName: string;
+  deleteAccountUrl: string;
 };
 
 export class Mailer {
@@ -94,6 +101,15 @@ export class Mailer {
     return this.send(AuthPasswordChangedEmail(rest), {
       to: userEmail,
       subject: '🔑 Password Changed for MoaiTime',
+    });
+  }
+
+  async sendAuthAccountDeletionEmail(options: MailerSendAuthAccountDeletionEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthAccountDeletionEmail(rest), {
+      to: userEmail,
+      subject: '😔 MoaiTime Account Deletion',
     });
   }
 

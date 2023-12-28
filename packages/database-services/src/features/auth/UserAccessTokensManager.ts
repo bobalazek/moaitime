@@ -58,6 +58,19 @@ export class UserAccessTokensManager {
     return rows[0];
   }
 
+  async updateOneByUserId(
+    userId: string,
+    data: Partial<NewUserAccessToken>
+  ): Promise<UserAccessToken> {
+    const rows = await getDatabase()
+      .update(userAccessTokens)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(userAccessTokens.userId, userId))
+      .returning();
+
+    return rows[0];
+  }
+
   async deleteOneById(id: string): Promise<UserAccessToken> {
     const rows = await getDatabase()
       .delete(userAccessTokens)

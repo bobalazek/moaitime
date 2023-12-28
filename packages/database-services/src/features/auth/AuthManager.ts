@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import {
+  AUTH_DELETION_REQUEST_EXPIRATION_SECONDS,
   AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS,
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
   compareHash,
@@ -288,6 +289,68 @@ export class AuthManager {
       password: hashedPassword,
       passwordResetToken: null,
       passwordResetLastRequestedAt: null,
+    });
+
+    return updatedUser;
+  }
+
+  async requestAccountDeletion(id: string): Promise<User> {
+    const user = await this._usersManager.findOneById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const now = new Date();
+    const expiresAt = user.deletionRequestedAt
+      ? addSeconds(user.deletionRequestedAt, AUTH_DELETION_REQUEST_EXPIRATION_SECONDS)
+      : null;
+
+    if (expiresAt && expiresAt.getTime() > now.getTime()) {
+      throw new Error(
+        `You already have a pending account deletion request. Check your email or try again later.`
+      );
+    }
+
+    const updatedUser = await this._usersManager.updateOneById(user.id, {
+      deletionToken: uuidv4(),
+      deletionRequestedAt: now,
+    });
+
+    await mailer.sendAuthAccountDeletionEmail({
+      userEmail: updatedUser.email,
+      userDisplayName: updatedUser.displayName,
+      deleteAccountUrl: `${WEB_URL}/delete-account?token=${updatedUser.deletionToken}`,
+    });
+
+    return updatedUser;
+  }
+
+  async deleteAccount(deletionToken: string): Promise<User> {
+    const user = await this._usersManager.findOneByDeletionToken(deletionToken);
+    if (!user) {
+      throw new Error('Invalid deletion token');
+    }
+
+    const now = new Date();
+    const expiresAt = user.deletionRequestedAt
+      ? addSeconds(user.deletionRequestedAt, AUTH_DELETION_REQUEST_EXPIRATION_SECONDS)
+      : null;
+
+    if (!expiresAt || (expiresAt && expiresAt.getTime() < now.getTime())) {
+      throw new Error(`Seems like the token already expired. Please try and request it again.`);
+    }
+
+    const updatedUser = await this._usersManager.updateOneById(user.id, {
+      email: `${user.id}@deleted-user`,
+      beforeDeletionEmail: user.email,
+      deletionToken: null,
+      deletionRequestedAt: null,
+      deletedAt: now,
+    });
+
+    await this._userAccessTokensManager.updateOneById(updatedUser.id, {
+      revokedAt: now,
+      expiresAt: now,
     });
 
     return updatedUser;

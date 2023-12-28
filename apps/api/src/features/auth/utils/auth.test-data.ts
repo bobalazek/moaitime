@@ -17,6 +17,7 @@ export const getTestUser = async (): Promise<User> => ({
   emailConfirmationToken: 'test-email-confirmation-token',
   newEmailConfirmationToken: null,
   passwordResetToken: null,
+  deletionToken: null,
   lockedReason: null,
   emailConfirmedAt: null,
   emailConfirmationLastSentAt: null,

@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import AuthConfirmEmailPage from './features/auth/components/pages/AuthConfirmEmailPage';
+import AuthDeleteAccountPage from './features/auth/components/pages/AuthDeleteAccountPage';
 import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotPasswordPage';
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
@@ -73,6 +74,7 @@ export function AppRoutes() {
           }
         />
         <Route path="/confirm-email" element={<AuthConfirmEmailPage />} />
+        <Route path="/delete-account" element={<AuthDeleteAccountPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

@@ -82,6 +82,18 @@ export class UsersManager {
     return this._fixBirthDateColumn(row);
   }
 
+  async findOneByDeletionToken(deletionToken: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.deletionToken, deletionToken),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return this._fixBirthDateColumn(row);
+  }
+
   async insertOne(data: NewUser): Promise<User> {
     const rows = await getDatabase().insert(users).values(data).returning();
 

@@ -12,6 +12,7 @@ export const LOGS_DIR = resolve(join(ROOT_DIR, 'logs'));
 // Auth
 export const AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS = 60 * 15;
 export const AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS = 60 * 15;
+export const AUTH_DELETION_REQUEST_EXPIRATION_SECONDS = 60 * 60;
 
 // Mailer
 export const MAILER_FROM = 'MoaiTime Mailer <mailer@bobalazek.com>';

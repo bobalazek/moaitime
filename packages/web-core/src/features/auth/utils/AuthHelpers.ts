@@ -114,6 +114,34 @@ export const resetPassword = async (token: string, password: string) => {
   return response;
 };
 
+export const requestAccountDeletion = async () => {
+  const response = await fetchJson<ResponseInterface>(
+    `${API_URL}/api/v1/auth/request-account-deletion`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+
+export const deleteAccount = async (token: string) => {
+  const response = await fetchJson<ResponseInterface>(`${API_URL}/api/v1/auth/delete-account`, {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response;
+};
+
 export const confirmEmail = async (token: string, isNewEmail?: boolean) => {
   const response = await fetchJson<ResponseInterface>(
     `${API_URL}/api/v1/auth/confirm-email`,

@@ -17,11 +17,13 @@ import { useTasksStore } from '../../tasks/state/tasksStore';
 import {
   cancelNewEmail,
   confirmEmail,
+  deleteAccount,
   loadAccount,
   login,
   logout,
   refreshToken,
   register,
+  requestAccountDeletion,
   requestPasswordReset,
   resendEmailConfirmation,
   resetPassword,
@@ -39,10 +41,12 @@ export type AuthStore = {
   logout: () => Promise<ResponseInterface>;
   // Register
   register: (displayName: string, email: string, password: string) => Promise<ResponseInterface>;
-  // Request Password Reset
-  requestPasswordReset: (email: string) => Promise<ResponseInterface>;
   // Reset Password
+  requestPasswordReset: (email: string) => Promise<ResponseInterface>;
   resetPassword: (token: string, password: string) => Promise<ResponseInterface>;
+  // Account Deletion
+  requestAccountDeletion: () => Promise<ResponseInterface>;
+  deleteAccount: (token: string) => Promise<ResponseInterface>;
   // Confirm Email
   confirmEmail: (token: string, isNewEmail?: boolean) => Promise<ResponseInterface>;
   // Refresh Token
@@ -99,15 +103,32 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      // Request Password Reset
+      // Reset Password
       requestPasswordReset: async (email: string) => {
         const response = await requestPasswordReset(email);
 
         return response;
       },
-      // Reset Password
       resetPassword: async (token: string, password: string) => {
         const response = await resetPassword(token, password);
+
+        return response;
+      },
+      // Account Deletion
+      requestAccountDeletion: async () => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        const response = await requestAccountDeletion();
+
+        return response;
+      },
+      deleteAccount: async (token: string) => {
+        const response = await deleteAccount(token);
+
+        set({ auth: null });
 
         return response;
       },

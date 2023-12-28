@@ -33,6 +33,7 @@ export const users = pgTable(
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),
     passwordResetToken: text('password_reset_token').unique(),
+    deletionToken: text('deletion_token').unique(),
     lockedReason: text('locked_reason'),
     emailConfirmedAt: timestamp('email_confirmed_at'),
     emailConfirmationLastSentAt: timestamp('email_confirmation_last_sent_at'),

@@ -1,3 +1,4 @@
+export * from './schema/enums';
 export * from './schema/backgrounds';
 export * from './schema/calendars';
 export * from './schema/events';
@@ -13,5 +14,6 @@ export * from './schema/teams';
 export * from './schema/teamUsers';
 export * from './schema/testingEmails';
 export * from './schema/userAccessTokens';
-export * from './schema/users';
+export * from './schema/userDataExports';
 export * from './schema/userCalendars';
+export * from './schema/users';

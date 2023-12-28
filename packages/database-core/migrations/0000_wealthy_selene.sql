@@ -1,3 +1,9 @@
+DO $$ BEGIN
+ CREATE TYPE "processing_status_enum" AS ENUM('pending', 'processing', 'processed', 'failed');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "backgrounds" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
@@ -180,6 +186,26 @@ CREATE TABLE IF NOT EXISTS "user_access_tokens" (
 	CONSTRAINT "user_access_tokens_refresh_token_unique" UNIQUE("refresh_token")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_data_exports" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"processing_status" "processing_status_enum" DEFAULT 'pending' NOT NULL,
+	"failed_error" json,
+	"started_at" timestamp,
+	"completed_at" timestamp,
+	"failed_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_calendars" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL,
+	"calendar_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"display_name" text NOT NULL,
@@ -193,6 +219,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"email_confirmation_token" text,
 	"new_email_confirmation_token" text,
 	"password_reset_token" text,
+	"deletion_token" text,
 	"locked_reason" text,
 	"email_confirmed_at" timestamp,
 	"email_confirmation_last_sent_at" timestamp,
@@ -208,28 +235,21 @@ CREATE TABLE IF NOT EXISTS "users" (
 	CONSTRAINT "users_new_email_unique" UNIQUE("new_email"),
 	CONSTRAINT "users_email_confirmation_token_unique" UNIQUE("email_confirmation_token"),
 	CONSTRAINT "users_new_email_confirmation_token_unique" UNIQUE("new_email_confirmation_token"),
-	CONSTRAINT "users_password_reset_token_unique" UNIQUE("password_reset_token")
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "user_calendars" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now(),
-	"user_id" uuid NOT NULL,
-	"calendar_id" uuid NOT NULL
+	CONSTRAINT "users_password_reset_token_unique" UNIQUE("password_reset_token"),
+	CONSTRAINT "users_deletion_token_unique" UNIQUE("deletion_token")
 );
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_id_idx" ON "organization_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_id_idx" ON "team_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "email_idx" ON "users" ("email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "new_email_idx" ON "users" ("new_email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "email_confirmation_token_idx" ON "users" ("email_confirmation_token");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "new_email_confirmation_token_idx" ON "users" ("new_email_confirmation_token");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "password_reset_token_idx" ON "users" ("password_reset_token");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "backgrounds" ADD CONSTRAINT "backgrounds_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
@@ -322,6 +342,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_access_tokens" ADD CONSTRAINT "user_access_tokens_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_data_exports" ADD CONSTRAINT "user_data_exports_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

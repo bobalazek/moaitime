@@ -1,5 +1,5 @@
 {
-  "id": "c0bf8784-204d-403a-bbb9-400f77bb20a4",
+  "id": "9e0dbe54-2695-4f41-9fde-2fe9b30ddaef",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1209,6 +1209,157 @@
         }
       }
     },
+    "user_data_exports": {
+      "name": "user_data_exports",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "processing_status": {
+          "name": "processing_status",
+          "type": "processing_status_enum",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "failed_error": {
+          "name": "failed_error",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "failed_at": {
+          "name": "failed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_data_exports_user_id_users_id_fk": {
+          "name": "user_data_exports_user_id_users_id_fk",
+          "tableFrom": "user_data_exports",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "user_calendars": {
+      "name": "user_calendars",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "calendar_id": {
+          "name": "calendar_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "user_id_idx": {
+          "name": "user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
+        "calendar_id_idx": {
+          "name": "calendar_id_idx",
+          "columns": ["calendar_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "user_calendars_user_id_users_id_fk": {
+          "name": "user_calendars_user_id_users_id_fk",
+          "tableFrom": "user_calendars",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "user_calendars_calendar_id_calendars_id_fk": {
+          "name": "user_calendars_calendar_id_calendars_id_fk",
+          "tableFrom": "user_calendars",
+          "tableTo": "calendars",
+          "columnsFrom": ["calendar_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "users": {
       "name": "users",
       "schema": "",
@@ -1283,6 +1434,12 @@
         },
         "password_reset_token": {
           "name": "password_reset_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletion_token": {
+          "name": "deletion_token",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -1410,84 +1567,26 @@
           "name": "users_password_reset_token_unique",
           "nullsNotDistinct": false,
           "columns": ["password_reset_token"]
+        },
+        "users_deletion_token_unique": {
+          "name": "users_deletion_token_unique",
+          "nullsNotDistinct": false,
+          "columns": ["deletion_token"]
         }
       }
-    },
-    "user_calendars": {
-      "name": "user_calendars",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "calendar_id": {
-          "name": "calendar_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {
-        "user_id_idx": {
-          "name": "user_id_idx",
-          "columns": ["user_id"],
-          "isUnique": false
-        },
-        "calendar_id_idx": {
-          "name": "calendar_id_idx",
-          "columns": ["calendar_id"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "user_calendars_user_id_users_id_fk": {
-          "name": "user_calendars_user_id_users_id_fk",
-          "tableFrom": "user_calendars",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "user_calendars_calendar_id_calendars_id_fk": {
-          "name": "user_calendars_calendar_id_calendars_id_fk",
-          "tableFrom": "user_calendars",
-          "tableTo": "calendars",
-          "columnsFrom": ["calendar_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "processing_status_enum": {
+      "name": "processing_status_enum",
+      "values": {
+        "pending": "pending",
+        "processing": "processing",
+        "processed": "processed",
+        "failed": "failed"
+      }
+    }
+  },
   "schemas": {},
   "_meta": {
     "schemas": {},

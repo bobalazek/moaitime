@@ -28,6 +28,7 @@ export * from './core/ColorSchema';
 export * from './core/DayOfWeek';
 export * from './core/SortDirectionEnum';
 export * from './core/ThemeEnum';
+export * from './core/ProcessingStatusEnum';
 export * from './core/Response';
 export * from './core/ErrorResponse';
 

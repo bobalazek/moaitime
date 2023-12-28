@@ -132,4 +132,25 @@ export class EventsController {
       data: updatedData,
     };
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/undelete')
+  async undelete(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<Event>> {
+    const canDelete = await eventsManager.userCanDelete(req.user.id, id);
+    if (!canDelete) {
+      throw new ForbiddenException('You cannot undelete this event');
+    }
+
+    const updatedData = await eventsManager.updateOneById(id, {
+      deletedAt: null,
+    });
+
+    return {
+      success: true,
+      data: updatedData,
+    };
+  }
 }

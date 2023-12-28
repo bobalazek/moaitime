@@ -133,4 +133,22 @@ export class NotesController {
       data: updatedData,
     };
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/undelete')
+  async undelete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Note>> {
+    const canDelete = await notesManager.userCanDelete(req.user.id, id);
+    if (!canDelete) {
+      throw new ForbiddenException('You cannot undelete this note');
+    }
+
+    const updatedData = await notesManager.updateOneById(id, {
+      deletedAt: null,
+    });
+
+    return {
+      success: true,
+      data: updatedData,
+    };
+  }
 }

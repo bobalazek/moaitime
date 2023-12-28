@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  ToastAction,
   useToast,
 } from '@moaitime/web-ui';
 
@@ -20,6 +21,7 @@ const NotesPageHeaderButtons = () => {
     setSelectedNote,
     saveSelectedNoteData,
     deleteNote,
+    undeleteNote,
   } = useNotesStore();
 
   if (!selectedNoteData) {
@@ -32,11 +34,18 @@ const NotesPageHeaderButtons = () => {
     }
 
     try {
-      await deleteNote(selectedNote.id);
+      const noteId = selectedNote.id;
+
+      await deleteNote(noteId);
 
       toast({
-        title: 'Success!',
+        title: `Note "${selectedNote.title}" Deleted`,
         description: 'You have successfully deleted the note!',
+        action: (
+          <ToastAction altText="Undo" onClick={() => undeleteNote(noteId)}>
+            Undo
+          </ToastAction>
+        ),
       });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function

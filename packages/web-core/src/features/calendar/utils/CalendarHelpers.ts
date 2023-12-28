@@ -224,6 +224,21 @@ export const deleteEvent = async (eventId: string, isHardDelete?: boolean): Prom
   return response.data as Event;
 };
 
+export const undeleteEvent = async (eventId: string): Promise<Event> => {
+  const response = await fetchJson<ResponseInterface<Event>>(
+    `${API_URL}/api/v1/events/${eventId}/undelete`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Event;
+};
+
 /********** Misc **********/
 export const getDatesForRange = (start: string, end: string) => {
   const range: string[] = [];

@@ -32,6 +32,7 @@ import {
   loadDeletedCalendars,
   removeVisibleCalendar,
   undeleteCalendar,
+  undeleteEvent,
 } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -93,6 +94,7 @@ export type CalendarStore = {
   addEvent: (event: CreateEvent) => Promise<Event>;
   editEvent: (eventId: string, event: UpdateEvent) => Promise<Event>;
   deleteEvent: (eventId: string) => Promise<Event>;
+  undeleteEvent: (eventId: string) => Promise<Event>;
 };
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
@@ -376,5 +378,14 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendarEntries();
 
     return deletedTask;
+  },
+  undeleteEvent: async (eventId: string) => {
+    const { loadCalendarEntries } = get();
+
+    const undeletedTask = await undeleteEvent(eventId);
+
+    await loadCalendarEntries();
+
+    return undeletedTask;
   },
 }));

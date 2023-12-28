@@ -19,6 +19,7 @@ import {
   Label,
   Switch,
   Textarea,
+  ToastAction,
   useToast,
 } from '@moaitime/web-ui';
 
@@ -38,6 +39,7 @@ export default function CalendarEntryEditDialog() {
     addEvent,
     editEvent,
     deleteEvent,
+    undeleteEvent,
     setSelectedCalendarEntryDialogOpen,
   } = useCalendarStore();
   const [data, setData] = useState<CreateCalendarEntry | UpdateCalendarEntry>();
@@ -65,11 +67,9 @@ export default function CalendarEntryEditDialog() {
   }, [selectedCalendarEntry, toast]);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-
   const calendarEntryExists = !!selectedCalendarEntry?.id;
   const dataTimezone = data?.timezone ?? 'UTC';
   const dataEndTimezone = data?.endTimezone ?? dataTimezone;
-
   const startDateInCurrentTimezone =
     !data?.isAllDay && data?.startsAt && dataTimezone !== generalTimezone
       ? format(
@@ -96,11 +96,18 @@ export default function CalendarEntryEditDialog() {
     }
 
     try {
-      await deleteEvent(selectedCalendarEntry.id.replace('events:', ''));
+      const eventId = selectedCalendarEntry.id.replace('events:', '');
+
+      await deleteEvent(eventId);
 
       toast({
         title: `Event "${selectedCalendarEntry.title}" deleted`,
         description: 'You have successfully deleted the event',
+        action: (
+          <ToastAction altText="Undo" onClick={() => undeleteEvent(eventId)}>
+            Undo
+          </ToastAction>
+        ),
       });
 
       setSelectedCalendarEntryDialogOpen(false, null);
@@ -114,6 +121,15 @@ export default function CalendarEntryEditDialog() {
   };
 
   const onSaveButtonClick = async () => {
+    if (!selectedCalendarEntry) {
+      toast({
+        title: 'Oops!',
+        description: 'No calendar entry selected',
+      });
+
+      return;
+    }
+
     if (!data) {
       toast({
         title: 'Oops!',
@@ -124,8 +140,9 @@ export default function CalendarEntryEditDialog() {
     }
 
     try {
+      const eventId = selectedCalendarEntry.id.replace('events:', '');
       const editedEvent = calendarEntryExists
-        ? await editEvent(selectedCalendarEntry.id.replace('events:', ''), data as UpdateEvent)
+        ? await editEvent(eventId, data as UpdateEvent)
         : await addEvent(data as CreateEvent);
 
       toast({

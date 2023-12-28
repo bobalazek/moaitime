@@ -1,4 +1,4 @@
-import { memo, MouseEvent, useState } from 'react';
+import { memo, useState } from 'react';
 import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
 import { Calendar } from '@moaitime/shared-common';
@@ -7,6 +7,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  ToastAction,
+  useToast,
 } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
@@ -18,42 +20,53 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     undeleteCalendar,
     setCalendarDeleteAlertDialogOpen,
   } = useCalendarStore();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
-  const onEditButtonClick = async (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-
+  const onEditButtonClick = async () => {
     setSelectedCalendarDialogOpen(true, calendar);
 
     setOpen(false);
   };
 
-  const onDeleteButtonClick = async (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const onDeleteButtonClick = async () => {
+    try {
+      await deleteCalendar(calendar.id);
 
-    deleteCalendar(calendar.id);
+      setOpen(false);
 
-    setOpen(false);
+      toast({
+        title: `Calendar "${calendar.name}" Deleted`,
+        description: 'The calendar was successfully deleted!',
+        action: (
+          <ToastAction altText="Undo" onClick={onUndeleteButtonClick}>
+            Undo
+          </ToastAction>
+        ),
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
-  const onUndeleteButtonClick = async (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const onUndeleteButtonClick = async () => {
+    try {
+      await undeleteCalendar(calendar.id);
 
-    undeleteCalendar(calendar.id);
-
-    setOpen(false);
+      setOpen(false);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
-  const onHardDeleteButtonClick = async (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const onHardDeleteButtonClick = async () => {
+    try {
+      setCalendarDeleteAlertDialogOpen(true, calendar);
 
-    setCalendarDeleteAlertDialogOpen(true, calendar);
-
-    setOpen(false);
+      setOpen(false);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
   };
 
   return (

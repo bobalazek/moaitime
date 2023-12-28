@@ -10,6 +10,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  ToastAction,
+  useToast,
 } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
@@ -17,8 +19,43 @@ import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDrop
 
 const TaskItemActions = memo(
   ({ task, onEditAndFocus }: { task: Task; onEditAndFocus: () => void }) => {
-    const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
     const { deleteTask, undeleteTask, moveTask, setSelectedTaskDialogOpen } = useTasksStore();
+    const { toast } = useToast();
+    const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
+
+    const onUndeleteButtonClick = async () => {
+      try {
+        await undeleteTask(task.id);
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
+    };
+
+    const onDeleteButtonClick = async () => {
+      try {
+        await deleteTask(task.id);
+
+        toast({
+          title: `Task "${task.name}" Deleted`,
+          description: 'The task was successfully deleted!',
+          action: (
+            <ToastAction altText="Undo" onClick={onUndeleteButtonClick}>
+              Undo
+            </ToastAction>
+          ),
+        });
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
+    };
+
+    const onHardDeleteButtonClick = async () => {
+      try {
+        await deleteTask(task.id, true);
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
+    };
 
     return (
       <div className="absolute right-0 top-0 ml-2">
@@ -78,9 +115,7 @@ const TaskItemActions = memo(
                 <DropdownMenuItem
                   variant="destructive"
                   className="cursor-pointer"
-                  onClick={async () => {
-                    await deleteTask(task.id);
-                  }}
+                  onClick={onDeleteButtonClick}
                 >
                   <FaTrash className="mr-2 h-4 w-4" />
                   <span>Delete</span>
@@ -88,21 +123,14 @@ const TaskItemActions = memo(
               )}
               {task.deletedAt && (
                 <>
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={async () => {
-                      await undeleteTask(task.id);
-                    }}
-                  >
+                  <DropdownMenuItem className="cursor-pointer" onClick={onUndeleteButtonClick}>
                     <FaHistory className="mr-2 h-4 w-4" />
                     <span>Undelete</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     variant="destructive"
                     className="cursor-pointer"
-                    onClick={async () => {
-                      await deleteTask(task.id, true);
-                    }}
+                    onClick={onHardDeleteButtonClick}
                   >
                     <FaTrash className="mr-2 h-4 w-4" />
                     <span>Hard Delete</span>

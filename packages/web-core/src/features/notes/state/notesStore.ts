@@ -9,7 +9,14 @@ import {
   UpdateNote,
 } from '@moaitime/shared-common';
 
-import { addNote, deleteNote, editNote, getNote, loadNotes } from '../utils/NotesHelpers';
+import {
+  addNote,
+  deleteNote,
+  editNote,
+  getNote,
+  loadNotes,
+  undeleteNote,
+} from '../utils/NotesHelpers';
 
 export type NotesStore = {
   /********** Notes **********/
@@ -19,6 +26,7 @@ export type NotesStore = {
   addNote: (note: CreateNote) => Promise<Note>;
   editNote: (noteId: string, note: UpdateNote) => Promise<Note>;
   deleteNote: (noteId: string) => Promise<Note>;
+  undeleteNote: (noteId: string) => Promise<Note>;
   // Sort
   notesSortField: NotesListSortFieldEnum;
   notesSortDirection: SortDirectionEnum;
@@ -87,6 +95,14 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     await loadNotes();
 
     return deletedNote;
+  },
+  undeleteNote: async (noteId: string) => {
+    const { loadNotes } = get();
+    const undeletedNote = await undeleteNote(noteId);
+
+    await loadNotes();
+
+    return undeletedNote;
   },
   // Sort
   notesSortField: NotesListSortFieldEnum.CREATED_AT,

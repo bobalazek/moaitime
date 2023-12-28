@@ -86,3 +86,18 @@ export const deleteNote = async (noteId: string, isHardDelete?: boolean): Promis
 
   return response.data as Note;
 };
+
+export const undeleteNote = async (noteId: string): Promise<Note> => {
+  const response = await fetchJson<ResponseInterface<Note>>(
+    `${API_URL}/api/v1/notes/${noteId}/undelete`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Note;
+};

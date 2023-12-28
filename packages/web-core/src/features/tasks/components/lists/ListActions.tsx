@@ -1,4 +1,4 @@
-import { MoveVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
+import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 
 import { List } from '@moaitime/shared-common';
@@ -23,7 +23,7 @@ const ListActions = memo(({ list }: { list: List }) => {
             className="rounded-full p-1 text-sm"
             data-test="tasks--list-actions--dropdown-menu--trigger-button"
           >
-            <MoveVerticalIcon className="h-4 w-4" />
+            <MoreVerticalIcon className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent

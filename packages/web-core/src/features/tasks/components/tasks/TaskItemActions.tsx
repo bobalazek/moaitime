@@ -2,7 +2,7 @@ import {
   HistoryIcon,
   InfoIcon,
   ListIcon,
-  MoveVerticalIcon,
+  MoreVerticalIcon,
   PencilIcon,
   TrashIcon,
 } from 'lucide-react';
@@ -72,7 +72,7 @@ const TaskItemActions = memo(
               className="rounded-full p-1 text-sm"
               data-test="tasks--task--actions-dropdown-menu--trigger-button"
             >
-              <MoveVerticalIcon />
+              <MoreVerticalIcon />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent

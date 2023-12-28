@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef } from 'react';
+import { IconBaseProps } from 'react-icons/lib/cjs';
 import {
   TiWeatherCloudy,
   TiWeatherDownpour,
@@ -14,7 +14,7 @@ import {
 
 import { useWeatherStore } from '../../state/weatherStore';
 
-const WeatherConditionIcon: React.FC<ComponentPropsWithoutRef<'svg'>> = ({ ...props }) => {
+const WeatherConditionIcon: React.FC<IconBaseProps> = ({ ...props }) => {
   const { weather } = useWeatherStore();
   const conditions = weather?.conditions ?? 'Cloudy';
 

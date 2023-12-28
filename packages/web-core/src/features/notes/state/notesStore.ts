@@ -162,7 +162,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   setSelectedNoteData: async (selectedNoteData: CreateNote | UpdateNote | null) => {
     set({
       selectedNoteData,
-      selectedNoteDataChanged: true,
+      selectedNoteDataChanged: !!selectedNoteData,
     });
 
     return selectedNoteData;

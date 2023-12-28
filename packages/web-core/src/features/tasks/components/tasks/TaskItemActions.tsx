@@ -79,10 +79,10 @@ const TaskItemActions = memo(
         <DropdownMenu open={dropdownMenuOpen} onOpenChange={setDropdownMenuOpen}>
           <DropdownMenuTrigger asChild>
             <button
-              className="rounded-full p-1 text-sm"
+              className="rounded-full p-1"
               data-test="tasks--task--actions-dropdown-menu--trigger-button"
             >
-              <MoreVerticalIcon />
+              <MoreVerticalIcon size={18} />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent

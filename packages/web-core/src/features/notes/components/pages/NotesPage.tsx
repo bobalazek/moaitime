@@ -8,8 +8,10 @@ import NotesPageMain from './notes/NotesPageMain';
 import NotesPageSidebar from './notes/NotesPageSidebar';
 
 export default function NotesPage() {
-  const { loadNotes, selectedNoteDataChanged } = useNotesStore();
+  const { selectedNoteDataChanged, selectedNoteData, setSelectedNoteData, loadNotes } =
+    useNotesStore();
   const isInitializedRef = useRef(false);
+  const selectedNoteDatadRef = useRef(selectedNoteData);
   const selectedNoteDataChangedRef = useRef(selectedNoteDataChanged);
   const navigate = useNavigate();
 
@@ -40,6 +42,12 @@ export default function NotesPage() {
           }
         }
 
+        if (selectedNoteDatadRef.current) {
+          setSelectedNoteData(null);
+
+          return;
+        }
+
         navigate('/');
       }
     };
@@ -52,8 +60,9 @@ export default function NotesPage() {
   }, []);
 
   useEffect(() => {
+    selectedNoteDatadRef.current = selectedNoteData;
     selectedNoteDataChangedRef.current = selectedNoteDataChanged;
-  }, [selectedNoteDataChanged]);
+  }, [selectedNoteData, selectedNoteDataChanged]);
 
   return (
     <ErrorBoundary>

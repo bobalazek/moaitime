@@ -1,20 +1,19 @@
-import { ExternalLinkIcon } from 'lucide-react';
+import { FilesIcon, PlusIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
-import { useWeatherStore } from '../state/weatherStore';
-import WeatherConditionIcon from './misc/WeatherConditionIcon';
 
-export default function WeatherCommandsList() {
+export default function NotesCommandsList() {
   const { auth } = useAuthStore();
-  const { setPopoverOpen } = useWeatherStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+  const navigate = useNavigate();
 
-  const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
+  const notesEnabled = !!auth?.user?.settings?.notesEnabled;
 
-  if (!weatherEnabled) {
+  if (!notesEnabled) {
     return null;
   }
 
@@ -22,22 +21,22 @@ export default function WeatherCommandsList() {
     <CommandGroup
       heading={
         <div className="flex items-center">
-          <WeatherConditionIcon size={20} className="mr-2" />
-          <span className="font-bold">Weather</span>
+          <FilesIcon className="mr-2" />
+          <span className="font-bold">Notes</span>
         </div>
       }
     >
       <CommandItem
         className="cursor-pointer"
         onSelect={() => {
-          setPopoverOpen(true);
+          navigate('/notes');
 
           setCommandsDialogOpen(false);
         }}
       >
-        <ExternalLinkIcon className="mr-2" />
+        <PlusIcon className="mr-2" />
         <span>
-          Open <b>Weather</b>
+          Open <b>Notes</b>
         </span>
       </CommandItem>
     </CommandGroup>

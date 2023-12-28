@@ -66,19 +66,21 @@ export class CalendarEntriesController {
     const nowString = new Date().toISOString().slice(0, -1);
 
     return events.map((event) => {
-      const startTimezone = event.timezone ?? 'UTC';
-      const endTimezone = event.endTimezone ?? startTimezone;
+      const timezone = event.timezone ?? 'UTC';
+      const endTimezone = event.endTimezone ?? timezone;
 
       const startsAt = event.startsAt?.toISOString().slice(0, -1) ?? nowString;
       const endsAt = event.endsAt?.toISOString().slice(0, -1) ?? nowString;
 
-      const startsAtUtc = zonedTimeToUtc(startsAt, startTimezone).toISOString();
+      const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
       const endsAtUtc = zonedTimeToUtc(endsAt, endTimezone).toISOString();
 
       return {
         ...event,
         id: `events:${event.id}`,
         type: CalendarEntryTypeEnum.EVENT,
+        timezone,
+        endTimezone,
         startsAt,
         startsAtUtc,
         endsAt,

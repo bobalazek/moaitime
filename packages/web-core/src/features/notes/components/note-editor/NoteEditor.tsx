@@ -7,7 +7,7 @@ export const NoteEditor = () => {
   const { selectedNote, selectedNoteData, setSelectedNoteData } = useNotesStore();
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       <div className="mb-4">
         <Input
           autoFocus

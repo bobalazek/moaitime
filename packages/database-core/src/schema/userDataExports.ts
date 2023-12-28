@@ -20,7 +20,7 @@ export const userDataExports = pgTable('user_data_exports', {
   updatedAt: timestamp('updated_at').defaultNow(),
   userId: uuid('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const userDataExportsRelations = relations(userDataExports, ({ one }) => ({

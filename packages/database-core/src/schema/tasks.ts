@@ -21,7 +21,7 @@ export const tasks = pgTable('tasks', {
   updatedAt: timestamp('updated_at').defaultNow(),
   listId: uuid('list_id')
     .notNull()
-    .references(() => lists.id),
+    .references(() => lists.id, { onDelete: 'cascade' }),
   parentId: uuid('parent_id'), // Relationship to self
 });
 

@@ -11,7 +11,7 @@ export const interests = pgTable('interests', {
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
   parentId: uuid('parent_id'), // Relationship to self
 });
 

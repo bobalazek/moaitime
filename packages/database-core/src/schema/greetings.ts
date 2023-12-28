@@ -10,7 +10,7 @@ export const greetings = pgTable('greetings', {
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const greetingsRelations = relations(greetings, ({ one }) => ({

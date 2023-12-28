@@ -14,7 +14,7 @@ export const notes = pgTable('notes', {
   updatedAt: timestamp('updated_at').defaultNow(),
   userId: uuid('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const notesRelations = relations(notes, ({ one }) => ({

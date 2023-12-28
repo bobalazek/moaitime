@@ -14,7 +14,7 @@ export const userAccessTokens = pgTable('user_access_tokens', {
   updatedAt: timestamp('updated_at').defaultNow(),
   userId: uuid('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const userAccessTokensRelations = relations(userAccessTokens, ({ one }) => ({

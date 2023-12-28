@@ -16,8 +16,8 @@ export const lists = pgTable('lists', {
   updatedAt: timestamp('updated_at').defaultNow(),
   userId: uuid('user_id')
     .notNull()
-    .references(() => users.id),
-  teamId: uuid('team_id').references(() => teams.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
+  teamId: uuid('team_id').references(() => teams.id, { onDelete: 'cascade' }),
 });
 
 export const listsRelations = relations(lists, ({ one, many }) => ({

@@ -13,7 +13,7 @@ export const backgrounds = pgTable('backgrounds', {
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const backgroundsRelations = relations(backgrounds, ({ one }) => ({

@@ -18,7 +18,7 @@ export const events = pgTable('events', {
   updatedAt: timestamp('updated_at').defaultNow(),
   calendarId: uuid('calendar_id')
     .notNull()
-    .references(() => calendars.id),
+    .references(() => calendars.id, { onDelete: 'cascade' }),
 });
 
 export const eventsRelations = relations(events, ({ one }) => ({

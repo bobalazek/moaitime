@@ -1,9 +1,9 @@
-import { FaQuoteRight } from 'react-icons/fa';
+import { QuoteIcon } from 'lucide-react';
 
 export default function QuoteSettingsSectionHeaderText() {
   return (
     <div className="flex items-center gap-2">
-      <FaQuoteRight />
+      <QuoteIcon />
       <span>Quote</span>
     </div>
   );

@@ -1,9 +1,9 @@
-import { FaSearch } from 'react-icons/fa';
+import { SearchIcon } from 'lucide-react';
 
 export default function SearchSettingsSectionHeaderText() {
   return (
     <div className="flex items-center gap-2">
-      <FaSearch />
+      <SearchIcon />
       <span>Search</span>
     </div>
   );

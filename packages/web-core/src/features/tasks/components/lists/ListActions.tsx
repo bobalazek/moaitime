@@ -1,5 +1,5 @@
+import { MoveVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { memo, useState } from 'react';
-import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
 import { List } from '@moaitime/shared-common';
 import {
@@ -23,7 +23,7 @@ const ListActions = memo(({ list }: { list: List }) => {
             className="rounded-full p-1 text-sm"
             data-test="tasks--list-actions--dropdown-menu--trigger-button"
           >
-            <FaEllipsisV className="h-4 w-4" />
+            <MoveVerticalIcon className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -42,7 +42,7 @@ const ListActions = memo(({ list }: { list: List }) => {
               setOpen(false);
             }}
           >
-            <FaEdit className="mr-2 h-4 w-4" />
+            <PencilIcon className="mr-2 h-4 w-4" />
             <span>Edit</span>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -56,7 +56,7 @@ const ListActions = memo(({ list }: { list: List }) => {
               setOpen(false);
             }}
           >
-            <FaTrash className="mr-2 h-4 w-4" />
+            <TrashIcon className="mr-2 h-4 w-4" />
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

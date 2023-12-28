@@ -1,9 +1,9 @@
-import { FaClock } from 'react-icons/fa';
+import { ClockIcon } from 'lucide-react';
 
 export default function ClockSettingsSectionHeaderText() {
   return (
     <div className="flex items-center gap-2">
-      <FaClock />
+      <ClockIcon />
       <span>Clock</span>
     </div>
   );

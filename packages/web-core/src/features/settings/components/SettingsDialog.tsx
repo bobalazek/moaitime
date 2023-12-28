@@ -108,6 +108,7 @@ export default function SettingsDialog() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              type="button"
               className={clsx(
                 `w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
                 tab.id === activeTab && 'font-extrabold dark:text-white'

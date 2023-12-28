@@ -1,4 +1,4 @@
-import { FaCog, FaExternalLinkAlt } from 'react-icons/fa';
+import { CogIcon, ExternalLinkIcon } from 'lucide-react';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
@@ -13,7 +13,7 @@ export default function SettingsCommandsList() {
     <CommandGroup
       heading={
         <div className="flex items-center">
-          <FaCog className="mr-2" />
+          <CogIcon className="mr-2" />
           <span className="font-bold">Settings</span>
         </div>
       }
@@ -26,7 +26,7 @@ export default function SettingsCommandsList() {
           setCommandsDialogOpen(false);
         }}
       >
-        <FaExternalLinkAlt className="mr-2" />
+        <ExternalLinkIcon className="mr-2" />
         <span>
           Open <b>Settings</b>
         </span>

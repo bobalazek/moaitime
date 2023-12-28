@@ -1,4 +1,4 @@
-import { FaEdit } from 'react-icons/fa';
+import { PencilIcon } from 'lucide-react';
 
 import { useWeatherStore } from '../../state/weatherStore';
 import WeatherBodyInformation from './WeatherBodyInformation';
@@ -21,7 +21,7 @@ export default function WeatherBody() {
           onClick={onEditButtonClick}
           data-test="weather--body--location--edit-button"
         >
-          <FaEdit className="h-4 w-4" />
+          <PencilIcon className="h-4 w-4" />
         </button>
       </h4>
       <WeatherBodyInformation />

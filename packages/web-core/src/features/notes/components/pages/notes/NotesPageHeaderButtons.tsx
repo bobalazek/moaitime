@@ -1,4 +1,4 @@
-import { FaEllipsisV, FaTrash } from 'react-icons/fa';
+import { MoreVerticalIcon, TrashIcon } from 'lucide-react';
 
 import {
   Button,
@@ -90,7 +90,7 @@ const NotesPageHeaderButtons = () => {
               className="rounded-full p-1 text-sm"
               data-test="notes--header--note-actions--dropdown-menu--trigger-button"
             >
-              <FaEllipsisV className="h-4 w-4" />
+              <MoreVerticalIcon className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent data-test="notes--header--note-actions--dropdown-menu">
@@ -99,7 +99,7 @@ const NotesPageHeaderButtons = () => {
               className="cursor-pointer"
               onClick={onDeleteButtonClick}
             >
-              <FaTrash className="mr-2 h-4 w-4" />
+              <TrashIcon className="mr-2 h-4 w-4" />
               <span>Delete</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

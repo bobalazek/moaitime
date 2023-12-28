@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { Calendar } from '@moaitime/shared-common';
@@ -51,7 +51,7 @@ export function CalendarSelector({
             />
             {selectedCalendar ? selectedCalendar.name : 'Select calendar ...'}
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0" data-test="calendar-selector">
@@ -72,7 +72,7 @@ export function CalendarSelector({
                   borderColor: calendar?.color ?? 'transparent',
                 }}
               >
-                <Check
+                <CheckIcon
                   className={clsx(
                     'mr-2 h-4 w-4',
                     value === calendar.id ? 'opacity-100' : 'opacity-0'

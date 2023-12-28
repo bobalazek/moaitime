@@ -1,4 +1,4 @@
-import { FaCog } from 'react-icons/fa';
+import { CogIcon } from 'lucide-react';
 
 import {
   Button,
@@ -26,7 +26,7 @@ export default function CalendarSettingsSheet() {
           size="sm"
           data-test="calendar--header--settings-button"
         >
-          <FaCog />
+          <CogIcon />
         </Button>
       </SheetTrigger>
       <SheetContent

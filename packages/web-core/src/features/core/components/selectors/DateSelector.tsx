@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
+import { CalendarIcon, XIcon } from 'lucide-react';
 import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
-import { FaCalendar, FaTimes } from 'react-icons/fa';
 
 import { isValidTime } from '@moaitime/shared-common';
 import {
@@ -156,12 +156,12 @@ export default function DateSelector({
           data-test="date-selector--trigger-button"
         >
           <span className="flex">
-            <FaCalendar className="mr-2 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-4 w-4" />
             <DateSelectorText data={data} />
           </span>
           {data.date && !disableClear && (
             <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
-              <FaTimes />
+              <XIcon />
             </span>
           )}
         </Button>

@@ -1,4 +1,4 @@
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { ExternalLinkIcon } from 'lucide-react';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
@@ -35,7 +35,7 @@ export default function WeatherCommandsList() {
           setCommandsDialogOpen(false);
         }}
       >
-        <FaExternalLinkAlt className="mr-2" />
+        <ExternalLinkIcon className="mr-2" />
         <span>
           Open <b>Weather</b>
         </span>

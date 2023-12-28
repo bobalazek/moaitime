@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { FaCaretDown } from 'react-icons/fa';
+import { ChevronDownIcon } from 'lucide-react';
 
 import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 import {
@@ -28,7 +28,7 @@ export default function CalendarPageHeaderViewSelector() {
           data-test="calendar--header--view-selector--dropdown-menu--trigger-button"
         >
           <span className="mr-2 inline-block">{calendarViewOption?.label ?? selectedView}</span>
-          <FaCaretDown />
+          <ChevronDownIcon />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" data-test="calendar--header--view-selector--dropdown-menu">

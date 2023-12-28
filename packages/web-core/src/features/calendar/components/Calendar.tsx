@@ -1,4 +1,4 @@
-import { FaCalendarAlt } from 'react-icons/fa';
+import { CalendarIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
@@ -15,7 +15,7 @@ export default function Calendar() {
           navigate('/calendar');
         }}
       >
-        <FaCalendarAlt className="text-3xl" />
+        <CalendarIcon className="text-3xl" />
       </button>
     </ErrorBoundary>
   );

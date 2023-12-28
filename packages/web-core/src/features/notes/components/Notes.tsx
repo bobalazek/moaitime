@@ -1,4 +1,4 @@
-import { FaBook } from 'react-icons/fa';
+import { BookIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
@@ -15,7 +15,7 @@ export default function Notes() {
           navigate('/notes');
         }}
       >
-        <FaBook className="text-3xl" />
+        <BookIcon className="text-3xl" />
       </button>
     </ErrorBoundary>
   );

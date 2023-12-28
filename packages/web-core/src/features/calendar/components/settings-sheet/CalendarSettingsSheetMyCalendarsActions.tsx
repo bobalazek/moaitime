@@ -1,5 +1,5 @@
+import { MoreVerticalIcon, PlusIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
-import { FaEllipsisV, FaPlus, FaTrash } from 'react-icons/fa';
 
 import {
   DropdownMenu,
@@ -21,7 +21,7 @@ export default function CalendarSettingsSheetMyCalendarsActions() {
           className="rounded-full p-1 text-sm"
           data-test="calendar--settings--my-calendars--actions--trigger-button"
         >
-          <FaEllipsisV className="h-4 w-4" />
+          <MoreVerticalIcon className="h-4 w-4" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" data-test="calendar--settings--my-calendars--actions">
@@ -36,7 +36,7 @@ export default function CalendarSettingsSheetMyCalendarsActions() {
             setOpen(false);
           }}
         >
-          <FaPlus className="mr-2 h-4 w-4" />
+          <PlusIcon className="mr-2 h-4 w-4" />
           <span>Add New Calendar</span>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -50,7 +50,7 @@ export default function CalendarSettingsSheetMyCalendarsActions() {
             setOpen(false);
           }}
         >
-          <FaTrash className="mr-2 h-4 w-4" />
+          <TrashIcon className="mr-2 h-4 w-4" />
           <span>Show Deleted Calendars</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

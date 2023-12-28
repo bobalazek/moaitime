@@ -1,5 +1,12 @@
+import {
+  HistoryIcon,
+  InfoIcon,
+  ListIcon,
+  MoveVerticalIcon,
+  PencilIcon,
+  TrashIcon,
+} from 'lucide-react';
 import { memo, useState } from 'react';
-import { FaEdit, FaEllipsisV, FaHistory, FaInfoCircle, FaList, FaTrash } from 'react-icons/fa';
 
 import { Task } from '@moaitime/shared-common';
 import {
@@ -65,7 +72,7 @@ const TaskItemActions = memo(
               className="rounded-full p-1 text-sm"
               data-test="tasks--task--actions-dropdown-menu--trigger-button"
             >
-              <FaEllipsisV />
+              <MoveVerticalIcon />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -85,12 +92,12 @@ const TaskItemActions = memo(
                   }, 250);
                 }}
               >
-                <FaEdit className="mr-2 h-4 w-4" />
+                <PencilIcon className="mr-2 h-4 w-4" />
                 <span>Edit</span>
               </DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <FaList className="mr-2 h-4 w-4" />
+                  <ListIcon className="mr-2 h-4 w-4" />
                   <span>Move</span>
                 </DropdownMenuSubTrigger>
                 <ListsSelectedListDropdownMenuContent
@@ -108,7 +115,7 @@ const TaskItemActions = memo(
                   setSelectedTaskDialogOpen(true, task);
                 }}
               >
-                <FaInfoCircle className="mr-2 h-4 w-4" />
+                <InfoIcon className="mr-2 h-4 w-4" />
                 <span>More</span>
               </DropdownMenuItem>
               {!task.deletedAt && (
@@ -117,14 +124,14 @@ const TaskItemActions = memo(
                   className="cursor-pointer"
                   onClick={onDeleteButtonClick}
                 >
-                  <FaTrash className="mr-2 h-4 w-4" />
+                  <TrashIcon className="mr-2 h-4 w-4" />
                   <span>Delete</span>
                 </DropdownMenuItem>
               )}
               {task.deletedAt && (
                 <>
                   <DropdownMenuItem className="cursor-pointer" onClick={onUndeleteButtonClick}>
-                    <FaHistory className="mr-2 h-4 w-4" />
+                    <HistoryIcon className="mr-2 h-4 w-4" />
                     <span>Undelete</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -132,7 +139,7 @@ const TaskItemActions = memo(
                     className="cursor-pointer"
                     onClick={onHardDeleteButtonClick}
                   >
-                    <FaTrash className="mr-2 h-4 w-4" />
+                    <TrashIcon className="mr-2 h-4 w-4" />
                     <span>Hard Delete</span>
                   </DropdownMenuItem>
                 </>

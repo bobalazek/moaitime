@@ -1,9 +1,9 @@
-import { FaCogs } from 'react-icons/fa';
+import { CogIcon } from 'lucide-react';
 
 export default function GeneralSettingsSectionHeaderText() {
   return (
     <div className="flex items-center gap-2">
-      <FaCogs />
+      <CogIcon />
       <span>General</span>
     </div>
   );

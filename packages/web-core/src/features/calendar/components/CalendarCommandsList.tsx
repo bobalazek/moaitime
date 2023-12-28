@@ -1,4 +1,4 @@
-import { FaCalendarAlt, FaCog } from 'react-icons/fa';
+import { CalendarIcon, CogIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
@@ -21,7 +21,7 @@ export default function CalendarCommandsList() {
     <CommandGroup
       heading={
         <div className="flex items-center">
-          <FaCog className="mr-2" />
+          <CogIcon className="mr-2" />
           <span className="font-bold">Calendar</span>
         </div>
       }
@@ -34,7 +34,7 @@ export default function CalendarCommandsList() {
           setCommandsDialogOpen(false);
         }}
       >
-        <FaCalendarAlt className="mr-2" />
+        <CalendarIcon className="mr-2" />
         <span>
           Open <b>Calendar</b>
         </span>

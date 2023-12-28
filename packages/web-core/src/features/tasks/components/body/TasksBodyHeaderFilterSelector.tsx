@@ -1,4 +1,4 @@
-import { FaFilter } from 'react-icons/fa';
+import { FilterIcon } from 'lucide-react';
 
 import {
   listSortOptions,
@@ -38,7 +38,7 @@ export default function TasksBodyHeaderFilterSelector() {
           className="rounded-full p-1 text-sm"
           data-test="tasks--body-header--list-selector--dropdown-menu--trigger-button"
         >
-          <FaFilter />
+          <FilterIcon />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

@@ -1,4 +1,4 @@
-import { FaCircle, FaExternalLinkAlt, FaPlus, FaTasks } from 'react-icons/fa';
+import { CircleIcon, ExternalLinkIcon, ListChecksIcon, PlusIcon } from 'lucide-react';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
@@ -21,7 +21,7 @@ export default function TasksCommandsList() {
     <CommandGroup
       heading={
         <div className="flex items-center">
-          <FaTasks className="mr-2" />
+          <ListChecksIcon className="mr-2" />
           <span className="font-bold">Tasks</span>
         </div>
       }
@@ -34,7 +34,7 @@ export default function TasksCommandsList() {
           setCommandsDialogOpen(false);
         }}
       >
-        <FaExternalLinkAlt className="mr-2" />
+        <ExternalLinkIcon className="mr-2" />
         <span>
           Open <b>Tasks</b>
         </span>
@@ -47,7 +47,7 @@ export default function TasksCommandsList() {
           setCommandsDialogOpen(false);
         }}
       >
-        <FaPlus className="mr-2" />
+        <PlusIcon className="mr-2" />
         <span>New List</span>
       </CommandItem>
       {lists.map((list) => (
@@ -61,12 +61,13 @@ export default function TasksCommandsList() {
             setCommandsDialogOpen(false);
           }}
         >
-          <FaCircle
-            className="mr-2"
+          <span
             style={{
-              color: list.color,
+              color: list.color ?? undefined,
             }}
-          />
+          >
+            <CircleIcon className="mr-2" />
+          </span>
           <span>
             Open <b>{list.name}</b> List
           </span>

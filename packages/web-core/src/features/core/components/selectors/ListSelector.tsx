@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -47,7 +47,7 @@ export function ListSelector({
             />
             {selectedList ? selectedList.name : 'Select list ...'}
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0" data-test="list-selector">
@@ -68,7 +68,7 @@ export function ListSelector({
                   borderColor: list?.color ?? 'transparent',
                 }}
               >
-                <Check
+                <CheckIcon
                   className={clsx('mr-2 h-4 w-4', value === list.id ? 'opacity-100' : 'opacity-0')}
                 />
                 {list.name}

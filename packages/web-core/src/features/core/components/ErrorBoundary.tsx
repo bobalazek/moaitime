@@ -1,5 +1,5 @@
+import { AlertTriangleIcon } from 'lucide-react';
 import { Component, ReactNode } from 'react';
-import { FaExclamationTriangle } from 'react-icons/fa';
 
 import { Alert, AlertDescription, AlertTitle, Button } from '@moaitime/web-ui';
 
@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         this.props.fallback || (
           <div className="flex h-full flex-col items-center justify-center p-4">
             <Alert>
-              <FaExclamationTriangle className="h-4 w-4" />
+              <AlertTriangleIcon className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>
                 {this.state.error?.message ||

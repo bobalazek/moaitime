@@ -1,4 +1,4 @@
-import { FaCalendarAlt } from 'react-icons/fa';
+import { CalendarIcon } from 'lucide-react';
 
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
@@ -21,7 +21,7 @@ function CalendarPageHeaderCalendar() {
           size="sm"
           data-test="calendar--header--calendar--trigger-button"
         >
-          <FaCalendarAlt />
+          <CalendarIcon />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" data-test="calendar--header--calendar">

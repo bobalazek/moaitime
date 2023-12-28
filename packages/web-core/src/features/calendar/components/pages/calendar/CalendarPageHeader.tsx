@@ -9,8 +9,8 @@ import {
   subWeeks,
   subYears,
 } from 'date-fns';
+import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
-import { FaAngleLeft, FaAngleRight, FaHome } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
@@ -87,7 +87,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           }}
           data-test="calendar--header--home-button"
         >
-          <FaHome />
+          <HomeIcon />
         </button>
         <CalendarPageHeaderText />
       </div>
@@ -101,7 +101,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           onClick={onPrevButtonClick}
           data-test="calendar--header--prev-button"
         >
-          <FaAngleLeft />
+          <ArrowLeftIcon />
         </Button>
         <Button
           className="border"
@@ -110,7 +110,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           onClick={onNextButtonClick}
           data-test="calendar--header--next-button"
         >
-          <FaAngleRight />
+          <ArrowRightIcon />
         </Button>
         <Button
           className="border"

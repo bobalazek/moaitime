@@ -1,4 +1,4 @@
-import { FilePlus, Filter } from 'lucide-react';
+import { FilePlusIcon, FilterIcon } from 'lucide-react';
 
 import {
   NotesListSortFieldEnum,
@@ -33,7 +33,7 @@ const NotesPageSidebarTopButtons = () => {
   return (
     <div className="mb-2 text-center text-xs">
       <button className="rounded-full p-1 hover:bg-gray-50" onClick={onAddNewNoteButtonClick}>
-        <FilePlus size={20} />
+        <FilePlusIcon size={20} />
       </button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -41,7 +41,7 @@ const NotesPageSidebarTopButtons = () => {
             className="rounded-full p-1 hover:bg-gray-50"
             data-test="notes--sidebar--sort--dropdown-menu--trigger-button"
           >
-            <Filter size={20} />
+            <FilterIcon size={20} />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" data-test="notes--sidebar--sort--dropdown-menu">

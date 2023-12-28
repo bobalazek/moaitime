@@ -1,9 +1,9 @@
-import { FaTasks } from 'react-icons/fa';
+import { ListChecksIcon } from 'lucide-react';
 
 export default function TasksSettingsSectionHeaderText() {
   return (
     <div className="flex items-center gap-2">
-      <FaTasks />
+      <ListChecksIcon />
       <span>Tasks</span>
     </div>
   );

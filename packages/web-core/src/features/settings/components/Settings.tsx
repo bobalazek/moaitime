@@ -1,4 +1,4 @@
-import { FaCog } from 'react-icons/fa';
+import { CogIcon } from 'lucide-react';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useSettingsStore } from '../state/settingsStore';
@@ -16,7 +16,7 @@ export default function Settings() {
           setDialogOpen(true);
         }}
       >
-        <FaCog className="text-3xl" />
+        <CogIcon className="text-3xl" />
       </button>
       <SettingsDialog />
     </ErrorBoundary>

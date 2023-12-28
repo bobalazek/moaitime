@@ -1,5 +1,5 @@
+import { ListChecksIcon } from 'lucide-react';
 import { useEffect } from 'react';
-import { FaTasks } from 'react-icons/fa';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
@@ -43,7 +43,7 @@ export default function Tasks() {
             className="text-xl text-white transition-all"
             data-test="tasks--popover--trigger-button"
           >
-            <FaTasks className="text-3xl" />
+            <ListChecksIcon className="text-3xl" />
           </button>
         </PopoverTrigger>
         <PopoverContent className="mb-4 w-full" align="end" data-test="tasks--popover">

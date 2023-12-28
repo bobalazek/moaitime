@@ -1,5 +1,5 @@
+import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
 
 import { SearchEnginesEnum, SearchEnginesMap } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
@@ -16,7 +16,7 @@ export default function SearchInput() {
   return (
     <div className="flex items-center justify-center">
       <div className="relative">
-        <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 transform text-xl text-gray-400" />
+        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 transform text-xl text-gray-400" />
         <Input
           className="w-full rounded-full px-12 py-7 text-3xl shadow-2xl lg:w-[640px]"
           value={search}

@@ -1,5 +1,5 @@
+import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { memo, useState } from 'react';
-import { FaEdit, FaEllipsisV, FaTrash } from 'react-icons/fa';
 
 import { Calendar } from '@moaitime/shared-common';
 import {
@@ -77,7 +77,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
             className="rounded-full p-1 text-sm"
             data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"
           >
-            <FaEllipsisV className="h-4 w-4" />
+            <MoreVerticalIcon className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -88,7 +88,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
           {!calendar.deletedAt && (
             <>
               <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
-                <FaEdit className="mr-2 h-4 w-4" />
+                <PencilIcon className="mr-2 h-4 w-4" />
                 <span>Edit</span>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -96,7 +96,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
                 className="cursor-pointer"
                 onClick={onDeleteButtonClick}
               >
-                <FaTrash className="mr-2 h-4 w-4" />
+                <TrashIcon className="mr-2 h-4 w-4" />
                 <span>Delete</span>
               </DropdownMenuItem>
             </>
@@ -104,7 +104,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
           {calendar.deletedAt && (
             <>
               <DropdownMenuItem className="cursor-pointer" onClick={onUndeleteButtonClick}>
-                <FaTrash className="mr-2 h-4 w-4" />
+                <TrashIcon className="mr-2 h-4 w-4" />
                 <span>Undelete</span>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -112,7 +112,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
                 className="cursor-pointer"
                 onClick={onHardDeleteButtonClick}
               >
-                <FaTrash className="mr-2 h-4 w-4" />
+                <TrashIcon className="mr-2 h-4 w-4" />
                 <span>Hard Delete</span>
               </DropdownMenuItem>
             </>

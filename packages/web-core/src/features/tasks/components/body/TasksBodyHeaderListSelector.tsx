@@ -1,4 +1,4 @@
-import { FaCaretDown } from 'react-icons/fa';
+import { ChevronDownIcon } from 'lucide-react';
 
 import { DropdownMenu, DropdownMenuTrigger } from '@moaitime/web-ui';
 
@@ -27,7 +27,7 @@ export default function TasksBodyHeaderListSelector() {
             className="rounded-full p-1 text-sm"
             data-test="tasks--body-header--lists-list--dropdown-menu--trigger-button"
           >
-            <FaCaretDown />
+            <ChevronDownIcon />
           </button>
         </h3>
       </DropdownMenuTrigger>

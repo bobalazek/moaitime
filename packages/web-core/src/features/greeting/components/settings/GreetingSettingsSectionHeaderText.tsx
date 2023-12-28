@@ -1,9 +1,9 @@
-import { FaHandSpock } from 'react-icons/fa';
+import { HelpingHandIcon } from 'lucide-react';
 
 export default function GreetingSettingsSectionHeaderText() {
   return (
     <div className="flex items-center gap-2">
-      <FaHandSpock />
+      <HelpingHandIcon />
       <span>Greeting</span>
     </div>
   );

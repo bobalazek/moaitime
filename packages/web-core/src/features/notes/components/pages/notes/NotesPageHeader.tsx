@@ -1,4 +1,4 @@
-import { FaHome } from 'react-icons/fa';
+import { HomeIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import NotesPageHeaderButtons from './NotesPageHeaderButtons';
@@ -18,7 +18,7 @@ const NotesPageHeader = () => {
           }}
           data-test="notes--header--home-button"
         >
-          <FaHome />
+          <HomeIcon />
         </button>
         <div>Notes</div>
       </div>

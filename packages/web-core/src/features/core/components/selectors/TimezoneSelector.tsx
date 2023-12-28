@@ -1,7 +1,6 @@
 import { clsx } from 'clsx';
-import { ChevronDown } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon, XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { FaCheck, FaTimes } from 'react-icons/fa';
 
 import { getTimezones } from '@moaitime/shared-common';
 import {
@@ -59,14 +58,14 @@ export default function TimezoneSelector({
             </span>
           )}
           {!isReadonly && (!allowClear || !value) && (
-            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           )}
           {!isReadonly && allowClear && value && (
             <span
               className="text-muted-foreground rounded-full p-1 hover:bg-slate-600"
               onClick={onClearButtonClick}
             >
-              <FaTimes />
+              <XIcon />
             </span>
           )}
         </Button>
@@ -122,7 +121,7 @@ export const GeneralTimezoneSettingContent = ({ value, onValueChange }: Timezone
                 onValueChange(selectedTimezone!);
               }}
             >
-              <FaCheck
+              <CheckIcon
                 className={clsx('mr-2 h-4 w-4', value === timezone ? 'opacity-100' : 'opacity-0')}
               />
               {timezone}

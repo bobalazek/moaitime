@@ -1,5 +1,5 @@
+import { LoaderIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { FaSpinner } from 'react-icons/fa';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import {
@@ -62,7 +62,7 @@ export default function AuthConfirmEmailPage() {
             {!hasLoaded && (
               <div className="text-center">
                 <div className="inline-block">
-                  <FaSpinner className="animate-spin text-5xl" />
+                  <LoaderIcon className="animate-spin text-5xl" />
                 </div>
               </div>
             )}

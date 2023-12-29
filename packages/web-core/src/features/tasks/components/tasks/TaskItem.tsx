@@ -5,6 +5,7 @@ import ConfettiExplosion from 'react-confetti-explosion';
 import { Task as TaskType } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
+import { useSingleAndDoubleClick } from '../../../core/hooks/useSingleAndDoubleClick';
 import { useTasksStore } from '../../state/tasksStore';
 import TaskItemActions from './TaskItemActions';
 
@@ -53,9 +54,10 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
-  const onClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    event.stopPropagation();
+  const isCompleted = !!task.completedAt;
+  const isDeleted = !!task.deletedAt;
 
+  const onClick = useCallback(() => {
     setSelectedTaskDialogOpen(true, task);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,12 +127,12 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
     }
   };
 
-  const isCompleted = !!task.completedAt;
-  const isDeleted = !!task.deletedAt;
+  const onSingleAndDoubleClick = useSingleAndDoubleClick(onClick, onDoubleClick);
 
   return (
     <div
       className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+      onClick={onSingleAndDoubleClick}
       data-test="tasks--task"
     >
       <div className="relative w-full">
@@ -145,34 +147,32 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
             }}
           />
         )}
-        <div onClick={onClick}>
-          <Checkbox
-            className="absolute left-0 top-1"
-            checked={!!task.completedAt}
-            onCheckedChange={onCompleteCheckboxToggle}
-            data-test="tasks--task--completed-checkbox"
-          />
-          <div
-            ref={textElementRef}
-            className={clsx(
-              'break-words px-6',
-              (isCompleted || isDeleted) && 'text-gray-400 ',
-              isCompleted && 'line-through'
-            )}
-            onDoubleClick={onDoubleClick}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
-            data-test="tasks--task--name"
-          >
-            {task.name}
-          </div>
-          <TaskItemDueDate task={task} />
-          {task.deletedAt && (
-            <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
-              (deleted at {new Date(task.deletedAt).toLocaleString()})
-            </p>
+        <Checkbox
+          className="absolute left-0 top-1"
+          checked={!!task.completedAt}
+          onCheckedChange={onCompleteCheckboxToggle}
+          onClick={(event) => event.stopPropagation()}
+          data-test="tasks--task--completed-checkbox"
+        />
+        <div
+          ref={textElementRef}
+          className={clsx(
+            'break-words px-6',
+            (isCompleted || isDeleted) && 'text-gray-400 ',
+            isCompleted && 'line-through'
           )}
+          onKeyDown={onKeyDown}
+          onBlur={onBlur}
+          data-test="tasks--task--name"
+        >
+          {task.name}
         </div>
+        <TaskItemDueDate task={task} />
+        {task.deletedAt && (
+          <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
+            (deleted at {new Date(task.deletedAt).toLocaleString()})
+          </p>
+        )}
         <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
       </div>
     </div>

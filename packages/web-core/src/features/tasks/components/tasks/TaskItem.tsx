@@ -53,7 +53,9 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
-  const onClick = async () => {
+  const onClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+
     setSelectedTaskDialogOpen(true, task);
   };
 
@@ -127,7 +129,6 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
   return (
     <div
       className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
-      onClick={onClick}
       data-test="tasks--task"
     >
       <div className="relative w-full">
@@ -142,32 +143,34 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
             }}
           />
         )}
-        <Checkbox
-          className="absolute left-0 top-1"
-          checked={!!task.completedAt}
-          onCheckedChange={onCompleteCheckboxToggle}
-          data-test="tasks--task--completed-checkbox"
-        />
-        <div
-          ref={textElementRef}
-          className={clsx(
-            'break-words px-6',
-            (isCompleted || isDeleted) && 'text-gray-400 ',
-            isCompleted && 'line-through'
+        <div onClick={onClick}>
+          <Checkbox
+            className="absolute left-0 top-1"
+            checked={!!task.completedAt}
+            onCheckedChange={onCompleteCheckboxToggle}
+            data-test="tasks--task--completed-checkbox"
+          />
+          <div
+            ref={textElementRef}
+            className={clsx(
+              'break-words px-6',
+              (isCompleted || isDeleted) && 'text-gray-400 ',
+              isCompleted && 'line-through'
+            )}
+            onDoubleClick={onDoubleClick}
+            onKeyDown={onKeyDown}
+            onBlur={onBlur}
+            data-test="tasks--task--name"
+          >
+            {task.name}
+          </div>
+          <TaskItemDueDate task={task} />
+          {task.deletedAt && (
+            <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
+              (deleted at {new Date(task.deletedAt).toLocaleString()})
+            </p>
           )}
-          onDoubleClick={onDoubleClick}
-          onKeyDown={onKeyDown}
-          onBlur={onBlur}
-          data-test="tasks--task--name"
-        >
-          {task.name}
         </div>
-        <TaskItemDueDate task={task} />
-        {task.deletedAt && (
-          <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
-            (deleted at {new Date(task.deletedAt).toLocaleString()})
-          </p>
-        )}
         <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
       </div>
     </div>

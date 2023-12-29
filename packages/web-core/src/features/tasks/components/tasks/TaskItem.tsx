@@ -53,11 +53,13 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
-  const onClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onClick = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
 
     setSelectedTaskDialogOpen(true, task);
-  };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onDoubleClick = useCallback(
     (event?: React.MouseEvent<HTMLDivElement, MouseEvent>, cursorAtEnd?: boolean) => {

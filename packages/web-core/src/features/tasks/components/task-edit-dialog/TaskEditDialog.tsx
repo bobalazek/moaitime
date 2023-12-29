@@ -21,6 +21,8 @@ export default function TaskEditDialog() {
 
   useEffect(() => {
     if (!selectedTask) {
+      setData(undefined);
+
       return;
     }
 

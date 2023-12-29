@@ -59,9 +59,7 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
 
   const onClick = useCallback(() => {
     setSelectedTaskDialogOpen(true, task);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setSelectedTaskDialogOpen, task]);
 
   const onDoubleClick = useCallback(
     (event?: React.MouseEvent<HTMLDivElement, MouseEvent>, cursorAtEnd?: boolean) => {

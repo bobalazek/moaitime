@@ -190,6 +190,28 @@ export class AuthController {
     };
   }
 
+  @Post('request-data-export')
+  async requestDataExport(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
+    if (!req.user) {
+      return {
+        success: false,
+      };
+    }
+
+    await authManager.requestDataExport(req.user.id);
+
+    res.status(200);
+
+    return {
+      success: true,
+      message:
+        'You have successfully requested the data export. This will take a couple of hours. Once done, you will get an email with the download link.',
+    };
+  }
+
   @Post('refresh-token')
   async refreshToken(
     @Body() body: TokenDto,

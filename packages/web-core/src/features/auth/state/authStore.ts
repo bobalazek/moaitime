@@ -24,6 +24,7 @@ import {
   refreshToken,
   register,
   requestAccountDeletion,
+  requestDataExport,
   requestPasswordReset,
   resendEmailConfirmation,
   resetPassword,
@@ -47,6 +48,8 @@ export type AuthStore = {
   // Account Deletion
   requestAccountDeletion: () => Promise<ResponseInterface>;
   deleteAccount: (token: string) => Promise<ResponseInterface>;
+  // Data Export
+  requestDataExport: () => Promise<ResponseInterface>;
   // Confirm Email
   confirmEmail: (token: string, isNewEmail?: boolean) => Promise<ResponseInterface>;
   // Refresh Token
@@ -129,6 +132,17 @@ export const useAuthStore = create<AuthStore>()(
         const response = await deleteAccount(token);
 
         set({ auth: null });
+
+        return response;
+      },
+      // Data Export
+      requestDataExport: async () => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        const response = await requestDataExport();
 
         return response;
       },

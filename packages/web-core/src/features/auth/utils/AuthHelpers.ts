@@ -142,6 +142,21 @@ export const deleteAccount = async (token: string) => {
   return response;
 };
 
+export const requestDataExport = async () => {
+  const response = await fetchJson<ResponseInterface>(
+    `${API_URL}/api/v1/auth/request-data-export`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+
 export const confirmEmail = async (token: string, isNewEmail?: boolean) => {
   const response = await fetchJson<ResponseInterface>(
     `${API_URL}/api/v1/auth/confirm-email`,

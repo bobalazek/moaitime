@@ -29,14 +29,14 @@ import GeneralSettingsSectionHeaderText from './general/GeneralSettingsSectionHe
 
 const tabs = [
   {
-    id: 'auth',
-    label: <AuthSettingsSectionHeaderText />,
-    content: <AuthSettingsSection />,
-  },
-  {
     id: 'general',
     label: <GeneralSettingsSectionHeaderText />,
     content: <GeneralSettingsSection />,
+  },
+  {
+    id: 'auth',
+    label: <AuthSettingsSectionHeaderText />,
+    content: <AuthSettingsSection />,
   },
   {
     id: 'weather',

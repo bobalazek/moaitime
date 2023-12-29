@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import {
+  AUTH_DATA_EXPIRATION_SECONDS,
   AUTH_DELETION_REQUEST_EXPIRATION_SECONDS,
   AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS,
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
@@ -13,6 +14,7 @@ import {
 } from '@moaitime/shared-backend';
 import {
   MAIN_COLORS,
+  ProcessingStatusEnum,
   UserPasswordSchema,
   UserRoleEnum,
   UserSettingsSchema,
@@ -22,6 +24,7 @@ import {
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
 import { UserAccessTokensManager, userAccessTokensManager } from './UserAccessTokensManager';
+import { UserDataExportsManager, userDataExportsManager } from './UserDataExportsManager';
 import { UsersManager, usersManager } from './UsersManager';
 
 type AuthLoginResult = {
@@ -33,10 +36,12 @@ export class AuthManager {
   constructor(
     private _usersManager: UsersManager,
     private _userAccessTokensManager: UserAccessTokensManager,
+    private _userExportsManager: UserDataExportsManager,
     private _listsManager: ListsManager,
     private _calendarsManager: CalendarsManager
   ) {}
 
+  // Login
   async login(email: string, password: string): Promise<AuthLoginResult> {
     const user = await this.getUserByCredentials(email, password);
     const userAccessToken = await this.createNewUserAccessToken(user.id);
@@ -63,6 +68,7 @@ export class AuthManager {
     return true;
   }
 
+  // Register
   async register(data: NewUser): Promise<User> {
     const { password, ...user } = data;
     if (!password) {
@@ -114,6 +120,7 @@ export class AuthManager {
     return newUser;
   }
 
+  // Email confirmation
   async confirmEmail(emailConfirmationToken: string, isNewEmail = false): Promise<User> {
     const user = isNewEmail
       ? await this._usersManager.findOneByNewEmailConfirmationToken(emailConfirmationToken)
@@ -230,6 +237,7 @@ export class AuthManager {
     return updatedUser;
   }
 
+  // Password reset
   async requestPasswordReset(email: string): Promise<User> {
     const user = await this._usersManager.findOneByEmail(email);
     if (!user) {
@@ -294,6 +302,35 @@ export class AuthManager {
     return updatedUser;
   }
 
+  // Data export
+  async requestDataExport(id: string): Promise<User> {
+    const user = await this._usersManager.findOneById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const lastUserDataExport = await this._userExportsManager.findOneLatestByUserId(user.id);
+
+    const now = new Date();
+    const expiresAt = lastUserDataExport
+      ? addSeconds(lastUserDataExport.createdAt!, AUTH_DATA_EXPIRATION_SECONDS)
+      : null;
+
+    if (expiresAt && expiresAt.getTime() > now.getTime()) {
+      throw new Error(
+        `You already have a requested a data export recently. Please wait for it to finish and then check your email or try again later.`
+      );
+    }
+
+    await this._userExportsManager.insertOne({
+      processingStatus: ProcessingStatusEnum.PENDING,
+      userId: user.id,
+    });
+
+    return user;
+  }
+
+  // Account deletion
   async requestAccountDeletion(id: string): Promise<User> {
     const user = await this._usersManager.findOneById(id);
     if (!user) {
@@ -356,6 +393,7 @@ export class AuthManager {
     return updatedUser;
   }
 
+  // Refresh token
   async refreshToken(refreshToken: string): Promise<AuthLoginResult> {
     const userAccessToken = await this._userAccessTokensManager.findOneByRefreshToken(refreshToken);
     if (!userAccessToken) {
@@ -391,6 +429,7 @@ export class AuthManager {
     };
   }
 
+  // Settings
   async update(id: string, data: Partial<NewUser>): Promise<User> {
     const user = await this._usersManager.findOneById(id);
     if (!user) {
@@ -507,6 +546,7 @@ export class AuthManager {
     return updatedUser;
   }
 
+  // Helpers
   async getUserByCredentials(email: string, password: string): Promise<User> {
     const user = await this._usersManager.findOneByEmail(email);
     if (!user) {
@@ -567,6 +607,7 @@ export class AuthManager {
 export const authManager = new AuthManager(
   usersManager,
   userAccessTokensManager,
+  userDataExportsManager,
   listsManager,
   calendarsManager
 );

@@ -10,6 +10,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
   const {
     logout,
     updateAccount,
+    requestDataExport,
     requestAccountDeletion,
     resendEmailConfirmation,
     cancelNewEmail,
@@ -78,17 +79,30 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
     }
   };
 
+  const onRequestDataExportButtonClick = async () => {
+    try {
+      const response = await requestDataExport();
+
+      toast({
+        title: `Data export requested`,
+        description: response.message ?? `You have successfully requested a data export`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
   const onLogoutButtonClick = async () => {
     await logout();
   };
 
-  const onRequestAccountDeletionClick = async () => {
+  const onRequestAccountDeletionButtonClick = async () => {
     try {
-      await requestAccountDeletion();
+      const response = await requestAccountDeletion();
 
       toast({
         title: `Account deletion requested`,
-        description: `You have successfully requested your account deletion. Please check your inbox and follow the instructions to confirm it.`,
+        description: response.message ?? `You have successfully requested your account deletion`,
       });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
@@ -175,6 +189,14 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
       </div>
       <hr className="mb-4" />
       <div className="mb-4">
+        <h4 className="text-lg font-bold">Data export</h4>
+        <p className="mb-2 text-xs text-gray-400">Get your data!</p>
+        <Button size="sm" variant="default" onClick={onRequestDataExportButtonClick}>
+          Request data export
+        </Button>
+      </div>
+      <hr className="mb-4" />
+      <div className="mb-4">
         <h4 className="text-lg font-bold">Logout</h4>
         <p className="mb-2 text-xs text-gray-400">Want to get a breath of fresh air?</p>
         <Button size="sm" variant="destructive" onClick={onLogoutButtonClick}>
@@ -188,7 +210,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
           Ayou you really sure you want to leave us? After pressing the button below, we will send
           you the last email to confirm your choice. Your account will then be premanetely deleted.
         </p>
-        <Button size="sm" variant="destructive" onClick={onRequestAccountDeletionClick}>
+        <Button size="sm" variant="destructive" onClick={onRequestAccountDeletionButtonClick}>
           Request account deletion
         </Button>
       </div>

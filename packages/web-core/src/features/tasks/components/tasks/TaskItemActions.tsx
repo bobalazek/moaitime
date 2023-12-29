@@ -1,11 +1,4 @@
-import {
-  HistoryIcon,
-  InfoIcon,
-  ListIcon,
-  MoreVerticalIcon,
-  PencilIcon,
-  TrashIcon,
-} from 'lucide-react';
+import { HistoryIcon, ListIcon, MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 
 import { Task } from '@moaitime/shared-common';
@@ -26,7 +19,7 @@ import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDrop
 
 const TaskItemActions = memo(
   ({ task, onEditAndFocus }: { task: Task; onEditAndFocus: () => void }) => {
-    const { deleteTask, undeleteTask, moveTask, setSelectedTaskDialogOpen } = useTasksStore();
+    const { deleteTask, undeleteTask, moveTask } = useTasksStore();
     const { toast } = useToast();
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
 
@@ -119,15 +112,6 @@ const TaskItemActions = memo(
                   }}
                 />
               </DropdownMenuSub>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => {
-                  setSelectedTaskDialogOpen(true, task);
-                }}
-              >
-                <InfoIcon className="mr-2 h-4 w-4" />
-                <span>More</span>
-              </DropdownMenuItem>
               {!task.deletedAt && (
                 <DropdownMenuItem
                   variant="destructive"

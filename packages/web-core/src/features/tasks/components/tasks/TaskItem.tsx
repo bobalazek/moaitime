@@ -49,9 +49,13 @@ const TaskItemDueDate = ({ task }: { task: TaskType }) => {
 };
 
 const TaskItem = memo(({ task }: { task: TaskType }) => {
-  const { editTask, completeTask, uncompleteTask } = useTasksStore();
+  const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
+
+  const onClick = async () => {
+    setSelectedTaskDialogOpen(true, task);
+  };
 
   const onDoubleClick = useCallback(
     (event?: React.MouseEvent<HTMLDivElement, MouseEvent>, cursorAtEnd?: boolean) => {
@@ -123,6 +127,7 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
   return (
     <div
       className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+      onClick={onClick}
       data-test="tasks--task"
     >
       <div className="relative w-full">

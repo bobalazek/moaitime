@@ -7,9 +7,9 @@ import {
   BullMQQueue,
   BullMQWorker,
 } from '@moaitime/bullmq';
+import { Logger, logger } from '@moaitime/logging';
 import { QUEUE_WORKERS_SHARED_QUEUE_NAME } from '@moaitime/shared-backend';
 import { getQueueTypes } from '@moaitime/shared-common';
-import { Logger, logger } from '@moaitime/shared-logging';
 
 export class SharedQueueWorker {
   private _queue?: BullMQQueue;

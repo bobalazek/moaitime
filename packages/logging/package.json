@@ -1,5 +1,5 @@
 {
-  "name": "@moaitime/shared-logging",
+  "name": "@moaitime/logging",
   "version": "0.0.0",
   "exports": {
     ".": {

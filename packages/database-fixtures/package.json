@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "@moaitime/database-core": "workspace:*",
+    "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
-    "@moaitime/shared-logging": "workspace:*",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "drizzle-orm": "^0.29.0"

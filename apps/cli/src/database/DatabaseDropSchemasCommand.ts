@@ -1,7 +1,7 @@
 import type { Command } from 'commander';
 
 import { dropDatabaseSchema } from '@moaitime/database-core';
-import { logger } from '@moaitime/shared-logging';
+import { logger } from '@moaitime/logging';
 
 export const addDatabaseDropSchemasCommand = (program: Command) => {
   const command = program.command('database:drop-schema').action(async () => {

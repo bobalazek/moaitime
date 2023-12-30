@@ -159,9 +159,9 @@ importers:
       '@moaitime/database-testing':
         specifier: workspace:*
         version: link:../../packages/database-testing
-      '@moaitime/shared-logging':
+      '@moaitime/logging':
         specifier: workspace:*
-        version: link:../../packages/shared-logging
+        version: link:../../packages/logging
       commander:
         specifier: ^11.1.0
         version: 11.1.0
@@ -293,15 +293,15 @@ importers:
 
   packages/database-core:
     dependencies:
+      '@moaitime/logging':
+        specifier: workspace:*
+        version: link:../logging
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
-      '@moaitime/shared-logging':
-        specifier: workspace:*
-        version: link:../shared-logging
       drizzle-kit:
         specifier: ^0.20.4
         version: 0.20.6
@@ -321,15 +321,15 @@ importers:
       '@moaitime/database-core':
         specifier: workspace:*
         version: link:../database-core
+      '@moaitime/logging':
+        specifier: workspace:*
+        version: link:../logging
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
-      '@moaitime/shared-logging':
-        specifier: workspace:*
-        version: link:../shared-logging
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -349,15 +349,15 @@ importers:
       '@moaitime/database-core':
         specifier: workspace:*
         version: link:../database-core
+      '@moaitime/logging':
+        specifier: workspace:*
+        version: link:../logging
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
-      '@moaitime/shared-logging':
-        specifier: workspace:*
-        version: link:../shared-logging
       drizzle-orm:
         specifier: ^0.29.0
         version: 0.29.1(postgres@3.4.3)
@@ -439,9 +439,9 @@ importers:
       '@moaitime/database-seeds':
         specifier: workspace:*
         version: link:../database-seeds
-      '@moaitime/shared-logging':
+      '@moaitime/logging':
         specifier: workspace:*
-        version: link:../shared-logging
+        version: link:../logging
     devDependencies:
       typescript:
         specifier: ^5.3.2
@@ -528,12 +528,12 @@ importers:
       '@moaitime/emails-core':
         specifier: workspace:*
         version: link:../emails-core
+      '@moaitime/logging':
+        specifier: workspace:*
+        version: link:../logging
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
-      '@moaitime/shared-logging':
-        specifier: workspace:*
-        version: link:../shared-logging
       '@react-email/render':
         specifier: ^0.0.10
         version: 0.0.10
@@ -553,6 +553,25 @@ importers:
       '@types/react':
         specifier: 18.2.33
         version: 18.2.33
+
+  packages/logging:
+    dependencies:
+      '@moaitime/shared-backend':
+        specifier: workspace:*
+        version: link:../shared-backend
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
+      pino:
+        specifier: ^8.16.2
+        version: 8.16.2
+      pino-pretty:
+        specifier: ^10.2.3
+        version: 10.2.3
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.3
 
   packages/redis:
     dependencies:
@@ -605,39 +624,20 @@ importers:
         specifier: ^5.3.2
         version: 5.3.3
 
-  packages/shared-logging:
-    dependencies:
-      '@moaitime/shared-backend':
-        specifier: workspace:*
-        version: link:../shared-backend
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.3.1
-      pino:
-        specifier: ^8.16.2
-        version: 8.16.2
-      pino-pretty:
-        specifier: ^10.2.3
-        version: 10.2.3
-    devDependencies:
-      typescript:
-        specifier: ^5.3.2
-        version: 5.3.3
-
   packages/shared-queue-worker:
     dependencies:
       '@moaitime/bullmq':
         specifier: workspace:*
         version: link:../bullmq
+      '@moaitime/logging':
+        specifier: workspace:*
+        version: link:../logging
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
-      '@moaitime/shared-logging':
-        specifier: workspace:*
-        version: link:../shared-logging
     devDependencies:
       typescript:
         specifier: ^5.3.2

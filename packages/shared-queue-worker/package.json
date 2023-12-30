@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "@moaitime/bullmq": "workspace:*",
+    "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
-    "@moaitime/shared-common": "workspace:*",
-    "@moaitime/shared-logging": "workspace:*"
+    "@moaitime/shared-common": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

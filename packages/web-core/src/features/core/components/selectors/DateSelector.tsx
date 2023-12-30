@@ -98,9 +98,9 @@ export default function DateSelector({
     }
 
     onSaveData({
-      date: dateValue,
-      dateTime: dateTimeValue,
-      dateTimeZone: dateTimeZoneValue,
+      date: dateValue || null,
+      dateTime: dateTimeValue || null,
+      dateTimeZone: dateTimeZoneValue || null,
     });
 
     setOpen(false);

@@ -23,6 +23,10 @@ export const isValidDate = (date: string) => {
 };
 
 export const isValidTime = (time: string) => {
+  if (!time) {
+    return false;
+  }
+
   const [hours, minutes] = time.split(':');
   if (!hours || !minutes) {
     return false;

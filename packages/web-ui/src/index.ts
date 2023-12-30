@@ -1,3 +1,6 @@
+// Helpers
+export * from './lib/utils';
+
 // Alert Dialog
 export * from './components/alert-dialog';
 

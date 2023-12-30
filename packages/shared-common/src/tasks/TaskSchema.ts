@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { ColorSchema } from '../core/ColorSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
-import { isValidTime } from '../Helpers';
+import { isValidDate, isValidTime } from '../Helpers';
 
 export const TaskSchema = z.object({
   id: z.string(),
@@ -35,17 +35,10 @@ export const CreateTaskSchema = z.object({
           return true;
         }
 
-        const now = new Date();
-        let dueDate = new Date(data);
-
-        if (data.length === 10) {
-          dueDate = new Date(`${data}T00:00:00.000`);
-        }
-
-        return dueDate >= now;
+        return isValidDate(data);
       },
       {
-        message: 'Due date must be in the future',
+        message: 'Due date must be valid',
       }
     )
     .nullable()

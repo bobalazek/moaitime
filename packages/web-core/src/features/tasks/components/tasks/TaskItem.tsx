@@ -1,10 +1,13 @@
 import { clsx } from 'clsx';
+import { colord } from 'colord';
+import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { memo, useCallback, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 
 import { Task as TaskType } from '@moaitime/shared-common';
-import { Checkbox } from '@moaitime/web-ui';
+import { Checkbox, cn } from '@moaitime/web-ui';
 
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useSingleAndDoubleClick } from '../../../core/hooks/useSingleAndDoubleClick';
 import { useTasksStore } from '../../state/tasksStore';
 import TaskItemActions from './TaskItemActions';
@@ -20,40 +23,57 @@ function setCursorToEnd(element: HTMLElement) {
   selection?.addRange(range);
 }
 
-const TaskItemDueDate = ({ task }: { task: TaskType }) => {
+const TaskItemDueDate = ({ task, timezone }: { task: TaskType; timezone: string }) => {
   if (!task.dueDate) {
     return null;
   }
 
-  const now = new Date();
-  const date =
-    task.dueDate && task.dueDateTime
-      ? new Date(task.dueDate + 'T' + task.dueDateTime)
-      : new Date(task.dueDate);
-  const isAlmostDue = date < new Date(now.getTime() + 1000 * 60 * 60 * 6); // 6 hours
-  const isOverDue = date < now;
+  let dateString = task.dueDate;
+  if (task.dueDateTime) {
+    dateString = dateString + 'T' + task.dueDateTime;
+  } else {
+    dateString = dateString + 'T23:59:59.999';
+  }
 
-  // TODO: take into account the timezone
+  if (task.dueDateTimeZone) {
+    const timezonedDate = utcToZonedTime(
+      zonedTimeToUtc(dateString, task.dueDateTimeZone),
+      timezone
+    );
+
+    dateString = timezonedDate.toISOString();
+  }
+
+  const now = new Date();
+  const date = new Date(dateString);
+
+  const dueInSeconds = (date.getTime() - now.getTime()) / 1000;
+  const isAlmostDue = dueInSeconds < 60 * 60 * 24 && dueInSeconds > 0;
+  const isOverDue = dueInSeconds < 0;
+
+  const dueDateString = format(date, 'PPP p');
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'ml-6 mt-1 text-xs text-yellow-400',
         isAlmostDue && 'text-orange-400',
-        isOverDue && 'text-red-400'
+        isOverDue && 'font-semibold text-red-400'
       )}
       data-test="tasks--task--due-text"
     >
-      Due on {date.toLocaleString()}
+      Due on {dueDateString}
     </div>
   );
 };
 
 const TaskItem = memo(({ task }: { task: TaskType }) => {
   const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
+  const { auth } = useAuthStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
+  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const isCompleted = !!task.completedAt;
   const isDeleted = !!task.deletedAt;
 
@@ -127,6 +147,13 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
 
   const onSingleAndDoubleClick = useSingleAndDoubleClick(onClick, onDoubleClick);
 
+  const checkboxBackgroundColor = task.color ?? '';
+  const checkboxColor = checkboxBackgroundColor
+    ? colord(checkboxBackgroundColor).isDark()
+      ? 'white'
+      : 'black'
+    : '';
+
   return (
     <div
       className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -150,6 +177,10 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
           checked={!!task.completedAt}
           onCheckedChange={onCompleteCheckboxToggle}
           onClick={(event) => event.stopPropagation()}
+          style={{
+            backgroundColor: checkboxBackgroundColor,
+            color: checkboxColor,
+          }}
           data-test="tasks--task--completed-checkbox"
         />
         <div
@@ -165,7 +196,7 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
         >
           {task.name}
         </div>
-        <TaskItemDueDate task={task} />
+        <TaskItemDueDate task={task} timezone={generalTimezone} />
         {task.deletedAt && (
           <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
             (deleted at {new Date(task.deletedAt).toLocaleString()})

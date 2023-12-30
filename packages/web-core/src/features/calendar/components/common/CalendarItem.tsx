@@ -1,3 +1,5 @@
+import { colord } from 'colord';
+
 import { Calendar } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
@@ -31,6 +33,13 @@ export default function CalendarItem({
     await addVisibleCalendar(calendar.id);
   };
 
+  const checkboxBackgroundColor = calendar.color ?? '';
+  const checkboxColor = checkboxBackgroundColor
+    ? colord(checkboxBackgroundColor).isDark()
+      ? 'white'
+      : 'black'
+    : '';
+
   return (
     <div
       className="min-h-[2rem] rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -44,7 +53,8 @@ export default function CalendarItem({
             checked={isChecked}
             onCheckedChange={onCheckedChange}
             style={{
-              backgroundColor: calendar.color ?? '',
+              backgroundColor: checkboxBackgroundColor,
+              color: checkboxColor,
             }}
             data-test="calendar--calendar-item--visible-checkbox"
           />

@@ -57,6 +57,21 @@ export const getTimezones = () => {
   return Array.from(timezones).sort();
 };
 
+// Queues
+export const getQueueTypes = () => {
+  // BullMQ queue types
+  return [
+    'waiting',
+    'wait',
+    'delayed',
+    'active',
+    'completed',
+    'failed',
+    'repeat',
+    'waiting-children',
+  ];
+};
+
 // Errors
 export const zodErrorToString = (error: unknown) => {
   if (Array.isArray((error as { errors: unknown[] }).errors)) {

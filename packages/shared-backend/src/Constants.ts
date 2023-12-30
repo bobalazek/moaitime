@@ -31,3 +31,6 @@ export const CALENDARS_MAX_EVENTS_PER_CALENDAR_COUNT = 500;
 
 // Notes
 export const NOTES_MAX_PER_USER_COUNT = 100;
+
+// Queue
+export const QUEUE_WORKERS_SHARED_QUEUE_NAME = 'shared-queue';

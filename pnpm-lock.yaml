@@ -165,6 +165,9 @@ importers:
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../../packages/logging
+      '@moaitime/processes':
+        specifier: workspace:*
+        version: link:../../packages/processes
       commander:
         specifier: ^11.1.0
         version: 11.1.0

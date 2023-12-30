@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import {
   Auth,
   ResponseInterface,
+  ThemeEnum,
   UpdateUser,
   UpdateUserPassword,
   UpdateUserSettings,
@@ -292,7 +293,12 @@ export const useAuthStore = create<AuthStore>()(
       reloadTheme: () => {
         const { auth } = get();
 
-        if (auth?.user?.settings?.generalTheme === 'dark') {
+        const isSystemDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (
+          auth?.user?.settings?.generalTheme === ThemeEnum.DARK ||
+          (auth?.user?.settings?.generalTheme === ThemeEnum.SYSTEM && isSystemDarkTheme)
+        ) {
           document.body.classList.add('dark');
         } else {
           document.body.classList.remove('dark');

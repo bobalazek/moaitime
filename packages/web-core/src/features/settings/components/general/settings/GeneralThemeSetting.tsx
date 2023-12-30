@@ -3,6 +3,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const themeOptions = [
   {
+    label: 'System',
+    value: ThemeEnum.SYSTEM,
+  },
+  {
     label: 'Light',
     value: ThemeEnum.LIGHT,
   },

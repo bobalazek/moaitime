@@ -4,7 +4,7 @@ import { UserSettings } from './UserSchema';
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   generalTimezone: 'UTC',
-  generalTheme: ThemeEnum.LIGHT,
+  generalTheme: ThemeEnum.SYSTEM,
   generalStartDayOfWeek: 0,
   commandsEnabled: true,
   commandsSearchButtonEnabled: true,

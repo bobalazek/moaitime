@@ -29,6 +29,7 @@
     "@moaitime/database-testing": "workspace:*",
     "@moaitime/job-runner": "workspace:*",
     "@moaitime/logging": "workspace:*",
+    "@moaitime/processes": "workspace:*",
     "commander": "^11.1.0"
   }
 }

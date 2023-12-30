@@ -123,6 +123,7 @@ describe('tasks-tasks.cy.ts', () => {
       .find('[data-test="tasks--task--name"]')
       .should('have.text', 'Change task name');
   });
+
   it('should add task description in expanded edit options', () => {
     openTasksPopover();
 
@@ -132,7 +133,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.get('#task-description').type('Task description.');
 
-    cy.get('button').contains('Save').click();
+    cy.getBySel('tasks--task-edit-dialog').get('button').contains('Save').click();
 
     cy.getBySel('tasks--task').first().click();
 

@@ -23,7 +23,20 @@ const TaskItemActions = memo(
     const { toast } = useToast();
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
 
-    const onUndeleteButtonClick = async () => {
+    const onEditTextButtonClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      event.stopPropagation();
+
+      // This is a hacky way of working around the issue of radix, where if the dropdown menu closes,
+      // it will by default focus on one of the popover elements, which is not what we want.
+      // In this case we actually want it to focus on the text element.
+      setTimeout(() => {
+        onEditAndFocus();
+      }, 250);
+    };
+
+    const onUndeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      event.stopPropagation();
+
       try {
         await undeleteTask(task.id);
 
@@ -36,7 +49,9 @@ const TaskItemActions = memo(
       }
     };
 
-    const onDeleteButtonClick = async () => {
+    const onDeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      event.stopPropagation();
+
       try {
         await deleteTask(task.id);
 
@@ -84,22 +99,16 @@ const TaskItemActions = memo(
             data-test="tasks--task--actions-dropdown-menu"
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => {
-                  // This is a hacky way of working around the issue of radix, where if the dropdown menu closes,
-                  // it will by default focus on one of the popover elements, which is not what we want.
-                  // In this case we actually want it to focus on the text element.
-                  setTimeout(() => {
-                    onEditAndFocus();
-                  }, 250);
-                }}
-              >
+              <DropdownMenuItem className="cursor-pointer" onClick={onEditTextButtonClick}>
                 <PencilIcon className="mr-2 h-4 w-4" />
                 <span>Edit Text</span>
               </DropdownMenuItem>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
+                >
                   <ListIcon className="mr-2 h-4 w-4" />
                   <span>Move</span>
                 </DropdownMenuSubTrigger>

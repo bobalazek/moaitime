@@ -16,6 +16,7 @@ const NotesPageHeader = () => {
           onClick={() => {
             navigate('/');
           }}
+          title="Go home"
           data-test="notes--header--home-button"
         >
           <HomeIcon />

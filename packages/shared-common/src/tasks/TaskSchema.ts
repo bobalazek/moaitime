@@ -4,7 +4,7 @@ import { ColorSchema } from '../core/ColorSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';
 
-export const TaskSchema = z.object({
+export const TaskBaseSchema = z.object({
   id: z.string(),
   name: z.string(),
   order: z.number(),
@@ -19,6 +19,11 @@ export const TaskSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   listId: z.string(),
+  parentId: z.string().nullable(),
+});
+
+export const TaskSchema = TaskBaseSchema.extend({
+  children: z.array(TaskBaseSchema).optional(),
 });
 
 export const CreateTaskSchema = z.object({
@@ -62,6 +67,7 @@ export const CreateTaskSchema = z.object({
     .optional(),
   dueDateTimeZone: TimezoneSchema.nullable().optional(),
   listId: z.string(),
+  parentId: z.string().nullable().optional(),
 });
 
 export const UpdateTaskSchema = CreateTaskSchema.partial();

@@ -24,6 +24,7 @@ export default function CalendarSettingsSheet() {
           className="border"
           variant="ghost"
           size="sm"
+          title="Open calendar settings"
           data-test="calendar--header--settings-button"
         >
           <CogIcon />

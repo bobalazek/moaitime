@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { and, asc, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, lists, NewTask, Task, tasks } from '@moaitime/database-core';
 import { SortDirectionEnum, TasksListSortFieldEnum } from '@moaitime/shared-common';
@@ -20,7 +20,7 @@ export class TasksManager {
     listId: string,
     options?: TasksManagerFindManyByListIdOptions
   ): Promise<Task[]> {
-    let where: SQL<unknown> = eq(tasks.listId, listId);
+    let where = eq(tasks.listId, listId);
     const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
 
     if (!options?.includeCompleted) {
@@ -42,14 +42,49 @@ export class TasksManager {
       orderBy.unshift(asc(tasks.priority));
     }
 
+    const rootWhere = and(where, isNull(tasks.parentId)) as SQL<unknown>;
     const rows = await getDatabase().query.tasks.findMany({
-      where,
+      where: rootWhere,
       orderBy,
     });
 
-    return rows.map((row) => {
-      return this._fixDueDateColumn(row);
+    const childrenWhere = and(where, isNotNull(tasks.parentId)) as SQL<unknown>;
+    const children = await getDatabase().query.tasks.findMany({
+      where: childrenWhere,
+      orderBy,
     });
+    const childrenMap: { [key: string]: Task[] } = {};
+    for (const child of children) {
+      if (!child.parentId) {
+        continue;
+      }
+
+      if (!childrenMap[child.parentId]) {
+        childrenMap[child.parentId] = [];
+      }
+
+      childrenMap[child.parentId].push(child);
+    }
+
+    return rows.map((row) => {
+      const task = this._fixDueDateColumn(row);
+
+      return {
+        ...task,
+        children: childrenMap[task.id] ?? [],
+      };
+    });
+  }
+
+  async findManyByParentId(parentId: string): Promise<Task[]> {
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .where(and(eq(tasks.parentId, parentId), isNull(tasks.deletedAt)))
+      .orderBy(asc(tasks.order))
+      .execute();
+
+    return rows.map((row) => this._fixDueDateColumn(row));
   }
 
   async findOneById(id: string): Promise<Task | null> {
@@ -95,18 +130,6 @@ export class TasksManager {
     return rows[0].order ?? 0;
   }
 
-  async countByListId(listId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(tasks.id).mapWith(Number),
-      })
-      .from(tasks)
-      .where(and(eq(tasks.listId, listId), isNull(tasks.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
   async insertOne(data: NewTask): Promise<Task> {
     const rows = await getDatabase().insert(tasks).values(data).returning();
 
@@ -123,6 +146,20 @@ export class TasksManager {
     return this._fixDueDateColumn(rows[0]);
   }
 
+  async deleteOneById(id: string): Promise<Task> {
+    const rows = await getDatabase().delete(tasks).where(eq(tasks.id, id)).returning();
+
+    // We may want to optimize this at some point
+
+    const children = await this.findManyByParentId(id);
+    for (const child of children) {
+      await this.deleteOneById(child.id);
+    }
+
+    return this._fixDueDateColumn(rows[0]);
+  }
+
+  // Helpers
   async updateReorder(map: { [key: string]: number }) {
     return getDatabase().transaction(async (tx) => {
       for (const taskId in map) {
@@ -131,13 +168,18 @@ export class TasksManager {
     });
   }
 
-  async deleteOneById(id: string): Promise<Task> {
-    const rows = await getDatabase().delete(tasks).where(eq(tasks.id, id)).returning();
+  async countByListId(listId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(tasks.id).mapWith(Number),
+      })
+      .from(tasks)
+      .where(and(eq(tasks.listId, listId), isNull(tasks.deletedAt)))
+      .execute();
 
-    return this._fixDueDateColumn(rows[0]);
+    return result[0].count ?? 0;
   }
 
-  // Helpers
   async duplicate(id: string): Promise<Task> {
     const task = await this.findOneById(id);
     if (!task) {
@@ -188,6 +230,63 @@ export class TasksManager {
     }
 
     await tasksManager.updateReorder(reorderMap);
+  }
+
+  /**
+   * @param id if null, we are creating a new task
+   * @param parentId
+   */
+  async validateParentId(id: string | null, parentId: string) {
+    const task = id ? await this.findOneById(id) : null;
+    if (!task) {
+      throw new Error('Task not found');
+    }
+
+    const parentTask = await this.findOneById(parentId);
+    if (!parentTask) {
+      throw new Error('Parent task not found');
+    }
+
+    if (id !== null) {
+      if (parentId === task.id) {
+        throw new Error('Task cannot be its own parent');
+      }
+
+      if (parentTask.parentId === task.id) {
+        throw new Error('Parent task cannot be a child of this task');
+      }
+
+      const depth = await this.getDepth(parentId);
+      if (depth > 1) {
+        throw new Error('Task cannot be moved any deeper');
+      }
+
+      const children = await this.findManyByParentId(id);
+      if (children.length > 0) {
+        throw new Error('Task with child tasks cannot have a parent');
+      }
+    }
+  }
+
+  async getDepth(taskId: string): Promise<number> {
+    const task = await this.findOneById(taskId);
+    if (!task) {
+      throw new Error('Task not found');
+    }
+
+    let depth = 0;
+    let parent = task.parentId;
+    while (parent) {
+      depth++;
+      const parentTask = await this.findOneById(parent);
+      if (!parentTask) {
+        break;
+      }
+
+      parent = parentTask.parentId;
+    }
+
+    return depth;
   }
 
   // Private

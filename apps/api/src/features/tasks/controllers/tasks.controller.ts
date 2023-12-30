@@ -102,6 +102,10 @@ export class TasksController {
       );
     }
 
+    if (body.parentId) {
+      await tasksManager.validateParentId(null, body.parentId);
+    }
+
     const maxOrderForListId = await tasksManager.findMaxOrderByListId(body.listId);
     const order = maxOrderForListId + 1;
 
@@ -130,6 +134,10 @@ export class TasksController {
       if (!list) {
         throw new NotFoundException('List not found');
       }
+    }
+
+    if (body.parentId) {
+      await tasksManager.validateParentId(id, body.parentId);
     }
 
     const updatedData = await tasksManager.updateOneById(id, body);

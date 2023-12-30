@@ -19,6 +19,7 @@ function CalendarPageHeaderCalendar() {
           className="border"
           variant="ghost"
           size="sm"
+          title="Open calendar selector"
           data-test="calendar--header--calendar--trigger-button"
         >
           <CalendarIcon />

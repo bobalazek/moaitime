@@ -13,7 +13,7 @@ export default function Calendar() {
         onClick={() => {
           navigate('/calendar');
         }}
-        title="Calendar"
+        title="Open calendar"
         data-test="calendar--open-button"
       >
         <CalendarIcon className="text-3xl" />

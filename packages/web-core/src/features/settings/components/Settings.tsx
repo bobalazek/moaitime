@@ -14,7 +14,7 @@ export default function Settings() {
         onClick={() => {
           setDialogOpen(true);
         }}
-        title="Settings"
+        title="Open settings"
         data-test="settings--dialog--trigger-button"
       >
         <CogIcon className="text-3xl" />

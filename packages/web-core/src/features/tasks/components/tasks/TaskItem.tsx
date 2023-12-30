@@ -82,7 +82,7 @@ const TaskItemDueDate = ({
   );
 };
 
-const TaskItem = memo(({ task }: { task: TaskType }) => {
+const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) => {
   const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
   const { auth } = useAuthStore();
   const [showConfetti, setShowConfetti] = useState(false);
@@ -172,69 +172,79 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
 
   return (
     <div
-      className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
-      onClick={onSingleAndDoubleClick}
-      data-test="tasks--task"
+      data-test="tasks--task-wrapper"
+      data-task-id={task.id}
+      style={{
+        marginLeft: depth * 16,
+      }}
     >
-      <div className="relative w-full">
-        {showConfetti && (
-          <ConfettiExplosion
-            zIndex={9999}
-            particleSize={6}
-            particleCount={50}
-            duration={2200}
-            onComplete={() => {
-              setShowConfetti(false);
-            }}
-          />
-        )}
-        <Checkbox
-          className="absolute left-0 top-1"
-          checked={!!task.completedAt}
-          onCheckedChange={onCompleteCheckboxToggle}
-          onClick={(event) => event.stopPropagation()}
-          style={{
-            backgroundColor: checkboxBackgroundColor,
-            color: checkboxColor,
-          }}
-          data-test="tasks--task--completed-checkbox"
-        />
-        <div
-          ref={textElementRef}
-          className={clsx(
-            'break-words px-6',
-            (isCompleted || isDeleted) && 'text-gray-400 ',
-            isCompleted && 'line-through'
+      <div
+        className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+        onClick={onSingleAndDoubleClick}
+        data-test="tasks--task"
+        data-task-id={task.id}
+      >
+        <div className="relative w-full">
+          {showConfetti && (
+            <ConfettiExplosion
+              zIndex={9999}
+              particleSize={6}
+              particleCount={50}
+              duration={2200}
+              onComplete={() => {
+                setShowConfetti(false);
+              }}
+            />
           )}
-          onKeyDown={onKeyDown}
-          onBlur={onBlur}
-          data-test="tasks--task--name"
-        >
-          {task.name}
-        </div>
-        <TaskItemDueDate
-          task={task}
-          timezone={generalTimezone}
-          startDayOfWeek={generalStartDayOfWeek}
-        />
-        {task.deletedAt && (
-          <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
-            (deleted at {new Date(task.deletedAt).toLocaleString()})
-          </p>
-        )}
-        {task.priority && (
-          <div
-            className="ml-6 mt-1 text-xs font-bold"
-            data-test="tasks--task--priority-text"
+          <Checkbox
+            className="absolute left-0 top-1"
+            checked={!!task.completedAt}
+            onCheckedChange={onCompleteCheckboxToggle}
+            onClick={(event) => event.stopPropagation()}
             style={{
-              color: prioritiesColorMap.get(task.priority) ?? '',
+              backgroundColor: checkboxBackgroundColor,
+              color: checkboxColor,
             }}
+            data-test="tasks--task--completed-checkbox"
+          />
+          <div
+            ref={textElementRef}
+            className={clsx(
+              'break-words px-6',
+              (isCompleted || isDeleted) && 'text-gray-400 ',
+              isCompleted && 'line-through'
+            )}
+            onKeyDown={onKeyDown}
+            onBlur={onBlur}
+            data-test="tasks--task--name"
           >
-            P{task.priority}
+            {task.name}
           </div>
-        )}
-        <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
+          <TaskItemDueDate
+            task={task}
+            timezone={generalTimezone}
+            startDayOfWeek={generalStartDayOfWeek}
+          />
+          {task.deletedAt && (
+            <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
+              (deleted at {new Date(task.deletedAt).toLocaleString()})
+            </p>
+          )}
+          {task.priority && (
+            <div
+              className="ml-6 mt-1 text-xs font-bold"
+              data-test="tasks--task--priority-text"
+              style={{
+                color: prioritiesColorMap.get(task.priority) ?? '',
+              }}
+            >
+              P{task.priority}
+            </div>
+          )}
+          <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
+        </div>
       </div>
+      {task.children?.map((child) => <TaskItem key={child.id} task={child} depth={depth + 1} />)}
     </div>
   );
 });

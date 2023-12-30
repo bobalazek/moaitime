@@ -25,6 +25,7 @@ export default function CalendarPageHeaderViewSelector() {
         <Button
           variant="outline"
           size="sm"
+          title="Open calendar view selector"
           data-test="calendar--header--view-selector--dropdown-menu--trigger-button"
         >
           <span className="mr-2 inline-block">{calendarViewOption?.label ?? selectedView}</span>

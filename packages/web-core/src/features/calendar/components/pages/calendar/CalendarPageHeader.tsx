@@ -85,6 +85,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           onClick={() => {
             navigate('/');
           }}
+          title="Go home"
           data-test="calendar--header--home-button"
         >
           <HomeIcon />
@@ -99,6 +100,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           variant="ghost"
           size="sm"
           onClick={onPrevButtonClick}
+          title="Previous date range"
           data-test="calendar--header--prev-button"
         >
           <ArrowLeftIcon />
@@ -108,6 +110,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           variant="ghost"
           size="sm"
           onClick={onNextButtonClick}
+          title="Next date range"
           data-test="calendar--header--next-button"
         >
           <ArrowRightIcon />
@@ -118,6 +121,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
           size="sm"
           onClick={onTodayButtonClick}
           disabled={isTodayButtonDisabled}
+          title="Go to today"
           data-test="calendar--header--today-button"
         >
           <CalendarPageHeaderTodayButtonText />

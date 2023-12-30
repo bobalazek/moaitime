@@ -41,7 +41,7 @@ export default function Tasks() {
         <PopoverTrigger asChild>
           <button
             className="text-xl text-white transition-all"
-            title="Tasks"
+            title="Open tasks"
             data-test="tasks--popover--trigger-button"
           >
             <ListChecksIcon className="text-3xl" />

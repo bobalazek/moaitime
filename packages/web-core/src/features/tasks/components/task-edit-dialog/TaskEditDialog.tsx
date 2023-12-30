@@ -16,6 +16,7 @@ import { ColorSelector } from '../../../core/components/selectors/ColorSelector'
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { PrioritySelector } from '../../../core/components/selectors/PrioritySelector';
+import { TaskParentSelector } from '../../../core/components/selectors/TaskParentSelector';
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function TaskEditDialog() {
@@ -191,6 +192,15 @@ export default function TaskEditDialog() {
                 dueDateTimeZone: saveData.dateTimeZone,
               });
             }}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="task-parent">Parent</Label>
+          <TaskParentSelector
+            value={data?.parentId ?? undefined}
+            onChangeValue={(value) =>
+              setData((current) => ({ ...current, parentId: value ?? null }))
+            }
           />
         </div>
         <div className="flex flex-row justify-between gap-2">

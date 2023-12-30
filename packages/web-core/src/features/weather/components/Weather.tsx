@@ -15,7 +15,7 @@ export default function Weather() {
         <PopoverTrigger asChild>
           <button
             className="text-xl text-white transition-all"
-            title="Weather"
+            title="Open weather"
             data-test="weather--popover--trigger-button"
           >
             <WeatherConditionIcon className="text-3xl" />

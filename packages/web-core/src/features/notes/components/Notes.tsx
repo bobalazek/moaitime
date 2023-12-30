@@ -13,7 +13,7 @@ export default function Notes() {
         onClick={() => {
           navigate('/notes');
         }}
-        title="Notes"
+        title="Open notes"
         data-test="notes--open-button"
       >
         <FilesIcon className="text-3xl" />

@@ -25,7 +25,7 @@ export const tasks = pgTable('tasks', {
   parentId: uuid('parent_id'), // Relationship to self
 });
 
-export const tasksRelations = relations(tasks, ({ one }) => ({
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
   list: one(lists, {
     fields: [tasks.listId],
     references: [lists.id],
@@ -33,6 +33,9 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
   parent: one(tasks, {
     fields: [tasks.parentId],
     references: [tasks.id],
+  }),
+  children: many(tasks, {
+    relationName: 'children',
   }),
 }));
 

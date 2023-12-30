@@ -1,5 +1,5 @@
 import { calendars, events, getMigrationDatabase, lists, users } from '@moaitime/database-core';
-import { logger } from '@moaitime/shared-logging';
+import { logger } from '@moaitime/logging';
 
 import { getCalendarFixtures } from './data/Calendars';
 import { getEventFixtures } from './data/Events';

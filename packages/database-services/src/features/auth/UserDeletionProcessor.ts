@@ -2,12 +2,12 @@ import { subSeconds } from 'date-fns';
 import { desc, gt } from 'drizzle-orm';
 
 import { getDatabase, User, users } from '@moaitime/database-core';
+import { logger, Logger } from '@moaitime/logging';
 import { AUTH_DELETION_HARD_DELETE_SECONDS } from '@moaitime/shared-backend';
-import { logger, Logger } from '@moaitime/shared-logging';
 
 import { usersManager, UsersManager } from './UsersManager';
 
-export class UserDeletionManager {
+export class UserDeletionProcessor {
   constructor(
     private _logger: Logger,
     private _usersManager: UsersManager
@@ -36,6 +36,10 @@ export class UserDeletionManager {
     this._logger.info('All overdue users were successfully processed.');
   }
 
+  setLogger(logger: Logger) {
+    this._logger = logger;
+  }
+
   private async _processUser(user: User) {
     this._logger.debug(`Processing user ${user.id} ...`);
 
@@ -45,4 +49,4 @@ export class UserDeletionManager {
   }
 }
 
-export const userDeletionManager = new UserDeletionManager(logger, usersManager);
+export const userDeletionProcessor = new UserDeletionProcessor(logger, usersManager);

@@ -12,8 +12,8 @@ import {
   AuthResetPasswordEmail,
   AuthWelcomeEmail,
 } from '@moaitime/emails-core';
+import { logger, Logger } from '@moaitime/logging';
 import { getEnv, MAILER_FROM } from '@moaitime/shared-backend';
-import { logger, Logger } from '@moaitime/shared-logging';
 
 import { configureTransporter } from './Helpers';
 

@@ -27,8 +27,8 @@
   "dependencies": {
     "@moaitime/database-services-testing": "workspace:*",
     "@moaitime/emails-core": "workspace:*",
+    "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
-    "@moaitime/shared-logging": "workspace:*",
     "@react-email/render": "^0.0.10",
     "nodemailer": "^6.9.7",
     "react": "18.2.0"

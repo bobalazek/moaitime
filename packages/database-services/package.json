@@ -28,6 +28,7 @@
     "@moaitime/database-core": "workspace:*",
     "@moaitime/database-testing": "workspace:*",
     "@moaitime/emails-mailer": "workspace:*",
+    "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
     "date-fns": "^2.30.0",

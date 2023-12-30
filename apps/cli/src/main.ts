@@ -1,13 +1,14 @@
 import { Command } from 'commander';
 
 import { destroyDatabase } from '@moaitime/database-core';
-import { logger } from '@moaitime/shared-logging';
+import { logger } from '@moaitime/logging';
 
 import { addDatabaseDropSchemasCommand } from './database/DatabaseDropSchemasCommand';
 import { addDatabaseInsertFixtureDataCommand } from './database/DatabaseInsertFixtureDataCommand';
 import { addDatabaseInsertSeedDataCommand } from './database/DatabaseInsertSeedDataCommand';
 import { addDatabaseReloadCommand } from './database/DatabaseReloadCommand';
 import { addDatabaseRunMigrationsCommand } from './database/DatabaseRunMigrationsCommand';
+import { addJobsRunnerStartCommand } from './jobs/JobsRunnerStartCommand';
 
 const program = new Command();
 
@@ -17,6 +18,9 @@ addDatabaseInsertFixtureDataCommand(program);
 addDatabaseDropSchemasCommand(program);
 addDatabaseRunMigrationsCommand(program);
 addDatabaseReloadCommand(program);
+
+// Jobs
+addJobsRunnerStartCommand(program);
 
 program
   .hook('postAction', async () => {

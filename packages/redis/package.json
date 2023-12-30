@@ -1,5 +1,5 @@
 {
-  "name": "@moaitime/shared-logging",
+  "name": "@moaitime/redis",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -25,9 +25,8 @@
   },
   "dependencies": {
     "@moaitime/shared-backend": "workspace:*",
-    "dotenv": "^16.3.1",
-    "pino": "^8.16.2",
-    "pino-pretty": "^10.2.3"
+    "ioredis": "^5.1.0",
+    "superjson": "^2.2.1"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

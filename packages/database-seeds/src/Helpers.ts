@@ -11,7 +11,7 @@ import {
   quotes,
   users,
 } from '@moaitime/database-core';
-import { logger } from '@moaitime/shared-logging';
+import { logger } from '@moaitime/logging';
 
 import { getEventSeeds } from '.';
 import { getBackgroundsSeeds } from './data/Backgrounds';

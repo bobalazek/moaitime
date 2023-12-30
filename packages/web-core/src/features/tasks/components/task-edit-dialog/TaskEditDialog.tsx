@@ -1,8 +1,18 @@
 import { useEffect, useState } from 'react';
 
 import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@moaitime/shared-common';
-import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  Input,
+  Label,
+  Textarea,
+  useToast,
+} from '@moaitime/web-ui';
 
+import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { useTasksStore } from '../../state/tasksStore';
@@ -99,7 +109,10 @@ export default function TaskEditDialog() {
   return (
     <Dialog open={selectedTaskDialogOpen} onOpenChange={setSelectedTaskDialogOpen}>
       <DialogContent data-test="tasks--task-edit-dialog">
-        <div className="mb-4 flex flex-col gap-2">
+        <DialogHeader>
+          {selectedTask && <>Edit "{selectedTask.name}" Task</>} {!selectedTask && <>Create Task</>}
+        </DialogHeader>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="task-name">Name</Label>
           <Input
             id="task-name"
@@ -109,7 +122,7 @@ export default function TaskEditDialog() {
             }}
           />
         </div>
-        <div className="mb-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="task-description">Description</Label>
           <Textarea
             id="task-description"
@@ -120,7 +133,7 @@ export default function TaskEditDialog() {
             }}
           />
         </div>
-        <div className="mb-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="task-list">List</Label>
           <ListSelector
             value={data.listId ?? ''}
@@ -129,7 +142,21 @@ export default function TaskEditDialog() {
             }}
           />
         </div>
-        <div className="mb-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="task-color">Color</Label>
+          <ColorSelector
+            value={data?.color ?? undefined}
+            onChangeValue={(value) => setData((current) => ({ ...current, color: value ?? null }))}
+            triggerProps={{
+              id: 'task-color',
+              'data-test': 'tasks--task-edit-dialog--color-select--trigger-button',
+            }}
+            contentProps={{
+              'data-test': 'tasks--task-edit-dialog--color-select',
+            }}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="task-list">Due Date</Label>
           <DateSelector
             includeTime

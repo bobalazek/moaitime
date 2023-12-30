@@ -1,6 +1,13 @@
 import { endOfDay, startOfDay } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
+// General
+export const sleep = (milliseconds: number): Promise<unknown> => {
+  return new Promise((resolve) => {
+    return setTimeout(resolve, milliseconds);
+  });
+};
+
 // Time
 export const getGmtOffset = (timezone: string) => {
   const now = new Date();
@@ -16,6 +23,10 @@ export const isValidDate = (date: string) => {
 };
 
 export const isValidTime = (time: string) => {
+  if (!time) {
+    return false;
+  }
+
   const [hours, minutes] = time.split(':');
   if (!hours || !minutes) {
     return false;
@@ -55,6 +66,21 @@ export const getTimezones = () => {
   }
 
   return Array.from(timezones).sort();
+};
+
+// Queues
+export const getQueueTypes = () => {
+  // BullMQ queue types
+  return [
+    'waiting',
+    'wait',
+    'delayed',
+    'active',
+    'completed',
+    'failed',
+    'repeat',
+    'waiting-children',
+  ];
 };
 
 // Errors

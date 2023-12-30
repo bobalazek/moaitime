@@ -65,7 +65,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task--actions-dropdown-menu')
       .find('div[role="menuitem"]')
-      .contains('Edit')
+      .contains('Edit Text')
       .click();
 
     cy.getBySel('tasks--task')

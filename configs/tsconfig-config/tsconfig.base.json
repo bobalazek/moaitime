@@ -33,10 +33,15 @@
       "@moaitime/emails-mailer": ["../../packages/emails-mailer/src/index.ts"],
       "@moaitime/shared-backend": ["../../packages/shared-backend/src/index.ts"],
       "@moaitime/shared-common": ["../../packages/shared-common/src/index.ts"],
-      "@moaitime/shared-logging": ["../../packages/shared-logging/src/index.ts"],
+      "@moaitime/shared-queue-worker": ["../../packages/shared-queue-worker/src/index.ts"],
       "@moaitime/web-core": ["../../packages/web-core/src/index.ts"],
       "@moaitime/web-ui": ["../../packages/web-ui/src/index.ts"],
-      "@moaitime/web-ui-editor": ["../../packages/web-ui-editor/src/index.ts"]
+      "@moaitime/web-ui-editor": ["../../packages/web-ui-editor/src/index.ts"],
+      "@moaitime/logging": ["../../packages/logging/src/index.ts"],
+      "@moaitime/processes": ["../../packages/processes/src/index.ts"],
+      "@moaitime/bullmq": ["../../packages/bullmq/src/index.ts"],
+      "@moaitime/redis": ["../../packages/redis/src/index.ts"],
+      "@moaitime/job-runner": ["../../packages/job-runner/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

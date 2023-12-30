@@ -18,6 +18,7 @@ import {
   completeTask,
   deleteList,
   deleteTask,
+  duplicateTask,
   editList,
   editTask,
   getTasksForList,
@@ -64,6 +65,7 @@ export type TasksStore = {
   moveTask: (taskId: string, newListId: string) => Promise<Task>;
   deleteTask: (taskId: string, isHardDelete?: boolean) => Promise<Task>;
   undeleteTask: (taskId: string) => Promise<Task>;
+  duplicateTask: (taskId: string) => Promise<Task>;
   completeTask: (taskId: string) => Promise<Task>;
   uncompleteTask: (taskId: string) => Promise<Task>;
   reorderTasks: (activeTaskId: string, overTaskId: string) => Promise<void>;
@@ -304,6 +306,19 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     return undeletedTask;
+  },
+  duplicateTask: async (taskId: string) => {
+    const { reloadSelectedList, loadLists } = get();
+
+    const duplicatedTask = await duplicateTask(taskId);
+
+    await reloadSelectedList();
+
+    set({
+      lists: await loadLists(), // We want to reload the count of tasks
+    });
+
+    return duplicatedTask;
   },
   completeTask: async (taskId: string) => {
     const { reloadSelectedList, loadLists } = get();

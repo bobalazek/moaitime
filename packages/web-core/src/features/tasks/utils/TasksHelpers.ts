@@ -158,6 +158,17 @@ export const undeleteTask = async (taskId: string): Promise<Task> => {
   return response.data as Task;
 };
 
+export const duplicateTask = async (taskId: string): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(
+    `${API_URL}/api/v1/tasks/${taskId}/duplicate`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as Task;
+};
+
 export const completeTask = async (taskId: string): Promise<Task> => {
   const response = await fetchJson<ResponseInterface<Task>>(
     `${API_URL}/api/v1/tasks/${taskId}/complete`,

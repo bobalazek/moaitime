@@ -63,31 +63,7 @@ export class TasksController {
 
     const { sortDirection, listId, originalTaskId, newTaskId } = body;
 
-    const result = await tasksManager.findManyByListId(listId, {
-      includeCompleted: true,
-      includeDeleted: true,
-      sortField: 'order',
-      sortDirection: sortDirection,
-    });
-
-    const originalIndex = result.findIndex((task) => task.id === originalTaskId);
-    const newIndex = result.findIndex((task) => task.id === newTaskId);
-
-    const [movedTask] = result.splice(originalIndex, 1);
-    result.splice(newIndex, 0, movedTask);
-
-    const reorderMap: { [key: string]: number } = {};
-    if (sortDirection === SortDirectionEnum.ASC) {
-      result.forEach((task, index) => {
-        reorderMap[task.id] = index;
-      });
-    } else {
-      result.forEach((task, index) => {
-        reorderMap[task.id] = result.length - 1 - index;
-      });
-    }
-
-    await tasksManager.updateReorder(reorderMap);
+    await tasksManager.reorder(listId, sortDirection, originalTaskId, newTaskId);
 
     return {
       success: true,
@@ -199,6 +175,25 @@ export class TasksController {
     const updatedData = await tasksManager.updateOneById(id, {
       deletedAt: null,
     });
+
+    return {
+      success: true,
+      data: updatedData,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/duplicate')
+  async duplicate(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<Task>> {
+    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+    if (!data) {
+      throw new NotFoundException('Task not found');
+    }
+
+    const updatedData = await tasksManager.duplicate(id);
 
     return {
       success: true,

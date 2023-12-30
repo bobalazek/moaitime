@@ -10,10 +10,11 @@ export default function Notes() {
     <ErrorBoundary>
       <button
         className="text-xl text-white transition-all"
-        data-test="notes--open-button"
         onClick={() => {
           navigate('/notes');
         }}
+        title="Notes"
+        data-test="notes--open-button"
       >
         <FilesIcon className="text-3xl" />
       </button>

@@ -21,7 +21,7 @@ export class TasksManager {
     options?: TasksManagerFindManyByListIdOptions
   ): Promise<Task[]> {
     let where: SQL<unknown> = eq(tasks.listId, listId);
-    let orderBy: SQL<unknown> = asc(tasks.createdAt);
+    const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
 
     if (!options?.includeCompleted) {
       where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
@@ -35,7 +35,7 @@ export class TasksManager {
       const direction = options?.sortDirection ?? SortDirectionEnum.ASC;
       const field = tasks[options.sortField] ?? tasks.order;
 
-      orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
+      orderBy.unshift(direction === SortDirectionEnum.ASC ? asc(field) : desc(field));
     }
 
     const rows = await getDatabase().query.tasks.findMany({
@@ -131,6 +131,59 @@ export class TasksManager {
     const rows = await getDatabase().delete(tasks).where(eq(tasks.id, id)).returning();
 
     return this._fixDueDateColumn(rows[0]);
+  }
+
+  // Helpers
+  async duplicate(id: string): Promise<Task> {
+    const task = await this.findOneById(id);
+    if (!task) {
+      throw new Error('Task not found');
+    }
+
+    const duplicatedTask = await this.insertOne({
+      ...task,
+      id: undefined,
+      createdAt: undefined,
+      updatedAt: undefined,
+      name: `${task.name} (copy)`,
+    });
+
+    await this.reorder(task.listId, SortDirectionEnum.ASC, task.id, duplicatedTask.id);
+
+    return this._fixDueDateColumn(duplicatedTask);
+  }
+
+  async reorder(
+    listId: string,
+    sortDirection: SortDirectionEnum,
+    originalTaskId: string,
+    newTaskId: string
+  ) {
+    const result = await tasksManager.findManyByListId(listId, {
+      includeCompleted: true,
+      includeDeleted: true,
+      sortField: 'order',
+      sortDirection: sortDirection,
+    });
+
+    const originalIndex = result.findIndex((task) => task.id === originalTaskId);
+    const newIndex = result.findIndex((task) => task.id === newTaskId);
+
+    const [movedTask] = result.splice(originalIndex, 1);
+    result.splice(newIndex, 0, movedTask);
+
+    const reorderMap: { [key: string]: number } = {};
+    if (sortDirection === SortDirectionEnum.ASC) {
+      result.forEach((task, index) => {
+        reorderMap[task.id] = index;
+      });
+    } else {
+      result.forEach((task, index) => {
+        reorderMap[task.id] = result.length - 1 - index;
+      });
+    }
+
+    await tasksManager.updateReorder(reorderMap);
   }
 
   // Private

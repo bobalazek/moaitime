@@ -10,10 +10,11 @@ export default function Calendar() {
     <ErrorBoundary>
       <button
         className="text-xl text-white transition-all"
-        data-test="calendar--open-button"
         onClick={() => {
           navigate('/calendar');
         }}
+        title="Calendar"
+        data-test="calendar--open-button"
       >
         <CalendarIcon className="text-3xl" />
       </button>

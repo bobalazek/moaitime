@@ -37,6 +37,7 @@ export default function TasksBodyHeaderFilterSelector() {
           type="button"
           className="rounded-full p-1 text-sm"
           data-test="tasks--body-header--list-selector--dropdown-menu--trigger-button"
+          title="Filter tasks"
         >
           <FilterIcon />
         </button>

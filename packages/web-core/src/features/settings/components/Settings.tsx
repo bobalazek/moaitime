@@ -11,10 +11,11 @@ export default function Settings() {
     <ErrorBoundary>
       <button
         className="text-xl text-white transition-all"
-        data-test="settings--dialog--trigger-button"
         onClick={() => {
           setDialogOpen(true);
         }}
+        title="Settings"
+        data-test="settings--dialog--trigger-button"
       >
         <CogIcon className="text-3xl" />
       </button>

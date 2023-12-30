@@ -1,4 +1,12 @@
-import { HistoryIcon, ListIcon, MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
+import {
+  CopyIcon,
+  FileEditIcon,
+  HistoryIcon,
+  ListIcon,
+  MoreVerticalIcon,
+  PencilIcon,
+  TrashIcon,
+} from 'lucide-react';
 import { memo, useState } from 'react';
 
 import { Task } from '@moaitime/shared-common';
@@ -19,9 +27,16 @@ import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDrop
 
 const TaskItemActions = memo(
   ({ task, onEditAndFocus }: { task: Task; onEditAndFocus: () => void }) => {
-    const { deleteTask, undeleteTask, moveTask } = useTasksStore();
+    const { duplicateTask, deleteTask, undeleteTask, moveTask, setSelectedTaskDialogOpen } =
+      useTasksStore();
     const { toast } = useToast();
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
+
+    const onEditButtonClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      event.stopPropagation();
+
+      setSelectedTaskDialogOpen(true, task);
+    };
 
     const onEditTextButtonClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       event.stopPropagation();
@@ -32,6 +47,12 @@ const TaskItemActions = memo(
       setTimeout(() => {
         onEditAndFocus();
       }, 250);
+    };
+
+    const onDuplicateButtonClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      event.stopPropagation();
+
+      duplicateTask(task.id);
     };
 
     const onUndeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -83,7 +104,7 @@ const TaskItemActions = memo(
     };
 
     return (
-      <div className="absolute right-0 top-0 ml-2">
+      <div className="absolute right-0 top-[-2px] ml-2">
         <DropdownMenu open={dropdownMenuOpen} onOpenChange={setDropdownMenuOpen}>
           <DropdownMenuTrigger asChild>
             <button
@@ -99,9 +120,17 @@ const TaskItemActions = memo(
             data-test="tasks--task--actions-dropdown-menu"
           >
             <DropdownMenuGroup>
+              <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
+                <FileEditIcon className="mr-2 h-4 w-4" />
+                <span>Edit</span>
+              </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" onClick={onEditTextButtonClick}>
                 <PencilIcon className="mr-2 h-4 w-4" />
                 <span>Edit Text</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={onDuplicateButtonClick}>
+                <CopyIcon className="mr-2 h-4 w-4" />
+                <span>Duplicate</span>
               </DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger

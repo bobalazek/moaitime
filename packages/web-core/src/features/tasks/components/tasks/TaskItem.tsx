@@ -1,10 +1,11 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
+import { formatRelative } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { memo, useCallback, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 
-import { Task as TaskType } from '@moaitime/shared-common';
+import { DayOfWeek, Task as TaskType } from '@moaitime/shared-common';
 import { Checkbox, cn } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
@@ -23,7 +24,15 @@ function setCursorToEnd(element: HTMLElement) {
   selection?.addRange(range);
 }
 
-const TaskItemDueDate = ({ task, timezone }: { task: TaskType; timezone: string }) => {
+const TaskItemDueDate = ({
+  task,
+  timezone,
+  startDayOfWeek,
+}: {
+  task: TaskType;
+  timezone: string;
+  startDayOfWeek: DayOfWeek;
+}) => {
   if (!task.dueDate) {
     return null;
   }
@@ -48,21 +57,27 @@ const TaskItemDueDate = ({ task, timezone }: { task: TaskType; timezone: string 
   const date = new Date(dateString);
 
   const dueInSeconds = (date.getTime() - now.getTime()) / 1000;
+  const isDueSoon = dueInSeconds < 60 * 60 * 24 * 3 && dueInSeconds > 60 * 60 * 24;
   const isAlmostDue = dueInSeconds < 60 * 60 * 24 && dueInSeconds > 0;
   const isOverDue = dueInSeconds < 0;
 
   const dueDateString = format(date, 'PPP p');
+  const dueDateRelativeString = formatRelative(date, now, {
+    weekStartsOn: startDayOfWeek,
+  });
 
   return (
     <div
       className={cn(
-        'ml-6 mt-1 text-xs text-yellow-400',
+        'ml-6 mt-1 text-xs',
+        isDueSoon && 'text-yellow-400',
         isAlmostDue && 'text-orange-400',
         isOverDue && 'font-semibold text-red-400'
       )}
+      title={dueDateString}
       data-test="tasks--task--due-text"
     >
-      Due on {dueDateString}
+      Due {dueDateRelativeString}
     </div>
   );
 };
@@ -74,6 +89,7 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const isCompleted = !!task.completedAt;
   const isDeleted = !!task.deletedAt;
 
@@ -196,7 +212,11 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
         >
           {task.name}
         </div>
-        <TaskItemDueDate task={task} timezone={generalTimezone} />
+        <TaskItemDueDate
+          task={task}
+          timezone={generalTimezone}
+          startDayOfWeek={generalStartDayOfWeek}
+        />
         {task.deletedAt && (
           <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
             (deleted at {new Date(task.deletedAt).toLocaleString()})

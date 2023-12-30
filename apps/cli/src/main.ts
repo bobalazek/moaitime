@@ -8,6 +8,7 @@ import { addDatabaseInsertFixtureDataCommand } from './database/DatabaseInsertFi
 import { addDatabaseInsertSeedDataCommand } from './database/DatabaseInsertSeedDataCommand';
 import { addDatabaseReloadCommand } from './database/DatabaseReloadCommand';
 import { addDatabaseRunMigrationsCommand } from './database/DatabaseRunMigrationsCommand';
+import { addJobsRunnerStartCommand } from './jobs/JobsRunnerStartCommand';
 
 const program = new Command();
 
@@ -17,6 +18,9 @@ addDatabaseInsertFixtureDataCommand(program);
 addDatabaseDropSchemasCommand(program);
 addDatabaseRunMigrationsCommand(program);
 addDatabaseReloadCommand(program);
+
+// Jobs
+addJobsRunnerStartCommand(program);
 
 program
   .hook('postAction', async () => {

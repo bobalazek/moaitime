@@ -1,6 +1,13 @@
 import { endOfDay, startOfDay } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
+// General
+export const sleep = (milliseconds: number): Promise<unknown> => {
+  return new Promise((resolve) => {
+    return setTimeout(resolve, milliseconds);
+  });
+};
+
 // Time
 export const getGmtOffset = (timezone: string) => {
   const now = new Date();

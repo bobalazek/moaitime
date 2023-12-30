@@ -1,5 +1,5 @@
 {
-  "name": "@moaitime/database-services",
+  "name": "@moaitime/job-runner",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -21,22 +21,17 @@
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest run",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@moaitime/database-core": "workspace:*",
-    "@moaitime/database-testing": "workspace:*",
-    "@moaitime/emails-mailer": "workspace:*",
+    "@moaitime/database-services": "workspace:*",
     "@moaitime/logging": "workspace:*",
-    "@moaitime/shared-backend": "workspace:*",
+    "@moaitime/processes": "workspace:*",
+    "@moaitime/redis": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
-    "date-fns": "^2.30.0",
-    "drizzle-orm": "^0.29.0",
-    "uuid": "^9.0.1"
+    "@moaitime/shared-queue-worker": "workspace:*"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.7",
     "typescript": "^5.3.2"
   }
 }

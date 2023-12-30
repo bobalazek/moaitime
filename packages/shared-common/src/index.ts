@@ -29,6 +29,7 @@ export * from './core/DayOfWeek';
 export * from './core/SortDirectionEnum';
 export * from './core/ThemeEnum';
 export * from './core/ProcessingStatusEnum';
+export * from './core/QueueEnums';
 export * from './core/Response';
 export * from './core/ErrorResponse';
 

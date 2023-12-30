@@ -27,6 +27,7 @@
     "@moaitime/database-fixtures": "workspace:*",
     "@moaitime/database-seeds": "workspace:*",
     "@moaitime/database-testing": "workspace:*",
+    "@moaitime/job-runner": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "commander": "^11.1.0"
   }

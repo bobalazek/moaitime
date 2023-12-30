@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { and, asc, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, lists, NewTask, Task, tasks } from '@moaitime/database-core';
-import { SortDirectionEnum } from '@moaitime/shared-common';
+import { SortDirectionEnum, TasksListSortFieldEnum } from '@moaitime/shared-common';
 
 export type TasksManagerFindManyByListIdOptions = {
   includeCompleted?: boolean;
@@ -36,6 +36,10 @@ export class TasksManager {
       const field = tasks[options.sortField] ?? tasks.order;
 
       orderBy.unshift(direction === SortDirectionEnum.ASC ? asc(field) : desc(field));
+    }
+
+    if (options?.sortField === TasksListSortFieldEnum.ORDER) {
+      orderBy.unshift(asc(tasks.priority));
     }
 
     const rows = await getDatabase().query.tasks.findMany({

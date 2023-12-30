@@ -15,6 +15,7 @@ import {
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
+import { PrioritySelector } from '../../../core/components/selectors/PrioritySelector';
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function TaskEditDialog() {
@@ -153,6 +154,22 @@ export default function TaskEditDialog() {
             }}
             contentProps={{
               'data-test': 'tasks--task-edit-dialog--color-select',
+            }}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="task-priority">Priority</Label>
+          <PrioritySelector
+            value={data?.priority?.toString() ?? undefined}
+            onChangeValue={(value) =>
+              setData((current) => ({ ...current, priority: value ? parseInt(value) : null }))
+            }
+            triggerProps={{
+              id: 'task-priority',
+              'data-test': 'tasks--task-edit-dialog--priority-select--trigger-button',
+            }}
+            contentProps={{
+              'data-test': 'tasks--task-edit-dialog--priority-select',
             }}
           />
         </div>

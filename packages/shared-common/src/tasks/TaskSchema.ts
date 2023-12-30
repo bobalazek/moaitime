@@ -26,6 +26,7 @@ export const CreateTaskSchema = z.object({
     message: 'Task name must be provided',
   }),
   color: ColorSchema.nullable().optional(),
+  priority: z.number().nullable().optional(),
   description: z.string().nullable().optional(),
   dueDate: z
     .string()

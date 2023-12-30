@@ -5,7 +5,7 @@ import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { memo, useCallback, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 
-import { DayOfWeek, Task as TaskType } from '@moaitime/shared-common';
+import { DayOfWeek, prioritiesColorMap, Task as TaskType } from '@moaitime/shared-common';
 import { Checkbox, cn } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
@@ -221,6 +221,17 @@ const TaskItem = memo(({ task }: { task: TaskType }) => {
           <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
             (deleted at {new Date(task.deletedAt).toLocaleString()})
           </p>
+        )}
+        {task.priority && (
+          <div
+            className="ml-6 mt-1 text-xs font-bold"
+            data-test="tasks--task--priority-text"
+            style={{
+              color: prioritiesColorMap.get(task.priority) ?? '',
+            }}
+          >
+            P{task.priority}
+          </div>
         )}
         <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
       </div>

@@ -22,6 +22,7 @@ export * from './calendar/EventSchema';
 
 // Core
 export * from './core/MainColors';
+export * from './core/Priorities';
 export * from './core/TimezoneSchema';
 export * from './core/HexSchema';
 export * from './core/ColorSchema';

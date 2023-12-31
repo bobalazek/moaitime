@@ -109,6 +109,11 @@ const TaskItemActions = memo(
           <DropdownMenuTrigger asChild>
             <button
               className="rounded-full p-1"
+              onClick={(event) => {
+                event.stopPropagation();
+
+                setDropdownMenuOpen(true);
+              }}
               data-test="tasks--task--actions-dropdown-menu--trigger-button"
             >
               <MoreVerticalIcon size={18} />

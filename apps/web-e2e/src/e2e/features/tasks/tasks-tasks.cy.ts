@@ -33,7 +33,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--task--completed-checkbox').should('have.attr', 'data-state', 'unchecked');
   });
 
-  it('should edit task when double clicking on it', () => {
+  it('should edit task text when double clicking on text', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
@@ -53,7 +53,7 @@ describe('tasks-tasks.cy.ts', () => {
       .should('have.text', 'My edited task');
   });
 
-  it('should edit task when edit button is clicked', () => {
+  it('should edit task text when edit button is clicked', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
@@ -140,6 +140,21 @@ describe('tasks-tasks.cy.ts', () => {
     cy.get('#task-description').contains('Task description.');
   });
 
+  it('should open expanded edit options in task dropdown menu', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Edit Text')
+      .click({ force: true });
+
+    cy.getBySel('tasks--task-edit-dialog').should('exist');
+  });
+
   it('should move task to another task list in expanded edit options', () => {
     openTasksPopover();
 
@@ -152,6 +167,33 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('list-selector').find('div').contains('Errands').click();
 
     cy.getBySel('list-selector--trigger-button').find('div').contains('Errands').should('exist');
+  });
+
+  it.skip('should add color to a task in expanded edit options', () => {
+    const LIST_COLOR_OPTION = {
+      name: 'Lime',
+      value: '#84CC16',
+    };
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('tasks--task-edit-dialog--color-select--trigger-button').click();
+
+    cy.getBySel('tasks--task-edit-dialog--color-select')
+      .find('div[role="option"]')
+      .contains(LIST_COLOR_OPTION.name)
+      .click();
+
+    cy.getBySel('tasks--task-edit-dialog').get('button').contains('Save').click();
+
+    cy.wait(100);
+
+    cy.getBySel('tasks--task')
+      .find('[data-test="tasks--task--completed-checkbox"]')
+      .should('exist');
   });
 
   it('should check if success message is displayed when clicking Save task in expanded edit options', () => {

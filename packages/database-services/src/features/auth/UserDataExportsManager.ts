@@ -1,4 +1,4 @@
-import { DBQueryConfig, desc, eq } from 'drizzle-orm';
+import { asc, DBQueryConfig, desc, eq } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -6,6 +6,7 @@ import {
   UserDataExport,
   userDataExports,
 } from '@moaitime/database-core';
+import { ProcessingStatusEnum } from '@moaitime/shared-common';
 
 export class UserDataExportsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<UserDataExport[]> {
@@ -24,6 +25,15 @@ export class UserDataExportsManager {
     const row = await getDatabase().query.userDataExports.findFirst({
       where: eq(userDataExports.userId, userId),
       orderBy: desc(userDataExports.createdAt),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneOldestPending(): Promise<UserDataExport | null> {
+    const row = await getDatabase().query.userDataExports.findFirst({
+      where: eq(userDataExports.processingStatus, ProcessingStatusEnum.PENDING),
+      orderBy: asc(userDataExports.createdAt),
     });
 
     return row ?? null;

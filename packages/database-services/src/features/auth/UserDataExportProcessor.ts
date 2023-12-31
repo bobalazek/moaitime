@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream, existsSync, mkdirSync, writeFileSync } from 'fs';
 
-import { S3Client } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import archiver from 'archiver';
 import { addSeconds } from 'date-fns';
 
@@ -72,7 +72,7 @@ export class UserDataExportProcessor {
       const expiresAt = addSeconds(completedAt, AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS);
 
       const zipFile = await this._zipFolder(tmpUserDataExportDir);
-      const exportUrl = await this._uploadToBucket(zipFile, expiresAt);
+      const exportUrl = await this._uploadToBucket(zipFile);
 
       await this._userDataExportsManager.updateOneById(userDataExport.id, {
         processingStatus: ProcessingStatusEnum.PROCESSED,
@@ -210,7 +210,7 @@ export class UserDataExportProcessor {
     return zipFilePath;
   }
 
-  async _uploadToBucket(zipFilePath: string, expires: Date) {
+  async _uploadToBucket(zipFilePath: string) {
     this._logger.debug(`Uploading file (${zipFilePath}) to bucket ...`);
 
     if (!existsSync(zipFilePath)) {
@@ -253,17 +253,15 @@ export class UserDataExportProcessor {
       forcePathStyle,
     });
 
-    const upload = await new Upload({
-      client,
-      params: {
-        Bucket: bucket,
-        Key: id,
-        Body: createReadStream(zipFilePath),
-        Expires: expires,
-      },
-    }).done();
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: id,
+      Body: createReadStream(zipFilePath),
+    });
 
-    const url = upload.Location;
+    const url = await getSignedUrl(client, command, {
+      expiresIn: AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS,
+    });
 
     return url;
   }

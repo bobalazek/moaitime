@@ -12,6 +12,7 @@ node_modules
 
 # artifacts
 dist
+tmp
 
 # turbo
 .turbo

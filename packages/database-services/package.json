@@ -25,6 +25,9 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.484.0",
+    "@aws-sdk/lib-storage": "^3.484.0",
+    "@aws-sdk/s3-request-presigner": "^3.484.0",
     "@moaitime/database-core": "workspace:*",
     "@moaitime/database-testing": "workspace:*",
     "@moaitime/emails-mailer": "workspace:*",

@@ -64,13 +64,13 @@ export class JobRunner {
         removeOnComplete: true,
         removeOnFail: true,
         repeat: {
-          every: 1000 * 60 * 60, // 1 hour
+          pattern: '0 * * * *', // Every hour
         },
       }
     );
 
     // Users data export
-    this._userDeletionManager.setLogger(this._logger);
+    this._userDataExportsManager.setLogger(this._logger);
 
     this._sharedQueueWorker.addToQueue(
       SharedQueueWorkerJobEnum.USERS_DATA_EXPORT,
@@ -86,10 +86,12 @@ export class JobRunner {
         removeOnComplete: true,
         removeOnFail: true,
         repeat: {
-          every: 1000 * 60, // 1 minute
+          pattern: '* * * * *', // Every minute
         },
       }
     );
+
+    await this._sharedQueueWorker.initializeAndRunWorker();
   }
 }
 

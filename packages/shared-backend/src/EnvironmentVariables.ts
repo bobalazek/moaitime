@@ -25,6 +25,11 @@ export const envSchema = z.object({
     .url()
     .min(1)
     .transform((value) => decodeURIComponent(value)),
+  USER_DATA_EXPORTS_BUCKET_URL: z
+    .string()
+    .url()
+    .min(1)
+    .transform((value) => decodeURIComponent(value)),
   API_PORT: z.coerce.number().default(3636),
 });
 

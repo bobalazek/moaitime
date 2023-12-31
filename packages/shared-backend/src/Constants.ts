@@ -15,7 +15,8 @@ export const AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS = 60 * 15;
 export const AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS = 60 * 15;
 export const AUTH_DELETION_REQUEST_EXPIRATION_SECONDS = 60 * 60;
 
-export const AUTH_DATA_EXPIRATION_SECONDS = 60 * 60 * 24; // How long until we can request the next data export again
+export const AUTH_DATA_EXPORT_REQUEST_EXPIRATION_SECONDS = 60 * 60 * 6; // How long until we can request the next data export again
+export const AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS = 60 * 60 * 24; // How long until the data export zip file expires
 export const AUTH_DELETION_HARD_DELETE_SECONDS = 60 * 60 * 24 * 30;
 
 // Mailer

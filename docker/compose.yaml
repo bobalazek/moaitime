@@ -33,6 +33,22 @@ services:
     networks:
       - moaitime-network
 
+  minio:
+    container_name: moaitime_minio
+    image: docker.io/bitnami/minio:2023.12.23
+    restart: unless-stopped
+    environment:
+      - MINIO_ROOT_USER=user
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_DEFAULT_BUCKETS=default
+    volumes:
+      - minio-data:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    networks:
+      - moaitime-network
+
 networks:
   moaitime-network:
     name: moaitime_network
@@ -41,3 +57,4 @@ networks:
 volumes:
   postgres-data:
   redis-data:
+  minio-data:

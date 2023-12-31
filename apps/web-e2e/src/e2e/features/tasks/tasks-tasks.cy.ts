@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { openTasksPopover } from '../../../support/utils/tasks-helpers';
+import { addPriorityToMultipleTasks, openTasksPopover } from '../../../support/utils/tasks-helpers';
 
 describe('tasks-tasks.cy.ts', () => {
   beforeEach(() => {
@@ -17,6 +17,42 @@ describe('tasks-tasks.cy.ts', () => {
 
     // Check if the new task is in the list
     cy.getBySel('tasks--task').should('exist');
+  });
+
+  it('should close task dialog when clicking on Cancel', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.get('button').contains('Cancel').click();
+
+    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
+  });
+
+  it('should close task dialog when clicking on the x (close) button in the right top corner in expanded edit options', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.get('[data-test="dialog--close"]').click();
+
+    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
+  });
+
+  it('should close task dialog when clicking outside the dialog', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.clickOutside();
+
+    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
   });
 
   it('should toggle the completed state when clicking on the checkbox', () => {
@@ -92,6 +128,26 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--task--name').should('not.exist');
   });
 
+  it('should undo delete task when undo is clicked in toast', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Delete')
+      .click();
+
+    cy.get('button[type="button"]').contains('Undo').click();
+
+    cy.getBySel('tasks--task--name').contains('My new task').should('exist');
+  });
+
   it('should open expanded edit options for a task', () => {
     openTasksPopover();
 
@@ -149,7 +205,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task--actions-dropdown-menu')
       .find('div[role="menuitem"]')
-      .contains('Edit Text')
+      .contains('Edit')
       .click({ force: true });
 
     cy.getBySel('tasks--task-edit-dialog').should('exist');
@@ -169,7 +225,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('list-selector--trigger-button').find('div').contains('Errands').should('exist');
   });
 
-  it.skip('should add color to a task in expanded edit options', () => {
+  it('should add color to a task in expanded edit options', () => {
     const LIST_COLOR_OPTION = {
       name: 'Lime',
       value: '#84CC16',
@@ -191,9 +247,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.wait(100);
 
-    cy.getBySel('tasks--task')
-      .find('[data-test="tasks--task--completed-checkbox"]')
-      .should('exist');
+    cy.getBySel('tasks--task').should('have.attr', 'data-task-color', LIST_COLOR_OPTION.value);
   });
 
   it('should check if success message is displayed when clicking Save task in expanded edit options', () => {
@@ -208,39 +262,73 @@ describe('tasks-tasks.cy.ts', () => {
     cy.contains('You have successfully saved the task').should('exist');
   });
 
-  it('should close task dialog when clicking on Cancel', () => {
+  it('should add priority to a task in expanded edit options', () => {
+    const LIST_COLOR_OPTION = {
+      name: 'High',
+      value: '#EF4444',
+    };
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
 
     cy.getBySel('tasks--task').first().click();
 
-    cy.get('button').contains('Cancel').click();
+    cy.getBySel('tasks--task-edit-dialog--priority-select--trigger-button').click();
 
-    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
+    cy.getBySel('tasks--task-edit-dialog--priority-select')
+      .find('div[role="option"]')
+      .contains(LIST_COLOR_OPTION.name)
+      .click();
+
+    cy.getBySel('tasks--task-edit-dialog').get('button').contains('Save').click();
+
+    cy.wait(100);
+
+    cy.getBySel('tasks--task')
+      .find('[data-test="tasks--task--priority-text"]')
+      .contains('P1')
+      .should('exist');
   });
 
-  it('should close task dialog when clicking on the x (close) button in the right top corner in expanded edit options', () => {
+  it('should add multiple tasks with priorities and sort them by priority', () => {
     openTasksPopover();
 
-    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+    addPriorityToMultipleTasks();
 
-    cy.getBySel('tasks--task').first().click();
+    cy.getBySel('tasks--task')
+      .eq(0)
+      .find('[data-test="tasks--task--priority-text"]')
+      .contains('P1')
+      .should('exist');
 
-    cy.get('[data-test="dialog--close"]').click();
+    cy.getBySel('tasks--task')
+      .eq(1)
+      .find('[data-test="tasks--task--priority-text"]')
+      .contains('P2')
+      .should('exist');
 
-    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
+    cy.getBySel('tasks--task')
+      .eq(2)
+      .find('[data-test="tasks--task--priority-text"]')
+      .contains('P3')
+      .should('exist');
   });
 
-  it('should close task dialog when clicking outside the dialog', () => {
+  it.only('should duplicate task when duplicate button in task dropdown menu is clicked', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
 
-    cy.getBySel('tasks--task').first().click();
+    cy.getBySel('tasks--task')
+      .first()
+      .find('[data-test="tasks--task--actions-dropdown-menu--trigger-button"]')
+      .click();
 
-    cy.clickOutside();
+    cy.getBySel('tasks--task--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Duplicate')
+      .click();
 
-    cy.getBySel('tasks--task-edit-dialog').should('not.exist');
+    cy.getBySel('tasks--task--name').contains('My new task (copy)').should('exist');
   });
 });

@@ -296,7 +296,7 @@ describe('tasks-filters.cy.ts', () => {
     cy.getBySel('tasks--task').eq(3).contains('aaa').should('exist');
   });
 
-  it.only('should filter tasks by Include deleted', () => {
+  it('should filter tasks by Include deleted', () => {
     openTasksPopover();
 
     addMultipleTasks();

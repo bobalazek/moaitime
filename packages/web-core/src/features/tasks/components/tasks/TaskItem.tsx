@@ -173,7 +173,6 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
   return (
     <div
       data-test="tasks--task-wrapper"
-      data-task-id={task.id}
       style={{
         marginLeft: depth * 16,
       }}
@@ -183,6 +182,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
         onClick={onSingleAndDoubleClick}
         data-test="tasks--task"
         data-task-id={task.id}
+        data-task-color={task.color}
       >
         <div className="relative w-full">
           {showConfetti && (

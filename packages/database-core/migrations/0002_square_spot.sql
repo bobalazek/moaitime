@@ -1,1 +1,0 @@
-ALTER TABLE "user_data_exports" ADD COLUMN "export_url" json;

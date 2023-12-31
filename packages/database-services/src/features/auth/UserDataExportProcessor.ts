@@ -72,7 +72,7 @@ export class UserDataExportProcessor {
       const expiresAt = addSeconds(completedAt, AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS);
 
       const zipFile = await this._zipFolder(tmpUserDataExportDir);
-      const exportUrl = await this._uploadToBucket(zipFile, userDataExport.id, expiresAt);
+      const exportUrl = await this._uploadToBucket(zipFile, expiresAt);
 
       await this._userDataExportsManager.updateOneById(userDataExport.id, {
         processingStatus: ProcessingStatusEnum.PROCESSED,
@@ -210,7 +210,7 @@ export class UserDataExportProcessor {
     return zipFilePath;
   }
 
-  async _uploadToBucket(zipFilePath: string, id: string, expires: Date) {
+  async _uploadToBucket(zipFilePath: string, expires: Date) {
     this._logger.debug(`Uploading file (${zipFilePath}) to bucket ...`);
 
     if (!existsSync(zipFilePath)) {
@@ -219,27 +219,32 @@ export class UserDataExportProcessor {
 
     const { USER_DATA_EXPORTS_BUCKET_URL } = getEnv();
 
-    const [protocol, url] = USER_DATA_EXPORTS_BUCKET_URL.split('://');
+    const [protocol, bucketUrl] = USER_DATA_EXPORTS_BUCKET_URL.split('://');
 
-    const atSplit = url.split('@');
+    const atSplit = bucketUrl.split('@');
     if (atSplit.length !== 2) {
-      throw new Error(`Invalid bucket URL (${url}).`);
+      throw new Error(`Invalid bucket URL (${bucketUrl}).`);
     }
 
     const colonSplit = atSplit[0].split(':');
     if (colonSplit.length !== 2) {
-      throw new Error(`Invalid bucket URL (${url}).`);
+      throw new Error(`Invalid bucket URL (${bucketUrl}).`);
     }
 
     const slashSplit = atSplit[1].split('/');
 
+    const region = 'us-east-1';
     const endpoint = `${protocol}://${slashSplit[0]}`;
     const bucket = slashSplit[1];
     const accessKeyId = colonSplit[0];
     const secretAccessKey = colonSplit[1];
     const forcePathStyle = true; // TODO: does this only need to be set for local development?
 
+    const filenameSplit = zipFilePath.split('/');
+    const id = filenameSplit[filenameSplit.length - 1];
+
     const client = new S3Client({
+      region,
       endpoint,
       credentials: {
         accessKeyId,
@@ -259,8 +264,6 @@ export class UserDataExportProcessor {
       client,
       params,
     }).done();
-
-    // TODO: not fully working yet
 
     return upload.Location;
   }

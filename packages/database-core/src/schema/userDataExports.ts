@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { json, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { ProcessingStatusEnum } from '@moaitime/shared-common';
 
@@ -13,7 +13,7 @@ export const userDataExports = pgTable('user_data_exports', {
     .default(ProcessingStatusEnum.PENDING)
     .$type<ProcessingStatusEnum>(),
   failedError: json('failed_error'),
-  exportUrl: json('export_url'),
+  exportUrl: text('export_url'),
   startedAt: timestamp('started_at'),
   completedAt: timestamp('completed_at'),
   failedAt: timestamp('failed_at'),

@@ -314,7 +314,7 @@ describe('tasks-tasks.cy.ts', () => {
       .should('exist');
   });
 
-  it.only('should duplicate task when duplicate button in task dropdown menu is clicked', () => {
+  it('should duplicate task when duplicate button in task dropdown menu is clicked', () => {
     openTasksPopover();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');

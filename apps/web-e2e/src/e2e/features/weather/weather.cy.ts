@@ -7,11 +7,11 @@ describe.skip('weather.cy.ts', () => {
     cy.login();
   });
 
-  it('should show the weather icon', () => {
+  it.skip('should show the weather icon', () => {
     cy.getBySel('weather--popover--trigger-button').should('exist');
   });
 
-  it('should open the popover once you click on the trigger button', () => {
+  it.skip('should open the popover once you click on the trigger button', () => {
     // Make sure it does NOT exist initially
     cy.getBySel('weather--popover').should('not.exist');
 
@@ -22,7 +22,7 @@ describe.skip('weather.cy.ts', () => {
     cy.getBySel('weather--popover').should('exist');
   });
 
-  it('should hide if we click outside the popover', () => {
+  it.skip('should hide if we click outside the popover', () => {
     cy.getBySel('weather--popover').should('not.exist');
 
     cy.getBySel('weather--popover--trigger-button').click();
@@ -35,7 +35,7 @@ describe.skip('weather.cy.ts', () => {
     cy.getBySel('weather--popover').should('not.exist');
   });
 
-  it('should not be visible if we disable it in the settings', () => {
+  it.skip('should not be visible if we disable it in the settings', () => {
     cy.getBySel('weather--popover--trigger-button').should('exist');
 
     cy.toggleSettingsSwitch('Weather', { weatherEnabled: false });

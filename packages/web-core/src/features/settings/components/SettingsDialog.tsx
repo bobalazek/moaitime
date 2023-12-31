@@ -21,8 +21,8 @@ import SearchSettingsSection from '../../search/components/settings/SearchSettin
 import SearchSettingsSectionHeaderText from '../../search/components/settings/SearchSettingsSectionHeaderText';
 import TasksSettingsSection from '../../tasks/components/settings/TasksSettingsSection';
 import TasksSettingsSectionHeaderText from '../../tasks/components/settings/TasksSettingsSectionHeaderText';
-import WeatherSettingsSection from '../../weather/components/settings/WeatherSettingsSection';
-import WeatherSettingsSectionHeaderText from '../../weather/components/settings/WeatherSettingsSectionHeaderText';
+// import WeatherSettingsSection from '../../weather/components/settings/WeatherSettingsSection';
+// import WeatherSettingsSectionHeaderText from '../../weather/components/settings/WeatherSettingsSectionHeaderText';
 import { useSettingsStore } from '../state/settingsStore';
 import GeneralSettingsSection from './general/GeneralSettingsSection';
 import GeneralSettingsSectionHeaderText from './general/GeneralSettingsSectionHeaderText';
@@ -38,20 +38,26 @@ const tabs = [
     label: <AuthSettingsSectionHeaderText />,
     content: <AuthSettingsSection />,
   },
-  {
-    id: 'weather',
-    label: <WeatherSettingsSectionHeaderText />,
-    content: <WeatherSettingsSection />,
-  },
+
   {
     id: 'calendar',
     label: <CalendarSettingsSectionHeaderText />,
     content: <CalendarSettingsSection />,
   },
   {
+    id: 'tasks',
+    label: <TasksSettingsSectionHeaderText />,
+    content: <TasksSettingsSection />,
+  },
+  {
     id: 'notes',
     label: <NotesSettingsSectionHeaderText />,
     content: <NotesSettingsSection />,
+  },
+  {
+    id: 'commands',
+    label: <CommandsSettingsSectionHeaderText />,
+    content: <CommandsSettingsSection />,
   },
   {
     id: 'clock',
@@ -73,16 +79,13 @@ const tabs = [
     label: <SearchSettingsSectionHeaderText />,
     content: <SearchSettingsSection />,
   },
+  /*
   {
-    id: 'tasks',
-    label: <TasksSettingsSectionHeaderText />,
-    content: <TasksSettingsSection />,
+    id: 'weather',
+    label: <WeatherSettingsSectionHeaderText />,
+    content: <WeatherSettingsSection />,
   },
-  {
-    id: 'commands',
-    label: <CommandsSettingsSectionHeaderText />,
-    content: <CommandsSettingsSection />,
-  },
+  */
 ];
 
 export default function SettingsDialog() {

@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('weather.cy.ts', () => {
+describe.skip('weather.cy.ts', () => {
   beforeEach(() => {
     cy.reloadDatabase();
 

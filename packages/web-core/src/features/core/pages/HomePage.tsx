@@ -75,7 +75,7 @@ export default function HomePage() {
                 <CommandsButton />
               </motion.div>
             )}
-            {weatherEnabled && (
+            {false && weatherEnabled && (
               <motion.div
                 key="weather"
                 layout
@@ -87,6 +87,7 @@ export default function HomePage() {
                 <Weather />
               </motion.div>
             )}
+            <div>{/* Just so we keep the commands button in the center */}</div>
           </AnimatePresence>
         </div>
         <div className="flex flex-grow flex-col items-center justify-center p-4 text-center">

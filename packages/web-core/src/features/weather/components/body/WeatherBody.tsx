@@ -1,10 +1,14 @@
 import { PencilIcon } from 'lucide-react';
 
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useWeatherStore } from '../../state/weatherStore';
 import WeatherBodyInformation from './WeatherBodyInformation';
 
 export default function WeatherBody() {
-  const { weather, setLocationDialogOpen } = useWeatherStore();
+  const { auth } = useAuthStore();
+  const { setLocationDialogOpen } = useWeatherStore();
+
+  const weatherLocation = auth?.user?.settings?.weatherLocation ?? '';
 
   const onEditButtonClick = () => {
     setLocationDialogOpen(true);
@@ -14,8 +18,8 @@ export default function WeatherBody() {
     <div className="min-w-[240px]" data-test="weather--body">
       <h3 className="mb-2 text-xl font-bold">Weather</h3>
       <h4 className="flex items-center text-lg font-bold" data-test="weather--body--location">
-        {!weather && <i>Location not set</i>}
-        {weather && <span>{weather.location}</span>}
+        {!weatherLocation && <i>Location not set</i>}
+        {weatherLocation && <span>{weatherLocation}</span>}
         <button
           className="ml-2"
           onClick={onEditButtonClick}

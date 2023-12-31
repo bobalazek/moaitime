@@ -14,7 +14,7 @@ import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import NotesCommandsList from '../../notes/components/NotesCommandsList';
 import SettingsCommandsList from '../../settings/components/SettingsCommandsList';
 import TasksCommandsList from '../../tasks/components/TasksCommandsList';
-import WeatherCommandsList from '../../weather/components/WeatherCommandsList';
+// import WeatherCommandsList from '../../weather/components/WeatherCommandsList';
 import { useCommandsStore } from '../state/commandsStore';
 
 export default function CommandsDialog() {
@@ -56,7 +56,7 @@ export default function CommandsDialog() {
               <TasksCommandsList />
               <CalendarCommandsList />
               <NotesCommandsList />
-              <WeatherCommandsList />
+              {/* <WeatherCommandsList /> */}
               <SettingsCommandsList />
             </CommandList>
           </Command>

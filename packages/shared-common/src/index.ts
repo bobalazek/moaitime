@@ -55,4 +55,3 @@ export * from './tasks/ListSortOptions';
 
 // Weather
 export * from './weather/Weather';
-export * from './weather/Location';

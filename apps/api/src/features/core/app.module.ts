@@ -10,6 +10,7 @@ import { NotesModule } from '../notes/notes.module';
 import { QuotesModule } from '../quotes/quotes.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { TestingModule } from '../testing/testing.module';
+import { WeatherModule } from '../weather/weather.module';
 import { AppController } from './controllers/app.controller';
 import { AppMiddleware } from './middlewares/app.middleware';
 
@@ -22,6 +23,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
     QuotesModule,
     TasksModule,
     CalendarsModule,
+    WeatherModule,
     TestingModule,
   ],
   controllers: [AppController],

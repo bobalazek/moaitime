@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import {
-  AUTH_DATA_EXPIRATION_SECONDS,
+  AUTH_DATA_EXPORT_REQUEST_EXPIRATION_SECONDS,
   AUTH_DELETION_REQUEST_EXPIRATION_SECONDS,
   AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS,
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
@@ -313,7 +313,7 @@ export class AuthManager {
 
     const now = new Date();
     const expiresAt = lastUserDataExport
-      ? addSeconds(lastUserDataExport.createdAt!, AUTH_DATA_EXPIRATION_SECONDS)
+      ? addSeconds(lastUserDataExport.createdAt!, AUTH_DATA_EXPORT_REQUEST_EXPIRATION_SECONDS)
       : null;
 
     if (expiresAt && expiresAt.getTime() > now.getTime()) {

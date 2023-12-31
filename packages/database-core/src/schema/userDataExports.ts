@@ -13,9 +13,11 @@ export const userDataExports = pgTable('user_data_exports', {
     .default(ProcessingStatusEnum.PENDING)
     .$type<ProcessingStatusEnum>(),
   failedError: json('failed_error'),
+  exportUrl: json('export_url'),
   startedAt: timestamp('started_at'),
   completedAt: timestamp('completed_at'),
   failedAt: timestamp('failed_at'),
+  expiresAt: timestamp('expires_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
   userId: uuid('user_id')

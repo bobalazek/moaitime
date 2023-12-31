@@ -8,6 +8,7 @@ export const AVAILABLE_NODE_ENVS = ['production', 'staging', 'development', 'tes
 // Paths
 export const ROOT_DIR = rootPath;
 export const LOGS_DIR = resolve(join(ROOT_DIR, 'logs'));
+export const TMP_USER_DATA_EXPORTS_DIR = resolve(join(ROOT_DIR, 'tmp', 'user-data-exports'));
 
 // Auth
 export const AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS = 60 * 15;

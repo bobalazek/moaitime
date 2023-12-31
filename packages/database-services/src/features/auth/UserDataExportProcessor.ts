@@ -1,12 +1,28 @@
+import { createWriteStream, existsSync, mkdirSync, writeFileSync } from 'fs';
+
+import archiver from 'archiver';
+
+import { List } from '@moaitime/database-core';
 import { logger, Logger } from '@moaitime/logging';
+import { TMP_USER_DATA_EXPORTS_DIR } from '@moaitime/shared-backend';
 import { ProcessingStatusEnum } from '@moaitime/shared-common';
 
+import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
+import { EventsManager, eventsManager } from '../calendars/EventsManager';
+import { NotesManager, notesManager } from '../notes/NotesManager';
+import { listsManager, ListsManager } from '../tasks/ListsManager';
+import { TasksManager, tasksManager } from '../tasks/TasksManager';
 import { userDataExportsManager, UserDataExportsManager } from './UserDataExportsManager';
 
 export class UserDataExportProcessor {
   constructor(
     private _logger: Logger,
-    private _userDataExportsManager: UserDataExportsManager
+    private _userDataExportsManager: UserDataExportsManager,
+    private _calendarsManager: CalendarsManager,
+    private _eventsManager: EventsManager,
+    private _listsManager: ListsManager,
+    private _tasksManager: TasksManager,
+    private _notesManager: NotesManager
   ) {}
 
   async processNextPending() {
@@ -31,12 +47,36 @@ export class UserDataExportProcessor {
         startedAt: new Date(),
       });
 
-      // TODO
+      if (!existsSync(TMP_USER_DATA_EXPORTS_DIR)) {
+        this._logger.debug(
+          `Creating tmp user data exports directory (${TMP_USER_DATA_EXPORTS_DIR}) ...`
+        );
+
+        mkdirSync(TMP_USER_DATA_EXPORTS_DIR);
+      }
+
+      const tmpUserDataExportDir = `${TMP_USER_DATA_EXPORTS_DIR}/${userDataExport.userId}`;
+      if (!existsSync(tmpUserDataExportDir)) {
+        this._logger.debug(`Creating tmp user data export directory (${tmpUserDataExportDir}) ...`);
+
+        mkdirSync(tmpUserDataExportDir);
+      }
+
+      // Calendars
+      await this._saveCalendars(userDataExport.userId, tmpUserDataExportDir);
+      await this._saveEvents(userDataExport.userId, tmpUserDataExportDir);
+      const lists = await this._saveLists(userDataExport.userId, tmpUserDataExportDir);
+      await this._saveTasks(userDataExport.userId, tmpUserDataExportDir, lists);
+      await this._saveNotes(userDataExport.userId, tmpUserDataExportDir);
+
+      await this._zipFolder(tmpUserDataExportDir);
 
       await this._userDataExportsManager.updateOneById(userDataExport.id, {
         processingStatus: ProcessingStatusEnum.PROCESSED,
         completedAt: new Date(),
       });
+
+      // TODO: send email with download link
 
       this._logger.info(`Finished processing data export (id: ${userDataExport.userId})`);
     } catch (error) {
@@ -56,6 +96,124 @@ export class UserDataExportProcessor {
   setLogger(logger: Logger) {
     this._logger = logger;
   }
+
+  async _saveCalendars(userId: string, tmpUserDataExportDir: string) {
+    this._logger.debug(`Fetching calendars for user (id: ${userId}) ...`);
+
+    const calendars = await this._calendarsManager.findManyByUserId(userId);
+
+    this._logger.debug(`Found ${calendars.length} calendars for user (id: ${userId}).`);
+
+    const calendarsJson = JSON.stringify(calendars, null, 2);
+
+    this._logger.debug(`Writing calendars for user (id: ${userId}) to file ...`);
+
+    const calendarsFilePath = `${tmpUserDataExportDir}/calendars.json`;
+
+    writeFileSync(calendarsFilePath, calendarsJson);
+  }
+
+  async _saveEvents(userId: string, tmpUserDataExportDir: string) {
+    this._logger.debug(`Fetching events for user (id: ${userId}) ...`);
+
+    const events = await this._eventsManager.findManyByUserId(userId);
+
+    this._logger.debug(`Found ${events.length} events for user (id: ${userId}).`);
+
+    const eventsJson = JSON.stringify(events, null, 2);
+
+    this._logger.debug(`Writing events for user (id: ${userId}) to file ...`);
+
+    const eventsFilePath = `${tmpUserDataExportDir}/events.json`;
+
+    writeFileSync(eventsFilePath, eventsJson);
+  }
+
+  async _saveLists(userId: string, tmpUserDataExportDir: string) {
+    this._logger.debug(`Fetching lists for user (id: ${userId}) ...`);
+
+    const lists = await this._listsManager.findManyByUserId(userId);
+
+    this._logger.debug(`Found ${lists.length} lists for user (id: ${userId}).`);
+
+    const listsJson = JSON.stringify(lists, null, 2);
+
+    this._logger.debug(`Writing lists for user (id: ${userId}) to file ...`);
+
+    const listsFilePath = `${tmpUserDataExportDir}/lists.json`;
+
+    writeFileSync(listsFilePath, listsJson);
+
+    return lists;
+  }
+
+  async _saveTasks(userId: string, tmpUserDataExportDir: string, lists: List[]) {
+    this._logger.debug(`Fetching tasks for user (id: ${userId}) ...`);
+
+    for (const list of lists) {
+      const listsDir = `${tmpUserDataExportDir}/lists`;
+      if (!existsSync(listsDir)) {
+        this._logger.debug(`Creating lists directory (${listsDir}) ...`);
+
+        mkdirSync(listsDir);
+      }
+
+      const listFilePath = `${listsDir}/${list.id}.json`;
+
+      const tasks = await this._tasksManager.findManyByListId(userId);
+
+      this._logger.debug(`Found ${tasks.length} tasks for user (id: ${userId}).`);
+
+      const tasksJson = JSON.stringify(tasks, null, 2);
+
+      this._logger.debug(`Writing tasks for user (id: ${userId}) to file ...`);
+
+      writeFileSync(listFilePath, tasksJson);
+    }
+  }
+
+  async _saveNotes(userId: string, tmpUserDataExportDir: string) {
+    this._logger.debug(`Fetching notes for user (id: ${userId}) ...`);
+
+    const notes = await this._notesManager.findManyByUserId(userId);
+
+    this._logger.debug(`Found ${notes.length} notes for user (id: ${userId}).`);
+
+    const notesJson = JSON.stringify(notes, null, 2);
+
+    this._logger.debug(`Writing notes for user (id: ${userId}) to file ...`);
+
+    const notesFilePath = `${tmpUserDataExportDir}/notes.json`;
+
+    writeFileSync(notesFilePath, notesJson);
+  }
+
+  async _zipFolder(tmpUserDataExportDir: string) {
+    this._logger.debug(`Zipping folder (${tmpUserDataExportDir}) ...`);
+
+    const zipFilePath = `${tmpUserDataExportDir}.zip`;
+
+    const output = createWriteStream(zipFilePath);
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    });
+
+    archive.pipe(output);
+
+    archive.directory(tmpUserDataExportDir, false);
+
+    await archive.finalize();
+
+    return zipFilePath;
+  }
 }
 
-export const userDataExportProcessor = new UserDataExportProcessor(logger, userDataExportsManager);
+export const userDataExportProcessor = new UserDataExportProcessor(
+  logger,
+  userDataExportsManager,
+  calendarsManager,
+  eventsManager,
+  listsManager,
+  tasksManager,
+  notesManager
+);

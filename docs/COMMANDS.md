@@ -28,3 +28,7 @@
 - `pnpm cli database:run-migrations` - runs all the migrations
 - `pnpm cli database:insert-seed-data` - inserts the seed data
 - `pnpm cli database:insert-fixture-data` - inserts the fixture data
+
+### CLI - Jobs Runner
+
+- `pnpm cli jobs:runner:start` - starts all the jobs

@@ -86,7 +86,7 @@ export class JobRunner {
         removeOnComplete: true,
         removeOnFail: true,
         repeat: {
-          every: 1000 * 60 * 5, // 5 minutes
+          every: 1000 * 60, // 1 minute
         },
       }
     );

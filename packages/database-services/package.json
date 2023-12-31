@@ -31,11 +31,13 @@
     "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
+    "archiver": "^6.0.1",
     "date-fns": "^2.30.0",
     "drizzle-orm": "^0.29.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.2",
     "@types/uuid": "^9.0.7",
     "typescript": "^5.3.2"
   }

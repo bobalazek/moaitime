@@ -253,19 +253,19 @@ export class UserDataExportProcessor {
       forcePathStyle,
     });
 
-    const params = {
-      Bucket: bucket,
-      Key: id,
-      Body: createReadStream(zipFilePath),
-      expires,
-    };
-
     const upload = await new Upload({
       client,
-      params,
+      params: {
+        Bucket: bucket,
+        Key: id,
+        Body: createReadStream(zipFilePath),
+        Expires: expires,
+      },
     }).done();
 
-    return upload.Location;
+    const url = upload.Location;
+
+    return url;
   }
 }
 

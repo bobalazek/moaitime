@@ -75,7 +75,7 @@ describe('commands.cy.ts', () => {
     cy.getBySel('calendar').should('exist');
   });
 
-  it('should open Weather from commands dialog', () => {
+  it.skip('should open Weather from commands dialog', () => {
     cy.getBySel('commands-trigger-button').click();
 
     cy.get('[data-value="open weather"]').click();

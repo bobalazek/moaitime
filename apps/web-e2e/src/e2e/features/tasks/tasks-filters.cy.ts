@@ -301,6 +301,8 @@ describe('tasks-filters.cy.ts', () => {
 
     addMultipleTasks();
 
+    cy.wait(1000);
+
     cy.getBySel('tasks--task--actions-dropdown-menu--trigger-button').first().click();
 
     cy.getBySel('tasks--task--actions-dropdown-menu')

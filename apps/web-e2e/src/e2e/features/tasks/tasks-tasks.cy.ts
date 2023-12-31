@@ -331,4 +331,47 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task--name').contains('My new task (copy)').should('exist');
   });
+
+  it('should add parent to a task', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.wait(1000);
+
+    cy.getBySel('tasks--tasks-form').find('input').type('Parent task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('task-parent-selector--trigger-button').click();
+
+    cy.getBySel('task-parent-selector').contains('Parent task').click();
+
+    cy.getBySel('tasks--task-edit-dialog').get('button').contains('Save').click();
+  });
+
+  it('should check that you can not add parent to a task that is already a parent', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.wait(1000);
+
+    cy.getBySel('tasks--tasks-form').find('input').type('Parent task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('task-parent-selector--trigger-button').click();
+
+    cy.getBySel('task-parent-selector').contains('Parent task').click();
+
+    cy.getBySel('tasks--task-edit-dialog').get('button').contains('Save').click();
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('tasks--task-edit-dialog')
+      .find('p')
+      .contains('A task with children cannot have a parent task. Please remove the children first.')
+      .should('exist');
+  });
 });

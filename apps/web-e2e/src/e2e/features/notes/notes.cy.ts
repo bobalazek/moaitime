@@ -40,7 +40,7 @@ describe('notes.cy.ts', () => {
 
     cy.hasToastWithText('Success!').should('exist');
 
-    cy.getBySel('notes--note').contains('First Note').should('exist');
+    cy.getBySel('notes--note').contains('First Note');
   });
 
   it('should add new note in notes sidebar', () => {
@@ -60,7 +60,7 @@ describe('notes.cy.ts', () => {
 
     cy.hasToastWithText('Success!');
 
-    cy.getBySel('notes--note').contains('First Note').should('exist');
+    cy.getBySel('notes--note').contains('First Note');
   });
 
   it('should show message unsaved changes if there are unsaved changes', () => {
@@ -74,7 +74,7 @@ describe('notes.cy.ts', () => {
 
     cy.getBySel('note-editor--title').type('First Note');
 
-    cy.getBySel('notes--header').find('div').contains('(unsaved changes)').should('exist');
+    cy.getBySel('notes--header').find('div').contains('(unsaved changes)');
 
     // Show show alert if canceling unsaved changes
     const stub = cy.stub();

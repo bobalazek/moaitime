@@ -48,6 +48,11 @@ declare global {
       getBySelLike(selector: string): Chainable;
 
       /**
+       * Gets the toasts container
+       */
+      getToastsContainer(): Chainable;
+
+      /**
        * Checks if we have a toast with the provided text
        */
       hasToastWithText(text: string): Chainable;
@@ -114,7 +119,7 @@ Cypress.Commands.add('toggleSettingsSwitch', (sectionLabel, settings) => {
 });
 
 Cypress.Commands.add('clickOutside', () => {
-  cy.get('body').click({
+  return cy.get('body').click({
     force: true,
   });
 });
@@ -127,6 +132,10 @@ Cypress.Commands.add('getBySelLike', (selector, ...args) => {
   return cy.get(`[data-test*=${selector}]`, ...args);
 });
 
+Cypress.Commands.add('getToastsContainer', () => {
+  return cy.get('[data-sonner-toaster="true"]');
+});
+
 Cypress.Commands.add('hasToastWithText', (text) => {
-  cy.get('[data-sonner-toaster="true"]').find('div[data-content]').contains(text);
+  return cy.getToastsContainer().find('div[data-content]').contains(text);
 });

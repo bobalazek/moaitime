@@ -23,7 +23,7 @@ describe('tasks-lists.cy.ts', () => {
       .contains('Personal')
       .click();
 
-    cy.getBySel('tasks--body-header--title').contains('Personal').should('exist');
+    cy.getBySel('tasks--body-header--title').contains('Personal');
   });
 
   it('should delete the task list correctly', () => {
@@ -38,7 +38,7 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.get('div[role="alertdialog"]').find('button').contains('Confirm').click();
 
-    cy.contains('List deleted').should('exist');
+    cy.hasToastWithText('List deleted');
   });
 
   it('should edit the task list name', () => {
@@ -80,7 +80,7 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
-    cy.contains('You have successfully saved the list.').should('exist');
+    cy.hasToastWithText('You have successfully saved the list.');
   });
 
   it('should edit and save the task list color', () => {
@@ -140,7 +140,7 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
-    cy.contains('You have successfully saved the list.').should('exist');
+    cy.hasToastWithText('You have successfully saved the list.');
   });
 
   it('should exit the add new task list dialog when clicking on the Close button', () => {

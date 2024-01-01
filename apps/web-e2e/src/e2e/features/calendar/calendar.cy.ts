@@ -59,7 +59,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('timezone-selector--content').find('div[data-value="europe/london"]').click();
 
-    cy.getBySel('timezone-selector--trigger-button').contains('Europe/London').should('exist');
+    cy.getBySel('timezone-selector--trigger-button').contains('Europe/London');
   });
 
   it('should search in the timezone selector', () => {
@@ -69,7 +69,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('timezone-selector').find('input').click().type('Africa/Abidjan{enter}');
 
-    cy.getBySel('timezone-selector--trigger-button').contains('Africa/Abidjan').should('exist');
+    cy.getBySel('timezone-selector--trigger-button').contains('Africa/Abidjan');
   });
 
   it('should switch to a Year in calendar dialog dropdown menu', () => {
@@ -84,9 +84,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--yearly-view').should('exist');
 
-    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
-      .contains('Year')
-      .should('exist');
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').contains('Year');
   });
 
   it('should switch from yearly view to monthly', () => {
@@ -108,9 +106,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--monthly-view').should('exist');
 
-    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
-      .contains('Month')
-      .should('exist');
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').contains('Month');
   });
 
   it('should switch to a Week in calendar dialog dropdown menu', () => {
@@ -125,9 +121,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--weekly-view').should('exist');
 
-    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
-      .contains('Week')
-      .should('exist');
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').contains('Week');
   });
 
   it('should switch to a Day in calendar dialog dropdown menu', () => {
@@ -142,9 +136,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--weekly-view').should('exist');
 
-    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
-      .contains('Day')
-      .should('exist');
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').contains('Day');
   });
 
   it('should switch to an Agenda in calendar dialog dropdown menu', () => {
@@ -159,9 +151,9 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--agenda-view').should('exist');
 
-    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button')
-      .contains('Agenda')
-      .should('exist');
+    cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').contains(
+      'Agenda'
+    );
   });
 
   it('should close the calendar', () => {
@@ -189,9 +181,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name')
-      .contains('New Calendar')
-      .should('exist');
+    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
   });
 
   it('should open edit dialog in calendar settings dialog', () => {
@@ -203,9 +193,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name')
-      .contains('New Calendar')
-      .should('exist');
+    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -226,9 +214,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name')
-      .contains('New Calendar')
-      .should('exist');
+    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -265,7 +251,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
 
-    cy.get('#calendar-edit-description').contains('This is my New Calendar').should('exist');
+    cy.get('#calendar-edit-description').contains('This is my New Calendar');
   });
 
   it('should add color to a new calendar in calendar settings dialog', () => {
@@ -301,9 +287,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Edit').click();
 
-    cy.getBySel('calendar--edit-dialog--color-select--trigger-button')
-      .contains('Pink')
-      .should('exist');
+    cy.getBySel('calendar--edit-dialog--color-select--trigger-button').contains('Pink');
   });
 
   it('should delete a new calendar in calendar settings dialog', () => {
@@ -315,9 +299,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name')
-      .contains('New Calendar')
-      .should('exist');
+    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -353,9 +335,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name')
-      .contains('New Calendar')
-      .should('exist');
+    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -384,9 +364,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name')
-      .contains('New Calendar')
-      .should('exist');
+    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -419,8 +397,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--settings-sheet')
       .find('div[data-test="calendar--calendar-item"]')
-      .contains('New Calendar')
-      .should('exist');
+      .contains('New Calendar');
   });
 
   it('should permanently delete calendar in Deleted Calendars', () => {
@@ -432,9 +409,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name')
-      .contains('New Calendar')
-      .should('exist');
+    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')

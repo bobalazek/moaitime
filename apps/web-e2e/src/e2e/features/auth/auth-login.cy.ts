@@ -22,7 +22,7 @@ describe('auth-login.cy.ts', () => {
 
     cy.get('#login-button').click();
 
-    cy.contains('Invalid credentials').should('exist');
+    cy.hasToastWithText('Invalid credentials');
   });
 
   it('should stay on the login page if all fields are not filled correctly', () => {

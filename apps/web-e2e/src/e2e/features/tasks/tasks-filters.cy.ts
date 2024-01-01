@@ -29,13 +29,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Descending')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(1).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(2).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(3).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('ccc');
   });
 
   it('should filter tasks by Name and Ascending', () => {
@@ -50,13 +50,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Name')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(2).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('ccc');
 
-    cy.getBySel('tasks--task').eq(3).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('ddd');
   });
 
   it('should filter tasks by Name and Descending', () => {
@@ -78,13 +78,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Descending')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(1).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('ccc');
 
-    cy.getBySel('tasks--task').eq(2).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(3).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('aaa');
   });
 
   it('should filter tasks by Created At and Ascending', () => {
@@ -99,13 +99,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Created At')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('ccc');
 
-    cy.getBySel('tasks--task').eq(1).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(2).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(3).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('bbb');
   });
 
   it('should filter tasks by Created At and Descending', () => {
@@ -127,13 +127,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Descending')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(1).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(2).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(3).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('ccc');
   });
 
   it('should filter tasks by Completed At and Ascending', () => {
@@ -156,13 +156,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Completed At')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(1).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('ccc');
 
-    cy.getBySel('tasks--task').eq(2).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(3).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('aaa');
   });
 
   it('should filter tasks by Completed At and Descending', () => {
@@ -192,13 +192,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Descending')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(2).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('ccc');
 
-    cy.getBySel('tasks--task').eq(3).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('ddd');
   });
 
   it('should filter tasks by Updated At and Ascending', () => {
@@ -219,13 +219,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Updated At')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(1).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(2).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(3).contains('eee').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('eee');
   });
 
   it('should filter tasks by Updated At and Descending', () => {
@@ -253,13 +253,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Descending')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('eee').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('eee');
 
-    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(2).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(3).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('aaa');
   });
 
   it('should filter tasks by Updated At and Descending', () => {
@@ -287,13 +287,13 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Descending')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('eee').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('eee');
 
-    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('bbb');
 
-    cy.getBySel('tasks--task').eq(2).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(3).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('aaa');
   });
 
   it('should filter tasks by Include deleted', () => {
@@ -334,13 +334,13 @@ describe('tasks-filters.cy.ts', () => {
 
     cy.wait(1000);
 
-    cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('ccc');
 
-    cy.getBySel('tasks--task').eq(1).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(2).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(3).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('bbb');
   });
 
   it('should filter tasks by Include completed (exlude completed)', () => {
@@ -359,9 +359,9 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Include completed?')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('bbb');
   });
 
   it('should filter tasks by Include completed (toggle Include completed)', () => {
@@ -380,9 +380,9 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Include completed?')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(1).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('bbb');
 
     cy.getBySel('tasks--body-header--list-selector--dropdown-menu--trigger-button').click();
 
@@ -391,12 +391,12 @@ describe('tasks-filters.cy.ts', () => {
       .contains('Include completed?')
       .click();
 
-    cy.getBySel('tasks--task').eq(0).contains('ccc').should('exist');
+    cy.getBySel('tasks--task').eq(0).contains('ccc');
 
-    cy.getBySel('tasks--task').eq(1).contains('aaa').should('exist');
+    cy.getBySel('tasks--task').eq(1).contains('aaa');
 
-    cy.getBySel('tasks--task').eq(2).contains('ddd').should('exist');
+    cy.getBySel('tasks--task').eq(2).contains('ddd');
 
-    cy.getBySel('tasks--task').eq(3).contains('bbb').should('exist');
+    cy.getBySel('tasks--task').eq(3).contains('bbb');
   });
 });

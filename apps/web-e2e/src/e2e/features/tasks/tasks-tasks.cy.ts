@@ -143,9 +143,9 @@ describe('tasks-tasks.cy.ts', () => {
       .contains('Delete')
       .click();
 
-    cy.get('button[type="button"]').contains('Undo').click();
+    cy.getToastsContainer().find('button').contains('Undo').click();
 
-    cy.getBySel('tasks--task--name').contains('My new task').should('exist');
+    cy.getBySel('tasks--task--name').contains('My new task');
   });
 
   it('should open expanded edit options for a task', () => {
@@ -259,7 +259,7 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.get('button').contains('Save').click();
 
-    cy.contains('You have successfully saved the task').should('exist');
+    cy.hasToastWithText('You have successfully saved the task');
   });
 
   it('should add priority to a task in expanded edit options', () => {
@@ -298,20 +298,17 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--task')
       .eq(0)
       .find('[data-test="tasks--task--priority-text"]')
-      .contains('P1')
-      .should('exist');
+      .contains('P1');
 
     cy.getBySel('tasks--task')
       .eq(1)
       .find('[data-test="tasks--task--priority-text"]')
-      .contains('P2')
-      .should('exist');
+      .contains('P2');
 
     cy.getBySel('tasks--task')
       .eq(2)
       .find('[data-test="tasks--task--priority-text"]')
-      .contains('P3')
-      .should('exist');
+      .contains('P3');
   });
 
   it('should duplicate task when duplicate button in task dropdown menu is clicked', () => {
@@ -329,7 +326,7 @@ describe('tasks-tasks.cy.ts', () => {
       .contains('Duplicate')
       .click();
 
-    cy.getBySel('tasks--task--name').contains('My new task (copy)').should('exist');
+    cy.getBySel('tasks--task--name').contains('My new task (copy)');
   });
 
   it('should add parent to a task', () => {
@@ -371,7 +368,8 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task-edit-dialog')
       .find('p')
-      .contains('A task with children cannot have a parent task. Please remove the children first.')
-      .should('exist');
+      .contains(
+        'A task with children cannot have a parent task. Please remove the children first.'
+      );
   });
 });

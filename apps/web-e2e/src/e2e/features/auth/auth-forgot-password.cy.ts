@@ -22,7 +22,7 @@ describe('auth-forgot-password.cy.ts', () => {
 
     cy.get('#forgotPassword-button').click();
 
-    cy.contains('User not found').should('exist');
+    cy.hasToastWithText('User not found');
   });
 
   it('should display an error if Email is not correct', () => {
@@ -34,7 +34,7 @@ describe('auth-forgot-password.cy.ts', () => {
 
     cy.get('#forgotPassword-button').click();
 
-    cy.contains('User not found').should('exist');
+    cy.hasToastWithText('User not found');
   });
 
   it('should go back to Login page when clicking Back to Login', () => {

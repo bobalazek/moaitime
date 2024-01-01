@@ -46,6 +46,11 @@ declare global {
        * Gets an element by selector that contains a string
        */
       getBySelLike(selector: string): Chainable;
+
+      /**
+       * Checks if we have a toast with the provided text
+       */
+      hasToastWithText(text: string): Chainable;
     }
   }
 }
@@ -120,4 +125,8 @@ Cypress.Commands.add('getBySel', (selector, ...args) => {
 
 Cypress.Commands.add('getBySelLike', (selector, ...args) => {
   return cy.get(`[data-test*=${selector}]`, ...args);
+});
+
+Cypress.Commands.add('hasToastWithText', (text) => {
+  cy.get('[data-sonner-toaster="true"]').find('div[data-content]').contains(text);
 });

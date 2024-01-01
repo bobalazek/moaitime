@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { addNote, openNotes } from '../../../support/utils/notes-helpers';
+
 describe('notes.cy.ts', () => {
   beforeEach(() => {
     cy.reloadDatabase();
@@ -20,15 +22,11 @@ describe('notes.cy.ts', () => {
   });
 
   it('should open notes', () => {
-    cy.getBySel('notes--open-button').click();
-
-    cy.getBySel('notes').should('exist');
+    openNotes();
   });
 
   it('should close notes', () => {
-    cy.getBySel('notes--open-button').click();
-
-    cy.getBySel('notes').should('exist');
+    openNotes();
 
     cy.getBySel('notes').find('[data-test="notes--header--home-button"]').click();
 
@@ -36,42 +34,87 @@ describe('notes.cy.ts', () => {
   });
 
   it('should add new note in notes main', () => {
-    cy.getBySel('notes--open-button').click();
+    openNotes();
 
-    cy.getBySel('notes').should('exist');
+    addNote();
 
-    cy.getBySel('notes--main').find('button').contains('Add new note').click();
+    cy.hasToastWithText('Success!').should('exist');
 
-    cy.get('input[placeholder="Title"]').click();
-
-    cy.wait(1000);
-
-    cy.get('input[placeholder="Title"]').type('First Note');
-
-    cy.get('div[role="textbox"]').click().type('This is the first note description.');
-
-    cy.getBySel('notes--header').find('button').contains('Create Note').click();
-
-    cy.get('li').contains('Success!').should('exist');
+    cy.getBySel('notes--note').contains('First Note').should('exist');
   });
 
-  it.only('should add new note in notes sidebar', () => {
-    cy.getBySel('notes--open-button').click();
+  it('should add new note in notes sidebar', () => {
+    openNotes();
 
-    cy.getBySel('notes').should('exist');
+    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
 
-    cy.getBySel('notes--sidebar').find('button').contains('Add new note').click();
-
-    cy.get('input[placeholder="Title"]').click();
+    cy.getBySel('note-editor--title').click();
 
     cy.wait(1000);
 
-    cy.get('input[placeholder="Title"]').type('First Note');
+    cy.getBySel('note-editor--title').type('First Note');
 
-    cy.get('div[role="textbox"]').click().type('This is the first note description.');
+    cy.getBySel('note-editor--content').click().type('This is the first note description.');
 
     cy.getBySel('notes--header').find('button').contains('Create Note').click();
 
-    cy.get('li').contains('Success!').should('exist');
+    cy.hasToastWithText('Success!');
+
+    cy.getBySel('notes--note').contains('First Note').should('exist');
+  });
+
+  it('should show message unsaved changes if there are unsaved changes', () => {
+    openNotes();
+
+    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
+
+    cy.getBySel('note-editor--title').click();
+
+    cy.wait(1000);
+
+    cy.getBySel('note-editor--title').type('First Note');
+
+    cy.getBySel('notes--header').find('div').contains('(unsaved changes)').should('exist');
+
+    // Show show alert if canceling unsaved changes
+    const stub = cy.stub();
+    cy.on('window:confirm', stub);
+    cy.getBySel('notes--header')
+      .find('button')
+      .contains('Cancel')
+      .click()
+      .then(() => {
+        expect(stub.getCall(0)).to.be.calledWith(
+          'You have unsaved changes. Are you sure you want to stop editing this note?'
+        );
+      });
+  });
+
+  it('should show message that note content must be provided', () => {
+    openNotes();
+
+    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
+
+    cy.getBySel('note-editor--title').click();
+
+    cy.wait(1000);
+
+    cy.getBySel('note-editor--title').type('First Note');
+
+    cy.getBySel('notes--header').find('button').contains('Create Note').click();
+
+    cy.hasToastWithText('Note content must be provided');
+  });
+
+  it('should cancel add new note if cancel button is clicked', () => {
+    openNotes();
+
+    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
+
+    cy.getBySel('note-editor').should('exist');
+
+    cy.getBySel('notes--header').find('button').contains('Cancel').click();
+
+    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').should('exist');
   });
 });

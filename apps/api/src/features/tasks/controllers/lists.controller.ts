@@ -17,8 +17,8 @@ import { List } from '@moaitime/database-core';
 import { listsManager } from '@moaitime/database-services';
 import { LISTS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 
+import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateListDto } from '../dtos/create-list.dto';
 import { UpdateListDto } from '../dtos/update-list.dto';
 

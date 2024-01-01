@@ -17,9 +17,9 @@ import { calendarsManager, usersManager } from '@moaitime/database-services';
 import { CALENDARS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 import { CreateCalendar, User } from '@moaitime/shared-common';
 
+import { DeleteDto } from '../../../dtos/delete.dto';
+import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { DeleteDto } from '../../core/dtos/delete.dto';
-import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateCalendarDto } from '../dtos/create-calendar.dto';
 import { UpdateCalendarDto } from '../dtos/update-calendar.dto';
 

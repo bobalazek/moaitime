@@ -18,8 +18,8 @@ import { calendarsManager, eventsManager } from '@moaitime/database-services';
 import { CALENDARS_MAX_EVENTS_PER_CALENDAR_COUNT } from '@moaitime/shared-backend';
 import { getTimezonedEndOfDay, getTimezonedStartOfDay } from '@moaitime/shared-common';
 
+import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateEventDto } from '../dtos/create-event.dto';
 import { UpdateEventDto } from '../dtos/update-event.dto';
 

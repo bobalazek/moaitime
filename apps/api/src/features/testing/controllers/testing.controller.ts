@@ -4,7 +4,7 @@ import { testingEmailsManager } from '@moaitime/database-services-testing';
 import { reloadDatabase } from '@moaitime/database-testing';
 import { getEnv } from '@moaitime/shared-backend';
 
-import { ResponseDto } from '../../core/dtos/responses/response.dto';
+import { ResponseDto } from '../../../dtos/responses/response.dto';
 
 @Controller('/api/testing')
 export class TestingController {

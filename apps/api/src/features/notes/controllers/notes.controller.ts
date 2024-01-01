@@ -18,8 +18,8 @@ import { notesManager } from '@moaitime/database-services';
 import { NOTES_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
+import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateNoteDto } from '../dto/create-note.dto';
 import { UpdateNoteDto } from '../dto/update-note.dto';
 

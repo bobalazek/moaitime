@@ -3,8 +3,8 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { Background } from '@moaitime/database-core';
 import { backgroundsManager } from '@moaitime/database-services';
 
+import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 
 @Controller('/api/v1/backgrounds')
 export class BackgroundsController {

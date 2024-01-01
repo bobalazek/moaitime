@@ -3,10 +3,10 @@ import { NestFactory } from '@nestjs/core';
 
 import { getEnv } from '@moaitime/shared-backend';
 
-import { AppModule } from './features/core/app.module';
-import { ErrorFilter } from './features/core/filters/error.filter';
-import { HttpExceptionFilter } from './features/core/filters/http-exception.filter';
-import { ZodValidationPipe } from './features/core/utils/validation-helpers';
+import { AppModule } from './app.module';
+import { ErrorFilter } from './filters/error.filter';
+import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { ZodValidationPipe } from './utils/validation-helpers';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
-import { AppMiddleware } from '../core/middlewares/app.middleware';
+import { AppMiddleware } from '../../middlewares/app.middleware';
 import { QuotesController } from './controllers/quotes.controller';
 
 @Module({

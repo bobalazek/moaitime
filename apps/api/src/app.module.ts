@@ -2,16 +2,16 @@ import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@
 
 import { destroyDatabase } from '@moaitime/database-core';
 
-import { AuthModule } from '../auth/auth.module';
-import { BackgroundsModule } from '../backgrounds/backgrounds.module';
-import { CalendarsModule } from '../calendar/calendar.module';
-import { GreetingsModule } from '../greetings/greetings.module';
-import { NotesModule } from '../notes/notes.module';
-import { QuotesModule } from '../quotes/quotes.module';
-import { TasksModule } from '../tasks/tasks.module';
-import { TestingModule } from '../testing/testing.module';
-import { WeatherModule } from '../weather/weather.module';
 import { AppController } from './controllers/app.controller';
+import { AuthModule } from './features/auth/auth.module';
+import { BackgroundsModule } from './features/backgrounds/backgrounds.module';
+import { CalendarsModule } from './features/calendar/calendar.module';
+import { GreetingsModule } from './features/greetings/greetings.module';
+import { NotesModule } from './features/notes/notes.module';
+import { QuotesModule } from './features/quotes/quotes.module';
+import { TasksModule } from './features/tasks/tasks.module';
+import { TestingModule } from './features/testing/testing.module';
+import { WeatherModule } from './features/weather/weather.module';
 import { AppMiddleware } from './middlewares/app.middleware';
 
 @Module({

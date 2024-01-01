@@ -1,4 +1,4 @@
-import { AbstractResponseDto } from '../../../core/dtos/responses/abstract-response.dto';
+import { AbstractResponseDto } from '../../../../dtos/responses/abstract-response.dto';
 import { UserAccessTokenLiteDto } from '../user-access-token-lite.dto';
 import { UserDto } from '../user.dto';
 

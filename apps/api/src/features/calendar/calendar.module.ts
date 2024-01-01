@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
-import { AppMiddleware } from '../core/middlewares/app.middleware';
+import { AppMiddleware } from '../../middlewares/app.middleware';
 import { CalendarEntriesController } from './controllers/calendar-entries.controller';
 import { CalendarsController } from './controllers/calendars.controller';
 import { EventsController } from './controllers/events.controller';

@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
-import { AppMiddleware } from '../core/middlewares/app.middleware';
+import { AppMiddleware } from '../../middlewares/app.middleware';
 import { ListsController } from './controllers/lists.controller';
 import { TasksController } from './controllers/tasks.controller';
 

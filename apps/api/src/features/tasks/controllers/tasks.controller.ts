@@ -17,9 +17,9 @@ import { listsManager, tasksManager } from '@moaitime/database-services';
 import { TASKS_MAX_PER_LIST_COUNT } from '@moaitime/shared-backend';
 import { SortDirectionEnum } from '@moaitime/shared-common';
 
+import { DeleteDto } from '../../../dtos/delete.dto';
+import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
-import { DeleteDto } from '../../core/dtos/delete.dto';
-import { AbstractResponseDto } from '../../core/dtos/responses/abstract-response.dto';
 import { CreateTaskDto } from '../dtos/create-task.dto';
 import { ReorderTasksDto } from '../dtos/reorder-tasks.dto';
 import { UpdateTaskDto } from '../dtos/update-task.dto';

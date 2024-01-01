@@ -1,5 +1,5 @@
+import { APP_VERSION_HEADER } from './app.constants';
 import { UserWithAccessToken } from './features/auth/types/user-with-access-token.type';
-import { APP_VERSION_HEADER } from './features/core/app.constants';
 
 export {};
 

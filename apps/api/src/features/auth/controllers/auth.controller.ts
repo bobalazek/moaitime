@@ -3,8 +3,8 @@ import { Request, Response } from 'express';
 
 import { authManager } from '@moaitime/database-services';
 
-import { ResponseDto } from '../../core/dtos/responses/response.dto';
-import { TokenDto } from '../../core/dtos/token.dto';
+import { ResponseDto } from '../../../dtos/responses/response.dto';
+import { TokenDto } from '../../../dtos/token.dto';
 import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
 import { LoginDto } from '../dtos/login.dto';
 import { RegisterDto } from '../dtos/register.dto';

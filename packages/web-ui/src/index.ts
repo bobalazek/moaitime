@@ -62,3 +62,6 @@ export * from './components/textarea';
 export * from './components/toast';
 export * from './components/toaster';
 export * from './components/use-toast';
+
+export * from './components/sonner-toast';
+export * from './components/sonner-toaster';

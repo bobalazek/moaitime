@@ -8,8 +8,8 @@ import {
   DialogHeader,
   Input,
   Label,
+  sonnerToast,
   Textarea,
-  useToast,
 } from '@moaitime/web-ui';
 
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
@@ -20,7 +20,6 @@ import { TaskParentSelector } from '../../../core/components/selectors/TaskParen
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function TaskEditDialog() {
-  const { toast } = useToast();
   const {
     selectedTaskDialogOpen,
     selectedTask,
@@ -40,8 +39,7 @@ export default function TaskEditDialog() {
 
     const parsedSelectedTask = UpdateTaskSchema.safeParse(selectedTask);
     if (!parsedSelectedTask.success) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: zodErrorToString(parsedSelectedTask.error),
       });
 
@@ -49,7 +47,7 @@ export default function TaskEditDialog() {
     }
 
     setData(parsedSelectedTask.data);
-  }, [selectedTask, toast]);
+  }, [selectedTask]);
 
   if (!selectedTaskDialogOpen || !data) {
     return null;
@@ -62,8 +60,7 @@ export default function TaskEditDialog() {
 
     const undeletedTask = await undeleteTask(selectedTask.id);
 
-    toast({
-      title: `Task "${data.name}" undeleted`,
+    sonnerToast.error(`Task "${data.name}" undeleted`, {
       description: 'You have successfully undeleted the task',
     });
 
@@ -77,8 +74,7 @@ export default function TaskEditDialog() {
 
     await deleteTask(selectedTask.id);
 
-    toast({
-      title: `Task "${selectedTask.name}" deleted`,
+    sonnerToast.success(`Task "${selectedTask.name}" deleted`, {
       description: 'You have successfully deleted the task',
     });
 
@@ -97,8 +93,7 @@ export default function TaskEditDialog() {
     try {
       const editedTask = await editTask(selectedTask.id, data);
 
-      toast({
-        title: `Task "${editedTask.name}" save`,
+      sonnerToast.success(`Task "${editedTask.name}" save`, {
         description: 'You have successfully saved the task',
       });
 

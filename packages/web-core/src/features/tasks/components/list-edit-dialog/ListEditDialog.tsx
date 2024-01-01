@@ -16,14 +16,13 @@ import {
   DialogTitle,
   Input,
   Label,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function ListEditDialog() {
-  const { toast } = useToast();
   const {
     selectedListDialogOpen,
     setSelectedListDialogOpen,
@@ -42,8 +41,7 @@ export default function ListEditDialog() {
 
     const parsedSelectedList = UpdateListSchema.safeParse(selectedListDialog);
     if (!parsedSelectedList.success) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: zodErrorToString(parsedSelectedList.error),
       });
 
@@ -51,7 +49,7 @@ export default function ListEditDialog() {
     }
 
     setData(parsedSelectedList.data);
-  }, [selectedListDialog, toast]);
+  }, [selectedListDialog]);
 
   const onSaveButtonClick = async () => {
     try {
@@ -59,17 +57,14 @@ export default function ListEditDialog() {
         ? await editList(selectedListDialog.id, data as UpdateList)
         : await addList(data as CreateList);
 
-      toast({
-        title: `List "${savedList.name}" saved`,
+      sonnerToast.success(`List "${savedList.name}" saved`, {
         description: `You have successfully saved the list.`,
       });
 
       setSelectedListDialogOpen(false);
       setData(undefined);
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description:
           error instanceof Error ? error.message : 'Something went wrong while saving the list.',
       });

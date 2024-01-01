@@ -10,7 +10,7 @@ import {
   CardTitle,
   Input,
   Label,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
@@ -18,7 +18,6 @@ import { useAuthStore } from '../../state/authStore';
 
 export default function AuthRegisterPage() {
   const { register } = useAuthStore();
-  const { toast } = useToast();
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,8 +31,7 @@ export default function AuthRegisterPage() {
     try {
       const response = await register(displayName, email, password);
 
-      toast({
-        title: 'Success!',
+      sonnerToast.success('Success!', {
         description: response.message ?? 'You have successfully registered!',
       });
     } catch (error) {

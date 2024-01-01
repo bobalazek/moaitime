@@ -7,8 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  ToastAction,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
@@ -20,7 +19,6 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     undeleteCalendar,
     setCalendarDeleteAlertDialogOpen,
   } = useCalendarStore();
-  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const onEditButtonClick = async () => {
@@ -35,14 +33,12 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
 
       setOpen(false);
 
-      toast({
-        title: `Calendar "${calendar.name}" Deleted`,
+      sonnerToast.success(`Calendar "${calendar.name}" Deleted`, {
         description: 'The calendar was successfully deleted!',
-        action: (
-          <ToastAction altText="Undo" onClick={onUndeleteButtonClick}>
-            Undo
-          </ToastAction>
-        ),
+        action: {
+          label: 'Undo',
+          onClick: () => onUndeleteButtonClick(),
+        },
       });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function

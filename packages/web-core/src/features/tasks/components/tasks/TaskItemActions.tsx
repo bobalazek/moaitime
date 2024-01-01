@@ -18,8 +18,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-  ToastAction,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
@@ -29,7 +28,6 @@ const TaskItemActions = memo(
   ({ task, onEditAndFocus }: { task: Task; onEditAndFocus: () => void }) => {
     const { duplicateTask, deleteTask, undeleteTask, moveTask, setSelectedTaskDialogOpen } =
       useTasksStore();
-    const { toast } = useToast();
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
 
     const onEditButtonClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -61,8 +59,7 @@ const TaskItemActions = memo(
       try {
         await undeleteTask(task.id);
 
-        toast({
-          title: `Task "${task.name}" Undeleted`,
+        sonnerToast.success(`Task "${task.name}" Undeleted`, {
           description: 'The task was successfully undeleted!',
         });
       } catch (error) {
@@ -76,14 +73,12 @@ const TaskItemActions = memo(
       try {
         await deleteTask(task.id);
 
-        toast({
-          title: `Task "${task.name}" Deleted`,
+        sonnerToast.success(`Task "${task.name}" Deleted`, {
           description: 'The task was successfully deleted!',
-          action: (
-            <ToastAction altText="Undo" onClick={onUndeleteButtonClick}>
-              Undo
-            </ToastAction>
-          ),
+          action: {
+            label: 'Undo',
+            onClick: (event) => onUndeleteButtonClick(event),
+          },
         });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function
@@ -94,8 +89,7 @@ const TaskItemActions = memo(
       try {
         await deleteTask(task.id, true);
 
-        toast({
-          title: `Task "${task.name}" Deleted`,
+        sonnerToast.success(`Task "${task.name}" Deleted`, {
           description: 'The task was successfully deleted!',
         });
       } catch (error) {

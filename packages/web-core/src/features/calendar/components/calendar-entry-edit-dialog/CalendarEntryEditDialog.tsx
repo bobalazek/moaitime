@@ -17,10 +17,9 @@ import {
   DialogContent,
   Input,
   Label,
+  sonnerToast,
   Switch,
   Textarea,
-  ToastAction,
-  useToast,
 } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
@@ -31,7 +30,6 @@ import { useCalendarStore } from '../../state/calendarStore';
 import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
 
 export default function CalendarEntryEditDialog() {
-  const { toast } = useToast();
   const { auth } = useAuthStore();
   const {
     selectedCalendarEntryDialogOpen,
@@ -55,8 +53,7 @@ export default function CalendarEntryEditDialog() {
       convertObjectNullPropertiesToUndefined(selectedCalendarEntry)
     );
     if (!parsedSelectedTask.success) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: zodErrorToString(parsedSelectedTask.error),
       });
 
@@ -64,7 +61,7 @@ export default function CalendarEntryEditDialog() {
     }
 
     setData(parsedSelectedTask.data);
-  }, [selectedCalendarEntry, toast]);
+  }, [selectedCalendarEntry]);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
   const calendarEntryExists = !!selectedCalendarEntry?.id;
@@ -87,8 +84,7 @@ export default function CalendarEntryEditDialog() {
 
   const onDeleteButtonClick = async () => {
     if (!selectedCalendarEntry) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: 'No calendar entry selected',
       });
 
@@ -100,14 +96,12 @@ export default function CalendarEntryEditDialog() {
 
       await deleteEvent(eventId);
 
-      toast({
-        title: `Event "${selectedCalendarEntry.title}" deleted`,
+      sonnerToast.success(`Event "${selectedCalendarEntry.title}" deleted`, {
         description: 'You have successfully deleted the event',
-        action: (
-          <ToastAction altText="Undo" onClick={() => undeleteEvent(eventId)}>
-            Undo
-          </ToastAction>
-        ),
+        action: {
+          label: 'Undo',
+          onClick: () => undeleteEvent(eventId),
+        },
       });
 
       setSelectedCalendarEntryDialogOpen(false, null);
@@ -121,18 +115,8 @@ export default function CalendarEntryEditDialog() {
   };
 
   const onSaveButtonClick = async () => {
-    if (!selectedCalendarEntry) {
-      toast({
-        title: 'Oops!',
-        description: 'No calendar entry selected',
-      });
-
-      return;
-    }
-
     if (!data) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: 'No data to save',
       });
 
@@ -140,13 +124,12 @@ export default function CalendarEntryEditDialog() {
     }
 
     try {
-      const eventId = selectedCalendarEntry.id.replace('events:', '');
-      const editedEvent = calendarEntryExists
+      const eventId = selectedCalendarEntry?.id?.replace('events:', '');
+      const editedEvent = eventId
         ? await editEvent(eventId, data as UpdateEvent)
         : await addEvent(data as CreateEvent);
 
-      toast({
-        title: `Event "${editedEvent.title}" save`,
+      sonnerToast.success(`Event "${editedEvent.title}" save`, {
         description: 'You have successfully saved the event',
       });
 

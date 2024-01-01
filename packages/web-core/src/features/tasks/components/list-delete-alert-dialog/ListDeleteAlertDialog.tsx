@@ -7,13 +7,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function ListDeleteAlertDialog() {
-  const { toast } = useToast();
   const {
     listDeleteAlertDialogOpen,
     setListDeleteAlertDialogOpen,
@@ -27,8 +26,7 @@ export default function ListDeleteAlertDialog() {
   const onConfirmButtonClick = async () => {
     await deleteList(selectedListDeleteAlertDialog.id);
 
-    toast({
-      title: 'List deleted',
+    sonnerToast.success('List deleted', {
       description: `The "${selectedListDeleteAlertDialog.name}" list has been successfully deleted.`,
     });
   };

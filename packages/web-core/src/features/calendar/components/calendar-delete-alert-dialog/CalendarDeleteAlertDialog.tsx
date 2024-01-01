@@ -7,13 +7,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
 
 export default function CalendarDeleteAlertDialog() {
-  const { toast } = useToast();
   const {
     calendarDeleteAlertDialogOpen,
     setCalendarDeleteAlertDialogOpen,
@@ -27,8 +26,7 @@ export default function CalendarDeleteAlertDialog() {
   const onConfirmButtonClick = async () => {
     await deleteCalendar(selectedCalendarDeleteAlertDialog.id, true);
 
-    toast({
-      title: 'Calendar deleted',
+    sonnerToast.success('Calendar deleted', {
       description: `The "${selectedCalendarDeleteAlertDialog.name}" calendar has been successfully deleted.`,
     });
   };

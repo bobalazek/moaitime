@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import { Auth } from '@moaitime/shared-common';
-import { Button, Input, useToast } from '@moaitime/web-ui';
+import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
 
 export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
-  const { toast } = useToast();
   const {
     logout,
     updateAccount,
@@ -28,8 +27,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
     try {
       await resendEmailConfirmation();
 
-      toast({
-        title: `Verification email sent`,
+      sonnerToast.success(`Verification email sent`, {
         description: `A verification email has been sent to "${auth.user.email}". Please check your inbox and follow the instructions to verify it.`,
       });
     } catch (error) {
@@ -41,8 +39,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
     try {
       await resendEmailConfirmation(true);
 
-      toast({
-        title: `Verification email sent`,
+      sonnerToast.success(`Verification email sent`, {
         description: `A verification email has been sent to "${auth.user.newEmail}". Please check your inbox and follow the instructions to verify it.`,
       });
     } catch (error) {
@@ -54,8 +51,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
     try {
       await cancelNewEmail();
 
-      toast({
-        title: `Email change cancelled`,
+      sonnerToast.success(`Email change cancelled`, {
         description: `Your email address has been reverted to "${auth.user.email}".`,
       });
     } catch (error) {
@@ -70,8 +66,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
         email: userEmail,
       });
 
-      toast({
-        title: `Account saved`,
+      sonnerToast.success(`Account saved`, {
         description: `You have successfully saved your account.`,
       });
     } catch (error) {
@@ -83,8 +78,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
     try {
       const response = await requestDataExport();
 
-      toast({
-        title: `Data export requested`,
+      sonnerToast.success(`Data export requested`, {
         description: response.message ?? `You have successfully requested a data export`,
       });
     } catch (error) {
@@ -100,8 +94,7 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
     try {
       const response = await requestAccountDeletion();
 
-      toast({
-        title: `Account deletion requested`,
+      sonnerToast.success(`Account deletion requested`, {
         description: response.message ?? `You have successfully requested your account deletion`,
       });
     } catch (error) {

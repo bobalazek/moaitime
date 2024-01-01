@@ -7,13 +7,20 @@ import {
   UpdateCalendarSchema,
   zodErrorToString,
 } from '@moaitime/shared-common';
-import { Button, Dialog, DialogContent, Input, Label, Textarea, useToast } from '@moaitime/web-ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  Input,
+  Label,
+  sonnerToast,
+  Textarea,
+} from '@moaitime/web-ui';
 
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useCalendarStore } from '../../state/calendarStore';
 
 export default function CalendarEditDialog() {
-  const { toast } = useToast();
   const {
     selectedCalendarDialogOpen,
     selectedCalendar,
@@ -35,8 +42,7 @@ export default function CalendarEditDialog() {
       convertObjectNullPropertiesToUndefined(selectedCalendar)
     );
     if (!parsedSelectedTask.success) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: zodErrorToString(parsedSelectedTask.error),
       });
 
@@ -44,14 +50,13 @@ export default function CalendarEditDialog() {
     }
 
     setData(parsedSelectedTask.data);
-  }, [selectedCalendar, toast]);
+  }, [selectedCalendar]);
 
   const calendarExists = !!selectedCalendar?.id;
 
   const onDeleteButtonClick = async () => {
     if (!selectedCalendar) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: 'No calendar selected',
       });
 
@@ -61,8 +66,7 @@ export default function CalendarEditDialog() {
     try {
       await deleteCalendar(selectedCalendar.id);
 
-      toast({
-        title: `Calendar "${selectedCalendar.name}" deleted`,
+      sonnerToast.success(`Calendar "${selectedCalendar.name}" deleted`, {
         description: 'You have successfully deleted the calendar',
       });
 
@@ -78,8 +82,7 @@ export default function CalendarEditDialog() {
 
   const onSaveButtonClick = async () => {
     if (!data) {
-      toast({
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: 'No data to save',
       });
 
@@ -91,8 +94,7 @@ export default function CalendarEditDialog() {
         ? await editCalendar(selectedCalendar.id, data as UpdateCalendar)
         : await addCalendar(data as CreateCalendar);
 
-      toast({
-        title: `Calendar "${editedCalendar.name}" save`,
+      sonnerToast.success(`Calendar "${editedCalendar.name}" save`, {
         description: 'You have successfully saved the calendar',
       });
 

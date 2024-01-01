@@ -1,4 +1,4 @@
-import { toast } from '@moaitime/web-ui';
+import { sonnerToast } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import { ErrorResponse } from '../errors/ErrorResponse';
@@ -33,9 +33,7 @@ export const fetchJson = async <T>(
     }
 
     if (data.error && !options?.preventToast) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
         description: data.error ?? 'Something went wrong.',
       });
     }

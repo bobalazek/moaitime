@@ -11,7 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
@@ -59,7 +59,6 @@ export default function DateSelector({
   isTimezoneReadonly,
   timezonePlaceholderText,
 }: DateSelectorProps) {
-  const { toast } = useToast();
   const { auth } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [dateValue, setDateValue] = useState<string | null>(null);
@@ -88,10 +87,8 @@ export default function DateSelector({
     event?.preventDefault();
 
     if (dateTimeValue && !isValidTime(dateTimeValue)) {
-      toast({
-        title: 'Invalid time',
+      sonnerToast.error('Invalid time', {
         description: 'Please enter a valid time',
-        variant: 'destructive',
       });
 
       return;

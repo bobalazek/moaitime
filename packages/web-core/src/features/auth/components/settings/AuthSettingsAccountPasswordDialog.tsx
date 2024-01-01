@@ -9,13 +9,12 @@ import {
   DialogTitle,
   Input,
   Label,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
 
 export default function AuthSettingsAccountPasswordDialog() {
-  const { toast } = useToast();
   const {
     accountPasswordSettingsDialogOpen,
     setAccountPasswordSettingsDialogOpen,
@@ -36,8 +35,7 @@ export default function AuthSettingsAccountPasswordDialog() {
         newPassword,
       });
 
-      toast({
-        title: 'Password updated',
+      sonnerToast.success('Password updated!', {
         description: 'You have successfully updated your password',
       });
 

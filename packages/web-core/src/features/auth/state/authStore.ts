@@ -9,7 +9,7 @@ import {
   UpdateUserPassword,
   UpdateUserSettings,
 } from '@moaitime/shared-common';
-import { toast } from '@moaitime/web-ui';
+import { sonnerToast } from '@moaitime/web-ui';
 
 import { useBackgroundStore } from '../../background/state/backgroundStore';
 import { useGreetingStore } from '../../greeting/state/greetingStore';
@@ -237,8 +237,7 @@ export const useAuthStore = create<AuthStore>()(
 
         set({ auth: response.data });
 
-        toast({
-          title: 'Settings updated',
+        sonnerToast.success('Settings updated', {
           description: 'Your settings have been updated.',
         });
 

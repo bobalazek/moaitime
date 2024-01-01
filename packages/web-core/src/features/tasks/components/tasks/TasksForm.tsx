@@ -1,11 +1,10 @@
 import { useRef, useState } from 'react';
 
-import { Input, useToast } from '@moaitime/web-ui';
+import { Input, sonnerToast } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
 
 function TasksForm() {
-  const { toast } = useToast();
   const { selectedList, addTask, listEndElement } = useTasksStore();
   const [name, setName] = useState('');
   const isSubmittingRef = useRef(false);
@@ -18,9 +17,8 @@ function TasksForm() {
     }
 
     if (!selectedList) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
+        position: 'top-right',
         description:
           'Oh dear, or dear. Did you, by any chance, forget to select a list? Awkward, right?',
       });
@@ -30,9 +28,8 @@ function TasksForm() {
 
     const finalName = name.trim();
     if (finalName === '') {
-      toast({
-        variant: 'destructive',
-        title: 'Oops!',
+      sonnerToast.error('Oops!', {
+        position: 'top-right',
         description:
           'Oh dear, or dear. Did you, by any chance, forget to type something? Awkward, right?',
       });

@@ -10,7 +10,7 @@ import {
   CardTitle,
   Input,
   Label,
-  useToast,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
@@ -18,7 +18,6 @@ import { useAuthStore } from '../../state/authStore';
 
 export default function AuthResetPasswordPage() {
   const { resetPassword } = useAuthStore();
-  const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -33,8 +32,7 @@ export default function AuthResetPasswordPage() {
     try {
       const response = await resetPassword(token, password);
 
-      toast({
-        title: 'Success!',
+      sonnerToast.success('Success!', {
         description: response.message ?? 'You have successfully reset your password!',
       });
 

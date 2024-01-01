@@ -241,7 +241,9 @@ export class UserDataExportProcessor {
     const secretAccessKey = colonSplit[1];
 
     const endpoint = `${protocol}://${domain}`;
-    const forcePathStyle = true; // TODO: does this only need to be set for local development?
+    const forcePathStyle = ['localhost', 'minio', '127.0.0.1'].some((host) =>
+      domain.includes(host)
+    );
 
     const filenameSplit = zipFilePath.split('/');
     const id = filenameSplit[filenameSplit.length - 1];

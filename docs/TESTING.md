@@ -1,6 +1,6 @@
 # MoaiTime - Testing
 
-Once you have the project setup, you can run the E2E the main command you need to know is `pnpm e2e:watch`. This will open the Cypress Studio app, which you then use to write your tests. Once you are done writing then, you can close the original app and then run `pnpm e2e`. This will run all of the tests again, but in headless mode.
+Once you have the project setup, you can run the E2E the main command you need to know is `pnpm dev:e2e`. This will open the Cypress Studio app, which you then use to write your tests. Once you are done writing then, you can close the original app and then run `pnpm e2e`. This will run all of the tests again, but in headless mode.
 
 ## FAQ
 

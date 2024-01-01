@@ -7,7 +7,7 @@
 - `pnpm test` - runs all the unit tests with Vitest
 - `pnpm test:watch` - runs all the unit tests with Vitest in watch mode
 - `pnpm e2e` - runs the E2E tests with Cypress, while also starting the API and web apps
-- `pnpm e2e:watch` - runs the E2E tests with Cypress Studio, while also starting the API and web apps
+- `pnpm dev:e2e` - runs the E2E tests with Cypress Studio, while also starting the API and web apps
 - `pnpm lint` - runs the ESLint
 - `pnpm format` - runs and fixes issues with the Prettier
 - `pnpm format:check` - checks if there are any issues with the Prettier

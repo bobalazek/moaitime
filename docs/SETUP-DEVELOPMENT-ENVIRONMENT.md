@@ -28,4 +28,4 @@ Follow these steps to set up your development environment:
    - Run `pnpm cli database:reload` to setup the database. This drops the current schema in the database, runs the migrations and the inserts the seed and fixture data
 6. **That is It**
    - If you are a developer, you will now want to run the following command: `pnpm dev`. This will start the backend and frontend in watch mode, so any changes you make to the code will be automatically picked up and the app will be reloaded. You can now go to <http://localhost:4200> and see the app running.
-   - If you are a tester, then you will need to run: `pnpm e2e:watch`. This will open the Cypress Studio app, which you then use to write your tests. Once you are done writing then, you can close the original app and then run `pnpm e2e`. This will run all of the tests again, but in headless mode.
+   - If you are a tester, then you will need to run: `pnpm dev:e2e`. This will open the Cypress Studio app, which you then use to write your tests. Once you are done writing then, you can close the original app and then run `pnpm e2e`. This will run all of the tests again, but in headless mode.

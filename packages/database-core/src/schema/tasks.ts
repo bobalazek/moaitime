@@ -2,6 +2,7 @@ import { relations } from 'drizzle-orm';
 import { date, integer, pgTable, text, time, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { lists } from './lists';
+import { taskTags } from './taskTags';
 
 export const tasks = pgTable('tasks', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -37,6 +38,7 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
   children: many(tasks, {
     relationName: 'children',
   }),
+  taskTags: many(taskTags),
 }));
 
 export type Task = typeof tasks.$inferSelect;

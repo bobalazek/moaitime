@@ -3,6 +3,12 @@ import { and, asc, count, DBQueryConfig, desc, eq, ilike, isNull } from 'drizzle
 import { getDatabase, NewNote, Note, notes } from '@moaitime/database-core';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
+export type NotesManagerFindManyByUserIdWithOptions = {
+  search?: string;
+  sortField?: NotesListSortFieldEnum;
+  sortDirection?: SortDirectionEnum;
+};
+
 export class NotesManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Note[]> {
     return getDatabase().query.notes.findMany(options);
@@ -17,11 +23,7 @@ export class NotesManager {
 
   async findManyByUserIdWithOptions(
     userId: string,
-    options?: {
-      search?: string;
-      sortField?: NotesListSortFieldEnum;
-      sortDirection?: SortDirectionEnum;
-    }
+    options?: NotesManagerFindManyByUserIdWithOptions
   ): Promise<Note[]> {
     let where = and(eq(notes.userId, userId), isNull(notes.deletedAt));
     let orderBy = desc(notes.createdAt);
@@ -77,7 +79,7 @@ export class NotesManager {
 
   async deleteOneById(id: string): Promise<Note> {
     const rows = await getDatabase().delete(notes).where(eq(notes.id, id)).returning();
-    notes;
+
     return rows[0];
   }
 

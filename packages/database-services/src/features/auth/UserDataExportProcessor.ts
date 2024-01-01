@@ -1,6 +1,7 @@
 import { createReadStream, createWriteStream, existsSync, mkdirSync, writeFileSync } from 'fs';
 
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import archiver from 'archiver';
 import { addSeconds } from 'date-fns';
@@ -234,10 +235,12 @@ export class UserDataExportProcessor {
     const slashSplit = atSplit[1].split('/');
 
     const region = 'us-east-1';
-    const endpoint = `${protocol}://${slashSplit[0]}`;
+    const domain = slashSplit[0];
     const bucket = slashSplit[1];
     const accessKeyId = colonSplit[0];
     const secretAccessKey = colonSplit[1];
+
+    const endpoint = `${protocol}://${domain}`;
     const forcePathStyle = true; // TODO: does this only need to be set for local development?
 
     const filenameSplit = zipFilePath.split('/');
@@ -253,13 +256,23 @@ export class UserDataExportProcessor {
       forcePathStyle,
     });
 
-    const command = new PutObjectCommand({
+    const upload = new Upload({
+      client,
+      params: {
+        Bucket: bucket,
+        Key: id,
+        Body: createReadStream(zipFilePath),
+        ContentType: 'application/zip',
+      },
+    });
+    await upload.done();
+
+    const getObjectCommand = new GetObjectCommand({
       Bucket: bucket,
       Key: id,
-      Body: createReadStream(zipFilePath),
     });
 
-    const url = await getSignedUrl(client, command, {
+    const url = await getSignedUrl(client, getObjectCommand, {
       expiresIn: AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS,
     });
 

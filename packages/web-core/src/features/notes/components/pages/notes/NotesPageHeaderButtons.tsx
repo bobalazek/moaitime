@@ -48,7 +48,7 @@ const NotesPageHeaderButtons = () => {
     }
   };
 
-  const onCancelButtonClick = () => {
+  const onCancelButtonClick = async () => {
     if (selectedNoteDataChanged) {
       const response = confirm(
         'You have unsaved changes. Are you sure you want to stop editing this note?'
@@ -61,9 +61,9 @@ const NotesPageHeaderButtons = () => {
     setSelectedNote(null);
   };
 
-  const onSaveButtonClick = () => {
+  const onSaveButtonClick = async () => {
     try {
-      saveSelectedNoteData();
+      await saveSelectedNoteData();
 
       sonnerToast.success('Success!', {
         description: 'You have successfully saved the note!',

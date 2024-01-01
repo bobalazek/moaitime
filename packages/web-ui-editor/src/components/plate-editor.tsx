@@ -332,11 +332,13 @@ const plugins = createPlugins(
 export function PlateEditor({
   value,
   onChange,
+  editorProps,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (value: any) => void;
+  editorProps?: Record<string, unknown>;
 }) {
   return (
     <DndProvider backend={HTML5Backend}>
@@ -356,7 +358,7 @@ export function PlateEditor({
             <FixedToolbar className="mb-2">
               <FixedToolbarButtons />
             </FixedToolbar>
-            <Editor />
+            <Editor {...editorProps} />
             <FloatingToolbar>
               <FloatingToolbarButtons />
             </FloatingToolbar>

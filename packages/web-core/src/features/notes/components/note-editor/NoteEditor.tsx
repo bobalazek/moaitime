@@ -7,7 +7,7 @@ export const NoteEditor = () => {
   const { selectedNote, selectedNoteData, setSelectedNoteData } = useNotesStore();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-test="note-editor">
       <div className="mb-4">
         <Input
           autoFocus
@@ -20,6 +20,7 @@ export const NoteEditor = () => {
               title: event.target.value,
             });
           }}
+          data-test="note-editor--title"
         />
       </div>
       <PlateEditor
@@ -30,6 +31,9 @@ export const NoteEditor = () => {
             ...selectedNoteData,
             content: value,
           });
+        }}
+        editorProps={{
+          'data-test': 'note-editor--content',
         }}
       />
     </div>

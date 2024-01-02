@@ -18,9 +18,9 @@ function TasksForm() {
 
     if (!selectedList) {
       sonnerToast.error('Oops!', {
-        position: 'top-right',
         description:
           'Oh dear, or dear. Did you, by any chance, forget to select a list? Awkward, right?',
+        position: 'top-right',
       });
 
       return;
@@ -29,9 +29,9 @@ function TasksForm() {
     const finalName = name.trim();
     if (finalName === '') {
       sonnerToast.error('Oops!', {
-        position: 'top-right',
         description:
           'Oh dear, or dear. Did you, by any chance, forget to type something? Awkward, right?',
+        position: 'top-right',
       });
 
       return;

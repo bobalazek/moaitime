@@ -143,9 +143,11 @@ describe('tasks-tasks.cy.ts', () => {
       .contains('Delete')
       .click();
 
-    cy.getToastsContainer().find('button').contains('Undo').click();
+    cy.getToastsContainer().find('button').contains('Undo').click({ force: true });
 
     cy.getBySel('tasks--task--name').contains('My new task');
+
+    cy.hasToastWithText('The task was successfully undeleted!');
   });
 
   it('should open expanded edit options for a task', () => {

@@ -61,6 +61,7 @@ const TaskItemActions = memo(
 
         sonnerToast.success(`Task "${task.name}" Undeleted`, {
           description: 'The task was successfully undeleted!',
+          position: 'top-right',
         });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function
@@ -79,6 +80,7 @@ const TaskItemActions = memo(
             label: 'Undo',
             onClick: (event) => onUndeleteButtonClick(event),
           },
+          position: 'top-right',
         });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function

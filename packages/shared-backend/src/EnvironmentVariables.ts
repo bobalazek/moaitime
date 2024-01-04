@@ -20,16 +20,8 @@ export const envSchema = z.object({
   POSTGRESQL_URL: z.string().url().min(1),
   REDIS_URL: z.string().url().min(1),
   // The URL is encoded in env variables, so we need to decode it here
-  SMTP_URL: z
-    .string()
-    .url()
-    .min(1)
-    .transform((value) => decodeURIComponent(value)),
-  USER_DATA_EXPORTS_BUCKET_URL: z
-    .string()
-    .url()
-    .min(1)
-    .transform((value) => decodeURIComponent(value)),
+  SMTP_URL: z.string().url().min(1),
+  USER_DATA_EXPORTS_BUCKET_URL: z.string().url().min(1),
   API_PORT: z.coerce.number().default(3636),
 });
 

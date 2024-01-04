@@ -55,7 +55,7 @@ export class Mailer {
     const { SMTP_URL, NODE_ENV } = getEnv();
 
     if (SMTP_URL && NODE_ENV !== 'test') {
-      this._transporter = configureTransporter(SMTP_URL);
+      this._transporter = configureTransporter(decodeURIComponent(SMTP_URL));
     }
   }
 

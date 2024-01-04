@@ -278,8 +278,6 @@ export class UserDataExportProcessor {
       expiresIn: AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS,
     });
 
-    // TODO: the generated URL is not working for some reason
-
     return url;
   }
 }

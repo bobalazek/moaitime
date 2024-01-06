@@ -82,11 +82,23 @@ export class CalendarEntriesController {
       const timezone = event.timezone ?? 'UTC';
       const endTimezone = event.endTimezone ?? timezone;
 
+      // The startsAt and endsAt fields are retrived as Date objects from drizzle-orm,
+      // but they are actually timezoned strings, so we need to remove the last "Z" character,
+      // as that is not really that is actually what is stored in the database.
       const startsAt = event.startsAt?.toISOString().slice(0, -1) ?? nowString;
       const endsAt = event.endsAt?.toISOString().slice(0, -1) ?? nowString;
 
       const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
       const endsAtUtc = zonedTimeToUtc(endsAt, endTimezone).toISOString();
+
+      const timesObject = {
+        timezone,
+        startsAt,
+        startsAtUtc,
+        endTimezone,
+        endsAt,
+        endsAtUtc,
+      };
 
       return {
         id: `events:${event.id}`,
@@ -95,21 +107,11 @@ export class CalendarEntriesController {
         description: event.description,
         isAllDay: event.isAllDay,
         color: event.color ?? event.calendarColor ?? null,
-        timezone,
-        startsAt,
-        startsAtUtc,
-        endTimezone,
-        endsAt,
-        endsAtUtc,
         calendarId: event.calendarId,
+        ...timesObject,
         raw: {
           ...event,
-          timezone,
-          startsAt,
-          startsAtUtc,
-          endTimezone,
-          endsAt,
-          endsAtUtc,
+          timesObject,
         } as unknown as Event,
       };
     });

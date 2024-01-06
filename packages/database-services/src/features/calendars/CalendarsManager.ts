@@ -1,17 +1,47 @@
 import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 
-import { Calendar, calendars, events, getDatabase, NewCalendar } from '@moaitime/database-core';
+import {
+  Calendar,
+  calendars,
+  events,
+  getDatabase,
+  NewCalendar,
+  userCalendars,
+} from '@moaitime/database-core';
+
+import { UsersManager, usersManager } from '../auth/UsersManager';
 
 export class CalendarsManager {
+  static CUSTOM_CALENDARS_PREFIX = 'custom--';
+  static CUSTOM_CALENDAR_IDS = [`${CalendarsManager.CUSTOM_CALENDARS_PREFIX}due-tasks`];
+
+  constructor(private _usersManager: UsersManager) {}
+
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Calendar[]> {
     return getDatabase().query.calendars.findMany(options);
   }
 
   async findManyByUserId(userId: string): Promise<Calendar[]> {
-    return getDatabase().query.calendars.findMany({
+    const data = await getDatabase().query.calendars.findMany({
       where: and(eq(calendars.userId, userId), isNull(calendars.deletedAt)),
       orderBy: asc(calendars.createdAt),
     });
+
+    const now = new Date();
+    data.push({
+      id: `${CalendarsManager.CUSTOM_CALENDARS_PREFIX}due-tasks`,
+      name: 'Due Tasks',
+      description: null,
+      color: null,
+      timezone: 'UTC',
+      isPublic: false,
+      userId,
+      deletedAt: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return data;
   }
 
   async findManyDeletedByUserId(userId: string): Promise<Calendar[]> {
@@ -76,6 +106,10 @@ export class CalendarsManager {
 
   // Helpers
   async userCanView(userId: string, calendarId: string): Promise<boolean> {
+    if (calendarId.startsWith('custom--')) {
+      return true;
+    }
+
     const row = await getDatabase().query.calendars.findFirst({
       where: and(eq(calendars.id, calendarId), eq(calendars.userId, userId)),
     });
@@ -90,6 +124,110 @@ export class CalendarsManager {
   async userCanDelete(userId: string, calendarId: string): Promise<boolean> {
     return this.userCanUpdate(userId, calendarId);
   }
+
+  async getVisibleCalendarIdsByUserId(userId: string): Promise<string[]> {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      return [];
+    }
+
+    const userSettings = this._usersManager.getUserSettings(user);
+    const userCalendarIds = userSettings.calendarVisibleCalendarIds ?? [];
+    const calendarIdsSet = new Set<string>();
+
+    // Calendars
+    const calendarRows = await getDatabase().query.calendars.findMany({
+      columns: {
+        id: true,
+      },
+      where: eq(calendars.userId, userId),
+    });
+
+    for (const row of calendarRows) {
+      calendarIdsSet.add(row.id);
+    }
+
+    // User Calendars
+    const userCalendarRows = await getDatabase().query.userCalendars.findMany({
+      columns: {
+        calendarId: true,
+      },
+      where: eq(userCalendars.userId, userId),
+    });
+
+    for (const row of userCalendarRows) {
+      calendarIdsSet.add(row.calendarId);
+    }
+
+    if (!userCalendarIds.includes('*')) {
+      const finalCalendarIds = new Set(userCalendarIds);
+
+      for (const calendarId of calendarIdsSet) {
+        if (finalCalendarIds.has(calendarId)) {
+          continue;
+        }
+
+        calendarIdsSet.delete(calendarId);
+      }
+    }
+
+    return Array.from(calendarIdsSet);
+  }
+
+  async addVisibleCalendarIdByUserId(userId: string, calendarId: string) {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      return;
+    }
+
+    const userSettings = this._usersManager.getUserSettings(user);
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+
+    if (
+      userCalendarIds.includes(calendarId) &&
+      !CalendarsManager.CUSTOM_CALENDAR_IDS.includes(calendarId)
+    ) {
+      return user;
+    }
+
+    userCalendarIds.push(calendarId);
+
+    return this._usersManager.updateOneById(userId, {
+      settings: {
+        ...userSettings,
+        calendarVisibleCalendarIds: userCalendarIds,
+      },
+    });
+  }
+
+  async removeVisibleCalendarIdByUserId(userId: string, calendarId: string) {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      return;
+    }
+
+    const userSettings = this._usersManager.getUserSettings(user);
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+
+    if (
+      !userCalendarIds.includes(calendarId) &&
+      !CalendarsManager.CUSTOM_CALENDAR_IDS.includes(calendarId)
+    ) {
+      return user;
+    }
+
+    const index = userCalendarIds.indexOf(calendarId);
+    if (index > -1) {
+      userCalendarIds.splice(index, 1);
+    }
+
+    return this._usersManager.updateOneById(userId, {
+      settings: {
+        ...userSettings,
+        calendarVisibleCalendarIds: userCalendarIds,
+      },
+    });
+  }
 }
 
-export const calendarsManager = new CalendarsManager();
+export const calendarsManager = new CalendarsManager(usersManager);

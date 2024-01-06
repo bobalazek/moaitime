@@ -1,8 +1,10 @@
 import { pgEnum } from 'drizzle-orm/pg-core';
 
+import { ProcessingStatusEnum } from '@moaitime/shared-common';
+
 export const processingStatusEnum = pgEnum('processing_status_enum', [
-  'pending',
-  'processing',
-  'processed',
-  'failed',
+  ProcessingStatusEnum.PENDING,
+  ProcessingStatusEnum.PROCESSING,
+  ProcessingStatusEnum.PROCESSED,
+  ProcessingStatusEnum.FAILED,
 ]);

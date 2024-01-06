@@ -76,6 +76,23 @@ export class TasksManager {
     });
   }
 
+  async findManyByUserIdWithDueDate(userId: string): Promise<Task[]> {
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(and(eq(lists.userId, userId), isNotNull(tasks.dueDate)))
+      .execute();
+
+    if (rows.length === 0) {
+      return [];
+    }
+
+    return rows.map((row) => {
+      return this._fixDueDateColumn(row.tasks);
+    });
+  }
+
   async findManyByParentId(parentId: string): Promise<Task[]> {
     const rows = await getDatabase()
       .select()

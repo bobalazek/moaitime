@@ -40,6 +40,7 @@ export * from './greetings/Greeting';
 // Notes
 export * from './notes/NoteSchema';
 export * from './notes/NotesSortOptions';
+export * from './notes/NoteTypeEnum';
 
 // Quote
 export * from './quotes/Quote';

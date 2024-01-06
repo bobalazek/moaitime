@@ -13,7 +13,7 @@ import {
 import { Request } from 'express';
 
 import { Calendar } from '@moaitime/database-core';
-import { calendarsManager, usersManager } from '@moaitime/database-services';
+import { calendarsManager } from '@moaitime/database-services';
 import { CALENDARS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 import { CreateCalendar, User } from '@moaitime/shared-common';
 
@@ -78,7 +78,7 @@ export class CalendarsController {
 
     const data = await calendarsManager.insertOne(insertData);
 
-    await usersManager.addVisibleCalendarIdByUserId(req.user.id, data.id);
+    await calendarsManager.addVisibleCalendarIdByUserId(req.user.id, data.id);
 
     return {
       success: true,
@@ -162,7 +162,7 @@ export class CalendarsController {
       throw new ForbiddenException('You cannot view this calendar');
     }
 
-    await usersManager.addVisibleCalendarIdByUserId(req.user.id, id);
+    await calendarsManager.addVisibleCalendarIdByUserId(req.user.id, id);
 
     return {
       success: true,
@@ -180,7 +180,7 @@ export class CalendarsController {
       throw new ForbiddenException('You cannot view this calendar');
     }
 
-    await usersManager.removeVisibleCalendarIdByUserId(req.user.id, id);
+    await calendarsManager.removeVisibleCalendarIdByUserId(req.user.id, id);
 
     return {
       success: true,

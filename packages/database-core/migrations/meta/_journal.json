@@ -15,6 +15,13 @@
       "when": 1704099208608,
       "tag": "0001_talented_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1704537146168,
+      "tag": "0002_new_psylocke",
+      "breakpoints": true
     }
   ]
 }

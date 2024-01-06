@@ -6,6 +6,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
+import TaskEditDialog from '../../../tasks/components/task-edit-dialog/TaskEditDialog';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarDeleteAlertDialog from '../calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
 import CalendarEditDialog from '../calendar-edit-dialog/CalendarEditDialog';
@@ -157,6 +158,7 @@ export default function CalendarPage() {
       <CalendarEntryEditDialog />
       <DeletedCalendarsDialog />
       <CalendarDeleteAlertDialog />
+      <TaskEditDialog />
     </ErrorBoundary>
   );
 }

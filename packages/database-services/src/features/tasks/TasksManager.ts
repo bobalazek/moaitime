@@ -89,7 +89,11 @@ export class TasksManager {
     });
   }
 
-  async findManyByUserIdWithDueDate(userId: string, from?: Date, to?: Date): Promise<Task[]> {
+  async findManyByUserIdWithDueDate(
+    userId: string,
+    from?: Date,
+    to?: Date
+  ): Promise<(Task & { listColor: string | null })[]> {
     let where = and(eq(lists.userId, userId), isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
 
     if (from && to) {
@@ -115,7 +119,8 @@ export class TasksManager {
     }
 
     return rows.map((row) => {
-      return this._fixDueDateColumn(row.tasks);
+      const task = this._fixDueDateColumn(row.tasks);
+      return { ...task, listColor: row.lists?.color ?? null };
     });
   }
 

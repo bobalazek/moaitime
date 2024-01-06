@@ -5,11 +5,14 @@ import { MouseEvent } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
+  // Needs to be a different name to the component name itself
   CalendarEntry as CalendarEntryType,
-  CalendarEntryTypeEnum, // Needs to be a different name to the component name itself
+  CalendarEntryTypeEnum,
+  Task,
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
+import { useTasksStore } from '../../tasks/state/tasksStore';
 import { useCalendarHighlightedCalendarEntryStore } from '../state/calendarDynamicStore';
 import { useCalendarStore } from '../state/calendarStore';
 
@@ -47,6 +50,7 @@ export default function CalendarEntry({
   showTimes,
 }: CalendarEntryProps) {
   const { auth } = useAuthStore();
+  const { setSelectedTaskDialogOpen } = useTasksStore();
   const { calendars, setSelectedCalendarEntryDialogOpen } = useCalendarStore();
   const { setHighlightedCalendarEntry, highlightedCalendarEntry } =
     useCalendarHighlightedCalendarEntryStore();
@@ -100,11 +104,11 @@ export default function CalendarEntry({
     event.preventDefault();
     event.stopPropagation();
 
-    if (calendarEntry.type !== CalendarEntryTypeEnum.EVENT) {
-      return;
+    if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
+      setSelectedCalendarEntryDialogOpen(true, calendarEntry);
+    } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
+      setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
     }
-
-    setSelectedCalendarEntryDialogOpen(true, calendarEntry);
   };
 
   const onMouseEnter = () => {

@@ -29,6 +29,7 @@ export function CalendarSelector({
   const { calendars } = useCalendarStore();
   const [open, setOpen] = useState(false);
 
+  const pickableCalendars = calendars.filter((calendar) => !!calendar.isSelectable);
   const selectedCalendar = calendars.find((calendar) => calendar.id === value) ?? null;
 
   return (
@@ -59,7 +60,7 @@ export function CalendarSelector({
           <CommandInput placeholder="Search calendars ..." />
           <CommandEmpty>No calendar found.</CommandEmpty>
           <CommandGroup>
-            {calendars.map((calendar) => (
+            {pickableCalendars.map((calendar) => (
               <CommandItem
                 key={calendar.id}
                 value={calendar.id}

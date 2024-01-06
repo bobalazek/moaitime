@@ -14,9 +14,11 @@ import {
   CalendarEntry,
   CalendarEntryTypeEnum,
   CalendarEntryYearlyEntry,
+  Event,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
   isValidDate,
+  Task,
 } from '@moaitime/shared-common';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -96,9 +98,7 @@ export class CalendarEntriesController {
         endTimezone,
         endsAt,
         endsAtUtc,
-        deletedAt: event.deletedAt?.toISOString() ?? null,
-        createdAt: event.createdAt!.toISOString(),
-        updatedAt: event.updatedAt!.toISOString(),
+        raw: event as unknown as Event,
       };
     });
 
@@ -113,11 +113,13 @@ export class CalendarEntriesController {
           continue;
         }
 
+        let isAllDay = false;
         let dateString = task.dueDate;
         if (task.dueDateTime) {
           dateString = `${dateString}T${task.dueDateTime}:00.000`;
         } else {
           dateString = format(addDays(new Date(dateString), 1), 'yyyy-MM-dd');
+          isAllDay = true;
         }
 
         if (task.dueDateTimeZone) {
@@ -126,13 +128,13 @@ export class CalendarEntriesController {
             timezone
           );
 
-          dateString = timezonedDate.toISOString();
+          dateString = timezonedDate.toISOString().slice(0, -1);
         }
 
         const endsAt = dateString;
         const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
 
-        const startsAt = subMinutes(new Date(endsAtUtc), 60).toISOString().slice(0, -1);
+        const startsAt = subMinutes(new Date(dateString), 60).toISOString().slice(0, -1);
         const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
 
         calendarEntries.push({
@@ -140,17 +142,16 @@ export class CalendarEntriesController {
           id: `tasks:${task.id}`,
           type: CalendarEntryTypeEnum.TASK,
           title: task.name,
-          isAllDay: false,
-          calendarId: null,
+          isAllDay,
+          color: task.color ?? task.listColor ?? null,
           timezone,
           startsAt,
           startsAtUtc,
           endTimezone: timezone,
           endsAt,
           endsAtUtc,
-          deletedAt: task.deletedAt?.toISOString() ?? null,
-          createdAt: task.createdAt!.toISOString(),
-          updatedAt: task.updatedAt!.toISOString(),
+          calendarId: null,
+          raw: task as unknown as Task,
         });
       }
     }

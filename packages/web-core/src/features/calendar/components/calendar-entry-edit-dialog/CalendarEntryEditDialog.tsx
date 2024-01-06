@@ -15,6 +15,8 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
   Input,
   Label,
   sonnerToast,
@@ -145,6 +147,13 @@ export default function CalendarEntryEditDialog() {
       onOpenChange={setSelectedCalendarEntryDialogOpen}
     >
       <DialogContent data-test="calendar--calendar-entry-edit-dialog">
+        <DialogHeader>
+          <DialogTitle>
+            {selectedCalendarEntry
+              ? `Edit "${selectedCalendarEntry.title}" Calendar Entry`
+              : 'New Calendar Entry'}
+          </DialogTitle>
+        </DialogHeader>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendarEntry-title">Title</Label>
           <Input

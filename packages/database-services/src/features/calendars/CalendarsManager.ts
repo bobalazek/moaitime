@@ -52,10 +52,11 @@ export class CalendarsManager {
     const data = await this.findManyByUserId(userId);
 
     return data.map((calendar) => {
-      const isEditable = calendar.id !== 'custom--due-tasks';
+      const isSelectable = calendar.id !== 'custom--due-tasks';
+      const isEditable = isSelectable;
       const isDeletable = isEditable;
 
-      return this.convertToApiCalendar(calendar, isEditable, isDeletable);
+      return this.convertToApiCalendar(calendar, isSelectable, isEditable, isDeletable);
     });
   }
 
@@ -262,13 +263,19 @@ export class CalendarsManager {
     });
   }
 
-  convertToApiCalendar(calendar: Calendar, isEditable: boolean, isDeletable: boolean): ApiCalendar {
+  convertToApiCalendar(
+    calendar: Calendar,
+    isSelectable: boolean,
+    isEditable: boolean,
+    isDeletable: boolean
+  ): ApiCalendar {
     return {
       ...calendar,
       userId: calendar.userId!,
       deletedAt: calendar.deletedAt?.toISOString() ?? null,
       createdAt: calendar.createdAt!.toISOString(),
       updatedAt: calendar.updatedAt!.toISOString(),
+      isSelectable,
       isEditable,
       isDeletable,
     };

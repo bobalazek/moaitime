@@ -13,6 +13,7 @@ export const CalendarSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   userId: z.string(),
+  isSelectable: z.boolean().optional(),
   isEditable: z.boolean().optional(),
   isDeletable: z.boolean().optional(),
 });

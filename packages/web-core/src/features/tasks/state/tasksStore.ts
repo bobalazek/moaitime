@@ -12,6 +12,7 @@ import {
   UpdateTask,
 } from '@moaitime/shared-common';
 
+import { useCalendarStore } from '../../calendar/state/calendarStore';
 import {
   addList,
   addTask,
@@ -196,6 +197,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     set({
       selectedListTasks,
     });
+
+    // If we are on the calendar page, we need to reload the calendar entries
+    const { calendars, loadCalendarEntries } = useCalendarStore.getState();
+    if (calendars.length > 0) {
+      await loadCalendarEntries();
+    }
   },
   // List Dialog
   selectedListDialogOpen: false,

@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 import { ColorSchema } from '../core/ColorSchema';
+import { TaskSchema } from '../tasks/TaskSchema';
 import { CalendarEntryTypeEnum } from './CalendarEntryTypeEnum';
+import { EventSchema } from './EventSchema';
 
 export const CalendarEntrySchema = z.object({
   id: z.string(),
@@ -16,12 +18,10 @@ export const CalendarEntrySchema = z.object({
   endsAt: z.string(),
   endsAtUtc: z.string(),
   endTimezone: z.string().nullable(),
-  deletedAt: z.string().nullable(),
-  updatedAt: z.string(),
-  createdAt: z.string(),
   calendarId: z.string().nullable(),
   isEditable: z.boolean().optional(),
   isDeletable: z.boolean().optional(),
+  raw: EventSchema.or(TaskSchema).optional(),
 });
 
 export const CreateCalendarEntrySchema = z.object({

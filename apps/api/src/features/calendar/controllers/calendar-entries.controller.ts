@@ -89,16 +89,28 @@ export class CalendarEntriesController {
       const endsAtUtc = zonedTimeToUtc(endsAt, endTimezone).toISOString();
 
       return {
-        ...event,
         id: `events:${event.id}`,
         type: CalendarEntryTypeEnum.EVENT,
+        title: event.title,
+        description: event.description,
+        isAllDay: event.isAllDay,
+        color: event.color ?? event.calendarColor ?? null,
         timezone,
         startsAt,
         startsAtUtc,
         endTimezone,
         endsAt,
         endsAtUtc,
-        raw: event as unknown as Event,
+        calendarId: event.calendarId,
+        raw: {
+          ...event,
+          timezone,
+          startsAt,
+          startsAtUtc,
+          endTimezone,
+          endsAt,
+          endsAtUtc,
+        } as unknown as Event,
       };
     });
 
@@ -138,10 +150,10 @@ export class CalendarEntriesController {
         const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
 
         calendarEntries.push({
-          ...task,
           id: `tasks:${task.id}`,
           type: CalendarEntryTypeEnum.TASK,
           title: task.name,
+          description: null,
           isAllDay,
           color: task.color ?? task.listColor ?? null,
           timezone,
@@ -150,7 +162,6 @@ export class CalendarEntriesController {
           endTimezone: timezone,
           endsAt,
           endsAtUtc,
-          calendarId: null,
           raw: task as unknown as Task,
         });
       }

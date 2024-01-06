@@ -56,14 +56,14 @@ export default function EventEditDialog() {
   const dataCalendarId = data && 'calendarId' in data ? data.calendarId : undefined;
 
   const startDateInCurrentTimezone =
-    !dataIsAllDay && dataTimezone && data?.startsAt && dataTimezone !== generalTimezone
+    !dataIsAllDay && data?.startsAt && dataTimezone !== generalTimezone
       ? format(
           utcToZonedTime(zonedTimeToUtc(data.startsAt, dataTimezone ?? 'UTC'), generalTimezone),
           'PPP p'
         )
       : null;
   const endDateInCurrentTimezone =
-    !dataIsAllDay && dataEndTimezone && data?.endsAt && dataEndTimezone !== generalTimezone
+    !dataIsAllDay && data?.endsAt && dataEndTimezone !== generalTimezone
       ? format(
           utcToZonedTime(zonedTimeToUtc(data.endsAt, dataEndTimezone ?? 'UTC'), generalTimezone),
           'PPP p'

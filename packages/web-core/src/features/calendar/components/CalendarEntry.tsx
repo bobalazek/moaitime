@@ -52,8 +52,7 @@ export default function CalendarEntry({
 }: CalendarEntryProps) {
   const { auth } = useAuthStore();
   const { setSelectedTaskDialogOpen } = useTasksStore();
-  const { calendars, setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen } =
-    useCalendarStore();
+  const { setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen } = useCalendarStore();
   const { setHighlightedCalendarEntry, highlightedCalendarEntry } =
     useCalendarHighlightedCalendarEntryStore();
 
@@ -61,8 +60,7 @@ export default function CalendarEntry({
   const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
   const hasAbsoluteClassName = className?.includes('absolute');
-  const calendar = calendars.find((c) => c.id === calendarEntry.calendarId);
-  const defaultBackgroundColor = calendarEntry.color ?? calendar?.color ?? '#ffffff';
+  const defaultBackgroundColor = calendarEntry.color ?? '#ffffff';
   const backgroundColor =
     highlightedCalendarEntry?.id === calendarEntry.id
       ? colord(defaultBackgroundColor).darken(0.1).toHex()

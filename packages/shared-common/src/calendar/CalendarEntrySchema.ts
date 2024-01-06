@@ -18,7 +18,6 @@ export const CalendarEntrySchema = z.object({
   endsAt: z.string(),
   endsAtUtc: z.string(),
   endTimezone: z.string().nullable(),
-  calendarId: z.string().nullable(),
   isEditable: z.boolean().optional(),
   isDeletable: z.boolean().optional(),
   raw: EventSchema.or(TaskSchema).optional(),
@@ -34,7 +33,6 @@ export const CreateCalendarEntrySchema = z.object({
   isAllDay: z.boolean(),
   startsAt: z.string(),
   endsAt: z.string(),
-  calendarId: z.string(),
 });
 
 export const UpdateCalendarEntrySchema = CreateCalendarEntrySchema.partial().omit({

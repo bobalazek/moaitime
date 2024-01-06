@@ -34,7 +34,7 @@ export class EventsManager {
     calendarIds: string[],
     from?: Date,
     to?: Date
-  ): Promise<Event[]> {
+  ): Promise<(Event & { calendarColor: string | null })[]> {
     if (calendarIds.length === 0) {
       return [];
     }
@@ -69,7 +69,10 @@ export class EventsManager {
       .execute();
 
     return result.map((row) => {
-      return row.events;
+      return {
+        ...row.events,
+        calendarColor: row.calendars?.color ?? null,
+      };
     });
   }
 

@@ -24,8 +24,12 @@ export default function CalendarMonthlyViewDay({
   calendarEntries,
   isFirstWeeksDay,
 }: CalendarMonthlyViewDayProps) {
-  const { selectedDate, setSelectedDate, setSelectedView, setSelectedCalendarEntryDialogOpen } =
-    useCalendarStore();
+  const {
+    selectedDate,
+    setSelectedDate,
+    setSelectedView,
+    setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen,
+  } = useCalendarStore();
   const isActive = isSameDay(day, now);
   const isActiveMonth = isSameMonth(day, selectedDate);
   const isFirst = day.getDate() === 1;

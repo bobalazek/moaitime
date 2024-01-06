@@ -10,8 +10,8 @@ import TaskEditDialog from '../../../tasks/components/task-edit-dialog/TaskEditD
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarDeleteAlertDialog from '../calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
 import CalendarEditDialog from '../calendar-edit-dialog/CalendarEditDialog';
-import CalendarEntryEditDialog from '../calendar-entry-edit-dialog/CalendarEntryEditDialog';
 import DeletedCalendarsDialog from '../deleted-calendars-dialog/DeletedCalendarsDialog';
+import EventEditDialog from '../event-edit-dialog/EventEditDialog';
 import CalendarAgendaView from '../views/CalendarAgendaView';
 import CalendarDailyView from '../views/CalendarDailyView';
 import CalendarMonthlyView from '../views/CalendarMonthlyView';
@@ -25,7 +25,7 @@ export default function CalendarPage() {
     selectedDate,
     settingsSheetOpen,
     selectedCalendarDialogOpen,
-    selectedCalendarEntryDialogOpen,
+    selectedEventDialogOpen: selectedCalendarEntryDialogOpen,
     setSelectedView,
     setSelectedDate,
     loadCalendars,
@@ -155,7 +155,7 @@ export default function CalendarPage() {
         </div>
       </div>
       <CalendarEditDialog />
-      <CalendarEntryEditDialog />
+      <EventEditDialog />
       <DeletedCalendarsDialog />
       <CalendarDeleteAlertDialog />
       <TaskEditDialog />

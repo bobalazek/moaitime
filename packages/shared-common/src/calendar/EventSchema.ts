@@ -1,3 +1,4 @@
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { z } from 'zod';
 
 import { ColorSchema } from '../core/ColorSchema';
@@ -37,8 +38,11 @@ export const CreateEventBaseSchema = z.object({
 
 export const CreateEventSchema = CreateEventBaseSchema.refine(
   (data) => {
-    const startsAt = new Date(data.startsAt);
-    const endsAt = new Date(data.endsAt);
+    const timezone = data.timezone ?? 'UTC';
+    const endTimezone = data.endTimezone ?? timezone;
+
+    const startsAt = zonedTimeToUtc(data.startsAt, timezone);
+    const endsAt = zonedTimeToUtc(data.endsAt, endTimezone);
 
     if (data.isAllDay && startsAt.getTime() === endsAt.getTime()) {
       return true;

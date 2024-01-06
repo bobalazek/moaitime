@@ -83,18 +83,18 @@ export type CalendarStore = {
   loadCalendarEntries: () => Promise<CalendarEntry[]>;
   calendarEntriesYearly: CalendarEntryYearlyEntry[];
   loadCalendarEntriesYearly: () => Promise<CalendarEntryYearlyEntry[]>;
-  // Selected
-  selectedCalendarEntryDialogOpen: boolean;
-  selectedCalendarEntry: CalendarEntry | null;
-  setSelectedCalendarEntryDialogOpen: (
-    selectedCalendarEntryDialogOpen: boolean,
-    selectedCalendarEntry?: CalendarEntry | null
-  ) => void;
   /********** Events **********/
   addEvent: (event: CreateEvent) => Promise<Event>;
   editEvent: (eventId: string, event: UpdateEvent) => Promise<Event>;
   deleteEvent: (eventId: string) => Promise<Event>;
   undeleteEvent: (eventId: string) => Promise<Event>;
+  // Selected
+  selectedEventDialogOpen: boolean;
+  selectedEvent: Event | null;
+  setSelectedEventDialogOpen: (
+    selectedEventDialogOpen: boolean,
+    selectedEvent?: Event | null
+  ) => void;
 };
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
@@ -339,18 +339,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     return calendarEntriesYearly;
   },
-  // Selected
-  selectedCalendarEntryDialogOpen: false,
-  selectedCalendarEntry: null,
-  setSelectedCalendarEntryDialogOpen: (
-    selectedCalendarEntryDialogOpen: boolean,
-    selectedCalendarEntry?: CalendarEntry | null
-  ) => {
-    set({
-      selectedCalendarEntryDialogOpen,
-      selectedCalendarEntry,
-    });
-  },
   /********** Events **********/
   addEvent: async (event: CreateEvent) => {
     const { loadCalendarEntries } = get();
@@ -387,5 +375,14 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendarEntries();
 
     return undeletedTask;
+  },
+  // Selected
+  selectedEventDialogOpen: false,
+  selectedEvent: null,
+  setSelectedEventDialogOpen: (selectedEventDialogOpen: boolean, selectedEvent?: Event | null) => {
+    set({
+      selectedEventDialogOpen,
+      selectedEvent,
+    });
   },
 }));

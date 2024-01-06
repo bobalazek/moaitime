@@ -8,6 +8,7 @@ import {
   // Needs to be a different name to the component name itself
   CalendarEntry as CalendarEntryType,
   CalendarEntryTypeEnum,
+  Event,
   Task,
 } from '@moaitime/shared-common';
 
@@ -51,7 +52,8 @@ export default function CalendarEntry({
 }: CalendarEntryProps) {
   const { auth } = useAuthStore();
   const { setSelectedTaskDialogOpen } = useTasksStore();
-  const { calendars, setSelectedCalendarEntryDialogOpen } = useCalendarStore();
+  const { calendars, setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen } =
+    useCalendarStore();
   const { setHighlightedCalendarEntry, highlightedCalendarEntry } =
     useCalendarHighlightedCalendarEntryStore();
 
@@ -105,7 +107,7 @@ export default function CalendarEntry({
     event.stopPropagation();
 
     if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-      setSelectedCalendarEntryDialogOpen(true, calendarEntry);
+      setSelectedCalendarEntryDialogOpen(true, calendarEntry.raw as Event);
     } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
       setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
     }

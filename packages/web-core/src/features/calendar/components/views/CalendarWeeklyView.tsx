@@ -28,7 +28,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     selectedView,
     setSelectedDate,
     setSelectedView,
-    setSelectedCalendarEntryDialogOpen,
+    setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen,
   } = useCalendarStore();
   const { auth } = useAuthStore();
   const prevSelectedDateRef = useRef(selectedDate);

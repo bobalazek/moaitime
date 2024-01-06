@@ -16,7 +16,7 @@ export default function CalendarAgendaViewDayEventEntry({
   calendar,
 }: CalendarAgendaViewDayEventEntryProps) {
   const { auth } = useAuthStore();
-  const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
+  const { setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen } = useCalendarStore();
 
   const generalTimezone = auth?.user?.settings?.generalTimezone || 'UTC';
   const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock || false;

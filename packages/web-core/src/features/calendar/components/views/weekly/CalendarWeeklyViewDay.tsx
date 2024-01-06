@@ -26,7 +26,7 @@ export default function CalendarWeeklyViewDay({
   calendarEntries,
 }: CalendarWeeklyViewDayProps) {
   const { auth } = useAuthStore();
-  const { setSelectedCalendarEntryDialogOpen } = useCalendarStore();
+  const { setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen } = useCalendarStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';

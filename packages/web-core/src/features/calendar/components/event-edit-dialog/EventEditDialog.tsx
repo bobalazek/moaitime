@@ -2,15 +2,7 @@ import { format } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { useEffect, useState } from 'react';
 
-import {
-  convertObjectNullPropertiesToUndefined,
-  CreateCalendarEntry,
-  CreateEvent,
-  UpdateCalendarEntry,
-  UpdateCalendarEntrySchema,
-  UpdateEvent,
-  zodErrorToString,
-} from '@moaitime/shared-common';
+import { CreateEvent, UpdateEvent } from '@moaitime/shared-common';
 import {
   Button,
   Dialog,
@@ -31,61 +23,55 @@ import DateSelector, { DateSelectorData } from '../../../core/components/selecto
 import { useCalendarStore } from '../../state/calendarStore';
 import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
 
-export default function CalendarEntryEditDialog() {
+export default function EventEditDialog() {
   const { auth } = useAuthStore();
   const {
-    selectedCalendarEntryDialogOpen,
-    selectedCalendarEntry,
+    selectedEventDialogOpen,
+    selectedEvent,
     addEvent,
     editEvent,
     deleteEvent,
     undeleteEvent,
-    setSelectedCalendarEntryDialogOpen,
+    setSelectedEventDialogOpen,
   } = useCalendarStore();
-  const [data, setData] = useState<CreateCalendarEntry | UpdateCalendarEntry>();
+  const [data, setData] = useState<CreateEvent | UpdateEvent>();
 
   useEffect(() => {
-    if (!selectedCalendarEntry) {
+    if (!selectedEvent) {
       setData(undefined);
 
       return;
     }
 
-    const parsedSelectedTask = UpdateCalendarEntrySchema.safeParse(
-      convertObjectNullPropertiesToUndefined(selectedCalendarEntry)
-    );
-    if (!parsedSelectedTask.success) {
-      sonnerToast.error('Oops!', {
-        description: zodErrorToString(parsedSelectedTask.error),
-      });
-
-      return;
-    }
-
-    setData(parsedSelectedTask.data);
-  }, [selectedCalendarEntry]);
+    setData(selectedEvent as CreateEvent);
+  }, [selectedEvent]);
 
   const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const calendarEntryExists = !!selectedCalendarEntry?.id;
-  const dataTimezone = data?.timezone ?? 'UTC';
-  const dataEndTimezone = data?.endTimezone ?? dataTimezone;
+
+  const eventExists = !!selectedEvent?.id;
+
+  const dataTimezone = data && 'timezone' in data ? data.timezone : undefined;
+  const dataEndTimezone = data && 'endTimezone' in data ? data.endTimezone : undefined;
+  const dataIsAllDay = data && 'isAllDay' in data ? data.isAllDay ?? false : false;
+  const dataCalendarId = data && 'calendarId' in data ? data.calendarId : undefined;
+
   const startDateInCurrentTimezone =
-    !data?.isAllDay && data?.startsAt && dataTimezone !== generalTimezone
+    !dataIsAllDay && dataTimezone && data?.startsAt && dataTimezone !== generalTimezone
       ? format(
-          utcToZonedTime(zonedTimeToUtc(data.startsAt, dataTimezone), generalTimezone),
+          utcToZonedTime(zonedTimeToUtc(data.startsAt, dataTimezone ?? 'UTC'), generalTimezone),
           'PPP p'
         )
       : null;
   const endDateInCurrentTimezone =
-    !data?.isAllDay && data?.endsAt && dataEndTimezone !== generalTimezone
+    !dataIsAllDay && dataEndTimezone && data?.endsAt && dataEndTimezone !== generalTimezone
       ? format(
-          utcToZonedTime(zonedTimeToUtc(data.endsAt, dataEndTimezone), generalTimezone),
+          utcToZonedTime(zonedTimeToUtc(data.endsAt, dataEndTimezone ?? 'UTC'), generalTimezone),
           'PPP p'
         )
       : null;
 
   const onDeleteButtonClick = async () => {
-    if (!selectedCalendarEntry) {
+    if (!selectedEvent) {
       sonnerToast.error('Oops!', {
         description: 'No calendar entry selected',
       });
@@ -94,11 +80,11 @@ export default function CalendarEntryEditDialog() {
     }
 
     try {
-      const eventId = selectedCalendarEntry.id.replace('events:', '');
+      const eventId = selectedEvent.id;
 
       await deleteEvent(eventId);
 
-      sonnerToast.success(`Event "${selectedCalendarEntry.title}" deleted`, {
+      sonnerToast.success(`Event "${selectedEvent.title}" deleted`, {
         description: 'You have successfully deleted the event',
         action: {
           label: 'Undo',
@@ -106,14 +92,14 @@ export default function CalendarEntryEditDialog() {
         },
       });
 
-      setSelectedCalendarEntryDialogOpen(false, null);
+      setSelectedEventDialogOpen(false, null);
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
   };
 
   const onCancelButtonClick = () => {
-    setSelectedCalendarEntryDialogOpen(false, null);
+    setSelectedEventDialogOpen(false, null);
   };
 
   const onSaveButtonClick = async () => {
@@ -126,7 +112,7 @@ export default function CalendarEntryEditDialog() {
     }
 
     try {
-      const eventId = selectedCalendarEntry?.id?.replace('events:', '');
+      const eventId = selectedEvent?.id?.replace('events:', '');
       const editedEvent = eventId
         ? await editEvent(eventId, data as UpdateEvent)
         : await addEvent(data as CreateEvent);
@@ -135,73 +121,77 @@ export default function CalendarEntryEditDialog() {
         description: 'You have successfully saved the event',
       });
 
-      setSelectedCalendarEntryDialogOpen(false, null);
+      setSelectedEventDialogOpen(false, null);
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
   };
 
   return (
-    <Dialog
-      open={selectedCalendarEntryDialogOpen}
-      onOpenChange={setSelectedCalendarEntryDialogOpen}
-    >
-      <DialogContent data-test="calendar--calendar-entry-edit-dialog">
+    <Dialog open={selectedEventDialogOpen} onOpenChange={setSelectedEventDialogOpen}>
+      <DialogContent data-test="calendar--event-edit-dialog">
         <DialogHeader>
           <DialogTitle>
-            {selectedCalendarEntry
-              ? `Edit "${selectedCalendarEntry.title}" Calendar Entry`
-              : 'New Calendar Entry'}
+            {eventExists ? `Edit "${selectedEvent.title}" Event` : 'New Event'}
           </DialogTitle>
         </DialogHeader>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendarEntry-title">Title</Label>
+          <Label htmlFor="event-title">Title</Label>
           <Input
-            id="calendarEntry-title"
+            id="event-title"
             value={data?.title ?? ''}
             onChange={(event) => {
-              setData((current) => ({ ...current, title: event.target.value }));
+              setData((current) => ({ ...current, title: event.target.value }) as CreateEvent);
             }}
           />
         </div>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendarEntry-description">Description</Label>
+          <Label htmlFor="event-description">Description</Label>
           <Textarea
-            id="calendarEntry-description"
+            id="event-description"
             rows={5}
             value={data?.description ?? ''}
             onChange={(event) => {
-              setData((current) => ({ ...current, description: event.target.value }));
+              setData(
+                (current) => ({ ...current, description: event.target.value }) as CreateEvent
+              );
             }}
           />
         </div>
         <div className="mb-4 flex items-center space-x-2">
           <Switch
-            id="calendarEntry-isAllDay"
-            checked={data?.isAllDay}
+            id="event-isAllDay"
+            checked={dataIsAllDay}
             onCheckedChange={(value) => {
-              setData((current) => ({ ...current, isAllDay: value }));
+              setData((current) => ({ ...current, isAllDay: value }) as CreateEvent);
             }}
-            disabled={calendarEntryExists}
+            disabled={eventExists}
           />
-          <Label htmlFor="calendarEntry-isAllDay">Is All Day?</Label>
+          <Label htmlFor="event-isAllDay">Is All Day?</Label>
         </div>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendarEntry-startsAt">Starts At</Label>
+          <Label htmlFor="event-startsAt">Starts At</Label>
           <DateSelector
-            includeTime={!data?.isAllDay}
-            disableClear={calendarEntryExists}
+            includeTime={!dataIsAllDay}
+            disableClear={eventExists}
             data={convertIsoStringToObject(
               data?.startsAt,
-              !data?.isAllDay,
-              !data?.isAllDay ? data?.timezone ?? undefined : undefined
+              !dataIsAllDay,
+              !dataIsAllDay ? dataTimezone ?? undefined : undefined
             )}
             onSaveData={(saveData) => {
               const result = convertObjectToIsoString<DateSelectorData>(saveData);
 
-              setData((current) => ({ ...current, startsAt: result?.iso }));
+              setData(
+                (current) =>
+                  ({
+                    ...current,
+                    startsAt: result?.iso,
+                    timezone: saveData.dateTimeZone,
+                  }) as CreateEvent
+              );
             }}
-            isTimezoneReadonly={calendarEntryExists}
+            isTimezoneReadonly={eventExists}
             timezonePlaceholderText="Select timezone ..."
           />
           {startDateInCurrentTimezone && (
@@ -215,24 +205,29 @@ export default function CalendarEntryEditDialog() {
           )}
         </div>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendarEntry-endsAt">Ends At</Label>
+          <Label htmlFor="event-endsAt">Ends At</Label>
           <DateSelector
-            includeTime={!data?.isAllDay}
-            disableClear={calendarEntryExists}
+            includeTime={!dataIsAllDay}
+            disableClear={eventExists}
             data={convertIsoStringToObject(
               data?.endsAt,
-              !data?.isAllDay,
-              !data?.isAllDay ? data?.endTimezone ?? undefined : undefined
+              !dataIsAllDay,
+              !dataIsAllDay ? dataEndTimezone ?? undefined : undefined
             )}
             onSaveData={(saveData) => {
               const result = convertObjectToIsoString<DateSelectorData>(saveData);
 
-              setData((current) => ({ ...current, endsAt: result?.iso }));
+              setData(
+                (current) =>
+                  ({
+                    ...current,
+                    endsAt: result?.iso,
+                    endTimezone: saveData.dateTimeZone,
+                  }) as CreateEvent
+              );
             }}
-            isTimezoneReadonly={calendarEntryExists}
-            timezonePlaceholderText={
-              calendarEntryExists ? selectedCalendarEntry.timezone : 'Same as start date'
-            }
+            isTimezoneReadonly={eventExists}
+            timezonePlaceholderText={eventExists ? selectedEvent.timezone! : 'Same as start date'}
           />
           {endDateInCurrentTimezone && (
             <div className="text-muted-foreground text-xs">
@@ -245,29 +240,34 @@ export default function CalendarEntryEditDialog() {
           )}
         </div>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendarEntry-calendar">Calendar</Label>
+          <Label htmlFor="event-calendar">Calendar</Label>
           <CalendarSelector
-            value={data?.calendarId}
+            value={dataCalendarId}
             onChangeValue={(value) => {
-              setData((current) => ({
-                ...current,
-                calendarId: value,
-              }));
+              setData(
+                (current) =>
+                  ({
+                    ...current,
+                    calendarId: value,
+                  }) as CreateEvent
+              );
             }}
-            isReadonly={calendarEntryExists}
+            isReadonly={eventExists}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="calendarEntry-color">Color</Label>
+          <Label htmlFor="event-color">Color</Label>
           <ColorSelector
             value={data?.color ?? undefined}
-            onChangeValue={(value) => setData((current) => ({ ...current, color: value ?? null }))}
+            onChangeValue={(value) =>
+              setData((current) => ({ ...current, color: value ?? null }) as CreateEvent)
+            }
             placeholderText="Inherit from calendar"
           />
         </div>
         <div className="flex flex-row justify-between gap-2">
           <div>
-            {calendarEntryExists && (
+            {eventExists && (
               <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
                 Delete
               </Button>

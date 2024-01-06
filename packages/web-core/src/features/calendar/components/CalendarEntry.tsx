@@ -5,7 +5,8 @@ import { MouseEvent } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
-  CalendarEntry as CalendarEntryType, // Needs to be a different name to the component name itself
+  CalendarEntry as CalendarEntryType,
+  CalendarEntryTypeEnum, // Needs to be a different name to the component name itself
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
@@ -98,6 +99,10 @@ export default function CalendarEntry({
   const onClick = (event: MouseEvent, calendarEntry: CalendarEntryType) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (calendarEntry.type !== CalendarEntryTypeEnum.EVENT) {
+      return;
+    }
 
     setSelectedCalendarEntryDialogOpen(true, calendarEntry);
   };

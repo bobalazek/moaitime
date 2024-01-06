@@ -19,11 +19,7 @@ import {
 
 import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
 
-import { CalendarsManager, calendarsManager } from './CalendarsManager';
-
 export class EventsManager {
-  constructor(private _calendarsManager: CalendarsManager) {}
-
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
     return getDatabase().query.events.findMany(options);
   }
@@ -34,16 +30,11 @@ export class EventsManager {
     });
   }
 
-  async findManyByUserId(
-    userId: string,
+  async findManyByCalendarIdsAndRange(
+    calendarIds: string[],
     from?: Date,
-    to?: Date,
-    calendarIds?: string[]
+    to?: Date
   ): Promise<Event[]> {
-    if (!calendarIds) {
-      calendarIds = await this._calendarsManager.getVisibleCalendarIdsByUserId(userId);
-    }
-
     if (calendarIds.length === 0) {
       return [];
     }
@@ -122,11 +113,10 @@ export class EventsManager {
   }
 
   // Helpers
-  async getCountsByYearByUserId(userId: string, year: number) {
+  async getCountsByCalendarIdsAndYear(calendarIds: string[], year: number) {
     const startOfYear = new Date(year, 0, 1);
     const endOfYear = new Date(year + 1, 0, 1);
 
-    const calendarIds = await this._calendarsManager.getVisibleCalendarIdsByUserId(userId);
     if (calendarIds.length === 0) {
       return [];
     }
@@ -191,4 +181,4 @@ export class EventsManager {
   }
 }
 
-export const eventsManager = new EventsManager(calendarsManager);
+export const eventsManager = new EventsManager();

@@ -15,7 +15,7 @@ import { Request } from 'express';
 import { Calendar } from '@moaitime/database-core';
 import { calendarsManager } from '@moaitime/database-services';
 import { CALENDARS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
-import { CreateCalendar, User } from '@moaitime/shared-common';
+import { Calendar as ApiCalendar, CreateCalendar, User } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -27,8 +27,8 @@ import { UpdateCalendarDto } from '../dtos/update-calendar.dto';
 export class CalendarsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async list(@Req() req: Request): Promise<AbstractResponseDto<Calendar[]>> {
-    const data = await calendarsManager.findManyByUserId(req.user.id);
+  async list(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
+    const data = await calendarsManager.findManyByUserApiResponse(req.user.id);
 
     return {
       success: true,

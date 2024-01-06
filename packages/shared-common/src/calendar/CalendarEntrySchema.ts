@@ -9,17 +9,19 @@ export const CalendarEntrySchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   color: ColorSchema.nullable(),
-  timezone: z.string(),
-  endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),
+  timezone: z.string(),
   startsAt: z.string(),
   startsAtUtc: z.string(),
   endsAt: z.string(),
   endsAtUtc: z.string(),
+  endTimezone: z.string().nullable(),
   deletedAt: z.string().nullable(),
   updatedAt: z.string(),
   createdAt: z.string(),
-  calendarId: z.string(),
+  calendarId: z.string().nullable(),
+  isEditable: z.boolean().optional(),
+  isDeletable: z.boolean().optional(),
 });
 
 export const CreateCalendarEntrySchema = z.object({

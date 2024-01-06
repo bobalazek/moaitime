@@ -39,7 +39,7 @@ const TaskItemDueDate = ({
 
   let dateString = task.dueDate;
   if (task.dueDateTime) {
-    dateString = dateString + 'T' + task.dueDateTime;
+    dateString = `${dateString}T${task.dueDateTime}:00.000`;
   } else {
     dateString = dateString + 'T23:59:59.999';
   }

@@ -65,6 +65,10 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     }
   };
 
+  if (!calendar.isEditable && !calendar.deletedAt) {
+    return null;
+  }
+
   return (
     <div className="absolute right-1 top-0 ml-2">
       <DropdownMenu open={open} onOpenChange={setOpen}>

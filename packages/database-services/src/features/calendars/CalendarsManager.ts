@@ -6,14 +6,18 @@ import {
   events,
   getDatabase,
   NewCalendar,
+  User,
   userCalendars,
 } from '@moaitime/database-core';
+import { Calendar as ApiCalendar } from '@moaitime/shared-common';
 
 import { UsersManager, usersManager } from '../auth/UsersManager';
 
 export class CalendarsManager {
   static CUSTOM_CALENDARS_PREFIX = 'custom--';
-  static CUSTOM_CALENDAR_IDS = [`${CalendarsManager.CUSTOM_CALENDARS_PREFIX}due-tasks`];
+  static CUSTOM_CALENDAR_DUE_TASKS_KEY = `${CalendarsManager.CUSTOM_CALENDARS_PREFIX}due-tasks`;
+
+  static CUSTOM_CALENDAR_IDS = [CalendarsManager.CUSTOM_CALENDAR_DUE_TASKS_KEY];
 
   constructor(private _usersManager: UsersManager) {}
 
@@ -42,6 +46,17 @@ export class CalendarsManager {
     });
 
     return data;
+  }
+
+  async findManyByUserApiResponse(userId: string): Promise<ApiCalendar[]> {
+    const data = await this.findManyByUserId(userId);
+
+    return data.map((calendar) => {
+      const isEditable = calendar.id !== 'custom--due-tasks';
+      const isDeletable = isEditable;
+
+      return this.convertToApiCalendar(calendar, isEditable, isDeletable);
+    });
   }
 
   async findManyDeletedByUserId(userId: string): Promise<Calendar[]> {
@@ -125,15 +140,33 @@ export class CalendarsManager {
     return this.userCanUpdate(userId, calendarId);
   }
 
-  async getVisibleCalendarIdsByUserId(userId: string): Promise<string[]> {
-    const user = await this._usersManager.findOneById(userId);
+  async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
+    const user =
+      typeof userOrUserId === 'string'
+        ? await this._usersManager.findOneById(userOrUserId)
+        : userOrUserId;
     if (!user) {
       return [];
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
     const userCalendarIds = userSettings.calendarVisibleCalendarIds ?? [];
+
+    return userCalendarIds;
+  }
+
+  async getVisibleCalendarIdsByUserId(userId: string, includingCustom = false): Promise<string[]> {
+    const userCalendarIds = await this.getUserSettingsCalendarIds(userId);
     const calendarIdsSet = new Set<string>();
+
+    if (includingCustom) {
+      const currentCustomCalendarIds = CalendarsManager.CUSTOM_CALENDAR_IDS.filter((id) =>
+        userCalendarIds.includes(id)
+      );
+      for (const id of currentCustomCalendarIds) {
+        calendarIdsSet.add(id);
+      }
+    }
 
     // Calendars
     const calendarRows = await getDatabase().query.calendars.findMany({
@@ -181,7 +214,7 @@ export class CalendarsManager {
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
-    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId, true);
 
     if (
       userCalendarIds.includes(calendarId) &&
@@ -207,7 +240,7 @@ export class CalendarsManager {
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
-    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId, true);
 
     if (
       !userCalendarIds.includes(calendarId) &&
@@ -227,6 +260,18 @@ export class CalendarsManager {
         calendarVisibleCalendarIds: userCalendarIds,
       },
     });
+  }
+
+  convertToApiCalendar(calendar: Calendar, isEditable: boolean, isDeletable: boolean): ApiCalendar {
+    return {
+      ...calendar,
+      userId: calendar.userId!,
+      deletedAt: calendar.deletedAt?.toISOString() ?? null,
+      createdAt: calendar.createdAt!.toISOString(),
+      updatedAt: calendar.updatedAt!.toISOString(),
+      isEditable,
+      isDeletable,
+    };
   }
 }
 

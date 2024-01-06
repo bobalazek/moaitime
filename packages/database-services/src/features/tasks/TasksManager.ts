@@ -1,5 +1,18 @@
 import { format } from 'date-fns';
-import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull, SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  between,
+  count,
+  DBQueryConfig,
+  desc,
+  eq,
+  gte,
+  isNotNull,
+  isNull,
+  lte,
+  SQL,
+} from 'drizzle-orm';
 
 import { getDatabase, lists, NewTask, Task, tasks } from '@moaitime/database-core';
 import { SortDirectionEnum, TasksListSortFieldEnum } from '@moaitime/shared-common';
@@ -76,12 +89,25 @@ export class TasksManager {
     });
   }
 
-  async findManyByUserIdWithDueDate(userId: string): Promise<Task[]> {
+  async findManyByUserIdWithDueDate(userId: string, from?: Date, to?: Date): Promise<Task[]> {
+    let where = and(eq(lists.userId, userId), isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
+
+    if (from && to) {
+      where = and(
+        where,
+        between(tasks.dueDate, from.toISOString(), to.toISOString())
+      ) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(tasks.dueDate, from.toISOString())) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(tasks.dueDate, to.toISOString())) as SQL<unknown>;
+    }
+
     const rows = await getDatabase()
       .select()
       .from(tasks)
       .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(and(eq(lists.userId, userId), isNotNull(tasks.dueDate)))
+      .where(where)
       .execute();
 
     if (rows.length === 0) {

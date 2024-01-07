@@ -64,6 +64,18 @@ export type TasksStore = {
     listDeleteAlertDialogOpen: boolean,
     selectedListDeleteAlertDialog?: List | null
   ) => void;
+  // Selected List Tasks
+  selectedListTasks: Task[];
+  selectedListTasksSortField: TasksListSortFieldEnum;
+  selectedListTasksSortDirection: SortDirectionEnum;
+  selectedListTasksIncludeCompleted: boolean;
+  selectedListTasksIncludeDeleted: boolean;
+  setSelectedListTasks: (selectedListTasks: Task[]) => void;
+  reloadSelectedListTasks: () => Promise<void>;
+  setSelectedListTasksSortField: (selectedListTasksSortField: TasksListSortFieldEnum) => void;
+  setSelectedListTasksSortDirection: (selectedListTasksSortDirection: SortDirectionEnum) => void;
+  setSelectedListTasksIncludeCompleted: (selectedListTasksIncludeCompleted: boolean) => void;
+  setSelectedListTasksIncludeDeleted: (selectedListTasksIncludeDeleted: boolean) => void;
   /********** Tasks **********/
   addTask: (task: CreateTask) => Promise<Task>;
   editTask: (taskId: string, task: UpdateTask) => Promise<Task>;
@@ -78,18 +90,6 @@ export type TasksStore = {
   selectedTaskDialogOpen: boolean;
   selectedTask: Task | null;
   setSelectedTaskDialogOpen: (selectedTaskDialogOpen: boolean, selectedTask?: Task | null) => void;
-  // Selected List Tasks
-  selectedListTasks: Task[];
-  selectedListTasksSortField: TasksListSortFieldEnum;
-  selectedListTasksSortDirection: SortDirectionEnum;
-  selectedListTasksIncludeCompleted: boolean;
-  selectedListTasksIncludeDeleted: boolean;
-  setSelectedListTasks: (selectedListTasks: Task[]) => void;
-  reloadSelectedListTasks: () => Promise<void>;
-  setSelectedListTasksSortField: (selectedListTasksSortField: TasksListSortFieldEnum) => void;
-  setSelectedListTasksSortDirection: (selectedListTasksSortDirection: SortDirectionEnum) => void;
-  setSelectedListTasksIncludeCompleted: (selectedListTasksIncludeCompleted: boolean) => void;
-  setSelectedListTasksIncludeDeleted: (selectedListTasksIncludeDeleted: boolean) => void;
 };
 
 export const useTasksStore = create<TasksStore>()((set, get) => ({
@@ -227,6 +227,83 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       listDeleteAlertDialogOpen,
       selectedListDeleteAlertDialog,
     });
+  },
+  // Selected List Tasks
+  selectedListTasks: [],
+  selectedListTasksSortField: TasksListSortFieldEnum.ORDER,
+  selectedListTasksSortDirection: SortDirectionEnum.ASC,
+  selectedListTasksIncludeCompleted: true,
+  selectedListTasksIncludeDeleted: false,
+  setSelectedListTasks: (selectedListTasks: Task[]) => {
+    set({
+      selectedListTasks,
+    });
+  },
+  reloadSelectedListTasks: async () => {
+    const {
+      selectedList,
+      selectedListTasksSortField,
+      selectedListTasksSortDirection,
+      selectedListTasksIncludeCompleted,
+      selectedListTasksIncludeDeleted,
+    } = get();
+
+    const selectedListTasks = selectedList
+      ? await getTasksForList(selectedList.id, {
+          sortField: selectedListTasksSortField,
+          sortDirection: selectedListTasksSortDirection,
+          includeCompleted: selectedListTasksIncludeCompleted,
+          includeDeleted: selectedListTasksIncludeDeleted,
+        })
+      : [];
+
+    set({
+      selectedListTasks,
+    });
+
+    // If we are on the calendar page, we need to reload the calendar entries
+    const { calendars, loadCalendarEntries } = useCalendarStore.getState();
+    if (calendars.length > 0) {
+      await loadCalendarEntries();
+    }
+  },
+  setSelectedListTasksSortField: async (selectedListTasksSortField: TasksListSortFieldEnum) => {
+    const { reloadSelectedListTasks } = get();
+
+    set({
+      selectedListTasksSortField,
+    });
+
+    await reloadSelectedListTasks();
+  },
+  setSelectedListTasksSortDirection: async (selectedListTasksSortDirection: SortDirectionEnum) => {
+    const { reloadSelectedListTasks } = get();
+
+    set({
+      selectedListTasksSortDirection,
+    });
+
+    await reloadSelectedListTasks();
+  },
+  setSelectedListTasksIncludeCompleted: async (selectedListTasksIncludeCompleted: boolean) => {
+    const { reloadSelectedListTasks, reloadLists } = get();
+
+    set({
+      selectedListTasksIncludeCompleted,
+    });
+
+    await reloadSelectedListTasks();
+    await reloadLists();
+  },
+  setSelectedListTasksIncludeDeleted: async (selectedListTasksIncludeDeleted: boolean) => {
+    const { reloadSelectedListTasks, reloadLists } = get();
+
+    set({
+      selectedListTasksIncludeDeleted,
+    });
+
+    await reloadSelectedListTasks();
+    await reloadLists();
   },
   /********** Tasks **********/
   addTask: async (task: CreateTask) => {
@@ -367,82 +444,5 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       selectedTaskDialogOpen,
       selectedTask,
     });
-  },
-  // Selected List Tasks
-  selectedListTasks: [],
-  selectedListTasksSortField: TasksListSortFieldEnum.ORDER,
-  selectedListTasksSortDirection: SortDirectionEnum.ASC,
-  selectedListTasksIncludeCompleted: true,
-  selectedListTasksIncludeDeleted: false,
-  setSelectedListTasks: (selectedListTasks: Task[]) => {
-    set({
-      selectedListTasks,
-    });
-  },
-  reloadSelectedListTasks: async () => {
-    const {
-      selectedList,
-      selectedListTasksSortField,
-      selectedListTasksSortDirection,
-      selectedListTasksIncludeCompleted,
-      selectedListTasksIncludeDeleted,
-    } = get();
-
-    const selectedListTasks = selectedList
-      ? await getTasksForList(selectedList.id, {
-          sortField: selectedListTasksSortField,
-          sortDirection: selectedListTasksSortDirection,
-          includeCompleted: selectedListTasksIncludeCompleted,
-          includeDeleted: selectedListTasksIncludeDeleted,
-        })
-      : [];
-
-    set({
-      selectedListTasks,
-    });
-
-    // If we are on the calendar page, we need to reload the calendar entries
-    const { calendars, loadCalendarEntries } = useCalendarStore.getState();
-    if (calendars.length > 0) {
-      await loadCalendarEntries();
-    }
-  },
-  setSelectedListTasksSortField: async (selectedListTasksSortField: TasksListSortFieldEnum) => {
-    const { reloadSelectedListTasks } = get();
-
-    set({
-      selectedListTasksSortField,
-    });
-
-    await reloadSelectedListTasks();
-  },
-  setSelectedListTasksSortDirection: async (selectedListTasksSortDirection: SortDirectionEnum) => {
-    const { reloadSelectedListTasks } = get();
-
-    set({
-      selectedListTasksSortDirection,
-    });
-
-    await reloadSelectedListTasks();
-  },
-  setSelectedListTasksIncludeCompleted: async (selectedListTasksIncludeCompleted: boolean) => {
-    const { reloadSelectedListTasks, reloadLists } = get();
-
-    set({
-      selectedListTasksIncludeCompleted,
-    });
-
-    await reloadSelectedListTasks();
-    await reloadLists();
-  },
-  setSelectedListTasksIncludeDeleted: async (selectedListTasksIncludeDeleted: boolean) => {
-    const { reloadSelectedListTasks, reloadLists } = get();
-
-    set({
-      selectedListTasksIncludeDeleted,
-    });
-
-    await reloadSelectedListTasks();
-    await reloadLists();
   },
 }));

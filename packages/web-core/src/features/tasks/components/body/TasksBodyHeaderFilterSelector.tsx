@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../state/tasksStore';
+import { useListsStore } from '../../state/listsStore';
 
 export default function TasksBodyHeaderFilterSelector() {
   const {
@@ -28,7 +28,7 @@ export default function TasksBodyHeaderFilterSelector() {
     setSelectedListTasksSortDirection,
     setSelectedListTasksIncludeCompleted,
     setSelectedListTasksIncludeDeleted,
-  } = useTasksStore();
+  } = useListsStore();
 
   return (
     <DropdownMenu>

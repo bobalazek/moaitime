@@ -9,10 +9,10 @@ import {
   DropdownMenuTrigger,
 } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../state/tasksStore';
+import { useListsStore } from '../../state/listsStore';
 
 const ListActions = memo(({ list }: { list: List }) => {
-  const { setSelectedListDialogOpen, setListDeleteAlertDialogOpen } = useTasksStore();
+  const { setSelectedListDialogOpen, setListDeleteAlertDialogOpen } = useListsStore();
   const [open, setOpen] = useState(false);
 
   return (

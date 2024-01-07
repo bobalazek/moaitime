@@ -10,7 +10,7 @@ import {
   sonnerToast,
 } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../state/tasksStore';
+import { useListsStore } from '../../state/listsStore';
 
 export default function ListDeleteAlertDialog() {
   const {
@@ -18,7 +18,7 @@ export default function ListDeleteAlertDialog() {
     setListDeleteAlertDialogOpen,
     selectedListDeleteAlertDialog,
     deleteList,
-  } = useTasksStore();
+  } = useListsStore();
   if (!listDeleteAlertDialogOpen || !selectedListDeleteAlertDialog) {
     return null;
   }

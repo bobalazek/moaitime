@@ -2,11 +2,11 @@ import { ChevronDownIcon } from 'lucide-react';
 
 import { DropdownMenu, DropdownMenuTrigger } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../state/tasksStore';
+import { useListsStore } from '../../state/listsStore';
 import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDropdownMenuContent';
 
 export default function TasksBodyHeaderListSelector() {
-  const { selectedList } = useTasksStore();
+  const { selectedList } = useListsStore();
 
   return (
     <DropdownMenu>

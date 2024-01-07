@@ -14,7 +14,7 @@ import { sonnerToast } from '@moaitime/web-ui';
 import { useBackgroundStore } from '../../background/state/backgroundStore';
 import { useGreetingStore } from '../../greeting/state/greetingStore';
 import { useQuoteStore } from '../../quote/state/quoteStore';
-import { useTasksStore } from '../../tasks/state/tasksStore';
+import { useListsStore } from '../../tasks/state/listsStore';
 import {
   cancelNewEmail,
   confirmEmail,
@@ -253,7 +253,7 @@ export const useAuthStore = create<AuthStore>()(
       // App Data
       loadAppData: async () => {
         const { auth, reloadTheme } = get();
-        const { reloadLists } = useTasksStore.getState();
+        const { reloadLists } = useListsStore.getState();
         const { loadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
         const { loadGreetings, setRandomGreeting } = useGreetingStore.getState();
         const { loadQuotes, setRandomQuote } = useQuoteStore.getState();

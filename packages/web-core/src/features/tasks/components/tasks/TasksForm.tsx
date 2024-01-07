@@ -2,10 +2,12 @@ import { useRef, useState } from 'react';
 
 import { Input, sonnerToast } from '@moaitime/web-ui';
 
+import { useListsStore } from '../../state/listsStore';
 import { useTasksStore } from '../../state/tasksStore';
 
 function TasksForm() {
-  const { selectedList, addTask, listEndElement } = useTasksStore();
+  const { addTask, listEndElement } = useTasksStore();
+  const { selectedList } = useListsStore();
   const [name, setName] = useState('');
   const isSubmittingRef = useRef(false);
 

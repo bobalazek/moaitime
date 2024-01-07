@@ -1,10 +1,10 @@
-import { useTasksStore } from '../../state/tasksStore';
+import { useListsStore } from '../../state/listsStore';
 import TasksForm from '../tasks/TasksForm';
 import TasksList from '../tasks/TasksList';
 import TasksBodyHeader from './TasksBodyHeader';
 
 export default function TasksBody() {
-  const { selectedList } = useTasksStore();
+  const { selectedList } = useListsStore();
 
   return (
     <div data-test="tasks--body">

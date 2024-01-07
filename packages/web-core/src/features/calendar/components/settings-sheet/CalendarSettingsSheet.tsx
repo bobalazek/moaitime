@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../../tasks/state/tasksStore';
+import { useListsStore } from '../../../tasks/state/listsStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItem from '../common/CalendarItem';
 import ListItem from '../common/ListItem';
@@ -18,7 +18,7 @@ import CalendarSettingsSheetMyCalendarsActions from './CalendarSettingsSheetMyCa
 
 export default function CalendarSettingsSheet() {
   const { settingsSheetOpen, setSettingsSheetOpen, calendars } = useCalendarStore();
-  const { lists } = useTasksStore();
+  const { lists } = useListsStore();
 
   return (
     <Sheet open={settingsSheetOpen} onOpenChange={setSettingsSheetOpen}>

@@ -4,11 +4,13 @@ import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
+import { useListsStore } from '../state/listsStore';
 import { useTasksStore } from '../state/tasksStore';
 
 export default function TasksCommandsList() {
   const { auth } = useAuthStore();
-  const { setSelectedListDialogOpen, setPopoverOpen, setSelectedList, lists } = useTasksStore();
+  const { setPopoverOpen } = useTasksStore();
+  const { setSelectedListDialogOpen, setSelectedList, lists } = useListsStore();
   const { setCommandsDialogOpen } = useCommandsStore();
 
   const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;

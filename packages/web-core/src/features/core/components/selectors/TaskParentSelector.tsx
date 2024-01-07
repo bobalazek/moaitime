@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from '@moaitime/web-ui';
 
+import { useListsStore } from '../../../tasks/state/listsStore';
 import { useTasksStore } from '../../../tasks/state/tasksStore';
 
 const __EMPTY_VALUE_PLACEHOLDER = '__empty';
@@ -28,7 +29,8 @@ export function TaskParentSelector({
   onChangeValue: (value?: string, task?: Task) => void;
   isReadonly?: boolean;
 }) {
-  const { selectedListTasks, selectedTask } = useTasksStore();
+  const { selectedTask } = useTasksStore();
+  const { selectedListTasks } = useListsStore();
   const [open, setOpen] = useState(false);
 
   const hasSelectedTaskChildren = selectedTask?.children?.length ?? 0 > 0;

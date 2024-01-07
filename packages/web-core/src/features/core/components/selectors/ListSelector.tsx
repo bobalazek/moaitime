@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../../tasks/state/tasksStore';
+import { useListsStore } from '../../../tasks/state/listsStore';
 
 export function ListSelector({
   value,
@@ -23,7 +23,7 @@ export function ListSelector({
   value?: string;
   onChangeValue: (value?: string) => void;
 }) {
-  const { lists } = useTasksStore();
+  const { lists } = useListsStore();
   const [open, setOpen] = useState(false);
 
   const selectedList = lists.find((list) => list.id === value) ?? null;

@@ -1,6 +1,6 @@
 import { CalendarEntry } from '@moaitime/shared-common';
 
-import { useTasksStore } from '../../../../tasks/state/tasksStore';
+import { useListsStore } from '../../../../tasks/state/listsStore';
 import { useCalendarStore } from '../../../state/calendarStore';
 import CalendarAgendaViewDayEventEntry from './CalendarAgendaViewDayEventEntry';
 
@@ -14,7 +14,7 @@ export default function CalendarAgendaViewDay({
   calendarEntries,
 }: CalendarAgendaViewDayProps) {
   const { calendars } = useCalendarStore();
-  const { lists } = useTasksStore();
+  const { lists } = useListsStore();
 
   const dateReadable = new Date(date).toLocaleString('default', {
     weekday: 'long',

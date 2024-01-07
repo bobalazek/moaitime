@@ -19,6 +19,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { TasksListSortFieldEnum } from '@moaitime/shared-common';
 
+import { useListsStore } from '../../state/listsStore';
 import { useTasksStore } from '../../state/tasksStore';
 import SortableTaskItem from './SortableTaskItem';
 
@@ -27,8 +28,8 @@ const collisionDetection = closestCenter;
 const strategy = verticalListSortingStrategy;
 
 export default function TasksList() {
-  const { reorderTasks, selectedListTasks, selectedListTasksSortField, setListEndElement } =
-    useTasksStore();
+  const { reorderTasks, setListEndElement } = useTasksStore();
+  const { selectedListTasks, selectedListTasksSortField } = useListsStore();
   const [allowAnimations, setAllowAnimations] = useState(true);
   const taskItemsListEndElementRef = useRef<HTMLDivElement>(null);
   const sensors = useSensors(

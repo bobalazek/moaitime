@@ -11,7 +11,7 @@ import {
   DropdownMenuSubContent,
 } from '@moaitime/web-ui';
 
-import { useTasksStore } from '../../state/tasksStore';
+import { useListsStore } from '../../state/listsStore';
 import ListActions from './ListActions';
 
 export default function ListsSelectedListDropdownMenuContent({
@@ -21,7 +21,7 @@ export default function ListsSelectedListDropdownMenuContent({
   isSubContent?: boolean;
   onListSelect?: (list: List) => void;
 }) {
-  const { selectedList, lists, setSelectedList, setSelectedListDialogOpen } = useTasksStore();
+  const { selectedList, lists, setSelectedList, setSelectedListDialogOpen } = useListsStore();
 
   const Content = isSubContent ? DropdownMenuSubContent : DropdownMenuContent;
   const showHeader = !isSubContent;

@@ -20,7 +20,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
-import { useTasksStore } from '../../state/tasksStore';
+import { useListsStore } from '../../state/listsStore';
 
 export default function ListEditDialog() {
   const {
@@ -29,7 +29,7 @@ export default function ListEditDialog() {
     selectedListDialog,
     addList,
     editList,
-  } = useTasksStore();
+  } = useListsStore();
   const [data, setData] = useState<UpdateList>();
 
   useEffect(() => {

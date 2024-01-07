@@ -206,6 +206,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   deleteCalendar: async (calendarId: string, isHardDelete?: boolean) => {
     const { loadCalendars, loadCalendarEntries, loadDeletedCalendars, deletedCalendarsDialogOpen } =
       get();
+    const { loadAccount } = useAuthStore.getState();
 
     const deletedTask = await deleteCalendar(calendarId, isHardDelete);
 
@@ -213,7 +214,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendarEntries();
 
     // Same as above
-    await useAuthStore.getState().loadAccount();
+    await loadAccount();
 
     if (deletedCalendarsDialogOpen) {
       await loadDeletedCalendars();
@@ -224,6 +225,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   undeleteCalendar: async (calendarId: string) => {
     const { loadCalendars, loadCalendarEntries, loadDeletedCalendars, deletedCalendarsDialogOpen } =
       get();
+    const { loadAccount } = useAuthStore.getState();
 
     const undeletedTask = await undeleteCalendar(calendarId);
 
@@ -231,7 +233,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await loadCalendarEntries();
 
     // Same as above
-    await useAuthStore.getState().loadAccount();
+    await loadAccount();
 
     if (deletedCalendarsDialogOpen) {
       await loadDeletedCalendars();
@@ -241,21 +243,23 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   addVisibleCalendar: async (calendarId: string) => {
     const { loadCalendarEntries } = get();
+    const { loadAccount } = useAuthStore.getState();
 
     await addVisibleCalendar(calendarId);
 
     // We update the settings, so we need to refresh the account
-    await useAuthStore.getState().loadAccount();
+    await loadAccount();
 
     await loadCalendarEntries();
   },
   removeVisibleCalendar: async (calendarId: string) => {
     const { loadCalendarEntries } = get();
+    const { loadAccount } = useAuthStore.getState();
 
     await removeVisibleCalendar(calendarId);
 
     // Same as above
-    await useAuthStore.getState().loadAccount();
+    await loadAccount();
 
     await loadCalendarEntries();
   },

@@ -5,9 +5,9 @@ import { Request } from 'express';
 
 import { User } from '@moaitime/database-core';
 import {
-  CalendarsManager,
   calendarsManager,
   eventsManager,
+  listsManager,
   tasksManager,
 } from '@moaitime/database-services';
 import {
@@ -74,10 +74,10 @@ export class CalendarEntriesController {
     to?: Date
   ): Promise<CalendarEntry[]> {
     const nowString = new Date().toISOString().slice(0, -1);
-    const userSettingsCalendarIds = await calendarsManager.getUserSettingsCalendarIds(user);
+    const timezone = user.settings?.generalTimezone ?? 'UTC';
+
     const calendarIds = await calendarsManager.getVisibleCalendarIdsByUserId(user.id);
     const events = await eventsManager.findManyByCalendarIdsAndRange(calendarIds, from, to);
-
     const calendarEntries: CalendarEntry[] = events.map((event) => {
       const timezone = event.timezone ?? 'UTC';
       const endTimezone = event.endTimezone ?? timezone;
@@ -116,57 +116,54 @@ export class CalendarEntriesController {
       };
     });
 
-    if (userSettingsCalendarIds.includes(CalendarsManager.CUSTOM_CALENDAR_DUE_TASKS_KEY)) {
-      const timezone = user.settings?.generalTimezone ?? 'UTC';
-
-      const dueTasks = await tasksManager.findManyByUserIdWithDueDate(user.id, from, to);
-      for (const task of dueTasks) {
-        // We should never have a task without a due date,
-        // but we need to apease typescript.
-        if (!task.dueDate) {
-          continue;
-        }
-
-        let isAllDay = false;
-        let dateString = task.dueDate;
-        if (task.dueDateTime) {
-          dateString = `${dateString}T${task.dueDateTime}:00.000`;
-        } else {
-          dateString = format(addDays(new Date(dateString), 1), 'yyyy-MM-dd');
-          isAllDay = true;
-        }
-
-        if (task.dueDateTimeZone) {
-          const timezonedDate = utcToZonedTime(
-            zonedTimeToUtc(dateString, task.dueDateTimeZone),
-            timezone
-          );
-
-          dateString = timezonedDate.toISOString().slice(0, -1);
-        }
-
-        const endsAt = dateString;
-        const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
-
-        const startsAt = subMinutes(new Date(dateString), 60).toISOString().slice(0, -1);
-        const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
-
-        calendarEntries.push({
-          id: `tasks:${task.id}`,
-          type: CalendarEntryTypeEnum.TASK,
-          title: task.name,
-          description: null,
-          isAllDay,
-          color: task.color ?? task.listColor ?? null,
-          timezone,
-          startsAt,
-          startsAtUtc,
-          endTimezone: timezone,
-          endsAt,
-          endsAtUtc,
-          raw: task as unknown as Task,
-        });
+    const listIds = await listsManager.getVisibleListIdsByUserId(user.id);
+    const tasks = await tasksManager.findManyByListIdsAndRange(listIds, from, to);
+    for (const task of tasks) {
+      // We should never have a task without a due date,
+      // but we need to apease typescript.
+      if (!task.dueDate) {
+        continue;
       }
+
+      let isAllDay = false;
+      let dateString = task.dueDate;
+      if (task.dueDateTime) {
+        dateString = `${dateString}T${task.dueDateTime}:00.000`;
+      } else {
+        dateString = format(addDays(new Date(dateString), 1), 'yyyy-MM-dd');
+        isAllDay = true;
+      }
+
+      if (task.dueDateTimeZone) {
+        const timezonedDate = utcToZonedTime(
+          zonedTimeToUtc(dateString, task.dueDateTimeZone),
+          timezone
+        );
+
+        dateString = timezonedDate.toISOString().slice(0, -1);
+      }
+
+      const endsAt = dateString;
+      const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
+
+      const startsAt = subMinutes(new Date(dateString), 60).toISOString().slice(0, -1);
+      const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
+
+      calendarEntries.push({
+        id: `tasks:${task.id}`,
+        type: CalendarEntryTypeEnum.TASK,
+        title: task.name,
+        description: null,
+        isAllDay,
+        color: task.color ?? task.listColor ?? null,
+        timezone,
+        startsAt,
+        startsAtUtc,
+        endTimezone: timezone,
+        endsAt,
+        endsAtUtc,
+        raw: task as unknown as Task,
+      });
     }
 
     calendarEntries.sort((a, b) => {

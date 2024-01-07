@@ -7,7 +7,7 @@ import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItemActions from './CalendarItemActions';
 
-export interface CalendarSettingsSheetCalendarProps {
+export interface CalendarSettingsSheetCalendarItemProps {
   calendar: Calendar;
   hideCheckbox?: boolean;
 }
@@ -15,7 +15,7 @@ export interface CalendarSettingsSheetCalendarProps {
 export default function CalendarItem({
   calendar,
   hideCheckbox,
-}: CalendarSettingsSheetCalendarProps) {
+}: CalendarSettingsSheetCalendarItemProps) {
   const { auth } = useAuthStore();
   const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
 

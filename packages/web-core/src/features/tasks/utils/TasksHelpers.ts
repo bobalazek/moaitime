@@ -73,6 +73,36 @@ export const deleteList = async (listId: string): Promise<List | null> => {
   return response.data as List;
 };
 
+export const addVisibleList = async (listId: string): Promise<List> => {
+  const response = await fetchJson<ResponseInterface<List>>(
+    `${API_URL}/api/v1/lists/${listId}/add-visible`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as List;
+};
+
+export const removeVisibleList = async (listId: string): Promise<List> => {
+  const response = await fetchJson<ResponseInterface<List>>(
+    `${API_URL}/api/v1/lists/${listId}/remove-visible`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as List;
+};
+
 /********** Tasks **********/
 export const getTasksForList = async (
   listId?: string,

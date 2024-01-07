@@ -8,6 +8,7 @@ import {
   desc,
   eq,
   gte,
+  inArray,
   isNotNull,
   isNull,
   lte,
@@ -89,12 +90,12 @@ export class TasksManager {
     });
   }
 
-  async findManyByUserIdWithDueDate(
-    userId: string,
+  async findManyByListIdsAndRange(
+    listIds: string[],
     from?: Date,
     to?: Date
   ): Promise<(Task & { listColor: string | null })[]> {
-    let where = and(eq(lists.userId, userId), isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
+    let where = and(inArray(lists.id, listIds), isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
 
     if (from && to) {
       where = and(

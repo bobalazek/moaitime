@@ -1,6 +1,8 @@
 import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, SQL } from 'drizzle-orm';
 
-import { getDatabase, List, lists, NewList, tasks } from '@moaitime/database-core';
+import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
+
+import { UsersManager, usersManager } from '../auth/UsersManager';
 
 export type ListsManagerFindManyByUserIdOptions = {
   includeCompleted?: boolean;
@@ -8,6 +10,8 @@ export type ListsManagerFindManyByUserIdOptions = {
 };
 
 export class ListsManager {
+  constructor(private _usersManager: UsersManager) {}
+
   async findMany(options?: DBQueryConfig<'many', true>): Promise<List[]> {
     return getDatabase().query.lists.findMany(options);
   }
@@ -123,6 +127,99 @@ export class ListsManager {
   async userCanDelete(userId: string, listId: string): Promise<boolean> {
     return this.userCanUpdate(userId, listId);
   }
+
+  async getUserSettingsListIds(userOrUserId: string | User): Promise<string[]> {
+    const user =
+      typeof userOrUserId === 'string'
+        ? await this._usersManager.findOneById(userOrUserId)
+        : userOrUserId;
+    if (!user) {
+      return [];
+    }
+
+    const userSettings = this._usersManager.getUserSettings(user);
+
+    return userSettings.calendarVisibleListIds ?? [];
+  }
+
+  async getVisibleListIdsByUserId(userId: string): Promise<string[]> {
+    const userListIds = await this.getUserSettingsListIds(userId);
+    const idsSet = new Set<string>();
+
+    // Lists
+    const rows = await this.findMany({
+      columns: {
+        id: true,
+      },
+      where: eq(lists.userId, userId),
+    });
+
+    for (const row of rows) {
+      idsSet.add(row.id);
+    }
+
+    // Check
+    if (!userListIds.includes('*')) {
+      const finalIds = new Set(userListIds);
+
+      for (const id of idsSet) {
+        if (finalIds.has(id)) {
+          continue;
+        }
+
+        idsSet.delete(id);
+      }
+    }
+
+    return Array.from(idsSet);
+  }
+
+  async addVisibleListIdByUserId(userId: string, listId: string) {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      return;
+    }
+
+    const userSettings = this._usersManager.getUserSettings(user);
+    const userListIds = await this.getVisibleListIdsByUserId(userId);
+    if (userListIds.includes(listId)) {
+      return user;
+    }
+
+    userListIds.push(listId);
+
+    return this._usersManager.updateOneById(userId, {
+      settings: {
+        ...userSettings,
+        calendarVisibleListIds: userListIds,
+      },
+    });
+  }
+
+  async removeVisibleListIdByUserId(userId: string, listId: string) {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      return;
+    }
+
+    const userSettings = this._usersManager.getUserSettings(user);
+    const userListIds = await this.getVisibleListIdsByUserId(userId);
+    if (!userListIds.includes(listId)) {
+      return user;
+    }
+
+    const index = userListIds.indexOf(listId);
+    if (index > -1) {
+      userListIds.splice(index, 1);
+    }
+
+    return this._usersManager.updateOneById(userId, {
+      settings: {
+        ...userSettings,
+        calendarVisibleListIds: userListIds,
+      },
+    });
+  }
 }
 
-export const listsManager = new ListsManager();
+export const listsManager = new ListsManager(usersManager);

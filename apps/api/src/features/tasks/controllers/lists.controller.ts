@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { List } from '@moaitime/database-core';
+import { List, User } from '@moaitime/database-core';
 import { listsManager } from '@moaitime/database-services';
 import { LISTS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 
@@ -116,6 +116,42 @@ export class ListsController {
     return {
       success: true,
       data: updatedData,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/add-visible')
+  async setVisible(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await listsManager.userCanView(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this list');
+    }
+
+    await listsManager.addVisibleListIdByUserId(req.user.id, id);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/remove-visible')
+  async removeVisible(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await listsManager.userCanDelete(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this calendar');
+    }
+
+    await listsManager.removeVisibleListIdByUserId(req.user.id, id);
+
+    return {
+      success: true,
     };
   }
 }

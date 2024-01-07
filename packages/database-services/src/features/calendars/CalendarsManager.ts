@@ -14,11 +14,6 @@ import { Calendar as ApiCalendar } from '@moaitime/shared-common';
 import { UsersManager, usersManager } from '../auth/UsersManager';
 
 export class CalendarsManager {
-  static CUSTOM_CALENDARS_PREFIX = 'custom--';
-  static CUSTOM_CALENDAR_DUE_TASKS_KEY = `${CalendarsManager.CUSTOM_CALENDARS_PREFIX}due-tasks`;
-
-  static CUSTOM_CALENDAR_IDS = [CalendarsManager.CUSTOM_CALENDAR_DUE_TASKS_KEY];
-
   constructor(private _usersManager: UsersManager) {}
 
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Calendar[]> {
@@ -29,20 +24,6 @@ export class CalendarsManager {
     const data = await getDatabase().query.calendars.findMany({
       where: and(eq(calendars.userId, userId), isNull(calendars.deletedAt)),
       orderBy: asc(calendars.createdAt),
-    });
-
-    const now = new Date();
-    data.push({
-      id: `${CalendarsManager.CUSTOM_CALENDARS_PREFIX}due-tasks`,
-      name: 'Due Tasks',
-      description: null,
-      color: null,
-      timezone: 'UTC',
-      isPublic: false,
-      userId,
-      deletedAt: null,
-      createdAt: now,
-      updatedAt: now,
     });
 
     return data;
@@ -151,34 +132,24 @@ export class CalendarsManager {
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
-    const userCalendarIds = userSettings.calendarVisibleCalendarIds ?? [];
 
-    return userCalendarIds;
+    return userSettings.calendarVisibleCalendarIds ?? [];
   }
 
-  async getVisibleCalendarIdsByUserId(userId: string, includingCustom = false): Promise<string[]> {
+  async getVisibleCalendarIdsByUserId(userId: string): Promise<string[]> {
     const userCalendarIds = await this.getUserSettingsCalendarIds(userId);
-    const calendarIdsSet = new Set<string>();
-
-    if (includingCustom) {
-      const currentCustomCalendarIds = CalendarsManager.CUSTOM_CALENDAR_IDS.filter((id) =>
-        userCalendarIds.includes(id)
-      );
-      for (const id of currentCustomCalendarIds) {
-        calendarIdsSet.add(id);
-      }
-    }
+    const idsSet = new Set<string>();
 
     // Calendars
-    const calendarRows = await getDatabase().query.calendars.findMany({
+    const rows = await this.findMany({
       columns: {
         id: true,
       },
       where: eq(calendars.userId, userId),
     });
 
-    for (const row of calendarRows) {
-      calendarIdsSet.add(row.id);
+    for (const row of rows) {
+      idsSet.add(row.id);
     }
 
     // User Calendars
@@ -190,22 +161,23 @@ export class CalendarsManager {
     });
 
     for (const row of userCalendarRows) {
-      calendarIdsSet.add(row.calendarId);
+      idsSet.add(row.calendarId);
     }
 
+    // Check
     if (!userCalendarIds.includes('*')) {
-      const finalCalendarIds = new Set(userCalendarIds);
+      const finalIds = new Set(userCalendarIds);
 
-      for (const calendarId of calendarIdsSet) {
-        if (finalCalendarIds.has(calendarId)) {
+      for (const id of idsSet) {
+        if (finalIds.has(id)) {
           continue;
         }
 
-        calendarIdsSet.delete(calendarId);
+        idsSet.delete(id);
       }
     }
 
-    return Array.from(calendarIdsSet);
+    return Array.from(idsSet);
   }
 
   async addVisibleCalendarIdByUserId(userId: string, calendarId: string) {
@@ -215,12 +187,8 @@ export class CalendarsManager {
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
-    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId, true);
-
-    if (
-      userCalendarIds.includes(calendarId) &&
-      !CalendarsManager.CUSTOM_CALENDAR_IDS.includes(calendarId)
-    ) {
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+    if (userCalendarIds.includes(calendarId)) {
       return user;
     }
 
@@ -241,12 +209,8 @@ export class CalendarsManager {
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
-    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId, true);
-
-    if (
-      !userCalendarIds.includes(calendarId) &&
-      !CalendarsManager.CUSTOM_CALENDAR_IDS.includes(calendarId)
-    ) {
+    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+    if (!userCalendarIds.includes(calendarId)) {
       return user;
     }
 

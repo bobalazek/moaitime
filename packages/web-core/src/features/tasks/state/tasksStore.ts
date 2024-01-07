@@ -12,10 +12,12 @@ import {
   UpdateTask,
 } from '@moaitime/shared-common';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import {
   addList,
   addTask,
+  addVisibleList,
   completeTask,
   deleteList,
   deleteTask,
@@ -24,6 +26,7 @@ import {
   editTask,
   getTasksForList,
   loadLists,
+  removeVisibleList,
   reorderTask,
   uncompleteTask,
   undeleteTask,
@@ -38,10 +41,12 @@ export type TasksStore = {
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Lists **********/
   lists: List[];
+  loadLists: () => Promise<List[]>;
   addList: (list: CreateList) => Promise<List>;
   editList: (listId: string, list: UpdateList) => Promise<List>;
   deleteList: (listId: string) => Promise<List | null>;
-  loadLists: () => Promise<List[]>;
+  addVisibleList: (listId: string) => Promise<void>;
+  removeVisibleList: (listId: string) => Promise<void>;
   // Selected
   selectedList: List | null;
   setSelectedList: (selectedList: List | null) => Promise<List | null>;
@@ -109,6 +114,27 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   /********** Lists **********/
   lists: [],
+  loadLists: async () => {
+    const { selectedListTasksIncludeCompleted, selectedListTasksIncludeDeleted, selectedList } =
+      get();
+
+    const lists = await loadLists({
+      includeCompleted: selectedListTasksIncludeCompleted,
+      includeDeleted: selectedListTasksIncludeDeleted,
+    });
+
+    const newSelectedList =
+      lists.find((list) => {
+        return list.id === selectedList?.id;
+      }) ?? null;
+
+    set({
+      lists,
+      selectedList: newSelectedList,
+    });
+
+    return lists;
+  },
   addList: async (list: CreateList) => {
     const { loadLists, setSelectedList } = get();
     const addedList = await addList(list);
@@ -142,26 +168,27 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return deletedList;
   },
-  loadLists: async () => {
-    const { selectedListTasksIncludeCompleted, selectedListTasksIncludeDeleted, selectedList } =
-      get();
+  addVisibleList: async (listId: string) => {
+    const { loadCalendarEntries } = useCalendarStore.getState();
+    const { loadAccount } = useAuthStore.getState();
 
-    const lists = await loadLists({
-      includeCompleted: selectedListTasksIncludeCompleted,
-      includeDeleted: selectedListTasksIncludeDeleted,
-    });
+    await addVisibleList(listId);
 
-    const newSelectedList =
-      lists.find((list) => {
-        return list.id === selectedList?.id;
-      }) ?? null;
+    // We update the settings, so we need to refresh the account
+    await loadAccount();
 
-    set({
-      lists,
-      selectedList: newSelectedList,
-    });
+    await loadCalendarEntries();
+  },
+  removeVisibleList: async (listId: string) => {
+    const { loadCalendarEntries } = useCalendarStore.getState();
+    const { loadAccount } = useAuthStore.getState();
 
-    return lists;
+    await removeVisibleList(listId);
+
+    // Same as above
+    await loadAccount();
+
+    await loadCalendarEntries();
   },
   // Selected
   selectedList: null,

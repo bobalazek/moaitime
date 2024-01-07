@@ -27,4 +27,5 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   notesEnabled: true,
   calendarEnabled: true,
   calendarVisibleCalendarIds: ['*'],
+  calendarVisibleListIds: ['*'],
 };

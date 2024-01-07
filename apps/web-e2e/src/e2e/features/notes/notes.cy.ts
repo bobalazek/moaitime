@@ -46,7 +46,7 @@ describe('notes.cy.ts', () => {
   it('should add new note in notes sidebar', () => {
     openNotes();
 
-    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
+    cy.getBySel('notes--sidebar--add-new-note-button').click();
 
     cy.getBySel('note-editor--title').click();
 
@@ -66,7 +66,7 @@ describe('notes.cy.ts', () => {
   it('should show message unsaved changes if there are unsaved changes', () => {
     openNotes();
 
-    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
+    cy.getBySel('notes--sidebar--add-new-note-button').click();
 
     cy.getBySel('note-editor--title').click();
 
@@ -93,7 +93,7 @@ describe('notes.cy.ts', () => {
   it('should show message that note content must be provided', () => {
     openNotes();
 
-    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
+    cy.getBySel('notes--sidebar--add-new-note-button').click();
 
     cy.getBySel('note-editor--title').click();
 
@@ -109,12 +109,12 @@ describe('notes.cy.ts', () => {
   it('should cancel add new note if cancel button is clicked', () => {
     openNotes();
 
-    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').click();
+    cy.getBySel('notes--sidebar--add-new-note-button').click();
 
     cy.getBySel('note-editor').should('exist');
 
     cy.getBySel('notes--header').find('button').contains('Cancel').click();
 
-    cy.getBySel('notes--sidebar').find('button[title="Add new note"]').should('exist');
+    cy.getBySel('notes--main').contains('No note selected');
   });
 });

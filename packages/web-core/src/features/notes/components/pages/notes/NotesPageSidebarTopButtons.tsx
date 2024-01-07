@@ -33,18 +33,19 @@ const NotesPageSidebarTopButtons = () => {
   return (
     <div className="mb-2 text-center text-xs">
       <button
-        className="rounded-full p-1 hover:bg-gray-50"
+        className="rounded-full p-1 hover:bg-gray-50 dark:hover:bg-gray-700"
         onClick={onAddNewNoteButtonClick}
         title="Add new note"
+        data-test="notes--sidebar--add-new-note-button"
       >
         <FilePlusIcon size={20} />
       </button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            className="rounded-full p-1 hover:bg-gray-50"
-            data-test="notes--sidebar--sort--dropdown-menu--trigger-button"
+            className="rounded-full p-1 hover:bg-gray-50 dark:hover:bg-gray-700"
             title="Sort by"
+            data-test="notes--sidebar--sort--dropdown-menu--trigger-button"
           >
             <FilterIcon size={20} />
           </button>

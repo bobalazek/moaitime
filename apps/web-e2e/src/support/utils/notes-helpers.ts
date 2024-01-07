@@ -9,7 +9,7 @@ export function openNotes() {
 }
 
 export function addNote() {
-  cy.getBySel('notes--main').find('button').contains('Add new note').click();
+  cy.getBySel('notes--sidebar--add-new-note-button').click();
 
   cy.getBySel('note-editor--title').click();
 

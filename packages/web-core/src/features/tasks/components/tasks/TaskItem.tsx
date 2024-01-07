@@ -26,6 +26,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
   const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
   const isCompleted = !!task.completedAt;
   const isDeleted = !!task.deletedAt;
+  const taskTags = task.tags ?? [];
 
   const checkboxBackgroundColor = task.color ?? '';
   const checkboxColor = checkboxBackgroundColor
@@ -156,16 +157,16 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
           </div>
           <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
         </div>
-        {(task.priority || task.dueDate || task.deletedAt || (task.tagIds?.length ?? 0) > 0) && (
+        {(task.priority || task.dueDate || task.deletedAt || taskTags.length > 0) && (
           <div className="ml-6 mt-1.5 space-y-1">
             <TaskItemPriority task={task} />
+            <TaskItemTags task={task} />
             <TaskItemDueDate
               task={task}
               timezone={generalTimezone}
               startDayOfWeek={generalStartDayOfWeek}
             />
             <TaskItemDeletedAt task={task} />
-            <TaskItemTags task={task} />
           </div>
         )}
       </div>

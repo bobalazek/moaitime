@@ -3,7 +3,7 @@ import { TagIcon } from 'lucide-react';
 import { Task as TaskType } from '@moaitime/shared-common';
 
 const TaskItemTags = ({ task }: { task: TaskType }) => {
-  if (!task.tags) {
+  if (!task.tags || task.tags.length === 0) {
     return null;
   }
 

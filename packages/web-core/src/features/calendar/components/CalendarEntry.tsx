@@ -15,7 +15,7 @@ import {
 import { useAuthStore } from '../../auth/state/authStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import { useCalendarHighlightedCalendarEntryStore } from '../state/calendarDynamicStore';
-import { useCalendarStore } from '../state/calendarStore';
+import { useEventsStore } from '../state/eventsStore';
 
 const shouldShowContinuedText = (
   calendarEntry: CalendarEntryType,
@@ -52,7 +52,7 @@ export default function CalendarEntry({
 }: CalendarEntryProps) {
   const { auth } = useAuthStore();
   const { setSelectedTaskDialogOpen } = useTasksStore();
-  const { setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen } = useCalendarStore();
+  const { setSelectedEventDialogOpen } = useEventsStore();
   const { setHighlightedCalendarEntry, highlightedCalendarEntry } =
     useCalendarHighlightedCalendarEntryStore();
 
@@ -105,7 +105,7 @@ export default function CalendarEntry({
     event.stopPropagation();
 
     if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-      setSelectedCalendarEntryDialogOpen(true, calendarEntry.raw as Event);
+      setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
     } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
       setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
     }

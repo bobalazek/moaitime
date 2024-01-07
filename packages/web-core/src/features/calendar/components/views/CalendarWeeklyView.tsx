@@ -12,6 +12,7 @@ import {
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
+import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
 import CalendarEntry from '../CalendarEntry';
 import CalendarWeeklyViewDay from './weekly/CalendarWeeklyViewDay';
@@ -22,14 +23,9 @@ type CalendarEntriesPerDay = {
 };
 
 export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) {
-  const {
-    calendarEntries,
-    selectedDate,
-    selectedView,
-    setSelectedDate,
-    setSelectedView,
-    setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen,
-  } = useCalendarStore();
+  const { calendarEntries, selectedDate, selectedView, setSelectedDate, setSelectedView } =
+    useCalendarStore();
+  const { setSelectedEventDialogOpen } = useEventsStore();
   const { auth } = useAuthStore();
   const prevSelectedDateRef = useRef(selectedDate);
 
@@ -151,7 +147,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
 
               const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 
-              setSelectedCalendarEntryDialogOpen(true, {
+              setSelectedEventDialogOpen(true, {
                 startsAt: dayMidnight,
                 endsAt: dayMidnight,
                 isAllDay: true,

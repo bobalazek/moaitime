@@ -8,6 +8,7 @@ import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import TaskEditDialog from '../../../tasks/components/task-edit-dialog/TaskEditDialog';
 import { useCalendarStore } from '../../state/calendarStore';
+import { useEventsStore } from '../../state/eventsStore';
 import CalendarDeleteAlertDialog from '../calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
 import CalendarEditDialog from '../calendar-edit-dialog/CalendarEditDialog';
 import DeletedCalendarsDialog from '../deleted-calendars-dialog/DeletedCalendarsDialog';
@@ -25,12 +26,12 @@ export default function CalendarPage() {
     selectedDate,
     settingsSheetOpen,
     selectedCalendarDialogOpen,
-    selectedEventDialogOpen: selectedCalendarEntryDialogOpen,
     setSelectedView,
     setSelectedDate,
     loadCalendars,
     reloadSelectedDays,
   } = useCalendarStore();
+  const { selectedEventDialogOpen } = useEventsStore();
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitializedRef = useRef(false); // Prevents react to trigger useEffect twice
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ export default function CalendarPage() {
   // Keyboard shortcuts
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {
-      if (settingsSheetOpen || selectedCalendarDialogOpen || selectedCalendarEntryDialogOpen) {
+      if (settingsSheetOpen || selectedCalendarDialogOpen || selectedEventDialogOpen) {
         return;
       }
 
@@ -138,7 +139,7 @@ export default function CalendarPage() {
     return () => document.removeEventListener('keydown', onKeydown);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingsSheetOpen, selectedCalendarDialogOpen, selectedCalendarEntryDialogOpen]);
+  }, [settingsSheetOpen, selectedCalendarDialogOpen, selectedEventDialogOpen]);
 
   return (
     <ErrorBoundary>

@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../../state/calendarStore';
+import { useEventsStore } from '../../../state/eventsStore';
 import CalendarEntry from '../../CalendarEntry';
 
 export type CalendarMonthlyViewDayProps = {
@@ -24,12 +25,8 @@ export default function CalendarMonthlyViewDay({
   calendarEntries,
   isFirstWeeksDay,
 }: CalendarMonthlyViewDayProps) {
-  const {
-    selectedDate,
-    setSelectedDate,
-    setSelectedView,
-    setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen,
-  } = useCalendarStore();
+  const { selectedDate, setSelectedDate, setSelectedView } = useCalendarStore();
+  const { setSelectedEventDialogOpen } = useEventsStore();
   const isActive = isSameDay(day, now);
   const isActiveMonth = isSameMonth(day, selectedDate);
   const isFirst = day.getDate() === 1;
@@ -51,7 +48,7 @@ export default function CalendarMonthlyViewDay({
 
     const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 
-    setSelectedCalendarEntryDialogOpen(true, {
+    setSelectedEventDialogOpen(true, {
       startsAt: dayMidnight,
       endsAt: dayMidnight,
       isAllDay: true,

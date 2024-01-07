@@ -7,21 +7,15 @@ import {
   CalendarEntryYearlyEntry,
   CalendarViewEnum,
   CreateCalendar,
-  CreateEvent,
-  Event,
   UpdateCalendar,
-  UpdateEvent,
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import {
   addCalendar,
-  addEvent,
   addVisibleCalendar,
   deleteCalendar,
-  deleteEvent,
   editCalendar,
-  editEvent,
   getAgendaRange,
   getMonthRange,
   getWeekRange,
@@ -32,7 +26,6 @@ import {
   loadDeletedCalendars,
   removeVisibleCalendar,
   undeleteCalendar,
-  undeleteEvent,
 } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -83,18 +76,6 @@ export type CalendarStore = {
   loadCalendarEntries: () => Promise<CalendarEntry[]>;
   calendarEntriesYearly: CalendarEntryYearlyEntry[];
   loadCalendarEntriesYearly: () => Promise<CalendarEntryYearlyEntry[]>;
-  /********** Events **********/
-  addEvent: (event: CreateEvent) => Promise<Event>;
-  editEvent: (eventId: string, event: UpdateEvent) => Promise<Event>;
-  deleteEvent: (eventId: string) => Promise<Event>;
-  undeleteEvent: (eventId: string) => Promise<Event>;
-  // Selected
-  selectedEventDialogOpen: boolean;
-  selectedEvent: Event | null;
-  setSelectedEventDialogOpen: (
-    selectedEventDialogOpen: boolean,
-    selectedEvent?: Event | null
-  ) => void;
 };
 
 export const useCalendarStore = create<CalendarStore>()((set, get) => ({
@@ -342,51 +323,5 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     set({ calendarEntriesYearly });
 
     return calendarEntriesYearly;
-  },
-  /********** Events **********/
-  addEvent: async (event: CreateEvent) => {
-    const { loadCalendarEntries } = get();
-
-    const addedTask = await addEvent(event);
-
-    await loadCalendarEntries();
-
-    return addedTask;
-  },
-  editEvent: async (eventId: string, event: UpdateEvent) => {
-    const { loadCalendarEntries } = get();
-
-    const editedTask = await editEvent(eventId, event);
-
-    await loadCalendarEntries();
-
-    return editedTask;
-  },
-  deleteEvent: async (eventId: string) => {
-    const { loadCalendarEntries } = get();
-
-    const deletedTask = await deleteEvent(eventId);
-
-    await loadCalendarEntries();
-
-    return deletedTask;
-  },
-  undeleteEvent: async (eventId: string) => {
-    const { loadCalendarEntries } = get();
-
-    const undeletedTask = await undeleteEvent(eventId);
-
-    await loadCalendarEntries();
-
-    return undeletedTask;
-  },
-  // Selected
-  selectedEventDialogOpen: false,
-  selectedEvent: null,
-  setSelectedEventDialogOpen: (selectedEventDialogOpen: boolean, selectedEvent?: Event | null) => {
-    set({
-      selectedEventDialogOpen,
-      selectedEvent,
-    });
   },
 }));

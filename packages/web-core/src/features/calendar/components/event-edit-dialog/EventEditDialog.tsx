@@ -20,7 +20,7 @@ import { useAuthStore } from '../../../auth/state/authStore';
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
-import { useCalendarStore } from '../../state/calendarStore';
+import { useEventsStore } from '../../state/eventsStore';
 import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
 
 export default function EventEditDialog() {
@@ -33,7 +33,7 @@ export default function EventEditDialog() {
     deleteEvent,
     undeleteEvent,
     setSelectedEventDialogOpen,
-  } = useCalendarStore();
+  } = useEventsStore();
   const [data, setData] = useState<CreateEvent | UpdateEvent>();
 
   useEffect(() => {

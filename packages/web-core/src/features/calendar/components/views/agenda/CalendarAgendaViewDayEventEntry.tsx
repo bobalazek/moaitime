@@ -1,22 +1,31 @@
 import { differenceInDays, format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
-import { Calendar, CalendarEntry } from '@moaitime/shared-common';
+import {
+  Calendar,
+  CalendarEntry,
+  CalendarEntryTypeEnum,
+  Event,
+  List,
+  Task,
+} from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../../auth/state/authStore';
-import { useCalendarStore } from '../../../state/calendarStore';
+import { useTasksStore } from '../../../../tasks/state/tasksStore';
+import { useEventsStore } from '../../../state/eventsStore';
 
 export type CalendarAgendaViewDayEventEntryProps = {
   calendarEntry: CalendarEntry;
-  calendar?: Calendar;
+  calendarOrList?: Calendar | List;
 };
 
 export default function CalendarAgendaViewDayEventEntry({
   calendarEntry,
-  calendar,
+  calendarOrList,
 }: CalendarAgendaViewDayEventEntryProps) {
   const { auth } = useAuthStore();
-  const { setSelectedEventDialogOpen: setSelectedCalendarEntryDialogOpen } = useCalendarStore();
+  const { setSelectedEventDialogOpen } = useEventsStore();
+  const { setSelectedTaskDialogOpen } = useTasksStore();
 
   const generalTimezone = auth?.user?.settings?.generalTimezone || 'UTC';
   const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock || false;
@@ -28,7 +37,6 @@ export default function CalendarAgendaViewDayEventEntry({
     hour: '2-digit',
     hour12: !clockUse24HourClock,
   });
-
   const end = utcToZonedTime(calendarEntry.endsAt, generalTimezone);
   const endDate = format(end, 'yyyy-MM-dd');
   const endTime = end.toLocaleString('default', {
@@ -41,18 +49,24 @@ export default function CalendarAgendaViewDayEventEntry({
     month: 'short',
     day: 'numeric',
   });
-  const calendarColor = calendar?.color ?? 'transparent';
+  const daysDifference = differenceInDays(new Date(endDate), new Date(startDate));
+
+  const calendarColor = calendarOrList?.color ?? 'transparent';
   const entryColor = calendarEntry.color ?? calendarColor;
 
-  const daysDifference = differenceInDays(new Date(endDate), new Date(startDate));
+  const onClick = () => {
+    if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
+      setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
+    } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
+      setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
+    }
+  };
 
   return (
     <div
       key={calendarEntry.id}
       className="flex cursor-pointer justify-between rounded-lg border-2 p-4"
-      onClick={() => {
-        setSelectedCalendarEntryDialogOpen(true, calendarEntry);
-      }}
+      onClick={onClick}
       style={{
         borderColor: entryColor,
       }}
@@ -60,7 +74,7 @@ export default function CalendarAgendaViewDayEventEntry({
       <div>
         <div className="font-bold">{calendarEntry.title}</div>
         {calendarEntry.description && <div className="text-xs">{calendarEntry.description}</div>}
-        {calendar && (
+        {calendarOrList && (
           <div className="mt-2 leading-4">
             <span
               className="mr-1 inline-block h-2 w-2 rounded-full"
@@ -68,7 +82,7 @@ export default function CalendarAgendaViewDayEventEntry({
                 backgroundColor: calendarColor,
               }}
             />
-            <span className="text-xs">{calendar.name}</span>
+            <span className="text-xs">{calendarOrList.name}</span>
           </div>
         )}
       </div>

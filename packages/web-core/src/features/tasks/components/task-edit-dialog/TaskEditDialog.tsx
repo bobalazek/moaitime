@@ -145,6 +145,7 @@ export default function TaskEditDialog() {
           <ColorSelector
             value={data?.color ?? undefined}
             onChangeValue={(value) => setData((current) => ({ ...current, color: value ?? null }))}
+            placeholderText="Inherit from list"
             triggerProps={{
               id: 'task-color',
               'data-test': 'tasks--task-edit-dialog--color-select--trigger-button',

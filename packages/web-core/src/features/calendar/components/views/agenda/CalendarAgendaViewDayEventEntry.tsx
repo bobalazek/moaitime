@@ -51,8 +51,8 @@ export default function CalendarAgendaViewDayEventEntry({
   });
   const daysDifference = differenceInDays(new Date(endDate), new Date(startDate));
 
-  const calendarColor = calendarOrList?.color ?? 'transparent';
-  const entryColor = calendarEntry.color ?? calendarColor;
+  const calendarOrListColor = calendarOrList?.color ?? 'transparent';
+  const entryColor = calendarEntry.color ?? calendarOrListColor;
 
   const onClick = () => {
     if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
@@ -79,7 +79,7 @@ export default function CalendarAgendaViewDayEventEntry({
             <span
               className="mr-1 inline-block h-2 w-2 rounded-full"
               style={{
-                backgroundColor: calendarColor,
+                backgroundColor: calendarOrListColor,
               }}
             />
             <span className="text-xs">{calendarOrList.name}</span>

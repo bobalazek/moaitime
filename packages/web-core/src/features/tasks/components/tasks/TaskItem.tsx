@@ -13,6 +13,7 @@ import { setCursorToEnd } from '../../utils/TaskHelpers';
 import TaskItemDeletedAt from './task-item/TaskItemDeletedAt';
 import TaskItemDueDate from './task-item/TaskItemDueDate';
 import TaskItemPriority from './task-item/TaskItemPriority';
+import TaskItemTags from './task-item/TaskItemTags';
 import TaskItemActions from './TaskItemActions';
 
 const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) => {
@@ -155,8 +156,8 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
           </div>
           <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
         </div>
-        {(task.priority || task.dueDate || task.deletedAt) && (
-          <div className="ml-6 mt-1.5 flex items-center gap-3">
+        {(task.priority || task.dueDate || task.deletedAt || (task.tagIds?.length ?? 0) > 0) && (
+          <div className="ml-6 mt-1.5 space-y-1">
             <TaskItemPriority task={task} />
             <TaskItemDueDate
               task={task}
@@ -164,6 +165,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
               startDayOfWeek={generalStartDayOfWeek}
             />
             <TaskItemDeletedAt task={task} />
+            <TaskItemTags task={task} />
           </div>
         )}
       </div>

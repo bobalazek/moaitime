@@ -16,6 +16,7 @@ import { ColorSelector } from '../../../core/components/selectors/ColorSelector'
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { PrioritySelector } from '../../../core/components/selectors/PrioritySelector';
+import { TagSelector } from '../../../core/components/selectors/TagSelector';
 import { TaskParentSelector } from '../../../core/components/selectors/TaskParentSelector';
 import { useTasksStore } from '../../state/tasksStore';
 
@@ -187,6 +188,13 @@ export default function TaskEditDialog() {
                 dueDateTimeZone: saveData.dateTimeZone,
               });
             }}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="task-parent">Tags</Label>
+          <TagSelector
+            values={data?.tagIds ?? []}
+            onChangeValue={(values) => setData((current) => ({ ...current, tagIds: values }))}
           />
         </div>
         <div className="flex flex-col gap-2">

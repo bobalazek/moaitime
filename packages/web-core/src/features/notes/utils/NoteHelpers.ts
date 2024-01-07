@@ -37,7 +37,7 @@ export const loadNotes = async (options?: {
     method: 'GET',
   });
 
-  return response.data as Note[];
+  return response.data ?? [];
 };
 
 export const getNote = async (noteId: string): Promise<Note> => {

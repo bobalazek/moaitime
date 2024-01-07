@@ -15,7 +15,16 @@ import {
   SQL,
 } from 'drizzle-orm';
 
-import { getDatabase, lists, NewTask, Task, tasks } from '@moaitime/database-core';
+import {
+  getDatabase,
+  lists,
+  NewTask,
+  Tag,
+  tags,
+  Task,
+  tasks,
+  taskTags,
+} from '@moaitime/database-core';
 import { SortDirectionEnum, TasksListSortFieldEnum } from '@moaitime/shared-common';
 
 export type TasksManagerFindManyByListIdOptions = {
@@ -336,6 +345,63 @@ export class TasksManager {
     }
 
     return depth;
+  }
+
+  async setTags(taskId: string, tagIds: string[]) {
+    const currentTaskTags = await getDatabase()
+      .select()
+      .from(taskTags)
+      .where(eq(taskTags.taskId, taskId))
+      .execute();
+
+    const currentTagIds = currentTaskTags.map((row) => row.tagId);
+
+    const toDelete = currentTagIds.filter((tagId) => !tagIds.includes(tagId));
+    const toInsert = tagIds.filter((tagId) => !currentTagIds.includes(tagId));
+
+    if (toDelete.length) {
+      await getDatabase()
+        .delete(taskTags)
+        .where(and(eq(taskTags.taskId, taskId), inArray(taskTags.tagId, toDelete)))
+        .execute();
+    }
+
+    if (toInsert.length) {
+      await getDatabase()
+        .insert(taskTags)
+        .values(
+          toInsert.map((tagId) => ({
+            taskId,
+            tagId,
+          }))
+        )
+        .execute();
+    }
+  }
+
+  async getTagIdsForTaskIds(taskIds: string[]): Promise<Record<string, Tag[]>> {
+    const rows = await getDatabase()
+      .select()
+      .from(taskTags)
+      .where(and(inArray(taskTags.taskId, taskIds), isNull(tags.deletedAt)))
+      .leftJoin(tags, eq(taskTags.tagId, tags.id))
+      .execute();
+
+    const map: Record<string, Tag[]> = {};
+    for (const row of rows) {
+      if (!row.tags) {
+        continue;
+      }
+
+      const { taskId } = row.task_tags;
+      if (!map[taskId]) {
+        map[taskId] = [];
+      }
+
+      map[taskId].push(row.tags);
+    }
+
+    return map;
   }
 
   // Private

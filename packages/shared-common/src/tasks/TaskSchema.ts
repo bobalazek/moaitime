@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { TagSchema } from '..';
 import { ColorSchema } from '../core/ColorSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';
@@ -20,6 +21,8 @@ export const TaskBaseSchema = z.object({
   updatedAt: z.string(),
   listId: z.string(),
   parentId: z.string().nullable(),
+  tags: z.array(TagSchema).optional(),
+  tagIds: z.array(z.string()).optional(),
 });
 
 export const TaskSchema = TaskBaseSchema.extend({
@@ -68,6 +71,7 @@ export const CreateTaskSchema = z.object({
   dueDateTimeZone: TimezoneSchema.nullable().optional(),
   listId: z.string(),
   parentId: z.string().nullable().optional(),
+  tagIds: z.array(z.string()).optional(),
 });
 
 export const UpdateTaskSchema = CreateTaskSchema.partial();

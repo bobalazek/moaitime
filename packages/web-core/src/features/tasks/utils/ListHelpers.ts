@@ -26,7 +26,7 @@ export const loadLists = async (options?: {
     method: 'GET',
   });
 
-  return response.data as List[];
+  return response.data ?? [];
 };
 
 export const getList = async (listId: string): Promise<List> => {
@@ -124,5 +124,5 @@ export const getTasksForList = async (
     method: 'GET',
   });
 
-  return response.data as Task[];
+  return response.data ?? [];
 };

@@ -40,12 +40,13 @@ export class TasksController {
     const sortField = req.query.sortField as keyof Task;
     const sortDirection = req.query.sortDirection as SortDirectionEnum;
 
-    const data = await tasksManager.findManyByListId(listId, {
+    const tags = await tasksManager.findManyByListId(listId, {
       includeCompleted,
       includeDeleted,
       sortField,
       sortDirection,
     });
+    const data = await this._populateTags(tags);
 
     return {
       success: true,
@@ -73,10 +74,12 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Get(':id')
   async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
-    if (!data) {
+    const row = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+    if (!row) {
       throw new NotFoundException('Task not found');
     }
+
+    const data = (await this._populateTags([row]))[0];
 
     return {
       success: true,
@@ -106,10 +109,16 @@ export class TasksController {
       await tasksManager.validateParentId(null, body.parentId);
     }
 
-    const maxOrderForListId = await tasksManager.findMaxOrderByListId(body.listId);
+    const { tagIds, ...insertData } = body;
+
+    const maxOrderForListId = await tasksManager.findMaxOrderByListId(insertData.listId);
     const order = maxOrderForListId + 1;
 
-    const data = await tasksManager.insertOne({ ...body, order });
+    const data = await tasksManager.insertOne({ ...insertData, order });
+
+    if (Array.isArray(tagIds)) {
+      await tasksManager.setTags(data.id, tagIds);
+    }
 
     return {
       success: true,
@@ -140,7 +149,13 @@ export class TasksController {
       await tasksManager.validateParentId(id, body.parentId);
     }
 
-    const updatedData = await tasksManager.updateOneById(id, body);
+    const { tagIds, ...updateData } = body;
+
+    const updatedData = await tasksManager.updateOneById(id, updateData);
+
+    if (Array.isArray(tagIds)) {
+      await tasksManager.setTags(data.id, tagIds);
+    }
 
     return {
       success: true,
@@ -246,5 +261,21 @@ export class TasksController {
       success: true,
       data: updatedData,
     };
+  }
+
+  private async _populateTags(tasks: Task[]) {
+    const taskIds = tasks.map((task) => task.id);
+    const tagsMap = await tasksManager.getTagIdsForTaskIds(taskIds);
+
+    return tasks.map((task) => {
+      const tags = tagsMap[task.id] || [];
+      const tagIds = tags.map((tag) => tag.id);
+
+      return {
+        ...task,
+        tags,
+        tagIds,
+      };
+    });
   }
 }

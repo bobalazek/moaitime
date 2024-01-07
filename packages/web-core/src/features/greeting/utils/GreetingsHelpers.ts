@@ -10,5 +10,5 @@ export const loadGreetings = async () => {
     }
   );
 
-  return response;
+  return response.data ?? [];
 };

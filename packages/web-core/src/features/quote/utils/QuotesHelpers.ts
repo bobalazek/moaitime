@@ -10,5 +10,5 @@ export const loadQuotes = async () => {
     }
   );
 
-  return response;
+  return response.data ?? [];
 };

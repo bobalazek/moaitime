@@ -11,7 +11,7 @@ export type BackgroundStore = {
   ) => Promise<BackgroundInterface | null>;
   setRandomBackground: () => Promise<BackgroundInterface>;
   backgrounds: BackgroundInterface[];
-  loadBackgrounds: () => Promise<BackgroundInterface[]>;
+  reloadBackgrounds: () => Promise<BackgroundInterface[]>;
 };
 
 export const useBackgroundStore = create<BackgroundStore>()((set, get) => ({
@@ -31,9 +31,8 @@ export const useBackgroundStore = create<BackgroundStore>()((set, get) => ({
     return randomBackground;
   },
   backgrounds: [],
-  loadBackgrounds: async () => {
-    const response = await loadBackgrounds();
-    const backgrounds = response.data ?? [];
+  reloadBackgrounds: async () => {
+    const backgrounds = await loadBackgrounds();
 
     set({ backgrounds });
 

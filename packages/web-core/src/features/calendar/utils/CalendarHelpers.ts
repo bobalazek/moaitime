@@ -36,7 +36,7 @@ export const loadCalendars = async () => {
     method: 'GET',
   });
 
-  return response.data as Calendar[];
+  return response.data;
 };
 
 export const loadDeletedCalendars = async () => {
@@ -47,7 +47,7 @@ export const loadDeletedCalendars = async () => {
     }
   );
 
-  return response.data as Calendar[];
+  return response.data;
 };
 
 export const addCalendar = async (calendar: CreateCalendar): Promise<Calendar> => {
@@ -161,7 +161,7 @@ export const loadCalendarEntries = async (from?: Date | string, to?: Date | stri
     method: 'GET',
   });
 
-  return response.data as CalendarEntry[];
+  return response.data;
 };
 
 export const loadCalendarEntriesYearly = async (year: number) => {

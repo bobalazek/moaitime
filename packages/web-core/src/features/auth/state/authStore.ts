@@ -15,6 +15,7 @@ import { useBackgroundStore } from '../../background/state/backgroundStore';
 import { useGreetingStore } from '../../greeting/state/greetingStore';
 import { useQuoteStore } from '../../quote/state/quoteStore';
 import { useListsStore } from '../../tasks/state/listsStore';
+import { useTagsStore } from '../../tasks/state/tagsStore';
 import {
   cancelNewEmail,
   confirmEmail,
@@ -254,9 +255,10 @@ export const useAuthStore = create<AuthStore>()(
       loadAppData: async () => {
         const { auth, reloadTheme } = get();
         const { reloadLists } = useListsStore.getState();
-        const { loadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
-        const { loadGreetings, setRandomGreeting } = useGreetingStore.getState();
-        const { loadQuotes, setRandomQuote } = useQuoteStore.getState();
+        const { reloadTags } = useTagsStore.getState();
+        const { reloadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
+        const { reloadGreetings, setRandomGreeting } = useGreetingStore.getState();
+        const { reloadQuotes, setRandomQuote } = useQuoteStore.getState();
 
         if (!auth?.userAccessToken?.token) {
           return;
@@ -266,8 +268,10 @@ export const useAuthStore = create<AuthStore>()(
 
         reloadLists();
 
+        reloadTags();
+
         (async () => {
-          await loadBackgrounds();
+          await reloadBackgrounds();
 
           setRandomBackground();
           setInterval(setRandomBackground, 1000 * 60 * 2);
@@ -275,7 +279,7 @@ export const useAuthStore = create<AuthStore>()(
 
         // Greetings
         (async () => {
-          await loadGreetings();
+          await reloadGreetings();
 
           setRandomGreeting();
           setInterval(setRandomGreeting, 1000 * 60 * 2);
@@ -283,7 +287,7 @@ export const useAuthStore = create<AuthStore>()(
 
         // Quotes
         (async () => {
-          await loadQuotes();
+          await reloadQuotes();
 
           setRandomQuote();
           setTimeout(setRandomQuote, 1000 * 60 * 2);

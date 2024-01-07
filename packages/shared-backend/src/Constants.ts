@@ -22,10 +22,11 @@ export const AUTH_DELETION_HARD_DELETE_SECONDS = 60 * 60 * 24 * 30;
 // Mailer
 export const MAILER_FROM = 'MoaiTime Mailer <mailer@bobalazek.com>';
 
-// Tasks & Lists
+// Tasks, Lists & Tags
+export const LISTS_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];
 export const TASKS_MAX_PER_LIST_COUNT = 50;
 export const LISTS_MAX_PER_USER_COUNT = 10;
-export const LISTS_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];
+export const TAGS_MAX_PER_USER_COUNT = 20;
 
 // Calendar
 export const CALENDARS_MAX_PER_USER_COUNT = 10;

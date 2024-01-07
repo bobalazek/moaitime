@@ -25,3 +25,4 @@ export * from './features/quotes/QuotesManager';
 // Tasks
 export * from './features/tasks/TasksManager';
 export * from './features/tasks/ListsManager';
+export * from './features/tasks/TagsManager';

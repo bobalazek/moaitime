@@ -12,7 +12,7 @@ import {
   reorderTask,
   uncompleteTask,
   undeleteTask,
-} from '../utils/TasksHelpers';
+} from '../utils/TaskHelpers';
 import { useListsStore } from './listsStore';
 
 export type TasksStore = {

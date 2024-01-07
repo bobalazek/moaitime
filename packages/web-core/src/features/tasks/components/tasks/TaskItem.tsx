@@ -1,86 +1,19 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
-import { formatRelative } from 'date-fns';
-import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { memo, useCallback, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 
-import { DayOfWeek, prioritiesColorMap, Task as TaskType } from '@moaitime/shared-common';
-import { Checkbox, cn } from '@moaitime/web-ui';
+import { Task as TaskType } from '@moaitime/shared-common';
+import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import { useSingleAndDoubleClick } from '../../../core/hooks/useSingleAndDoubleClick';
 import { useTasksStore } from '../../state/tasksStore';
+import { setCursorToEnd } from '../../utils/TaskHelpers';
+import TaskItemDeletedAt from './task-item/TaskItemDeletedAt';
+import TaskItemDueDate from './task-item/TaskItemDueDate';
+import TaskItemPriority from './task-item/TaskItemPriority';
 import TaskItemActions from './TaskItemActions';
-
-function setCursorToEnd(element: HTMLElement) {
-  const range = document.createRange();
-  const selection = window.getSelection();
-
-  range.selectNodeContents(element);
-  range.collapse(false);
-
-  selection?.removeAllRanges();
-  selection?.addRange(range);
-}
-
-const TaskItemDueDate = ({
-  task,
-  timezone,
-  startDayOfWeek,
-}: {
-  task: TaskType;
-  timezone: string;
-  startDayOfWeek: DayOfWeek;
-}) => {
-  if (!task.dueDate) {
-    return null;
-  }
-
-  let dateString = task.dueDate;
-  if (task.dueDateTime) {
-    dateString = `${dateString}T${task.dueDateTime}:00.000`;
-  } else {
-    dateString = dateString + 'T23:59:59.999';
-  }
-
-  if (task.dueDateTimeZone) {
-    const timezonedDate = utcToZonedTime(
-      zonedTimeToUtc(dateString, task.dueDateTimeZone),
-      timezone
-    );
-
-    dateString = timezonedDate.toISOString();
-  }
-
-  const now = new Date();
-  const date = new Date(dateString);
-
-  const dueInSeconds = (date.getTime() - now.getTime()) / 1000;
-  const isDueSoon = dueInSeconds < 60 * 60 * 24 * 3 && dueInSeconds > 60 * 60 * 24;
-  const isAlmostDue = dueInSeconds < 60 * 60 * 24 && dueInSeconds > 0;
-  const isOverDue = dueInSeconds < 0;
-
-  const dueDateString = format(date, 'PPP p');
-  const dueDateRelativeString = formatRelative(date, now, {
-    weekStartsOn: startDayOfWeek,
-  });
-
-  return (
-    <div
-      className={cn(
-        'ml-6 mt-1 text-xs',
-        isDueSoon && 'text-yellow-400',
-        isAlmostDue && 'text-orange-400',
-        isOverDue && 'font-semibold text-red-400'
-      )}
-      title={dueDateString}
-      data-test="tasks--task--due-text"
-    >
-      Due {dueDateRelativeString}
-    </div>
-  );
-};
 
 const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) => {
   const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
@@ -220,28 +153,16 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
           >
             {task.name}
           </div>
-          <TaskItemDueDate
-            task={task}
-            timezone={generalTimezone}
-            startDayOfWeek={generalStartDayOfWeek}
-          />
-          {task.deletedAt && (
-            <p className="ml-6 mt-1 text-xs text-gray-400" data-test="tasks--task--deleted-text">
-              (deleted at {new Date(task.deletedAt).toLocaleString()})
-            </p>
-          )}
-          {task.priority && (
-            <div
-              className="ml-6 mt-1 text-xs font-bold"
-              data-test="tasks--task--priority-text"
-              style={{
-                color: prioritiesColorMap.get(task.priority) ?? '',
-              }}
-            >
-              P{task.priority}
-            </div>
-          )}
-          <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
+          <div className="mt-2 flex flex-col gap-1">
+            <TaskItemPriority task={task} />
+            <TaskItemDueDate
+              task={task}
+              timezone={generalTimezone}
+              startDayOfWeek={generalStartDayOfWeek}
+            />
+            <TaskItemDeletedAt task={task} />
+            <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
+          </div>
         </div>
       </div>
       {task.children?.map((child) => <TaskItem key={child.id} task={child} depth={depth + 1} />)}

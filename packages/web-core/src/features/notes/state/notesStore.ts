@@ -16,7 +16,7 @@ import {
   getNote,
   loadNotes,
   undeleteNote,
-} from '../utils/NotesHelpers';
+} from '../utils/NoteHelpers';
 
 export type NotesStore = {
   /********** Notes **********/

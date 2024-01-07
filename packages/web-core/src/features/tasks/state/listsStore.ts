@@ -19,7 +19,7 @@ import {
   getTasksForList,
   loadLists,
   removeVisibleList,
-} from '../utils/TasksHelpers';
+} from '../utils/ListHelpers';
 
 export type ListsStore = {
   /********** Lists **********/

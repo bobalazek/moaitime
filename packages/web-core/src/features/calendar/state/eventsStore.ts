@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 import { CreateEvent, Event, UpdateEvent } from '@moaitime/shared-common';
 
-import { addEvent, deleteEvent, editEvent, undeleteEvent } from '../utils/CalendarHelpers';
+import { addEvent, deleteEvent, editEvent, undeleteEvent } from '../utils/EventHelpers';
 import { useCalendarStore } from './calendarStore';
 
 export type CalendarStore = {

@@ -38,7 +38,7 @@ describe('notes.cy.ts', () => {
 
     addNote();
 
-    cy.hasToastWithText('Success!').should('exist');
+    cy.hasToastWithText('You have successfully saved the note!');
 
     cy.getBySel('notes--note').contains('First Note');
   });
@@ -58,7 +58,7 @@ describe('notes.cy.ts', () => {
 
     cy.getBySel('notes--header').find('button').contains('Create Note').click();
 
-    cy.hasToastWithText('Success!');
+    cy.hasToastWithText('You have successfully saved the note!');
 
     cy.getBySel('notes--note').contains('First Note');
   });

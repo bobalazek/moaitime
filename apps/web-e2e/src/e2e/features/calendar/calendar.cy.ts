@@ -97,6 +97,8 @@ describe('calendar.cy.ts', () => {
       .contains('Year')
       .click();
 
+    cy.wait(100);
+
     cy.getBySel('calendar--header--view-selector--dropdown-menu--trigger-button').click();
 
     cy.getBySel('calendar--header--view-selector--dropdown-menu')

@@ -253,7 +253,7 @@ export const useAuthStore = create<AuthStore>()(
       // App Data
       loadAppData: async () => {
         const { auth, reloadTheme } = get();
-        const { loadLists } = useTasksStore.getState();
+        const { reloadLists } = useTasksStore.getState();
         const { loadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
         const { loadGreetings, setRandomGreeting } = useGreetingStore.getState();
         const { loadQuotes, setRandomQuote } = useQuoteStore.getState();
@@ -264,7 +264,7 @@ export const useAuthStore = create<AuthStore>()(
 
         reloadTheme();
 
-        loadLists();
+        reloadLists();
 
         (async () => {
           await loadBackgrounds();

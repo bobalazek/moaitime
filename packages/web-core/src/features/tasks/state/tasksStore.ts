@@ -41,7 +41,7 @@ export type TasksStore = {
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Lists **********/
   lists: List[];
-  loadLists: () => Promise<List[]>;
+  reloadLists: () => Promise<List[]>;
   addList: (list: CreateList) => Promise<List>;
   editList: (listId: string, list: UpdateList) => Promise<List>;
   deleteList: (listId: string) => Promise<List | null>;
@@ -50,7 +50,6 @@ export type TasksStore = {
   // Selected
   selectedList: List | null;
   setSelectedList: (selectedList: List | null) => Promise<List | null>;
-  reloadSelectedList: () => Promise<void>;
   // List Dialog
   selectedListDialogOpen: boolean;
   selectedListDialog: List | null;
@@ -85,6 +84,8 @@ export type TasksStore = {
   selectedListTasksSortDirection: SortDirectionEnum;
   selectedListTasksIncludeCompleted: boolean;
   selectedListTasksIncludeDeleted: boolean;
+  setSelectedListTasks: (selectedListTasks: Task[]) => void;
+  reloadSelectedListTasks: () => Promise<void>;
   setSelectedListTasksSortField: (selectedListTasksSortField: TasksListSortFieldEnum) => void;
   setSelectedListTasksSortDirection: (selectedListTasksSortDirection: SortDirectionEnum) => void;
   setSelectedListTasksIncludeCompleted: (selectedListTasksIncludeCompleted: boolean) => void;
@@ -95,14 +96,14 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   /********** General **********/
   popoverOpen: false,
   setPopoverOpen: (popoverOpen: boolean) => {
-    const { loadLists } = get();
+    const { reloadLists } = get();
 
     set({
       popoverOpen,
     });
 
     if (popoverOpen) {
-      loadLists();
+      reloadLists();
     }
   },
   // Tasks List End Element
@@ -114,7 +115,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   /********** Lists **********/
   lists: [],
-  loadLists: async () => {
+  reloadLists: async () => {
     const { selectedListTasksIncludeCompleted, selectedListTasksIncludeDeleted, selectedList } =
       get();
 
@@ -136,28 +137,28 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return lists;
   },
   addList: async (list: CreateList) => {
-    const { loadLists, setSelectedList } = get();
+    const { reloadLists, setSelectedList } = get();
     const addedList = await addList(list);
 
-    await loadLists();
+    await reloadLists();
     await setSelectedList(addedList);
 
     return addedList;
   },
   editList: async (listId: string, list: UpdateList) => {
-    const { loadLists, reloadSelectedList } = get();
+    const { reloadLists, reloadSelectedListTasks } = get();
     const editedList = await editList(listId, list);
 
-    await loadLists();
-    await reloadSelectedList();
+    await reloadLists();
+    await reloadSelectedListTasks();
 
     return editedList;
   },
   deleteList: async (listId: string) => {
-    const { loadLists, selectedList } = get();
+    const { reloadLists, selectedList } = get();
     const deletedList = await deleteList(listId);
 
-    await loadLists();
+    await reloadLists();
 
     if (selectedList?.id === listId) {
       set({
@@ -193,43 +194,15 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   // Selected
   selectedList: null,
   setSelectedList: async (selectedList: List | null) => {
-    const { reloadSelectedList } = get();
+    const { reloadSelectedListTasks } = get();
 
     set({
       selectedList,
     });
 
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
 
     return selectedList;
-  },
-  reloadSelectedList: async () => {
-    const {
-      selectedList,
-      selectedListTasksSortField,
-      selectedListTasksSortDirection,
-      selectedListTasksIncludeCompleted,
-      selectedListTasksIncludeDeleted,
-    } = get();
-
-    const selectedListTasks = selectedList
-      ? await getTasksForList(selectedList.id, {
-          sortField: selectedListTasksSortField,
-          sortDirection: selectedListTasksSortDirection,
-          includeCompleted: selectedListTasksIncludeCompleted,
-          includeDeleted: selectedListTasksIncludeDeleted,
-        })
-      : [];
-
-    set({
-      selectedListTasks,
-    });
-
-    // If we are on the calendar page, we need to reload the calendar entries
-    const { calendars, loadCalendarEntries } = useCalendarStore.getState();
-    if (calendars.length > 0) {
-      await loadCalendarEntries();
-    }
   },
   // List Dialog
   selectedListDialogOpen: false,
@@ -257,20 +230,17 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   /********** Tasks **********/
   addTask: async (task: CreateTask) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadSelectedListTasks, reloadLists } = get();
 
     const addedTask = await addTask(task);
 
-    set({
-      lists: await loadLists(), // We want to reload the count of tasks
-    });
-
-    await reloadSelectedList();
+    await reloadLists(), // We want to reload the count of tasks
+      await reloadSelectedListTasks();
 
     return addedTask;
   },
   editTask: async (taskId: string, task: UpdateTask) => {
-    const { lists, loadLists, reloadSelectedList, selectedListTasks } = get();
+    const { lists, reloadLists, reloadSelectedListTasks, selectedListTasks } = get();
 
     const originalTask = selectedListTasks.find((task) => task.id === taskId);
 
@@ -286,15 +256,15 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
         selectedList,
       });
 
-      await loadLists();
+      await reloadLists();
     }
 
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
 
     return editedTask;
   },
   moveTask: async (taskId: string, newListId: string) => {
-    const { lists, reloadSelectedList, loadLists } = get();
+    const { lists, reloadSelectedListTasks, reloadLists } = get();
 
     const movedTask = await editTask(taskId, {
       listId: newListId,
@@ -308,81 +278,70 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       selectedList,
     });
 
-    await reloadSelectedList();
-
+    await reloadSelectedListTasks();
     // We need to update the counts of the lists, once it was moved to another list
-    await loadLists();
+    await reloadLists();
 
     return movedTask;
   },
   deleteTask: async (taskId: string, isHardDelete?: boolean) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadLists, reloadSelectedListTasks } = get();
 
     const deletedTask = await deleteTask(taskId, isHardDelete);
 
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
 
-    set({
-      lists: await loadLists(), // We want to reload the count of tasks
-    });
+    await reloadLists(); // We want to reload the count of tasks
 
     return deletedTask;
   },
   undeleteTask: async (taskId: string) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadSelectedListTasks, reloadLists } = get();
 
     const undeletedTask = await undeleteTask(taskId);
 
-    await reloadSelectedList();
-
-    set({
-      lists: await loadLists(), // We want to reload the count of tasks
-    });
+    await reloadSelectedListTasks();
+    await reloadLists(); // We want to reload the count of tasks
 
     return undeletedTask;
   },
   duplicateTask: async (taskId: string) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadSelectedListTasks, reloadLists } = get();
 
     const duplicatedTask = await duplicateTask(taskId);
 
-    await reloadSelectedList();
-
-    set({
-      lists: await loadLists(), // We want to reload the count of tasks
-    });
+    await reloadSelectedListTasks();
+    await reloadLists(); // We want to reload the count of tasks
 
     return duplicatedTask;
   },
   completeTask: async (taskId: string) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadSelectedListTasks, reloadLists } = get();
 
     const completedTask = await completeTask(taskId);
 
-    set({
-      lists: await loadLists(), // We want to reload the count of tasks
-    });
-
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
+    await reloadLists(); // We want to reload the count of tasks
 
     return completedTask;
   },
   uncompleteTask: async (taskId: string) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadSelectedListTasks, reloadLists } = get();
 
     const uncompletedTask = await uncompleteTask(taskId);
 
-    set({
-      lists: await loadLists(), // We want to reload the count of tasks
-    });
-
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
+    await reloadLists(); // We want to reload the count of tasks
 
     return uncompletedTask;
   },
   reorderTasks: async (originalTaskId: string, newTaskId: string) => {
-    const { selectedList, selectedListTasks, reloadSelectedList, selectedListTasksSortDirection } =
-      get();
+    const {
+      selectedList,
+      selectedListTasks,
+      reloadSelectedListTasks,
+      selectedListTasksSortDirection,
+    } = get();
     if (!selectedList) {
       return;
     }
@@ -398,7 +357,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     await reorderTask(selectedList.id, originalTaskId, newTaskId, selectedListTasksSortDirection);
 
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
   },
   // Selected
   selectedTaskDialogOpen: false,
@@ -415,42 +374,75 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   selectedListTasksSortDirection: SortDirectionEnum.ASC,
   selectedListTasksIncludeCompleted: true,
   selectedListTasksIncludeDeleted: false,
+  setSelectedListTasks: (selectedListTasks: Task[]) => {
+    set({
+      selectedListTasks,
+    });
+  },
+  reloadSelectedListTasks: async () => {
+    const {
+      selectedList,
+      selectedListTasksSortField,
+      selectedListTasksSortDirection,
+      selectedListTasksIncludeCompleted,
+      selectedListTasksIncludeDeleted,
+    } = get();
+
+    const selectedListTasks = selectedList
+      ? await getTasksForList(selectedList.id, {
+          sortField: selectedListTasksSortField,
+          sortDirection: selectedListTasksSortDirection,
+          includeCompleted: selectedListTasksIncludeCompleted,
+          includeDeleted: selectedListTasksIncludeDeleted,
+        })
+      : [];
+
+    set({
+      selectedListTasks,
+    });
+
+    // If we are on the calendar page, we need to reload the calendar entries
+    const { calendars, loadCalendarEntries } = useCalendarStore.getState();
+    if (calendars.length > 0) {
+      await loadCalendarEntries();
+    }
+  },
   setSelectedListTasksSortField: async (selectedListTasksSortField: TasksListSortFieldEnum) => {
-    const { reloadSelectedList } = get();
+    const { reloadSelectedListTasks } = get();
 
     set({
       selectedListTasksSortField,
     });
 
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
   },
   setSelectedListTasksSortDirection: async (selectedListTasksSortDirection: SortDirectionEnum) => {
-    const { reloadSelectedList } = get();
+    const { reloadSelectedListTasks } = get();
 
     set({
       selectedListTasksSortDirection,
     });
 
-    await reloadSelectedList();
+    await reloadSelectedListTasks();
   },
   setSelectedListTasksIncludeCompleted: async (selectedListTasksIncludeCompleted: boolean) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadSelectedListTasks, reloadLists } = get();
 
     set({
       selectedListTasksIncludeCompleted,
     });
 
-    await reloadSelectedList();
-    await loadLists();
+    await reloadSelectedListTasks();
+    await reloadLists();
   },
   setSelectedListTasksIncludeDeleted: async (selectedListTasksIncludeDeleted: boolean) => {
-    const { reloadSelectedList, loadLists } = get();
+    const { reloadSelectedListTasks, reloadLists } = get();
 
     set({
       selectedListTasksIncludeDeleted,
     });
 
-    await reloadSelectedList();
-    await loadLists();
+    await reloadSelectedListTasks();
+    await reloadLists();
   },
 }));

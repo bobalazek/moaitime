@@ -26,6 +26,13 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
   const isCompleted = !!task.completedAt;
   const isDeleted = !!task.deletedAt;
 
+  const checkboxBackgroundColor = task.color ?? '';
+  const checkboxColor = checkboxBackgroundColor
+    ? colord(checkboxBackgroundColor).isDark()
+      ? 'white'
+      : 'black'
+    : '';
+
   const onClick = useCallback(() => {
     setSelectedTaskDialogOpen(true, task);
   }, [setSelectedTaskDialogOpen, task]);
@@ -96,13 +103,6 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
 
   const onSingleAndDoubleClick = useSingleAndDoubleClick(onClick, onDoubleClick);
 
-  const checkboxBackgroundColor = task.color ?? '';
-  const checkboxColor = checkboxBackgroundColor
-    ? colord(checkboxBackgroundColor).isDark()
-      ? 'white'
-      : 'black'
-    : '';
-
   return (
     <div
       data-test="tasks--task-wrapper"
@@ -111,7 +111,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
       }}
     >
       <div
-        className="rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+        className="flex flex-col rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
         onClick={onSingleAndDoubleClick}
         data-test="tasks--task"
         data-task-id={task.id}
@@ -153,7 +153,10 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
           >
             {task.name}
           </div>
-          <div className="mt-2 flex flex-col gap-1">
+          <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
+        </div>
+        {(task.priority || task.dueDate || task.deletedAt) && (
+          <div className="ml-6 mt-1.5 flex items-center gap-3">
             <TaskItemPriority task={task} />
             <TaskItemDueDate
               task={task}
@@ -161,9 +164,8 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
               startDayOfWeek={generalStartDayOfWeek}
             />
             <TaskItemDeletedAt task={task} />
-            <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
           </div>
-        </div>
+        )}
       </div>
       {task.children?.map((child) => <TaskItem key={child.id} task={child} depth={depth + 1} />)}
     </div>

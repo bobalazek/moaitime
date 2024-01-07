@@ -11,7 +11,7 @@ const TaskItemDeletedAt = ({ task }: { task: TaskType }) => {
 
   return (
     <div
-      className="ml-6 flex items-center space-x-1 align-middle text-xs  text-gray-400"
+      className="flex items-center space-x-1 align-middle text-xs text-gray-400"
       data-test="tasks--task--deleted-text"
       title={`Deleted ${deletedAtString}`}
     >

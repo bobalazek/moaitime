@@ -1,8 +1,8 @@
 export const PRIORITIES = [
   {
-    name: 'High',
-    value: 1,
-    color: '#EF4444',
+    name: 'Low',
+    value: 3,
+    color: '#3B82F6',
   },
   {
     name: 'Medium',
@@ -10,9 +10,9 @@ export const PRIORITIES = [
     color: '#F59E0B',
   },
   {
-    name: 'Low',
-    value: 3,
-    color: '#3B82F6',
+    name: 'High',
+    value: 1,
+    color: '#EF4444',
   },
 ];
 

@@ -6,6 +6,16 @@ import { NoteTypeEnum } from './NoteTypeEnum';
 export const NoteNodeSchema = z.object({
   type: z.string().optional(),
   text: z.string().optional(),
+  indent: z.number().optional(),
+  bold: z.boolean().optional(),
+  italic: z.boolean().optional(),
+  underline: z.boolean().optional(),
+  strikethrough: z.boolean().optional(),
+  code: z.boolean().optional(),
+  color: z.string().optional(),
+  backgroundColor: z.string().optional(),
+  highlight: z.string().optional(),
+  href: z.string().optional(),
 });
 
 export const NodeNodeWithChildrenSchema = NoteNodeSchema.extend({
@@ -18,7 +28,7 @@ export const NoteContentSchema = z.array(NodeNodeWithChildrenSchema, {
 
 export const NoteSchema = z.object({
   id: z.string(),
-  type: z.string(),
+  type: z.nativeEnum(NoteTypeEnum).default(NoteTypeEnum.NOTE),
   title: z.string(),
   content: NoteContentSchema,
   color: z.string().nullable(),

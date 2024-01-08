@@ -1,6 +1,6 @@
 import { and, asc, count, DBQueryConfig, desc, eq, ilike, isNull } from 'drizzle-orm';
 
-import { getDatabase, NewNote, Note, notes } from '@moaitime/database-core';
+import { getDatabase, NewNote, Note, notes, NoteWithoutContent } from '@moaitime/database-core';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
 export type NotesManagerFindManyByUserIdWithOptions = {
@@ -24,7 +24,7 @@ export class NotesManager {
   async findManyByUserIdWithOptions(
     userId: string,
     options?: NotesManagerFindManyByUserIdWithOptions
-  ): Promise<Note[]> {
+  ): Promise<NoteWithoutContent[]> {
     let where = and(eq(notes.userId, userId), isNull(notes.deletedAt));
     let orderBy = desc(notes.createdAt);
 
@@ -42,6 +42,9 @@ export class NotesManager {
     return getDatabase().query.notes.findMany({
       where,
       orderBy,
+      columns: {
+        content: false,
+      },
     });
   }
 

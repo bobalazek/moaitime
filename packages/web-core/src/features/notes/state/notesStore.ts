@@ -151,13 +151,20 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   selectedNoteData: null,
   selectedNoteDataChanged: false,
   setSelectedNote: async (selectedNote: Note | null) => {
+    const { getNote } = get();
+
+    // The reason we get this is,
+    // because that selected note most likely won't have the "content" field,
+    // so we need to populate it here.
+    const note = selectedNote ? await getNote(selectedNote.id) : null;
+
     set({
-      selectedNote,
-      selectedNoteData: selectedNote,
+      selectedNote: note,
+      selectedNoteData: note,
       selectedNoteDataChanged: false,
     });
 
-    return selectedNote;
+    return note;
   },
   setSelectedNoteData: async (selectedNoteData: CreateNote | UpdateNote | null) => {
     set({

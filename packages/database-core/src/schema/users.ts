@@ -7,6 +7,7 @@ import { backgrounds } from './backgrounds';
 import { calendars } from './calendars';
 import { greetings } from './greetings';
 import { interests } from './interests';
+import { moodEntries } from './moodEntries';
 import { organizationUsers } from './organizationUsers';
 import { quotes } from './quotes';
 import { teamUsers } from './teamUsers';
@@ -71,6 +72,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   backgrounds: many(backgrounds),
   quotes: many(quotes),
   interests: many(interests),
+  moodEntries: many(moodEntries),
 }));
 
 export type User = typeof users.$inferSelect;

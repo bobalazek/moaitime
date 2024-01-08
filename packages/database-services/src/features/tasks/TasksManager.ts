@@ -12,6 +12,7 @@ import {
   isNotNull,
   isNull,
   lte,
+  sql,
   SQL,
 } from 'drizzle-orm';
 
@@ -406,6 +407,42 @@ export class TasksManager {
     }
 
     return map;
+  }
+
+  async getCountsByListIdsAndYear(listIds: string[], year: number) {
+    const startOfYear = new Date(year, 0, 1);
+    const endOfYear = new Date(year + 1, 0, 1);
+
+    if (listIds.length === 0) {
+      return [];
+    }
+
+    const dueDate = sql<Date>`DATE(${tasks.dueDate})`;
+    const where = and(
+      inArray(lists.id, listIds),
+      isNull(lists.deletedAt),
+      isNull(tasks.deletedAt),
+      isNotNull(tasks.dueDate),
+      between(dueDate, startOfYear, endOfYear)
+    );
+
+    const result = await getDatabase()
+      .select({
+        count: count(tasks.id).mapWith(Number),
+        date: dueDate,
+      })
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(where)
+      .groupBy(dueDate)
+      .execute();
+
+    return result.map((row) => {
+      return {
+        date: format(row.date, 'yyyy-MM-dd'),
+        count: row.count,
+      };
+    });
   }
 
   // Private

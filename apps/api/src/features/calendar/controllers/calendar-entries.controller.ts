@@ -58,8 +58,29 @@ export class CalendarEntriesController {
   async yearly(@Req() req: Request): Promise<AbstractResponseDto<CalendarEntryYearlyEntry[]>> {
     const year = parseInt(req.query.year);
 
+    // Calendar
     const calendarIds = await calendarsManager.getVisibleCalendarIdsByUserId(req.user.id);
-    const data = await eventsManager.getCountsByCalendarIdsAndYear(calendarIds, year);
+    const calendarCounts = await eventsManager.getCountsByCalendarIdsAndYear(calendarIds, year);
+
+    // Tasks
+    const listIds = await listsManager.getVisibleListIdsByUserId(req.user.id);
+    const taskCounts = await tasksManager.getCountsByListIdsAndYear(listIds, year);
+
+    // Merge
+    const daysMap = new Map<string, number>();
+    for (const calendarCount of calendarCounts) {
+      daysMap.set(calendarCount.date, calendarCount.count);
+    }
+
+    for (const taskCount of taskCounts) {
+      const count = daysMap.get(taskCount.date) ?? 0;
+      daysMap.set(taskCount.date, count + taskCount.count);
+    }
+
+    const data = [...daysMap.entries()].map(([date, count]) => ({
+      date,
+      count,
+    })) as CalendarEntryYearlyEntry[];
 
     return {
       success: true,

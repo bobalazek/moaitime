@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { Note } from '@moaitime/database-core';
+import { Note, NoteWithoutContent } from '@moaitime/database-core';
 import { notesManager, usersManager } from '@moaitime/database-services';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
@@ -26,7 +26,7 @@ import { UpdateNoteDto } from '../dto/update-note.dto';
 export class NotesController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async list(@Req() req: Request): Promise<AbstractResponseDto<Note[]>> {
+  async list(@Req() req: Request): Promise<AbstractResponseDto<NoteWithoutContent[]>> {
     const search = req.query.search as string;
     const sortField = req.query.sortField as NotesListSortFieldEnum;
     const sortDirection = req.query.sortDirection as SortDirectionEnum;

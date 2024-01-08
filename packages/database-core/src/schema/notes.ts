@@ -32,4 +32,6 @@ export const notesRelations = relations(notes, ({ one }) => ({
 
 export type Note = typeof notes.$inferSelect;
 
+export type NoteWithoutContent = Omit<Note, 'content'>;
+
 export type NewNote = typeof notes.$inferInsert;

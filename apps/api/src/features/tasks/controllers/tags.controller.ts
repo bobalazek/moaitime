@@ -6,8 +6,8 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -73,7 +73,7 @@ export class TagsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Req() req: Request,
     @Param('id') id: string,

@@ -13,8 +13,7 @@ import {
 import { Request } from 'express';
 
 import { Calendar } from '@moaitime/database-core';
-import { calendarsManager } from '@moaitime/database-services';
-import { CALENDARS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
+import { calendarsManager, usersManager } from '@moaitime/database-services';
 import { Calendar as ApiCalendar, CreateCalendar, User } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
@@ -64,10 +63,15 @@ export class CalendarsController {
     @Body() body: CreateCalendarDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Calendar>> {
+    const calendarsMaxPerUserCount = await usersManager.getUserLimits(
+      req.user,
+      'calendarsMaxPerUserCount'
+    );
+
     const calendarsCount = await calendarsManager.countByUserId(req.user.id);
-    if (calendarsCount >= CALENDARS_MAX_PER_USER_COUNT) {
+    if (calendarsCount >= calendarsMaxPerUserCount) {
       throw new ForbiddenException(
-        `You have reached the maximum number of calendars per user (${CALENDARS_MAX_PER_USER_COUNT}).`
+        `You have reached the maximum number of calendars per user (${calendarsMaxPerUserCount}).`
       );
     }
 

@@ -24,16 +24,6 @@ export const MAILER_FROM = 'MoaiTime Mailer <mailer@bobalazek.com>';
 
 // Tasks, Lists & Tags
 export const LISTS_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];
-export const TASKS_MAX_PER_LIST_COUNT = 50;
-export const LISTS_MAX_PER_USER_COUNT = 10;
-export const TAGS_MAX_PER_USER_COUNT = 20;
-
-// Calendar
-export const CALENDARS_MAX_PER_USER_COUNT = 10;
-export const CALENDARS_MAX_EVENTS_PER_CALENDAR_COUNT = 500;
-
-// Notes
-export const NOTES_MAX_PER_USER_COUNT = 100;
 
 // Queue
 export const QUEUE_WORKERS_SHARED_QUEUE_NAME = 'shared-queue';

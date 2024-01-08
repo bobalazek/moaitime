@@ -14,8 +14,7 @@ import {
 import { Request } from 'express';
 
 import { Tag } from '@moaitime/database-core';
-import { tagsManager } from '@moaitime/database-services';
-import { TAGS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
+import { tagsManager, usersManager } from '@moaitime/database-services';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -62,10 +61,12 @@ export class TagsController {
   @UseGuards(AuthenticatedGuard)
   @Post()
   async create(@Body() body: CreateTagDto, @Req() req: Request): Promise<AbstractResponseDto<Tag>> {
+    const tagsMaxPerUserCount = await usersManager.getUserLimits(req.user, 'listsMaxPerUserCount');
+
     const tagsCount = await tagsManager.countByUserId(req.user.id);
-    if (tagsCount >= TAGS_MAX_PER_USER_COUNT) {
+    if (tagsCount >= tagsMaxPerUserCount) {
       throw new ForbiddenException(
-        `You have reached the maximum number of tags per user (${TAGS_MAX_PER_USER_COUNT}).`
+        `You have reached the maximum number of tags per user (${tagsMaxPerUserCount}).`
       );
     }
 

@@ -14,8 +14,7 @@ import {
 import { Request } from 'express';
 
 import { Event } from '@moaitime/database-core';
-import { calendarsManager, eventsManager } from '@moaitime/database-services';
-import { CALENDARS_MAX_EVENTS_PER_CALENDAR_COUNT } from '@moaitime/shared-backend';
+import { calendarsManager, eventsManager, usersManager } from '@moaitime/database-services';
 import { getTimezonedEndOfDay, getTimezonedStartOfDay } from '@moaitime/shared-common';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -47,10 +46,15 @@ export class EventsController {
     @Body() body: CreateEventDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Event>> {
+    const calendarsMaxEventsPerCalendarCount = await usersManager.getUserLimits(
+      req.user,
+      'calendarsMaxEventsPerCalendarCount'
+    );
+
     const listsCount = await eventsManager.countByCalendarId(body.calendarId);
-    if (listsCount >= CALENDARS_MAX_EVENTS_PER_CALENDAR_COUNT) {
+    if (listsCount >= calendarsMaxEventsPerCalendarCount) {
       throw new Error(
-        `You have reached the maximum number of events per calendar (${CALENDARS_MAX_EVENTS_PER_CALENDAR_COUNT}).`
+        `You have reached the maximum number of events per calendar (${calendarsMaxEventsPerCalendarCount}).`
       );
     }
 

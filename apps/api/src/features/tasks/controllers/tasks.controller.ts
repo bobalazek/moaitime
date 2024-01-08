@@ -13,8 +13,7 @@ import {
 import { Request } from 'express';
 
 import { Task } from '@moaitime/database-core';
-import { listsManager, tasksManager } from '@moaitime/database-services';
-import { TASKS_MAX_PER_LIST_COUNT } from '@moaitime/shared-backend';
+import { listsManager, tasksManager, usersManager } from '@moaitime/database-services';
 import { SortDirectionEnum } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
@@ -98,10 +97,12 @@ export class TasksController {
       throw new NotFoundException('List not found');
     }
 
+    const tasksMaxPerListCount = await usersManager.getUserLimits(req.user, 'tasksMaxPerListCount');
+
     const tasksCount = await tasksManager.countByListId(list.id);
-    if (tasksCount >= TASKS_MAX_PER_LIST_COUNT) {
+    if (tasksCount >= tasksMaxPerListCount) {
       throw new Error(
-        `You have reached the maximum number of tasks per list (${TASKS_MAX_PER_LIST_COUNT}).`
+        `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
       );
     }
 

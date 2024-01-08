@@ -14,8 +14,7 @@ import {
 import { Request } from 'express';
 
 import { Note } from '@moaitime/database-core';
-import { notesManager } from '@moaitime/database-services';
-import { NOTES_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
+import { notesManager, usersManager } from '@moaitime/database-services';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -69,10 +68,12 @@ export class NotesController {
     @Body() body: CreateNoteDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Note>> {
+    const notesMaxPerUserCount = await usersManager.getUserLimits(req.user, 'notesMaxPerUserCount');
+
     const listsCount = await notesManager.countByUserId(req.user.id);
-    if (listsCount >= NOTES_MAX_PER_USER_COUNT) {
+    if (listsCount >= notesMaxPerUserCount) {
       throw new Error(
-        `You have reached the maximum number of notes per user (${NOTES_MAX_PER_USER_COUNT}).`
+        `You have reached the maximum number of notes per user (${notesMaxPerUserCount}).`
       );
     }
 

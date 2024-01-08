@@ -4,6 +4,15 @@ import { DBQueryConfig, eq } from 'drizzle-orm';
 import { getDatabase, NewUser, User, users } from '@moaitime/database-core';
 import { DEFAULT_USER_SETTINGS, UserSettings } from '@moaitime/shared-common';
 
+export type UserLimits = {
+  tasksMaxPerListCount: number;
+  listsMaxPerUserCount: number;
+  tagsMaxPerUserCount: number;
+  calendarsMaxPerUserCount: number;
+  calendarsMaxEventsPerCalendarCount: number;
+  notesMaxPerUserCount: number;
+};
+
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
     const rows = await getDatabase().query.users.findMany(options);
@@ -115,6 +124,22 @@ export class UsersManager {
       ...DEFAULT_USER_SETTINGS,
       ...(user.settings ?? {}),
     };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getUserLimits(user: User, key: keyof UserLimits): Promise<number> {
+    // TODO: once we have plans, we need to adjust the limits depending on that
+
+    const limits: UserLimits = {
+      tasksMaxPerListCount: 50,
+      listsMaxPerUserCount: 10,
+      tagsMaxPerUserCount: 20,
+      calendarsMaxPerUserCount: 10,
+      calendarsMaxEventsPerCalendarCount: 500,
+      notesMaxPerUserCount: 100,
+    };
+
+    return limits[key];
   }
 
   // Helpers

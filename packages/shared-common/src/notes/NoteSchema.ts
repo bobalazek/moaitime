@@ -17,9 +17,17 @@ export const NoteNodeSchema = z.object({
   backgroundColor: z.string().optional(),
   highlight: z.string().optional(),
   align: z.string().optional(),
+  lineHeight: z.number().optional(),
   url: z.string().optional(),
   size: z.number().optional(),
   colSizes: z.array(z.number()).optional(),
+  borders: z
+    .record(
+      z.object({
+        size: z.number().optional(),
+      })
+    )
+    .optional(),
 });
 
 export type NoteNode = z.infer<typeof NoteNodeSchema> & {

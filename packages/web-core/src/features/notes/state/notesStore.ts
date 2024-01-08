@@ -40,7 +40,7 @@ export type NotesStore = {
   selectedNote: Note | null;
   selectedNoteData: CreateNote | UpdateNote | null; // The cloned object of the selectedNote, so we don't mutate the original
   selectedNoteDataChanged: boolean;
-  setSelectedNote: (note: Note | null) => Promise<Note | null>;
+  setSelectedNote: (note: Note | null, skipGet?: boolean) => Promise<Note | null>;
   setSelectedNoteData: (
     noteData: CreateNote | UpdateNote | null
   ) => Promise<CreateNote | UpdateNote | null>;
@@ -70,19 +70,27 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     return note;
   },
   addNote: async (note: CreateNote) => {
-    const { loadNotes, setSelectedNoteData } = get();
+    const { selectedNote, loadNotes, setSelectedNoteData } = get();
     const addedNote = await addNote(note);
 
     await loadNotes();
     await setSelectedNoteData(addedNote);
 
+    if (selectedNote?.id === addedNote.id) {
+      await setSelectedNoteData(addedNote);
+    }
+
     return addedNote;
   },
   editNote: async (noteId: string, note: UpdateNote) => {
-    const { loadNotes } = get();
+    const { selectedNote, loadNotes, setSelectedNote } = get();
     const editedNote = await editNote(noteId, note);
 
     await loadNotes();
+
+    if (selectedNote?.id === editedNote.id) {
+      await setSelectedNote(editedNote, true);
+    }
 
     return editedNote;
   },
@@ -150,13 +158,13 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   selectedNote: null,
   selectedNoteData: null,
   selectedNoteDataChanged: false,
-  setSelectedNote: async (selectedNote: Note | null) => {
+  setSelectedNote: async (selectedNote: Note | null, skipGet?: boolean) => {
     const { getNote } = get();
 
     // The reason we get this is,
     // because that selected note most likely won't have the "content" field,
     // so we need to populate it here.
-    const note = selectedNote ? await getNote(selectedNote.id) : null;
+    const note = skipGet ? selectedNote : selectedNote ? await getNote(selectedNote.id) : null;
 
     set({
       selectedNote: note,

@@ -8,6 +8,8 @@ import { useNotesStore } from '../../state/notesStore';
 export const NoteEditor = () => {
   const { selectedNote, selectedNoteData, setSelectedNoteData } = useNotesStore();
 
+  const plateEditorKey = selectedNote ? `${selectedNote.id}-${selectedNote.updatedAt}` : 'new';
+
   return (
     <div className="flex flex-col" data-test="note-editor">
       <div className="mb-4">
@@ -27,7 +29,7 @@ export const NoteEditor = () => {
       </div>
       <ErrorBoundary>
         <PlateEditor
-          key={selectedNote?.id}
+          key={plateEditorKey}
           value={selectedNoteData?.content}
           onChange={(value) => {
             setSelectedNoteData({

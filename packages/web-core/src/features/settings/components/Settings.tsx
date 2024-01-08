@@ -2,7 +2,6 @@ import { CogIcon } from 'lucide-react';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useSettingsStore } from '../state/settingsStore';
-import SettingsDialog from './SettingsDialog';
 
 export default function Settings() {
   const { setDialogOpen } = useSettingsStore();
@@ -19,7 +18,6 @@ export default function Settings() {
       >
         <CogIcon className="text-3xl" />
       </button>
-      <SettingsDialog />
     </ErrorBoundary>
   );
 }

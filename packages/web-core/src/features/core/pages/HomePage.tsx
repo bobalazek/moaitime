@@ -7,7 +7,6 @@ import BackgroundInformation from '../../background/components/BackgroundInfroma
 import Calendar from '../../calendar/components/Calendar';
 import Clock from '../../clock/components/Clock';
 import CommandsButton from '../../commands/components/CommandsButton';
-import CommandsDialog from '../../commands/components/CommandsDialog';
 import Greeting from '../../greeting/components/Greeting';
 import Notes from '../../notes/components/Notes';
 import Quote from '../../quote/components/Quote';
@@ -180,7 +179,6 @@ export default function HomePage() {
           </AnimatePresence>
         </div>
       </motion.div>
-      {commandsEnabled && <CommandsDialog />}
     </ErrorBoundary>
   );
 }

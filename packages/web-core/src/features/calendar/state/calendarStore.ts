@@ -33,6 +33,7 @@ export type CalendarStore = {
   // Selected Date
   selectedDate: Date;
   setSelectedDate: (selectedDate: Date) => void;
+  setSelectedDateAndView: (selectedDate: Date, selectedView: CalendarViewEnum) => void; // We need this so we prevent double reloads when calling each of those separately
   // Selected View
   selectedView: CalendarViewEnum;
   setSelectedView: (selectedView: CalendarViewEnum) => void;
@@ -87,6 +88,16 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     set({
       selectedDate,
+    });
+
+    reloadSelectedDays();
+  },
+  setSelectedDateAndView: (selectedDate: Date, selectedView: CalendarViewEnum) => {
+    const { reloadSelectedDays } = get();
+
+    set({
+      selectedDate,
+      selectedView,
     });
 
     reloadSelectedDays();

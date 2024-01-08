@@ -1,18 +1,13 @@
 import { format } from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { CalendarViewEnum, calendarViewOptions } from '@moaitime/shared-common';
+import { CalendarViewEnum } from '@moaitime/shared-common';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
-import TaskEditDialog from '../../../tasks/components/task-edit-dialog/TaskEditDialog';
+import { useCalendarShortcuts } from '../../hooks/useCalendarShortcuts';
+import { useCalendarStateAndUrlSync } from '../../hooks/useCalendarStateAndUrlSync';
 import { useCalendarStore } from '../../state/calendarStore';
-import { useEventsStore } from '../../state/eventsStore';
-import CalendarDeleteAlertDialog from '../calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
-import CalendarEditDialog from '../calendar-edit-dialog/CalendarEditDialog';
-import DeletedCalendarsDialog from '../deleted-calendars-dialog/DeletedCalendarsDialog';
-import EventEditDialog from '../event-edit-dialog/EventEditDialog';
 import CalendarAgendaView from '../views/CalendarAgendaView';
 import CalendarDailyView from '../views/CalendarDailyView';
 import CalendarMonthlyView from '../views/CalendarMonthlyView';
@@ -24,19 +19,13 @@ export default function CalendarPage() {
   const {
     selectedView,
     selectedDate,
-    settingsSheetOpen,
-    selectedCalendarDialogOpen,
     setSelectedView,
     setSelectedDate,
     loadCalendars,
     reloadSelectedDays,
   } = useCalendarStore();
-  const { selectedEventDialogOpen } = useEventsStore();
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitializedRef = useRef(false); // Prevents react to trigger useEffect twice
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [targetUri, setTargetUri] = useState(location.pathname);
 
   const updateStateByUrl = useDebouncedCallback(() => {
     const newSelectedView = location.pathname.replace('/calendar/', '') as CalendarViewEnum;
@@ -54,6 +43,9 @@ export default function CalendarPage() {
     }
   }, 50);
 
+  useCalendarShortcuts(headerRef);
+  useCalendarStateAndUrlSync(updateStateByUrl);
+
   useEffect(() => {
     if (isInitializedRef.current) {
       return;
@@ -67,79 +59,6 @@ export default function CalendarPage() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // If URL changes
-  useEffect(() => {
-    const onPopState = () => {
-      updateStateByUrl();
-    };
-
-    window.addEventListener('popstate', onPopState);
-
-    return () => {
-      window.removeEventListener('popstate', onPopState);
-    };
-  }, [updateStateByUrl]);
-
-  useEffect(() => {
-    const currentUri = `${location.pathname}${location.search}`;
-    if (currentUri !== targetUri) {
-      navigate(targetUri);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetUri]);
-
-  // If State changes
-  useEffect(() => {
-    const newTargetUri = `/calendar/${selectedView}?selectedDate=${format(
-      selectedDate,
-      'yyyy-MM-dd'
-    )}`;
-
-    setTargetUri(newTargetUri);
-  }, [setTargetUri, selectedView, selectedDate, targetUri]);
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const onKeydown = (event: KeyboardEvent) => {
-      if (settingsSheetOpen || selectedCalendarDialogOpen || selectedEventDialogOpen) {
-        return;
-      }
-
-      const selectedViewByKey = calendarViewOptions.find(
-        (option) => option.keyboardShortcutKey === event.key
-      )?.value;
-      if (selectedViewByKey) {
-        event.preventDefault();
-
-        setSelectedDate(new Date());
-        setSelectedView(selectedViewByKey);
-      } else if (event.key === 'PageUp') {
-        event.preventDefault();
-
-        headerRef.current?.onPrevButtonClick();
-      } else if (event.key === 'PageDown') {
-        event.preventDefault();
-
-        headerRef.current?.onNextButtonClick();
-      } else if (event.key === 'Home') {
-        event.preventDefault();
-
-        headerRef.current?.onTodayButtonClick();
-      } else if (event.key === 'Escape') {
-        event.preventDefault();
-
-        navigate('/');
-      }
-    };
-
-    document.addEventListener('keydown', onKeydown);
-
-    return () => document.removeEventListener('keydown', onKeydown);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingsSheetOpen, selectedCalendarDialogOpen, selectedEventDialogOpen]);
 
   return (
     <ErrorBoundary>
@@ -155,11 +74,6 @@ export default function CalendarPage() {
           {selectedView === CalendarViewEnum.AGENDA && <CalendarAgendaView />}
         </div>
       </div>
-      <CalendarEditDialog />
-      <EventEditDialog />
-      <DeletedCalendarsDialog />
-      <CalendarDeleteAlertDialog />
-      <TaskEditDialog />
     </ErrorBoundary>
   );
 }

@@ -6,12 +6,42 @@ import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotP
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
+import { useAuthStore } from './features/auth/state/authStore';
+import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
+import CalendarEditDialog from './features/calendar/components/calendar-edit-dialog/CalendarEditDialog';
+import DeletedCalendarsDialog from './features/calendar/components/deleted-calendars-dialog/DeletedCalendarsDialog';
+import EventEditDialog from './features/calendar/components/event-edit-dialog/EventEditDialog';
 import CalendarPage from './features/calendar/components/pages/CalendarPage';
+import CommandsDialog from './features/commands/components/CommandsDialog';
 import ProtectedRoute from './features/core/components/ProtectedRoute';
 import PublicOnlyRoute from './features/core/components/PublicOnlyRoute';
 import HomePage from './features/core/pages/HomePage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
+import SettingsDialog from './features/settings/components/SettingsDialog';
+import ListDeleteAlertDialog from './features/tasks/components/list-delete-alert-dialog/ListDeleteAlertDialog';
+import ListEditDialog from './features/tasks/components/list-edit-dialog/ListEditDialog';
+import TaskEditDialog from './features/tasks/components/task-edit-dialog/TaskEditDialog';
+
+function GlobalDialogs() {
+  const { auth } = useAuthStore();
+
+  const commandsEnabled = auth?.user?.settings?.commandsEnabled ?? false;
+
+  return (
+    <>
+      <TaskEditDialog />
+      <ListEditDialog />
+      <ListDeleteAlertDialog />
+      <SettingsDialog />
+      <CalendarEditDialog />
+      <EventEditDialog />
+      <DeletedCalendarsDialog />
+      <CalendarDeleteAlertDialog />
+      {commandsEnabled && <CommandsDialog />}
+    </>
+  );
+}
 
 export function AppRoutes() {
   return (
@@ -77,6 +107,7 @@ export function AppRoutes() {
         <Route path="/delete-account" element={<AuthDeleteAccountPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <GlobalDialogs />
     </BrowserRouter>
   );
 }

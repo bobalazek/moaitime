@@ -18,7 +18,7 @@ import { useListsStore } from './listsStore';
 export type TasksStore = {
   /********** General **********/
   popoverOpen: boolean;
-  setPopoverOpen: (popoverOpen: boolean) => void;
+  setPopoverOpen: (popoverOpen: boolean) => Promise<void>;
   // Tasks List End Element
   listEndElement: HTMLElement | null;
   setListEndElement: (listEndElement: HTMLElement | null) => void;
@@ -38,18 +38,19 @@ export type TasksStore = {
   setSelectedTaskDialogOpen: (selectedTaskDialogOpen: boolean, selectedTask?: Task | null) => void;
 };
 
-export const useTasksStore = create<TasksStore>()((set) => ({
+export const useTasksStore = create<TasksStore>()((set, get) => ({
   /********** General **********/
   popoverOpen: false,
-  setPopoverOpen: (popoverOpen: boolean) => {
+  setPopoverOpen: async (popoverOpen: boolean) => {
+    const { popoverOpen: currentPopoverOpen } = get();
     const { reloadLists } = useListsStore.getState();
 
     set({
       popoverOpen,
     });
 
-    if (popoverOpen) {
-      reloadLists();
+    if (popoverOpen && !currentPopoverOpen) {
+      await reloadLists();
     }
   },
   // Tasks List End Element
@@ -85,7 +86,7 @@ export const useTasksStore = create<TasksStore>()((set) => ({
           return list.id === editedTask.listId;
         }) ?? null;
 
-      setSelectedList(selectedList);
+      await setSelectedList(selectedList);
 
       await reloadLists();
     }
@@ -106,7 +107,7 @@ export const useTasksStore = create<TasksStore>()((set) => ({
         return list.id === newListId;
       }) ?? null;
 
-    setSelectedList(selectedList);
+    await setSelectedList(selectedList);
 
     await reloadSelectedListTasks();
     // We need to update the counts of the lists, once it was moved to another list

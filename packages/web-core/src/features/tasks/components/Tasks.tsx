@@ -7,9 +7,6 @@ import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useListsStore } from '../state/listsStore';
 import { useTasksStore } from '../state/tasksStore';
 import TasksBody from './body/TasksBody';
-import ListDeleteAlertDialog from './list-delete-alert-dialog/ListDeleteAlertDialog';
-import ListEditDialog from './list-edit-dialog/ListEditDialog';
-import TaskEditDialog from './task-edit-dialog/TaskEditDialog';
 
 export default function Tasks() {
   const { popoverOpen, setPopoverOpen } = useTasksStore();
@@ -53,9 +50,6 @@ export default function Tasks() {
           <TasksBody />
         </PopoverContent>
       </Popover>
-      <TaskEditDialog />
-      <ListEditDialog />
-      <ListDeleteAlertDialog />
     </ErrorBoundary>
   );
 }

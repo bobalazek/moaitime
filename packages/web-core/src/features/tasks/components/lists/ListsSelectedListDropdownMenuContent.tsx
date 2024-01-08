@@ -58,6 +58,7 @@ export default function ListsSelectedListDropdownMenuContent({
         value={selectedList?.id}
         onValueChange={async (value) => {
           const newSelectedList = lists.find((list) => list.id === value) ?? null;
+
           await setSelectedList(newSelectedList);
         }}
       >

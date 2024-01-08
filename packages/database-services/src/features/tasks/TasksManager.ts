@@ -380,6 +380,10 @@ export class TasksManager {
   }
 
   async getTagIdsForTaskIds(taskIds: string[]): Promise<Record<string, Tag[]>> {
+    if (taskIds.length === 0) {
+      return {};
+    }
+
     const rows = await getDatabase()
       .select()
       .from(taskTags)

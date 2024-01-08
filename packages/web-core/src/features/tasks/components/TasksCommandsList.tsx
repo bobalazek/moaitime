@@ -1,4 +1,5 @@
 import { CircleIcon, ExternalLinkIcon, ListChecksIcon, PlusIcon } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
@@ -12,8 +13,16 @@ export default function TasksCommandsList() {
   const { setPopoverOpen } = useTasksStore();
   const { setSelectedListDialogOpen, setSelectedList, lists } = useListsStore();
   const { setCommandsDialogOpen } = useCommandsStore();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
+
+  const goToHomeIfRequired = () => {
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
 
   if (!tasksEnabled) {
     return null;
@@ -31,6 +40,8 @@ export default function TasksCommandsList() {
       <CommandItem
         className="cursor-pointer"
         onSelect={() => {
+          goToHomeIfRequired();
+
           setPopoverOpen(true);
 
           setCommandsDialogOpen(false);
@@ -56,9 +67,12 @@ export default function TasksCommandsList() {
         <CommandItem
           key={list.id}
           className="cursor-pointer"
-          onSelect={() => {
-            setPopoverOpen(true);
-            setSelectedList(list);
+          onSelect={async () => {
+            goToHomeIfRequired();
+
+            await setPopoverOpen(true);
+
+            await setSelectedList(list);
 
             setCommandsDialogOpen(false);
           }}

@@ -55,7 +55,7 @@ export default function ListItem({ list, hideCheckbox }: CalendarSettingsSheetLi
             data-test="calendar--list-item--visible-checkbox"
           />
         )}
-        <div className="break-words px-6" data-test="calendar--settings-sheet--list--name">
+        <div className="break-words px-6" data-test="calendar--list-item--name">
           {list.name}
         </div>
       </div>

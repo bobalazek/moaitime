@@ -1,12 +1,18 @@
-import { Label, Switch } from '@moaitime/web-ui';
+import { Button, Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
+import { useTagsStore } from '../../state/tagsStore';
 import TasksSettingsSectionHeaderText from './TasksSettingsSectionHeaderText';
 
 export default function TasksSettingsSection() {
   const { auth, updateAccountSettings } = useAuthStore();
+  const { setTagsDialogOpen } = useTagsStore();
 
   const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
+
+  const onOpenTagsButtonClick = () => {
+    setTagsDialogOpen(true);
+  };
 
   return (
     <div>
@@ -32,6 +38,14 @@ export default function TasksSettingsSection() {
           </Label>
         </div>
         <p className="mt-2 text-xs text-gray-400">Do you want the feature?</p>
+      </div>
+      <hr className="mb-4" />
+      <div className="mb-4">
+        <h4 className="text-lg font-bold">Tags</h4>
+        <p className="mb-2 text-xs text-gray-400">Want to see what tags you created?</p>
+        <Button size="sm" onClick={onOpenTagsButtonClick}>
+          View Tags
+        </Button>
       </div>
     </div>
   );

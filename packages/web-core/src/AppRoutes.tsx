@@ -21,6 +21,8 @@ import NotesPage from './features/notes/components/pages/NotesPage';
 import SettingsDialog from './features/settings/components/SettingsDialog';
 import ListDeleteAlertDialog from './features/tasks/components/list-delete-alert-dialog/ListDeleteAlertDialog';
 import ListEditDialog from './features/tasks/components/list-edit-dialog/ListEditDialog';
+import TagEditDialog from './features/tasks/components/tag-edit-dialog/TagEditDialog';
+import TagsDialog from './features/tasks/components/tags-dialog/TagsDialog';
 import TaskEditDialog from './features/tasks/components/task-edit-dialog/TaskEditDialog';
 
 function GlobalDialogs() {
@@ -33,6 +35,8 @@ function GlobalDialogs() {
       <TaskEditDialog />
       <ListEditDialog />
       <ListDeleteAlertDialog />
+      <TagsDialog />
+      <TagEditDialog />
       <SettingsDialog />
       <CalendarEditDialog />
       <EventEditDialog />

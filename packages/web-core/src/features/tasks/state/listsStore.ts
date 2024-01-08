@@ -33,7 +33,7 @@ export type ListsStore = {
   // Selected
   selectedList: List | null;
   setSelectedList: (selectedList: List | null) => Promise<List | null>;
-  // List Dialog
+  // Selected List Dialog
   selectedListDialogOpen: boolean;
   selectedListDialog: List | null;
   setSelectedListDialogOpen: (
@@ -153,7 +153,7 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
 
     return selectedList;
   },
-  // List Dialog
+  // Selected List Dialog
   selectedListDialogOpen: false,
   selectedListDialog: null,
   setSelectedListDialogOpen: (

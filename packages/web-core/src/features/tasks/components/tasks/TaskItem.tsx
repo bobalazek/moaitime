@@ -107,7 +107,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
 
   return (
     <div
-      data-test="tasks--task-wrapper"
+      data-test="tasks--task--wrapper"
       style={{
         marginLeft: depth * 16,
       }}

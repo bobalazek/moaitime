@@ -1,7 +1,7 @@
 import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 
-import { Calendar } from '@moaitime/shared-common';
+import { Tag } from '@moaitime/shared-common';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,31 +10,27 @@ import {
   sonnerToast,
 } from '@moaitime/web-ui';
 
-import { useCalendarStore } from '../../state/calendarStore';
+import { useTagsStore } from '../../state/tagsStore';
+import { undeleteTag } from '../../utils/TagHelpers';
 
-const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
-  const {
-    setSelectedCalendarDialogOpen,
-    deleteCalendar,
-    undeleteCalendar,
-    setCalendarDeleteAlertDialogOpen,
-  } = useCalendarStore();
+const TagItemActions = memo(({ tag }: { tag: Tag }) => {
+  const { setSelectedTagDialogOpen, deleteTag } = useTagsStore();
   const [open, setOpen] = useState(false);
 
   const onEditButtonClick = async () => {
-    setSelectedCalendarDialogOpen(true, calendar);
+    setSelectedTagDialogOpen(true, tag);
 
     setOpen(false);
   };
 
   const onDeleteButtonClick = async () => {
     try {
-      await deleteCalendar(calendar.id);
+      await deleteTag(tag.id);
 
       setOpen(false);
 
-      sonnerToast.success(`Calendar "${calendar.name}" deleted`, {
-        description: 'The calendar was successfully deleted!',
+      sonnerToast.success(`Tag "${tag.name}" deleted`, {
+        description: 'The tag was successfully deleted!',
         action: {
           label: 'Undo',
           onClick: () => onUndeleteButtonClick(),
@@ -47,12 +43,12 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
 
   const onUndeleteButtonClick = async () => {
     try {
-      await undeleteCalendar(calendar.id);
+      await undeleteTag(tag.id);
 
       setOpen(false);
 
-      sonnerToast.success(`Calendar "${calendar.name}" undeleted`, {
-        description: 'The calendar was successfully undeleted!',
+      sonnerToast.success(`Tag "${tag.name}" undeleted`, {
+        description: 'The tag was successfully undeleted!',
         action: {
           label: 'Undo',
           onClick: () => onUndeleteButtonClick(),
@@ -65,17 +61,17 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
 
   const onHardDeleteButtonClick = async () => {
     try {
-      setCalendarDeleteAlertDialogOpen(true, calendar);
+      await deleteTag(tag.id, true);
 
       setOpen(false);
+
+      sonnerToast.success(`Tag "${tag.name}" hard deleted`, {
+        description: 'The tag was successfully hard deleted!',
+      });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
   };
-
-  if (!calendar.isEditable && !calendar.deletedAt) {
-    return null;
-  }
 
   return (
     <div className="absolute right-1 top-0 ml-2">
@@ -83,7 +79,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
         <DropdownMenuTrigger asChild>
           <button
             className="rounded-full p-1 text-sm"
-            data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"
+            data-test="tasks--tag-actions--dropdown-menu--trigger-button"
           >
             <MoreVerticalIcon className="h-4 w-4" />
           </button>
@@ -91,9 +87,9 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
         <DropdownMenuContent
           className="w-56"
           align="end"
-          data-test="calendar--calendar-item--actions--dropdown-menu"
+          data-test="tasks--tag-actions--dropdown-menu"
         >
-          {!calendar.deletedAt && (
+          {!tag.deletedAt && (
             <>
               <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
                 <PencilIcon className="mr-2 h-4 w-4" />
@@ -109,7 +105,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
               </DropdownMenuItem>
             </>
           )}
-          {calendar.deletedAt && (
+          {tag.deletedAt && (
             <>
               <DropdownMenuItem className="cursor-pointer" onClick={onUndeleteButtonClick}>
                 <TrashIcon className="mr-2 h-4 w-4" />
@@ -131,4 +127,4 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
   );
 });
 
-export default CalendarItemActions;
+export default TagItemActions;

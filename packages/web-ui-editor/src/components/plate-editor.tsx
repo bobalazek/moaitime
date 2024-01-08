@@ -1,3 +1,4 @@
+import { withProps } from '@udecode/cn';
 import { createAlignPlugin } from '@udecode/plate-alignment';
 import { createAutoformatPlugin } from '@udecode/plate-autoformat';
 import {
@@ -33,7 +34,6 @@ import {
   PlateElement,
   PlateLeaf,
   RenderAfterEditable,
-  withProps,
 } from '@udecode/plate-common';
 import { createDndPlugin } from '@udecode/plate-dnd';
 import { createEmojiPlugin } from '@udecode/plate-emoji';

@@ -1,6 +1,12 @@
 import { PlusIcon } from 'lucide-react';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@moaitime/web-ui';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@moaitime/web-ui';
 
 import { useTagsStore } from '../../../tasks/state/tagsStore';
 import TagItem from '../tags/TagItem';
@@ -40,6 +46,15 @@ export default function TagsDialog() {
             <TagItem key={tag.id} tag={tag} />
           ))}
         </div>
+        <hr />
+        <DialogDescription>
+          <div className="text-lg">Deletion types</div>
+          <b>Delete</b> - this will remove the tag from the edit task dialogs tag selector, but it
+          will still keep that tag on the tasks that have it. At this point you are still able to
+          undelete the tag and continue using it as normal.
+          <br />
+          <b>Hard Delete</b> - this will permanently remove the tag from all the tasks that have it.
+        </DialogDescription>
       </DialogContent>
     </Dialog>
   );

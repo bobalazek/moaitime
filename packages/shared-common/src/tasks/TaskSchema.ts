@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { TagSchema } from '..';
 import { ColorSchema } from '../core/ColorSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';
+import { TagSchema } from '../tasks/TagSchema';
 
 export const TaskBaseSchema = z.object({
   id: z.string(),

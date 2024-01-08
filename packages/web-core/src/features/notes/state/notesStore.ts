@@ -73,15 +73,11 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     return note;
   },
   addNote: async (note: CreateNote) => {
-    const { selectedNote, reloadNotes, setSelectedNoteData } = get();
+    const { reloadNotes, setSelectedNoteData } = get();
     const addedNote = await addNote(note);
 
     await reloadNotes();
     await setSelectedNoteData(addedNote);
-
-    if (selectedNote?.id === addedNote.id) {
-      await setSelectedNoteData(addedNote);
-    }
 
     return addedNote;
   },
@@ -101,13 +97,12 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     const { selectedNote, reloadNotes, setSelectedNote } = get();
     const deletedNote = await deleteNote(noteId, isHardDelete);
 
-    setSelectedNote(isHardDelete ? null : deletedNote);
-
     await reloadNotes();
 
-    if (!isHardDelete && selectedNote?.id === deletedNote.id) {
-      await setSelectedNote(deletedNote, true);
-    }
+    await setSelectedNote(
+      !isHardDelete && selectedNote?.id === deletedNote.id ? deletedNote : null,
+      true
+    );
 
     return deletedNote;
   },

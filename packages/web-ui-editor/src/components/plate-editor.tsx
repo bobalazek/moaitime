@@ -346,7 +346,7 @@ export function PlateEditor({
         <CommentsProvider>
           <Plate
             plugins={plugins}
-            value={value}
+            initialValue={value}
             onChange={(newValue) => {
               // There is an issue with Plate or Slate, where it will trigger a change event on focus,
               // so this is a workaround to prevent that.

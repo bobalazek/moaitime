@@ -4,6 +4,7 @@ import { isValidDate } from '../Helpers';
 import { NoteTypeEnum } from './NoteTypeEnum';
 
 export const NoteNodeSchema = z.object({
+  id: z.string().optional(),
   type: z.string().optional(),
   text: z.string().optional(),
   indent: z.number().optional(),
@@ -15,11 +16,16 @@ export const NoteNodeSchema = z.object({
   color: z.string().optional(),
   backgroundColor: z.string().optional(),
   highlight: z.string().optional(),
-  href: z.string().optional(),
+  align: z.string().optional(),
+  url: z.string().optional(),
 });
 
-export const NodeNodeWithChildrenSchema = NoteNodeSchema.extend({
-  children: z.array(NoteNodeSchema).optional(),
+export type NoteNode = z.infer<typeof NoteNodeSchema> & {
+  children?: NoteNode[];
+};
+
+export const NodeNodeWithChildrenSchema: z.ZodType<NoteNode> = NoteNodeSchema.extend({
+  children: z.lazy(() => z.array(NodeNodeWithChildrenSchema)).optional(),
 });
 
 export const NoteContentSchema = z.array(NodeNodeWithChildrenSchema, {

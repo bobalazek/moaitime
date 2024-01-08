@@ -2,6 +2,7 @@ import { Note } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
 import { PlateEditor } from '@moaitime/web-ui-editor';
 
+import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { useNotesStore } from '../../state/notesStore';
 
 export const NoteEditor = () => {
@@ -24,19 +25,21 @@ export const NoteEditor = () => {
           data-test="note-editor--title"
         />
       </div>
-      <PlateEditor
-        key={selectedNote?.id}
-        value={selectedNoteData?.content}
-        onChange={(value) => {
-          setSelectedNoteData({
-            ...selectedNoteData,
-            content: value,
-          } as Note);
-        }}
-        editorProps={{
-          'data-test': 'note-editor--content',
-        }}
-      />
+      <ErrorBoundary>
+        <PlateEditor
+          key={selectedNote?.id}
+          value={selectedNoteData?.content}
+          onChange={(value) => {
+            setSelectedNoteData({
+              ...selectedNoteData,
+              content: value,
+            } as Note);
+          }}
+          editorProps={{
+            'data-test': 'note-editor--content',
+          }}
+        />
+      </ErrorBoundary>
     </div>
   );
 };

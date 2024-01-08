@@ -17,6 +17,7 @@ import { Note, NoteWithoutContent } from '@moaitime/database-core';
 import { notesManager, usersManager } from '@moaitime/database-services';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
+import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { CreateNoteDto } from '../dto/create-note.dto';
@@ -30,11 +31,13 @@ export class NotesController {
     const search = req.query.search as string;
     const sortField = req.query.sortField as NotesListSortFieldEnum;
     const sortDirection = req.query.sortDirection as SortDirectionEnum;
+    const includeDeleted = req.query.includeDeleted === 'true';
 
     const data = await notesManager.findManyByUserIdWithOptions(req.user.id, {
       search,
       sortField,
       sortDirection,
+      includeDeleted,
     });
 
     return {
@@ -119,15 +122,21 @@ export class NotesController {
 
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
-  async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Note>> {
+  async delete(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: DeleteDto
+  ): Promise<AbstractResponseDto<Note>> {
     const hasAccess = await notesManager.userCanDelete(req.user.id, id);
     if (!hasAccess) {
       throw new NotFoundException('Calendar not found');
     }
 
-    const updatedData = await notesManager.updateOneById(id, {
-      deletedAt: new Date(),
-    });
+    const updatedData = body.isHardDelete
+      ? await notesManager.deleteOneById(id)
+      : await notesManager.updateOneById(id, {
+          deletedAt: new Date(),
+        });
 
     return {
       success: true,

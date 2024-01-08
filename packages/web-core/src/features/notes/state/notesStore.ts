@@ -21,17 +21,19 @@ import {
 export type NotesStore = {
   /********** Notes **********/
   notes: Note[];
-  loadNotes: () => Promise<Note[]>;
+  reloadNotes: () => Promise<Note[]>;
   getNote: (noteId: string) => Promise<Note>;
   addNote: (note: CreateNote) => Promise<Note>;
   editNote: (noteId: string, note: UpdateNote) => Promise<Note>;
-  deleteNote: (noteId: string) => Promise<Note>;
+  deleteNote: (noteId: string, isHardDelete?: boolean) => Promise<Note>;
   undeleteNote: (noteId: string) => Promise<Note>;
   // Sort
   notesSortField: NotesListSortFieldEnum;
   notesSortDirection: SortDirectionEnum;
+  notesSortIncludeDeleted: boolean;
   setNotesSortField: (notesSortField: NotesListSortFieldEnum) => void;
   setNotesSortDirection: (notesSortDirection: SortDirectionEnum) => void;
+  setNotesSortIncludeDeleted: (notesSortIncludeDeleted: boolean) => void;
   // Search
   notesSearch: string;
   setNotesSearch: (notesSearch: string) => Promise<string>;
@@ -51,13 +53,14 @@ export type NotesStore = {
 export const useNotesStore = create<NotesStore>()((set, get) => ({
   /********** Notes **********/
   notes: [],
-  loadNotes: async () => {
-    const { notesSearch, notesSortField, notesSortDirection } = get();
+  reloadNotes: async () => {
+    const { notesSearch, notesSortField, notesSortDirection, notesSortIncludeDeleted } = get();
 
     const notes = await loadNotes({
       search: notesSearch,
       sortField: notesSortField,
       sortDirection: notesSortDirection,
+      includeDeleted: notesSortIncludeDeleted,
     });
 
     set({ notes });
@@ -70,10 +73,10 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     return note;
   },
   addNote: async (note: CreateNote) => {
-    const { selectedNote, loadNotes, setSelectedNoteData } = get();
+    const { selectedNote, reloadNotes, setSelectedNoteData } = get();
     const addedNote = await addNote(note);
 
-    await loadNotes();
+    await reloadNotes();
     await setSelectedNoteData(addedNote);
 
     if (selectedNote?.id === addedNote.id) {
@@ -83,10 +86,10 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     return addedNote;
   },
   editNote: async (noteId: string, note: UpdateNote) => {
-    const { selectedNote, loadNotes, setSelectedNote } = get();
+    const { selectedNote, reloadNotes, setSelectedNote } = get();
     const editedNote = await editNote(noteId, note);
 
-    await loadNotes();
+    await reloadNotes();
 
     if (selectedNote?.id === editedNote.id) {
       await setSelectedNote(editedNote, true);
@@ -94,40 +97,56 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return editedNote;
   },
-  deleteNote: async (noteId: string) => {
-    const { loadNotes, setSelectedNote } = get();
-    const deletedNote = await deleteNote(noteId);
+  deleteNote: async (noteId: string, isHardDelete?: boolean) => {
+    const { selectedNote, reloadNotes, setSelectedNote } = get();
+    const deletedNote = await deleteNote(noteId, isHardDelete);
 
-    setSelectedNote(null);
+    setSelectedNote(isHardDelete ? null : deletedNote);
 
-    await loadNotes();
+    await reloadNotes();
+
+    if (!isHardDelete && selectedNote?.id === deletedNote.id) {
+      await setSelectedNote(deletedNote, true);
+    }
 
     return deletedNote;
   },
   undeleteNote: async (noteId: string) => {
-    const { loadNotes } = get();
+    const { selectedNote, reloadNotes, setSelectedNote } = get();
     const undeletedNote = await undeleteNote(noteId);
 
-    await loadNotes();
+    await reloadNotes();
+
+    if (selectedNote?.id === undeletedNote.id) {
+      await setSelectedNote(undeletedNote, true);
+    }
 
     return undeletedNote;
   },
   // Sort
   notesSortField: NotesListSortFieldEnum.CREATED_AT,
   notesSortDirection: SortDirectionEnum.DESC,
+  notesSortIncludeDeleted: false,
   setNotesSortField: (notesSortField: NotesListSortFieldEnum) => {
-    const { loadNotes } = get();
+    const { reloadNotes } = get();
 
     set({ notesSortField });
 
-    loadNotes();
+    reloadNotes();
   },
   setNotesSortDirection: (notesSortDirection: SortDirectionEnum) => {
-    const { loadNotes } = get();
+    const { reloadNotes } = get();
 
     set({ notesSortDirection });
 
-    loadNotes();
+    reloadNotes();
+  },
+  setNotesSortIncludeDeleted: (notesSortIncludeDeleted: boolean) => {
+    const { reloadNotes } = get();
+
+    set({ notesSortIncludeDeleted });
+
+    reloadNotes();
   },
   // Search
   notesSearch: '',
@@ -145,10 +164,10 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     let debouncedFn: any = null;
 
     return async () => {
-      const { loadNotes } = get();
+      const { reloadNotes } = get();
 
       if (!debouncedFn) {
-        debouncedFn = debounce(loadNotes, 500);
+        debouncedFn = debounce(reloadNotes, 500);
       }
 
       debouncedFn();

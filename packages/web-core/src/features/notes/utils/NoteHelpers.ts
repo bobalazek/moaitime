@@ -15,10 +15,12 @@ export const loadNotes = async (options?: {
   search?: string;
   sortField?: NotesListSortFieldEnum;
   sortDirection?: SortDirectionEnum;
+  includeDeleted?: boolean;
 }): Promise<Note[]> => {
   const search = options?.search ?? '';
   const sortField = options?.sortField ?? NotesListSortFieldEnum.CREATED_AT;
   const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
+  const includeDeleted = options?.includeDeleted ?? false;
 
   const url = new URL(`${API_URL}/api/v1/notes`);
   if (search) {
@@ -31,6 +33,10 @@ export const loadNotes = async (options?: {
 
   if (sortDirection) {
     url.searchParams.append('sortDirection', sortDirection);
+  }
+
+  if (includeDeleted) {
+    url.searchParams.append('includeDeleted', 'true');
   }
 
   const response = await fetchJson<ResponseInterface<Note[]>>(url.toString(), {

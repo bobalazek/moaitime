@@ -1,4 +1,4 @@
-import { and, asc, count, DBQueryConfig, desc, eq, ilike, isNull } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, ilike, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, NewNote, Note, notes, NoteWithoutContent } from '@moaitime/database-core';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
@@ -7,6 +7,7 @@ export type NotesManagerFindManyByUserIdWithOptions = {
   search?: string;
   sortField?: NotesListSortFieldEnum;
   sortDirection?: SortDirectionEnum;
+  includeDeleted?: boolean;
 };
 
 export class NotesManager {
@@ -25,11 +26,11 @@ export class NotesManager {
     userId: string,
     options?: NotesManagerFindManyByUserIdWithOptions
   ): Promise<NoteWithoutContent[]> {
-    let where = and(eq(notes.userId, userId), isNull(notes.deletedAt));
+    let where = eq(notes.userId, userId);
     let orderBy = desc(notes.createdAt);
 
     if (options?.search) {
-      where = and(ilike(notes.title, `%${options.search}%`));
+      where = and(ilike(notes.title, `%${options.search}%`)) as SQL<unknown>;
     }
 
     if (options?.sortField) {
@@ -37,6 +38,10 @@ export class NotesManager {
       const field = notes[options.sortField] ?? notes.title;
 
       orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
+    }
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(notes.deletedAt)) as SQL<unknown>;
     }
 
     return getDatabase().query.notes.findMany({

@@ -1,4 +1,4 @@
-import { MoreVerticalIcon, TrashIcon } from 'lucide-react';
+import { HistoryIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
 
 import {
   Button,
@@ -48,6 +48,39 @@ const NotesPageHeaderButtons = () => {
     }
   };
 
+  const onHardDeleteButtonClick = async () => {
+    if (!selectedNote) {
+      return;
+    }
+
+    try {
+      await deleteNote(selectedNote.id, true);
+
+      sonnerToast.success(`Note "${selectedNote.title}" hard deleted`, {
+        description: 'The note was successfully hard deleted!',
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
+  const onUndeleteButtonClick = async () => {
+    if (!selectedNote) {
+      return;
+    }
+
+    try {
+      await undeleteNote(selectedNote.id);
+
+      sonnerToast.success(`Note "${selectedNote.title}" undeleted`, {
+        description: 'The note was successfully undeleted!',
+        position: 'top-right',
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
   const onCancelButtonClick = async () => {
     if (selectedNoteDataChanged) {
       const response = confirm(
@@ -89,14 +122,32 @@ const NotesPageHeaderButtons = () => {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent data-test="notes--header--note-actions--dropdown-menu">
-            <DropdownMenuItem
-              variant="destructive"
-              className="cursor-pointer"
-              onClick={onDeleteButtonClick}
-            >
-              <TrashIcon className="mr-2 h-4 w-4" />
-              <span>Delete</span>
-            </DropdownMenuItem>
+            {!selectedNote.deletedAt && (
+              <DropdownMenuItem
+                variant="destructive"
+                className="cursor-pointer"
+                onClick={onDeleteButtonClick}
+              >
+                <TrashIcon className="mr-2 h-4 w-4" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            )}
+            {selectedNote.deletedAt && (
+              <>
+                <DropdownMenuItem className="cursor-pointer" onClick={onUndeleteButtonClick}>
+                  <HistoryIcon className="mr-2 h-4 w-4" />
+                  <span>Undelete</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  variant="destructive"
+                  className="cursor-pointer"
+                  onClick={onHardDeleteButtonClick}
+                >
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  <span>Hard Delete</span>
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       )}

@@ -8,7 +8,7 @@ import NotesPageMain from './notes/NotesPageMain';
 import NotesPageSidebar from './notes/NotesPageSidebar';
 
 export default function NotesPage() {
-  const { selectedNoteDataChanged, selectedNoteData, setSelectedNoteData, loadNotes } =
+  const { selectedNoteDataChanged, selectedNoteData, setSelectedNoteData, reloadNotes } =
     useNotesStore();
   const isInitializedRef = useRef(false);
   const selectedNoteDatadRef = useRef(selectedNoteData);
@@ -22,7 +22,7 @@ export default function NotesPage() {
 
     isInitializedRef.current = true;
 
-    loadNotes();
+    reloadNotes();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

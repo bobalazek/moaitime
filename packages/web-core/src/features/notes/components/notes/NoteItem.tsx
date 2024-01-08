@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { TrashIcon } from 'lucide-react';
 
 import { Note } from '@moaitime/shared-common';
 
@@ -21,6 +22,15 @@ const NoteItem = ({ note, isSelected }: { note: Note; isSelected?: boolean }) =>
       <div className="truncate" title={note.title} data-test="notes--note--title">
         {note.title}
       </div>
+      {note.deletedAt && (
+        <div
+          className="text-muted-foreground text-xs"
+          title={`Deleted at ${new Date(note.deletedAt).toLocaleString()}`}
+          data-test="notes--note--deleted-at"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </div>
+      )}
     </div>
   );
 };

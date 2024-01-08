@@ -53,21 +53,6 @@ const TaskItemActions = memo(
       duplicateTask(task.id);
     };
 
-    const onUndeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      event.stopPropagation();
-
-      try {
-        await undeleteTask(task.id);
-
-        sonnerToast.success(`Task "${task.name}" Undeleted`, {
-          description: 'The task was successfully undeleted!',
-          position: 'top-right',
-        });
-      } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
-      }
-    };
-
     const onDeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       event.stopPropagation();
 
@@ -91,8 +76,23 @@ const TaskItemActions = memo(
       try {
         await deleteTask(task.id, true);
 
-        sonnerToast.success(`Task "${task.name}" Deleted`, {
-          description: 'The task was successfully deleted!',
+        sonnerToast.success(`Task "${task.name}" hard deleted`, {
+          description: 'The task was successfully hard deleted!',
+        });
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
+    };
+
+    const onUndeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      event.stopPropagation();
+
+      try {
+        await undeleteTask(task.id);
+
+        sonnerToast.success(`Task "${task.name}" undeleted`, {
+          description: 'The task was successfully undeleted!',
+          position: 'top-right',
         });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function

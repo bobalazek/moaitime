@@ -7,6 +7,7 @@ import {
 } from '@moaitime/shared-common';
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -21,9 +22,11 @@ const NotesPageSidebarTopButtons = () => {
   const {
     notesSortField,
     notesSortDirection,
+    notesSortIncludeDeleted,
     setDraftAsSelectedNoteData,
     setNotesSortField,
     setNotesSortDirection,
+    setNotesSortIncludeDeleted,
   } = useNotesStore();
 
   const onAddNewNoteButtonClick = () => {
@@ -85,6 +88,13 @@ const NotesPageSidebarTopButtons = () => {
               Descending
             </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuCheckboxItem
+            checked={notesSortIncludeDeleted}
+            onCheckedChange={setNotesSortIncludeDeleted}
+          >
+            Include deleted?
+          </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

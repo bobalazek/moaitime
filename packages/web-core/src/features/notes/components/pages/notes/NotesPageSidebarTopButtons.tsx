@@ -48,14 +48,14 @@ const NotesPageSidebarTopButtons = () => {
           <button
             className="rounded-full p-1 hover:bg-gray-50 dark:hover:bg-gray-700"
             title="Sort by"
-            data-test="notes--sidebar--sort--dropdown-menu--trigger-button"
+            data-test="notes--sidebar--filters--dropdown-menu--trigger-button"
           >
             <FilterIcon size={20} />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" data-test="notes--sidebar--sort--dropdown-menu">
+        <DropdownMenuContent className="w-56" data-test="notes--sidebar--filters--dropdown-menu">
           <DropdownMenuLabel className="flex items-center justify-between">
-            <span className="font-bold">Sort</span>
+            <span className="font-bold">Filters</span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuRadioGroup

@@ -297,7 +297,7 @@ export class TasksManager {
    */
   async validateParentId(id: string | null, parentId: string) {
     const task = id ? await this.findOneById(id) : null;
-    if (!task) {
+    if (id && !task) {
       throw new Error('Task not found');
     }
 
@@ -306,7 +306,7 @@ export class TasksManager {
       throw new Error('Parent task not found');
     }
 
-    if (id !== null) {
+    if (id && task) {
       if (parentId === task.id) {
         throw new Error('Task cannot be its own parent');
       }

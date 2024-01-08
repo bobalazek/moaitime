@@ -1,23 +1,18 @@
+import { PlusCircleIcon, XCircle } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-import { Input, sonnerToast } from '@moaitime/web-ui';
+import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
 import { useListsStore } from '../../state/listsStore';
 import { useTasksStore } from '../../state/tasksStore';
 
-function TasksForm() {
+function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () => void }) {
   const { addTask, listEndElement } = useTasksStore();
   const { selectedList } = useListsStore();
   const [name, setName] = useState('');
   const isSubmittingRef = useRef(false);
 
-  // TODO: implement loader to prevent submitting if the task is still being added
-
-  const onKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== 'Enter') {
-      return;
-    }
-
+  const onSaveButtonClick = async () => {
     if (!selectedList) {
       sonnerToast.error('Oops!', {
         description:
@@ -45,6 +40,7 @@ function TasksForm() {
       await addTask({
         name: finalName,
         listId: selectedList.id,
+        parentId,
       });
 
       setName('');
@@ -59,17 +55,44 @@ function TasksForm() {
     }
   };
 
+  const onKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+
+    if (event.key === 'Enter') {
+      await onSaveButtonClick();
+    }
+  };
+
   return (
-    <div className="pt-2" data-test="tasks--tasks-form">
-      <Input
-        type="text"
-        placeholder='Add a task and press "Enter"'
-        value={name}
-        onChange={(event) => {
-          setName(event.target.value);
-        }}
-        onKeyPress={onKeyPress}
-      />
+    <div className="pt-2" data-parent-id={parentId} data-test="tasks--tasks-form">
+      <div className="flex items-center gap-1">
+        <Input
+          type="text"
+          placeholder="What needs to be done?"
+          value={name}
+          onChange={(event) => {
+            setName(event.target.value);
+          }}
+          onKeyPress={onKeyPress}
+          enterKeyHint="enter"
+        />
+
+        {onCancel && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setName('');
+
+              onCancel();
+            }}
+          >
+            <XCircle size={16} />
+          </Button>
+        )}
+        <Button variant="default" onClick={onSaveButtonClick} disabled={isSubmittingRef.current}>
+          <PlusCircleIcon size={16} />
+        </Button>
+      </div>
     </div>
   );
 }

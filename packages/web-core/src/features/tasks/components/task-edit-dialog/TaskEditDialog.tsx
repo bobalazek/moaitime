@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { UpdateTask, UpdateTaskSchema, zodErrorToString } from '@moaitime/shared-common';
+import {
+  CreateTask,
+  UpdateTask,
+  UpdateTaskSchema,
+  zodErrorToString,
+} from '@moaitime/shared-common';
 import {
   Button,
   Dialog,
@@ -25,6 +30,7 @@ export default function TaskEditDialog() {
     selectedTaskDialogOpen,
     selectedTask,
     setSelectedTaskDialogOpen,
+    addTask,
     editTask,
     deleteTask,
     undeleteTask,
@@ -87,12 +93,14 @@ export default function TaskEditDialog() {
   };
 
   const onSaveButtonClick = async () => {
-    if (!selectedTask || !data) {
+    if (!data) {
       return;
     }
 
     try {
-      const editedTask = await editTask(selectedTask.id, data);
+      const editedTask = selectedTask?.id
+        ? await editTask(selectedTask.id, data)
+        : await addTask(data as CreateTask);
 
       sonnerToast.success(`Task "${editedTask.name}" save`, {
         description: 'You have successfully saved the task',
@@ -108,7 +116,8 @@ export default function TaskEditDialog() {
     <Dialog open={selectedTaskDialogOpen} onOpenChange={setSelectedTaskDialogOpen}>
       <DialogContent data-test="tasks--task-edit-dialog">
         <DialogHeader>
-          {selectedTask && <>Edit "{selectedTask.name}" Task</>} {!selectedTask && <>Create Task</>}
+          {selectedTask?.id && <>Edit "{selectedTask.name}" Task</>}
+          {!selectedTask?.id && <>Create Task</>}
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <Label htmlFor="task-name">Name</Label>

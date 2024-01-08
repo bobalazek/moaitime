@@ -5,6 +5,7 @@ import {
   ListIcon,
   MoreVerticalIcon,
   PencilIcon,
+  PlusSquareIcon,
   TrashIcon,
 } from 'lucide-react';
 import { memo, useState } from 'react';
@@ -25,7 +26,15 @@ import { useTasksStore } from '../../state/tasksStore';
 import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDropdownMenuContent';
 
 const TaskItemActions = memo(
-  ({ task, onEditAndFocus }: { task: Task; onEditAndFocus: () => void }) => {
+  ({
+    task,
+    onEditAndFocus,
+    onAddSubTaskButtonClick,
+  }: {
+    task: Task;
+    onEditAndFocus: () => void;
+    onAddSubTaskButtonClick?: () => void;
+  }) => {
     const { duplicateTask, deleteTask, undeleteTask, moveTask, setSelectedTaskDialogOpen } =
       useTasksStore();
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
@@ -133,6 +142,19 @@ const TaskItemActions = memo(
                 <CopyIcon className="mr-2 h-4 w-4" />
                 <span>Duplicate</span>
               </DropdownMenuItem>
+              {onAddSubTaskButtonClick && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={(event) => {
+                    event.stopPropagation();
+
+                    onAddSubTaskButtonClick();
+                  }}
+                >
+                  <PlusSquareIcon className="mr-2 h-4 w-4" />
+                  <span>Add Sub Task</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger
                   onClick={(event) => {

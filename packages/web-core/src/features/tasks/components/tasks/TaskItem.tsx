@@ -155,7 +155,19 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
           >
             {task.name}
           </div>
-          <TaskItemActions task={task} onEditAndFocus={() => onDoubleClick(undefined, true)} />
+          <TaskItemActions
+            task={task}
+            onEditAndFocus={() => onDoubleClick(undefined, true)}
+            onAddSubTaskButtonClick={
+              depth === 0
+                ? () =>
+                    setSelectedTaskDialogOpen(true, {
+                      parentId: task.id,
+                      listId: task.listId,
+                    } as TaskType)
+                : undefined
+            }
+          />
         </div>
         {(task.priority || task.dueDate || task.deletedAt || taskTags.length > 0) && (
           <div className="ml-6 mt-1.5 space-y-1">

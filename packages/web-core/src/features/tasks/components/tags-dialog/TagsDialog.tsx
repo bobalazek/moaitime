@@ -6,7 +6,8 @@ import { useTagsStore } from '../../../tasks/state/tagsStore';
 import TagItem from '../tags/TagItem';
 
 export default function TagsDialog() {
-  const { tags, tagsDialogOpen, setTagsDialogOpen, setSelectedTagDialogOpen } = useTagsStore();
+  const { tagsDialogTags, tagsDialogOpen, setTagsDialogOpen, setSelectedTagDialogOpen } =
+    useTagsStore();
 
   return (
     <Dialog open={tagsDialogOpen} onOpenChange={setTagsDialogOpen}>
@@ -28,14 +29,14 @@ export default function TagsDialog() {
           </DialogTitle>
         </DialogHeader>
         <div>
-          {tags.length === 0 && (
+          {tagsDialogTags.length === 0 && (
             <div className="flex flex-col items-center justify-center p-4">
               <div className="text-center">
                 <div className="text-xl">No tags yet</div>
               </div>
             </div>
           )}
-          {tags.map((tag) => (
+          {tagsDialogTags.map((tag) => (
             <TagItem key={tag.id} tag={tag} />
           ))}
         </div>

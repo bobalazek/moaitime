@@ -11,10 +11,9 @@ import {
 } from '@moaitime/web-ui';
 
 import { useTagsStore } from '../../state/tagsStore';
-import { undeleteTag } from '../../utils/TagHelpers';
 
 const TagItemActions = memo(({ tag }: { tag: Tag }) => {
-  const { setSelectedTagDialogOpen, deleteTag } = useTagsStore();
+  const { setSelectedTagDialogOpen, deleteTag, undeleteTag } = useTagsStore();
   const [open, setOpen] = useState(false);
 
   const onEditButtonClick = async () => {

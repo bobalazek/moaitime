@@ -3,8 +3,10 @@ import { API_URL, CreateTag, ResponseInterface, Tag, UpdateTag } from '@moaitime
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Tags **********/
-export const loadTags = async () => {
-  const response = await fetchJson<ResponseInterface<Tag[]>>(`${API_URL}/api/v1/tags`, {
+export const loadTags = async (options?: { includeDeleted?: boolean }) => {
+  const includeDeleted = options?.includeDeleted ?? false;
+  const url = `${API_URL}/api/v1/tags?includeDeleted=${includeDeleted ? 'true' : 'false'}`;
+  const response = await fetchJson<ResponseInterface<Tag[]>>(url, {
     method: 'GET',
   });
 

@@ -18,8 +18,12 @@ export default function TagItem({ tag }: TagItemProps) {
     >
       <div className="relative flex justify-between break-words px-2">
         <div>
-          <span data-test="tasks--tag-item--name">{tag.name}</span>
-          <span className="ml-2 inline-block h-2 w-2 rounded-full" />
+          <div data-test="tasks--tag-item--name">{tag.name}</div>
+          {tag.deletedAt && (
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Deleted at {new Date(tag.deletedAt).toLocaleString()}
+            </div>
+          )}
         </div>
         <TagItemActions tag={tag} />
       </div>

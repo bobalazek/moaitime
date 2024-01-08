@@ -17,6 +17,7 @@ import { Tag } from '@moaitime/database-core';
 import { tagsManager } from '@moaitime/database-services';
 import { TAGS_MAX_PER_USER_COUNT } from '@moaitime/shared-backend';
 
+import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { CreateTagDto } from '../dtos/create-tag.dto';
@@ -27,7 +28,11 @@ export class TagsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Tag[]>> {
-    const data = await tagsManager.findManyByUserId(req.user.id);
+    const includeDeleted = req.query.includeDeleted === 'true';
+
+    const data = await tagsManager.findManyByUserId(req.user.id, {
+      includeDeleted,
+    });
 
     return {
       success: true,
@@ -94,15 +99,21 @@ export class TagsController {
 
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
-  async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Tag>> {
+  async delete(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: DeleteDto
+  ): Promise<AbstractResponseDto<Tag>> {
     const canDelete = await tagsManager.userCanDelete(id, req.user.id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot delete this tag');
     }
 
-    const updatedData = await tagsManager.updateOneById(id, {
-      deletedAt: new Date(),
-    });
+    const updatedData = body.isHardDelete
+      ? await tagsManager.deleteOneById(id)
+      : await tagsManager.updateOneById(id, {
+          deletedAt: new Date(),
+        });
 
     return {
       success: true,

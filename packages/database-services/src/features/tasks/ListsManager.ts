@@ -4,7 +4,7 @@ import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/databa
 
 import { UsersManager, usersManager } from '../auth/UsersManager';
 
-export type ListsManagerFindManyByUserIdOptions = {
+export type ListsManagerFindManyByUserIdTaskCountOptions = {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
 };
@@ -18,14 +18,14 @@ export class ListsManager {
 
   async findManyByUserId(
     userId: string,
-    options?: ListsManagerFindManyByUserIdOptions
+    taskCountOptions?: ListsManagerFindManyByUserIdTaskCountOptions
   ): Promise<List[]> {
     const result = await getDatabase().query.lists.findMany({
       where: and(eq(lists.userId, userId), isNull(lists.deletedAt)),
       orderBy: [desc(lists.order), asc(lists.createdAt)],
     });
     const ids = result.map((list) => list.id);
-    const tasksCountMap = await this.getTasksCountMap(ids, options);
+    const tasksCountMap = await this.getTasksCountMap(ids, taskCountOptions);
 
     return result.map((list) => ({
       ...list,
@@ -84,7 +84,7 @@ export class ListsManager {
     return result[0].count ?? 0;
   }
 
-  async getTasksCountMap(ids: string[], options?: ListsManagerFindManyByUserIdOptions) {
+  async getTasksCountMap(ids: string[], options?: ListsManagerFindManyByUserIdTaskCountOptions) {
     const tasksCountMap = new Map<string, number>();
     if (ids.length > 0) {
       let where = inArray(tasks.listId, ids);

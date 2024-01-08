@@ -1,15 +1,28 @@
-import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, NewTag, Tag, tags } from '@moaitime/database-core';
+
+export type TagsManagerFindManyByUserIdOptions = {
+  includeDeleted?: boolean;
+};
 
 export class TagsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Tag[]> {
     return getDatabase().query.tags.findMany(options);
   }
 
-  async findManyByUserId(userId: string): Promise<Tag[]> {
+  async findManyByUserId(
+    userId: string,
+    options?: TagsManagerFindManyByUserIdOptions
+  ): Promise<Tag[]> {
+    let where = eq(tags.userId, userId);
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(tags.deletedAt)) as SQL<unknown>;
+    }
+
     return getDatabase().query.tags.findMany({
-      where: and(eq(tags.userId, userId), isNull(tags.deletedAt)),
+      where,
       orderBy: desc(tags.createdAt),
     });
   }

@@ -29,6 +29,8 @@ export type DateSelectorProps = {
   includeTime?: boolean;
   disableClear?: boolean;
   disablePast?: boolean;
+  disableFuture?: boolean;
+  disableTimeZone?: boolean;
   isTimezoneReadonly?: boolean;
   timezonePlaceholderText?: string;
 };
@@ -56,6 +58,8 @@ export default function DateSelector({
   includeTime,
   disableClear,
   disablePast,
+  disableFuture,
+  disableTimeZone,
   isTimezoneReadonly,
   timezonePlaceholderText,
 }: DateSelectorProps) {
@@ -144,6 +148,18 @@ export default function DateSelector({
 
   const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
 
+  const isDateDisabled = (date: Date) => {
+    if (disablePast && date < new Date()) {
+      return true;
+    }
+
+    if (disableFuture && date > new Date()) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -170,7 +186,7 @@ export default function DateSelector({
       >
         <Calendar
           mode="single"
-          disabled={disablePast ? [{ before: new Date() }] : undefined}
+          disabled={isDateDisabled}
           selected={dateValue ? new Date(dateValue) : undefined}
           onSelect={onSelectDate}
           weekStartsOn={generalStartDayOfWeek}
@@ -207,16 +223,18 @@ export default function DateSelector({
               />
               {/* Add TimeRangesDropdownMenu here, once we sort out the focus issue */}
             </div>
-            <div>
-              <Label>Timezone</Label>
-              <TimezoneSelector
-                value={dateTimeZoneValue}
-                onValueChange={setDateTimeZoneValue}
-                isReadonly={isTimezoneReadonly}
-                placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
-                allowClear={!isTimezoneReadonly}
-              />
-            </div>
+            {!disableTimeZone && (
+              <div>
+                <Label>Timezone</Label>
+                <TimezoneSelector
+                  value={dateTimeZoneValue}
+                  onValueChange={setDateTimeZoneValue}
+                  isReadonly={isTimezoneReadonly}
+                  placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
+                  allowClear={!isTimezoneReadonly}
+                />
+              </div>
+            )}
           </>
         )}
         <div>

@@ -3,10 +3,16 @@ import { TagIcon } from 'lucide-react';
 
 import { Task as TaskType } from '@moaitime/shared-common';
 
+import { useTagsStore } from '../../../state/tagsStore';
+
 const TaskItemTags = ({ task }: { task: TaskType }) => {
+  const { tags } = useTagsStore();
+
   if (!task.tags || task.tags.length === 0) {
     return null;
   }
+
+  const tagsMap = new Map(tags.map((tag) => [tag.id, tag]));
 
   return (
     <div
@@ -16,6 +22,10 @@ const TaskItemTags = ({ task }: { task: TaskType }) => {
       <TagIcon size={12} className="min-w-[12px]" />
       <div className="text-[0.65rem]">
         {task.tags.map((tag) => {
+          if (tagsMap.has(tag.id)) {
+            tag = tagsMap.get(tag.id) as typeof tag; // this will be the newer version of the tag in case we have updated from the settings
+          }
+
           const backgroundColor = tag.color ?? '#666666';
           const textColor = backgroundColor
             ? colord(backgroundColor).isDark()

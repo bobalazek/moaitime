@@ -1,4 +1,4 @@
-import { PlusCircleIcon, XCircle } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { Button, Input, sonnerToast } from '@moaitime/web-ui';
@@ -89,9 +89,6 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
             <XCircle size={16} />
           </Button>
         )}
-        <Button variant="default" onClick={onSaveButtonClick} disabled={isSubmittingRef.current}>
-          <PlusCircleIcon size={16} />
-        </Button>
       </div>
     </div>
   );

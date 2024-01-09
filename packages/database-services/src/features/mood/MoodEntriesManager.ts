@@ -10,7 +10,7 @@ export class MoodEntriesManager {
   async findManyByUserId(userId: string): Promise<MoodEntry[]> {
     return getDatabase().query.moodEntries.findMany({
       where: and(eq(moodEntries.userId, userId), isNull(moodEntries.deletedAt)),
-      orderBy: desc(moodEntries.createdAt),
+      orderBy: desc(moodEntries.loggedAt),
     });
   }
 

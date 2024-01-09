@@ -19,6 +19,11 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
+import {
+  convertIsoStringToObject,
+  convertObjectToIsoString,
+} from '../../../calendar/utils/CalendarHelpers';
+import DateSelector from '../../../core/components/selectors/DateSelector';
 import { useMoodEntrysStore } from '../../state/moodEntriesStore';
 import { HappinessScoreIcon } from '../common/HappinesScoreIcon';
 
@@ -126,6 +131,23 @@ export default function MoodEntryEditDialog() {
             }}
           />
         </div>
+        <DateSelector
+          includeTime={true}
+          data={convertIsoStringToObject(data?.loggedAt, true, undefined)}
+          onSaveData={(saveData) => {
+            const result = convertObjectToIsoString(saveData);
+            if (!result) {
+              return;
+            }
+
+            setData((current) => ({
+              ...current,
+              loggedAt: result.iso,
+            }));
+          }}
+          disableFuture={true}
+          disableTimeZone={true}
+        />
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="secondary">

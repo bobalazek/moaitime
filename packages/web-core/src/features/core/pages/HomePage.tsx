@@ -8,6 +8,7 @@ import Calendar from '../../calendar/components/Calendar';
 import Clock from '../../clock/components/Clock';
 import CommandsButton from '../../commands/components/CommandsButton';
 import Greeting from '../../greeting/components/Greeting';
+import Mood from '../../mood/components/Mood';
 import Notes from '../../notes/components/Notes';
 import Quote from '../../quote/components/Quote';
 import Search from '../../search/components/Search';
@@ -30,6 +31,7 @@ export default function HomePage() {
   const commandsSearchButtonEnabled = auth?.user?.settings?.commandsSearchButtonEnabled ?? false;
   const clockEnabled = auth?.user?.settings?.clockEnabled ?? false;
   const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
+  const moodEnabled = auth?.user?.settings?.moodEnabled ?? false;
   const greetingEnabled = auth?.user?.settings?.greetingEnabled ?? false;
   const searchEnabled = auth?.user?.settings?.searchEnabled ?? false;
   const quoteEnabled = auth?.user?.settings?.quoteEnabled ?? false;
@@ -86,7 +88,19 @@ export default function HomePage() {
                 <Weather />
               </motion.div>
             )}
-            <div>{/* Just so we keep the commands button in the center */}</div>
+            {moodEnabled && (
+              <motion.div
+                key="mood"
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+              >
+                <Mood />
+              </motion.div>
+            )}
+            {!moodEnabled && <div>{/* Just so we keep the commands button in the center */}</div>}
           </AnimatePresence>
         </div>
         <div className="flex flex-grow flex-col items-center justify-center p-4 text-center">

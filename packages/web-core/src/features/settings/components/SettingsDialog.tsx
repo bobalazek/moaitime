@@ -13,6 +13,8 @@ import CommandsSettingsSection from '../../commands/components/settings/Commands
 import CommandsSettingsSectionHeaderText from '../../commands/components/settings/CommandsSettingsSectionHeaderText';
 import GreetingSettingsSection from '../../greeting/components/settings/GreetingSettingsSection';
 import GreetingSettingsSectionHeaderText from '../../greeting/components/settings/GreetingSettingsSectionHeaderText';
+import MoodSettingsSection from '../../mood/components/settings/MoodSettingsSection';
+import MoodSettingsSectionHeaderText from '../../mood/components/settings/MoodSettingsSectionHeaderText';
 import NotesSettingsSection from '../../notes/components/settings/NotesSettingsSection';
 import NotesSettingsSectionHeaderText from '../../notes/components/settings/NotesSettingsSectionHeaderText';
 import QuoteSettingsSection from '../../quote/components/settings/QuoteSettingsSection';
@@ -53,6 +55,11 @@ const tabs = [
     id: 'notes',
     label: <NotesSettingsSectionHeaderText />,
     content: <NotesSettingsSection />,
+  },
+  {
+    id: 'mood',
+    label: <MoodSettingsSectionHeaderText />,
+    content: <MoodSettingsSection />,
   },
   {
     id: 'commands',

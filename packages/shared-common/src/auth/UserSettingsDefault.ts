@@ -28,4 +28,5 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   calendarEnabled: true,
   calendarVisibleCalendarIds: ['*'],
   calendarVisibleListIds: ['*'],
+  moodEnabled: true,
 };

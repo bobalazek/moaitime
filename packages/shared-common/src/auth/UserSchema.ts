@@ -50,6 +50,9 @@ export const UserSettingsSchema = z.object({
   calendarEnabled: z.boolean(),
   calendarVisibleCalendarIds: z.array(z.string()),
   calendarVisibleListIds: z.array(z.string()),
+
+  // Mood
+  moodEnabled: z.boolean(),
 });
 
 export const UpdateUserSettingsSchema = UserSettingsSchema.partial();

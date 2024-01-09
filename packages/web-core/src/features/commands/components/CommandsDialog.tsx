@@ -11,6 +11,7 @@ import {
 
 import CalendarCommandsList from '../../calendar/components/CalendarCommandsList';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
+import MoodCommandsList from '../../mood/components/MoodCommandsList';
 import NotesCommandsList from '../../notes/components/NotesCommandsList';
 import SettingsCommandsList from '../../settings/components/SettingsCommandsList';
 import TasksCommandsList from '../../tasks/components/TasksCommandsList';
@@ -57,6 +58,7 @@ export default function CommandsDialog() {
               <CalendarCommandsList />
               <NotesCommandsList />
               {/* <WeatherCommandsList /> */}
+              <MoodCommandsList />
               <SettingsCommandsList />
             </CommandList>
           </Command>

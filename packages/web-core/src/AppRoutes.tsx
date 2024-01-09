@@ -17,6 +17,7 @@ import ProtectedRoute from './features/core/components/ProtectedRoute';
 import PublicOnlyRoute from './features/core/components/PublicOnlyRoute';
 import HomePage from './features/core/pages/HomePage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
+import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
 import SettingsDialog from './features/settings/components/SettingsDialog';
 import ListDeleteAlertDialog from './features/tasks/components/list-delete-alert-dialog/ListDeleteAlertDialog';
@@ -72,6 +73,14 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <NotesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mood/*"
+          element={
+            <ProtectedRoute>
+              <MoodPage />
             </ProtectedRoute>
           }
         />

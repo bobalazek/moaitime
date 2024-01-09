@@ -1,4 +1,4 @@
-import { Note } from '@moaitime/shared-common';
+import { UpdateNote } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
 import { PlateEditor } from '@moaitime/web-ui-editor';
 
@@ -22,7 +22,7 @@ export const NoteEditor = () => {
             setSelectedNoteData({
               ...selectedNoteData,
               title: event.target.value,
-            } as Note);
+            } as UpdateNote);
           }}
           data-test="note-editor--title"
         />
@@ -35,7 +35,7 @@ export const NoteEditor = () => {
             setSelectedNoteData({
               ...selectedNoteData,
               content: value,
-            } as Note);
+            } as UpdateNote);
           }}
           editorProps={{
             'data-test': 'note-editor--content',

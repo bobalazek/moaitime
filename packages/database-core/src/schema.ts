@@ -5,6 +5,7 @@ export * from './schema/events';
 export * from './schema/greetings';
 export * from './schema/interests';
 export * from './schema/lists';
+export * from './schema/moodEntries';
 export * from './schema/notes';
 export * from './schema/organizations';
 export * from './schema/organizationUsers';

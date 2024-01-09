@@ -4,6 +4,12 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "note_types" AS ENUM('note', 'journal_entry');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "backgrounds" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
@@ -81,12 +87,25 @@ CREATE TABLE IF NOT EXISTS "lists" (
 	"team_id" uuid
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "mood_entries" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"happiness_score" integer,
+	"description" text,
+	"logged_at" timestamp NOT NULL,
+	"deleted_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "notes" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"type" "note_types" DEFAULT 'note' NOT NULL,
 	"title" text NOT NULL,
 	"content" json NOT NULL,
 	"color" text,
 	"directory" text,
+	"journal_date" date,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
@@ -125,6 +144,16 @@ CREATE TABLE IF NOT EXISTS "quotes" (
 	"user_id" uuid
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "tags" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"color" text,
+	"deleted_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tasks" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
@@ -141,6 +170,14 @@ CREATE TABLE IF NOT EXISTS "tasks" (
 	"updated_at" timestamp DEFAULT now(),
 	"list_id" uuid NOT NULL,
 	"parent_id" uuid
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "task_tags" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"task_id" uuid NOT NULL,
+	"tag_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teams" (
@@ -243,6 +280,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_id_idx" ON "organization_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "task_id_idx" ON "task_tags" ("task_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "tag_id_idx" ON "task_tags" ("tag_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_id_idx" ON "team_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
@@ -295,6 +334,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "mood_entries" ADD CONSTRAINT "mood_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "notes" ADD CONSTRAINT "notes_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -319,7 +364,25 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "tags" ADD CONSTRAINT "tags_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "tasks" ADD CONSTRAINT "tasks_list_id_lists_id_fk" FOREIGN KEY ("list_id") REFERENCES "lists"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "task_tags" ADD CONSTRAINT "task_tags_task_id_tasks_id_fk" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "task_tags" ADD CONSTRAINT "task_tags_tag_id_tags_id_fk" FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

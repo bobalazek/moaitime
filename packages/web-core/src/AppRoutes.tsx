@@ -68,7 +68,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/notes"
+          path="/notes/*"
           element={
             <ProtectedRoute>
               <NotesPage />

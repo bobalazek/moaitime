@@ -1,19 +1,50 @@
-import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useDebouncedCallback } from 'use-debounce';
+
+import { isValidUuid, Note } from '@moaitime/shared-common';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
+import { useStateAndUrlSync } from '../../../core/hooks/useStateAndUrlSync';
 import { useNotesStore } from '../../state/notesStore';
 import NotesPageHeader from './notes/NotesPageHeader';
 import NotesPageMain from './notes/NotesPageMain';
 import NotesPageSidebar from './notes/NotesPageSidebar';
 
 export default function NotesPage() {
-  const { selectedNoteDataChanged, selectedNoteData, setSelectedNoteData, reloadNotes } =
-    useNotesStore();
+  const {
+    getNote,
+    selectedNote,
+    selectedNoteData,
+    selectedNoteDataChanged,
+    setSelectedNote,
+    setSelectedNoteData,
+    reloadNotes,
+  } = useNotesStore();
+  const location = useLocation();
+  const [targetUri, setTargetUri] = useState(`${location.pathname}${location.search}`);
   const isInitializedRef = useRef(false);
+  const isInitialFetchDoneRef = useRef(false);
   const selectedNoteDatadRef = useRef(selectedNoteData);
   const selectedNoteDataChangedRef = useRef(selectedNoteDataChanged);
-  const navigate = useNavigate();
+
+  const updateStateByUrl = useDebouncedCallback(async () => {
+    const noteId = location.pathname.replace('/notes/', '');
+    if (isValidUuid(noteId)) {
+      try {
+        setSelectedNote({
+          id: noteId,
+        } as Note);
+
+        const newSelectedNote = await getNote(noteId);
+        setSelectedNote(newSelectedNote);
+      } catch (error) {
+        setTargetUri('/notes');
+      }
+    }
+
+    isInitialFetchDoneRef.current = true;
+  }, 10);
 
   useEffect(() => {
     if (isInitializedRef.current) {
@@ -22,6 +53,7 @@ export default function NotesPage() {
 
     isInitializedRef.current = true;
 
+    updateStateByUrl();
     reloadNotes();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,7 +80,7 @@ export default function NotesPage() {
           return;
         }
 
-        navigate('/');
+        setTargetUri('/');
       }
     };
 
@@ -63,6 +95,21 @@ export default function NotesPage() {
     selectedNoteDatadRef.current = selectedNoteData;
     selectedNoteDataChangedRef.current = selectedNoteDataChanged;
   }, [selectedNoteData, selectedNoteDataChanged]);
+
+  useEffect(() => {
+    // We want to prevent this executing and setting the targetUrl to /notes,
+    // as we do not the fetch does happen asynchronously above, so we need to wait until
+    // that resolves.
+    if (!isInitialFetchDoneRef.current) {
+      return;
+    }
+
+    const newTargetUri = selectedNote?.id ? `/notes/${selectedNote.id}` : `/notes`;
+
+    setTargetUri(newTargetUri);
+  }, [setTargetUri, selectedNote]);
+
+  useStateAndUrlSync(updateStateByUrl, targetUri);
 
   return (
     <ErrorBoundary>

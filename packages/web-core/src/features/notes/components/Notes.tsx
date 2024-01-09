@@ -1,4 +1,4 @@
-import { FilesIcon } from 'lucide-react';
+import { NotebookPenIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
@@ -16,7 +16,7 @@ export default function Notes() {
         title="Open notes"
         data-test="notes--open-button"
       >
-        <FilesIcon className="text-3xl" />
+        <NotebookPenIcon className="text-3xl" />
       </button>
     </ErrorBoundary>
   );

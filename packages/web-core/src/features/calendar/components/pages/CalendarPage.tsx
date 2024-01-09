@@ -44,7 +44,7 @@ export default function CalendarPage() {
     if (newSelectedDate && newSelectedDate !== format(selectedDate, 'yyyy-MM-dd')) {
       setSelectedDate(new Date(newSelectedDate));
     }
-  }, 100);
+  }, 10);
 
   useEffect(() => {
     if (isInitializedRef.current) {
@@ -65,10 +65,10 @@ export default function CalendarPage() {
     const newTargetUri = `/calendar/${selectedView}?selectedDate=${selectedDateString}`;
 
     setTargetUri(newTargetUri);
-  }, [setTargetUri, selectedView, selectedDate, targetUri]);
+  }, [setTargetUri, selectedView, selectedDate]);
 
-  useCalendarShortcuts(headerRef);
   useStateAndUrlSync(updateStateByUrl, targetUri);
+  useCalendarShortcuts(headerRef);
 
   return (
     <ErrorBoundary>

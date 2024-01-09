@@ -68,6 +68,14 @@ export const getTimezones = () => {
   return Array.from(timezones).sort();
 };
 
+// UUID
+// Could have used the UUID library, but one of our other dependencies requires a lower version,
+// which we are then unable to use
+export const isValidUuid = (str: string): boolean => {
+  const pattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
+  return pattern.test(str);
+};
+
 // Queues
 export const getQueueTypes = () => {
   // BullMQ queue types

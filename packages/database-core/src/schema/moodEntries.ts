@@ -6,7 +6,7 @@ import { users } from './users';
 export const moodEntries = pgTable('mood_entries', {
   id: uuid('id').defaultRandom().primaryKey(),
   happinessScore: integer('happiness_score'),
-  description: text('description'),
+  note: text('note'),
   loggedAt: timestamp('logged_at').notNull(),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),

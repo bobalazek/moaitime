@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const MoodEntrySchema = z.object({
   id: z.string(),
   happinessScore: z.number(),
-  description: z.string().nullable(),
+  note: z.string().nullable(),
   loggedAt: z.string(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
@@ -17,7 +17,7 @@ export const CreateMoodEntrySchema = z.object({
     })
     .min(-2)
     .max(2),
-  description: z.string().optional(),
+  note: z.string().optional(),
   loggedAt: z.string().default(() => new Date().toISOString()),
 });
 

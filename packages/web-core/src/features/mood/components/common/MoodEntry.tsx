@@ -13,8 +13,8 @@ export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
         <HappinessScoreIcon score={moodEntry.happinessScore} />
       </div>
       <div className="flex flex-grow flex-col">
-        <div className="text-sm font-semibold">{loggedAtRelative}</div>
-        {moodEntry.description && <div className="text-sm">{moodEntry.description}</div>}
+        <div className="font-semibold">{loggedAtRelative}</div>
+        {moodEntry.note && <div className="text-muted-foreground text-xs">{moodEntry.note}</div>}
       </div>
     </div>
   );

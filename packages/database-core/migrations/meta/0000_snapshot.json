@@ -1,5 +1,5 @@
 {
-  "id": "d532bc6b-049a-419b-a036-86c1bbe96bbe",
+  "id": "01a09dc2-dded-4a9a-8779-9c146c9b4637",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -527,8 +527,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "description": {
-          "name": "description",
+        "note": {
+          "name": "note",
           "type": "text",
           "primaryKey": false,
           "notNull": false

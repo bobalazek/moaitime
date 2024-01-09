@@ -9,11 +9,22 @@ import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
 import { MoodEntry } from '../common/MoodEntry';
 
 export default function MoodEntriesActivity() {
-  const [showConfetti, setShowConfetti] = useState(false);
   const { data, isLoading, error } = useMoodEntriesQuery();
+  const [showConfetti, setShowConfetti] = useState(false);
   const lastMoodEntryRef = useRef<MoodEntryType | null>(null);
+  const dataIsEmpty = useRef<boolean>(false);
 
   useEffect(() => {
+    // This convers the cases where we want to show the confetti for the very first entry
+    if (typeof data !== 'undefined' && data.length === 0) {
+      dataIsEmpty.current = true;
+    }
+
+    if (dataIsEmpty.current && data && data.length > 0) {
+      dataIsEmpty.current = false;
+      setShowConfetti(true);
+    }
+
     if (!data) {
       return;
     }
@@ -59,8 +70,10 @@ export default function MoodEntriesActivity() {
         />
       )}
       {data.length === 0 && (
-        <div className="flex h-full items-center justify-center">
-          <p className="text-muted-foreground">No mood entries yet.</p>
+        <div className="text-muted-foreground justify-center space-y-3 text-center">
+          <div className="text-2xl">No mood entries just yet.</div>
+          <div>Why not add one?</div>
+          <div>It is free, you know that, right?</div>
         </div>
       )}
       {data.length > 0 && (

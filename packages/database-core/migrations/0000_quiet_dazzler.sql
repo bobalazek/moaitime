@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS "lists" (
 CREATE TABLE IF NOT EXISTS "mood_entries" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"happiness_score" integer,
-	"description" text,
+	"note" text,
 	"logged_at" timestamp NOT NULL,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),

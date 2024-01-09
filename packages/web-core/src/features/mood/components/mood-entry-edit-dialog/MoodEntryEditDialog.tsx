@@ -23,11 +23,11 @@ import { useMoodEntrysStore } from '../../state/moodEntriesStore';
 import { HappinessScoreIcon } from '../common/HappinesScoreIcon';
 
 const moodScores = [
-  { score: -2, label: 'Terrible' },
-  { score: -1, label: 'Bad' },
-  { score: 0, label: 'Neutral' },
-  { score: 1, label: 'Good' },
   { score: 2, label: 'Great' },
+  { score: 1, label: 'Good' },
+  { score: 0, label: 'Neutral' },
+  { score: -1, label: 'Bad' },
+  { score: -2, label: 'Terrible' },
 ];
 
 export default function MoodEntryEditDialog() {
@@ -115,13 +115,13 @@ export default function MoodEntryEditDialog() {
           })}
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="moodEntry-description">Description</Label>
+          <Label htmlFor="moodEntry-note">Note</Label>
           <Textarea
-            id="moodEntry-description"
+            id="moodEntry-note"
             rows={5}
-            value={data?.description ?? ''}
+            value={data?.note ?? ''}
             onChange={(event) => {
-              setData((current) => ({ ...current, description: event.target.value }));
+              setData((current) => ({ ...current, note: event.target.value }));
             }}
           />
         </div>

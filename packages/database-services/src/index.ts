@@ -11,6 +11,7 @@ export * from './features/backgrounds/BackgroundsManager';
 
 // Calendars
 export * from './features/calendars/CalendarsManager';
+export * from './features/calendars/CalendarEntriesManager';
 export * from './features/calendars/EventsManager';
 
 // Greetings
@@ -26,3 +27,6 @@ export * from './features/quotes/QuotesManager';
 export * from './features/tasks/TasksManager';
 export * from './features/tasks/ListsManager';
 export * from './features/tasks/TagsManager';
+
+// Mood
+export * from './features/mood/MoodEntriesManager';

@@ -55,5 +55,8 @@ export * from './tasks/ListSchema';
 export * from './tasks/TaskSchema';
 export * from './tasks/TagSchema';
 
+// Mood
+export * from './mood/MoodEntrySchema';
+
 // Weather
 export * from './weather/Weather';

@@ -7,6 +7,7 @@ import { AuthModule } from './features/auth/auth.module';
 import { BackgroundsModule } from './features/backgrounds/backgrounds.module';
 import { CalendarsModule } from './features/calendar/calendar.module';
 import { GreetingsModule } from './features/greetings/greetings.module';
+import { MoodModule } from './features/mood/mood.module';
 import { NotesModule } from './features/notes/notes.module';
 import { QuotesModule } from './features/quotes/quotes.module';
 import { TasksModule } from './features/tasks/tasks.module';
@@ -24,6 +25,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
     TasksModule,
     CalendarsModule,
     WeatherModule,
+    MoodModule,
     TestingModule,
   ],
   controllers: [AppController],

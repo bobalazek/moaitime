@@ -1,12 +1,13 @@
 import { format } from 'date-fns';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
+import { useStateAndUrlSync } from '../../../core/hooks/useStateAndUrlSync';
 import { useCalendarShortcuts } from '../../hooks/useCalendarShortcuts';
-import { useCalendarStateAndUrlSync } from '../../hooks/useCalendarStateAndUrlSync';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarAgendaView from '../views/CalendarAgendaView';
 import CalendarDailyView from '../views/CalendarDailyView';
@@ -24,6 +25,8 @@ export default function CalendarPage() {
     loadCalendars,
     reloadSelectedDays,
   } = useCalendarStore();
+  const location = useLocation();
+  const [targetUri, setTargetUri] = useState(`${location.pathname}${location.search}`);
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitializedRef = useRef(false); // Prevents react to trigger useEffect twice
 
@@ -41,10 +44,7 @@ export default function CalendarPage() {
     if (newSelectedDate && newSelectedDate !== format(selectedDate, 'yyyy-MM-dd')) {
       setSelectedDate(new Date(newSelectedDate));
     }
-  }, 50);
-
-  useCalendarShortcuts(headerRef);
-  useCalendarStateAndUrlSync(updateStateByUrl);
+  }, 100);
 
   useEffect(() => {
     if (isInitializedRef.current) {
@@ -59,6 +59,16 @@ export default function CalendarPage() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const selectedDateString = format(selectedDate, 'yyyy-MM-dd');
+    const newTargetUri = `/calendar/${selectedView}?selectedDate=${selectedDateString}`;
+
+    setTargetUri(newTargetUri);
+  }, [setTargetUri, selectedView, selectedDate, targetUri]);
+
+  useCalendarShortcuts(headerRef);
+  useStateAndUrlSync(updateStateByUrl, targetUri);
 
   return (
     <ErrorBoundary>

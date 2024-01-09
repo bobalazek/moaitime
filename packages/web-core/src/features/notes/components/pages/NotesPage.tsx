@@ -63,9 +63,9 @@ export default function NotesPage() {
     // Not really sure why we need separate effect for this,
     // but otherwise it doesn't work.
 
-    const onKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
 
         if (selectedNoteDataChangedRef.current) {
           const response = confirm('You have unsaved changes. Are you sure you want to leave?');

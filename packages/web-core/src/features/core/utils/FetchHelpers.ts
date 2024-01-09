@@ -1,7 +1,11 @@
+import { QueryClient } from 'react-query';
+
 import { sonnerToast } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../auth/state/authStore';
 import { ErrorResponse } from '../errors/ErrorResponse';
+
+export const queryClient = new QueryClient();
 
 export const fetchJson = async <T>(
   input: RequestInfo | URL,

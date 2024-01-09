@@ -22,9 +22,9 @@ export default function CommandsDialog() {
   const { commandsDialogOpen, setCommandsDialogOpen, search, setSearch } = useCommandsStore();
 
   useEffect(() => {
-    const onKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
 
         setCommandsDialogOpen(!commandsDialogOpen);
       }

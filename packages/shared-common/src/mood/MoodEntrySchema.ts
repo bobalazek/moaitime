@@ -11,8 +11,13 @@ export const MoodEntrySchema = z.object({
 });
 
 export const CreateMoodEntrySchema = z.object({
-  happinessScore: z.number().min(-2).max(2),
-  description: z.string().nullable(),
+  happinessScore: z
+    .number({
+      required_error: 'Happiness score is required',
+    })
+    .min(-2)
+    .max(2),
+  description: z.string().optional(),
   loggedAt: z.string().default(() => new Date().toISOString()),
 });
 

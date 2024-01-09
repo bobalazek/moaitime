@@ -1,5 +1,6 @@
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { useMoodShortcuts } from '../../hooks/useMoodShortcuts';
+import MoodPageContent from './mood/MoodPageContent';
 import MoodPageHeader from './mood/MoodPageHeader';
 
 export default function MoodPage() {
@@ -9,7 +10,7 @@ export default function MoodPage() {
     <ErrorBoundary>
       <div className="flex h-screen flex-col" data-test="mood">
         <MoodPageHeader />
-        <div className="p-4 text-center">TODO</div>
+        <MoodPageContent />
       </div>
     </ErrorBoundary>
   );

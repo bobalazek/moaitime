@@ -1,6 +1,8 @@
 import { HomeIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import MoodPageHeaderButtons from './MoodPageHeaderButtons';
+
 const MoodPageHeader = () => {
   const navigate = useNavigate();
 
@@ -21,6 +23,7 @@ const MoodPageHeader = () => {
         </button>
         <div>Mood</div>
       </div>
+      <MoodPageHeaderButtons />
     </div>
   );
 };

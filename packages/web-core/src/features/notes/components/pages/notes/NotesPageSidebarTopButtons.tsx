@@ -22,11 +22,11 @@ const NotesPageSidebarTopButtons = () => {
   const {
     notesSortField,
     notesSortDirection,
-    notesSortIncludeDeleted,
+    notesIncludeDeleted,
     setDraftAsSelectedNoteData,
     setNotesSortField,
     setNotesSortDirection,
-    setNotesSortIncludeDeleted,
+    setNotesIncludeDeleted,
   } = useNotesStore();
 
   const onAddNewNoteButtonClick = () => {
@@ -90,8 +90,8 @@ const NotesPageSidebarTopButtons = () => {
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem
-            checked={notesSortIncludeDeleted}
-            onCheckedChange={setNotesSortIncludeDeleted}
+            checked={notesIncludeDeleted}
+            onCheckedChange={setNotesIncludeDeleted}
           >
             Include deleted?
           </DropdownMenuCheckboxItem>

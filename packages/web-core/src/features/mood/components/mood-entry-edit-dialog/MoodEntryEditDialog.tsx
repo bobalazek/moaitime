@@ -23,11 +23,11 @@ import { useMoodEntrysStore } from '../../state/moodEntriesStore';
 import { HappinessScoreIcon } from '../common/HappinesScoreIcon';
 
 const moodScores = [
-  { score: 2, label: 'Great' },
-  { score: 1, label: 'Good' },
-  { score: 0, label: 'Neutral' },
-  { score: -1, label: 'Bad' },
-  { score: -2, label: 'Terrible' },
+  { score: 2, label: 'great' },
+  { score: 1, label: 'good' },
+  { score: 0, label: 'neutral' },
+  { score: -1, label: 'bad' },
+  { score: -2, label: 'terrible' },
 ];
 
 export default function MoodEntryEditDialog() {
@@ -110,6 +110,7 @@ export default function MoodEntryEditDialog() {
                   size={48}
                   strokeWidth={isSelected ? 2 : 1.5}
                 />
+                <div className="mt-1.5 text-center text-xs font-semibold">{moodScore.label}</div>
               </div>
             );
           })}

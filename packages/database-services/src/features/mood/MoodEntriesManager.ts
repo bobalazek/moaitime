@@ -12,7 +12,6 @@ import {
   lte,
   ne,
   or,
-  sql,
   SQL,
 } from 'drizzle-orm';
 
@@ -43,8 +42,10 @@ export class MoodEntriesManager {
     options?: MoodEntriesManagerFindOptions
   ): Promise<{ data: MoodEntry[]; previousCursor?: string; nextCursor?: string }> {
     const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
-    const loggedAtDate = sql`${moodEntries.loggedAt}`;
+    const isSortAscending = sortDirection === SortDirectionEnum.ASC;
 
+    let orderWasReversed = false;
+    let orderBy = isSortAscending ? asc(moodEntries.loggedAt) : desc(moodEntries.loggedAt);
     let where = eq(moodEntries.userId, userId);
     if (!options?.includeDeleted) {
       where = and(where, isNull(moodEntries.deletedAt)) as SQL<unknown>;
@@ -53,13 +54,13 @@ export class MoodEntriesManager {
     if (options?.from && options?.to) {
       where = and(
         where,
-        gte(loggedAtDate, options.from),
-        lte(loggedAtDate, options.to)
+        gte(moodEntries.loggedAt, options.from),
+        lte(moodEntries.loggedAt, options.to)
       ) as SQL<unknown>;
     } else if (options?.from) {
-      where = and(where, gte(loggedAtDate, options.from)) as SQL<unknown>;
+      where = and(where, gte(moodEntries.loggedAt, options.from)) as SQL<unknown>;
     } else if (options?.to) {
-      where = and(where, lte(loggedAtDate, options.to)) as SQL<unknown>;
+      where = and(where, lte(moodEntries.loggedAt, options.to)) as SQL<unknown>;
     }
 
     if (options?.previousCursor) {
@@ -70,10 +71,16 @@ export class MoodEntriesManager {
       where = and(
         where,
         or(
-          lt(loggedAtDate, previousLoggedAt),
-          and(eq(loggedAtDate, previousLoggedAt), ne(moodEntries.id, previousId))
+          lt(moodEntries.loggedAt, previousLoggedAt),
+          and(eq(moodEntries.loggedAt, previousLoggedAt), ne(moodEntries.id, previousId))
         )
       ) as SQL<unknown>;
+
+      // If we are going backwards, we need to reverse the order so we do not miss any entries in the middle
+      if (!isSortAscending) {
+        orderBy = desc(moodEntries.loggedAt);
+        orderWasReversed = true;
+      }
     }
 
     if (options?.nextCursor) {
@@ -82,20 +89,22 @@ export class MoodEntriesManager {
       where = and(
         where,
         or(
-          gt(loggedAtDate, nextLoggedAt),
-          and(eq(loggedAtDate, nextLoggedAt), ne(moodEntries.id, nextId))
+          gt(moodEntries.loggedAt, nextLoggedAt),
+          and(eq(moodEntries.loggedAt, nextLoggedAt), ne(moodEntries.id, nextId))
         )
       ) as SQL<unknown>;
     }
 
     const rows = await getDatabase().query.moodEntries.findMany({
       where,
-      orderBy:
-        sortDirection === SortDirectionEnum.DESC
-          ? desc(moodEntries.loggedAt)
-          : asc(moodEntries.loggedAt),
+      orderBy,
       limit: options?.limit,
     });
+
+    // Here we reverse the order back to what it was originally
+    if (orderWasReversed) {
+      rows.reverse();
+    }
 
     const data = rows.map((row) => {
       return this._fixRowColumns(row);
@@ -105,20 +114,19 @@ export class MoodEntriesManager {
     let nextCursor: string | undefined;
     if (data.length > 0) {
       const isLessThanLimit = data.length < (options?.limit ?? 0);
-      const isAscending = sortDirection === SortDirectionEnum.ASC;
       const firstItem = data[0];
       const lastItem = data[data.length - 1];
 
       previousCursor = !isLessThanLimit
         ? this._propertiesToCursor({
-            id: isAscending ? firstItem.id : lastItem.id,
-            loggedAt: isAscending ? firstItem.loggedAt : lastItem.loggedAt,
+            id: isSortAscending ? firstItem.id : lastItem.id,
+            loggedAt: isSortAscending ? firstItem.loggedAt : lastItem.loggedAt,
           })
         : undefined;
       nextCursor = !isLessThanLimit
         ? this._propertiesToCursor({
-            id: isAscending ? lastItem.id : firstItem.id,
-            loggedAt: isAscending ? lastItem.loggedAt : firstItem.loggedAt,
+            id: isSortAscending ? lastItem.id : firstItem.id,
+            loggedAt: isSortAscending ? lastItem.loggedAt : firstItem.loggedAt,
           })
         : undefined;
     }
@@ -222,12 +230,10 @@ export class MoodEntriesManager {
   }
 
   private _propertiesToCursor(properties: { id: string; loggedAt: string }): string {
-    return JSON.stringify(properties);
     return btoa(JSON.stringify(properties));
   }
 
   private _cursorToProperties(cursor: string): { id: string; loggedAt: string } {
-    return JSON.parse(cursor);
     return JSON.parse(atob(cursor));
   }
 }

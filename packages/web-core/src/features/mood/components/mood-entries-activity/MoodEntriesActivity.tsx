@@ -10,8 +10,28 @@ import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntri
 import { MoodEntry } from '../common/MoodEntry';
 
 function MoodEntriesActivityInner() {
-  const { data, isLoading, hasNextPage, fetchNextPage, hasPreviousPage, fetchPreviousPage, error } =
-    useMoodEntriesQuery();
+  const {
+    data,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    hasPreviousPage,
+    fetchPreviousPage,
+    refetch,
+    error,
+  } = useMoodEntriesQuery();
+
+  useEffect(() => {
+    const callback = () => {
+      refetch();
+    };
+
+    moodEntriesEmitter.on('*', callback);
+
+    return () => {
+      moodEntriesEmitter.off('*', callback);
+    };
+  }, [refetch]);
 
   const items = data?.pages.flatMap((page) => page.data!);
   if (!items) {

@@ -2,8 +2,6 @@ import { create } from 'zustand';
 
 import { CreateMoodEntry, MoodEntry, UpdateMoodEntry } from '@moaitime/shared-common';
 
-import { queryClient } from '../../core/utils/FetchHelpers';
-import { MOOD_ENTRIES_QUERY_KEY } from '../hooks/useMoodEntriesQuery';
 import {
   addMoodEntry,
   deleteMoodEntry,
@@ -30,10 +28,6 @@ export type MoodEntrieStore = {
   ) => void;
 };
 
-const reloadMoodEntries = async () => {
-  return queryClient.invalidateQueries([MOOD_ENTRIES_QUERY_KEY]);
-};
-
 export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   /********** Mood Entries **********/
   getMoodEntry: async (moodEntryId: string) => {
@@ -44,16 +38,12 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   addMoodEntry: async (moodEntry: CreateMoodEntry) => {
     const addedMoodEntry = await addMoodEntry(moodEntry);
 
-    await reloadMoodEntries();
-
     moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, { moodEntry: addedMoodEntry });
 
     return addedMoodEntry;
   },
   editMoodEntry: async (moodEntryId: string, moodEntry: UpdateMoodEntry) => {
     const editedMoodEntry = await editMoodEntry(moodEntryId, moodEntry);
-
-    await reloadMoodEntries();
 
     moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_EDITED, {
       moodEntry: editedMoodEntry,
@@ -64,8 +54,6 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   deleteMoodEntry: async (moodEntryId: string, isHardDelete?: boolean) => {
     const deletedMoodEntry = await deleteMoodEntry(moodEntryId, isHardDelete);
 
-    await reloadMoodEntries();
-
     moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_DELETED, {
       moodEntry: deletedMoodEntry,
       isHardDelete: !!isHardDelete,
@@ -75,8 +63,6 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   },
   undeleteMoodEntry: async (moodEntryId: string) => {
     const undeletedMoodEntry = await undeleteMoodEntry(moodEntryId);
-
-    await reloadMoodEntries();
 
     moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_UNDELETED, {
       moodEntry: undeletedMoodEntry,

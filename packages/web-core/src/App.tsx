@@ -1,4 +1,4 @@
-import { QueryClientProvider } from 'react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import { SonnerToaster, Toaster } from '@moaitime/web-ui';
 

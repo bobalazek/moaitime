@@ -40,8 +40,16 @@ export class MoodEntriesManager {
   async findManyByUserId(
     userId: string,
     options?: MoodEntriesManagerFindOptions
-  ): Promise<{ data: MoodEntry[]; previousCursor?: string; nextCursor?: string }> {
+  ): Promise<{
+    data: MoodEntry[];
+    previousCursor?: string;
+    nextCursor?: string;
+    sortDirection?: SortDirectionEnum;
+    limit?: number;
+  }> {
+    const limit = options?.limit ?? 20;
     const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
+
     const isSortAscending = sortDirection === SortDirectionEnum.ASC;
 
     let orderWasReversed = false;
@@ -71,16 +79,16 @@ export class MoodEntriesManager {
       where = and(
         where,
         or(
-          lt(moodEntries.loggedAt, previousLoggedAt),
+          isSortAscending
+            ? lt(moodEntries.loggedAt, previousLoggedAt)
+            : gt(moodEntries.loggedAt, previousLoggedAt),
           and(eq(moodEntries.loggedAt, previousLoggedAt), ne(moodEntries.id, previousId))
         )
       ) as SQL<unknown>;
 
       // If we are going backwards, we need to reverse the order so we do not miss any entries in the middle
-      if (!isSortAscending) {
-        orderBy = desc(moodEntries.loggedAt);
-        orderWasReversed = true;
-      }
+      orderBy = isSortAscending ? desc(moodEntries.loggedAt) : asc(moodEntries.loggedAt);
+      orderWasReversed = true;
     }
 
     if (options?.nextCursor) {
@@ -89,7 +97,9 @@ export class MoodEntriesManager {
       where = and(
         where,
         or(
-          gt(moodEntries.loggedAt, nextLoggedAt),
+          isSortAscending
+            ? gt(moodEntries.loggedAt, nextLoggedAt)
+            : lt(moodEntries.loggedAt, nextLoggedAt),
           and(eq(moodEntries.loggedAt, nextLoggedAt), ne(moodEntries.id, nextId))
         )
       ) as SQL<unknown>;
@@ -98,7 +108,7 @@ export class MoodEntriesManager {
     const rows = await getDatabase().query.moodEntries.findMany({
       where,
       orderBy,
-      limit: options?.limit,
+      limit,
     });
 
     // Here we reverse the order back to what it was originally
@@ -119,14 +129,14 @@ export class MoodEntriesManager {
 
       previousCursor = !isLessThanLimit
         ? this._propertiesToCursor({
-            id: isSortAscending ? firstItem.id : lastItem.id,
-            loggedAt: isSortAscending ? firstItem.loggedAt : lastItem.loggedAt,
+            id: firstItem.id,
+            loggedAt: firstItem.loggedAt,
           })
         : undefined;
       nextCursor = !isLessThanLimit
         ? this._propertiesToCursor({
-            id: isSortAscending ? lastItem.id : firstItem.id,
-            loggedAt: isSortAscending ? lastItem.loggedAt : firstItem.loggedAt,
+            id: lastItem.id,
+            loggedAt: lastItem.loggedAt,
           })
         : undefined;
     }
@@ -135,6 +145,7 @@ export class MoodEntriesManager {
       data,
       previousCursor,
       nextCursor,
+      sortDirection,
     };
   }
 

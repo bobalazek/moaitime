@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useQueryClient } from 'react-query';
+// Need to have this, else typescript won't work...
+// https://github.com/microsoft/TypeScript/issues/47663#issuecomment-1519138189
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
+
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { AsyncReturnType } from '@moaitime/shared-common';
 
@@ -8,7 +13,14 @@ export const MOOD_ENTRIES_QUERY_KEY = 'mood-entries';
 
 export const useMoodEntriesQuery = () => {
   return useInfiniteQuery<AsyncReturnType<typeof loadMoodEntriesRawResponse>>({
-    queryKey: MOOD_ENTRIES_QUERY_KEY,
+    initialPageParam: undefined,
+    // Temporary disable until we have a fix for this.
+    // Issue is, that pageParam stays the same as the last fetch you did,
+    // so if you scroll to bottom when there are no more entries,
+    // then it won't work on the refresh anymore.
+    // See: https://github.com/TanStack/query/discussions/5692
+    refetchOnWindowFocus: false,
+    queryKey: [MOOD_ENTRIES_QUERY_KEY],
     queryFn: ({ pageParam }) => {
       let params: MoodEntriesManagerFindOptions | undefined = undefined;
       if (pageParam && typeof pageParam === 'string') {
@@ -42,16 +54,5 @@ export const useMoodEntriesQuery = () => {
 
       return `nextCursor=${nextCursor}`;
     },
-    keepPreviousData: true,
   });
-};
-
-export const useInvalidateMoodEntriesQuery = () => {
-  const queryClient = useQueryClient();
-
-  const invalidateAssetsQuery = () => {
-    queryClient.invalidateQueries([MOOD_ENTRIES_QUERY_KEY]);
-  };
-
-  return invalidateAssetsQuery;
 };

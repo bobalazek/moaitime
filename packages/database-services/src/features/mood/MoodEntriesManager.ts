@@ -1,5 +1,6 @@
 import {
   and,
+  asc,
   count,
   DBQueryConfig,
   desc,
@@ -9,12 +10,14 @@ import {
   isNull,
   lt,
   lte,
+  ne,
   or,
   sql,
   SQL,
 } from 'drizzle-orm';
 
 import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/database-core';
+import { SortDirectionEnum } from '@moaitime/shared-common';
 
 export type MoodEntriesManagerFindOptions = {
   includeDeleted?: boolean;
@@ -23,6 +26,7 @@ export type MoodEntriesManagerFindOptions = {
   afterCursor?: string;
   beforeCursor?: string;
   limit?: number;
+  sortDirection?: SortDirectionEnum;
 };
 
 export class MoodEntriesManager {
@@ -38,10 +42,10 @@ export class MoodEntriesManager {
     userId: string,
     options?: MoodEntriesManagerFindOptions
   ): Promise<{ data: MoodEntry[]; beforeCursor?: string; afterCursor?: string }> {
+    const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
+    const loggedAtDate = sql<string>`DATE(${moodEntries.loggedAt})`;
+
     let where = eq(moodEntries.userId, userId);
-
-    const loggedAtDate = sql<Date>`DATE(${moodEntries.loggedAt})`;
-
     if (!options?.includeDeleted) {
       where = and(where, isNull(moodEntries.deletedAt)) as SQL<unknown>;
     }
@@ -49,10 +53,8 @@ export class MoodEntriesManager {
     if (options?.from && options?.to) {
       where = and(
         where,
-        or(
-          and(gte(loggedAtDate, options.from), lte(loggedAtDate, options.to)),
-          and(lt(loggedAtDate, options.from), gt(loggedAtDate, options.to))
-        )
+        gte(loggedAtDate, options.from),
+        lte(loggedAtDate, options.to)
       ) as SQL<unknown>;
     } else if (options?.from) {
       where = and(where, gte(loggedAtDate, options.from)) as SQL<unknown>;
@@ -68,8 +70,8 @@ export class MoodEntriesManager {
       where = and(
         where,
         or(
-          and(gt(loggedAtDate, afterLoggedAt), gt(moodEntries.id, afterId)),
-          gt(loggedAtDate, afterLoggedAt)
+          gt(loggedAtDate, afterLoggedAt),
+          and(eq(loggedAtDate, afterLoggedAt), ne(moodEntries.id, afterId))
         )
       ) as SQL<unknown>;
     }
@@ -82,15 +84,18 @@ export class MoodEntriesManager {
       where = and(
         where,
         or(
-          and(lt(loggedAtDate, beforeLoggedAt), lt(moodEntries.id, beforeId)),
-          lt(loggedAtDate, beforeLoggedAt)
+          lt(loggedAtDate, beforeLoggedAt),
+          and(eq(loggedAtDate, beforeLoggedAt), ne(moodEntries.id, beforeId))
         )
       ) as SQL<unknown>;
     }
 
     const rows = await getDatabase().query.moodEntries.findMany({
       where,
-      orderBy: [desc(moodEntries.loggedAt), desc(moodEntries.id)],
+      orderBy:
+        sortDirection === SortDirectionEnum.DESC
+          ? desc(moodEntries.loggedAt)
+          : asc(moodEntries.loggedAt),
       limit: options?.limit,
     });
 
@@ -98,20 +103,29 @@ export class MoodEntriesManager {
       return this._fixRowColumns(row);
     });
 
-    const beforeCursor =
-      data.length > 0
-        ? this._propertiesToCursor({
-            id: data[data.length - 1].id,
-            loggedAt: data[data.length - 1].loggedAt,
-          })
-        : undefined;
-    const afterCursor =
-      data.length > 0
-        ? this._propertiesToCursor({
-            id: data[0].id,
-            loggedAt: data[0].loggedAt,
-          })
-        : undefined;
+    let beforeCursor: string | undefined;
+    let afterCursor: string | undefined;
+    if (data.length > 0) {
+      if (sortDirection === SortDirectionEnum.DESC) {
+        beforeCursor = this._propertiesToCursor({
+          id: data[data.length - 1].id,
+          loggedAt: data[data.length - 1].loggedAt,
+        });
+        afterCursor = this._propertiesToCursor({
+          id: data[0].id,
+          loggedAt: data[0].loggedAt,
+        });
+      } else {
+        beforeCursor = this._propertiesToCursor({
+          id: data[0].id,
+          loggedAt: data[0].loggedAt,
+        });
+        afterCursor = this._propertiesToCursor({
+          id: data[data.length - 1].id,
+          loggedAt: data[data.length - 1].loggedAt,
+        });
+      }
+    }
 
     return {
       data,
@@ -212,10 +226,12 @@ export class MoodEntriesManager {
   }
 
   private _propertiesToCursor(properties: { id: string; loggedAt: string }): string {
+    return JSON.stringify(properties);
     return btoa(JSON.stringify(properties));
   }
 
   private _cursorToProperties(cursor: string): { id: string; loggedAt: string } {
+    return JSON.parse(cursor);
     return JSON.parse(atob(cursor));
   }
 }

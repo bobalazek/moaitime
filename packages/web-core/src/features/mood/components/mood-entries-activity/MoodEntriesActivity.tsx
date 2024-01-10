@@ -42,9 +42,9 @@ function MoodEntriesActivityInner() {
       )}
       {items.length > 0 && (
         <div className="space-y-4">
-          {hasNextPage && (
+          {hasPreviousPage && (
             <div className="flex justify-center">
-              <Button className="btn btn-primary" onClick={() => fetchNextPage()}>
+              <Button className="btn btn-primary" onClick={() => fetchPreviousPage()}>
                 Load newer
               </Button>
             </div>
@@ -54,10 +54,10 @@ function MoodEntriesActivityInner() {
               return <MoodEntry key={moodEntry.id} moodEntry={moodEntry} />;
             })}
           </div>
-          {hasPreviousPage && (
+          {hasNextPage && (
             <div className="flex justify-center">
-              <Button className="btn btn-primary" onClick={() => fetchPreviousPage()}>
-                Load previous
+              <Button className="btn btn-primary" onClick={() => fetchNextPage()}>
+                Load older
               </Button>
             </div>
           )}

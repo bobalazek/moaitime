@@ -21,6 +21,7 @@ export * from './calendar/CalendarViewOptions';
 export * from './calendar/EventSchema';
 
 // Core
+export * from './core/AsyncReturnType';
 export * from './core/MainColors';
 export * from './core/Priorities';
 export * from './core/TimezoneSchema';

@@ -27,11 +27,27 @@ export class MoodEntriesController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<MoodEntry[]>> {
-    const data = await moodEntriesManager.findManyByUserId(req.user.id);
+    const limit = 5;
+    const beforeCursorQueryParameter = req.query.beforeCursor as string | undefined;
+    const afterCursorQueryParameter = req.query.afterCursor as string | undefined;
+
+    const { data, beforeCursor, afterCursor } = await moodEntriesManager.findManyByUserId(
+      req.user.id,
+      {
+        limit,
+        beforeCursor: beforeCursorQueryParameter,
+        afterCursor: afterCursorQueryParameter,
+      }
+    );
 
     return {
       success: true,
       data,
+      meta: {
+        limit,
+        beforeCursor,
+        afterCursor,
+      },
     };
   }
 

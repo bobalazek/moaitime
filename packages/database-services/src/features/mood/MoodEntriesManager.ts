@@ -20,6 +20,8 @@ export type MoodEntriesManagerFindOptions = {
   includeDeleted?: boolean;
   from?: Date;
   to?: Date;
+  afterCursor?: string;
+  beforeCursor?: string;
   limit?: number;
 };
 
@@ -35,7 +37,7 @@ export class MoodEntriesManager {
   async findManyByUserId(
     userId: string,
     options?: MoodEntriesManagerFindOptions
-  ): Promise<MoodEntry[]> {
+  ): Promise<{ data: MoodEntry[]; beforeCursor?: string; afterCursor?: string }> {
     let where = eq(moodEntries.userId, userId);
 
     const loggedAtDate = sql<Date>`DATE(${moodEntries.loggedAt})`;
@@ -58,15 +60,64 @@ export class MoodEntriesManager {
       where = and(where, lte(loggedAtDate, options.to)) as SQL<unknown>;
     }
 
+    if (options?.afterCursor) {
+      const { id: afterId, loggedAt: afterLoggedAt } = this._cursorToProperties(
+        options.afterCursor
+      );
+
+      where = and(
+        where,
+        or(
+          and(gt(loggedAtDate, afterLoggedAt), gt(moodEntries.id, afterId)),
+          gt(loggedAtDate, afterLoggedAt)
+        )
+      ) as SQL<unknown>;
+    }
+
+    if (options?.beforeCursor) {
+      const { id: beforeId, loggedAt: beforeLoggedAt } = this._cursorToProperties(
+        options.beforeCursor
+      );
+
+      where = and(
+        where,
+        or(
+          and(lt(loggedAtDate, beforeLoggedAt), lt(moodEntries.id, beforeId)),
+          lt(loggedAtDate, beforeLoggedAt)
+        )
+      ) as SQL<unknown>;
+    }
+
     const rows = await getDatabase().query.moodEntries.findMany({
       where,
-      orderBy: desc(moodEntries.loggedAt),
+      orderBy: [desc(moodEntries.loggedAt), desc(moodEntries.id)],
       limit: options?.limit,
     });
 
-    return rows.map((row) => {
+    const data = rows.map((row) => {
       return this._fixRowColumns(row);
     });
+
+    const beforeCursor =
+      data.length > 0
+        ? this._propertiesToCursor({
+            id: data[data.length - 1].id,
+            loggedAt: data[data.length - 1].loggedAt,
+          })
+        : undefined;
+    const afterCursor =
+      data.length > 0
+        ? this._propertiesToCursor({
+            id: data[0].id,
+            loggedAt: data[0].loggedAt,
+          })
+        : undefined;
+
+    return {
+      data,
+      beforeCursor,
+      afterCursor,
+    };
   }
 
   async findOneById(id: string): Promise<MoodEntry | null> {
@@ -144,7 +195,7 @@ export class MoodEntriesManager {
     return this.userCanUpdate(userId, moodEntryId);
   }
 
-  // Privae
+  // Private
   private _fixRowColumns(moodEntry: MoodEntry) {
     // TODO
     // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
@@ -158,6 +209,14 @@ export class MoodEntriesManager {
     }
 
     return moodEntry;
+  }
+
+  private _propertiesToCursor(properties: { id: string; loggedAt: string }): string {
+    return btoa(JSON.stringify(properties));
+  }
+
+  private _cursorToProperties(cursor: string): { id: string; loggedAt: string } {
+    return JSON.parse(atob(cursor));
   }
 }
 

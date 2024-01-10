@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 
+import { Button } from '@moaitime/web-ui';
+
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
@@ -8,9 +10,11 @@ import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntri
 import { MoodEntry } from '../common/MoodEntry';
 
 function MoodEntriesActivityInner() {
-  const { data, isLoading, error } = useMoodEntriesQuery();
+  const { data, isLoading, hasNextPage, fetchNextPage, hasPreviousPage, fetchPreviousPage, error } =
+    useMoodEntriesQuery();
 
-  if (!data) {
+  const items = data?.pages.flatMap((page) => page.data!);
+  if (!items) {
     return null;
   }
 
@@ -24,7 +28,7 @@ function MoodEntriesActivityInner() {
 
   return (
     <>
-      {data.length === 0 && (
+      {items.length === 0 && (
         <div className="text-muted-foreground justify-center text-center">
           <div className="mb-3 text-3xl">No mood entries just yet.</div>
           <div>Why not add one? It is free, you know that, right?</div>
@@ -36,11 +40,27 @@ function MoodEntriesActivityInner() {
           </div>
         </div>
       )}
-      {data.length > 0 && (
-        <div className="flex flex-col gap-4">
-          {data.map((moodEntry) => {
-            return <MoodEntry key={moodEntry.id} moodEntry={moodEntry} />;
-          })}
+      {items.length > 0 && (
+        <div className="space-y-4">
+          {hasNextPage && (
+            <div className="flex justify-center">
+              <Button className="btn btn-primary" onClick={() => fetchNextPage()}>
+                Load newer
+              </Button>
+            </div>
+          )}
+          <div className="flex flex-col gap-4">
+            {items.map((moodEntry) => {
+              return <MoodEntry key={moodEntry.id} moodEntry={moodEntry} />;
+            })}
+          </div>
+          {hasPreviousPage && (
+            <div className="flex justify-center">
+              <Button className="btn btn-primary" onClick={() => fetchPreviousPage()}>
+                Load previous
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </>

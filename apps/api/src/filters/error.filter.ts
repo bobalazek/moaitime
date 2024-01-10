@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 
+import { getEnv } from '@moaitime/shared-backend';
 import { zodErrorToString } from '@moaitime/shared-common';
 
 @Catch(Error)
@@ -29,7 +30,7 @@ export class ErrorFilter implements ExceptionFilter {
     }
 
     let stack: string[] | undefined;
-    if (exception.stack) {
+    if (getEnv().NODE_ENV !== 'production' && exception.stack) {
       stack = exception.stack.split('\n');
     }
 

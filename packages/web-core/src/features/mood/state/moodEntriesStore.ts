@@ -11,6 +11,7 @@ import {
   getMoodEntry,
   undeleteMoodEntry,
 } from '../utils/MoodHelpers';
+import { moodEntriesEmitter, MoodEntriesEventsEnum } from './moodEntriesEmitter';
 
 export type MoodEntrieStore = {
   /********** Mood Entries **********/
@@ -45,12 +46,18 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
 
     await reloadMoodEntries();
 
+    moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, { moodEntry: addedMoodEntry });
+
     return addedMoodEntry;
   },
   editMoodEntry: async (moodEntryId: string, moodEntry: UpdateMoodEntry) => {
     const editedMoodEntry = await editMoodEntry(moodEntryId, moodEntry);
 
     await reloadMoodEntries();
+
+    moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_EDITED, {
+      moodEntry: editedMoodEntry,
+    });
 
     return editedMoodEntry;
   },
@@ -59,12 +66,21 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
 
     await reloadMoodEntries();
 
+    moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_DELETED, {
+      moodEntry: deletedMoodEntry,
+      isHardDelete: !!isHardDelete,
+    });
+
     return deletedMoodEntry;
   },
   undeleteMoodEntry: async (moodEntryId: string) => {
     const undeletedMoodEntry = await undeleteMoodEntry(moodEntryId);
 
     await reloadMoodEntries();
+
+    moodEntriesEmitter.emit(MoodEntriesEventsEnum.MOOD_ENTRY_UNDELETED, {
+      moodEntry: undeletedMoodEntry,
+    });
 
     return undeletedMoodEntry;
   },

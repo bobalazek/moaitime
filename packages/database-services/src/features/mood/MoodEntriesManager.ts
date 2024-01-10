@@ -20,6 +20,7 @@ export type MoodEntriesManagerFindOptions = {
   includeDeleted?: boolean;
   from?: Date;
   to?: Date;
+  limit?: number;
 };
 
 export class MoodEntriesManager {
@@ -60,6 +61,7 @@ export class MoodEntriesManager {
     const rows = await getDatabase().query.moodEntries.findMany({
       where,
       orderBy: desc(moodEntries.loggedAt),
+      limit: options?.limit,
     });
 
     return rows.map((row) => {

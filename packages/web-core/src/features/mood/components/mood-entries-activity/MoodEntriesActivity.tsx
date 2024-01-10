@@ -1,48 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
-
-import { MoodEntry as MoodEntryType } from '@moaitime/shared-common';
 
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
+import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntriesEmitter';
 import { MoodEntry } from '../common/MoodEntry';
 
-export default function MoodEntriesActivity() {
+function MoodEntriesActivityInner() {
   const { data, isLoading, error } = useMoodEntriesQuery();
-  const [showConfetti, setShowConfetti] = useState(false);
-  const lastMoodEntryRef = useRef<MoodEntryType | null>(null);
-  const dataIsEmpty = useRef<boolean>(false);
-
-  useEffect(() => {
-    // This convers the cases where we want to show the confetti for the very first entry
-    if (typeof data !== 'undefined' && data.length === 0) {
-      dataIsEmpty.current = true;
-    }
-
-    if (dataIsEmpty.current && data && data.length > 0) {
-      dataIsEmpty.current = false;
-      setShowConfetti(true);
-    }
-
-    if (!data || data.length === 0) {
-      return;
-    }
-
-    if (!lastMoodEntryRef.current) {
-      lastMoodEntryRef.current = data[0];
-
-      return;
-    }
-
-    if (data[0].id === lastMoodEntryRef.current.id) {
-      return;
-    }
-
-    setShowConfetti(true);
-
-    lastMoodEntryRef.current = data[0];
-  }, [data]);
 
   if (!data) {
     return null;
@@ -57,6 +23,46 @@ export default function MoodEntriesActivity() {
   }
 
   return (
+    <>
+      {data.length === 0 && (
+        <div className="text-muted-foreground justify-center text-center">
+          <div className="mb-3 text-3xl">No mood entries just yet.</div>
+          <div>Why not add one? It is free, you know that, right?</div>
+          <div className="absolute right-4 top-12 text-center text-5xl">
+            <div>☝️</div>
+            <div className="mt-2 text-[0.65rem] leading-tight">
+              Press here. <br /> Gently please.
+            </div>
+          </div>
+        </div>
+      )}
+      {data.length > 0 && (
+        <div className="flex flex-col gap-4">
+          {data.map((moodEntry) => {
+            return <MoodEntry key={moodEntry.id} moodEntry={moodEntry} />;
+          })}
+        </div>
+      )}
+    </>
+  );
+}
+
+export default function MoodEntriesActivity() {
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    const callback = () => {
+      setShowConfetti(true);
+    };
+
+    moodEntriesEmitter.on(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, callback);
+
+    return () => {
+      moodEntriesEmitter.off(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, callback);
+    };
+  }, []);
+
+  return (
     <div data-test="mood--mood-entries-activity">
       {showConfetti && (
         <ConfettiExplosion
@@ -69,20 +75,7 @@ export default function MoodEntriesActivity() {
           }}
         />
       )}
-      {data.length === 0 && (
-        <div className="text-muted-foreground justify-center space-y-3 text-center">
-          <div className="text-2xl">No mood entries just yet.</div>
-          <div>Why not add one?</div>
-          <div>It is free, you know that, right?</div>
-        </div>
-      )}
-      {data.length > 0 && (
-        <div className="flex flex-col gap-4">
-          {data.map((moodEntry) => {
-            return <MoodEntry key={moodEntry.id} moodEntry={moodEntry} />;
-          })}
-        </div>
-      )}
+      <MoodEntriesActivityInner />
     </div>
   );
 }

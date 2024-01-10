@@ -47,7 +47,12 @@ export default function MoodEntryEditDialog() {
 
   useEffect(() => {
     if (!selectedMoodEntryDialog) {
-      setData(undefined);
+      const loggedAt = new Date();
+      loggedAt.setMinutes(loggedAt.getMinutes() - loggedAt.getTimezoneOffset());
+
+      setData({
+        loggedAt: loggedAt.toISOString().slice(0, -1),
+      });
 
       return;
     }

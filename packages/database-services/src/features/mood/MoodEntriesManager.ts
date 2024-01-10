@@ -107,7 +107,7 @@ export class MoodEntriesManager {
     // we will still need to keep this to remove the Z,
     // as the loggedAt date stored here, is local, not UTC!
     if (moodEntry.loggedAt && (moodEntry.loggedAt as unknown as Date) instanceof Date) {
-      moodEntry.loggedAt = (moodEntry.loggedAt as unknown as Date).toISOString().replace('Z', '');
+      moodEntry.loggedAt = (moodEntry.loggedAt as unknown as Date).toISOString().slice(0, -1);
     }
 
     return moodEntry;

@@ -1,6 +1,26 @@
-import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
+import {
+  and,
+  count,
+  DBQueryConfig,
+  desc,
+  eq,
+  gt,
+  gte,
+  isNull,
+  lt,
+  lte,
+  or,
+  sql,
+  SQL,
+} from 'drizzle-orm';
 
 import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/database-core';
+
+export type MoodEntriesManagerFindOptions = {
+  includeDeleted?: boolean;
+  from?: Date;
+  to?: Date;
+};
 
 export class MoodEntriesManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<MoodEntry[]> {
@@ -11,9 +31,34 @@ export class MoodEntriesManager {
     });
   }
 
-  async findManyByUserId(userId: string): Promise<MoodEntry[]> {
+  async findManyByUserId(
+    userId: string,
+    options?: MoodEntriesManagerFindOptions
+  ): Promise<MoodEntry[]> {
+    let where = eq(moodEntries.userId, userId);
+
+    const loggedAtDate = sql<Date>`DATE(${moodEntries.loggedAt})`;
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(moodEntries.deletedAt)) as SQL<unknown>;
+    }
+
+    if (options?.from && options?.to) {
+      where = and(
+        where,
+        or(
+          and(gte(loggedAtDate, options.from), lte(loggedAtDate, options.to)),
+          and(lt(loggedAtDate, options.from), gt(loggedAtDate, options.to))
+        )
+      ) as SQL<unknown>;
+    } else if (options?.from) {
+      where = and(where, gte(loggedAtDate, options.from)) as SQL<unknown>;
+    } else if (options?.to) {
+      where = and(where, lte(loggedAtDate, options.to)) as SQL<unknown>;
+    }
+
     const rows = await getDatabase().query.moodEntries.findMany({
-      where: and(eq(moodEntries.userId, userId), isNull(moodEntries.deletedAt)),
+      where,
       orderBy: desc(moodEntries.loggedAt),
     });
 

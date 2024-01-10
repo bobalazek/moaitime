@@ -56,7 +56,7 @@ export class CalendarEntriesManager {
         ...timesObject,
         raw: {
           ...event,
-          timesObject,
+          ...timesObject,
         } as unknown as Event,
       };
     });

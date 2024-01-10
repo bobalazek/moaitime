@@ -4,13 +4,21 @@ import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/dat
 
 export class MoodEntriesManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<MoodEntry[]> {
-    return getDatabase().query.moodEntries.findMany(options);
+    const rows = await getDatabase().query.moodEntries.findMany(options);
+
+    return rows.map((row) => {
+      return this._fixRowColumns(row);
+    });
   }
 
   async findManyByUserId(userId: string): Promise<MoodEntry[]> {
-    return getDatabase().query.moodEntries.findMany({
+    const rows = await getDatabase().query.moodEntries.findMany({
       where: and(eq(moodEntries.userId, userId), isNull(moodEntries.deletedAt)),
       orderBy: desc(moodEntries.loggedAt),
+    });
+
+    return rows.map((row) => {
+      return this._fixRowColumns(row);
     });
   }
 
@@ -19,7 +27,11 @@ export class MoodEntriesManager {
       where: eq(moodEntries.id, id),
     });
 
-    return row ?? null;
+    if (!row) {
+      return null;
+    }
+
+    return this._fixRowColumns(row);
   }
 
   async findOneByIdAndUserId(id: string, userId: string): Promise<MoodEntry | null> {
@@ -27,13 +39,17 @@ export class MoodEntriesManager {
       where: and(eq(moodEntries.id, id), eq(moodEntries.userId, userId)),
     });
 
-    return row ?? null;
+    if (!row) {
+      return null;
+    }
+
+    return this._fixRowColumns(row);
   }
 
   async insertOne(data: NewMoodEntry): Promise<MoodEntry> {
     const rows = await getDatabase().insert(moodEntries).values(data).returning();
 
-    return rows[0];
+    return this._fixRowColumns(rows[0]);
   }
 
   async updateOneById(id: string, data: Partial<NewMoodEntry>): Promise<MoodEntry> {
@@ -43,13 +59,13 @@ export class MoodEntriesManager {
       .where(eq(moodEntries.id, id))
       .returning();
 
-    return rows[0];
+    return this._fixRowColumns(rows[0]);
   }
 
   async deleteOneById(id: string): Promise<MoodEntry> {
     const rows = await getDatabase().delete(moodEntries).where(eq(moodEntries.id, id)).returning();
 
-    return rows[0];
+    return this._fixRowColumns(rows[0]);
   }
 
   // Helpers
@@ -79,6 +95,22 @@ export class MoodEntriesManager {
 
   async userCanDelete(userId: string, moodEntryId: string): Promise<boolean> {
     return this.userCanUpdate(userId, moodEntryId);
+  }
+
+  // Privae
+  private _fixRowColumns(moodEntry: MoodEntry) {
+    // TODO
+    // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
+    // Should actually be a string
+
+    // Keep in mind that once that is fixed,
+    // we will still need to keep this to remove the Z,
+    // as the loggedAt date stored here, is local, not UTC!
+    if (moodEntry.loggedAt && (moodEntry.loggedAt as unknown as Date) instanceof Date) {
+      moodEntry.loggedAt = (moodEntry.loggedAt as unknown as Date).toISOString().replace('Z', '');
+    }
+
+    return moodEntry;
   }
 }
 

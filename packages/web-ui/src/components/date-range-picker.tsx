@@ -31,7 +31,7 @@ export interface DateRangePickerProps {
   showCompare?: boolean;
 }
 
-const formatDate = (date: Date, locale = 'en-us'): string => {
+const formatDate = (date: Date, locale: string | undefined = undefined): string => {
   return date.toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',

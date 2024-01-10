@@ -37,7 +37,11 @@ export type TasksManagerFindManyByListIdOptions = {
 
 export class TasksManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Task[]> {
-    return getDatabase().query.tasks.findMany(options);
+    const rows = await getDatabase().query.tasks.findMany(options);
+
+    return rows.map((row) => {
+      return this._fixRowColumns(row);
+    });
   }
 
   async findManyByListId(
@@ -91,7 +95,7 @@ export class TasksManager {
     }
 
     return rows.map((row) => {
-      const task = this._fixDueDateColumn(row);
+      const task = this._fixRowColumns(row);
 
       return {
         ...task,
@@ -130,7 +134,7 @@ export class TasksManager {
     }
 
     return rows.map((row) => {
-      const task = this._fixDueDateColumn(row.tasks);
+      const task = this._fixRowColumns(row.tasks);
       return { ...task, listColor: row.lists?.color ?? null };
     });
   }
@@ -143,7 +147,7 @@ export class TasksManager {
       .orderBy(asc(tasks.order))
       .execute();
 
-    return rows.map((row) => this._fixDueDateColumn(row));
+    return rows.map((row) => this._fixRowColumns(row));
   }
 
   async findOneById(id: string): Promise<Task | null> {
@@ -155,7 +159,7 @@ export class TasksManager {
       return null;
     }
 
-    return this._fixDueDateColumn(row);
+    return this._fixRowColumns(row);
   }
 
   async findOneByIdAndUserId(id: string, userId: string): Promise<Task | null> {
@@ -170,7 +174,7 @@ export class TasksManager {
       return null;
     }
 
-    return this._fixDueDateColumn(rows[0].tasks);
+    return this._fixRowColumns(rows[0].tasks);
   }
 
   async findMaxOrderByListId(listId: string): Promise<number> {
@@ -192,7 +196,7 @@ export class TasksManager {
   async insertOne(data: NewTask): Promise<Task> {
     const rows = await getDatabase().insert(tasks).values(data).returning();
 
-    return this._fixDueDateColumn(rows[0]);
+    return this._fixRowColumns(rows[0]);
   }
 
   async updateOneById(id: string, data: Partial<NewTask>): Promise<Task> {
@@ -202,7 +206,7 @@ export class TasksManager {
       .where(eq(tasks.id, id))
       .returning();
 
-    return this._fixDueDateColumn(rows[0]);
+    return this._fixRowColumns(rows[0]);
   }
 
   async deleteOneById(id: string): Promise<Task> {
@@ -215,7 +219,7 @@ export class TasksManager {
       await this.deleteOneById(child.id);
     }
 
-    return this._fixDueDateColumn(rows[0]);
+    return this._fixRowColumns(rows[0]);
   }
 
   // Helpers
@@ -255,7 +259,7 @@ export class TasksManager {
 
     await this.reorder(task.listId, SortDirectionEnum.ASC, task.id, duplicatedTask.id);
 
-    return this._fixDueDateColumn(duplicatedTask);
+    return this._fixRowColumns(duplicatedTask);
   }
 
   async reorder(
@@ -446,7 +450,7 @@ export class TasksManager {
   }
 
   // Private
-  private _fixDueDateColumn(task: Task) {
+  private _fixRowColumns(task: Task) {
     // TODO
     // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
     // Should actually be a string

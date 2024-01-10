@@ -2,10 +2,10 @@ import { SmilePlusIcon } from 'lucide-react';
 
 import { Button } from '@moaitime/web-ui';
 
-import { useMoodEntrysStore } from '../../../state/moodEntriesStore';
+import { useMoodEntriesStore } from '../../../state/moodEntriesStore';
 
 const MoodPageHeaderButtons = () => {
-  const { setSelectedMoodEntryDialogOpen } = useMoodEntrysStore();
+  const { setSelectedMoodEntryDialogOpen } = useMoodEntriesStore();
 
   const onAddMoodButtonClick = () => {
     setSelectedMoodEntryDialogOpen(true, null);

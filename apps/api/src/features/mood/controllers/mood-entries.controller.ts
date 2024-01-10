@@ -6,8 +6,8 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +16,7 @@ import { Request } from 'express';
 import { MoodEntry } from '@moaitime/database-core';
 import { moodEntriesManager } from '@moaitime/database-services';
 
+import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { CreateMoodEntryDto } from '../dtos/create-mood-entry.dto';
@@ -64,7 +65,7 @@ export class MoodEntriesController {
   ): Promise<AbstractResponseDto<MoodEntry>> {
     const insertData = {
       ...body,
-      loggedAt: body.loggedAt ? new Date(body.loggedAt) : new Date(),
+      loggedAt: body.loggedAt ?? new Date().toISOString(),
       userId: req.user.id,
     };
 
@@ -77,7 +78,7 @@ export class MoodEntriesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Req() req: Request,
     @Param('id') id: string,
@@ -90,7 +91,7 @@ export class MoodEntriesController {
 
     const updateData = {
       ...body,
-      loggedAt: body.loggedAt ? new Date(body.loggedAt) : undefined,
+      loggedAt: body.loggedAt ? new Date(body.loggedAt).toISOString() : undefined,
     };
 
     const updatedData = await moodEntriesManager.updateOneById(id, updateData);
@@ -105,15 +106,39 @@ export class MoodEntriesController {
   @Delete(':id')
   async delete(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('id') id: string,
+    @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<MoodEntry>> {
     const canDelete = await moodEntriesManager.userCanDelete(id, req.user.id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot delete this mood entry');
     }
 
+    const updatedData = body.isHardDelete
+      ? await moodEntriesManager.deleteOneById(id)
+      : await moodEntriesManager.updateOneById(id, {
+          deletedAt: new Date(),
+        });
+
+    return {
+      success: true,
+      data: updatedData,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/undelete')
+  async undelete(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<MoodEntry>> {
+    const canDelete = await moodEntriesManager.userCanDelete(id, req.user.id);
+    if (!canDelete) {
+      throw new ForbiddenException('You cannot undelete this mood entry');
+    }
+
     const updatedData = await moodEntriesManager.updateOneById(id, {
-      deletedAt: new Date(),
+      deletedAt: null,
     });
 
     return {

@@ -24,7 +24,7 @@ import {
   convertObjectToIsoString,
 } from '../../../calendar/utils/CalendarHelpers';
 import DateSelector from '../../../core/components/selectors/DateSelector';
-import { useMoodEntrysStore } from '../../state/moodEntriesStore';
+import { useMoodEntriesStore } from '../../state/moodEntriesStore';
 import { HappinessScoreIcon } from '../common/HappinesScoreIcon';
 
 const moodScores = [
@@ -42,7 +42,7 @@ export default function MoodEntryEditDialog() {
     selectedMoodEntryDialog,
     addMoodEntry,
     editMoodEntry,
-  } = useMoodEntrysStore();
+  } = useMoodEntriesStore();
   const [data, setData] = useState<UpdateMoodEntry>();
 
   useEffect(() => {

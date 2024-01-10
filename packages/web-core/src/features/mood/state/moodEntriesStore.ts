@@ -19,6 +19,7 @@ export type MoodEntrieStore = {
   editMoodEntry: (moodEntryId: string, moodEntry: UpdateMoodEntry) => Promise<MoodEntry>;
   deleteMoodEntry: (moodEntryId: string, isHardDelete?: boolean) => Promise<MoodEntry>;
   undeleteMoodEntry: (moodEntryId: string) => Promise<MoodEntry>;
+
   // Selected Mood Entry Dialog
   selectedMoodEntryDialogOpen: boolean;
   selectedMoodEntryDialog: MoodEntry | null;
@@ -28,27 +29,11 @@ export type MoodEntrieStore = {
   ) => void;
 };
 
-const fixMoodEntryLoggedAt = <T extends { loggedAt?: string }>(moodEntry: T) => {
-  // Yes, we want to return if null or undefined
-  if (!moodEntry) {
-    return moodEntry;
-  }
-
-  if (moodEntry.loggedAt) {
-    const loggedAtLocalTime = new Date(moodEntry.loggedAt);
-    const loggedAtUTC = loggedAtLocalTime.toISOString();
-
-    moodEntry.loggedAt = loggedAtUTC;
-  }
-
-  return moodEntry;
-};
-
 const reloadMoodEntries = async () => {
   return queryClient.invalidateQueries([MOOD_ENTRIES_QUERY_KEY]);
 };
 
-export const useMoodEntrysStore = create<MoodEntrieStore>()((set) => ({
+export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   /********** Mood Entries **********/
   getMoodEntry: async (moodEntryId: string) => {
     const moodentry = await getMoodEntry(moodEntryId);
@@ -56,14 +41,14 @@ export const useMoodEntrysStore = create<MoodEntrieStore>()((set) => ({
     return moodentry;
   },
   addMoodEntry: async (moodEntry: CreateMoodEntry) => {
-    const addedMoodEntry = await addMoodEntry(fixMoodEntryLoggedAt(moodEntry));
+    const addedMoodEntry = await addMoodEntry(moodEntry);
 
     await reloadMoodEntries();
 
     return addedMoodEntry;
   },
   editMoodEntry: async (moodEntryId: string, moodEntry: UpdateMoodEntry) => {
-    const editedMoodEntry = await editMoodEntry(moodEntryId, fixMoodEntryLoggedAt(moodEntry));
+    const editedMoodEntry = await editMoodEntry(moodEntryId, moodEntry);
 
     await reloadMoodEntries();
 

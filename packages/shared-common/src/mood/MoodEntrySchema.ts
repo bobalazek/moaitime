@@ -17,11 +17,10 @@ export const CreateMoodEntrySchema = z.object({
     })
     .min(-2)
     .max(2),
-  note: z.string().optional(),
-  loggedAt: z
-    .string()
-    .default(() => new Date().toISOString())
-    .optional(),
+  note: z.string().nullable().optional(),
+  loggedAt: z.string({
+    required_error: 'Please provide a date',
+  }),
 });
 
 export const UpdateMoodEntrySchema = CreateMoodEntrySchema.partial();

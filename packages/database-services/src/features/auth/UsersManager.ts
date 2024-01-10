@@ -18,7 +18,7 @@ export class UsersManager {
     const rows = await getDatabase().query.users.findMany(options);
 
     return rows.map((row) => {
-      return this._fixBirthDateColumn(row);
+      return this._fixRowColumns(row);
     });
   }
 
@@ -31,7 +31,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixBirthDateColumn(row);
+    return this._fixRowColumns(row);
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
@@ -43,7 +43,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixBirthDateColumn(row);
+    return this._fixRowColumns(row);
   }
 
   async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
@@ -55,7 +55,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixBirthDateColumn(row);
+    return this._fixRowColumns(row);
   }
 
   async findOneByNewEmailConfirmationToken(
@@ -69,7 +69,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixBirthDateColumn(row);
+    return this._fixRowColumns(row);
   }
 
   async findOneByPasswordResetToken(passwordResetToken: string): Promise<User | null> {
@@ -81,7 +81,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixBirthDateColumn(row);
+    return this._fixRowColumns(row);
   }
 
   async findOneByDeletionToken(deletionToken: string): Promise<User | null> {
@@ -93,13 +93,13 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixBirthDateColumn(row);
+    return this._fixRowColumns(row);
   }
 
   async insertOne(data: NewUser): Promise<User> {
     const rows = await getDatabase().insert(users).values(data).returning();
 
-    return this._fixBirthDateColumn(rows[0]);
+    return this._fixRowColumns(rows[0]);
   }
 
   async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
@@ -109,13 +109,13 @@ export class UsersManager {
       .where(eq(users.id, id))
       .returning();
 
-    return this._fixBirthDateColumn(rows[0]);
+    return this._fixRowColumns(rows[0]);
   }
 
   async deleteOneById(id: string): Promise<User> {
     const rows = await getDatabase().delete(users).where(eq(users.id, id)).returning();
 
-    return this._fixBirthDateColumn(rows[0]);
+    return this._fixRowColumns(rows[0]);
   }
 
   // Custom
@@ -142,8 +142,8 @@ export class UsersManager {
     return limits[key];
   }
 
-  // Helpers
-  private _fixBirthDateColumn(user: User) {
+  // Private
+  private _fixRowColumns(user: User) {
     // TODO
     // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
     // Should actually be a string

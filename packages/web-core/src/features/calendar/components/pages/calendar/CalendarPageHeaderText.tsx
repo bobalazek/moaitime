@@ -21,7 +21,7 @@ function CalendarPageHeaderText() {
   let text = <span>{date}</span>;
 
   if (selectedView === CalendarViewEnum.DAY) {
-    const day = selectedDate.toLocaleDateString('default', {
+    const day = selectedDate.toLocaleDateString(undefined, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',

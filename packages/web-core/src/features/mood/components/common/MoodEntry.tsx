@@ -1,5 +1,6 @@
 import { MoodEntry as MoodEntryType } from '@moaitime/shared-common';
 
+import { convertTextToHtml } from '../../../core/utils/TextHelpers';
 import { HappinessScoreIcon } from './HappinesScoreIcon';
 import { MoodEntryActions } from './MoodEntryActions';
 
@@ -27,9 +28,13 @@ export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
             {date}
           </div>
           {moodEntry.note && (
-            <div className="text-muted-foreground text-xs" data-test="mood--mood-entry--note">
-              {moodEntry.note}
-            </div>
+            <div
+              className="text-muted-foreground text-xs"
+              data-test="mood--mood-entry--note"
+              dangerouslySetInnerHTML={{
+                __html: convertTextToHtml(moodEntry.note),
+              }}
+            />
           )}
         </div>
         <div>

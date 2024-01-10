@@ -749,6 +749,9 @@ importers:
       date-fns-tz:
         specifier: ^2.0.0
         version: 2.0.0(date-fns@2.30.0)
+      dompurify:
+        specifier: ^3.0.8
+        version: 3.0.8
       framer-motion:
         specifier: ^10.16.4
         version: 10.16.16(react-dom@18.2.0)(react@18.2.0)
@@ -789,6 +792,9 @@ importers:
       '@moaitime/tailwind-config':
         specifier: workspace:*
         version: link:../../configs/tailwind-config
+      '@types/dompurify':
+        specifier: ^3.0.5
+        version: 3.0.5
       '@types/lodash':
         specifier: ^4.14.202
         version: 4.14.202
@@ -5659,6 +5665,12 @@ packages:
     resolution: {integrity: sha512-he+DHOWReW0nghN24E1WUqM0efK4kI9oTqDm6XmK8ZPe2djZ90BSNdGnIyCLzCPw7/pogPlGbzI2wHGGmi4O/Q==}
     dev: true
 
+  /@types/dompurify@3.0.5:
+    resolution: {integrity: sha512-1Wg0g3BtQF7sSb27fJQAKck1HECM6zV1EB66j8JH9i3LCjYabJa0FSdiSgsD5K/RbrsR0SiraKacLB+T8ZVYAg==}
+    dependencies:
+      '@types/trusted-types': 2.0.7
+    dev: true
+
   /@types/express-serve-static-core@4.17.41:
     resolution: {integrity: sha512-OaJ7XLaelTgrvlZD8/aa0vvvxZdUmlCn6MtWeB7TkiKW70BQLc9XEPpDLPdbo52ZhXUCrznlWdCHWxJWtdyajA==}
     dependencies:
@@ -5817,6 +5829,10 @@ packages:
     resolution: {integrity: sha512-6c2ogktZ06tr2ENoZivgm7YnprnhYE4ZoXGMY+oA7IuAf17M8FWvujXZGmxLv8y0PTyts4x5A+erSwVUFA8XSg==}
     dependencies:
       '@types/superagent': 4.1.24
+    dev: true
+
+  /@types/trusted-types@2.0.7:
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
     dev: true
 
   /@types/unist@2.0.10:
@@ -8811,6 +8827,10 @@ packages:
     engines: {node: '>= 4'}
     dependencies:
       domelementtype: 2.3.0
+
+  /dompurify@3.0.8:
+    resolution: {integrity: sha512-b7uwreMYL2eZhrSCRC4ahLTeZcPZxSmYfmcQGXGkXiZSNW1X85v+SDM5KsWcpivIiUBH47Ji7NtyUdpLeF5JZQ==}
+    dev: false
 
   /domutils@2.8.0:
     resolution: {integrity: sha512-w96Cjofp72M5IIhpjgobBimYEfoPjx1Vx0BSX9P30WBdZW2WIKU0T1Bd0kz2eNZ9ikjKgHbEyKx8BB6H1L3h3A==}

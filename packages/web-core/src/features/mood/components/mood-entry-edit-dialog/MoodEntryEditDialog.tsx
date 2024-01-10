@@ -145,6 +145,7 @@ export default function MoodEntryEditDialog() {
               loggedAt: result.iso,
             }));
           }}
+          disableClear={true}
           disableFuture={true}
           disableTimeZone={true}
         />

@@ -11,6 +11,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../../auth/state/authStore';
+import { convertTextToHtml } from '../../../../core/utils/TextHelpers';
 import { useTasksStore } from '../../../../tasks/state/tasksStore';
 import { useEventsStore } from '../../../state/eventsStore';
 
@@ -73,7 +74,14 @@ export default function CalendarAgendaViewDayEventEntry({
     >
       <div>
         <div className="font-bold">{calendarEntry.title}</div>
-        {calendarEntry.description && <div className="text-xs">{calendarEntry.description}</div>}
+        {calendarEntry.description && (
+          <div
+            className="text-xs"
+            dangerouslySetInnerHTML={{
+              __html: convertTextToHtml(calendarEntry.description),
+            }}
+          />
+        )}
         {calendarOrList && (
           <div className="mt-2 leading-4">
             <span

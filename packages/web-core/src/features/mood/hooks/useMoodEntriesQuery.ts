@@ -11,37 +11,36 @@ export const useMoodEntriesQuery = () => {
     queryKey: MOOD_ENTRIES_QUERY_KEY,
     queryFn: ({ pageParam }) => {
       let params: MoodEntriesManagerFindOptions | undefined = undefined;
-      if (pageParam && typeof pageParam === 'string' && pageParam.startsWith('afterCursor=')) {
-        params = {
-          afterCursor: pageParam.replace('afterCursor=', ''),
-        };
-      } else if (
-        pageParam &&
-        typeof pageParam === 'string' &&
-        pageParam.startsWith('beforeCursor=')
-      ) {
-        params = {
-          beforeCursor: pageParam.replace('beforeCursor=', ''),
-        };
+      if (pageParam && typeof pageParam === 'string') {
+        if (pageParam.startsWith('previousCursor=')) {
+          params = {
+            previousCursor: pageParam.replace('previousCursor=', ''),
+          };
+        } else if (pageParam.startsWith('nextCursor=')) {
+          params = {
+            nextCursor: pageParam.replace('nextCursor=', ''),
+          };
+        }
       }
 
       return loadMoodEntriesRawResponse(params);
     },
-    getNextPageParam: (lastPage) => {
-      const afterCursor = (lastPage.meta as { afterCursor?: string })?.afterCursor ?? undefined;
-      if (!afterCursor) {
-        return undefined;
-      }
-
-      return `afterCursor=${afterCursor}`;
-    },
     getPreviousPageParam: (firstPage) => {
-      const beforeCursor = (firstPage.meta as { beforeCursor?: string })?.beforeCursor ?? undefined;
-      if (!beforeCursor) {
+      const previousCursor =
+        (firstPage.meta as { previousCursor?: string })?.previousCursor ?? undefined;
+      if (!previousCursor) {
         return undefined;
       }
 
-      return `beforeCursor=${beforeCursor}`;
+      return `previousCursor=${previousCursor}`;
+    },
+    getNextPageParam: (lastPage) => {
+      const nextCursor = (lastPage.meta as { nextCursor?: string })?.nextCursor ?? undefined;
+      if (!nextCursor) {
+        return undefined;
+      }
+
+      return `nextCursor=${nextCursor}`;
     },
     keepPreviousData: true,
   });

@@ -21,10 +21,10 @@ import { SortDirectionEnum } from '@moaitime/shared-common';
 
 export type MoodEntriesManagerFindOptions = {
   includeDeleted?: boolean;
-  from?: Date;
-  to?: Date;
-  afterCursor?: string;
-  beforeCursor?: string;
+  from?: string;
+  to?: string;
+  nextCursor?: string;
+  previousCursor?: string;
   limit?: number;
   sortDirection?: SortDirectionEnum;
 };
@@ -41,9 +41,9 @@ export class MoodEntriesManager {
   async findManyByUserId(
     userId: string,
     options?: MoodEntriesManagerFindOptions
-  ): Promise<{ data: MoodEntry[]; beforeCursor?: string; afterCursor?: string }> {
-    const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
-    const loggedAtDate = sql<string>`DATE(${moodEntries.loggedAt})`;
+  ): Promise<{ data: MoodEntry[]; previousCursor?: string; nextCursor?: string }> {
+    const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
+    const loggedAtDate = sql`${moodEntries.loggedAt}`;
 
     let where = eq(moodEntries.userId, userId);
     if (!options?.includeDeleted) {
@@ -62,30 +62,28 @@ export class MoodEntriesManager {
       where = and(where, lte(loggedAtDate, options.to)) as SQL<unknown>;
     }
 
-    if (options?.afterCursor) {
-      const { id: afterId, loggedAt: afterLoggedAt } = this._cursorToProperties(
-        options.afterCursor
+    if (options?.previousCursor) {
+      const { id: previousId, loggedAt: previousLoggedAt } = this._cursorToProperties(
+        options.previousCursor
       );
 
       where = and(
         where,
         or(
-          gt(loggedAtDate, afterLoggedAt),
-          and(eq(loggedAtDate, afterLoggedAt), ne(moodEntries.id, afterId))
+          lt(loggedAtDate, previousLoggedAt),
+          and(eq(loggedAtDate, previousLoggedAt), ne(moodEntries.id, previousId))
         )
       ) as SQL<unknown>;
     }
 
-    if (options?.beforeCursor) {
-      const { id: beforeId, loggedAt: beforeLoggedAt } = this._cursorToProperties(
-        options.beforeCursor
-      );
+    if (options?.nextCursor) {
+      const { id: nextId, loggedAt: nextLoggedAt } = this._cursorToProperties(options.nextCursor);
 
       where = and(
         where,
         or(
-          lt(loggedAtDate, beforeLoggedAt),
-          and(eq(loggedAtDate, beforeLoggedAt), ne(moodEntries.id, beforeId))
+          gt(loggedAtDate, nextLoggedAt),
+          and(eq(loggedAtDate, nextLoggedAt), ne(moodEntries.id, nextId))
         )
       ) as SQL<unknown>;
     }
@@ -103,34 +101,32 @@ export class MoodEntriesManager {
       return this._fixRowColumns(row);
     });
 
-    let beforeCursor: string | undefined;
-    let afterCursor: string | undefined;
+    let previousCursor: string | undefined;
+    let nextCursor: string | undefined;
     if (data.length > 0) {
-      if (sortDirection === SortDirectionEnum.DESC) {
-        beforeCursor = this._propertiesToCursor({
-          id: data[data.length - 1].id,
-          loggedAt: data[data.length - 1].loggedAt,
-        });
-        afterCursor = this._propertiesToCursor({
-          id: data[0].id,
-          loggedAt: data[0].loggedAt,
-        });
-      } else {
-        beforeCursor = this._propertiesToCursor({
-          id: data[0].id,
-          loggedAt: data[0].loggedAt,
-        });
-        afterCursor = this._propertiesToCursor({
-          id: data[data.length - 1].id,
-          loggedAt: data[data.length - 1].loggedAt,
-        });
-      }
+      const isLessThanLimit = data.length < (options?.limit ?? 0);
+      const isAscending = sortDirection === SortDirectionEnum.ASC;
+      const firstItem = data[0];
+      const lastItem = data[data.length - 1];
+
+      previousCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: isAscending ? firstItem.id : lastItem.id,
+            loggedAt: isAscending ? firstItem.loggedAt : lastItem.loggedAt,
+          })
+        : undefined;
+      nextCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: isAscending ? lastItem.id : firstItem.id,
+            loggedAt: isAscending ? lastItem.loggedAt : firstItem.loggedAt,
+          })
+        : undefined;
     }
 
     return {
       data,
-      beforeCursor,
-      afterCursor,
+      previousCursor,
+      nextCursor,
     };
   }
 

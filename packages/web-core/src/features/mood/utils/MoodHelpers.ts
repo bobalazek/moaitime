@@ -10,19 +10,19 @@ import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Mood Entries **********/
 export type MoodEntriesManagerFindOptions = {
-  beforeCursor?: string;
-  afterCursor?: string;
+  previousCursor?: string;
+  nextCursor?: string;
 };
 
 export const loadMoodEntriesRawResponse = async (options?: MoodEntriesManagerFindOptions) => {
   const url = new URL(`${API_URL}/api/v1/mood-entries`);
 
-  if (options?.beforeCursor) {
-    url.searchParams.append('beforeCursor', options.beforeCursor);
+  if (options?.previousCursor) {
+    url.searchParams.append('previousCursor', options.previousCursor);
   }
 
-  if (options?.afterCursor) {
-    url.searchParams.append('afterCursor', options.afterCursor);
+  if (options?.nextCursor) {
+    url.searchParams.append('nextCursor', options.nextCursor);
   }
 
   return fetchJson<ResponseInterface<MoodEntry[]>>(url.toString(), {

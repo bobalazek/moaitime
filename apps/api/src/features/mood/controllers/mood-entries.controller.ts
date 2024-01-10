@@ -28,15 +28,15 @@ export class MoodEntriesController {
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<MoodEntry[]>> {
     const limit = 5;
-    const beforeCursorQueryParameter = req.query.beforeCursor as string | undefined;
-    const afterCursorQueryParameter = req.query.afterCursor as string | undefined;
+    const previousCursorParameter = req.query.previousCursor as string | undefined;
+    const nextCursorParameter = req.query.nextCursor as string | undefined;
 
-    const { data, beforeCursor, afterCursor } = await moodEntriesManager.findManyByUserId(
+    const { data, previousCursor, nextCursor } = await moodEntriesManager.findManyByUserId(
       req.user.id,
       {
         limit,
-        beforeCursor: beforeCursorQueryParameter,
-        afterCursor: afterCursorQueryParameter,
+        previousCursor: previousCursorParameter,
+        nextCursor: nextCursorParameter,
       }
     );
 
@@ -45,8 +45,8 @@ export class MoodEntriesController {
       data,
       meta: {
         limit,
-        beforeCursor,
-        afterCursor,
+        previousCursor,
+        nextCursor,
       },
     };
   }

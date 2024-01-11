@@ -1,5 +1,5 @@
 {
-  "id": "01a09dc2-dded-4a9a-8779-9c146c9b4637",
+  "id": "5e306e0a-0624-4fd2-92c5-344f3a8c4b09",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -594,7 +594,7 @@
         },
         "type": {
           "name": "type",
-          "type": "note_types",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "default": "'note'"
@@ -732,6 +732,12 @@
           "notNull": true,
           "default": "'[]'"
         },
+        "invite_email": {
+          "name": "invite_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "invited_at": {
           "name": "invited_at",
           "type": "timestamp",
@@ -781,7 +787,7 @@
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {
@@ -811,6 +817,90 @@
           "tableFrom": "organization_users",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "subscriptions": {
+      "name": "subscriptions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "plan_key": {
+          "name": "plan_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plan_metadata": {
+          "name": "plan_metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "canceled_at": {
+          "name": "canceled_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "ends_at": {
+          "name": "ends_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "subscriptions_organization_id_organizations_id_fk": {
+          "name": "subscriptions_organization_id_organizations_id_fk",
+          "tableFrom": "subscriptions",
+          "tableTo": "organizations",
+          "columnsFrom": ["organization_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -1444,7 +1534,7 @@
         },
         "processing_status": {
           "name": "processing_status",
-          "type": "processing_status_enum",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "default": "'pending'"
@@ -1810,24 +1900,7 @@
       }
     }
   },
-  "enums": {
-    "processing_status_enum": {
-      "name": "processing_status_enum",
-      "values": {
-        "pending": "pending",
-        "processing": "processing",
-        "processed": "processed",
-        "failed": "failed"
-      }
-    },
-    "note_types": {
-      "name": "note_types",
-      "values": {
-        "note": "note",
-        "journal_entry": "journal_entry"
-      }
-    }
-  },
+  "enums": {},
   "schemas": {},
   "_meta": {
     "schemas": {},

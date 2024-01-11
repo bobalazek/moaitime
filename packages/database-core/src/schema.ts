@@ -1,4 +1,3 @@
-export * from './schema/enums';
 export * from './schema/backgrounds';
 export * from './schema/calendars';
 export * from './schema/events';
@@ -9,6 +8,7 @@ export * from './schema/moodEntries';
 export * from './schema/notes';
 export * from './schema/organizations';
 export * from './schema/organizationUsers';
+export * from './schema/subscriptions';
 export * from './schema/quotes';
 export * from './schema/tags';
 export * from './schema/tasks';

@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, json, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { OrganizationUserRoleEnum } from '@moaitime/shared-common';
 
@@ -11,6 +11,7 @@ export const organizationUsers = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     roles: json('roles').notNull().default('[]').$type<OrganizationUserRoleEnum[]>(),
+    inviteEmail: text('invite_email'),
     invitedAt: timestamp('invited_at').defaultNow(),
     inviteExpiresAt: timestamp('invite_expires_at'),
     inviteAcceptedAt: timestamp('invite_accepted_at'),
@@ -20,9 +21,7 @@ export const organizationUsers = pgTable(
     organizationId: uuid('organization_id')
       .notNull()
       .references(() => organizations.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
   },
   (table) => {
     return {

@@ -3,12 +3,11 @@ import { json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { ProcessingStatusEnum } from '@moaitime/shared-common';
 
-import { processingStatusEnum } from './enums';
 import { users } from './users';
 
 export const userDataExports = pgTable('user_data_exports', {
   id: uuid('id').defaultRandom().primaryKey(),
-  processingStatus: processingStatusEnum('processing_status')
+  processingStatus: text('processing_status')
     .notNull()
     .default(ProcessingStatusEnum.PENDING)
     .$type<ProcessingStatusEnum>(),

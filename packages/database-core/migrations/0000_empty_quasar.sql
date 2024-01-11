@@ -1,15 +1,3 @@
-DO $$ BEGIN
- CREATE TYPE "processing_status_enum" AS ENUM('pending', 'processing', 'processed', 'failed');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- CREATE TYPE "note_types" AS ENUM('note', 'journal_entry');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "backgrounds" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
@@ -100,7 +88,7 @@ CREATE TABLE IF NOT EXISTS "mood_entries" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "notes" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"type" "note_types" DEFAULT 'note' NOT NULL,
+	"type" text DEFAULT 'note' NOT NULL,
 	"title" text NOT NULL,
 	"content" json NOT NULL,
 	"color" text,
@@ -123,6 +111,7 @@ CREATE TABLE IF NOT EXISTS "organizations" (
 CREATE TABLE IF NOT EXISTS "organization_users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"roles" json DEFAULT '[]' NOT NULL,
+	"invite_email" text,
 	"invited_at" timestamp DEFAULT now(),
 	"invite_expires_at" timestamp,
 	"invite_accepted_at" timestamp,
@@ -130,7 +119,20 @@ CREATE TABLE IF NOT EXISTS "organization_users" (
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"organization_id" uuid NOT NULL,
-	"user_id" uuid NOT NULL
+	"user_id" uuid
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "subscriptions" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"plan_key" text NOT NULL,
+	"plan_metadata" json,
+	"cancel_reason" text,
+	"canceled_at" timestamp,
+	"started_at" timestamp DEFAULT now(),
+	"ends_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"organization_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "quotes" (
@@ -225,7 +227,7 @@ CREATE TABLE IF NOT EXISTS "user_access_tokens" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_data_exports" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"processing_status" "processing_status_enum" DEFAULT 'pending' NOT NULL,
+	"processing_status" text DEFAULT 'pending' NOT NULL,
 	"failed_error" json,
 	"export_url" text,
 	"started_at" timestamp,
@@ -353,6 +355,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "organization_users" ADD CONSTRAINT "organization_users_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

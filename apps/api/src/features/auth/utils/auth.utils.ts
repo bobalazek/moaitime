@@ -10,6 +10,7 @@ export const convertToUserAndAccessTokenDto = (
 ): {
   user: UserDto;
   userAccessToken: UserAccessTokenLiteDto;
+  subscription: null;
 } => {
   const now = new Date();
 
@@ -31,5 +32,6 @@ export const convertToUserAndAccessTokenDto = (
       refreshToken: userAccessToken.refreshToken,
       expiresAt: userAccessToken.expiresAt?.toISOString() ?? null,
     },
+    subscription: null,
   };
 };

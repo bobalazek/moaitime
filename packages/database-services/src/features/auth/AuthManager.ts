@@ -166,8 +166,8 @@ export class AuthManager {
     return updatedUser;
   }
 
-  async resendEmailConfirmation(id: string, isNewEmail = false): Promise<User> {
-    const user = await this._usersManager.findOneById(id);
+  async resendEmailConfirmation(userId: string, isNewEmail = false): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -218,8 +218,8 @@ export class AuthManager {
     return updatedUser;
   }
 
-  async cancelNewEmail(id: string): Promise<User> {
-    const user = await this._usersManager.findOneById(id);
+  async cancelNewEmail(userId: string): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -303,8 +303,8 @@ export class AuthManager {
   }
 
   // Data export
-  async requestDataExport(id: string): Promise<User> {
-    const user = await this._usersManager.findOneById(id);
+  async requestDataExport(userId: string): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -331,8 +331,8 @@ export class AuthManager {
   }
 
   // Account deletion
-  async requestAccountDeletion(id: string): Promise<User> {
-    const user = await this._usersManager.findOneById(id);
+  async requestAccountDeletion(userId: string): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -430,8 +430,8 @@ export class AuthManager {
   }
 
   // Settings
-  async update(id: string, data: Partial<NewUser>): Promise<User> {
-    const user = await this._usersManager.findOneById(id);
+  async update(userId: string, data: Partial<NewUser>): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -453,7 +453,7 @@ export class AuthManager {
       data.email !== user.newEmail
     ) {
       const existingUser = await this._usersManager.findOneByEmail(data.email);
-      if (existingUser && existingUser.id !== id) {
+      if (existingUser && existingUser.id !== userId) {
         throw new Error('User with this email address already exists');
       }
 
@@ -472,7 +472,7 @@ export class AuthManager {
       return user;
     }
 
-    const updatedUser = await this._usersManager.updateOneById(id, updateData);
+    const updatedUser = await this._usersManager.updateOneById(userId, updateData);
 
     if (isEmailChanged) {
       await mailer.sendAuthConfirmNewEmailEmail({
@@ -485,10 +485,14 @@ export class AuthManager {
     return updatedUser;
   }
 
-  async updatePassword(id: string, newPassword: string, currentPassword?: string): Promise<User> {
+  async updatePassword(
+    userId: string,
+    newPassword: string,
+    currentPassword?: string
+  ): Promise<User> {
     UserPasswordSchema.parse(newPassword);
 
-    const user = await this._usersManager.findOneById(id);
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -512,7 +516,7 @@ export class AuthManager {
 
     const hashedPassword = await this.validateAndHashPassword(newPassword);
 
-    const updatedUser = await this._usersManager.updateOneById(id, {
+    const updatedUser = await this._usersManager.updateOneById(userId, {
       password: hashedPassword,
     });
 
@@ -524,8 +528,8 @@ export class AuthManager {
     return updatedUser;
   }
 
-  async updateSettings(id: string, data: Partial<NewUser['settings']>): Promise<User> {
-    const user = await this._usersManager.findOneById(id);
+  async updateSettings(userId: string, data: Partial<NewUser['settings']>): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -539,7 +543,7 @@ export class AuthManager {
 
     UserSettingsSchema.parse(settings);
 
-    const updatedUser = await this._usersManager.updateOneById(id, {
+    const updatedUser = await this._usersManager.updateOneById(userId, {
       settings,
     });
 

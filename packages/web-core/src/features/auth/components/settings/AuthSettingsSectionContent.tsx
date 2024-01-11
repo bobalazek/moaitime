@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { Auth } from '@moaitime/shared-common';
 import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
 
-export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
+export default function AuthSettingsSectionContent() {
   const {
+    auth,
     logout,
     updateAccount,
     requestDataExport,
@@ -15,13 +15,17 @@ export default function AuthSettingsSectionContent({ auth }: { auth: Auth }) {
     cancelNewEmail,
     setAccountPasswordSettingsDialogOpen,
   } = useAuthStore();
-  const [userDisplayName, setUserDisplayName] = useState(auth.user.displayName ?? '');
-  const [userEmail, setUserEmail] = useState(auth.user.email ?? '');
+  const [userDisplayName, setUserDisplayName] = useState(auth?.user?.displayName ?? '');
+  const [userEmail, setUserEmail] = useState(auth?.user?.email ?? '');
 
   useEffect(() => {
-    setUserDisplayName(auth.user.displayName ?? '');
-    setUserEmail(auth.user.email ?? '');
-  }, [auth.user]);
+    setUserDisplayName(auth?.user?.displayName ?? '');
+    setUserEmail(auth?.user?.email ?? '');
+  }, [auth?.user]);
+
+  if (!auth) {
+    return null;
+  }
 
   const onResendVerificationEmailButtonClick = async () => {
     try {

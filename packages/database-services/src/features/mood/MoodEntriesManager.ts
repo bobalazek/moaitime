@@ -143,6 +143,13 @@ export class MoodEntriesManager {
         : undefined;
     }
 
+    if (!options?.previousCursor) {
+      // Since no previousCursor was provided by the request,
+      // we assume that this is the very first page, and because of that,
+      // we certainly have no previous entries.
+      previousCursor = undefined;
+    }
+
     return {
       data,
       meta: {

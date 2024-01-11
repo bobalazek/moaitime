@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
+import { useIntersectionObserver } from 'usehooks-ts';
 
 import { Button } from '@moaitime/web-ui';
 
@@ -8,6 +9,24 @@ import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
 import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntriesEmitter';
 import { MoodEntry } from '../common/MoodEntry';
+
+function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const entry = useIntersectionObserver(ref, {});
+  const isVisible = !!entry?.isIntersecting;
+
+  useEffect(() => {
+    if (isVisible) {
+      fetchNextPage();
+    }
+  }, [isVisible, fetchNextPage]);
+
+  return (
+    <Button ref={ref} className="btn btn-primary" onClick={() => fetchNextPage()}>
+      Load older
+    </Button>
+  );
+}
 
 function MoodEntriesActivityInner() {
   const {
@@ -76,9 +95,7 @@ function MoodEntriesActivityInner() {
           </div>
           {hasNextPage && (
             <div className="flex justify-center">
-              <Button className="btn btn-primary" onClick={() => fetchNextPage()}>
-                Load older
-              </Button>
+              <FetchNextPageButton fetchNextPage={fetchNextPage} />
             </div>
           )}
         </div>

@@ -42,13 +42,15 @@ export class MoodEntriesManager {
     options?: MoodEntriesManagerFindOptions
   ): Promise<{
     data: MoodEntry[];
-    previousCursor?: string;
-    nextCursor?: string;
-    sortDirection?: SortDirectionEnum;
-    limit?: number;
+    meta: {
+      previousCursor?: string;
+      nextCursor?: string;
+      sortDirection?: SortDirectionEnum;
+      limit?: number;
+    };
   }> {
     const limit = options?.limit ?? 20;
-    const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
+    const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
 
     const isSortAscending = sortDirection === SortDirectionEnum.ASC;
 
@@ -143,9 +145,12 @@ export class MoodEntriesManager {
 
     return {
       data,
-      previousCursor,
-      nextCursor,
-      sortDirection,
+      meta: {
+        previousCursor,
+        nextCursor,
+        sortDirection,
+        limit,
+      },
     };
   }
 

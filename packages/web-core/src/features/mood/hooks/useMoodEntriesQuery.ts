@@ -14,17 +14,18 @@ export const MOOD_ENTRIES_QUERY_KEY = 'mood-entries';
 export const useMoodEntriesQuery = () => {
   return useInfiniteQuery<AsyncReturnType<typeof loadMoodEntriesRawResponse>>({
     initialPageParam: undefined,
-    // Temporary disable until we have a fix for this.
-    // Issue is, that pageParam stays the same as the last fetch you did,
-    // so if you scroll to bottom when there are no more entries,
-    // then it won't work on the refresh anymore.
-    // See: https://github.com/TanStack/query/discussions/5692
-    refetchOnWindowFocus: false,
+    maxPages: 5,
     queryKey: [MOOD_ENTRIES_QUERY_KEY],
-    queryFn: ({ pageParam }) => {
+    queryFn: ({ pageParam, direction }) => {
       let params: MoodEntriesManagerFindOptions | undefined = undefined;
       if (pageParam && typeof pageParam === 'string') {
-        if (pageParam.startsWith('previousCursor=')) {
+        // We do NOT want to set the previous cursor if we are going forward,
+        // because the only case where going forward and a previous cursor is set is,
+        // when we re-fetch the data for a re-connect of window focus.
+        // This would we wgong in our case, because if by any chance the user has tried and get the previous page,
+        // that would be at the top of the fetch stack. The problem with that is, that if we do this request again,
+        // we will not have any next cursor, since there will be no items there.
+        if (pageParam.startsWith('previousCursor=') && direction === 'backward') {
           params = {
             previousCursor: pageParam.replace('previousCursor=', ''),
           };

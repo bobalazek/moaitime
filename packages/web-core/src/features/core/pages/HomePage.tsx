@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Auth from '../../auth/components/Auth';
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import Background from '../../background/components/Background';
 import BackgroundInformation from '../../background/components/BackgroundInfromation';
 import Calendar from '../../calendar/components/Calendar';
@@ -24,19 +24,17 @@ const animationVariants = {
 };
 
 export default function HomePage() {
-  const { auth } = useAuthStore();
-
-  const calendarEnabled = auth?.user?.settings?.calendarEnabled ?? false;
-  const commandsEnabled = auth?.user?.settings?.commandsEnabled ?? false;
-  const commandsSearchButtonEnabled = auth?.user?.settings?.commandsSearchButtonEnabled ?? false;
-  const clockEnabled = auth?.user?.settings?.clockEnabled ?? false;
-  const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
-  const moodEnabled = auth?.user?.settings?.moodEnabled ?? false;
-  const greetingEnabled = auth?.user?.settings?.greetingEnabled ?? false;
-  const searchEnabled = auth?.user?.settings?.searchEnabled ?? false;
-  const quoteEnabled = auth?.user?.settings?.quoteEnabled ?? false;
-  const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
-  const notesEnabled = auth?.user?.settings?.notesEnabled ?? false;
+  const calendarEnabled = useAuthUserSetting('calendarEnabled', false);
+  const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
+  const commandsSearchButtonEnabled = useAuthUserSetting('commandsSearchButtonEnabled', false);
+  const clockEnabled = useAuthUserSetting('clockEnabled', false);
+  const weatherEnabled = useAuthUserSetting('weatherEnabled', false);
+  const moodEnabled = useAuthUserSetting('moodEnabled', false);
+  const greetingEnabled = useAuthUserSetting('greetingEnabled', false);
+  const searchEnabled = useAuthUserSetting('searchEnabled', false);
+  const quoteEnabled = useAuthUserSetting('quoteEnabled', false);
+  const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
+  const notesEnabled = useAuthUserSetting('notesEnabled', false);
 
   return (
     <ErrorBoundary>

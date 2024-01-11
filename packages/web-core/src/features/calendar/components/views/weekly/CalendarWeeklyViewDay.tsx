@@ -6,7 +6,7 @@ import {
   CalendarEntryWithVerticalPosition,
 } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { useEventsStore } from '../../../state/eventsStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../CalendarEntry';
@@ -25,11 +25,10 @@ export default function CalendarWeeklyViewDay({
   isActive,
   calendarEntries,
 }: CalendarWeeklyViewDayProps) {
-  const { auth } = useAuthStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
 
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
 
   const calendarEntriesWithStyles = useMemo(() => {
     return getCalendarEntriesWithStyles(

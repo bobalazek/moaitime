@@ -2,18 +2,16 @@ import { ExternalLinkIcon } from 'lucide-react';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
 import { useWeatherStore } from '../state/weatherStore';
 import WeatherConditionIcon from './misc/WeatherConditionIcon';
 
 export default function WeatherCommandsList() {
-  const { auth } = useAuthStore();
   const { setPopoverOpen } = useWeatherStore();
   const { setCommandsDialogOpen } = useCommandsStore();
 
-  const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
-
+  const weatherEnabled = useAuthUserSetting('weatherEnabled', false);
   if (!weatherEnabled) {
     return null;
   }

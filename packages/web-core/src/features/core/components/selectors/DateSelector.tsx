@@ -14,7 +14,7 @@ import {
   sonnerToast,
 } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import TimezoneSelector from './TimezoneSelector';
 
 export type DateSelectorData = {
@@ -63,7 +63,6 @@ export default function DateSelector({
   isTimezoneReadonly,
   timezonePlaceholderText,
 }: DateSelectorProps) {
-  const { auth } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [dateValue, setDateValue] = useState<string | null>(null);
   const [dateTimeValue, setDateTimeValue] = useState<string | null>(null);
@@ -146,7 +145,7 @@ export default function DateSelector({
     setDateTimeValue(`${paddedHours}:${paddedMins}`);
   };
 
-  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
 
   const isDateDisabled = (date: Date) => {
     if (disablePast && date < new Date()) {

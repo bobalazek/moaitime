@@ -3,20 +3,19 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
 import { useListsStore } from '../state/listsStore';
 import { useTasksStore } from '../state/tasksStore';
 
 export default function TasksCommandsList() {
-  const { auth } = useAuthStore();
   const { setPopoverOpen } = useTasksStore();
   const { setSelectedListDialogOpen, setSelectedList, lists } = useListsStore();
   const { setCommandsDialogOpen } = useCommandsStore();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
+  const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
 
   const goToHomeIfRequired = () => {
     if (location.pathname !== '/') {

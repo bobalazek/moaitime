@@ -2,15 +2,14 @@ import { endOfWeek, getWeek, isSameMonth, startOfWeek } from 'date-fns';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { useCalendarStore } from '../../../state/calendarStore';
 import { getAgendaRange } from '../../../utils/CalendarHelpers';
 
 function CalendarPageHeaderText() {
-  const { auth } = useAuthStore();
   const { selectedDate, selectedView } = useCalendarStore();
 
-  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const year = selectedDate.getFullYear();
   const date = selectedDate.toLocaleString('default', {
     month: 'long',

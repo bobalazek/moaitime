@@ -1,13 +1,13 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import CommandsSettingsSectionHeaderText from './CommandsSettingsSectionHeaderText';
 
 export default function CommandsSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
 
-  const commandsEnabled = auth?.user?.settings?.commandsEnabled ?? false;
-  const commandsSearchButtonEnabled = auth?.user?.settings?.commandsSearchButtonEnabled ?? false;
+  const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
+  const commandsSearchButtonEnabled = useAuthUserSetting('commandsSearchButtonEnabled', false);
 
   return (
     <div>

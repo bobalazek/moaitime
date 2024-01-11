@@ -1,6 +1,6 @@
 import { TiThermometer, TiWeatherWindy } from 'react-icons/ti';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useWeatherStore } from '../../state/weatherStore';
 import {
   convertCelciusToFahrenheit,
@@ -9,15 +9,14 @@ import {
 import WeatherConditionIcon from '../misc/WeatherConditionIcon';
 
 export default function WeatherBodyInformation() {
-  const { auth } = useAuthStore();
   const { weather } = useWeatherStore();
+  const weatherUseMetricUnits = useAuthUserSetting('weatherUseMetricUnits', false);
 
   if (!weather) {
     return null;
   }
 
   const { conditions } = weather;
-  const weatherUseMetricUnits = auth?.user?.settings?.weatherUseMetricUnits ?? false;
   const temperature = weatherUseMetricUnits ? (
     <>{weather.temperatureCelsius}°C</>
   ) : (

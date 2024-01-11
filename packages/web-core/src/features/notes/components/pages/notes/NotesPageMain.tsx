@@ -5,16 +5,14 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { Note } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { useBreakpoint } from '../../../../core/hooks/useBreakpoint';
 import { useNotesStore } from '../../../state/notesStore';
 import NoteEditor from '../../note-editor/NoteEditor';
 
 const NotesPageMainMetadata = ({ note }: { note: Note }) => {
-  const { auth } = useAuthStore();
-
   const now = new Date();
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
 
   return (
     <div className="text-muted-foreground mt-3 flex justify-end gap-3 text-[0.65rem]">

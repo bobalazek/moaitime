@@ -1,12 +1,12 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import SearchSettingsSectionHeaderText from './SearchSettingsSectionHeaderText';
 
 export default function SearchSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
 
-  const searchEnabled = auth?.user?.settings?.searchEnabled ?? false;
+  const searchEnabled = useAuthUserSetting('searchEnabled', false);
 
   return (
     <div>

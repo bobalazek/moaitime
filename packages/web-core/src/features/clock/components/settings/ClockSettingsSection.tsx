@@ -1,15 +1,15 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import ClockSettingsSectionHeaderText from './ClockSettingsSectionHeaderText';
 
 export default function ClockSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
 
-  const clockEnabled = auth?.user?.settings.clockEnabled ?? false;
-  const clockUseDigitalClock = auth?.user?.settings?.clockUseDigitalClock ?? false;
-  const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;
-  const clockShowSeconds = auth?.user?.settings?.clockShowSeconds ?? false;
+  const clockEnabled = useAuthUserSetting('clockEnabled', false);
+  const clockUseDigitalClock = useAuthUserSetting('clockUseDigitalClock', false);
+  const clockUse24HourClock = useAuthUserSetting('clockUse24HourClock', false);
+  const clockShowSeconds = useAuthUserSetting('clockShowSeconds', false);
 
   return (
     <div>

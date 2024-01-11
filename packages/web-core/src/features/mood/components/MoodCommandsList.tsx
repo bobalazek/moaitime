@@ -3,16 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
 
 export default function MoodCommandsList() {
-  const { auth } = useAuthStore();
   const { setCommandsDialogOpen } = useCommandsStore();
   const navigate = useNavigate();
 
-  const moodEnabled = !!auth?.user?.settings?.moodEnabled;
-
+  const moodEnabled = useAuthUserSetting('moodEnabled', false);
   if (!moodEnabled) {
     return null;
   }

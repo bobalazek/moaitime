@@ -3,16 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
 
 export default function NotesCommandsList() {
-  const { auth } = useAuthStore();
   const { setCommandsDialogOpen } = useCommandsStore();
   const navigate = useNavigate();
 
-  const notesEnabled = !!auth?.user?.settings?.notesEnabled;
-
+  const notesEnabled = useAuthUserSetting('notesEnabled', false);
   if (!notesEnabled) {
     return null;
   }

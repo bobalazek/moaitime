@@ -4,17 +4,16 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { CalendarEntry } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import { getCalendarEntriesForDay, getWeeksForMonth } from '../../utils/CalendarHelpers';
 import CalendarMonthlyViewDay from './monthly/CalendarMonthlyViewDay';
 
 export default function CalendarMonthlyView() {
   const { calendarEntries, selectedDate } = useCalendarStore();
-  const { auth } = useAuthStore();
 
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
 
   const weeks = useMemo(() => {
     return getWeeksForMonth(selectedDate, generalStartDayOfWeek);

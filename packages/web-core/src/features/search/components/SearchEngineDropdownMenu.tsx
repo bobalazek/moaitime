@@ -9,11 +9,12 @@ import {
   DropdownMenuTrigger,
 } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../auth/state/authStore';
 
 export default function SearchEngineDropdownMenu() {
-  const { auth, updateAccountSettings } = useAuthStore();
-  const searchEngine = auth?.user?.settings?.searchEngine ?? SearchEnginesEnum.GOOGLE;
+  const { updateAccountSettings } = useAuthStore();
+
+  const searchEngine = useAuthUserSetting('searchEngine', SearchEnginesEnum.GOOGLE);
   const selectedSearchEngine = SearchEnginesMap[searchEngine]
     ? searchEngine
     : SearchEnginesEnum.GOOGLE;

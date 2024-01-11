@@ -2,14 +2,13 @@ import { CalendarIcon } from 'lucide-react';
 
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { useCalendarStore } from '../../../state/calendarStore';
 
 function CalendarPageHeaderCalendar() {
-  const { auth } = useAuthStore();
   const { selectedDays, selectedDate, setSelectedDate } = useCalendarStore();
 
-  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const now = new Date();
 
   return (

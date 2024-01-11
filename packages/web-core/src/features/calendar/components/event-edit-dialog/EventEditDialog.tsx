@@ -16,7 +16,7 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
@@ -24,7 +24,6 @@ import { useEventsStore } from '../../state/eventsStore';
 import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
 
 export default function EventEditDialog() {
-  const { auth } = useAuthStore();
   const {
     selectedEventDialogOpen,
     selectedEvent,
@@ -46,7 +45,7 @@ export default function EventEditDialog() {
     setData(selectedEvent as CreateEvent);
   }, [selectedEvent]);
 
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
 
   const eventExists = !!selectedEvent?.id;
 

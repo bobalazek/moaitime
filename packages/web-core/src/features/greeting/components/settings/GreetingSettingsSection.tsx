@@ -1,12 +1,12 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import GreetingSettingsSectionHeaderText from './GreetingSettingsSectionHeaderText';
 
 export default function GreetingSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
 
-  const greetingEnabled = auth?.user?.settings?.greetingEnabled ?? false;
+  const greetingEnabled = useAuthUserSetting('greetingEnabled', false);
 
   return (
     <div>

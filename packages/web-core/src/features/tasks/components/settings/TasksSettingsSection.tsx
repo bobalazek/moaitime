@@ -1,14 +1,14 @@
 import { Button, Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import { useTagsStore } from '../../state/tagsStore';
 import TasksSettingsSectionHeaderText from './TasksSettingsSectionHeaderText';
 
 export default function TasksSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
   const { setTagsDialogOpen } = useTagsStore();
 
-  const tasksEnabled = auth?.user?.settings?.tasksEnabled ?? false;
+  const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
 
   const onOpenTagsButtonClick = () => {
     setTagsDialogOpen(true);

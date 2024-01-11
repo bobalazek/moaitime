@@ -12,7 +12,7 @@ import {
   Task,
 } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import { useCalendarHighlightedCalendarEntryStore } from '../state/calendarDynamicStore';
 import { useEventsStore } from '../state/eventsStore';
@@ -50,14 +50,13 @@ export default function CalendarEntry({
   className,
   showTimes,
 }: CalendarEntryProps) {
-  const { auth } = useAuthStore();
   const { setSelectedTaskDialogOpen } = useTasksStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
   const { setHighlightedCalendarEntry, highlightedCalendarEntry } =
     useCalendarHighlightedCalendarEntryStore();
 
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
+  const clockUse24HourClock = useAuthUserSetting('clockUse24HourClock', false);
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
   const hasAbsoluteClassName = className?.includes('absolute');
   const defaultBackgroundColor = calendarEntry.color ?? '#ffffff';

@@ -15,17 +15,21 @@ import {
   Label,
 } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import { useWeatherStore } from '../../state/weatherStore';
 import { getWeatherLocation } from '../../utils/WeatherHelpers';
 
 export default function WeatherLocationDialog() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
   const { locationDialogOpen, setLocationDialogOpen } = useWeatherStore();
 
-  const weatherLocation = auth?.user?.settings?.weatherLocation ?? '';
-  const weatherLocationLatitude = auth?.user?.settings?.weatherCoordinates?.latitude ?? 0;
-  const weatherLocationLongitude = auth?.user?.settings?.weatherCoordinates?.longitude ?? 0;
+  const weatherLocation = useAuthUserSetting('weatherLocation', '');
+  const weatherCoordinates = useAuthUserSetting('weatherCoordinates', {
+    latitude: 0,
+    longitude: 0,
+  });
+  const weatherLocationLatitude = weatherCoordinates.latitude;
+  const weatherLocationLongitude = weatherCoordinates.longitude;
 
   const [browserLocationError, setBrowserLocationError] = useState<string>();
   const [location, setLocation] = useState(weatherLocation);

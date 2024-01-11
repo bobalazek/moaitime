@@ -10,7 +10,7 @@ import {
   Task,
 } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { convertTextToHtml } from '../../../../core/utils/TextHelpers';
 import { useTasksStore } from '../../../../tasks/state/tasksStore';
 import { useEventsStore } from '../../../state/eventsStore';
@@ -24,12 +24,11 @@ export default function CalendarAgendaViewDayEventEntry({
   calendarEntry,
   calendarOrList,
 }: CalendarAgendaViewDayEventEntryProps) {
-  const { auth } = useAuthStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
   const { setSelectedTaskDialogOpen } = useTasksStore();
 
-  const generalTimezone = auth?.user?.settings?.generalTimezone || 'UTC';
-  const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock || false;
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
+  const clockUse24HourClock = useAuthUserSetting('clockUse24HourClock', false);
 
   const start = utcToZonedTime(calendarEntry.startsAt, generalTimezone);
   const startDate = format(start, 'yyyy-MM-dd');

@@ -8,6 +8,7 @@ import {
   UpdateUser,
   UpdateUserPassword,
   UpdateUserSettings,
+  UserSettings,
 } from '@moaitime/shared-common';
 import { sonnerToast } from '@moaitime/web-ui';
 
@@ -344,3 +345,8 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
+
+export const useAuthUserSetting = <K extends keyof UserSettings, F = null>(
+  key: K,
+  fallback: F = null as F
+) => useAuthStore((state) => state.auth?.user?.settings?.[key] ?? fallback);

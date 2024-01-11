@@ -1,13 +1,13 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import WeatherSettingsSectionHeaderText from './WeatherSettingsSectionHeaderText';
 
 export default function WeatherSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
 
-  const weatherEnabled = auth?.user?.settings?.weatherEnabled ?? false;
-  const weatherUseMetricUnits = auth?.user?.settings?.weatherUseMetricUnits ?? false;
+  const weatherEnabled = useAuthUserSetting('weatherEnabled', false);
+  const weatherUseMetricUnits = useAuthUserSetting('weatherUseMetricUnits', false);
 
   return (
     <div>

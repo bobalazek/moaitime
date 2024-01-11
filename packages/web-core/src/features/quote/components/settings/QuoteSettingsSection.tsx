@@ -1,12 +1,12 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import QuoteSettingsSectionHeaderText from './QuoteSettingsSectionHeaderText';
 
 export default function QuoteSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
 
-  const quoteEnabled = auth?.user?.settings?.quoteEnabled ?? false;
+  const quoteEnabled = useAuthUserSetting('quoteEnabled', false);
 
   return (
     <div>

@@ -6,7 +6,7 @@ import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotP
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
-import { useAuthStore } from './features/auth/state/authStore';
+import { useAuthUserSetting } from './features/auth/state/authStore';
 import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
 import CalendarEditDialog from './features/calendar/components/calendar-edit-dialog/CalendarEditDialog';
 import DeletedCalendarsDialog from './features/calendar/components/deleted-calendars-dialog/DeletedCalendarsDialog';
@@ -28,9 +28,7 @@ import TagsDialog from './features/tasks/components/tags-dialog/TagsDialog';
 import TaskEditDialog from './features/tasks/components/task-edit-dialog/TaskEditDialog';
 
 function GlobalDialogs() {
-  const { auth } = useAuthStore();
-
-  const commandsEnabled = auth?.user?.settings?.commandsEnabled ?? false;
+  const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
 
   return (
     <>

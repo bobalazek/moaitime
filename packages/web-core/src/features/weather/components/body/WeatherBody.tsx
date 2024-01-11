@@ -1,14 +1,13 @@
 import { PencilIcon } from 'lucide-react';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useWeatherStore } from '../../state/weatherStore';
 import WeatherBodyInformation from './WeatherBodyInformation';
 
 export default function WeatherBody() {
-  const { auth } = useAuthStore();
   const { setLocationDialogOpen } = useWeatherStore();
 
-  const weatherLocation = auth?.user?.settings?.weatherLocation ?? '';
+  const weatherLocation = useAuthUserSetting('weatherLocation', '');
 
   const onEditButtonClick = () => {
     setLocationDialogOpen(true);

@@ -10,7 +10,7 @@ import {
   getGmtOffset,
 } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
@@ -26,11 +26,10 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
   const { calendarEntries, selectedDate, selectedView, setSelectedDate, setSelectedView } =
     useCalendarStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
-  const { auth } = useAuthStore();
   const prevSelectedDateRef = useRef(selectedDate);
 
-  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const days = useMemo(() => {
     return singleDay
       ? [singleDay]

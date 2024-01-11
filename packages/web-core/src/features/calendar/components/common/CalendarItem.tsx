@@ -3,7 +3,7 @@ import { colord } from 'colord';
 import { Calendar } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItemActions from './CalendarItemActions';
 
@@ -16,10 +16,9 @@ export default function CalendarItem({
   calendar,
   hideCheckbox,
 }: CalendarSettingsSheetCalendarItemProps) {
-  const { auth } = useAuthStore();
   const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
 
-  const visibleCalendarIds = auth?.user?.settings?.calendarVisibleCalendarIds || [];
+  const visibleCalendarIds = useAuthUserSetting('calendarVisibleCalendarIds', [] as string[]);
 
   const isChecked = visibleCalendarIds.includes('*') || visibleCalendarIds.includes(calendar.id);
 

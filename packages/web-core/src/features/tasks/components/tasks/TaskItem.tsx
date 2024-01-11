@@ -6,7 +6,7 @@ import ConfettiExplosion from 'react-confetti-explosion';
 import { Task as TaskType } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useSingleAndDoubleClick } from '../../../core/hooks/useSingleAndDoubleClick';
 import { useTasksStore } from '../../state/tasksStore';
 import { setCursorToEnd } from '../../utils/TaskHelpers';
@@ -18,12 +18,11 @@ import TaskItemActions from './TaskItemActions';
 
 const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) => {
   const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
-  const { auth } = useAuthStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
-  const generalTimezone = auth?.user?.settings?.generalTimezone ?? 'UTC';
-  const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const isCompleted = !!task.completedAt;
   const isDeleted = !!task.deletedAt;
   const taskTags = task.tags ?? [];

@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../auth/state/authStore';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import AnalogClock from './AnalogClock';
 import DigitalClock from './DigitalClock';
 
 export default function Clock() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
   const [time, setTime] = useState(new Date());
 
-  const clockUseDigitalClock = auth?.user?.settings?.clockUseDigitalClock ?? false;
-  const clockUse24HourClock = auth?.user?.settings?.clockUse24HourClock ?? false;
-  const clockShowSeconds = auth?.user?.settings?.clockShowSeconds ?? false;
+  const clockUseDigitalClock = useAuthUserSetting('clockUseDigitalClock', false);
+  const clockUse24HourClock = useAuthUserSetting('clockUse24HourClock', false);
+  const clockShowSeconds = useAuthUserSetting('clockShowSeconds', false);
 
   useEffect(() => {
     const timerId = setInterval(() => {

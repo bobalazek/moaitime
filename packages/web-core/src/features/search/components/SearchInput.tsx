@@ -4,14 +4,13 @@ import { useState } from 'react';
 import { SearchEnginesEnum, SearchEnginesMap } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../auth/state/authStore';
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import SearchEngineDropdownMenu from './SearchEngineDropdownMenu';
 
 export default function SearchInput() {
-  const { auth } = useAuthStore();
   const [search, setSearch] = useState('');
 
-  const searchEngine = auth?.user?.settings?.searchEngine ?? SearchEnginesEnum.GOOGLE;
+  const searchEngine = useAuthUserSetting('searchEngine', SearchEnginesEnum.GOOGLE);
 
   return (
     <div className="flex items-center justify-center">

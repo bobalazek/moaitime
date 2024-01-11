@@ -3,15 +3,14 @@ import { utcToZonedTime } from 'date-fns-tz';
 
 import { CalendarEntry } from '@moaitime/shared-common';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarAgendaViewDay from './agenda/CalendarAgendaViewDay';
 
 export default function CalendarAgendaView() {
-  const { auth } = useAuthStore();
   const { calendarEntries } = useCalendarStore();
 
-  const generalTimezone = auth?.user?.settings?.generalTimezone || 'UTC';
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
 
   const calendarEntriesPerDay = calendarEntries.reduce(
     (acc, calendarEntry) => {

@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useIntersectionObserver } from 'usehooks-ts';
@@ -9,6 +10,12 @@ import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
 import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntriesEmitter';
 import { MoodEntry } from '../common/MoodEntry';
+
+const animationVariants = {
+  initial: { opacity: 0, y: -100 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 100 },
+};
 
 function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
   const ref = useRef<HTMLButtonElement>(null);
@@ -89,9 +96,22 @@ function MoodEntriesActivityInner() {
             </div>
           )}
           <div className="flex flex-col gap-4">
-            {items.map((moodEntry) => {
-              return <MoodEntry key={moodEntry.id} moodEntry={moodEntry} />;
-            })}
+            <AnimatePresence>
+              {items.map((moodEntry) => {
+                return (
+                  <motion.div
+                    key={moodEntry.id}
+                    layout
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    variants={animationVariants}
+                  >
+                    <MoodEntry moodEntry={moodEntry} />
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
           {hasNextPage && (
             <div className="flex justify-center">

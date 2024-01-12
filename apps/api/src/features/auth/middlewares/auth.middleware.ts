@@ -33,6 +33,8 @@ export class AuthMiddleware implements NestMiddleware {
           ...user,
           settings: usersManager.getUserSettings(user),
           _accessToken: userAccessToken,
+          _plan: null,
+          _subscription: null,
         };
       }
     } catch (error) {

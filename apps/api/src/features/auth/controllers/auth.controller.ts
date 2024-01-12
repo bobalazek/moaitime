@@ -12,7 +12,7 @@ import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
 import { ResendEmailConfirmationDto } from '../dtos/resend-email-confirmation.dto';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
 import { LoginResponseDto } from '../dtos/responses/login-response.dto';
-import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
+import { convertToUserDto } from '../utils/auth.utils';
 
 @Controller('/api/v1/auth')
 export class AuthController {
@@ -28,7 +28,7 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully logged in',
-      data: convertToUserAndAccessTokenDto(user, userAccessToken),
+      data: convertToUserDto({ ...user, _accessToken: userAccessToken }),
     };
   }
 
@@ -73,7 +73,7 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully registered',
-      data: convertToUserAndAccessTokenDto(user, userAccessToken),
+      data: convertToUserDto({ ...user, _accessToken: userAccessToken }),
     };
   }
 
@@ -224,7 +224,7 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully refreshed your token',
-      data: convertToUserAndAccessTokenDto(user, userAccessToken),
+      data: convertToUserDto({ ...user, _accessToken: userAccessToken }),
     };
   }
 }

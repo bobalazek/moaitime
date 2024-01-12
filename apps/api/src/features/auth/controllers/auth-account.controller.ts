@@ -18,7 +18,7 @@ import { UpdateUserPasswordDto } from '../dtos/update-user-password.dto';
 import { UpdateUserSettingsDto } from '../dtos/update-user-settings.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
-import { convertToUserAndAccessTokenDto } from '../utils/auth.utils';
+import { convertToUserDto } from '../utils/auth.utils';
 
 @Controller('/api/v1/auth/account')
 export class AuthAccountController {
@@ -32,7 +32,7 @@ export class AuthAccountController {
 
     return {
       success: true,
-      data: convertToUserAndAccessTokenDto(req.user, req.user._accessToken),
+      data: convertToUserDto(req.user),
     };
   }
 
@@ -86,10 +86,10 @@ export class AuthAccountController {
 
     return {
       success: true,
-      data: convertToUserAndAccessTokenDto(
-        userWithAccessToken.user,
-        userWithAccessToken.userAccessToken
-      ),
+      data: convertToUserDto({
+        ...userWithAccessToken.user,
+        _accessToken: userWithAccessToken.userAccessToken,
+      }),
     };
   }
 }

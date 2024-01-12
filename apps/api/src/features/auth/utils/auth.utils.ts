@@ -1,37 +1,40 @@
-import { User, UserAccessToken } from '@moaitime/database-core';
 import { usersManager } from '@moaitime/database-services';
 
+import { PlanDto } from '../dtos/plan.dto';
+import { SubscriptionDto } from '../dtos/subscription.dto';
 import { UserAccessTokenLiteDto } from '../dtos/user-access-token-lite.dto';
 import { UserDto } from '../dtos/user.dto';
+import { UserWithAccessToken } from '../types/user-with-access-token.type';
 
-export const convertToUserAndAccessTokenDto = (
-  user: User,
-  userAccessToken: UserAccessToken
+export const convertToUserDto = (
+  userWithAccessToken: UserWithAccessToken
 ): {
   user: UserDto;
   userAccessToken: UserAccessTokenLiteDto;
-  subscription: null;
+  plan: PlanDto | null;
+  subscription: SubscriptionDto | null;
 } => {
   const now = new Date();
 
   return {
     user: {
-      id: user.id,
-      displayName: user.displayName,
-      email: user.email,
-      newEmail: user.newEmail ?? null,
-      roles: user.roles,
-      settings: usersManager.getUserSettings(user),
-      birthDate: user.birthDate,
-      emailConfirmedAt: user.emailConfirmedAt?.toISOString() ?? null,
-      createdAt: user.createdAt?.toISOString() ?? now.toISOString(),
-      updatedAt: user.updatedAt?.toISOString() ?? now.toISOString(),
+      id: userWithAccessToken.id,
+      displayName: userWithAccessToken.displayName,
+      email: userWithAccessToken.email,
+      newEmail: userWithAccessToken.newEmail ?? null,
+      roles: userWithAccessToken.roles,
+      settings: usersManager.getUserSettings(userWithAccessToken),
+      birthDate: userWithAccessToken.birthDate,
+      emailConfirmedAt: userWithAccessToken.emailConfirmedAt?.toISOString() ?? null,
+      createdAt: userWithAccessToken.createdAt?.toISOString() ?? now.toISOString(),
+      updatedAt: userWithAccessToken.updatedAt?.toISOString() ?? now.toISOString(),
     },
     userAccessToken: {
-      token: userAccessToken.token,
-      refreshToken: userAccessToken.refreshToken,
-      expiresAt: userAccessToken.expiresAt?.toISOString() ?? null,
+      token: userWithAccessToken._accessToken.token,
+      refreshToken: userWithAccessToken._accessToken.refreshToken,
+      expiresAt: userWithAccessToken._accessToken.expiresAt?.toISOString() ?? null,
     },
-    subscription: null,
+    plan: userWithAccessToken._plan ?? null,
+    subscription: userWithAccessToken._subscription ?? null,
   };
 };

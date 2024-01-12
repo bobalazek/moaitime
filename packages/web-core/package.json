@@ -42,7 +42,7 @@
     "dompurify": "^3.0.8",
     "framer-motion": "^10.16.4",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.307.0",
+    "lucide-react": "^0.309.0",
     "mitt": "^3.0.1",
     "react": "18.2.0",
     "react-confetti-explosion": "^2.1.2",

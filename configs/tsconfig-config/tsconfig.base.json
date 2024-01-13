@@ -18,7 +18,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
-    "types": ["node", "vitest/globals"],
+    "types": ["vitest/globals"],
     "baseUrl": ".",
     "paths": {
       "@moaitime/database-core": ["../../packages/database-core/src/index.ts"],

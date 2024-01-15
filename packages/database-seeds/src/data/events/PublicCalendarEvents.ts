@@ -7,6 +7,7 @@ import belgiumHolidays from './calendars/BelgiumHolidays';
 import buddhistHolidays from './calendars/BuddhistHolidays';
 import christianHolidays from './calendars/ChristianHolidays';
 import croatiaHolidays from './calendars/CroatiaHolidays';
+import cultureAndHistoryHolidays from './calendars/CultureAndHistoryHolidays';
 import czechRepublicHolidays from './calendars/CzechRepublicHolidays';
 import denmarkHolidays from './calendars/DenmarkHolidays';
 import finlandHolidays from './calendars/FinlandHolidays';
@@ -71,4 +72,5 @@ export const publicCalendarEvents: PublicCalendarEvent[] = [
   ...islamicHolidays,
   ...jewishHolidays,
   ...sikhHolidays,
+  ...cultureAndHistoryHolidays,
 ];

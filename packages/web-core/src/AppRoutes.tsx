@@ -26,6 +26,7 @@ import ListEditDialog from './features/tasks/components/list-edit-dialog/ListEdi
 import TagEditDialog from './features/tasks/components/tag-edit-dialog/TagEditDialog';
 import TagsDialog from './features/tasks/components/tags-dialog/TagsDialog';
 import TaskEditDialog from './features/tasks/components/task-edit-dialog/TaskEditDialog';
+import TasksPopover from './features/tasks/components/TasksPopover';
 
 function GlobalDialogs() {
   const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
@@ -43,6 +44,7 @@ function GlobalDialogs() {
       <DeletedCalendarsDialog />
       <CalendarDeleteAlertDialog />
       <MoodEntryEditDialog />
+      <TasksPopover />
       {commandsEnabled && <CommandsDialog />}
     </>
   );

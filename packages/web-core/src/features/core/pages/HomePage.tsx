@@ -13,7 +13,6 @@ import Notes from '../../notes/components/Notes';
 import Quote from '../../quote/components/Quote';
 import Search from '../../search/components/Search';
 import Settings from '../../settings/components/Settings';
-import Tasks from '../../tasks/components/Tasks';
 import TasksAppButton from '../../tasks/components/TasksAppButton';
 import Weather from '../../weather/components/Weather';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -41,7 +40,6 @@ export default function HomePage() {
     <ErrorBoundary>
       <Auth />
       <Background />
-      <Tasks />
       <motion.div
         key="content"
         className="full-screen flex flex-col"
@@ -105,6 +103,27 @@ export default function HomePage() {
                 className="mt-12"
               >
                 <Search />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="flex items-end justify-between gap-6 p-4 text-center">
+          <div className="flex gap-4">
+            <BackgroundInformation />
+          </div>
+          <AnimatePresence>
+            {quoteEnabled && (
+              <motion.div
+                key="quote"
+                className="text-right"
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+              >
+                <Quote />
               </motion.div>
             )}
           </AnimatePresence>
@@ -180,26 +199,6 @@ export default function HomePage() {
           >
             <Settings />
           </motion.div>
-        </div>
-        <div className="flex items-end justify-between gap-6 p-4 text-center">
-          <div className="flex gap-4">
-            <BackgroundInformation />
-          </div>
-          <AnimatePresence>
-            {quoteEnabled && (
-              <motion.div
-                key="quote"
-                className="text-right"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <Quote />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </motion.div>
     </ErrorBoundary>

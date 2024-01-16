@@ -7,7 +7,7 @@ import { useListsStore } from '../state/listsStore';
 import { useTasksStore } from '../state/tasksStore';
 import TasksBody from './body/TasksBody';
 
-export default function Tasks() {
+export default function TasksPopover() {
   const { popoverOpen, setPopoverOpen } = useTasksStore();
   const { lists, selectedList, setSelectedList } = useListsStore();
 

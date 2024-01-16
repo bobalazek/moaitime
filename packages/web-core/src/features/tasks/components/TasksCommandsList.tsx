@@ -39,8 +39,6 @@ export default function TasksCommandsList() {
       <CommandItem
         className="cursor-pointer"
         onSelect={() => {
-          goToHomeIfRequired();
-
           setPopoverOpen(true);
 
           setCommandsDialogOpen(false);

@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from '@moaitime/web-ui';
 
 import AuthSettingsSection from '../../auth/components/settings/AuthSettingsSection';
 import AuthSettingsSectionHeaderText from '../../auth/components/settings/AuthSettingsSectionHeaderText';
+import { useAuthStore } from '../../auth/state/authStore';
 import CalendarSettingsSection from '../../calendar/components/settings/CalendarSettingsSection';
 import CalendarSettingsSectionHeaderText from '../../calendar/components/settings/CalendarSettingsSectionHeaderText';
 import ClockSettingsSection from '../../clock/components/settings/ClockSettingsSection';
@@ -96,8 +97,13 @@ const tabs = [
 ];
 
 export default function SettingsDialog() {
+  const { auth } = useAuthStore();
   const { dialogOpen, setDialogOpen } = useSettingsStore();
   const [activeTab, setActiveTab] = useState(tabs[0].id);
+
+  if (!auth) {
+    return null;
+  }
 
   const renderContent = () => {
     const tab = tabs.find((tab) => tab.id === activeTab);

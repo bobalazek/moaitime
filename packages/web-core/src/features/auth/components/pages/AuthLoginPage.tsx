@@ -41,7 +41,7 @@ export default function AuthLoginPage() {
 
   return (
     <ErrorBoundary>
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center p-4">
         <Card className="w-full max-w-screen-sm">
           <CardHeader className="text-center">
             <CardTitle>Sign In</CardTitle>

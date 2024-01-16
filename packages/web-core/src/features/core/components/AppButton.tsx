@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 
 import { ButtonHTMLAttributes, useEffect, useState } from 'react';
 
-import { cn, Tooltip, TooltipContent, TooltipTrigger } from '@moaitime/web-ui';
+import { cn, Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@moaitime/web-ui';
 
 export const AppButton: React.FC<
   ButtonHTMLAttributes<HTMLButtonElement> & { icon: LucideIcon }
@@ -49,11 +49,11 @@ export const AppButton: React.FC<
 
   if (title) {
     return (
-      <Tooltip>
-        <TooltipTrigger>{Button}</TooltipTrigger>
-        <TooltipContent sideOffset={4} className="text-xs">
-          {title}
-        </TooltipContent>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>{Button}</TooltipTrigger>
+        <TooltipPortal container={document.body}>
+          <TooltipContent className="z-50 text-xs">{title}</TooltipContent>
+        </TooltipPortal>
       </Tooltip>
     );
   }

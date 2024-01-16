@@ -37,7 +37,7 @@ export async function bootstrap() {
   );
 
   // Start server
-  if (NODE_ENV === 'test') {
+  if (NODE_ENV === 'test' || NODE_ENV === 'development') {
     await app.listen(port);
   } else {
     await app.listen(port, '127.0.0.1');

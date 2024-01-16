@@ -68,7 +68,7 @@ export default function CommandsDialog() {
             <kbd className="bg-muted pointer-events-none select-none items-center gap-1 rounded border px-1 font-mono">
               {shortcutText}
             </kbd>{' '}
-            to open the search dialog
+            to open the command palette
           </div>
         </DialogContent>
       </Dialog>

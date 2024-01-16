@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { ScrollArea, ScrollBar } from '@moaitime/web-ui';
+
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import CalendarAppButton from '../../../calendar/components/CalendarAppButton';
 import CommandsAppButton from '../../../commands/components/CommandsAppButton';
@@ -27,93 +29,96 @@ export default function AppsDock() {
 
   return (
     <ErrorBoundary>
-      <div className="flex justify-center p-2">
-        <div className="flex flex-row gap-3 rounded-2xl border border-gray-300 bg-white/30 p-2 backdrop-blur-3xl">
-          <AnimatePresence>
-            {moodEnabled && (
+      <div className="z-50 flex w-full justify-center p-2">
+        <ScrollArea>
+          <div className="flex flex-row gap-3 rounded-2xl border border-gray-300 bg-white/30 p-2 backdrop-blur-3xl">
+            <AnimatePresence>
+              {moodEnabled && (
+                <motion.div
+                  key="mood"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <MoodAppButton />
+                </motion.div>
+              )}
+              {calendarEnabled && (
+                <motion.div
+                  key="calendar"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <CalendarAppButton />
+                </motion.div>
+              )}
+              {tasksEnabled && (
+                <motion.div
+                  key="tasks"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <TasksAppButton />
+                </motion.div>
+              )}
+              {notesEnabled && (
+                <motion.div
+                  key="notes"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <NotesAppButton />
+                </motion.div>
+              )}
+              {false && weatherEnabled && (
+                <motion.div
+                  key="weather"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <WeatherAppButton />
+                </motion.div>
+              )}
+              {commandsEnabled && commandsSearchButtonEnabled && (
+                <motion.div
+                  key="commands"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <CommandsAppButton />
+                </motion.div>
+              )}
               <motion.div
-                key="mood"
+                key="settings"
                 layout
                 initial="initial"
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
               >
-                <MoodAppButton />
+                <SettingsAppButton />
               </motion.div>
-            )}
-            {calendarEnabled && (
-              <motion.div
-                key="calendar"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <CalendarAppButton />
-              </motion.div>
-            )}
-            {tasksEnabled && (
-              <motion.div
-                key="tasks"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <TasksAppButton />
-              </motion.div>
-            )}
-            {notesEnabled && (
-              <motion.div
-                key="notes"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <NotesAppButton />
-              </motion.div>
-            )}
-            {false && weatherEnabled && (
-              <motion.div
-                key="weather"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <WeatherAppButton />
-              </motion.div>
-            )}
-            {commandsEnabled && commandsSearchButtonEnabled && (
-              <motion.div
-                key="commands"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <CommandsAppButton />
-              </motion.div>
-            )}
-            <motion.div
-              key="settings"
-              layout
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              variants={animationVariants}
-            >
-              <SettingsAppButton />
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            </AnimatePresence>
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </ErrorBoundary>
   );

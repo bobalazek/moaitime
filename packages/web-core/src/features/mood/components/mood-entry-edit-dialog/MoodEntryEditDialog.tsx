@@ -100,7 +100,10 @@ export default function MoodEntryEditDialog() {
             {selectedMoodEntryDialog ? `Edit Mood entry` : 'New Mood Entry'}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex w-full flex-row justify-between gap-2 py-4">
+        <div
+          className="flex w-full flex-row justify-between gap-2 py-4"
+          data-test="mood--mood-entry-edit-dialog--scores"
+        >
           {moodScores.map((moodScore) => {
             const isSelected = moodScore.score === data?.happinessScore;
             return (

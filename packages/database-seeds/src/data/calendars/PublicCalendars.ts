@@ -121,4 +121,40 @@ export const publicCalendars: NewCalendar[] = [
     timezone: 'Europe/Malta',
     isPublic: true,
   },
+  {
+    name: 'Science Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Animal Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Buddhist Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Christian Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Hindu Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Islamic Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Jewish Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Sikh Holidays',
+    isPublic: true,
+  },
+  {
+    name: 'Culture And History Holidays',
+    isPublic: true,
+  },
 ];

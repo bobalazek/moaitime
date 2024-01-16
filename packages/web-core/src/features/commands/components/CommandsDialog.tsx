@@ -21,6 +21,8 @@ import { useCommandsStore } from '../state/commandsStore';
 export default function CommandsDialog() {
   const { commandsDialogOpen, setCommandsDialogOpen, search, setSearch } = useCommandsStore();
 
+  const shortcutText = navigator.userAgent.includes('Mac OS X') ? '⌘ K' : 'Ctrl K';
+
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
@@ -62,6 +64,12 @@ export default function CommandsDialog() {
               <SettingsCommandsList />
             </CommandList>
           </Command>
+          <div className="text-muted-foreground border-t p-2 text-xs">
+            <kbd className="bg-muted pointer-events-none select-none items-center gap-1 rounded border px-1 font-mono">
+              {shortcutText}
+            </kbd>{' '}
+            to open the search dialog
+          </div>
         </DialogContent>
       </Dialog>
     </ErrorBoundary>

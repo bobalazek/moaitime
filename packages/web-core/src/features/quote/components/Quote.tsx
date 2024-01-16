@@ -71,7 +71,7 @@ export default function Quote() {
           </motion.span>
         ))}
         {quote?.author && (
-          <div className="text-sm">
+          <div className="text-right text-sm">
             {authorCharacters.map(({ char, delay }, index) => (
               <motion.span
                 key={`${quote?.text}-${index}`}

@@ -17,11 +17,24 @@ export const AppButton: React.FC<
     }
   }, [isPressed]);
 
+  useEffect(() => {
+    const handleMouseUp = () => setIsPressed(false);
+    const handleTouchEnd = () => setIsPressed(false);
+
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
+
   return (
     <button
       type="button"
       className={cn(
-        `flex h-16 w-16 select-none items-center justify-center rounded-full border border-white bg-slate-600 shadow-lg transition-all hover:bg-slate-500 focus:bg-slate-400`,
+        `flex h-16 w-16 select-none items-center justify-center rounded-2xl bg-slate-600 shadow-lg transition-all hover:bg-slate-400 focus:bg-slate-400`,
         isPressed && `scale-90`
       )}
       onMouseDown={() => setIsPressed(true)}

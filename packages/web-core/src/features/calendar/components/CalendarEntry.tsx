@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
 import { formatInTimeZone, utcToZonedTime } from 'date-fns-tz';
+import { FlagIcon } from 'lucide-react';
 import { MouseEvent } from 'react';
 
 import {
@@ -73,6 +74,17 @@ export default function CalendarEntry({
     color,
   };
 
+  const calendarEntryTitle =
+    calendarEntry.type === CalendarEntryTypeEnum.TASK && (calendarEntry.raw as Task).priority ? (
+      <span className="flex justify-between gap-2">
+        <span>{calendarEntry.title}</span>
+        <span className="w-10">
+          <FlagIcon size={10} className="inline" /> P{(calendarEntry.raw as Task).priority}
+        </span>
+      </span>
+    ) : (
+      calendarEntry.title
+    );
   const startTime = utcToZonedTime(calendarEntry.startsAtUtc, generalTimezone).toLocaleString(
     'default',
     {
@@ -138,7 +150,7 @@ export default function CalendarEntry({
           className="overflow-auto break-words font-bold"
           data-test="calendar--weekly-view--day--calendar-entry--title"
         >
-          {calendarEntry.title}
+          {calendarEntryTitle}
           {showContinuedText && (
             <span
               className="text-[0.65rem] transition-all"

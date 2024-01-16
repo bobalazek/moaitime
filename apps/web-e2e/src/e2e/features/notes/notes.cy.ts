@@ -76,7 +76,7 @@ describe('notes.cy.ts', () => {
 
     cy.getBySel('notes--header').find('div').contains('(unsaved changes)');
 
-    // Show show alert if canceling unsaved changes
+    // Show alert if canceling unsaved changes
     const stub = cy.stub();
     cy.on('window:confirm', stub);
     cy.getBySel('notes--header')
@@ -116,5 +116,107 @@ describe('notes.cy.ts', () => {
     cy.getBySel('notes--header').find('button').contains('Cancel').click();
 
     cy.getBySel('notes--main').contains('No note selected');
+  });
+
+  it('should delete note', () => {
+    openNotes();
+
+    addNote();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu--trigger-button').click();
+
+    cy.wait(5000);
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu')
+      .find('div[role="menuitem"] span')
+      .contains('Delete')
+      .click({ force: true });
+
+    cy.hasToastWithText('You have successfully deleted the note!');
+  });
+
+  it('should undo delete note', () => {
+    openNotes();
+
+    addNote();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu')
+      .find('div[role="menuitem"] span')
+      .contains('Delete')
+      .click({ force: true });
+
+    cy.hasToastWithText('You have successfully deleted the note!');
+
+    cy.get('section li').find('button').contains('Undo').click();
+
+    cy.getBySel('notes--note').contains('First Note');
+  });
+
+  it('should hard delete note in note action dropdown menu', () => {
+    openNotes();
+
+    addNote();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu')
+      .find('div[role="menuitem"] span')
+      .contains('Delete')
+      .click({ force: true });
+
+    cy.hasToastWithText('You have successfully deleted the note!');
+
+    cy.getBySel('notes--sidebar--filters--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('notes--sidebar--filters--dropdown-menu')
+      .find('div')
+      .contains('Include deleted?')
+      .click();
+
+    cy.getBySel('notes--note').contains('First Note').click();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu')
+      .find('div[role="menuitem"] span')
+      .contains('Hard Delete')
+      .click({ force: true });
+
+    cy.hasToastWithText('The note was successfully hard deleted!');
+  });
+
+  it('should undelete deleted note in note action dropdown menu', () => {
+    openNotes();
+
+    addNote();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu')
+      .find('div[role="menuitem"] span')
+      .contains('Delete')
+      .click({ force: true });
+
+    cy.hasToastWithText('You have successfully deleted the note!');
+
+    cy.getBySel('notes--sidebar--filters--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('notes--sidebar--filters--dropdown-menu')
+      .find('div')
+      .contains('Include deleted?')
+      .click();
+
+    cy.getBySel('notes--note').contains('First Note').click();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('notes--header--note-actions--dropdown-menu')
+      .find('div[role="menuitem"] span')
+      .contains('Undelete')
+      .click({ force: true });
+
+    cy.hasToastWithText('The note was successfully undeleted!');
   });
 });

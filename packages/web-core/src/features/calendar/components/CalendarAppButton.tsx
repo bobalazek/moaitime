@@ -12,7 +12,7 @@ export default function CalendarAppButton() {
       onClick={() => {
         navigate('/calendar');
       }}
-      title="Open calendar"
+      title="Calendar"
       data-test="calendar--open-button"
     />
   );

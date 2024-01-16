@@ -9,11 +9,11 @@ export default function CommandsAppButton() {
   return (
     <AppButton
       icon={SearchIcon}
-      title="Open tasks"
-      data-test="tasks--popover--trigger-button"
       onClick={() => {
         setCommandsDialogOpen(true);
       }}
+      title="Commands"
+      data-test="commands--dialog--trigger-button"
     />
   );
 }

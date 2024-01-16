@@ -9,11 +9,11 @@ export default function TasksAppButton() {
   return (
     <AppButton
       icon={ListChecksIcon}
-      title="Open tasks"
-      data-test="tasks--popover--trigger-button"
       onClick={() => {
         setPopoverOpen(true);
       }}
+      title="Tasks"
+      data-test="tasks--popover--trigger-button"
     />
   );
 }

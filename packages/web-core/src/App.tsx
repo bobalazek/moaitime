@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { SonnerToaster, Toaster } from '@moaitime/web-ui';
 
+import { TooltipProvider } from '../../web-ui-editor/src/components/tooltip';
 import { AppRoutes } from './AppRoutes';
 import { useAuthUserSetting } from './features/auth/state/authStore';
 import { ErrorBoundary } from './features/core/components/ErrorBoundary';
@@ -28,7 +29,9 @@ export function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AppRoutes />
+        <TooltipProvider>
+          <AppRoutes />
+        </TooltipProvider>
       </QueryClientProvider>
       <ToasterContainer />
       <SonnerToasterContainer />

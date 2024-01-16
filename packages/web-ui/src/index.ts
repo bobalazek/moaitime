@@ -58,6 +58,9 @@ export * from './components/sheet';
 // Textarea
 export * from './components/textarea';
 
+// Tooltip
+export * from './components/tooltip';
+
 // Toast
 export * from './components/toast';
 export * from './components/toaster';

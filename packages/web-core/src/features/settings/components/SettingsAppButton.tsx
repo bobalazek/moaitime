@@ -12,7 +12,7 @@ export default function SettingsAppButton() {
       onClick={() => {
         setDialogOpen(true);
       }}
-      title="Open settings"
+      title="Settings"
       data-test="settings--dialog--trigger-button"
     />
   );

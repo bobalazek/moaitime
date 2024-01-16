@@ -12,7 +12,7 @@ export default function NotesAppButton() {
       onClick={() => {
         navigate('/notes');
       }}
-      title="Open notes"
+      title="Notes"
       data-test="notes--open-button"
     />
   );

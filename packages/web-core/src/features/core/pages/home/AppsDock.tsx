@@ -1,13 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
-import Calendar from '../../../calendar/components/Calendar';
+import CalendarAppButton from '../../../calendar/components/CalendarAppButton';
 import CommandsAppButton from '../../../commands/components/CommandsAppButton';
-import Mood from '../../../mood/components/Mood';
-import Notes from '../../../notes/components/Notes';
-import Settings from '../../../settings/components/Settings';
+import MoodAppButton from '../../../mood/components/MoodAppButton';
+import NotesAppButton from '../../../notes/components/NotesAppButton';
+import SettingsAppButton from '../../../settings/components/SettingsAppButton';
 import TasksAppButton from '../../../tasks/components/TasksAppButton';
-import Weather from '../../../weather/components/Weather';
+import WeatherAppButton from '../../../weather/components/WeatherAppButton';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 
 const animationVariants = {
@@ -39,7 +39,7 @@ export default function AppsDock() {
                 exit="exit"
                 variants={animationVariants}
               >
-                <Mood />
+                <MoodAppButton />
               </motion.div>
             )}
             {calendarEnabled && (
@@ -51,7 +51,7 @@ export default function AppsDock() {
                 exit="exit"
                 variants={animationVariants}
               >
-                <Calendar />
+                <CalendarAppButton />
               </motion.div>
             )}
             {tasksEnabled && (
@@ -75,7 +75,7 @@ export default function AppsDock() {
                 exit="exit"
                 variants={animationVariants}
               >
-                <Notes />
+                <NotesAppButton />
               </motion.div>
             )}
             {false && weatherEnabled && (
@@ -87,7 +87,7 @@ export default function AppsDock() {
                 exit="exit"
                 variants={animationVariants}
               >
-                <Weather />
+                <WeatherAppButton />
               </motion.div>
             )}
             {commandsEnabled && commandsSearchButtonEnabled && (
@@ -110,7 +110,7 @@ export default function AppsDock() {
               exit="exit"
               variants={animationVariants}
             >
-              <Settings />
+              <SettingsAppButton />
             </motion.div>
           </AnimatePresence>
         </div>

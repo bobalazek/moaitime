@@ -37,7 +37,7 @@ export default function TasksPopover() {
         }
       >
         <PopoverTrigger asChild>
-          {/* We need this element so the popover know where it should appear. We actually trigger the open outside. We need an empty div so it knows where to place that popover*/}
+          {/* We need an empty div so it knows where to place that popover */}
           <div className="absolute bottom-0 right-4" />
         </PopoverTrigger>
         <PopoverContent className="mb-4 w-full" align="end" data-test="tasks--popover">

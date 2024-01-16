@@ -14,6 +14,7 @@ import Quote from '../../quote/components/Quote';
 import Search from '../../search/components/Search';
 import Settings from '../../settings/components/Settings';
 import Tasks from '../../tasks/components/Tasks';
+import TasksAppButton from '../../tasks/components/TasksAppButton';
 import Weather from '../../weather/components/Weather';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
@@ -40,6 +41,7 @@ export default function HomePage() {
     <ErrorBoundary>
       <Auth />
       <Background />
+      <Tasks />
       <motion.div
         key="content"
         className="full-screen flex flex-col"
@@ -48,20 +50,8 @@ export default function HomePage() {
         exit="exit"
         variants={animationVariants}
       >
-        <div className="flex-shrink-1 flex justify-between p-4">
+        <div className="flex-shrink-1 flex justify-center p-4">
           <AnimatePresence>
-            {calendarEnabled && (
-              <motion.div
-                key="calendar"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <Calendar />
-              </motion.div>
-            )}
             {commandsEnabled && commandsSearchButtonEnabled && (
               <motion.div
                 key="commands"
@@ -74,31 +64,6 @@ export default function HomePage() {
                 <CommandsButton />
               </motion.div>
             )}
-            {false && weatherEnabled && (
-              <motion.div
-                key="weather"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <Weather />
-              </motion.div>
-            )}
-            {moodEnabled && (
-              <motion.div
-                key="mood"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <Mood />
-              </motion.div>
-            )}
-            {!moodEnabled && <div>{/* Just so we keep the commands button in the center */}</div>}
           </AnimatePresence>
         </div>
         <div className="flex flex-grow flex-col items-center justify-center p-4 text-center">
@@ -144,15 +109,87 @@ export default function HomePage() {
             )}
           </AnimatePresence>
         </div>
+        <div className="flex flex-row justify-center gap-4">
+          {moodEnabled && (
+            <motion.div
+              key="mood"
+              layout
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={animationVariants}
+            >
+              <Mood />
+            </motion.div>
+          )}
+          {calendarEnabled && (
+            <motion.div
+              key="calendar"
+              layout
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={animationVariants}
+            >
+              <Calendar />
+            </motion.div>
+          )}
+          {tasksEnabled && (
+            <motion.div
+              key="tasks"
+              layout
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={animationVariants}
+            >
+              <TasksAppButton />
+            </motion.div>
+          )}
+          {notesEnabled && (
+            <motion.div
+              key="notes"
+              layout
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={animationVariants}
+            >
+              <Notes />
+            </motion.div>
+          )}
+          {false && weatherEnabled && (
+            <motion.div
+              key="weather"
+              layout
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={animationVariants}
+            >
+              <Weather />
+            </motion.div>
+          )}
+          <motion.div
+            key="settings"
+            layout
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={animationVariants}
+          >
+            <Settings />
+          </motion.div>
+        </div>
         <div className="flex items-end justify-between gap-6 p-4 text-center">
           <div className="flex gap-4">
-            <Settings />
             <BackgroundInformation />
           </div>
           <AnimatePresence>
             {quoteEnabled && (
               <motion.div
                 key="quote"
+                className="text-right"
                 layout
                 initial="initial"
                 animate="animate"
@@ -162,32 +199,6 @@ export default function HomePage() {
                 <Quote />
               </motion.div>
             )}
-            <div className="flex gap-4">
-              {notesEnabled && (
-                <motion.div
-                  key="notes"
-                  layout
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  variants={animationVariants}
-                >
-                  <Notes />
-                </motion.div>
-              )}
-              {tasksEnabled && (
-                <motion.div
-                  key="tasks"
-                  layout
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  variants={animationVariants}
-                >
-                  <Tasks />
-                </motion.div>
-              )}
-            </div>
           </AnimatePresence>
         </div>
       </motion.div>

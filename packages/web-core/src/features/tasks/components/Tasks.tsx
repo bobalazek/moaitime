@@ -1,4 +1,3 @@
-import { ListChecksIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
@@ -38,13 +37,8 @@ export default function Tasks() {
         }
       >
         <PopoverTrigger asChild>
-          <button
-            className="text-xl text-white transition-all"
-            title="Open tasks"
-            data-test="tasks--popover--trigger-button"
-          >
-            <ListChecksIcon className="text-3xl" />
-          </button>
+          {/* We need this element so the popover know where it should appear. We actually trigger the open outside. We need an empty div so it knows where to place that popover*/}
+          <div className="absolute bottom-0 right-4" />
         </PopoverTrigger>
         <PopoverContent className="mb-4 w-full" align="end" data-test="tasks--popover">
           <TasksBody />

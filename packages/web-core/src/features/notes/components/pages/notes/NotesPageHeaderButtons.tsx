@@ -36,6 +36,8 @@ const NotesPageHeaderButtons = () => {
 
       await deleteNote(noteId);
 
+      setSelectedNote(null);
+
       sonnerToast.success(`Note "${selectedNote.title}" Deleted`, {
         description: 'You have successfully deleted the note!',
         action: {

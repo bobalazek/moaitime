@@ -19,6 +19,7 @@ export default function NotesPage() {
     selectedNoteDataChanged,
     setSelectedNote,
     setSelectedNoteData,
+    setNotesIncludeDeleted,
     reloadNotes,
   } = useNotesStore();
   const location = useLocation();
@@ -38,6 +39,10 @@ export default function NotesPage() {
 
         const newSelectedNote = await getNote(noteId);
         setSelectedNote(newSelectedNote);
+
+        if (newSelectedNote && newSelectedNote.deletedAt) {
+          setNotesIncludeDeleted(true);
+        }
       } catch (error) {
         setTargetUri('/notes');
       }

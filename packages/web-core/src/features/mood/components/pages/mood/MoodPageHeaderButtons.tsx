@@ -14,7 +14,7 @@ const MoodPageHeaderButtons = () => {
   return (
     <div className="flex gap-2">
       <Button size="sm" variant="default" className="h-8" onClick={onAddMoodButtonClick}>
-        <SmilePlusIcon size={24} data-test="mood--header--home-button" />
+        <SmilePlusIcon size={24} data-test="add-new-mood-button" />
       </Button>
     </div>
   );

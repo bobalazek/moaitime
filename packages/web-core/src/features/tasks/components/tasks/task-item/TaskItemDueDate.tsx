@@ -1,6 +1,6 @@
 import { formatRelative } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
-import { ClockIcon } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 
 import { DayOfWeek, Task as TaskType } from '@moaitime/shared-common';
 import { cn } from '@moaitime/web-ui';
@@ -58,7 +58,7 @@ const TaskItemDueDate = ({
       title={dueDateString}
       data-test="tasks--task--due-text"
     >
-      <ClockIcon size={12} />
+      <CalendarIcon size={12} />
       <span>{dueDateRelativeString}</span>
     </div>
   );

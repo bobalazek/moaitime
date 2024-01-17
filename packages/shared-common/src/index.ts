@@ -31,7 +31,7 @@ export * from './core/AsyncReturnType';
 export * from './core/MainColors';
 export * from './core/Priorities';
 export * from './core/TimezoneSchema';
-export * from './core/HexSchema';
+export * from './core/HexColorSchema';
 export * from './core/ColorSchema';
 export * from './core/DayOfWeek';
 export * from './core/SortDirectionEnum';

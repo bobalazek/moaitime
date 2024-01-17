@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 import { MOOD_SCORES } from '../Constants';
-import { ColorSchema } from '../core/ColorSchema';
 import { DayOfWeek } from '../core/DayOfWeek';
+import { HexColorSchema } from '../core/HexColorSchema';
 import { ThemeEnum } from '../core/ThemeEnum';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 
@@ -65,7 +65,7 @@ export const UserSettingsSchema = z.object({
           .max(16, {
             message: 'Label must be 16 characters or less',
           }),
-        color: ColorSchema,
+        color: HexColorSchema,
       })
     )
     .refine((scores) => {

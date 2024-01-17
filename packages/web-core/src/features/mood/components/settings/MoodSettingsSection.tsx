@@ -117,6 +117,8 @@ export default function MoodSettingsSection() {
                   onChangeValue={(value) => {
                     onColorChange(score, value!);
                   }}
+                  disableClear
+                  allowCustomColors
                 />
               </div>
             </div>

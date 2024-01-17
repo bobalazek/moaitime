@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const HexSchema = z.string().refine(
+export const HexColorSchema = z.string().refine(
   (data) => {
     if (!data) {
       return true;

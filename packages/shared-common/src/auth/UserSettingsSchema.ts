@@ -57,9 +57,14 @@ export const UserSettingsSchema = z.object({
   moodScores: z
     .record(
       z.object({
-        label: z.string({ required_error: 'Label is required' }).max(16, {
-          message: 'Label must be 16 characters or less',
-        }),
+        label: z
+          .string({ required_error: 'Label is required' })
+          .min(1, {
+            message: 'Label must be 1 character or more',
+          })
+          .max(16, {
+            message: 'Label must be 16 characters or less',
+          }),
         color: ColorSchema,
       })
     )

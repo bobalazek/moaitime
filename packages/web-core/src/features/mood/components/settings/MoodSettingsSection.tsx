@@ -12,6 +12,7 @@ export default function MoodSettingsSection() {
   const { updateAccountSettings } = useAuthStore();
   const moodEnabled = useAuthUserSetting('moodEnabled', false);
   const moodScores = useAuthUserSetting('moodScores', DEFAULT_USER_SETTINGS.moodScores);
+  // The only reason we need this is, because we are debouncing the label change, meaning a controlled input woulnd't be updated in real time otherwise
   const [moodScoresData, setMoodScoresData] = useState(moodScores);
 
   useEffect(() => {
@@ -19,15 +20,19 @@ export default function MoodSettingsSection() {
   }, [moodScores]);
 
   const onDebouncedLabelChange = useDebouncedCallback((score: number, value: string) => {
-    updateAccountSettings({
-      moodScores: {
-        ...moodScores,
-        [score]: {
-          ...(moodScores[score] ?? {}),
-          label: value,
+    try {
+      updateAccountSettings({
+        moodScores: {
+          ...moodScores,
+          [score]: {
+            ...(moodScores[score] ?? {}),
+            label: value,
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      // Already handled in fetchJson
+    }
   }, 500);
 
   const onLabelCange = (score: number, value: string) => {
@@ -43,15 +48,19 @@ export default function MoodSettingsSection() {
   };
 
   const onColorChange = (score: number, value: string) => {
-    updateAccountSettings({
-      moodScores: {
-        ...moodScores,
-        [score]: {
-          ...(moodScores[score] ?? {}),
-          color: value,
+    try {
+      updateAccountSettings({
+        moodScores: {
+          ...moodScores,
+          [score]: {
+            ...(moodScores[score] ?? {}),
+            color: value,
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      // Already handled in fetchJson
+    }
   };
 
   const onResetButtonClick = () => {
@@ -104,7 +113,7 @@ export default function MoodSettingsSection() {
               </div>
               <div className="ml-2 w-full">
                 <ColorSelector
-                  value={moodScoresData[score]?.color}
+                  value={moodScores[score]?.color}
                   onChangeValue={(value) => {
                     onColorChange(score, value!);
                   }}
@@ -113,13 +122,7 @@ export default function MoodSettingsSection() {
             </div>
           ))}
         </div>
-        <Button
-          onClick={() => {
-            onResetButtonClick();
-          }}
-        >
-          Reset to original
-        </Button>
+        <Button onClick={onResetButtonClick}>Reset to original</Button>
       </div>
     </div>
   );

@@ -185,6 +185,15 @@ export default function TaskEditDialog() {
           />
         </div>
         <div className="flex flex-col gap-2">
+          <Label htmlFor="task-list">Duration</Label>
+          <DurationSelector
+            value={data?.durationSeconds ?? undefined}
+            onChangeValue={(value) =>
+              setData((current) => ({ ...current, durationSeconds: value ?? null }))
+            }
+          />
+        </div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="task-list">Due Date</Label>
           <DateSelector
             includeTime
@@ -202,15 +211,6 @@ export default function TaskEditDialog() {
                 dueDateTimeZone: saveData.dateTimeZone,
               });
             }}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="task-list">Duration</Label>
-          <DurationSelector
-            value={data?.durationSeconds ?? undefined}
-            onChangeValue={(value) =>
-              setData((current) => ({ ...current, durationSeconds: value ?? null }))
-            }
           />
         </div>
         <div className="flex flex-col gap-2">

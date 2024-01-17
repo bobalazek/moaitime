@@ -42,7 +42,6 @@ export default function TagsDialog() {
         </div>
         <hr />
         <div className="text-muted-foreground text-xs">
-          <div className="text-lg">Deletion types</div>
           <b>Delete</b> - this will remove the tag from the edit task dialogs tag selector, but it
           will still keep that tag on the tasks that have it. At this point you are still able to
           undelete the tag and continue using it as normal.

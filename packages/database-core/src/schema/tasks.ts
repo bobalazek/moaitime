@@ -11,12 +11,12 @@ export const tasks = pgTable('tasks', {
   order: integer('order').default(0),
   color: text('color'),
   priority: integer('priority'),
+  durationSeconds: integer('duration_seconds'),
   dueDate: date('due_date', {
     mode: 'string',
   }),
   dueDateTime: time('due_date_time'),
   dueDateTimeZone: text('due_date_time_zone'),
-  durationSeconds: integer('duration_seconds'),
   completedAt: timestamp('completed_at'),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),

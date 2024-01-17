@@ -54,9 +54,11 @@ export function TagSelector({
           data-test="tag-selector--trigger-button"
         >
           <div className="w-full text-left">
-            {selectedTags.length === 0 && <span>Select a tag</span>}
             {selectedTags.length > 0 && (
               <span>{selectedTags.map((tag) => tag.name).join(', ')}</span>
+            )}
+            {selectedTags.length === 0 && (
+              <span className="text-muted-foreground">Select tags ...</span>
             )}
           </div>
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />

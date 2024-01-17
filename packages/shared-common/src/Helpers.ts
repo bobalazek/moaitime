@@ -131,6 +131,7 @@ export const convertObjectNullPropertiesToUndefined = <T extends Record<string, 
   return newObj;
 };
 
+// Time
 export const getTimezonedStartOfDay = (timezone: string, date?: string): Date | null => {
   if (!date) {
     return null;
@@ -147,4 +148,20 @@ export const getTimezonedEndOfDay = (timezone: string, date: string): Date | nul
 
   const zonedToDate = utcToZonedTime(date, timezone);
   return zonedTimeToUtc(endOfDay(zonedToDate), timezone);
+};
+
+export const durationToHoursMinutesSeconds = (durationSeconds: number) => {
+  const hours = durationSeconds ? Math.floor(durationSeconds / 3600) : 0;
+  const minutes = durationSeconds ? Math.floor((durationSeconds - hours * 3600) / 60) : 0;
+  const seconds = durationSeconds ? durationSeconds - hours * 3600 - minutes * 60 : 0;
+
+  return { hours, minutes, seconds };
+};
+
+export const getDurationText = (durationSeconds: number) => {
+  const { hours, minutes, seconds } = durationToHoursMinutesSeconds(durationSeconds);
+
+  return `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${
+    seconds ? `${seconds}s` : ''
+  }`;
 };

@@ -64,8 +64,8 @@ export function TaskParentSelector({
           data-test="task-parent-selector--trigger-button"
         >
           <div>
-            <span className="mr-2 inline-block h-2 w-2 rounded-full" />
-            {selectedParentTask ? selectedParentTask.name : 'Select task ...'}
+            {selectedParentTask && <span>{selectedParentTask.name}</span>}
+            {!value && <span className="text-muted-foreground">Select task ...</span>}
           </div>
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

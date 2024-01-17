@@ -15,6 +15,7 @@ export const TaskBaseSchema = z.object({
   dueDate: z.string().nullable(),
   dueDateTime: z.string().nullable(),
   dueDateTimeZone: z.string().nullable(),
+  durationSeconds: z.number().nullable(),
   completedAt: z.string().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
@@ -69,6 +70,7 @@ export const CreateTaskSchema = z.object({
     .nullable()
     .optional(),
   dueDateTimeZone: TimezoneSchema.nullable().optional(),
+  durationSeconds: z.number().nullable().optional(),
   listId: z.string(),
   parentId: z.string().nullable().optional(),
   tagIds: z.array(z.string()).optional(),

@@ -12,6 +12,7 @@ import { useTasksStore } from '../../state/tasksStore';
 import { setCursorToEnd } from '../../utils/TaskHelpers';
 import TaskItemDeletedAt from './task-item/TaskItemDeletedAt';
 import TaskItemDueDate from './task-item/TaskItemDueDate';
+import TaskItemDuration from './task-item/TaskItemDuration';
 import TaskItemPriority from './task-item/TaskItemPriority';
 import TaskItemTags from './task-item/TaskItemTags';
 import TaskItemActions from './TaskItemActions';
@@ -168,10 +169,15 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) =
             }
           />
         </div>
-        {(task.priority || task.dueDate || task.deletedAt || taskTags.length > 0) && (
+        {(task.priority ||
+          task.dueDate ||
+          task.durationSeconds ||
+          task.deletedAt ||
+          taskTags.length > 0) && (
           <div className="ml-6 mt-1.5 space-y-1">
             <TaskItemPriority task={task} />
             <TaskItemTags task={task} />
+            <TaskItemDuration task={task} />
             <TaskItemDueDate
               task={task}
               timezone={generalTimezone}

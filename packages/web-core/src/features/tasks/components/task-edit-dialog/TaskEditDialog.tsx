@@ -1,3 +1,4 @@
+import { PencilIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -19,10 +20,12 @@ import {
 
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector from '../../../core/components/selectors/DateSelector';
+import { DurationSelector } from '../../../core/components/selectors/DurationSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { PrioritySelector } from '../../../core/components/selectors/PrioritySelector';
 import { TagSelector } from '../../../core/components/selectors/TagSelector';
 import { TaskParentSelector } from '../../../core/components/selectors/TaskParentSelector';
+import { useTagsStore } from '../../state/tagsStore';
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function TaskEditDialog() {
@@ -35,6 +38,7 @@ export default function TaskEditDialog() {
     deleteTask,
     undeleteTask,
   } = useTasksStore();
+  const { setTagsDialogOpen } = useTagsStore();
   const [data, setData] = useState<UpdateTask>();
 
   useEffect(() => {
@@ -201,7 +205,26 @@ export default function TaskEditDialog() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="task-parent">Tags</Label>
+          <Label htmlFor="task-list">Duration</Label>
+          <DurationSelector
+            value={data?.durationSeconds ?? undefined}
+            onChangeValue={(value) =>
+              setData((current) => ({ ...current, durationSeconds: value ?? null }))
+            }
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="task-parent" className="flex items-center gap-2">
+            <span>Tags</span>
+            <button
+              type="button"
+              onClick={() => {
+                setTagsDialogOpen(true);
+              }}
+            >
+              <PencilIcon size={12} />
+            </button>
+          </Label>
           <TagSelector
             values={data?.tagIds ?? []}
             onChangeValue={(values) => setData((current) => ({ ...current, tagIds: values }))}

@@ -14,6 +14,7 @@ import {
   undeleteTask,
 } from '../utils/TaskHelpers';
 import { useListsStore } from './listsStore';
+import { tasksEmitter, TasksEventsEnum } from './tasksEmitter';
 
 export type TasksStore = {
   /********** General **********/
@@ -66,6 +67,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const addedTask = await addTask(task);
 
+    tasksEmitter.emit(TasksEventsEnum.TASK_ADDED, {
+      task: addedTask,
+    });
+
     await reloadLists(); // We want to reload the count of tasks
     await reloadSelectedListTasks();
 
@@ -80,6 +85,11 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     // In case we moved the task to another list, we need to update the counts of the lists,
     // and we also need to set that as the selected list
     const editedTask = await editTask(taskId, task);
+
+    tasksEmitter.emit(TasksEventsEnum.TASK_EDITED, {
+      task: editedTask,
+    });
+
     if (task.listId && originalTask?.listId !== editedTask.listId) {
       const selectedList =
         lists.find((list) => {
@@ -102,6 +112,11 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const movedTask = await editTask(taskId, {
       listId: newListId,
     });
+
+    tasksEmitter.emit(TasksEventsEnum.TASK_EDITED, {
+      task: movedTask,
+    });
+
     const selectedList =
       lists.find((list) => {
         return list.id === newListId;
@@ -120,6 +135,11 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const deletedTask = await deleteTask(taskId, isHardDelete);
 
+    tasksEmitter.emit(TasksEventsEnum.TASK_DELETED, {
+      task: deletedTask,
+      isHardDelete: !!isHardDelete,
+    });
+
     await reloadSelectedListTasks();
     await reloadLists(); // We want to reload the count of tasks
 
@@ -129,6 +149,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
 
     const undeletedTask = await undeleteTask(taskId);
+
+    tasksEmitter.emit(TasksEventsEnum.TASK_UNDELETED, {
+      task: undeletedTask,
+    });
 
     await reloadSelectedListTasks();
     await reloadLists(); // We want to reload the count of tasks
@@ -140,6 +164,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const duplicatedTask = await duplicateTask(taskId);
 
+    tasksEmitter.emit(TasksEventsEnum.TASK_UNDELETED, {
+      task: duplicatedTask,
+    });
+
     await reloadSelectedListTasks();
     await reloadLists(); // We want to reload the count of tasks
 
@@ -150,6 +178,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const completedTask = await completeTask(taskId);
 
+    tasksEmitter.emit(TasksEventsEnum.TASK_COMPLETED, {
+      task: completedTask,
+    });
+
     await reloadSelectedListTasks();
     await reloadLists(); // We want to reload the count of tasks
 
@@ -159,6 +191,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
 
     const uncompletedTask = await uncompleteTask(taskId);
+
+    tasksEmitter.emit(TasksEventsEnum.TASK_UNCOMPLETED, {
+      task: uncompletedTask,
+    });
 
     await reloadSelectedListTasks();
     await reloadLists(); // We want to reload the count of tasks

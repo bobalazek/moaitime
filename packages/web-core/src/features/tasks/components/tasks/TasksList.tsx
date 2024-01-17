@@ -16,10 +16,12 @@ import {
 } from '@dnd-kit/sortable';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import ConfettiExplosion from 'react-confetti-explosion';
 
 import { TasksListSortFieldEnum } from '@moaitime/shared-common';
 
 import { useListsStore } from '../../state/listsStore';
+import { tasksEmitter, TasksEventsEnum } from '../../state/tasksEmitter';
 import { useTasksStore } from '../../state/tasksStore';
 import SortableTaskItem from './SortableTaskItem';
 
@@ -29,8 +31,10 @@ const strategy = verticalListSortingStrategy;
 
 export default function TasksList() {
   const { reorderTasks, setListEndElement } = useTasksStore();
-  const { selectedListTasks, selectedListTasksSortField } = useListsStore();
+  const { selectedListTasks, selectedListTasksSortField, selectedListTasksIncludeCompleted } =
+    useListsStore();
   const [allowAnimations, setAllowAnimations] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
   const taskItemsListEndElementRef = useRef<HTMLDivElement>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -69,11 +73,40 @@ export default function TasksList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // This is a workaround so we can show the confetti when a task is completed,
+  // in case we do not have the "include completed" option enabled.
+  useEffect(() => {
+    if (selectedListTasksIncludeCompleted) {
+      return;
+    }
+
+    const taskCompletedCallback = () => {
+      setShowConfetti(true);
+    };
+
+    tasksEmitter.on(TasksEventsEnum.TASK_COMPLETED, taskCompletedCallback);
+
+    return () => {
+      tasksEmitter.off(TasksEventsEnum.TASK_COMPLETED, taskCompletedCallback);
+    };
+  }, [selectedListTasksIncludeCompleted]);
+
   const isSortableDisabled =
     selectedListTasks.length === 0 || selectedListTasksSortField !== TasksListSortFieldEnum.ORDER;
 
   return (
     <div className="relative h-[320px] overflow-auto" data-test="tasks--tasks-list">
+      {showConfetti && (
+        <ConfettiExplosion
+          zIndex={9999}
+          particleSize={6}
+          particleCount={50}
+          duration={2200}
+          onComplete={() => {
+            setShowConfetti(false);
+          }}
+        />
+      )}
       <DndContext
         sensors={sensors}
         modifiers={modifiers}

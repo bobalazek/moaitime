@@ -91,7 +91,11 @@ export class CalendarEntriesManager {
       const endsAt = dateString;
       const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
 
-      const startsAt = subMinutes(new Date(dateString), 60).toISOString().slice(0, -1);
+      const startDurationMinutesSub = task.durationSeconds ? task.durationSeconds / 60 : 30;
+
+      const startsAt = subMinutes(new Date(dateString), startDurationMinutesSub)
+        .toISOString()
+        .slice(0, -1);
       const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
 
       calendarEntries.push({

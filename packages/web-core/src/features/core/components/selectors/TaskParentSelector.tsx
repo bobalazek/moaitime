@@ -18,7 +18,7 @@ import {
 import { useListsStore } from '../../../tasks/state/listsStore';
 import { useTasksStore } from '../../../tasks/state/tasksStore';
 
-const __EMPTY_VALUE_PLACEHOLDER = '__empty';
+const EMPTY_VALUE_PLACEHOLDER = '__empty';
 
 export function TaskParentSelector({
   value,
@@ -76,7 +76,7 @@ export function TaskParentSelector({
           <CommandEmpty>No task found.</CommandEmpty>
           <CommandGroup>
             <CommandItem
-              value={__EMPTY_VALUE_PLACEHOLDER}
+              value={EMPTY_VALUE_PLACEHOLDER}
               onSelect={() => {
                 onChangeValue(undefined);
                 setOpen(false);

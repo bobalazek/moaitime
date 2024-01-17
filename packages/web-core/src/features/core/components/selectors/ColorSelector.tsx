@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { MAIN_COLORS } from '@moaitime/shared-common';
 import {
@@ -30,37 +31,68 @@ export function ColorSelector({
   triggerProps?: Record<string, string>;
   contentProps?: Record<string, string>;
 }) {
-  const isSelectedColorCustom = value && !MAIN_COLORS.some((color) => color.value === value);
-
-  const [open, setOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(value);
+  const isSelectedColorCustom =
+    value && !MAIN_COLORS.some((color) => color.value === selectedColor);
   const [customColor, setCustomColor] = useState<string | undefined>(
     isSelectedColorCustom ? value : undefined
   );
+  const customColorInputRef = useRef<HTMLInputElement>(null);
 
-  const onChangeColor = (value: string) => {
-    if (value === CUSTOM_VALUE_PLACEHOLDER) {
-      setOpen(true);
+  useEffect(() => {
+    setSelectedColor(value);
+    setCustomColor(isSelectedColorCustom ? value : undefined);
+  }, [value, isSelectedColorCustom]);
+
+  const onSave = (newValue: string) => {
+    if (newValue === CUSTOM_VALUE_PLACEHOLDER) {
+      customColorInputRef.current?.click();
 
       return;
     }
 
-    onChangeValue(value !== EMPTY_VALUE_PLACEHOLDER ? value : undefined);
+    onChangeValue(newValue !== EMPTY_VALUE_PLACEHOLDER ? newValue : undefined);
+  };
+
+  const onDebouncedCustomColorSave = useDebouncedCallback(() => {
+    if (!customColor) {
+      return;
+    }
+
+    onSave(customColor);
+  }, 500);
+
+  const onCustomColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomColor(event.target.value);
+
+    onDebouncedCustomColorSave();
   };
 
   return (
-    <Select
-      open={open}
-      onOpenChange={setOpen}
-      value={value ?? EMPTY_VALUE_PLACEHOLDER}
-      onValueChange={onChangeColor}
-    >
-      <SelectTrigger className="w-full" {...triggerProps}>
+    <Select value={selectedColor ?? EMPTY_VALUE_PLACEHOLDER} onValueChange={onSave}>
+      <SelectTrigger className="relative w-full" {...triggerProps}>
         <SelectValue placeholder="Color" />
+        <Input
+          ref={customColorInputRef}
+          type="color"
+          value={customColor ?? '#000000'}
+          onChange={onCustomColorChange}
+          className="absolute h-0 w-0 opacity-0"
+        />
       </SelectTrigger>
       <SelectContent {...contentProps}>
-        {!disableClear && (
+        {(!value || !disableClear) && (
           <SelectItem value={EMPTY_VALUE_PLACEHOLDER}>
             <i>{placeholderText ?? 'None'}</i>
+          </SelectItem>
+        )}
+        {(isSelectedColorCustom || allowCustomColors) && (
+          <SelectItem value={customColor ?? CUSTOM_VALUE_PLACEHOLDER} disabled={!allowCustomColors}>
+            <span className="inline-block">Custom</span>
+            <span
+              className="ml-2 inline-block h-2 w-2 rounded-full"
+              style={{ backgroundColor: customColor }}
+            ></span>
           </SelectItem>
         )}
         {MAIN_COLORS.map((color) => (
@@ -72,27 +104,6 @@ export function ColorSelector({
             ></span>
           </SelectItem>
         ))}
-        {(isSelectedColorCustom || allowCustomColors) && (
-          <SelectItem
-            value={customColor ?? CUSTOM_VALUE_PLACEHOLDER}
-            disabled={!allowCustomColors}
-            className="relative"
-          >
-            <span className="inline-block">Custom</span>
-            <span
-              className="ml-2 inline-block h-2 w-2 rounded-full"
-              style={{ backgroundColor: customColor }}
-            ></span>
-            <Input
-              type="color"
-              value={customColor}
-              onChange={(event) => {
-                setCustomColor(event.target.value);
-              }}
-              className="absolute h-0 w-0 opacity-0"
-            />
-          </SelectItem>
-        )}
       </SelectContent>
     </Select>
   );

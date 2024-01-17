@@ -1,7 +1,7 @@
 import { PRIORITIES } from '@moaitime/shared-common';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@moaitime/web-ui';
 
-const __EMPTY_VALUE_PLACEHOLDER = '__empty';
+const EMPTY_VALUE_PLACEHOLDER = '__empty';
 
 export function PrioritySelector({
   value,
@@ -18,16 +18,16 @@ export function PrioritySelector({
 }) {
   return (
     <Select
-      value={value ?? __EMPTY_VALUE_PLACEHOLDER}
+      value={value ?? EMPTY_VALUE_PLACEHOLDER}
       onValueChange={(value) => {
-        onChangeValue(value !== __EMPTY_VALUE_PLACEHOLDER ? value : undefined);
+        onChangeValue(value !== EMPTY_VALUE_PLACEHOLDER ? value : undefined);
       }}
     >
       <SelectTrigger className="w-full" {...triggerProps}>
         <SelectValue placeholder="Priority" />
       </SelectTrigger>
       <SelectContent {...contentProps}>
-        <SelectItem value={__EMPTY_VALUE_PLACEHOLDER}>
+        <SelectItem value={EMPTY_VALUE_PLACEHOLDER}>
           <i>{placeholderText ?? 'None'}</i>
         </SelectItem>
         {PRIORITIES.map((priority) => (

@@ -12,7 +12,7 @@ export default function MoodAppButton() {
       onClick={() => {
         navigate('/mood');
       }}
-      title="Mood Tracker"
+      title="Mood"
       data-test="mood--open-button"
     />
   );

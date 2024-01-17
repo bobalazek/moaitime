@@ -90,4 +90,20 @@ describe('commands.cy.ts', () => {
 
     cy.getBySel('settings--dialog').should('exist');
   });
+
+  it('should open Notes from commands dialog', () => {
+    cy.getBySel('commands-trigger-button').click();
+
+    cy.get('[data-value="open notes"]').click();
+
+    cy.getBySel('notes').should('exist');
+  });
+
+  it('should open Mood from commands dialog', () => {
+    cy.getBySel('commands-trigger-button').click();
+
+    cy.get('[data-value="open mood"]').click();
+
+    cy.getBySel('mood').should('exist');
+  });
 });

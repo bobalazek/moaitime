@@ -1,63 +1,7 @@
 import { z } from 'zod';
 
-import { DayOfWeek } from '../core/DayOfWeek';
-import { ThemeEnum } from '../core/ThemeEnum';
-import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
+import { UserSettingsSchema } from './UserSettingsSchema';
 
-// User Settings
-export const UserSettingsSchema = z.object({
-  // General
-  generalTimezone: z.string(),
-  generalStartDayOfWeek: z.number().min(0).max(6) as z.ZodType<DayOfWeek>,
-  generalTheme: z.nativeEnum(ThemeEnum),
-
-  // Commands
-  commandsEnabled: z.boolean(),
-  commandsSearchButtonEnabled: z.boolean(),
-
-  // Weather
-  weatherEnabled: z.boolean(),
-  weatherUseMetricUnits: z.boolean(),
-  weatherLocation: z.string(),
-  weatherCoordinates: z.object({
-    latitude: z.number(),
-    longitude: z.number(),
-  }),
-
-  // Clock
-  clockEnabled: z.boolean(),
-  clockUseDigitalClock: z.boolean(),
-  clockShowSeconds: z.boolean(),
-  clockUse24HourClock: z.boolean(),
-
-  // Search
-  searchEnabled: z.boolean(),
-  searchEngine: z.nativeEnum(SearchEnginesEnum),
-
-  // Greeting
-  greetingEnabled: z.boolean(),
-
-  // Quote
-  quoteEnabled: z.boolean(),
-
-  // Tasks
-  tasksEnabled: z.boolean(),
-
-  // Notes
-  notesEnabled: z.boolean(),
-
-  // Calendar
-  calendarEnabled: z.boolean(),
-  calendarVisibleCalendarIds: z.array(z.string()),
-  calendarVisibleListIds: z.array(z.string()),
-
-  // Mood
-  moodEnabled: z.boolean(),
-});
-
-export const UpdateUserSettingsSchema = UserSettingsSchema.partial();
-
-// User
 export const UserSchema = z.object({
   id: z.string(),
   displayName: z.string(),
@@ -96,13 +40,14 @@ export const UserBirthDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/i, {
   message: 'You must provide a valid date of birth',
 });
 
-// Update User and User Password
+// Update User
 export const UpdateUserSchema = z.object({
   displayName: UserDisplayNameSchema.optional(),
   email: UserEmailSchema.optional(),
   birthDate: UserBirthDateSchema.optional().nullable(),
 });
 
+// User Password
 export const UpdateUserPasswordSchema = z.object({
   newPassword: UserPasswordSchema,
   currentPassword: UserPasswordSchema.optional(), // The only reason it's optional is, because we will have OAuth in the future, where the user won't have a password
@@ -132,10 +77,6 @@ export type User = z.infer<typeof UserSchema>;
 export type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
 export type UpdateUserPassword = z.infer<typeof UpdateUserPasswordSchema>;
-
-export type UserSettings = z.infer<typeof UserSettingsSchema>;
-
-export type UpdateUserSettings = z.infer<typeof UpdateUserSettingsSchema>;
 
 export type RegisterUser = z.infer<typeof RegisterUserSchema>;
 

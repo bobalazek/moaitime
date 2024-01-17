@@ -16,6 +16,7 @@ export const tasks = pgTable('tasks', {
   }),
   dueDateTime: time('due_date_time'),
   dueDateTimeZone: text('due_date_time_zone'),
+  durationSeconds: integer('duration_seconds'),
   completedAt: timestamp('completed_at'),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),

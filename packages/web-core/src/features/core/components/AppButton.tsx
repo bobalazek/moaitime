@@ -34,7 +34,7 @@ export const AppButton: React.FC<
     <button
       type="button"
       className={cn(
-        `flex h-16 w-16 select-none items-center justify-center rounded-2xl bg-slate-600 shadow-lg transition-all hover:bg-slate-400 focus:bg-slate-400`,
+        `flex h-16 w-16 select-none items-center justify-center rounded-2xl bg-slate-600 shadow-lg transition-all hover:bg-slate-600/70 focus:bg-slate-600/60`,
         isPressed && `scale-90`
       )}
       onMouseDown={() => setIsPressed(true)}

@@ -27,14 +27,7 @@ export default function HomePage() {
     <ErrorBoundary>
       <Auth />
       <Background />
-      <motion.div
-        key="content"
-        className="full-screen flex flex-col"
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={animationVariants}
-      >
+      <div className="full-screen flex flex-col">
         <div className="flex-shrink-1 flex justify-between p-3">
           <div className="flex gap-4">
             <BackgroundInformation />
@@ -96,7 +89,7 @@ export default function HomePage() {
           </AnimatePresence>
         </div>
         <AppsDock />
-      </motion.div>
+      </div>
     </ErrorBoundary>
   );
 }

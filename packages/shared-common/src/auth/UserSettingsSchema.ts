@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { MOOD_SCORES } from '../Constants';
+import { ColorSchema } from '../core/ColorSchema';
 import { DayOfWeek } from '../core/DayOfWeek';
 import { ThemeEnum } from '../core/ThemeEnum';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
@@ -52,6 +54,20 @@ export const UserSettingsSchema = z.object({
 
   // Mood
   moodEnabled: z.boolean(),
+  moodScores: z
+    .record(
+      z.object({
+        label: z.string({ required_error: 'Label is required' }).max(16, {
+          message: 'Label must be 16 characters or less',
+        }),
+        color: ColorSchema,
+      })
+    )
+    .refine((scores) => {
+      const scoreKeys = Object.keys(scores).map((key) => parseInt(key, 10));
+
+      return scoreKeys.length === 5 && scoreKeys.every((score) => MOOD_SCORES.includes(score));
+    }),
 });
 
 export const UpdateUserSettingsSchema = UserSettingsSchema.partial();

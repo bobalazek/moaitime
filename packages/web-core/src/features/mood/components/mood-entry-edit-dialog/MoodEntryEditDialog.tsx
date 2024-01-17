@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import {
   CreateMoodEntry,
+  MOOD_SCORES,
   UpdateMoodEntry,
   UpdateMoodEntrySchema,
   zodErrorToString,
@@ -25,15 +26,7 @@ import {
 } from '../../../calendar/utils/CalendarHelpers';
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { useMoodEntriesStore } from '../../state/moodEntriesStore';
-import { HappinessScoreIcon } from '../common/HappinesScoreIcon';
-
-const moodScores = [
-  { score: 2, label: 'great' },
-  { score: 1, label: 'good' },
-  { score: 0, label: 'neutral' },
-  { score: -1, label: 'bad' },
-  { score: -2, label: 'terrible' },
-];
+import { HappinessScore } from '../common/HappinesScore';
 
 export default function MoodEntryEditDialog() {
   const {
@@ -104,26 +97,21 @@ export default function MoodEntryEditDialog() {
           className="flex w-full flex-row justify-between gap-2 py-4"
           data-test="mood--mood-entry-edit-dialog--scores"
         >
-          {moodScores.map((moodScore) => {
-            const isSelected = moodScore.score === data?.happinessScore;
+          {MOOD_SCORES.map((moodScore) => {
+            const isSelected = moodScore === data?.happinessScore;
             return (
               <div
-                key={moodScore.score}
+                key={moodScore}
                 className="cursor-pointer transition-all hover:scale-[1.1]"
                 onClick={() => {
-                  setData((current) => ({ ...current, happinessScore: moodScore.score }));
+                  setData((current) => ({ ...current, happinessScore: moodScore }));
                 }}
                 style={{
-                  scale: isSelected ? '1.4' : '1',
+                  scale: isSelected ? '1.2' : '1',
                   opacity: isSelected ? '1' : '0.8',
                 }}
               >
-                <HappinessScoreIcon
-                  score={moodScore.score}
-                  size={48}
-                  strokeWidth={isSelected ? 2 : 1.5}
-                />
-                <div className="mt-1.5 text-center text-xs font-semibold">{moodScore.label}</div>
+                <HappinessScore score={moodScore} isSelected={isSelected} />
               </div>
             );
           })}

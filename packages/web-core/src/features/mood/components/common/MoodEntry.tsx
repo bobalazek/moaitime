@@ -1,7 +1,7 @@
 import { MoodEntry as MoodEntryType } from '@moaitime/shared-common';
 
 import { convertTextToHtml } from '../../../core/utils/TextHelpers';
-import { HappinessScoreIcon } from './HappinesScoreIcon';
+import { HappinessScoreIcon } from './HappinesScore';
 import { MoodEntryActions } from './MoodEntryActions';
 
 export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {

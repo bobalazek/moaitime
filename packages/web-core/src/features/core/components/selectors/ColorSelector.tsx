@@ -16,6 +16,8 @@ export function ColorSelector({
   triggerProps?: Record<string, string>;
   contentProps?: Record<string, string>;
 }) {
+  const isSelectedColorCustom = value && !MAIN_COLORS.some((color) => color.value === value);
+
   return (
     <Select
       value={value ?? __EMPTY_VALUE_PLACEHOLDER}
@@ -30,6 +32,15 @@ export function ColorSelector({
         <SelectItem value={__EMPTY_VALUE_PLACEHOLDER}>
           <i>{placeholderText ?? 'None'}</i>
         </SelectItem>
+        {isSelectedColorCustom && (
+          <SelectItem value={value}>
+            <span className="inline-block">Custom</span>
+            <span
+              className="ml-2 inline-block h-2 w-2 rounded-full"
+              style={{ backgroundColor: value }}
+            ></span>
+          </SelectItem>
+        )}
         {MAIN_COLORS.map((color) => (
           <SelectItem key={color.value} value={color.value}>
             <span className="inline-block">{color.name}</span>

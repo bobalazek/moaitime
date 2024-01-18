@@ -102,7 +102,7 @@ export class NotesController {
   ): Promise<AbstractResponseDto<Note>> {
     const canView = await notesManager.userCanUpdate(req.user.id, id);
     if (!canView) {
-      throw new ForbiddenException('You cannot view this note');
+      throw new ForbiddenException('You cannot update this note');
     }
 
     const data = await notesManager.findOneById(id);

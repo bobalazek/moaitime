@@ -22,7 +22,7 @@ export const EventSchema = z.object({
 
 export const CreateEventBaseSchema = z.object({
   title: z.string({ required_error: 'Title is required' }),
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
   color: ColorSchema.nullable().optional(),
   timezone: TimezoneSchema.optional(),
   endTimezone: z.string().optional(),

@@ -9,6 +9,10 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
 
   const events: NewEvent[] = [];
   for (const calendar of calendars) {
+    if (calendar.isPublic) {
+      continue;
+    }
+
     const calendarId = calendar.id;
     const timezone = calendar.timezone ?? 'UTC';
     const todaysDate = format(now, 'yyyy-MM-dd');

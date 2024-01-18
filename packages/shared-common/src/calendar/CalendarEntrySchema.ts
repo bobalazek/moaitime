@@ -21,28 +21,8 @@ export const CalendarEntrySchema = z.object({
   raw: EventSchema.or(TaskSchema).optional(),
 });
 
-export const CreateCalendarEntrySchema = z.object({
-  type: z.nativeEnum(CalendarEntryTypeEnum),
-  title: z.string(),
-  description: z.string().optional(),
-  color: ColorSchema.nullable().optional(),
-  timezone: z.string().optional(),
-  endTimezone: z.string().optional(),
-  isAllDay: z.boolean(),
-  startsAt: z.string(),
-  endsAt: z.string(),
-});
-
-export const UpdateCalendarEntrySchema = CreateCalendarEntrySchema.partial().omit({
-  type: true,
-});
-
 // Types
 export type CalendarEntry = z.infer<typeof CalendarEntrySchema>;
-
-export type CreateCalendarEntry = z.infer<typeof CreateCalendarEntrySchema>;
-
-export type UpdateCalendarEntry = z.infer<typeof UpdateCalendarEntrySchema>;
 
 export type CalendarEntryWithVerticalPosition = CalendarEntry & { left: string; width: string };
 

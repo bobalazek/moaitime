@@ -161,7 +161,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     );
   }
 
-  if (calendar.permissions?.canAddShared) {
+  if (calendar.permissions?.canAddShared && !isShared) {
     actions.push(
       <DropdownMenuItem
         key="add-shared"

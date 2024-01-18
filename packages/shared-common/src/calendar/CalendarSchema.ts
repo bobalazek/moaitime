@@ -25,7 +25,7 @@ export const CalendarSchema = z.object({
 
 export const CreateCalendarSchema = z.object({
   name: z.string({ required_error: 'Name is required' }),
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
   color: ColorSchema.optional(),
   timezone: z.string().optional(),
   isPublic: z.boolean().optional(),

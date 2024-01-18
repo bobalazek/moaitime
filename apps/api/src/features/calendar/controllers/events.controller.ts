@@ -89,7 +89,7 @@ export class EventsController {
   ): Promise<AbstractResponseDto<Event>> {
     const canView = await eventsManager.userCanUpdate(req.user.id, id);
     if (!canView) {
-      throw new ForbiddenException('You cannot view this event');
+      throw new ForbiddenException('You cannot update this event');
     }
 
     const data = await eventsManager.findOneById(id);

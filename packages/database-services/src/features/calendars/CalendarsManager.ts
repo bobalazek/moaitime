@@ -37,10 +37,14 @@ export class CalendarsManager {
   }
 
   async findManySharedByUserId(userId: string): Promise<Calendar[]> {
-    return getDatabase().query.calendars.findMany({
-      where: and(eq(userCalendars.userId, userId), isNull(calendars.deletedAt)),
-      orderBy: asc(calendars.name),
-    });
+    const result = await getDatabase()
+      .select()
+      .from(calendars)
+      .leftJoin(userCalendars, eq(calendars.id, userCalendars.calendarId))
+      .where(and(eq(userCalendars.userId, userId), isNull(calendars.deletedAt)))
+      .execute();
+
+    return result.map((row) => row.calendars);
   }
 
   async findManyPublic(): Promise<Calendar[]> {

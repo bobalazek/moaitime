@@ -26,6 +26,7 @@ import {
   DayOfWeek,
   ResponseInterface,
   UpdateCalendar,
+  UserCalendar,
 } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -138,6 +139,18 @@ export const undeleteCalendar = async (calendarId: string): Promise<Calendar> =>
   return response.data as Calendar;
 };
 
+// Shared
+export const getSharedCalendar = async (calendarId: string): Promise<UserCalendar> => {
+  const response = await fetchJson<ResponseInterface<UserCalendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as UserCalendar;
+};
+
 export const addSharedCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
     `${API_URL}/api/v1/calendars/${calendarId}/shared`,
@@ -168,6 +181,7 @@ export const removeSharedCalendar = async (calendarId: string): Promise<Calendar
   return response.data as Calendar;
 };
 
+// Visible
 export const addVisibleCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
     `${API_URL}/api/v1/calendars/${calendarId}/visible`,

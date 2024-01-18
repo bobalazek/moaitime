@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { Calendar } from '@moaitime/database-core';
+import { Calendar, UserCalendar } from '@moaitime/database-core';
 import { calendarsManager, usersManager } from '@moaitime/database-services';
 import {
   Calendar as ApiCalendar,
@@ -181,16 +181,12 @@ export class CalendarsController {
   async viewShared(
     @Req() req: Request,
     @Param('id') id: string
-  ): Promise<AbstractResponseDto<User>> {
-    const canView = await calendarsManager.userCanAddSharedCalendar(req.user.id, id);
-    if (!canView) {
-      throw new ForbiddenException('You cannot add this shared calendar');
-    }
-
-    await calendarsManager.addSharedCalendarToUser(req.user.id, id);
+  ): Promise<AbstractResponseDto<UserCalendar | null>> {
+    const data = await calendarsManager.getSharedCalendar(req.user.id, id);
 
     return {
       success: true,
+      data,
     };
   }
 

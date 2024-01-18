@@ -7,6 +7,7 @@ import {
   getDatabase,
   NewCalendar,
   User,
+  UserCalendar,
   userCalendars,
 } from '@moaitime/database-core';
 import { Calendar as ApiCalendar, UpdateUserCalendar } from '@moaitime/shared-common';
@@ -145,6 +146,7 @@ export class CalendarsManager {
     return this.userCanAddSharedCalendar(userId, calendarOrCalendarId);
   }
 
+  // Settings
   async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
     const user =
       typeof userOrUserId === 'string'
@@ -159,6 +161,7 @@ export class CalendarsManager {
     return userSettings.calendarVisibleCalendarIds ?? [];
   }
 
+  // Visible
   async getVisibleCalendarIdsByUserId(userId: string): Promise<string[]> {
     const userCalendarIds = await this.getUserSettingsCalendarIds(userId);
     const idsSet = new Set<string>();
@@ -250,6 +253,15 @@ export class CalendarsManager {
     });
   }
 
+  // Shared
+  async getSharedCalendar(userId: string, calendarId: string): Promise<UserCalendar | null> {
+    const row = await getDatabase().query.userCalendars.findFirst({
+      where: and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)),
+    });
+
+    return row ?? null;
+  }
+
   async addSharedCalendarToUser(userId: string, calendarId: string) {
     const canView = await this.userCanAddSharedCalendar(userId, calendarId);
     if (!canView) {
@@ -299,6 +311,7 @@ export class CalendarsManager {
       .execute();
   }
 
+  // Permissions
   async getCalendarPermissions(
     userId: string,
     calendarOrCalendarId: string | Calendar

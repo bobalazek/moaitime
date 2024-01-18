@@ -54,7 +54,8 @@ export class CalendarEntriesController {
     const year = parseInt(req.query.year);
 
     // Calendar
-    const calendarIds = await calendarsManager.getVisibleCalendarIdsByUserId(req.user.id);
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(req.user.id);
+    const calendarIds = Array.from(calendarIdsMap.keys());
     const calendarCounts = await eventsManager.getCountsByCalendarIdsAndYear(calendarIds, year);
 
     // Tasks

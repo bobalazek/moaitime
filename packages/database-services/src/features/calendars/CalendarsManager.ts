@@ -14,6 +14,8 @@ import { Calendar as ApiCalendar, UpdateUserCalendar } from '@moaitime/shared-co
 
 import { UsersManager, usersManager } from '../auth/UsersManager';
 
+export type CalendarsManagerVisibleCalendarsMap = Map<string, 'user' | 'team' | 'user-shared'>;
+
 export class CalendarsManager {
   constructor(private _usersManager: UsersManager) {}
 
@@ -171,9 +173,11 @@ export class CalendarsManager {
   }
 
   // Visible
-  async getVisibleCalendarIdsByUserId(userId: string): Promise<string[]> {
+  async getVisibleCalendarIdsByUserIdMap(
+    userId: string
+  ): Promise<CalendarsManagerVisibleCalendarsMap> {
     const userCalendarIds = await this.getUserSettingsCalendarIds(userId);
-    const idsSet = new Set<string>();
+    const idsMap: CalendarsManagerVisibleCalendarsMap = new Map();
 
     // Calendars
     const rows = await this.findMany({
@@ -184,7 +188,7 @@ export class CalendarsManager {
     });
 
     for (const row of rows) {
-      idsSet.add(row.id);
+      idsMap.set(row.id, 'user');
     }
 
     // User Calendars
@@ -196,23 +200,23 @@ export class CalendarsManager {
     });
 
     for (const row of userCalendarRows) {
-      idsSet.add(row.calendarId);
+      idsMap.set(row.calendarId, 'user-shared');
     }
 
     // Check
     if (!userCalendarIds.includes('*')) {
       const finalIds = new Set(userCalendarIds);
 
-      for (const id of idsSet) {
+      for (const id of idsMap.keys()) {
         if (finalIds.has(id)) {
           continue;
         }
 
-        idsSet.delete(id);
+        idsMap.delete(id);
       }
     }
 
-    return Array.from(idsSet);
+    return idsMap;
   }
 
   async addVisibleCalendarIdByUserId(userId: string, calendarId: string) {
@@ -222,7 +226,8 @@ export class CalendarsManager {
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
-    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+    const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
+    const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (userCalendarIds.includes(calendarId)) {
       return user;
     }
@@ -244,7 +249,8 @@ export class CalendarsManager {
     }
 
     const userSettings = this._usersManager.getUserSettings(user);
-    const userCalendarIds = await this.getVisibleCalendarIdsByUserId(userId);
+    const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
+    const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (!userCalendarIds.includes(calendarId)) {
       return user;
     }

@@ -21,9 +21,9 @@ export class CalendarEntriesManager {
     const nowString = new Date().toISOString().slice(0, -1);
     const timezone = user.settings?.generalTimezone ?? 'UTC';
 
-    const calendarIds = await this._calendarsManager.getVisibleCalendarIdsByUserId(user.id);
+    const calendarIdsMap = await this._calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
     const events = await this._eventsManager.findManyByCalendarIdsAndRange(
-      calendarIds,
+      calendarIdsMap,
       user.id,
       from,
       to

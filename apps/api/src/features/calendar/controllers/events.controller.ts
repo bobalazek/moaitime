@@ -31,9 +31,9 @@ export class EventsController {
     const from = getTimezonedStartOfDay(timezone, req.query.from) ?? undefined;
     const to = getTimezonedEndOfDay(timezone, req.query.to) ?? undefined;
 
-    const calendarIds = await calendarsManager.getVisibleCalendarIdsByUserId(req.user.id);
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(req.user.id);
     const data = await eventsManager.findManyByCalendarIdsAndRange(
-      calendarIds,
+      calendarIdsMap,
       req.user.id,
       from,
       to

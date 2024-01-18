@@ -17,10 +17,17 @@ import {
   SQL,
 } from 'drizzle-orm';
 
-import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
+import {
+  calendars,
+  Event,
+  events,
+  getDatabase,
+  NewEvent,
+  userCalendars,
+} from '@moaitime/database-core';
 import { Permissions } from '@moaitime/shared-common';
 
-import { calendarsManager } from './CalendarsManager';
+import { calendarsManager, CalendarsManagerVisibleCalendarsMap } from './CalendarsManager';
 
 export class EventsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
@@ -34,11 +41,12 @@ export class EventsManager {
   }
 
   async findManyByCalendarIdsAndRange(
-    calendarIds: string[],
+    calendarIdsMap: CalendarsManagerVisibleCalendarsMap,
     userId: string,
     from?: Date,
     to?: Date
   ) {
+    const calendarIds = Array.from(calendarIdsMap.keys());
     if (calendarIds.length === 0) {
       return [];
     }
@@ -72,6 +80,35 @@ export class EventsManager {
       .orderBy(asc(events.startsAt))
       .execute();
 
+    // User calendars map
+    const userCalendarCalendarIds: string[] = [];
+    for (const [calendarId, type] of calendarIdsMap.entries()) {
+      if (type !== 'user-shared') {
+        continue;
+      }
+
+      userCalendarCalendarIds.push(calendarId);
+    }
+
+    const userCalendarRows =
+      userCalendarCalendarIds.length > 0
+        ? await getDatabase()
+            .select()
+            .from(userCalendars)
+            .where(
+              and(
+                inArray(userCalendars.calendarId, userCalendarCalendarIds),
+                eq(userCalendars.userId, userId)
+              )
+            )
+            .execute()
+        : [];
+
+    const userCalendarColorMap = new Map<string, string | null>();
+    for (const row of userCalendarRows) {
+      userCalendarColorMap.set(row.calendarId, row.color);
+    }
+
     const finalRows: (Event & { calendarColor: string | null; permissions?: Permissions })[] = [];
 
     for (const row of result) {
@@ -89,9 +126,11 @@ export class EventsManager {
         };
       }
 
+      const userCalendarColor = userCalendarColorMap.get(row.calendars!.id);
+
       finalRows.push({
         ...row.events,
-        calendarColor: row.calendars?.color ?? null,
+        calendarColor: userCalendarColor ?? row.calendars?.color ?? null,
         permissions,
       });
     }

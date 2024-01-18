@@ -141,7 +141,7 @@ export class CalendarsManager {
     return calendar.isPublic;
   }
 
-  async userCanUpdateSharedCalendarColor(userId: string, calendarOrCalendarId: string | Calendar) {
+  async userCanUpdateSharedCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
     return this.userCanAddSharedCalendar(userId, calendarOrCalendarId);
   }
 
@@ -286,7 +286,7 @@ export class CalendarsManager {
     const canUpdate = await this.userCanUpdate(userId, calendarOrCalendarId);
     const canDelete = await this.userCanDelete(userId, calendarOrCalendarId);
     const canAddSharedCalendar = await this.userCanAddSharedCalendar(userId, calendarOrCalendarId);
-    const canUpdateSharedCalendarColor = await this.userCanUpdateSharedCalendarColor(
+    const canUpdateSharedCalendar = await this.userCanUpdateSharedCalendar(
       userId,
       calendarOrCalendarId
     );
@@ -296,7 +296,7 @@ export class CalendarsManager {
       canUpdate,
       canDelete,
       canAddSharedCalendar,
-      canUpdateSharedCalendarColor,
+      canUpdateSharedCalendar,
     };
   }
 

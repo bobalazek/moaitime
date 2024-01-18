@@ -27,12 +27,6 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
   const isShared = sharedCalendars.some((sharedCalendar) => sharedCalendar.id === calendar.id);
 
   // Handlers
-  const onEditButtonClick = async () => {
-    setSelectedCalendarDialogOpen(true, calendar);
-
-    setOpen(false);
-  };
-
   const onDeleteButtonClick = async () => {
     try {
       await deleteCalendar(calendar.id);
@@ -120,7 +114,15 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
 
   if (!calendar.deletedAt && calendar.permissions?.canUpdate) {
     actions.push(
-      <DropdownMenuItem key="edit" className="cursor-pointer" onClick={onEditButtonClick}>
+      <DropdownMenuItem
+        key="edit"
+        className="cursor-pointer"
+        onClick={async () => {
+          setSelectedCalendarDialogOpen(true, calendar);
+
+          setOpen(false);
+        }}
+      >
         <PencilIcon className="mr-2 h-4 w-4" />
         <span>Edit</span>
       </DropdownMenuItem>
@@ -161,7 +163,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     );
   }
 
-  if (calendar.permissions?.canAddSharedCalendar && !isShared) {
+  if (!isShared && calendar.permissions?.canAddSharedCalendar) {
     actions.push(
       <DropdownMenuItem
         key="add-shared"
@@ -174,7 +176,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     );
   }
 
-  if (isShared) {
+  if (isShared && calendar.permissions?.canAddSharedCalendar) {
     actions.push(
       <DropdownMenuItem
         key="remove-shared"

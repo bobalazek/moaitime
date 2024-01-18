@@ -326,11 +326,13 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return removedUserCalendar;
   },
   updateUserCalendar: async (calendarId: string, userCalendar: UpdateUserCalendar) => {
-    const { reloadUserCalendars } = get();
+    const { reloadCalendarEntries, reloadUserCalendars } = get();
 
     const editedTask = await updateUserCalendar(calendarId, userCalendar);
 
     await reloadUserCalendars();
+
+    await reloadCalendarEntries();
 
     return editedTask;
   },

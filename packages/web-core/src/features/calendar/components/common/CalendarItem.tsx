@@ -36,7 +36,7 @@ export default function CalendarItem({
     await addVisibleCalendar(calendar.id);
   };
 
-  const checkboxBackgroundColor = calendar.color ?? '';
+  const checkboxBackgroundColor = userCalendar?.color ?? calendar.color ?? '';
   const checkboxColor = checkboxBackgroundColor
     ? colord(checkboxBackgroundColor).isDark()
       ? 'white'

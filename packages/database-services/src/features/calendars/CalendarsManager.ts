@@ -260,6 +260,8 @@ export class CalendarsManager {
     }
 
     await getDatabase().insert(userCalendars).values({ userId, calendarId }).execute();
+
+    await this.addVisibleCalendarIdByUserId(userId, calendarId);
   }
 
   async removeSharedCalendarFromUser(userId: string, calendarId: string) {
@@ -267,6 +269,8 @@ export class CalendarsManager {
       .delete(userCalendars)
       .where(and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)))
       .execute();
+
+    await this.removeVisibleCalendarIdByUserId(userId, calendarId);
   }
 
   async getCalendarPermissions(

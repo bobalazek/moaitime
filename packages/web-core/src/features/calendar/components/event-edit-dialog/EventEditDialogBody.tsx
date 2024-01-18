@@ -115,7 +115,7 @@ export default function EventEditDialogBody() {
   };
 
   return (
-    <>
+    <div>
       <div className="mb-4 flex flex-col gap-2">
         <Label htmlFor="event-title">Title</Label>
         <Input
@@ -261,6 +261,6 @@ export default function EventEditDialogBody() {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

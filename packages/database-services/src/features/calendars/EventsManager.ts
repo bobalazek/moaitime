@@ -79,6 +79,7 @@ export class EventsManager {
         userId,
         row.calendars!
       );
+
       let permissions: Permissions | undefined = undefined;
       if (calendarPermissions) {
         permissions = {

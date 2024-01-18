@@ -1,0 +1,1 @@
+ALTER TABLE "user_calendars" ADD COLUMN "color" text;

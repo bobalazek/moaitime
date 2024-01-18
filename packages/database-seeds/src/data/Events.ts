@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, like } from 'drizzle-orm';
 
 import { calendars, getDatabase, NewEvent } from '@moaitime/database-core';
 
@@ -9,11 +9,17 @@ export const getEventSeeds = async (): Promise<NewEvent[]> => {
   const rawEvents = publicCalendarEvents;
 
   for (const single of rawEvents) {
-    const calendar = await getDatabase().query.calendars.findFirst({
+    let calendar = await getDatabase().query.calendars.findFirst({
       where: eq(calendars.name, single.calendarName),
     });
     if (!calendar) {
-      throw new Error(`Calendar "${single.calendarName}" not found!`);
+      calendar = await getDatabase().query.calendars.findFirst({
+        where: like(calendars.name, `%${single.calendarName}%`),
+      });
+
+      if (!calendar) {
+        throw new Error(`Calendar "${single.calendarName}" not found!`);
+      }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

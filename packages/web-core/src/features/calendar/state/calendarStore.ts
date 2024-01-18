@@ -13,6 +13,7 @@ import {
 import { useAuthStore } from '../../auth/state/authStore';
 import {
   addCalendar,
+  addSharedCalendar,
   addVisibleCalendar,
   deleteCalendar,
   editCalendar,
@@ -22,8 +23,11 @@ import {
   getCalendars,
   getDeletedCalendars,
   getMonthRange,
+  getPublicCalendars,
+  getSharedCalendars,
   getWeekRange,
   getYearRange,
+  removeSharedCalendar,
   removeVisibleCalendar,
   undeleteCalendar,
 } from '../utils/CalendarHelpers';
@@ -53,6 +57,11 @@ export type CalendarStore = {
   undeleteCalendar: (calendarId: string) => Promise<Calendar>;
   addVisibleCalendar: (calendarId: string) => Promise<void>;
   removeVisibleCalendar: (calendarId: string) => Promise<void>;
+  // Shared
+  sharedCalendars: Calendar[];
+  reloadSharedCalendars: () => Promise<Calendar[]>;
+  addSharedCalendar: (calendarId: string) => Promise<void>;
+  removeSharedCalendar: (calendarId: string) => Promise<void>;
   // Selected
   selectedCalendarDialogOpen: boolean;
   selectedCalendar: Calendar | null;
@@ -72,6 +81,11 @@ export type CalendarStore = {
     calendarDeleteAlertDialogOpen: boolean,
     selectedCalendarDeleteAlertDialog?: Calendar | null
   ) => void;
+  // Public
+  publicCalendarsDialogOpen: boolean;
+  setPublicCalendarsDialogOpen: (publicCalendarsDialogOpen: boolean) => void;
+  publicCalendars: Calendar[];
+  reloadPublicCalendars: () => Promise<Calendar[]>;
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   reloadCalendarEntries: () => Promise<CalendarEntry[]>;
@@ -209,7 +223,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await reloadCalendars();
     await reloadCalendarEntries();
 
-    // Same as above
     await reloadAccount();
 
     if (deletedCalendarsDialogOpen) {
@@ -232,7 +245,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await reloadCalendars();
     await reloadCalendarEntries();
 
-    // Same as above
     await reloadAccount();
 
     if (deletedCalendarsDialogOpen) {
@@ -247,7 +259,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     await addVisibleCalendar(calendarId);
 
-    // We update the settings, so we need to refresh the account
     await reloadAccount();
 
     await reloadCalendarEntries();
@@ -258,7 +269,39 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     await removeVisibleCalendar(calendarId);
 
-    // Same as above
+    await reloadAccount();
+
+    await reloadCalendarEntries();
+  },
+  // Shared
+  sharedCalendars: [],
+  reloadSharedCalendars: async () => {
+    const sharedCalendars = await getSharedCalendars();
+
+    set({ sharedCalendars });
+
+    return sharedCalendars;
+  },
+  addSharedCalendar: async (calendarId: string) => {
+    const { reloadCalendarEntries, reloadSharedCalendars } = get();
+    const { reloadAccount } = useAuthStore.getState();
+
+    await addSharedCalendar(calendarId);
+
+    await reloadSharedCalendars();
+
+    await reloadAccount();
+
+    await reloadCalendarEntries();
+  },
+  removeSharedCalendar: async (calendarId: string) => {
+    const { reloadCalendarEntries, reloadSharedCalendars } = get();
+    const { reloadAccount } = useAuthStore.getState();
+
+    await removeSharedCalendar(calendarId);
+
+    await reloadSharedCalendars();
+
     await reloadAccount();
 
     await reloadCalendarEntries();
@@ -307,6 +350,27 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       calendarDeleteAlertDialogOpen,
       selectedCalendarDeleteAlertDialog,
     });
+  },
+  // Public
+  publicCalendarsDialogOpen: false,
+  setPublicCalendarsDialogOpen: (publicCalendarsDialogOpen: boolean) => {
+    const { reloadPublicCalendars } = get();
+
+    if (publicCalendarsDialogOpen) {
+      reloadPublicCalendars();
+    }
+
+    set({
+      publicCalendarsDialogOpen,
+    });
+  },
+  publicCalendars: [],
+  reloadPublicCalendars: async () => {
+    const publicCalendars = await getPublicCalendars();
+
+    set({ publicCalendars });
+
+    return publicCalendars;
   },
   /********** Calendar Entries **********/
   calendarEntries: [],

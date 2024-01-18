@@ -15,9 +15,11 @@ import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItem from '../common/CalendarItem';
 import ListItem from '../common/ListItem';
 import CalendarSettingsSheetMyCalendarsActions from './CalendarSettingsSheetMyCalendarsActions';
+import CalendarSettingsSheetSharedCalendarsActions from './CalendarSettingsSheetSharedCalendarsActions';
 
 export default function CalendarSettingsSheet() {
-  const { settingsSheetOpen, setSettingsSheetOpen, calendars } = useCalendarStore();
+  const { settingsSheetOpen, setSettingsSheetOpen, calendars, sharedCalendars } =
+    useCalendarStore();
   const { lists } = useListsStore();
 
   return (
@@ -53,6 +55,20 @@ export default function CalendarSettingsSheet() {
             <p className="text-xs text-gray-500">You do not have any calendars at the moment.</p>
           )}
           {calendars.map((calendar) => (
+            <CalendarItem key={calendar.id} calendar={calendar} />
+          ))}
+        </div>
+        <div className="mt-4">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="font-bold">Shared Calendars</h3>
+            <CalendarSettingsSheetSharedCalendarsActions />
+          </div>
+          {sharedCalendars.length === 0 && (
+            <p className="text-xs text-gray-500">
+              You do not have any shared calendars at the moment.
+            </p>
+          )}
+          {sharedCalendars.map((calendar) => (
             <CalendarItem key={calendar.id} calendar={calendar} />
           ))}
         </div>

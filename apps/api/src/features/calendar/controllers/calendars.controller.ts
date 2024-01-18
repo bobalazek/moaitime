@@ -27,7 +27,8 @@ export class CalendarsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
-    const data = await calendarsManager.findManyByUserApiResponse(req.user.id);
+    const calendars = await calendarsManager.findManyByUserId(req.user.id);
+    const data = await calendarsManager.convertToApiResponse(calendars, req.user.id);
 
     return {
       success: true,
@@ -37,8 +38,21 @@ export class CalendarsController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('deleted')
-  async listDeleted(@Req() req: Request): Promise<AbstractResponseDto<Calendar[]>> {
-    const data = await calendarsManager.findManyDeletedByUserId(req.user.id);
+  async listDeleted(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
+    const calendars = await calendarsManager.findManyDeletedByUserId(req.user.id);
+    const data = await calendarsManager.convertToApiResponse(calendars, req.user.id);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('shared')
+  async listShared(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
+    const calendars = await calendarsManager.findManySharedByUserId(req.user.id);
+    const data = await calendarsManager.convertToApiResponse(calendars, req.user.id);
 
     return {
       success: true,
@@ -48,8 +62,9 @@ export class CalendarsController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('public')
-  async listPublic(): Promise<AbstractResponseDto<Calendar[]>> {
-    const data = await calendarsManager.findManyPublic();
+  async listPublic(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
+    const calendars = await calendarsManager.findManyPublic();
+    const data = await calendarsManager.convertToApiResponse(calendars, req.user.id);
 
     return {
       success: true,
@@ -140,7 +155,7 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<Calendar>> {
-    const canDelete = await calendarsManager.userCanDelete(req.user.id, id);
+    const canDelete = await calendarsManager.userCanUpdate(req.user.id, id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this calendar');
     }
@@ -152,6 +167,42 @@ export class CalendarsController {
     return {
       success: true,
       data: updatedData,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/add-shared')
+  async addShared(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await calendarsManager.userCanView(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this list');
+    }
+
+    await calendarsManager.addSharedCalendarToUser(req.user.id, id);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/remove-shared')
+  async removeShared(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await calendarsManager.userCanView(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot view this calendar');
+    }
+
+    await calendarsManager.removeSharedCalendarFromUser(req.user.id, id);
+
+    return {
+      success: true,
     };
   }
 
@@ -179,7 +230,7 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await calendarsManager.userCanDelete(req.user.id, id);
+    const canView = await calendarsManager.userCanView(req.user.id, id);
     if (!canView) {
       throw new ForbiddenException('You cannot view this calendar');
     }

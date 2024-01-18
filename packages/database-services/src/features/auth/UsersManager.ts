@@ -118,7 +118,7 @@ export class UsersManager {
     return this._fixRowColumns(rows[0]);
   }
 
-  // Custom
+  // Helpers
   getUserSettings(user: User): UserSettings {
     return {
       ...DEFAULT_USER_SETTINGS,

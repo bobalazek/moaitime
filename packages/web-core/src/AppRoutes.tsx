@@ -12,6 +12,7 @@ import CalendarEditDialog from './features/calendar/components/calendar-edit-dia
 import DeletedCalendarsDialog from './features/calendar/components/deleted-calendars-dialog/DeletedCalendarsDialog';
 import EventEditDialog from './features/calendar/components/event-edit-dialog/EventEditDialog';
 import CalendarPage from './features/calendar/components/pages/CalendarPage';
+import PublicCalendarsDialog from './features/calendar/components/public-calendars-dialog/PublicCalendarsDialog';
 import CommandsDialog from './features/commands/components/CommandsDialog';
 import ProtectedRoute from './features/core/components/ProtectedRoute';
 import PublicOnlyRoute from './features/core/components/PublicOnlyRoute';
@@ -42,6 +43,7 @@ function GlobalDialogs() {
       <CalendarEditDialog />
       <EventEditDialog />
       <DeletedCalendarsDialog />
+      <PublicCalendarsDialog />
       <CalendarDeleteAlertDialog />
       <MoodEntryEditDialog />
       <TasksPopover />

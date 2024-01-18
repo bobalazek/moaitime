@@ -141,7 +141,7 @@ export class MoodEntriesController {
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canDelete = await moodEntriesManager.userCanDelete(id, req.user.id);
+    const canDelete = await moodEntriesManager.userCanUpdate(id, req.user.id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this mood entry');
     }

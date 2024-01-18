@@ -125,7 +125,7 @@ export class TagsController {
   @UseGuards(AuthenticatedGuard)
   @Post(':id/undelete')
   async undelete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Tag>> {
-    const canDelete = await tagsManager.userCanDelete(req.user.id, id);
+    const canDelete = await tagsManager.userCanUpdate(req.user.id, id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this tag');
     }

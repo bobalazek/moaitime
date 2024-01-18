@@ -3,24 +3,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, ScrollArea } from '@m
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItem from '../common/CalendarItem';
 
-export default function DeletedCalendarsDialog() {
-  const { deletedCalendars, deletedCalendarsDialogOpen, setDeletedCalendarsDialogOpen } =
+export default function PublicCalendarsDialog() {
+  const { publicCalendars, publicCalendarsDialogOpen, setPublicCalendarsDialogOpen } =
     useCalendarStore();
 
   return (
-    <Dialog open={deletedCalendarsDialogOpen} onOpenChange={setDeletedCalendarsDialogOpen}>
-      <DialogContent data-test="calendar--deleted-calendars-dialog">
+    <Dialog open={publicCalendarsDialogOpen} onOpenChange={setPublicCalendarsDialogOpen}>
+      <DialogContent data-test="calendar--public-calendars-dialog">
         <DialogHeader>
-          <DialogTitle>Deleted Calendars</DialogTitle>
+          <DialogTitle>Public Calendars</DialogTitle>
         </DialogHeader>
-        {deletedCalendars.length === 0 && (
+        {publicCalendars.length === 0 && (
           <div className="flex flex-col items-center justify-center p-4">
-            <div className="text-muted-foreground text-center">No deleted calendars</div>
+            <div className="text-muted-foreground text-center">No public calendars</div>
           </div>
         )}
-        {deletedCalendars.length > 0 && (
+        {publicCalendars.length > 0 && (
           <ScrollArea className="h-[360px]">
-            {deletedCalendars.map((calendar) => (
+            {publicCalendars.map((calendar) => (
               <CalendarItem key={calendar.id} calendar={calendar} hideCheckbox />
             ))}
           </ScrollArea>

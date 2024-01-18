@@ -144,7 +144,7 @@ export class EventsController {
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<Event>> {
-    const canDelete = await eventsManager.userCanDelete(req.user.id, id);
+    const canDelete = await eventsManager.userCanUpdate(req.user.id, id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this event');
     }

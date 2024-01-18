@@ -50,6 +50,17 @@ export const getDeletedCalendars = async () => {
   return response.data ?? [];
 };
 
+export const getSharedCalendars = async () => {
+  const response = await fetchJson<ResponseInterface<Calendar[]>>(
+    `${API_URL}/api/v1/calendars/shared`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data ?? [];
+};
+
 export const getPublicCalendars = async () => {
   const response = await fetchJson<ResponseInterface<Calendar[]>>(
     `${API_URL}/api/v1/calendars/public`,
@@ -115,6 +126,36 @@ export const deleteCalendar = async (
 export const undeleteCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
     `${API_URL}/api/v1/calendars/${calendarId}/undelete`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
+};
+
+export const addSharedCalendar = async (calendarId: string): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}/add-shared`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
+};
+
+export const removeSharedCalendar = async (calendarId: string): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}/remove-shared`,
     {
       method: 'POST',
       headers: {

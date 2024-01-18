@@ -1,4 +1,4 @@
-import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull, or } from 'drizzle-orm';
 
 import {
   Calendar,
@@ -29,22 +29,17 @@ export class CalendarsManager {
     return data;
   }
 
-  async findManyByUserApiResponse(userId: string): Promise<ApiCalendar[]> {
-    const data = await this.findManyByUserId(userId);
-
-    return data.map((calendar) => {
-      const isSelectable = calendar.id !== 'custom--due-tasks';
-      const isEditable = isSelectable;
-      const isDeletable = isEditable;
-
-      return this.convertToApiCalendar(calendar, isSelectable, isEditable, isDeletable);
-    });
-  }
-
   async findManyDeletedByUserId(userId: string): Promise<Calendar[]> {
     return getDatabase().query.calendars.findMany({
       where: and(eq(calendars.userId, userId), isNotNull(calendars.deletedAt)),
       orderBy: desc(calendars.deletedAt),
+    });
+  }
+
+  async findManySharedByUserId(userId: string): Promise<Calendar[]> {
+    return getDatabase().query.calendars.findMany({
+      where: and(eq(userCalendars.userId, userId), isNull(calendars.deletedAt)),
+      orderBy: asc(calendars.name),
     });
   }
 
@@ -102,24 +97,43 @@ export class CalendarsManager {
   }
 
   // Helpers
-  async userCanView(userId: string, calendarId: string): Promise<boolean> {
-    if (calendarId.startsWith('custom--')) {
-      return true;
+  async userCanView(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
+    if (typeof calendarOrCalendarId !== 'string') {
+      return calendarOrCalendarId.userId === userId || calendarOrCalendarId.isPublic;
     }
 
     const row = await getDatabase().query.calendars.findFirst({
-      where: and(eq(calendars.id, calendarId), eq(calendars.userId, userId)),
+      where: or(
+        and(eq(calendars.id, calendarOrCalendarId), eq(calendars.userId, userId)),
+        eq(calendars.isPublic, true)
+      ),
     });
 
     return row !== null;
   }
 
-  async userCanUpdate(userId: string, calendarId: string): Promise<boolean> {
-    return this.userCanView(userId, calendarId);
+  async userCanUpdate(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
+    if (typeof calendarOrCalendarId !== 'string') {
+      return calendarOrCalendarId.userId === userId;
+    }
+
+    const row = await getDatabase().query.calendars.findFirst({
+      where: and(eq(calendars.id, calendarOrCalendarId), eq(calendars.userId, userId)),
+    });
+
+    return row !== null;
   }
 
-  async userCanDelete(userId: string, calendarId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, calendarId);
+  async userCanDelete(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
+    if (typeof calendarOrCalendarId !== 'string') {
+      return calendarOrCalendarId.userId === userId;
+    }
+
+    const row = await getDatabase().query.calendars.findFirst({
+      where: and(eq(calendars.id, calendarOrCalendarId), eq(calendars.userId, userId)),
+    });
+
+    return row !== null;
   }
 
   async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
@@ -227,22 +241,55 @@ export class CalendarsManager {
     });
   }
 
-  convertToApiCalendar(
-    calendar: Calendar,
-    isSelectable: boolean,
-    isEditable: boolean,
-    isDeletable: boolean
-  ): ApiCalendar {
-    return {
-      ...calendar,
-      userId: calendar.userId!,
-      deletedAt: calendar.deletedAt?.toISOString() ?? null,
-      createdAt: calendar.createdAt!.toISOString(),
-      updatedAt: calendar.updatedAt!.toISOString(),
-      isSelectable,
-      isEditable,
-      isDeletable,
-    };
+  async addSharedCalendarToUser(userId: string, calendarId: string) {
+    const canView = await this.userCanView(userId, calendarId);
+    if (!canView) {
+      return;
+    }
+
+    const row = await getDatabase().query.userCalendars.findFirst({
+      where: and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)),
+    });
+
+    if (row) {
+      return;
+    }
+
+    await getDatabase().insert(userCalendars).values({ userId, calendarId }).execute();
+  }
+
+  async removeSharedCalendarFromUser(userId: string, calendarId: string) {
+    await getDatabase()
+      .delete(userCalendars)
+      .where(and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)))
+      .execute();
+  }
+
+  async convertToApiResponse(calendars: Calendar[], userId: string): Promise<ApiCalendar[]> {
+    const apiCalendars: ApiCalendar[] = [];
+
+    for (const calendar of calendars) {
+      const canView = await this.userCanView(userId, calendar);
+      const canUpdate = await this.userCanUpdate(userId, calendar);
+      const canDelete = await this.userCanDelete(userId, calendar);
+      const canAddShared = canView;
+
+      apiCalendars.push({
+        ...calendar,
+        userId: calendar.userId!,
+        deletedAt: calendar.deletedAt?.toISOString() ?? null,
+        createdAt: calendar.createdAt!.toISOString(),
+        updatedAt: calendar.updatedAt!.toISOString(),
+        permissions: {
+          canView,
+          canUpdate,
+          canDelete,
+          canAddShared,
+        },
+      });
+    }
+
+    return apiCalendars;
   }
 }
 

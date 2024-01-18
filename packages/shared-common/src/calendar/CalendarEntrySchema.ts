@@ -18,8 +18,6 @@ export const CalendarEntrySchema = z.object({
   endsAt: z.string(),
   endsAtUtc: z.string(),
   endTimezone: z.string().nullable(),
-  isEditable: z.boolean().optional(),
-  isDeletable: z.boolean().optional(),
   raw: EventSchema.or(TaskSchema).optional(),
 });
 

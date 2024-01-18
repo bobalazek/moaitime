@@ -13,9 +13,14 @@ export const CalendarSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   userId: z.string(),
-  isSelectable: z.boolean().optional(),
-  isEditable: z.boolean().optional(),
-  isDeletable: z.boolean().optional(),
+  permissions: z
+    .object({
+      canView: z.boolean().optional(),
+      canUpdate: z.boolean().optional(),
+      canDelete: z.boolean().optional(),
+      canAddShared: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export const CreateCalendarSchema = z.object({

@@ -1,4 +1,4 @@
-import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
+import { MoreVerticalIcon, PencilIcon, PlusIcon, TrashIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 
 import { Calendar } from '@moaitime/shared-common';
@@ -14,13 +14,19 @@ import { useCalendarStore } from '../../state/calendarStore';
 
 const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
   const {
+    sharedCalendars,
     setSelectedCalendarDialogOpen,
     deleteCalendar,
     undeleteCalendar,
     setCalendarDeleteAlertDialogOpen,
+    addSharedCalendar,
+    removeSharedCalendar,
   } = useCalendarStore();
   const [open, setOpen] = useState(false);
 
+  const isShared = sharedCalendars.some((sharedCalendar) => sharedCalendar.id === calendar.id);
+
+  // Handlers
   const onEditButtonClick = async () => {
     setSelectedCalendarDialogOpen(true, calendar);
 
@@ -73,7 +79,116 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     }
   };
 
-  if (!calendar.isEditable && !calendar.deletedAt) {
+  const onAddToSharedButtonClick = async () => {
+    try {
+      await addSharedCalendar(calendar.id);
+
+      setOpen(false);
+
+      sonnerToast.success(`Calendar "${calendar.name}" added to shared calendars`, {
+        description: 'The calendar was successfully added to your shared calendars!',
+        action: {
+          label: 'Undo',
+          onClick: () => onRemoveFromSharedButtonClick(),
+        },
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
+  const onRemoveFromSharedButtonClick = async () => {
+    try {
+      await removeSharedCalendar(calendar.id);
+
+      setOpen(false);
+
+      sonnerToast.success(`Calendar "${calendar.name}" removed from shared calendars`, {
+        description: 'The calendar was successfully removed from your shared calendars!',
+        action: {
+          label: 'Undo',
+          onClick: () => onAddToSharedButtonClick(),
+        },
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
+  // Actions
+  const actions: JSX.Element[] = [];
+
+  if (!calendar.deletedAt && calendar.permissions?.canUpdate) {
+    actions.push(
+      <DropdownMenuItem key="edit" className="cursor-pointer" onClick={onEditButtonClick}>
+        <PencilIcon className="mr-2 h-4 w-4" />
+        <span>Edit</span>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (!calendar.deletedAt && calendar.permissions?.canDelete) {
+    actions.push(
+      <DropdownMenuItem
+        key="delete"
+        variant="destructive"
+        className="cursor-pointer"
+        onClick={onDeleteButtonClick}
+      >
+        <TrashIcon className="mr-2 h-4 w-4" />
+        <span>Delete</span>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (calendar.deletedAt) {
+    actions.push(
+      <DropdownMenuItem key="undelete" className="cursor-pointer" onClick={onUndeleteButtonClick}>
+        <TrashIcon className="mr-2 h-4 w-4" />
+        <span>Undelete</span>
+      </DropdownMenuItem>
+    );
+    actions.push(
+      <DropdownMenuItem
+        key="hard-delete"
+        variant="destructive"
+        className="cursor-pointer"
+        onClick={onHardDeleteButtonClick}
+      >
+        <TrashIcon className="mr-2 h-4 w-4" />
+        <span>Hard Delete</span>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (calendar.permissions?.canAddShared) {
+    actions.push(
+      <DropdownMenuItem
+        key="add-shared"
+        className="cursor-pointer"
+        onClick={onAddToSharedButtonClick}
+      >
+        <PlusIcon className="mr-2 h-4 w-4" />
+        <span>Add To Shared</span>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (isShared) {
+    actions.push(
+      <DropdownMenuItem
+        key="remove-shared"
+        variant="destructive"
+        className="cursor-pointer"
+        onClick={onRemoveFromSharedButtonClick}
+      >
+        <TrashIcon className="mr-2 h-4 w-4" />
+        <span>Remove From Shared</span>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (actions.length === 0) {
     return null;
   }
 
@@ -93,38 +208,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
           align="end"
           data-test="calendar--calendar-item--actions--dropdown-menu"
         >
-          {!calendar.deletedAt && (
-            <>
-              <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
-                <PencilIcon className="mr-2 h-4 w-4" />
-                <span>Edit</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                variant="destructive"
-                className="cursor-pointer"
-                onClick={onDeleteButtonClick}
-              >
-                <TrashIcon className="mr-2 h-4 w-4" />
-                <span>Delete</span>
-              </DropdownMenuItem>
-            </>
-          )}
-          {calendar.deletedAt && (
-            <>
-              <DropdownMenuItem className="cursor-pointer" onClick={onUndeleteButtonClick}>
-                <TrashIcon className="mr-2 h-4 w-4" />
-                <span>Undelete</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                variant="destructive"
-                className="cursor-pointer"
-                onClick={onHardDeleteButtonClick}
-              >
-                <TrashIcon className="mr-2 h-4 w-4" />
-                <span>Hard Delete</span>
-              </DropdownMenuItem>
-            </>
-          )}
+          {actions}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

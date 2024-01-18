@@ -16,13 +16,17 @@ export const getLists = async (options?: {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
 }) => {
-  const includeCompleted = options?.includeCompleted ?? false;
-  const includeDeleted = options?.includeDeleted ?? false;
-  const url = `${API_URL}/api/v1/lists?includeCompleted=${
-    includeCompleted ? 'true' : 'false'
-  }&includeDeleted=${includeDeleted ? 'true' : 'false'}`;
+  const url = new URL(`${API_URL}/api/v1/lists`);
 
-  const response = await fetchJson<ResponseInterface<List[]>>(url, {
+  if (options?.includeCompleted) {
+    url.searchParams.set('includeCompleted', 'true');
+  }
+
+  if (options?.includeDeleted) {
+    url.searchParams.set('includeDeleted', 'true');
+  }
+
+  const response = await fetchJson<ResponseInterface<List[]>>(url.toString(), {
     method: 'GET',
   });
 

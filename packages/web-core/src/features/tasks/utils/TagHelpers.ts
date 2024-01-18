@@ -4,9 +4,13 @@ import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Tags **********/
 export const getTags = async (options?: { includeDeleted?: boolean }) => {
-  const includeDeleted = options?.includeDeleted ?? false;
-  const url = `${API_URL}/api/v1/tags?includeDeleted=${includeDeleted ? 'true' : 'false'}`;
-  const response = await fetchJson<ResponseInterface<Tag[]>>(url, {
+  const url = new URL(`${API_URL}/api/v1/tags`);
+
+  if (options?.includeDeleted) {
+    url.searchParams.set('includeDeleted', 'true');
+  }
+
+  const response = await fetchJson<ResponseInterface<Tag[]>>(url.toString(), {
     method: 'GET',
   });
 

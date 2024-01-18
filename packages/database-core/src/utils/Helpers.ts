@@ -28,7 +28,9 @@ export const createDatabaseAndClient = (
   );
 
   const { POSTGRESQL_URL } = getEnv();
+
   const url = new URL(POSTGRESQL_URL);
+
   url.searchParams.delete('schema');
 
   const client = postgres(url.toString(), {

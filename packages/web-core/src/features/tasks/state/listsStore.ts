@@ -119,26 +119,26 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     return deletedList;
   },
   addVisibleList: async (listId: string) => {
-    const { loadCalendarEntries } = useCalendarStore.getState();
-    const { loadAccount } = useAuthStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
+    const { reloadAccount } = useAuthStore.getState();
 
     await addVisibleList(listId);
 
     // We update the settings, so we need to refresh the account
-    await loadAccount();
+    await reloadAccount();
 
-    await loadCalendarEntries();
+    await reloadCalendarEntries();
   },
   removeVisibleList: async (listId: string) => {
-    const { loadCalendarEntries } = useCalendarStore.getState();
-    const { loadAccount } = useAuthStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
+    const { reloadAccount } = useAuthStore.getState();
 
     await removeVisibleList(listId);
 
     // Same as above
-    await loadAccount();
+    await reloadAccount();
 
-    await loadCalendarEntries();
+    await reloadCalendarEntries();
   },
   // Selected
   selectedList: null,
@@ -211,9 +211,9 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     });
 
     // If we are on the calendar page, we need to reload the calendar entries
-    const { calendars, loadCalendarEntries } = useCalendarStore.getState();
+    const { calendars, reloadCalendarEntries } = useCalendarStore.getState();
     if (calendars.length > 0) {
-      await loadCalendarEntries();
+      await reloadCalendarEntries();
     }
   },
   setSelectedListTasksSortField: async (selectedListTasksSortField: TasksListSortFieldEnum) => {

@@ -22,7 +22,7 @@ export default function CalendarPage() {
     selectedDate,
     setSelectedView,
     setSelectedDate,
-    loadCalendars,
+    reloadCalendars,
     reloadSelectedDays,
   } = useCalendarStore();
   const location = useLocation();
@@ -54,7 +54,7 @@ export default function CalendarPage() {
     isInitializedRef.current = true;
 
     updateStateByUrl();
-    loadCalendars();
+    reloadCalendars();
     reloadSelectedDays();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -21,38 +21,38 @@ export type CalendarStore = {
 
 export const useEventsStore = create<CalendarStore>()((set) => ({
   addEvent: async (event: CreateEvent) => {
-    const { loadCalendarEntries } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const addedTask = await addEvent(event);
 
-    await loadCalendarEntries();
+    await reloadCalendarEntries();
 
     return addedTask;
   },
   editEvent: async (eventId: string, event: UpdateEvent) => {
-    const { loadCalendarEntries } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const editedTask = await editEvent(eventId, event);
 
-    await loadCalendarEntries();
+    await reloadCalendarEntries();
 
     return editedTask;
   },
   deleteEvent: async (eventId: string) => {
-    const { loadCalendarEntries } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const deletedTask = await deleteEvent(eventId);
 
-    await loadCalendarEntries();
+    await reloadCalendarEntries();
 
     return deletedTask;
   },
   undeleteEvent: async (eventId: string) => {
-    const { loadCalendarEntries } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const undeletedTask = await undeleteEvent(eventId);
 
-    await loadCalendarEntries();
+    await reloadCalendarEntries();
 
     return undeletedTask;
   },

@@ -18,7 +18,6 @@ export type MoodEntrieStore = {
   editMoodEntry: (moodEntryId: string, moodEntry: UpdateMoodEntry) => Promise<MoodEntry>;
   deleteMoodEntry: (moodEntryId: string, isHardDelete?: boolean) => Promise<MoodEntry>;
   undeleteMoodEntry: (moodEntryId: string) => Promise<MoodEntry>;
-
   // Selected Mood Entry Dialog
   selectedMoodEntryDialogOpen: boolean;
   selectedMoodEntryDialog: MoodEntry | null;

@@ -62,7 +62,7 @@ export type AuthStore = {
   // Cancel New Email Confirmation
   cancelNewEmail: () => Promise<ResponseInterface>;
   // Account
-  loadAccount: () => Promise<ResponseInterface>;
+  reloadAccount: () => Promise<ResponseInterface>;
   updateAccount: (data: UpdateUser) => Promise<ResponseInterface>;
   updateAccountPassword: (data: UpdateUserPassword) => Promise<ResponseInterface>;
   updateAccountSettings: (data: UpdateUserSettings) => Promise<ResponseInterface>;
@@ -70,7 +70,7 @@ export type AuthStore = {
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
   // App Data
-  loadAppData: () => Promise<void>;
+  reloadAppData: () => Promise<void>;
   reloadTheme: () => void;
 };
 
@@ -83,13 +83,13 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Login
       login: async (email: string, password: string) => {
-        const { loadAppData } = get();
+        const { reloadAppData } = get();
 
         const response = await login(email, password);
 
         set({ auth: response.data });
 
-        loadAppData();
+        reloadAppData();
 
         return response;
       },
@@ -181,19 +181,19 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Cancel New Email
       cancelNewEmail: async () => {
-        const { auth, loadAccount } = get();
+        const { auth, reloadAccount } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
         const response = await cancelNewEmail();
 
-        await loadAccount();
+        await reloadAccount();
 
         return response;
       },
       // Account
-      loadAccount: async () => {
+      reloadAccount: async () => {
         const { auth } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
@@ -253,7 +253,7 @@ export const useAuthStore = create<AuthStore>()(
         set({ accountPasswordSettingsDialogOpen });
       },
       // App Data
-      loadAppData: async () => {
+      reloadAppData: async () => {
         const { auth, reloadTheme } = get();
         const { reloadLists } = useListsStore.getState();
         const { reloadTags } = useTagsStore.getState();
@@ -334,8 +334,8 @@ export const useAuthStore = create<AuthStore>()(
           // Make sure that the store at that point is ready
           setTimeout(async () => {
             try {
-              await state.loadAccount();
-              await state.loadAppData();
+              await state.reloadAccount();
+              await state.reloadAppData();
             } catch (error) {
               // Nothing to do
             }

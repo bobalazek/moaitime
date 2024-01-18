@@ -33,6 +33,7 @@ export * from './core/Priorities';
 export * from './core/TimezoneSchema';
 export * from './core/HexColorSchema';
 export * from './core/ColorSchema';
+export * from './core/PermissionsSchema';
 export * from './core/DayOfWeek';
 export * from './core/SortDirectionEnum';
 export * from './core/ThemeEnum';

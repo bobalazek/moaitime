@@ -121,7 +121,7 @@ export class UserDataExportProcessor {
     this._logger.debug(`Fetching events for user (id: ${userId}) ...`);
 
     const calendarIds = await this._calendarsManager.getVisibleCalendarIdsByUserId(userId);
-    const events = await this._eventsManager.findManyByCalendarIdsAndRange(calendarIds);
+    const events = await this._eventsManager.findManyByCalendarIdsAndRange(calendarIds, userId);
 
     this._logger.debug(`Found ${events.length} events for user (id: ${userId}).`);
 

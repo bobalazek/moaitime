@@ -22,7 +22,12 @@ export class CalendarEntriesManager {
     const timezone = user.settings?.generalTimezone ?? 'UTC';
 
     const calendarIds = await this._calendarsManager.getVisibleCalendarIdsByUserId(user.id);
-    const events = await this._eventsManager.findManyByCalendarIdsAndRange(calendarIds, from, to);
+    const events = await this._eventsManager.findManyByCalendarIdsAndRange(
+      calendarIds,
+      user.id,
+      from,
+      to
+    );
     const calendarEntries: CalendarEntry[] = events.map((event) => {
       const timezone = event.timezone ?? 'UTC';
       const endTimezone = event.endTimezone ?? timezone;

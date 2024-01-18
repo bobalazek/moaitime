@@ -269,14 +269,28 @@ export class CalendarsManager {
       .execute();
   }
 
+  async getCalendarPermissions(
+    userId: string,
+    calendarOrCalendarId: string | Calendar
+  ): Promise<ApiCalendar['permissions']> {
+    const canView = await this.userCanView(userId, calendarOrCalendarId);
+    const canUpdate = await this.userCanUpdate(userId, calendarOrCalendarId);
+    const canDelete = await this.userCanDelete(userId, calendarOrCalendarId);
+    const canAddShared = canView;
+
+    return {
+      canView,
+      canUpdate,
+      canDelete,
+      canAddShared,
+    };
+  }
+
   async convertToApiResponse(calendars: Calendar[], userId: string): Promise<ApiCalendar[]> {
     const apiCalendars: ApiCalendar[] = [];
 
     for (const calendar of calendars) {
-      const canView = await this.userCanView(userId, calendar);
-      const canUpdate = await this.userCanUpdate(userId, calendar);
-      const canDelete = await this.userCanDelete(userId, calendar);
-      const canAddShared = canView;
+      const permissions = await this.getCalendarPermissions(userId, calendar);
 
       apiCalendars.push({
         ...calendar,
@@ -284,12 +298,7 @@ export class CalendarsManager {
         deletedAt: calendar.deletedAt?.toISOString() ?? null,
         createdAt: calendar.createdAt!.toISOString(),
         updatedAt: calendar.updatedAt!.toISOString(),
-        permissions: {
-          canView,
-          canUpdate,
-          canDelete,
-          canAddShared,
-        },
+        permissions,
       });
     }
 

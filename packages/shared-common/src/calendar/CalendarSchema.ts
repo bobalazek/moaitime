@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { ColorSchema } from '../core/ColorSchema';
+import { PermissionsSchema } from '../core/PermissionsSchema';
 
 export const CalendarSchema = z.object({
   id: z.string(),
@@ -13,14 +14,9 @@ export const CalendarSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   userId: z.string(),
-  permissions: z
-    .object({
-      canView: z.boolean().optional(),
-      canUpdate: z.boolean().optional(),
-      canDelete: z.boolean().optional(),
-      canAddShared: z.boolean().optional(),
-    })
-    .optional(),
+  permissions: PermissionsSchema.extend({
+    canAddShared: z.boolean().optional(),
+  }).optional(),
 });
 
 export const CreateCalendarSchema = z.object({

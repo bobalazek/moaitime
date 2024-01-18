@@ -2,6 +2,7 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { z } from 'zod';
 
 import { ColorSchema } from '../core/ColorSchema';
+import { PermissionsSchema } from '../core/PermissionsSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
 
 export const EventSchema = z.object({
@@ -18,6 +19,7 @@ export const EventSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   calendarId: z.string(),
+  permissions: PermissionsSchema.optional(),
 });
 
 export const CreateEventBaseSchema = z.object({

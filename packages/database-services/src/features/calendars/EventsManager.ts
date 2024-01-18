@@ -18,6 +18,9 @@ import {
 } from 'drizzle-orm';
 
 import { calendars, Event, events, getDatabase, NewEvent } from '@moaitime/database-core';
+import { Permissions } from '@moaitime/shared-common';
+
+import { calendarsManager } from './CalendarsManager';
 
 export class EventsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
@@ -32,9 +35,10 @@ export class EventsManager {
 
   async findManyByCalendarIdsAndRange(
     calendarIds: string[],
+    userId: string,
     from?: Date,
     to?: Date
-  ): Promise<(Event & { calendarColor: string | null })[]> {
+  ) {
     if (calendarIds.length === 0) {
       return [];
     }
@@ -68,12 +72,30 @@ export class EventsManager {
       .orderBy(asc(events.startsAt))
       .execute();
 
-    return result.map((row) => {
-      return {
+    const finalRows: (Event & { calendarColor: string | null; permissions?: Permissions })[] = [];
+
+    for (const row of result) {
+      const calendarPermissions = await calendarsManager.getCalendarPermissions(
+        userId,
+        row.calendars!
+      );
+      let permissions: Permissions | undefined = undefined;
+      if (calendarPermissions) {
+        permissions = {
+          canView: true,
+          canUpdate: calendarPermissions.canUpdate,
+          canDelete: calendarPermissions.canDelete,
+        };
+      }
+
+      finalRows.push({
         ...row.events,
         calendarColor: row.calendars?.color ?? null,
-      };
-    });
+        permissions,
+      });
+    }
+
+    return finalRows;
   }
 
   async findOneById(id: string): Promise<Event | null> {

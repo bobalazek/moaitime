@@ -129,7 +129,7 @@ export class NotesController {
   ): Promise<AbstractResponseDto<Note>> {
     const hasAccess = await notesManager.userCanDelete(req.user.id, id);
     if (!hasAccess) {
-      throw new NotFoundException('Calendar not found');
+      throw new NotFoundException('Note not found');
     }
 
     const updatedData = body.isHardDelete

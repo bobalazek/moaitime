@@ -131,7 +131,7 @@ export class EventsController {
     @Req() req: Request,
     @Param('eventId') eventId: string
   ): Promise<AbstractResponseDto<Event>> {
-    const hasAccess = await calendarsManager.userCanDelete(req.user.id, eventId);
+    const hasAccess = await eventsManager.userCanDelete(req.user.id, eventId);
     if (!hasAccess) {
       throw new NotFoundException('Calendar not found');
     }

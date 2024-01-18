@@ -244,7 +244,7 @@ export default function EventEditDialogBody() {
           placeholderText="Inherit from calendar"
         />
       </div>
-      <div className="flex flex-row justify-between gap-2">
+      <div className="mt-4 flex flex-row justify-between gap-2">
         <div>
           {eventExists && (
             <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>

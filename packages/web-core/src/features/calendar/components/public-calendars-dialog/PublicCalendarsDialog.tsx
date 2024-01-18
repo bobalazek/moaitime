@@ -21,7 +21,7 @@ export default function PublicCalendarsDialog() {
         {publicCalendars.length > 0 && (
           <ScrollArea className="h-[360px]">
             {publicCalendars.map((calendar) => (
-              <CalendarItem key={calendar.id} calendar={calendar} hideCheckbox />
+              <CalendarItem key={calendar.id} calendar={calendar} hideCheckbox showSharedText />
             ))}
           </ScrollArea>
         )}

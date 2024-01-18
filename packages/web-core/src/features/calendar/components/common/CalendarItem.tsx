@@ -10,13 +10,15 @@ import CalendarItemActions from './CalendarItemActions';
 export interface CalendarSettingsSheetCalendarItemProps {
   calendar: Calendar;
   hideCheckbox?: boolean;
+  showSharedText?: boolean;
 }
 
 export default function CalendarItem({
   calendar,
   hideCheckbox,
+  showSharedText,
 }: CalendarSettingsSheetCalendarItemProps) {
-  const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
+  const { addVisibleCalendar, removeVisibleCalendar, sharedCalendars } = useCalendarStore();
 
   const visibleCalendarIds = useAuthUserSetting('calendarVisibleCalendarIds', [] as string[]);
 
@@ -32,6 +34,7 @@ export default function CalendarItem({
     await addVisibleCalendar(calendar.id);
   };
 
+  const isShared = sharedCalendars.some((sharedCalendar) => sharedCalendar.id === calendar.id);
   const checkboxBackgroundColor = calendar.color ?? '';
   const checkboxColor = checkboxBackgroundColor
     ? colord(checkboxBackgroundColor).isDark()
@@ -59,7 +62,10 @@ export default function CalendarItem({
           />
         )}
         <div className="break-words px-6" data-test="calendar--settings-sheet--calendar--name">
-          {calendar.name}
+          <span>{calendar.name}</span>
+          {showSharedText && isShared && (
+            <span className="text-muted-foreground text-xs"> (shared)</span>
+          )}
         </div>
         <CalendarItemActions calendar={calendar} />
       </div>

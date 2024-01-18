@@ -169,7 +169,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
         onClick={onAddToSharedButtonClick}
       >
         <PlusIcon className="mr-2 h-4 w-4" />
-        <span>Add To Shared</span>
+        <span>Add to Shared</span>
       </DropdownMenuItem>
     );
   }
@@ -183,7 +183,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
         onClick={onRemoveFromSharedButtonClick}
       >
         <TrashIcon className="mr-2 h-4 w-4" />
-        <span>Remove From Shared</span>
+        <span>Remove from Shared</span>
       </DropdownMenuItem>
     );
   }

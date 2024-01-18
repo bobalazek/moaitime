@@ -14,7 +14,13 @@ export default function EventEditDialogBodyReadOnly() {
     calendar = calendars.find((c) => c.id === selectedEvent.calendarId);
   }
 
-  const date = new Date(selectedEvent.startsAt).toLocaleDateString(undefined, {
+  const startDate = new Date(selectedEvent.startsAt).toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const endDate = new Date(selectedEvent.endsAt).toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'short',
     day: 'numeric',
@@ -24,16 +30,18 @@ export default function EventEditDialogBodyReadOnly() {
   return (
     <div>
       <h3 className="text-2xl">{selectedEvent.title}</h3>
-      <div className="text-muted-foreground text-sm">{date}</div>
+      <div className="text-muted-foreground text-sm">
+        {startDate === endDate ? startDate : `${startDate} - ${endDate}`}
+      </div>
       {selectedEvent.description && (
-        <div className="mt-2">
-          <h3 className="text-lg">Description</h3>
+        <div className="mt-4">
+          <h3 className="mb-1 font-bold">Description</h3>
           <p className="text-muted-foreground">{selectedEvent.description}</p>
         </div>
       )}
       {calendar && (
-        <div className="mt-2">
-          <h3 className="text-lg">Calendar</h3>
+        <div className="mt-4">
+          <h3 className="mb-1 font-bold">Calendar</h3>
           <p>{calendar.name}</p>
         </div>
       )}

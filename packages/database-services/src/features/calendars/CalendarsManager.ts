@@ -1,4 +1,4 @@
-import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull, or } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 
 import {
   Calendar,
@@ -102,42 +102,47 @@ export class CalendarsManager {
 
   // Helpers
   async userCanView(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
-    if (typeof calendarOrCalendarId !== 'string') {
-      return calendarOrCalendarId.userId === userId || calendarOrCalendarId.isPublic;
+    const calendar =
+      typeof calendarOrCalendarId === 'string'
+        ? await this.findOneById(calendarOrCalendarId)
+        : calendarOrCalendarId;
+    if (!calendar) {
+      return false;
     }
 
-    const row = await getDatabase().query.calendars.findFirst({
-      where: or(
-        and(eq(calendars.id, calendarOrCalendarId), eq(calendars.userId, userId)),
-        eq(calendars.isPublic, true)
-      ),
-    });
-
-    return row !== null;
+    return calendar.userId === userId || calendar.isPublic;
   }
 
   async userCanUpdate(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
-    if (typeof calendarOrCalendarId !== 'string') {
-      return calendarOrCalendarId.userId === userId;
+    const calendar =
+      typeof calendarOrCalendarId === 'string'
+        ? await this.findOneById(calendarOrCalendarId)
+        : calendarOrCalendarId;
+    if (!calendar) {
+      return false;
     }
 
-    const row = await getDatabase().query.calendars.findFirst({
-      where: and(eq(calendars.id, calendarOrCalendarId), eq(calendars.userId, userId)),
-    });
-
-    return row !== null;
+    return calendar.userId === userId;
   }
 
   async userCanDelete(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
-    if (typeof calendarOrCalendarId !== 'string') {
-      return calendarOrCalendarId.userId === userId;
+    return this.userCanUpdate(userId, calendarOrCalendarId);
+  }
+
+  async userCanAddSharedCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
+    const calendar =
+      typeof calendarOrCalendarId === 'string'
+        ? await this.findOneById(calendarOrCalendarId)
+        : calendarOrCalendarId;
+    if (!calendar) {
+      return false;
     }
 
-    const row = await getDatabase().query.calendars.findFirst({
-      where: and(eq(calendars.id, calendarOrCalendarId), eq(calendars.userId, userId)),
-    });
+    return calendar.isPublic;
+  }
 
-    return row !== null;
+  async userCanUpdateSharedCalendarColor(userId: string, calendarOrCalendarId: string | Calendar) {
+    return this.userCanAddSharedCalendar(userId, calendarOrCalendarId);
   }
 
   async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
@@ -280,13 +285,18 @@ export class CalendarsManager {
     const canView = await this.userCanView(userId, calendarOrCalendarId);
     const canUpdate = await this.userCanUpdate(userId, calendarOrCalendarId);
     const canDelete = await this.userCanDelete(userId, calendarOrCalendarId);
-    const canAddShared = canView;
+    const canAddSharedCalendar = await this.userCanAddSharedCalendar(userId, calendarOrCalendarId);
+    const canUpdateSharedCalendarColor = await this.userCanUpdateSharedCalendarColor(
+      userId,
+      calendarOrCalendarId
+    );
 
     return {
       canView,
       canUpdate,
       canDelete,
-      canAddShared,
+      canAddSharedCalendar,
+      canUpdateSharedCalendarColor,
     };
   }
 

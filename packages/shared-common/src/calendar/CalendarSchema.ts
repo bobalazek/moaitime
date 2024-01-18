@@ -15,7 +15,8 @@ export const CalendarSchema = z.object({
   createdAt: z.string(),
   userId: z.string(),
   permissions: PermissionsSchema.extend({
-    canAddShared: z.boolean().optional(),
+    canAddSharedCalendar: z.boolean().optional(),
+    canUpdateSharedCalendarColor: z.boolean().optional(),
   }).optional(),
 });
 

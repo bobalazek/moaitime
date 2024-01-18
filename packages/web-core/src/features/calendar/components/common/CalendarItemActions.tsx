@@ -161,7 +161,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     );
   }
 
-  if (calendar.permissions?.canAddShared && !isShared) {
+  if (calendar.permissions?.canAddSharedCalendar && !isShared) {
     actions.push(
       <DropdownMenuItem
         key="add-shared"
@@ -169,7 +169,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
         onClick={onAddToSharedButtonClick}
       >
         <PlusIcon className="mr-2 h-4 w-4" />
-        <span>Add to Shared</span>
+        <span>Add</span>
       </DropdownMenuItem>
     );
   }
@@ -183,7 +183,7 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
         onClick={onRemoveFromSharedButtonClick}
       >
         <TrashIcon className="mr-2 h-4 w-4" />
-        <span>Remove from Shared</span>
+        <span>Remove</span>
       </DropdownMenuItem>
     );
   }

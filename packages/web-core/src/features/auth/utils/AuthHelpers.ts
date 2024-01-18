@@ -192,7 +192,7 @@ export const refreshToken = async (token: string) => {
   return response;
 };
 
-export const loadAccount = async () => {
+export const getAccount = async () => {
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/account`, {
     method: 'GET',
     headers: {

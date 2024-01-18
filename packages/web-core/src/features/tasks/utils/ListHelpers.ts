@@ -12,7 +12,7 @@ import {
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Lists **********/
-export const loadLists = async (options?: {
+export const getLists = async (options?: {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
 }) => {

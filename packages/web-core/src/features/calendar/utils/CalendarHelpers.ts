@@ -31,7 +31,7 @@ import {
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Calendars **********/
-export const loadCalendars = async () => {
+export const getCalendars = async () => {
   const response = await fetchJson<ResponseInterface<Calendar[]>>(`${API_URL}/api/v1/calendars`, {
     method: 'GET',
   });
@@ -39,7 +39,7 @@ export const loadCalendars = async () => {
   return response.data ?? [];
 };
 
-export const loadDeletedCalendars = async () => {
+export const getDeletedCalendars = async () => {
   const response = await fetchJson<ResponseInterface<Calendar[]>>(
     `${API_URL}/api/v1/calendars/deleted`,
     {
@@ -50,7 +50,7 @@ export const loadDeletedCalendars = async () => {
   return response.data ?? [];
 };
 
-export const loadPublicCalendars = async () => {
+export const getPublicCalendars = async () => {
   const response = await fetchJson<ResponseInterface<Calendar[]>>(
     `${API_URL}/api/v1/calendars/public`,
     {
@@ -158,7 +158,7 @@ export const removeVisibleCalendar = async (calendarId: string): Promise<Calenda
 };
 
 /********** Calendar Entries **********/
-export const loadCalendarEntries = async (from?: Date | string, to?: Date | string) => {
+export const getCalendarEntries = async (from?: Date | string, to?: Date | string) => {
   const url = new URL(`${API_URL}/api/v1/calendar-entries`);
   if (from) {
     url.searchParams.append('from', from instanceof Date ? from.toISOString() : from);
@@ -175,7 +175,7 @@ export const loadCalendarEntries = async (from?: Date | string, to?: Date | stri
   return response.data ?? [];
 };
 
-export const loadCalendarEntriesYearly = async (year: number) => {
+export const getCalendarEntriesYearly = async (year: number) => {
   const response = await fetchJson<ResponseInterface<CalendarEntryYearlyEntry[]>>(
     `${API_URL}/api/v1/calendar-entries/yearly?year=${year}`,
     {

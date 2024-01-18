@@ -14,7 +14,7 @@ import {
   deleteNote,
   editNote,
   getNote,
-  loadNotes,
+  getNotes,
   undeleteNote,
 } from '../utils/NoteHelpers';
 
@@ -56,7 +56,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   reloadNotes: async () => {
     const { notesSearch, notesSortField, notesSortDirection, notesIncludeDeleted } = get();
 
-    const notes = await loadNotes({
+    const notes = await getNotes({
       search: notesSearch,
       sortField: notesSortField,
       sortDirection: notesSortDirection,

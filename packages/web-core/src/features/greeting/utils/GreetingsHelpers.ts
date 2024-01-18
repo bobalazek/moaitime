@@ -2,7 +2,7 @@ import { API_URL, GreetingInterface, ResponseInterface } from '@moaitime/shared-
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-export const loadGreetings = async () => {
+export const getGreetings = async () => {
   const response = await fetchJson<ResponseInterface<GreetingInterface[]>>(
     `${API_URL}/api/v1/greetings`,
     {

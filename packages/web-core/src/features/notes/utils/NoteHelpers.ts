@@ -11,7 +11,7 @@ import {
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Notes **********/
-export const loadNotes = async (options?: {
+export const getNotes = async (options?: {
   search?: string;
   sortField?: NotesListSortFieldEnum;
   sortDirection?: SortDirectionEnum;

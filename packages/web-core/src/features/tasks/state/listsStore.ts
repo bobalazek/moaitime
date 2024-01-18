@@ -16,8 +16,8 @@ import {
   addVisibleList,
   deleteList,
   editList,
+  getLists,
   getTasksForList,
-  loadLists,
   removeVisibleList,
 } from '../utils/ListHelpers';
 
@@ -68,7 +68,7 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     const { selectedListTasksIncludeCompleted, selectedListTasksIncludeDeleted, selectedList } =
       get();
 
-    const lists = await loadLists({
+    const lists = await getLists({
       includeCompleted: selectedListTasksIncludeCompleted,
       includeDeleted: selectedListTasksIncludeDeleted,
     });

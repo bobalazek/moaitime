@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 import { QuoteInterface } from '@moaitime/shared-common';
 
-import { loadQuotes } from '../utils/QuotesHelpers';
+import { getQuotes } from '../utils/QuotesHelpers';
 
 export type QuoteStore = {
   quote: QuoteInterface | null;
@@ -26,7 +26,7 @@ export const useQuoteStore = create<QuoteStore>()((set, get) => ({
   },
   quotes: [],
   reloadQuotes: async () => {
-    const quotes = await loadQuotes();
+    const quotes = await getQuotes();
 
     set({ quotes });
 

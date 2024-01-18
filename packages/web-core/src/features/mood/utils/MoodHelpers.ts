@@ -14,7 +14,7 @@ export type MoodEntriesManagerFindOptions = {
   nextCursor?: string;
 };
 
-export const loadMoodEntriesRawResponse = async (options?: MoodEntriesManagerFindOptions) => {
+export const getMoodEntriesRawResponse = async (options?: MoodEntriesManagerFindOptions) => {
   const url = new URL(`${API_URL}/api/v1/mood-entries`);
 
   if (options?.previousCursor) {
@@ -30,8 +30,8 @@ export const loadMoodEntriesRawResponse = async (options?: MoodEntriesManagerFin
   });
 };
 
-export const loadMoodEntries = async (): Promise<MoodEntry[]> => {
-  const response = await loadMoodEntriesRawResponse();
+export const getMoodEntries = async (): Promise<MoodEntry[]> => {
+  const response = await getMoodEntriesRawResponse();
 
   return response.data ?? [];
 };

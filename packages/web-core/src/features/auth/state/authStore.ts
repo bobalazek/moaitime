@@ -21,7 +21,7 @@ import {
   cancelNewEmail,
   confirmEmail,
   deleteAccount,
-  loadAccount,
+  getAccount,
   login,
   logout,
   refreshToken,
@@ -199,7 +199,7 @@ export const useAuthStore = create<AuthStore>()(
           throw new Error('No token found');
         }
 
-        const response = await loadAccount();
+        const response = await getAccount();
 
         set({ auth: response.data });
 

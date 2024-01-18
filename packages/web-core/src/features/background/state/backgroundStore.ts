@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 import { BackgroundInterface } from '@moaitime/shared-common';
 
-import { loadBackgrounds } from '../utils/BackgroundHelpers';
+import { getBackgrounds } from '../utils/BackgroundHelpers';
 
 export type BackgroundStore = {
   background: BackgroundInterface | null;
@@ -32,7 +32,7 @@ export const useBackgroundStore = create<BackgroundStore>()((set, get) => ({
   },
   backgrounds: [],
   reloadBackgrounds: async () => {
-    const backgrounds = await loadBackgrounds();
+    const backgrounds = await getBackgrounds();
 
     set({ backgrounds });
 

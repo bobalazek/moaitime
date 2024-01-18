@@ -2,7 +2,7 @@ import { API_URL, QuoteInterface, ResponseInterface } from '@moaitime/shared-com
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-export const loadQuotes = async () => {
+export const getQuotes = async () => {
   const response = await fetchJson<ResponseInterface<QuoteInterface[]>>(
     `${API_URL}/api/v1/quotes`,
     {

@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { GreetingInterface } from '@moaitime/shared-common';
 
 import { queryEvaluator } from '../../core/utils/QueryEvaluatorHelpers';
-import { loadGreetings } from '../utils/GreetingsHelpers';
+import { getGreetings } from '../utils/GreetingsHelpers';
 
 export type GreetingStore = {
   greeting: GreetingInterface | null;
@@ -38,7 +38,7 @@ export const useGreetingStore = create<GreetingStore>()((set, get) => ({
   },
   greetings: [],
   reloadGreetings: async () => {
-    const greetings = await loadGreetings();
+    const greetings = await getGreetings();
 
     set({ greetings });
 

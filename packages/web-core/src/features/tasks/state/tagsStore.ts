@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 import { CreateTag, Tag, UpdateTag } from '@moaitime/shared-common';
 
-import { addTag, deleteTag, editTag, loadTags, undeleteTag } from '../utils/TagHelpers';
+import { addTag, deleteTag, editTag, getTags, undeleteTag } from '../utils/TagHelpers';
 
 export type TagsStore = {
   /********** General **********/
@@ -46,7 +46,7 @@ export const useTagsStore = create<TagsStore>()((set, get) => ({
       return [];
     }
 
-    const tagsDialogTags = await loadTags({ includeDeleted: true });
+    const tagsDialogTags = await getTags({ includeDeleted: true });
 
     set({
       tagsDialogTags,
@@ -57,7 +57,7 @@ export const useTagsStore = create<TagsStore>()((set, get) => ({
   /********** Tags **********/
   tags: [],
   reloadTags: async () => {
-    const tags = await loadTags();
+    const tags = await getTags();
 
     set({
       tags,

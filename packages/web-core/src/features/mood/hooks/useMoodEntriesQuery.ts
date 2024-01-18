@@ -7,12 +7,12 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { AsyncReturnType } from '@moaitime/shared-common';
 
-import { loadMoodEntriesRawResponse, MoodEntriesManagerFindOptions } from '../utils/MoodHelpers';
+import { getMoodEntriesRawResponse, MoodEntriesManagerFindOptions } from '../utils/MoodHelpers';
 
 export const MOOD_ENTRIES_QUERY_KEY = 'mood-entries';
 
 export const useMoodEntriesQuery = () => {
-  return useInfiniteQuery<AsyncReturnType<typeof loadMoodEntriesRawResponse>>({
+  return useInfiniteQuery<AsyncReturnType<typeof getMoodEntriesRawResponse>>({
     initialPageParam: undefined,
     maxPages: 5,
     queryKey: [MOOD_ENTRIES_QUERY_KEY],
@@ -36,7 +36,7 @@ export const useMoodEntriesQuery = () => {
         }
       }
 
-      return loadMoodEntriesRawResponse(params);
+      return getMoodEntriesRawResponse(params);
     },
     getPreviousPageParam: (firstPage) => {
       const previousCursor =

@@ -17,13 +17,13 @@ import {
   deleteCalendar,
   editCalendar,
   getAgendaRange,
+  getCalendarEntries,
+  getCalendarEntriesYearly,
+  getCalendars,
+  getDeletedCalendars,
   getMonthRange,
   getWeekRange,
   getYearRange,
-  loadCalendarEntries,
-  loadCalendarEntriesYearly,
-  loadCalendars,
-  loadDeletedCalendars,
   removeVisibleCalendar,
   undeleteCalendar,
 } from '../utils/CalendarHelpers';
@@ -166,7 +166,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   /********** Calendars **********/
   calendars: [],
   reloadCalendars: async () => {
-    const calendars = await loadCalendars();
+    const calendars = await getCalendars();
 
     set({ calendars });
 
@@ -178,7 +178,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     const addedTask = await addCalendar(calendar);
 
     await reloadCalendars();
-    await loadCalendarEntries();
+    await getCalendarEntries();
 
     // We update the settings, so we need to refresh the account
     await useAuthStore.getState().reloadAccount();
@@ -290,7 +290,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   deletedCalendars: [],
   reloadDeletedCalendars: async () => {
-    const deletedCalendars = await loadDeletedCalendars();
+    const deletedCalendars = await getDeletedCalendars();
 
     set({ deletedCalendars });
 
@@ -324,7 +324,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       ? format(selectedDays[selectedDays.length - 1], 'yyyy-MM-dd')
       : undefined;
 
-    const calendarEntries = await loadCalendarEntries(from, to);
+    const calendarEntries = await getCalendarEntries(from, to);
 
     set({ calendarEntries });
 
@@ -336,7 +336,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     const year = selectedDate.getFullYear();
 
-    const response = await loadCalendarEntriesYearly(year);
+    const response = await getCalendarEntriesYearly(year);
     const calendarEntriesYearly = response.data ?? [];
 
     set({ calendarEntriesYearly });

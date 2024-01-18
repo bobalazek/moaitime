@@ -16,8 +16,8 @@ export const CalendarSchema = z.object({
   createdAt: z.string(),
   userId: z.string(),
   permissions: PermissionsSchema.extend({
-    canAddSharedCalendar: z.boolean().optional(),
-    canUpdateSharedCalendar: z.boolean().optional(),
+    canAddUserCalendar: z.boolean().optional(),
+    canUpdateUserCalendar: z.boolean().optional(),
   }).optional(),
 });
 
@@ -39,6 +39,12 @@ export const UserCalendarSchema = z.object({
   color: ColorSchema.nullable(),
   updatedAt: z.string(),
   createdAt: z.string(),
+  calendar: CalendarSchema,
+});
+
+export const CreateUserCalendarSchema = z.object({
+  calendarId: z.string(),
+  color: ColorSchema.optional(),
 });
 
 export const UpdateUserCalendarSchema = z.object({
@@ -54,5 +60,7 @@ export type UpdateCalendar = z.infer<typeof UpdateCalendarSchema>;
 
 // User Calendar
 export type UserCalendar = z.infer<typeof UserCalendarSchema>;
+
+export type CreateUserCalendar = z.infer<typeof CreateUserCalendarSchema>;
 
 export type UpdateUserCalendar = z.infer<typeof UpdateUserCalendarSchema>;

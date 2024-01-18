@@ -3,13 +3,13 @@ import { useEventsStore } from '../../state/eventsStore';
 
 export default function EventEditDialogBodyReadOnly() {
   const { selectedEvent } = useEventsStore();
-  const { calendars, sharedCalendars } = useCalendarStore();
+  const { calendars, userCalendars } = useCalendarStore();
 
   if (!selectedEvent) {
     return null;
   }
 
-  let calendar = sharedCalendars.find((c) => c.id === selectedEvent.calendarId);
+  let calendar = userCalendars.find((c) => c.id === selectedEvent.calendarId)?.calendar;
   if (!calendar) {
     calendar = calendars.find((c) => c.id === selectedEvent.calendarId);
   }

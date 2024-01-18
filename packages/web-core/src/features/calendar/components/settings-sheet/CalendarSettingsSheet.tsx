@@ -15,11 +15,10 @@ import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItem from '../common/CalendarItem';
 import ListItem from '../common/ListItem';
 import CalendarSettingsSheetMyCalendarsActions from './CalendarSettingsSheetMyCalendarsActions';
-import CalendarSettingsSheetSharedCalendarsActions from './CalendarSettingsSheetSharedCalendarsActions';
+import CalendarSettingsSheetUserCalendarsActions from './CalendarSettingsSheetUserCalendarsActions';
 
 export default function CalendarSettingsSheet() {
-  const { settingsSheetOpen, setSettingsSheetOpen, calendars, sharedCalendars } =
-    useCalendarStore();
+  const { settingsSheetOpen, setSettingsSheetOpen, calendars, userCalendars } = useCalendarStore();
   const { lists } = useListsStore();
 
   return (
@@ -61,15 +60,20 @@ export default function CalendarSettingsSheet() {
         <div className="mt-4">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-bold">Shared Calendars</h3>
-            <CalendarSettingsSheetSharedCalendarsActions />
+            <CalendarSettingsSheetUserCalendarsActions />
           </div>
-          {sharedCalendars.length === 0 && (
+          {userCalendars.length === 0 && (
             <p className="text-xs text-gray-500">
               You do not have any shared calendars at the moment.
             </p>
           )}
-          {sharedCalendars.map((calendar) => (
-            <CalendarItem key={calendar.id} calendar={calendar} />
+          {userCalendars.map((userCalendar) => (
+            <CalendarItem
+              key={userCalendar.id}
+              calendar={userCalendar.calendar}
+              userCalendar={userCalendar}
+              showAddUserCalendar
+            />
           ))}
         </div>
         <div className="mt-4">

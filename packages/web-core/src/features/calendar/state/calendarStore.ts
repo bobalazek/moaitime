@@ -7,6 +7,7 @@ import {
   CalendarEntryYearlyEntry,
   CalendarViewEnum,
   CreateCalendar,
+  CreateUserCalendar,
   UpdateCalendar,
   UpdateUserCalendar,
   UserCalendar,
@@ -15,9 +16,10 @@ import {
 import { useAuthStore } from '../../auth/state/authStore';
 import {
   addCalendar,
-  addSharedCalendar,
+  addUserCalendar,
   addVisibleCalendar,
   deleteCalendar,
+  deleteUserCalendar,
   editCalendar,
   getAgendaRange,
   getCalendarEntries,
@@ -26,14 +28,12 @@ import {
   getDeletedCalendars,
   getMonthRange,
   getPublicCalendars,
-  getSharedCalendar,
-  getSharedCalendars,
+  getUserCalendars,
   getWeekRange,
   getYearRange,
-  removeSharedCalendar,
   removeVisibleCalendar,
   undeleteCalendar,
-  updateSharedCalendar,
+  updateUserCalendar,
 } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -61,13 +61,15 @@ export type CalendarStore = {
   undeleteCalendar: (calendarId: string) => Promise<Calendar>;
   addVisibleCalendar: (calendarId: string) => Promise<void>;
   removeVisibleCalendar: (calendarId: string) => Promise<void>;
-  // Shared
-  sharedCalendars: Calendar[];
-  reloadSharedCalendars: () => Promise<Calendar[]>;
-  getSharedCalendar: (calendarId: string) => Promise<UserCalendar>;
-  addSharedCalendar: (calendarId: string) => Promise<void>;
-  removeSharedCalendar: (calendarId: string) => Promise<void>;
-  updateSharedCalendar: (calendarId: string, userCalendar: UpdateUserCalendar) => Promise<Calendar>;
+  // User Calendars
+  userCalendars: UserCalendar[];
+  reloadUserCalendars: () => Promise<UserCalendar[]>;
+  addUserCalendar: (userCalendar: CreateUserCalendar) => Promise<UserCalendar>;
+  deleteUserCalendar: (userCalendarId: string) => Promise<UserCalendar>;
+  updateUserCalendar: (
+    userCalendarId: string,
+    userCalendar: UpdateUserCalendar
+  ) => Promise<UserCalendar>;
   // User Calendar
   selectedUserCalendarDialogOpen: boolean;
   selectedUserCalendar: UserCalendar | null;
@@ -287,49 +289,48 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await reloadCalendarEntries();
   },
   // Shared
-  sharedCalendars: [],
-  reloadSharedCalendars: async () => {
-    const sharedCalendars = await getSharedCalendars();
+  userCalendars: [],
+  reloadUserCalendars: async () => {
+    const userCalendars = await getUserCalendars();
 
-    set({ sharedCalendars });
+    set({ userCalendars });
 
-    return sharedCalendars;
+    return userCalendars;
   },
-  getSharedCalendar: async (calendarId: string) => {
-    const sharedCalendar = await getSharedCalendar(calendarId);
-
-    return sharedCalendar;
-  },
-  addSharedCalendar: async (calendarId: string) => {
-    const { reloadCalendarEntries, reloadSharedCalendars } = get();
+  addUserCalendar: async (userCalendar: CreateUserCalendar) => {
+    const { reloadCalendarEntries, reloadUserCalendars } = get();
     const { reloadAccount } = useAuthStore.getState();
 
-    await addSharedCalendar(calendarId);
+    const addedUserCalendar = await addUserCalendar(userCalendar);
 
-    await reloadSharedCalendars();
+    await reloadUserCalendars();
 
     await reloadAccount();
 
     await reloadCalendarEntries();
+
+    return addedUserCalendar;
   },
-  removeSharedCalendar: async (calendarId: string) => {
-    const { reloadCalendarEntries, reloadSharedCalendars } = get();
+  deleteUserCalendar: async (userCalendarId: string) => {
+    const { reloadCalendarEntries, reloadUserCalendars } = get();
     const { reloadAccount } = useAuthStore.getState();
 
-    await removeSharedCalendar(calendarId);
+    const removedUserCalendar = await deleteUserCalendar(userCalendarId);
 
-    await reloadSharedCalendars();
+    await reloadUserCalendars();
 
     await reloadAccount();
 
     await reloadCalendarEntries();
+
+    return removedUserCalendar;
   },
-  updateSharedCalendar: async (calendarId: string, userCalendar: UpdateUserCalendar) => {
-    const { reloadSharedCalendars } = get();
+  updateUserCalendar: async (calendarId: string, userCalendar: UpdateUserCalendar) => {
+    const { reloadUserCalendars } = get();
 
-    const editedTask = await updateSharedCalendar(calendarId, userCalendar);
+    const editedTask = await updateUserCalendar(calendarId, userCalendar);
 
-    await reloadSharedCalendars();
+    await reloadUserCalendars();
 
     return editedTask;
   },

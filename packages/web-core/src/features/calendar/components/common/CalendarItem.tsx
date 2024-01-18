@@ -1,6 +1,6 @@
 import { colord } from 'colord';
 
-import { Calendar } from '@moaitime/shared-common';
+import { Calendar, UserCalendar } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
@@ -10,15 +10,17 @@ import CalendarItemActions from './CalendarItemActions';
 export interface CalendarSettingsSheetCalendarItemProps {
   calendar: Calendar;
   hideCheckbox?: boolean;
-  showSharedText?: boolean;
+  userCalendar?: UserCalendar;
+  showAddUserCalendar?: boolean;
 }
 
 export default function CalendarItem({
   calendar,
   hideCheckbox,
-  showSharedText,
+  userCalendar,
+  showAddUserCalendar,
 }: CalendarSettingsSheetCalendarItemProps) {
-  const { addVisibleCalendar, removeVisibleCalendar, sharedCalendars } = useCalendarStore();
+  const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
 
   const visibleCalendarIds = useAuthUserSetting('calendarVisibleCalendarIds', [] as string[]);
 
@@ -34,7 +36,6 @@ export default function CalendarItem({
     await addVisibleCalendar(calendar.id);
   };
 
-  const isShared = sharedCalendars.some((sharedCalendar) => sharedCalendar.id === calendar.id);
   const checkboxBackgroundColor = calendar.color ?? '';
   const checkboxColor = checkboxBackgroundColor
     ? colord(checkboxBackgroundColor).isDark()
@@ -63,11 +64,13 @@ export default function CalendarItem({
         )}
         <div className="break-words px-6" data-test="calendar--settings-sheet--calendar--name">
           <span>{calendar.name}</span>
-          {showSharedText && isShared && (
-            <span className="text-muted-foreground text-xs"> (shared)</span>
-          )}
+          {userCalendar && <span className="text-muted-foreground text-xs"> (shared)</span>}
         </div>
-        <CalendarItemActions calendar={calendar} />
+        <CalendarItemActions
+          calendar={calendar}
+          userCalendar={userCalendar}
+          showAddUserCalendar={showAddUserCalendar}
+        />
       </div>
     </div>
   );

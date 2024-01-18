@@ -10,7 +10,7 @@ export default function UserCalendarEditDialog() {
   const {
     selectedUserCalendarDialogOpen,
     selectedUserCalendar,
-    updateSharedCalendar,
+    updateUserCalendar,
     setSelectedUserCalendarDialogOpen,
   } = useCalendarStore();
   const [data, setData] = useState<UpdateUserCalendar>();
@@ -39,7 +39,7 @@ export default function UserCalendarEditDialog() {
     }
 
     try {
-      await updateSharedCalendar(selectedUserCalendar.calendarId, data);
+      await updateUserCalendar(selectedUserCalendar.id, data);
 
       sonnerToast.success(`Shared calendar save`, {
         description: 'You have successfully saved the shared calendar',

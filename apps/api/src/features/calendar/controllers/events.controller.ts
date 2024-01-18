@@ -86,18 +86,18 @@ export class EventsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Patch(':id')
+  @Patch(':eventId')
   async update(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('eventId') eventId: string,
     @Body() body: UpdateEventDto
   ): Promise<AbstractResponseDto<Event>> {
-    const canView = await eventsManager.userCanUpdate(req.user.id, id);
+    const canView = await eventsManager.userCanUpdate(req.user.id, eventId);
     if (!canView) {
       throw new ForbiddenException('You cannot update this event');
     }
 
-    const data = await eventsManager.findOneById(id);
+    const data = await eventsManager.findOneById(eventId);
     if (!data) {
       throw new NotFoundException('Event not found');
     }
@@ -117,7 +117,7 @@ export class EventsController {
       endsAt,
     };
 
-    const updatedData = await eventsManager.updateOneById(id, updateData);
+    const updatedData = await eventsManager.updateOneById(eventId, updateData);
 
     return {
       success: true,
@@ -126,14 +126,17 @@ export class EventsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id')
-  async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Event>> {
-    const hasAccess = await calendarsManager.userCanDelete(req.user.id, id);
+  @Delete(':eventId')
+  async delete(
+    @Req() req: Request,
+    @Param('eventId') eventId: string
+  ): Promise<AbstractResponseDto<Event>> {
+    const hasAccess = await calendarsManager.userCanDelete(req.user.id, eventId);
     if (!hasAccess) {
       throw new NotFoundException('Calendar not found');
     }
 
-    const updatedData = await eventsManager.updateOneById(id, {
+    const updatedData = await eventsManager.updateOneById(eventId, {
       deletedAt: new Date(),
     });
 
@@ -144,17 +147,17 @@ export class EventsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/undelete')
+  @Post(':eventId/undelete')
   async undelete(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('eventId') eventId: string
   ): Promise<AbstractResponseDto<Event>> {
-    const canDelete = await eventsManager.userCanUpdate(req.user.id, id);
+    const canDelete = await eventsManager.userCanUpdate(req.user.id, eventId);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this event');
     }
 
-    const updatedData = await eventsManager.updateOneById(id, {
+    const updatedData = await eventsManager.updateOneById(eventId, {
       deletedAt: null,
     });
 

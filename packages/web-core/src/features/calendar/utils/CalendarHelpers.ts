@@ -23,6 +23,7 @@ import {
   CalendarEntryWithVerticalPosition,
   CalendarEntryYearlyEntry,
   CreateCalendar,
+  CreateUserCalendar,
   DayOfWeek,
   ResponseInterface,
   UpdateCalendar,
@@ -44,17 +45,6 @@ export const getCalendars = async () => {
 export const getDeletedCalendars = async () => {
   const response = await fetchJson<ResponseInterface<Calendar[]>>(
     `${API_URL}/api/v1/calendars/deleted`,
-    {
-      method: 'GET',
-    }
-  );
-
-  return response.data ?? [];
-};
-
-export const getSharedCalendars = async () => {
-  const response = await fetchJson<ResponseInterface<Calendar[]>>(
-    `${API_URL}/api/v1/calendars/shared`,
     {
       method: 'GET',
     }
@@ -140,67 +130,6 @@ export const undeleteCalendar = async (calendarId: string): Promise<Calendar> =>
   return response.data as Calendar;
 };
 
-// Shared
-export const getSharedCalendar = async (calendarId: string): Promise<UserCalendar> => {
-  const response = await fetchJson<ResponseInterface<UserCalendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
-    {
-      method: 'GET',
-    }
-  );
-
-  return response.data as UserCalendar;
-};
-
-export const addSharedCalendar = async (calendarId: string): Promise<Calendar> => {
-  const response = await fetchJson<ResponseInterface<Calendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return response.data as Calendar;
-};
-
-export const removeSharedCalendar = async (calendarId: string): Promise<Calendar> => {
-  const response = await fetchJson<ResponseInterface<Calendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
-    {
-      method: 'DELETE',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return response.data as Calendar;
-};
-
-export const updateSharedCalendar = async (
-  calendarId: string,
-  userCalendar: UpdateUserCalendar
-): Promise<Calendar> => {
-  const response = await fetchJson<ResponseInterface<Calendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(userCalendar),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return response.data as Calendar;
-};
-
 // Visible
 export const addVisibleCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
@@ -259,6 +188,79 @@ export const getCalendarEntriesYearly = async (year: number) => {
   );
 
   return response;
+};
+
+// User Calendars
+export const getUserCalendars = async () => {
+  const response = await fetchJson<ResponseInterface<UserCalendar[]>>(
+    `${API_URL}/api/v1/user-calendars`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data ?? [];
+};
+
+export const getUserCalendar = async (userCalendarId: string): Promise<UserCalendar> => {
+  const response = await fetchJson<ResponseInterface<UserCalendar>>(
+    `${API_URL}/api/v1/user-calendars/${userCalendarId}`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as UserCalendar;
+};
+
+export const addUserCalendar = async (userCalendar: CreateUserCalendar): Promise<UserCalendar> => {
+  const response = await fetchJson<ResponseInterface<UserCalendar>>(
+    `${API_URL}/api/v1/user-calendars`,
+    {
+      method: 'POST',
+      body: JSON.stringify(userCalendar),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as UserCalendar;
+};
+
+export const deleteUserCalendar = async (userCalendarId: string): Promise<UserCalendar> => {
+  const response = await fetchJson<ResponseInterface<UserCalendar>>(
+    `${API_URL}/api/v1/user-calendars/${userCalendarId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as UserCalendar;
+};
+
+export const updateUserCalendar = async (
+  userCalendarId: string,
+  userCalendar: UpdateUserCalendar
+): Promise<UserCalendar> => {
+  const response = await fetchJson<ResponseInterface<UserCalendar>>(
+    `${API_URL}/api/v1/user-calendars/${userCalendarId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(userCalendar),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as UserCalendar;
 };
 
 /********** Misc **********/

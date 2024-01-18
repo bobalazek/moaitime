@@ -39,17 +39,6 @@ export class CalendarsManager {
     });
   }
 
-  async findManySharedByUserId(userId: string): Promise<Calendar[]> {
-    const result = await getDatabase()
-      .select()
-      .from(calendars)
-      .leftJoin(userCalendars, eq(calendars.id, userCalendars.calendarId))
-      .where(and(eq(userCalendars.userId, userId), isNull(calendars.deletedAt)))
-      .execute();
-
-    return result.map((row) => row.calendars);
-  }
-
   async findManyPublic(): Promise<Calendar[]> {
     return getDatabase().query.calendars.findMany({
       where: eq(calendars.isPublic, true),
@@ -132,7 +121,7 @@ export class CalendarsManager {
     return this.userCanUpdate(userId, calendarOrCalendarId);
   }
 
-  async userCanAddSharedCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
+  async userCanAddUserCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
     const calendar =
       typeof calendarOrCalendarId === 'string'
         ? await this.findOneById(calendarOrCalendarId)
@@ -144,15 +133,13 @@ export class CalendarsManager {
     return calendar.isPublic;
   }
 
-  async userCanUpdateSharedCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
+  async userCanUpdateUserCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
     // TODO: this will do far too many queries. Cache and fix it!
 
-    const userCalendar = await this.getSharedCalendar(
+    const userCalendar = await this.getUserCalendar(
       userId,
       typeof calendarOrCalendarId === 'string' ? calendarOrCalendarId : calendarOrCalendarId.id
     );
-
-    console.log(userCalendar);
 
     return !!userCalendar;
   }
@@ -268,17 +255,34 @@ export class CalendarsManager {
     });
   }
 
-  // Shared
-  async getSharedCalendar(userId: string, calendarId: string): Promise<UserCalendar | null> {
+  // User Calendars
+  async getUserCalendarsByUserId(userId: string): Promise<UserCalendar[]> {
+    const rows = await getDatabase().query.userCalendars.findMany({
+      where: eq(userCalendars.userId, userId),
+      with: {
+        calendar: true,
+      },
+    });
+
+    return rows.map((row) => ({
+      ...row,
+      calendar: {
+        ...row.calendar,
+        permissions: this.getCalendarPermissions(userId, row.calendar),
+      },
+    }));
+  }
+
+  async getUserCalendar(userId: string, userCalendarId: string): Promise<UserCalendar | null> {
     const row = await getDatabase().query.userCalendars.findFirst({
-      where: and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)),
+      where: and(eq(userCalendars.id, userCalendarId), eq(userCalendars.userId, userId)),
     });
 
     return row ?? null;
   }
 
-  async addSharedCalendarToUser(userId: string, calendarId: string) {
-    const canView = await this.userCanAddSharedCalendar(userId, calendarId);
+  async addUserCalendarToUser(userId: string, calendarId: string) {
+    const canView = await this.userCanAddUserCalendar(userId, calendarId);
     if (!canView) {
       return;
     }
@@ -296,26 +300,25 @@ export class CalendarsManager {
     await this.addVisibleCalendarIdByUserId(userId, calendarId);
   }
 
-  async removeSharedCalendarFromUser(userId: string, calendarId: string) {
-    await getDatabase()
-      .delete(userCalendars)
-      .where(and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)))
-      .execute();
-
-    await this.removeVisibleCalendarIdByUserId(userId, calendarId);
-  }
-
-  async updateSharedCalendar(userId: string, calendarId: string, data: UpdateUserCalendar) {
-    const canView = await this.userCanAddSharedCalendar(userId, calendarId);
-    if (!canView) {
+  async deleteUserCalendarFromUser(userId: string, userCalendarId: string) {
+    const userCalendar = await this.getUserCalendar(userId, userCalendarId);
+    if (!userCalendar) {
       return;
     }
 
-    const userCalendar = await getDatabase().query.userCalendars.findFirst({
-      where: and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)),
-    });
+    await getDatabase().delete(userCalendars).where(eq(userCalendars.id, userCalendarId)).execute();
 
+    await this.removeVisibleCalendarIdByUserId(userId, userCalendar.calendarId);
+  }
+
+  async updateUserCalendar(userId: string, userCalendarId: string, data: UpdateUserCalendar) {
+    const userCalendar = await this.getUserCalendar(userId, userCalendarId);
     if (!userCalendar) {
+      return;
+    }
+
+    const canView = await this.userCanAddUserCalendar(userId, userCalendar.calendarId);
+    if (!canView) {
       return;
     }
 
@@ -334,8 +337,8 @@ export class CalendarsManager {
     const canView = await this.userCanView(userId, calendarOrCalendarId);
     const canUpdate = await this.userCanUpdate(userId, calendarOrCalendarId);
     const canDelete = await this.userCanDelete(userId, calendarOrCalendarId);
-    const canAddSharedCalendar = await this.userCanAddSharedCalendar(userId, calendarOrCalendarId);
-    const canUpdateSharedCalendar = await this.userCanUpdateSharedCalendar(
+    const canAddUserCalendar = await this.userCanAddUserCalendar(userId, calendarOrCalendarId);
+    const canUpdateUserCalendar = await this.userCanUpdateUserCalendar(
       userId,
       calendarOrCalendarId
     );
@@ -344,8 +347,8 @@ export class CalendarsManager {
       canView,
       canUpdate,
       canDelete,
-      canAddSharedCalendar,
-      canUpdateSharedCalendar,
+      canAddUserCalendar,
+      canUpdateUserCalendar,
     };
   }
 

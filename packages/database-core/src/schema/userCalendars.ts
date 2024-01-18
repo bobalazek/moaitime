@@ -26,9 +26,15 @@ export const userCalendars = pgTable(
   }
 );
 
-export const userCalendarsRelations = relations(userCalendars, ({ many }) => ({
-  user: many(users),
-  calendars: many(calendars),
+export const userCalendarsRelations = relations(userCalendars, ({ one }) => ({
+  user: one(users, {
+    fields: [userCalendars.userId],
+    references: [users.id],
+  }),
+  calendar: one(calendars, {
+    fields: [userCalendars.calendarId],
+    references: [calendars.id],
+  }),
 }));
 
 export type UserCalendar = typeof userCalendars.$inferSelect;

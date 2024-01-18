@@ -4,8 +4,16 @@ import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItem from '../common/CalendarItem';
 
 export default function PublicCalendarsDialog() {
-  const { publicCalendars, publicCalendarsDialogOpen, setPublicCalendarsDialogOpen } =
-    useCalendarStore();
+  const {
+    publicCalendars,
+    publicCalendarsDialogOpen,
+    setPublicCalendarsDialogOpen,
+    userCalendars,
+  } = useCalendarStore();
+
+  const userCalendarsMap = new Map(
+    userCalendars.map((userCalendar) => [userCalendar.calendar.id, userCalendar])
+  );
 
   return (
     <Dialog open={publicCalendarsDialogOpen} onOpenChange={setPublicCalendarsDialogOpen}>
@@ -20,9 +28,19 @@ export default function PublicCalendarsDialog() {
         )}
         {publicCalendars.length > 0 && (
           <ScrollArea className="h-[360px]">
-            {publicCalendars.map((calendar) => (
-              <CalendarItem key={calendar.id} calendar={calendar} hideCheckbox showSharedText />
-            ))}
+            {publicCalendars.map((calendar) => {
+              const userCalendar = userCalendarsMap.get(calendar.id);
+
+              return (
+                <CalendarItem
+                  key={calendar.id}
+                  calendar={calendar}
+                  userCalendar={userCalendar}
+                  showAddUserCalendar
+                  hideCheckbox
+                />
+              );
+            })}
           </ScrollArea>
         )}
       </DialogContent>

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ColorSchema } from '../core/ColorSchema';
 import { PermissionsSchema } from '../core/PermissionsSchema';
 
+// Calendar
 export const CalendarSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -30,9 +31,28 @@ export const CreateCalendarSchema = z.object({
 
 export const UpdateCalendarSchema = CreateCalendarSchema.partial();
 
+// User Calendar
+export const UserCalendarSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  calendarId: z.string(),
+  color: ColorSchema.nullable(),
+  updatedAt: z.string(),
+  createdAt: z.string(),
+});
+
+export const UpdateUserCalendarSchema = z.object({
+  color: ColorSchema.nullable().optional(),
+});
+
 // Types
 export type Calendar = z.infer<typeof CalendarSchema>;
 
 export type CreateCalendar = z.infer<typeof CreateCalendarSchema>;
 
 export type UpdateCalendar = z.infer<typeof UpdateCalendarSchema>;
+
+// User Calendar
+export type UserCalendar = z.infer<typeof UserCalendarSchema>;
+
+export type UpdateUserCalendar = z.infer<typeof UpdateUserCalendarSchema>;

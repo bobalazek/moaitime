@@ -120,9 +120,10 @@ export class ListsController {
     };
   }
 
+  // Visible
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/add-visible')
-  async setVisible(
+  @Post(':id/visible')
+  async addVisible(
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<User>> {
@@ -139,7 +140,7 @@ export class ListsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/remove-visible')
+  @Delete(':id/visible')
   async removeVisible(
     @Req() req: Request,
     @Param('id') id: string

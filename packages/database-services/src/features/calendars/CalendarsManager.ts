@@ -9,7 +9,7 @@ import {
   User,
   userCalendars,
 } from '@moaitime/database-core';
-import { Calendar as ApiCalendar } from '@moaitime/shared-common';
+import { Calendar as ApiCalendar, UpdateUserCalendar } from '@moaitime/shared-common';
 
 import { UsersManager, usersManager } from '../auth/UsersManager';
 
@@ -251,7 +251,7 @@ export class CalendarsManager {
   }
 
   async addSharedCalendarToUser(userId: string, calendarId: string) {
-    const canView = await this.userCanView(userId, calendarId);
+    const canView = await this.userCanAddSharedCalendar(userId, calendarId);
     if (!canView) {
       return;
     }
@@ -276,6 +276,27 @@ export class CalendarsManager {
       .execute();
 
     await this.removeVisibleCalendarIdByUserId(userId, calendarId);
+  }
+
+  async updateSharedCalendar(userId: string, calendarId: string, data: UpdateUserCalendar) {
+    const canView = await this.userCanAddSharedCalendar(userId, calendarId);
+    if (!canView) {
+      return;
+    }
+
+    const userCalendar = await getDatabase().query.userCalendars.findFirst({
+      where: and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)),
+    });
+
+    if (!userCalendar) {
+      return;
+    }
+
+    await getDatabase()
+      .update(userCalendars)
+      .set(data)
+      .where(eq(userCalendars.id, userCalendar.id))
+      .execute();
   }
 
   async getCalendarPermissions(

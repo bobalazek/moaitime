@@ -14,7 +14,12 @@ import { Request } from 'express';
 
 import { Calendar } from '@moaitime/database-core';
 import { calendarsManager, usersManager } from '@moaitime/database-services';
-import { Calendar as ApiCalendar, CreateCalendar, User } from '@moaitime/shared-common';
+import {
+  Calendar as ApiCalendar,
+  CreateCalendar,
+  UpdateUserCalendar,
+  User,
+} from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -170,15 +175,16 @@ export class CalendarsController {
     };
   }
 
+  // Shared
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/add-shared')
-  async addShared(
+  @Get(':id/shared')
+  async viewShared(
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await calendarsManager.userCanView(req.user.id, id);
+    const canView = await calendarsManager.userCanAddSharedCalendar(req.user.id, id);
     if (!canView) {
-      throw new ForbiddenException('You cannot view this list');
+      throw new ForbiddenException('You cannot add this shared calendar');
     }
 
     await calendarsManager.addSharedCalendarToUser(req.user.id, id);
@@ -189,14 +195,32 @@ export class CalendarsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/remove-shared')
+  @Post(':id/shared')
+  async addShared(
+    @Req() req: Request,
+    @Param('id') id: string
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await calendarsManager.userCanAddSharedCalendar(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot add this shared calendar');
+    }
+
+    await calendarsManager.addSharedCalendarToUser(req.user.id, id);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete(':id/shared')
   async removeShared(
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<User>> {
     const canView = await calendarsManager.userCanView(req.user.id, id);
     if (!canView) {
-      throw new ForbiddenException('You cannot view this calendar');
+      throw new ForbiddenException('You cannot remove this shared calendar');
     }
 
     await calendarsManager.removeSharedCalendarFromUser(req.user.id, id);
@@ -207,8 +231,28 @@ export class CalendarsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/add-visible')
-  async setVisible(
+  @Patch(':id/shared')
+  async updateShared(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: UpdateUserCalendar
+  ): Promise<AbstractResponseDto<User>> {
+    const canView = await calendarsManager.userCanUpdateSharedCalendar(req.user.id, id);
+    if (!canView) {
+      throw new ForbiddenException('You cannot update this shared calendar');
+    }
+
+    await calendarsManager.updateSharedCalendar(req.user.id, id, body);
+
+    return {
+      success: true,
+    };
+  }
+
+  // Visible
+  @UseGuards(AuthenticatedGuard)
+  @Post(':id/visible')
+  async addVisible(
     @Req() req: Request,
     @Param('id') id: string
   ): Promise<AbstractResponseDto<User>> {
@@ -225,7 +269,7 @@ export class CalendarsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/remove-visible')
+  @Delete(':id/visible')
   async removeVisible(
     @Req() req: Request,
     @Param('id') id: string

@@ -140,7 +140,7 @@ export const undeleteCalendar = async (calendarId: string): Promise<Calendar> =>
 
 export const addSharedCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/add-shared`,
+    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
     {
       method: 'POST',
       headers: {
@@ -155,9 +155,9 @@ export const addSharedCalendar = async (calendarId: string): Promise<Calendar> =
 
 export const removeSharedCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/remove-shared`,
+    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
     {
-      method: 'POST',
+      method: 'DELETE',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export const removeSharedCalendar = async (calendarId: string): Promise<Calendar
 
 export const addVisibleCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/add-visible`,
+    `${API_URL}/api/v1/calendars/${calendarId}/visible`,
     {
       method: 'POST',
       headers: {
@@ -185,9 +185,9 @@ export const addVisibleCalendar = async (calendarId: string): Promise<Calendar> 
 
 export const removeVisibleCalendar = async (calendarId: string): Promise<Calendar> => {
   const response = await fetchJson<ResponseInterface<Calendar>>(
-    `${API_URL}/api/v1/calendars/${calendarId}/remove-visible`,
+    `${API_URL}/api/v1/calendars/${calendarId}/visible`,
     {
-      method: 'POST',
+      method: 'DELETE',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

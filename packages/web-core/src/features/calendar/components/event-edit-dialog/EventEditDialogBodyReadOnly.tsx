@@ -9,9 +9,11 @@ export default function EventEditDialogBodyReadOnly() {
     return null;
   }
 
-  let calendar = userCalendars.find((c) => c.id === selectedEvent.calendarId)?.calendar;
+  let calendar = userCalendars.find(
+    (userCalendar) => userCalendar.calendarId === selectedEvent.calendarId
+  )?.calendar;
   if (!calendar) {
-    calendar = calendars.find((c) => c.id === selectedEvent.calendarId);
+    calendar = calendars.find((calendar) => calendar.id === selectedEvent.calendarId);
   }
 
   const startDate = new Date(selectedEvent.startsAt).toLocaleDateString(undefined, {

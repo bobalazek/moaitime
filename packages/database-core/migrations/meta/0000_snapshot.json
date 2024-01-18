@@ -1,5 +1,5 @@
 {
-  "id": "5e306e0a-0624-4fd2-92c5-344f3a8c4b09",
+  "id": "1a52164e-2af4-4cb7-9bf7-5c9e6abe5982",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -72,7 +72,13 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "backgrounds_user_id_idx": {
+          "name": "backgrounds_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "backgrounds_user_id_users_id_fk": {
           "name": "backgrounds_user_id_users_id_fk",
@@ -155,9 +161,26 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "calendars_user_id_idx": {
+          "name": "calendars_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
+        "calendars_team_id_idx": {
+          "name": "calendars_team_id_idx",
+          "columns": ["team_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "calendars_user_id_users_id_fk": {
           "name": "calendars_user_id_users_id_fk",
@@ -165,7 +188,16 @@
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "calendars_team_id_teams_id_fk": {
+          "name": "calendars_team_id_teams_id_fk",
+          "tableFrom": "calendars",
+          "tableTo": "teams",
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -260,7 +292,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "events_calendar_id_idx": {
+          "name": "events_calendar_id_idx",
+          "columns": ["calendar_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "events_calendar_id_calendars_id_fk": {
           "name": "events_calendar_id_calendars_id_fk",
@@ -325,7 +363,13 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "greetings_user_id_idx": {
+          "name": "greetings_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "greetings_user_id_users_id_fk": {
           "name": "greetings_user_id_users_id_fk",
@@ -402,7 +446,18 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "interests_user_id_idx": {
+          "name": "interests_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
+        "interests_parent_id_idx": {
+          "name": "interests_parent_id_idx",
+          "columns": ["parent_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "interests_user_id_users_id_fk": {
           "name": "interests_user_id_users_id_fk",
@@ -477,7 +532,7 @@
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "team_id": {
           "name": "team_id",
@@ -486,7 +541,18 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "lists_user_id_idx": {
+          "name": "lists_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
+        "lists_team_id_idx": {
+          "name": "lists_team_id_idx",
+          "columns": ["team_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "lists_user_id_users_id_fk": {
           "name": "lists_user_id_users_id_fk",
@@ -494,7 +560,7 @@
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         },
         "lists_team_id_teams_id_fk": {
@@ -503,7 +569,7 @@
           "tableTo": "teams",
           "columnsFrom": ["team_id"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -566,7 +632,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "mood_entries_user_id_idx": {
+          "name": "mood_entries_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "mood_entries_user_id_users_id_fk": {
           "name": "mood_entries_user_id_users_id_fk",
@@ -656,7 +728,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "notes_user_id_idx": {
+          "name": "notes_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "notes_user_id_users_id_fk": {
           "name": "notes_user_id_users_id_fk",
@@ -791,13 +869,13 @@
         }
       },
       "indexes": {
-        "organization_id_idx": {
-          "name": "organization_id_idx",
+        "organization_users_organization_id_idx": {
+          "name": "organization_users_organization_id_idx",
           "columns": ["organization_id"],
           "isUnique": false
         },
-        "user_id_idx": {
-          "name": "user_id_idx",
+        "organization_users_user_id_idx": {
+          "name": "organization_users_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
         }
@@ -894,7 +972,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "lists_user_id_idx": {
+          "name": "lists_user_id_idx",
+          "columns": ["organization_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "subscriptions_organization_id_organizations_id_fk": {
           "name": "subscriptions_organization_id_organizations_id_fk",
@@ -965,7 +1049,13 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "quotes_user_id_idx": {
+          "name": "quotes_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "quotes_user_id_users_id_fk": {
           "name": "quotes_user_id_users_id_fk",
@@ -1030,7 +1120,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "tags_user_id_idx": {
+          "name": "tags_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "tags_user_id_users_id_fk": {
           "name": "tags_user_id_users_id_fk",
@@ -1083,6 +1179,12 @@
         },
         "priority": {
           "name": "priority",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration_seconds": {
+          "name": "duration_seconds",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -1144,7 +1246,18 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "tasks_list_id_idx": {
+          "name": "tasks_list_id_idx",
+          "columns": ["list_id"],
+          "isUnique": false
+        },
+        "tasks_parent_id_idx": {
+          "name": "tasks_parent_id_idx",
+          "columns": ["parent_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "tasks_list_id_lists_id_fk": {
           "name": "tasks_list_id_lists_id_fk",
@@ -1198,13 +1311,13 @@
         }
       },
       "indexes": {
-        "task_id_idx": {
-          "name": "task_id_idx",
+        "task_tags_task_id_idx": {
+          "name": "task_tags_task_id_idx",
           "columns": ["task_id"],
           "isUnique": false
         },
-        "tag_id_idx": {
-          "name": "tag_id_idx",
+        "task_tags_tag_id_idx": {
+          "name": "task_tags_tag_id_idx",
           "columns": ["tag_id"],
           "isUnique": false
         }
@@ -1276,7 +1389,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "teams_organization_id_idx": {
+          "name": "teams_organization_id_idx",
+          "columns": ["organization_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "teams_organization_id_organizations_id_fk": {
           "name": "teams_organization_id_organizations_id_fk",
@@ -1362,13 +1481,13 @@
         }
       },
       "indexes": {
-        "team_id_idx": {
-          "name": "team_id_idx",
+        "team_users_team_id_idx": {
+          "name": "team_users_team_id_idx",
           "columns": ["team_id"],
           "isUnique": false
         },
-        "user_id_idx": {
-          "name": "user_id_idx",
+        "team_users_user_id_idx": {
+          "name": "team_users_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
         }
@@ -1495,7 +1614,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "user_access_tokens_user_id_idx": {
+          "name": "user_access_tokens_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "user_access_tokens_user_id_users_id_fk": {
           "name": "user_access_tokens_user_id_users_id_fk",
@@ -1596,7 +1721,13 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "user_data_exports_user_id_idx": {
+          "name": "user_data_exports_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "user_data_exports_user_id_users_id_fk": {
           "name": "user_data_exports_user_id_users_id_fk",
@@ -1650,13 +1781,13 @@
         }
       },
       "indexes": {
-        "user_id_idx": {
-          "name": "user_id_idx",
+        "user_calendars_user_id_idx": {
+          "name": "user_calendars_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
         },
-        "calendar_id_idx": {
-          "name": "calendar_id_idx",
+        "user_calendars_calendar_id_idx": {
+          "name": "user_calendars_calendar_id_idx",
           "columns": ["calendar_id"],
           "isUnique": false
         }
@@ -1838,28 +1969,28 @@
         }
       },
       "indexes": {
-        "email_idx": {
-          "name": "email_idx",
+        "users_email_idx": {
+          "name": "users_email_idx",
           "columns": ["email"],
           "isUnique": false
         },
-        "new_email_idx": {
-          "name": "new_email_idx",
+        "users_new_email_idx": {
+          "name": "users_new_email_idx",
           "columns": ["new_email"],
           "isUnique": false
         },
-        "email_confirmation_token_idx": {
-          "name": "email_confirmation_token_idx",
+        "users_email_confirmation_token_idx": {
+          "name": "users_email_confirmation_token_idx",
           "columns": ["email_confirmation_token"],
           "isUnique": false
         },
-        "new_email_confirmation_token_idx": {
-          "name": "new_email_confirmation_token_idx",
+        "users_new_email_confirmation_token_idx": {
+          "name": "users_new_email_confirmation_token_idx",
           "columns": ["new_email_confirmation_token"],
           "isUnique": false
         },
-        "password_reset_token_idx": {
-          "name": "password_reset_token_idx",
+        "users_password_reset_token_idx": {
+          "name": "users_password_reset_token_idx",
           "columns": ["password_reset_token"],
           "isUnique": false
         }

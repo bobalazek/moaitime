@@ -26,8 +26,8 @@ export const teamUsers = pgTable(
   },
   (table) => {
     return {
-      teamIdIdx: index('team_id_idx').on(table.teamId),
-      userIdIdx: index('user_id_idx').on(table.userId),
+      teamIdIdx: index('team_users_team_id_idx').on(table.teamId),
+      userIdIdx: index('team_users_user_id_idx').on(table.userId),
     };
   }
 );

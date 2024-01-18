@@ -19,8 +19,8 @@ export const userCalendars = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('user_id_idx').on(table.userId),
-      calendarIdIdx: index('calendar_id_idx').on(table.calendarId),
+      userIdIdx: index('user_calendars_user_id_idx').on(table.userId),
+      calendarIdIdx: index('user_calendars_calendar_id_idx').on(table.calendarId),
     };
   }
 );

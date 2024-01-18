@@ -25,8 +25,8 @@ export const organizationUsers = pgTable(
   },
   (table) => {
     return {
-      organizationIdIdx: index('organization_id_idx').on(table.organizationId),
-      userIdIdx: index('user_id_idx').on(table.userId),
+      organizationIdIdx: index('organization_users_organization_id_idx').on(table.organizationId),
+      userIdIdx: index('organization_users_user_id_idx').on(table.userId),
     };
   }
 );

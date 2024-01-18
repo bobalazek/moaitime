@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS "calendars" (
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	"user_id" uuid
+	"user_id" uuid,
+	"team_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "events" (
@@ -71,7 +72,7 @@ CREATE TABLE IF NOT EXISTS "lists" (
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	"user_id" uuid NOT NULL,
+	"user_id" uuid,
 	"team_id" uuid
 );
 --> statement-breakpoint
@@ -163,6 +164,7 @@ CREATE TABLE IF NOT EXISTS "tasks" (
 	"order" integer DEFAULT 0,
 	"color" text,
 	"priority" integer,
+	"duration_seconds" integer,
 	"due_date" date,
 	"due_date_time" time,
 	"due_date_time_zone" text,
@@ -280,19 +282,38 @@ CREATE TABLE IF NOT EXISTS "users" (
 	CONSTRAINT "users_deletion_token_unique" UNIQUE("deletion_token")
 );
 --> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_id_idx" ON "organization_users" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "task_id_idx" ON "task_tags" ("task_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "tag_id_idx" ON "task_tags" ("tag_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_id_idx" ON "team_users" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "email_idx" ON "users" ("email");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "new_email_idx" ON "users" ("new_email");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "email_confirmation_token_idx" ON "users" ("email_confirmation_token");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "new_email_confirmation_token_idx" ON "users" ("new_email_confirmation_token");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "password_reset_token_idx" ON "users" ("password_reset_token");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "backgrounds_user_id_idx" ON "backgrounds" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "calendars_user_id_idx" ON "calendars" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "calendars_team_id_idx" ON "calendars" ("team_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "events_calendar_id_idx" ON "events" ("calendar_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "greetings_user_id_idx" ON "greetings" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "interests_user_id_idx" ON "interests" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "interests_parent_id_idx" ON "interests" ("parent_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "lists" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "lists_team_id_idx" ON "lists" ("team_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "mood_entries_user_id_idx" ON "mood_entries" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "notes_user_id_idx" ON "notes" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "organization_users_organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "organization_users_user_id_idx" ON "organization_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "subscriptions" ("organization_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "quotes_user_id_idx" ON "quotes" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "tags_user_id_idx" ON "tags" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "tasks_list_id_idx" ON "tasks" ("list_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "tasks_parent_id_idx" ON "tasks" ("parent_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "task_tags_task_id_idx" ON "task_tags" ("task_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "task_tags_tag_id_idx" ON "task_tags" ("tag_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "teams_organization_id_idx" ON "teams" ("organization_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "team_users_team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "team_users_user_id_idx" ON "team_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_access_tokens_user_id_idx" ON "user_access_tokens" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_calendars_calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "users_email_idx" ON "users" ("email");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "users_new_email_idx" ON "users" ("new_email");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "users_email_confirmation_token_idx" ON "users" ("email_confirmation_token");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "users_new_email_confirmation_token_idx" ON "users" ("new_email_confirmation_token");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "users_password_reset_token_idx" ON "users" ("password_reset_token");--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "backgrounds" ADD CONSTRAINT "backgrounds_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
@@ -300,7 +321,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "calendars" ADD CONSTRAINT "calendars_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "calendars" ADD CONSTRAINT "calendars_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "calendars" ADD CONSTRAINT "calendars_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -324,13 +351,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "lists" ADD CONSTRAINT "lists_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "lists" ADD CONSTRAINT "lists_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "lists" ADD CONSTRAINT "lists_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "lists" ADD CONSTRAINT "lists_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

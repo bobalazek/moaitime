@@ -19,8 +19,8 @@ export const taskTags = pgTable(
   },
   (table) => {
     return {
-      taskIdIdx: index('task_id_idx').on(table.taskId),
-      tagIdIdx: index('tag_id_idx').on(table.tagId),
+      taskIdIdx: index('task_tags_task_id_idx').on(table.taskId),
+      tagIdIdx: index('task_tags_tag_id_idx').on(table.tagId),
     };
   }
 );

@@ -15,6 +15,8 @@ import { useCalendarStore } from '../../state/calendarStore';
 const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
   const {
     sharedCalendars,
+    getSharedCalendar,
+    setSelectedUserCalendarDialogOpen,
     setSelectedCalendarDialogOpen,
     deleteCalendar,
     undeleteCalendar,
@@ -109,6 +111,17 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
     }
   };
 
+  const onEditSharedButtonClick = async () => {
+    try {
+      const userCalendar = await getSharedCalendar(calendar.id);
+      setSelectedUserCalendarDialogOpen(true, userCalendar);
+
+      setOpen(false);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
   // Actions
   const actions: JSX.Element[] = [];
 
@@ -177,6 +190,16 @@ const CalendarItemActions = memo(({ calendar }: { calendar: Calendar }) => {
   }
 
   if (isShared && calendar.permissions?.canAddSharedCalendar) {
+    actions.push(
+      <DropdownMenuItem
+        key="edit-shared"
+        className="cursor-pointer"
+        onClick={onEditSharedButtonClick}
+      >
+        <PencilIcon className="mr-2 h-4 w-4" />
+        <span>Edit</span>
+      </DropdownMenuItem>
+    );
     actions.push(
       <DropdownMenuItem
         key="remove-shared"

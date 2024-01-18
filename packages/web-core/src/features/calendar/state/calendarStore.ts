@@ -8,6 +8,8 @@ import {
   CalendarViewEnum,
   CreateCalendar,
   UpdateCalendar,
+  UpdateUserCalendar,
+  UserCalendar,
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
@@ -24,12 +26,14 @@ import {
   getDeletedCalendars,
   getMonthRange,
   getPublicCalendars,
+  getSharedCalendar,
   getSharedCalendars,
   getWeekRange,
   getYearRange,
   removeSharedCalendar,
   removeVisibleCalendar,
   undeleteCalendar,
+  updateSharedCalendar,
 } from '../utils/CalendarHelpers';
 
 export type CalendarStore = {
@@ -60,8 +64,17 @@ export type CalendarStore = {
   // Shared
   sharedCalendars: Calendar[];
   reloadSharedCalendars: () => Promise<Calendar[]>;
+  getSharedCalendar: (calendarId: string) => Promise<UserCalendar>;
   addSharedCalendar: (calendarId: string) => Promise<void>;
   removeSharedCalendar: (calendarId: string) => Promise<void>;
+  updateSharedCalendar: (calendarId: string, userCalendar: UpdateUserCalendar) => Promise<Calendar>;
+  // User Calendar
+  selectedUserCalendarDialogOpen: boolean;
+  selectedUserCalendar: UserCalendar | null;
+  setSelectedUserCalendarDialogOpen: (
+    selectedUserCalendarDialogOpen: boolean,
+    selectedUserCalendar?: UserCalendar | null
+  ) => void;
   // Selected
   selectedCalendarDialogOpen: boolean;
   selectedCalendar: Calendar | null;
@@ -282,6 +295,11 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     return sharedCalendars;
   },
+  getSharedCalendar: async (calendarId: string) => {
+    const sharedCalendar = await getSharedCalendar(calendarId);
+
+    return sharedCalendar;
+  },
   addSharedCalendar: async (calendarId: string) => {
     const { reloadCalendarEntries, reloadSharedCalendars } = get();
     const { reloadAccount } = useAuthStore.getState();
@@ -306,6 +324,15 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     await reloadCalendarEntries();
   },
+  updateSharedCalendar: async (calendarId: string, userCalendar: UpdateUserCalendar) => {
+    const { reloadSharedCalendars } = get();
+
+    const editedTask = await updateSharedCalendar(calendarId, userCalendar);
+
+    await reloadSharedCalendars();
+
+    return editedTask;
+  },
   // Selected
   selectedCalendarDialogOpen: false,
   selectedCalendar: null,
@@ -316,6 +343,18 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     set({
       selectedCalendarDialogOpen,
       selectedCalendar,
+    });
+  },
+  // User Calendar
+  selectedUserCalendarDialogOpen: false,
+  selectedUserCalendar: null,
+  setSelectedUserCalendarDialogOpen: (
+    selectedUserCalendarDialogOpen: boolean,
+    selectedUserCalendar?: UserCalendar | null
+  ) => {
+    set({
+      selectedUserCalendarDialogOpen,
+      selectedUserCalendar,
     });
   },
   // Deleted

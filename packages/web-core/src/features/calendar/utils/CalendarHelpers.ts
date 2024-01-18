@@ -26,6 +26,7 @@ import {
   DayOfWeek,
   ResponseInterface,
   UpdateCalendar,
+  UpdateUserCalendar,
   UserCalendar,
 } from '@moaitime/shared-common';
 
@@ -171,6 +172,25 @@ export const removeSharedCalendar = async (calendarId: string): Promise<Calendar
     `${API_URL}/api/v1/calendars/${calendarId}/shared`,
     {
       method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Calendar;
+};
+
+export const updateSharedCalendar = async (
+  calendarId: string,
+  userCalendar: UpdateUserCalendar
+): Promise<Calendar> => {
+  const response = await fetchJson<ResponseInterface<Calendar>>(
+    `${API_URL}/api/v1/calendars/${calendarId}/shared`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(userCalendar),
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

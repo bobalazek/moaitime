@@ -143,7 +143,16 @@ export class CalendarsManager {
   }
 
   async userCanUpdateSharedCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
-    return this.userCanAddSharedCalendar(userId, calendarOrCalendarId);
+    // TODO: this will do far too many queries. Cache and fix it!
+
+    const userCalendar = await this.getSharedCalendar(
+      userId,
+      typeof calendarOrCalendarId === 'string' ? calendarOrCalendarId : calendarOrCalendarId.id
+    );
+
+    console.log(userCalendar);
+
+    return !!userCalendar;
   }
 
   // Settings

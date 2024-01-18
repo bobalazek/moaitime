@@ -257,20 +257,25 @@ export class CalendarsManager {
 
   // User Calendars
   async getUserCalendarsByUserId(userId: string): Promise<UserCalendar[]> {
-    const rows = await getDatabase().query.userCalendars.findMany({
-      where: eq(userCalendars.userId, userId),
-      with: {
-        calendar: true,
-      },
-    });
+    const rows = await getDatabase()
+      .select()
+      .from(userCalendars)
+      .leftJoin(calendars, eq(userCalendars.calendarId, calendars.id))
+      .where(eq(userCalendars.userId, userId))
+      .orderBy(asc(calendars.name))
+      .execute();
 
-    return rows.map((row) => ({
-      ...row,
-      calendar: {
-        ...row.calendar,
-        permissions: this.getCalendarPermissions(userId, row.calendar),
-      },
-    }));
+    return rows.map((row) => {
+      const { calendars, user_calendars } = row;
+
+      return {
+        ...user_calendars,
+        calendar: {
+          ...calendars,
+          permissions: this.getCalendarPermissions(userId, calendars!),
+        },
+      };
+    });
   }
 
   async getUserCalendar(userId: string, userCalendarId: string): Promise<UserCalendar | null> {

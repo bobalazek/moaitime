@@ -1,3 +1,4 @@
+import { timeZonesNames } from '@vvo/tzdb';
 import { endOfDay, startOfDay } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
@@ -55,17 +56,7 @@ export const isValidTime = (time: string) => {
 };
 
 export const getTimezones = () => {
-  // Could maybe use the following library instead?
-  // https://github.com/vvo/tzdb
-  const timezones = new Set<string>();
-
-  timezones.add('UTC');
-
-  for (const timezone of Intl.supportedValuesOf('timeZone')) {
-    timezones.add(timezone);
-  }
-
-  return Array.from(timezones).sort();
+  return ['UTC', ...timeZonesNames].sort();
 };
 
 // UUID

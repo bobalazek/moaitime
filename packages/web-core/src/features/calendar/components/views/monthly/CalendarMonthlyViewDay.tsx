@@ -10,7 +10,7 @@ import {
 
 import { useCalendarStore } from '../../../state/calendarStore';
 import { useEventsStore } from '../../../state/eventsStore';
-import CalendarEntry from '../../CalendarEntry';
+import CalendarEntry from '../../calendar-entry/CalendarEntry';
 
 export type CalendarMonthlyViewDayProps = {
   day: Date;

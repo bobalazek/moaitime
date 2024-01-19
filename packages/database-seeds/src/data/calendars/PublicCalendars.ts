@@ -157,4 +157,8 @@ export const publicCalendars: NewCalendar[] = [
     name: '📜 Culture And History Holidays',
     isPublic: true,
   },
+  {
+    name: '🏎️ F1 Schedule 2024',
+    isPublic: true,
+  },
 ];

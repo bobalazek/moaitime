@@ -14,7 +14,7 @@ import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
-import CalendarEntry from '../CalendarEntry';
+import CalendarEntry from '../calendar-entry/CalendarEntry';
 import CalendarWeeklyViewDay from './weekly/CalendarWeeklyViewDay';
 
 type CalendarEntriesPerDay = {

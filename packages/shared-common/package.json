@@ -24,6 +24,7 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
+    "@vvo/tzdb": "^6.124.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0"
   },

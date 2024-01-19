@@ -680,6 +680,9 @@ importers:
 
   packages/shared-common:
     dependencies:
+      '@vvo/tzdb':
+        specifier: ^6.124.0
+        version: 6.124.0
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -7232,6 +7235,10 @@ packages:
       loupe: 2.3.7
       pretty-format: 29.7.0
     dev: true
+
+  /@vvo/tzdb@6.124.0:
+    resolution: {integrity: sha512-1zKnDMwg/9I0MrwcVjziyrn1VlapdCwB2ujaJ545N3A4nmniQ3wFbd/BcKtvwiJaFwqBAKoMwq68syTynroeKQ==}
+    dev: false
 
   /@zeit/schemas@2.29.0:
     resolution: {integrity: sha512-g5QiLIfbg3pLuYUJPlisNKY+epQJTcMDsOnVNkscrDP1oi7vmJnzOANYJI/1pZcVJ6umUkBv3aFtlg1UvUHGzA==}

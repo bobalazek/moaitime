@@ -9,7 +9,7 @@ import {
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { useEventsStore } from '../../../state/eventsStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
-import CalendarEntry from '../../CalendarEntry';
+import CalendarEntry from '../../calendar-entry/CalendarEntry';
 import CalendarWeeklyViewDayCurrentTimeLine from './CalendarWeeklyViewDayCurrentTimeLine';
 
 export type CalendarWeeklyViewDayProps = {

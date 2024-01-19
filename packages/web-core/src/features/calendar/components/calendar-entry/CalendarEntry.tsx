@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
-import { formatInTimeZone, utcToZonedTime } from 'date-fns-tz';
+import { formatInTimeZone } from 'date-fns-tz';
 import { FlagIcon } from 'lucide-react';
 import { MouseEvent } from 'react';
 
@@ -13,10 +13,11 @@ import {
   Task,
 } from '@moaitime/shared-common';
 
-import { useAuthUserSetting } from '../../auth/state/authStore';
-import { useTasksStore } from '../../tasks/state/tasksStore';
-import { useCalendarHighlightedCalendarEntryStore } from '../state/calendarDynamicStore';
-import { useEventsStore } from '../state/eventsStore';
+import { useAuthUserSetting } from '../../../auth/state/authStore';
+import { useTasksStore } from '../../../tasks/state/tasksStore';
+import { useCalendarHighlightedCalendarEntryStore } from '../../state/calendarDynamicStore';
+import { useEventsStore } from '../../state/eventsStore';
+import CalendarEntryTimes from './CalendarEntryTimes';
 
 const shouldShowContinuedText = (
   calendarEntry: CalendarEntryType,
@@ -57,7 +58,6 @@ export default function CalendarEntry({
     useCalendarHighlightedCalendarEntryStore();
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
-  const clockUse24HourClock = useAuthUserSetting('clockUse24HourClock', false);
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
   const hasAbsoluteClassName = className?.includes('absolute');
   const defaultBackgroundColor = calendarEntry.color ?? '#ffffff';
@@ -85,22 +85,6 @@ export default function CalendarEntry({
     ) : (
       calendarEntry.title
     );
-  const startTime = utcToZonedTime(calendarEntry.startsAtUtc, generalTimezone).toLocaleString(
-    'default',
-    {
-      minute: '2-digit',
-      hour: '2-digit',
-      hour12: !clockUse24HourClock,
-    }
-  );
-  const endTime = utcToZonedTime(calendarEntry.endsAtUtc, generalTimezone).toLocaleString(
-    'default',
-    {
-      minute: '2-digit',
-      hour: '2-digit',
-      hour12: !clockUse24HourClock,
-    }
-  );
 
   const containerStyle = style
     ? {
@@ -165,7 +149,7 @@ export default function CalendarEntry({
         </h4>
         {showTimes && (
           <div className="break-words text-[0.65rem] font-semibold">
-            {startTime} - {endTime}
+            <CalendarEntryTimes calendarEntry={calendarEntry} />
           </div>
         )}
       </div>

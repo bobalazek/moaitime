@@ -13,7 +13,8 @@ export default function EventEditDialog() {
   return (
     <Dialog open={selectedEventDialogOpen} onOpenChange={setSelectedEventDialogOpen}>
       <DialogContent data-test="calendar--event-edit-dialog">
-        {!eventIsReadOnly && (
+        {/* The reason we have this is is, because there is a sfort blip when closing the dialog in edit dialog for a brief moment */}
+        {selectedEventDialogOpen && !eventIsReadOnly && (
           <>
             <DialogHeader>
               <DialogTitle>
@@ -23,7 +24,7 @@ export default function EventEditDialog() {
             <EventEditDialogBody />
           </>
         )}
-        {eventIsReadOnly && <EventEditDialogBodyReadOnly />}
+        {selectedEventDialogOpen && eventIsReadOnly && <EventEditDialogBodyReadOnly />}
       </DialogContent>
     </Dialog>
   );

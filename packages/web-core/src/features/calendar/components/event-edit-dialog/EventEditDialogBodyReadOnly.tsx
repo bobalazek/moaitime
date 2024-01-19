@@ -1,5 +1,8 @@
+import { CalendarEntry } from '@moaitime/shared-common';
+
 import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
+import CalendarEntryTimes from '../calendar-entry/CalendarEntryTimes';
 
 export default function EventEditDialogBodyReadOnly() {
   const { selectedEvent } = useEventsStore();
@@ -16,24 +19,11 @@ export default function EventEditDialogBodyReadOnly() {
     calendar = calendars.find((calendar) => calendar.id === selectedEvent.calendarId);
   }
 
-  const startDate = new Date(selectedEvent.startsAt).toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-  const endDate = new Date(selectedEvent.endsAt).toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-
   return (
     <div>
       <h3 className="text-2xl">{selectedEvent.title}</h3>
       <div className="text-muted-foreground text-sm">
-        {startDate === endDate ? startDate : `${startDate} - ${endDate}`}
+        <CalendarEntryTimes calendarEntry={selectedEvent as unknown as CalendarEntry} includeDate />
       </div>
       {selectedEvent.description && (
         <div className="mt-4">

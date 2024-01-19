@@ -46,11 +46,14 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
     const startsAt = zonedTimeToUtc(data.startsAt, timezone);
     const endsAt = zonedTimeToUtc(data.endsAt, endTimezone);
 
-    if (data.isAllDay && startsAt.getTime() === endsAt.getTime()) {
+    const startTime = startsAt.getTime();
+    const endTime = endsAt.getTime();
+
+    if (data.isAllDay && startTime === endTime) {
       return true;
     }
 
-    return startsAt < endsAt;
+    return startTime <= endTime;
   },
   {
     message: 'Start date must be before end date',

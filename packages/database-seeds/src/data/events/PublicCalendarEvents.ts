@@ -10,6 +10,7 @@ import croatiaHolidays from './calendars/CroatiaHolidays';
 import cultureAndHistoryHolidays from './calendars/CultureAndHistoryHolidays';
 import czechRepublicHolidays from './calendars/CzechRepublicHolidays';
 import denmarkHolidays from './calendars/DenmarkHolidays';
+import f1Schedule2024 from './calendars/F1Schedule2024';
 import finlandHolidays from './calendars/FinlandHolidays';
 import frenchHolidays from './calendars/FrenchHolidays';
 import germanHolidays from './calendars/GermanHolidays';
@@ -35,8 +36,9 @@ import ukraineHolidays from './calendars/UkraineHolidays';
 import usHolidays from './calendars/USHolidays';
 
 export type PublicCalendarEvent = Omit<NewEvent, 'calendarId' | 'startsAt' | 'endsAt'> & {
-  date: string;
   calendarName: string;
+  date: string;
+  endDate?: string;
 };
 
 export const publicCalendarEvents: PublicCalendarEvent[] = [
@@ -73,4 +75,5 @@ export const publicCalendarEvents: PublicCalendarEvent[] = [
   ...jewishHolidays,
   ...sikhHolidays,
   ...cultureAndHistoryHolidays,
+  ...f1Schedule2024,
 ];

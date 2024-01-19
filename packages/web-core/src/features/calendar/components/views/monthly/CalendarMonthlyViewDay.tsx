@@ -29,8 +29,8 @@ export default function CalendarMonthlyViewDay({
   const { setSelectedEventDialogOpen } = useEventsStore();
   const isActive = isSameDay(day, now);
   const isActiveMonth = isSameMonth(day, selectedDate);
-  const isFirst = day.getDate() === 1;
-  const dateText = format(day, isFirst || isFirstWeeksDay ? 'd. MMM.' : 'd').toLowerCase();
+  const isFirst = day.getDate() === 1 || isFirstWeeksDay;
+  const dateText = format(day, isFirst ? 'd. MMM.' : 'd').toLowerCase();
   const dayOfWeek = format(day, 'eee');
   const date = format(day, 'yyyy-MM-dd');
 

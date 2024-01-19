@@ -22,6 +22,7 @@ export type NotesStore = {
   /********** Notes **********/
   notes: Note[];
   reloadNotes: () => Promise<Note[]>;
+  reloadNotesDebounced: () => Promise<void>;
   getNote: (noteId: string) => Promise<Note>;
   addNote: (note: CreateNote) => Promise<Note>;
   editNote: (noteId: string, note: UpdateNote) => Promise<Note>;
@@ -37,7 +38,6 @@ export type NotesStore = {
   // Search
   notesSearch: string;
   setNotesSearch: (notesSearch: string) => Promise<string>;
-  loadNotesDebounced: () => Promise<void>;
   // Selected
   selectedNote: Note | null;
   selectedNoteData: CreateNote | UpdateNote | null; // The cloned object of the selectedNote, so we don't mutate the original
@@ -67,6 +67,20 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return notes;
   },
+  reloadNotesDebounced: (() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let debouncedFn: any = null;
+
+    return async () => {
+      const { reloadNotes } = get();
+
+      if (!debouncedFn) {
+        debouncedFn = debounce(reloadNotes, 500);
+      }
+
+      debouncedFn();
+    };
+  })(),
   getNote: async (noteId: string) => {
     const note = await getNote(noteId);
 
@@ -146,28 +160,14 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   // Search
   notesSearch: '',
   setNotesSearch: async (notesSearch: string) => {
-    const { loadNotesDebounced } = get();
+    const { reloadNotesDebounced } = get();
 
     set({ notesSearch });
 
-    loadNotesDebounced();
+    reloadNotesDebounced();
 
     return notesSearch;
   },
-  loadNotesDebounced: (() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let debouncedFn: any = null;
-
-    return async () => {
-      const { reloadNotes } = get();
-
-      if (!debouncedFn) {
-        debouncedFn = debounce(reloadNotes, 500);
-      }
-
-      debouncedFn();
-    };
-  })(),
   // Selected
   selectedNote: null,
   selectedNoteData: null,

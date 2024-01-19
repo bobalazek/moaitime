@@ -137,7 +137,7 @@ export class UsersManager {
       tagsMaxPerUserCount: 20,
       calendarsMaxPerUserCount: 10,
       calendarsMaxEventsPerCalendarCount: 500,
-      calendarsMaxUserCalendarsPerUserCount: 10,
+      calendarsMaxUserCalendarsPerUserCount: 5,
       notesMaxPerUserCount: 100,
     };
 

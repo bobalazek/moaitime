@@ -159,6 +159,7 @@ export const publicCalendars: NewCalendar[] = [
   },
   {
     name: '🏎️ F1 Schedule 2024',
+    description: 'Formula 1 Schedule 2024',
     isPublic: true,
   },
 ];

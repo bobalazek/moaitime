@@ -76,6 +76,14 @@ export default function CalendarItem({
           showUserCalendarActions={showUserCalendarActions}
         />
       </div>
+      {calendar.description && (
+        <div
+          className="text-muted-foreground mt-1 px-6 text-xs"
+          data-test="calendar--settings-dialog--calendar--description"
+        >
+          {calendar.description}
+        </div>
+      )}
     </div>
   );
 }

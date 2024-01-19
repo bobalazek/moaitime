@@ -45,7 +45,7 @@ export default function CalendarSettingsDialog() {
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
               <h3 className="font-bold">My Calendars</h3>
               <CalendarSettingsDialogMyCalendarsActions />
             </div>
@@ -57,7 +57,7 @@ export default function CalendarSettingsDialog() {
             ))}
           </div>
           <div className="mt-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
               <h3 className="font-bold">Shared Calendars</h3>
               <CalendarSettingsDialogUserCalendarsActions />
             </div>

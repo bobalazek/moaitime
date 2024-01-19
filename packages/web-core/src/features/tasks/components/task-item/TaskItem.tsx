@@ -10,14 +10,14 @@ import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useSingleAndDoubleClick } from '../../../core/hooks/useSingleAndDoubleClick';
 import { useTasksStore } from '../../state/tasksStore';
 import { setCursorToEnd } from '../../utils/TaskHelpers';
-import TaskItemDeletedAt from './task-item/TaskItemDeletedAt';
-import TaskItemDueDate from './task-item/TaskItemDueDate';
-import TaskItemDuration from './task-item/TaskItemDuration';
-import TaskItemPriority from './task-item/TaskItemPriority';
-import TaskItemTags from './task-item/TaskItemTags';
 import TaskItemActions from './TaskItemActions';
+import TaskItemDeletedAt from './TaskItemDeletedAt';
+import TaskItemDueDate from './TaskItemDueDate';
+import TaskItemDuration from './TaskItemDuration';
+import TaskItemPriority from './TaskItemPriority';
+import TaskItemTags from './TaskItemTags';
 
-const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth: number }) => {
+const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) => {
   const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);

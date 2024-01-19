@@ -3,8 +3,8 @@ import { APP_VERSION } from '@moaitime/shared-common';
 import { useAuthStore } from '../../../auth/state/authStore';
 import TimezoneSelector from '../../../core/components/selectors/TimezoneSelector';
 import GeneralSettingsSectionHeaderText from './GeneralSettingsSectionHeaderText';
-import GeneralStartDayOfWeekSetting from './settings/GeneralStartDayOfWeekSetting';
-import GeneralThemeSetting from './settings/GeneralThemeSetting';
+import GeneralStartDayOfWeekSetting from './GeneralStartDayOfWeekSetting';
+import GeneralThemeSetting from './GeneralThemeSetting';
 
 export default function GeneralSettingsSection() {
   const { auth, updateAccountSettings } = useAuthStore();

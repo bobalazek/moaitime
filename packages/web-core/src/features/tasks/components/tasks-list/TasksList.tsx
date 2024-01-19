@@ -23,7 +23,7 @@ import { TasksListSortFieldEnum } from '@moaitime/shared-common';
 import { useListsStore } from '../../state/listsStore';
 import { tasksEmitter, TasksEventsEnum } from '../../state/tasksEmitter';
 import { useTasksStore } from '../../state/tasksStore';
-import SortableTaskItem from './SortableTaskItem';
+import SortableTaskItem from '../task-item/SortableTaskItem';
 
 const modifiers = [restrictToVerticalAxis];
 const collisionDetection = closestCenter;

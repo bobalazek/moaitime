@@ -6,7 +6,7 @@ import { Button, Input, Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
-import MoodSettingsSectionHeaderText from './MoodSettingsSectionHeaderText';
+import MoodSettingsSectionHeaderText from '../mood-settings/MoodSettingsSectionHeaderText';
 
 export default function MoodSettingsSection() {
   const { updateAccountSettings } = useAuthStore();

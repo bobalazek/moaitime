@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 
 import { AppButton } from '../../core/components/AppButton';
 import { useWeatherStore } from '../state/weatherStore';
-import WeatherConditionIcon from './misc/WeatherConditionIcon';
+import WeatherConditionIcon from './WeatherConditionIcon';
 
 export default function WeatherAppButton() {
   const { setPopoverOpen } = useWeatherStore();

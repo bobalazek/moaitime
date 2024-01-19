@@ -26,7 +26,7 @@ import {
 } from '../../../calendar/utils/CalendarHelpers';
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { useMoodEntriesStore } from '../../state/moodEntriesStore';
-import { HappinessScore } from '../common/HappinesScore';
+import { HappinessScore } from '../mood-entry/HappinesScore';
 
 export default function MoodEntryEditDialog() {
   const {

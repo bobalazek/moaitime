@@ -11,7 +11,7 @@ import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
 import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntriesEmitter';
 import { playAudioAfterNewMoodEntry } from '../../utils/MoodHelpers';
-import { MoodEntry } from '../common/MoodEntry';
+import { MoodEntry } from '../mood-entry/MoodEntry';
 
 const animationVariants = {
   initial: { opacity: 0, y: -100 },

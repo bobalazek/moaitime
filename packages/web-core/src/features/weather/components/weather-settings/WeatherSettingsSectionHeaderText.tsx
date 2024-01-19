@@ -1,4 +1,4 @@
-import WeatherConditionIcon from '../misc/WeatherConditionIcon';
+import WeatherConditionIcon from '../WeatherConditionIcon';
 
 export default function WeatherSettingsSectionHeaderText() {
   return (

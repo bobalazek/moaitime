@@ -3,7 +3,7 @@ import { TagIcon } from 'lucide-react';
 
 import { Task as TaskType } from '@moaitime/shared-common';
 
-import { useTagsStore } from '../../../state/tagsStore';
+import { useTagsStore } from '../../state/tagsStore';
 
 const TaskItemTags = ({ task }: { task: TaskType }) => {
   const { tags } = useTagsStore();

@@ -6,7 +6,7 @@ import {
   convertCelciusToFahrenheit,
   convertKilometersPerHourToMilesPerHour,
 } from '../../utils/WeatherHelpers';
-import WeatherConditionIcon from '../misc/WeatherConditionIcon';
+import WeatherConditionIcon from '../WeatherConditionIcon';
 
 export default function WeatherBodyInformation() {
   const { weather } = useWeatherStore();

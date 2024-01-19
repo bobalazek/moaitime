@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useListsStore } from '../state/listsStore';
 import { useTasksStore } from '../state/tasksStore';
-import TasksBody from './body/TasksBody';
+import TasksBody from './tasks-body/TasksBody';
 
 export default function TasksPopover() {
   const { popoverOpen, setPopoverOpen } = useTasksStore();

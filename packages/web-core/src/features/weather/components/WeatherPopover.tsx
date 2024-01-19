@@ -2,8 +2,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import { useWeatherStore } from '../state/weatherStore';
-import WeatherBody from './body/WeatherBody';
-import WeatherLocationDialog from './dialog/WeatherLocationDialog';
+import WeatherBody from './weather-body/WeatherBody';
+import WeatherLocationDialog from './weather-location-dialog/WeatherLocationDialog';
 
 export default function WeatherPopover() {
   const { popoverOpen, setPopoverOpen } = useWeatherStore();

@@ -3,32 +3,32 @@ import { useState } from 'react';
 
 import { Dialog, DialogContent } from '@moaitime/web-ui';
 
-import AuthSettingsSection from '../../auth/components/settings/AuthSettingsSection';
-import AuthSettingsSectionHeaderText from '../../auth/components/settings/AuthSettingsSectionHeaderText';
+import AuthSettingsSection from '../../auth/components/auth-settings/AuthSettingsSection';
+import AuthSettingsSectionHeaderText from '../../auth/components/auth-settings/AuthSettingsSectionHeaderText';
 import { useAuthStore } from '../../auth/state/authStore';
-import CalendarSettingsSection from '../../calendar/components/settings/CalendarSettingsSection';
-import CalendarSettingsSectionHeaderText from '../../calendar/components/settings/CalendarSettingsSectionHeaderText';
-import ClockSettingsSection from '../../clock/components/settings/ClockSettingsSection';
-import ClockSettingsSectionHeaderText from '../../clock/components/settings/ClockSettingsSectionHeaderText';
-import CommandsSettingsSection from '../../commands/components/settings/CommandsSettingsSection';
-import CommandsSettingsSectionHeaderText from '../../commands/components/settings/CommandsSettingsSectionHeaderText';
-import GreetingSettingsSection from '../../greeting/components/settings/GreetingSettingsSection';
-import GreetingSettingsSectionHeaderText from '../../greeting/components/settings/GreetingSettingsSectionHeaderText';
-import MoodSettingsSection from '../../mood/components/settings/MoodSettingsSection';
-import MoodSettingsSectionHeaderText from '../../mood/components/settings/MoodSettingsSectionHeaderText';
-import NotesSettingsSection from '../../notes/components/settings/NotesSettingsSection';
-import NotesSettingsSectionHeaderText from '../../notes/components/settings/NotesSettingsSectionHeaderText';
-import QuoteSettingsSection from '../../quote/components/settings/QuoteSettingsSection';
-import QuoteSettingsSectionHeaderText from '../../quote/components/settings/QuoteSettingsSectionHeaderText';
-import SearchSettingsSection from '../../search/components/settings/SearchSettingsSection';
-import SearchSettingsSectionHeaderText from '../../search/components/settings/SearchSettingsSectionHeaderText';
-import TasksSettingsSection from '../../tasks/components/settings/TasksSettingsSection';
-import TasksSettingsSectionHeaderText from '../../tasks/components/settings/TasksSettingsSectionHeaderText';
+import CalendarSettingsSection from '../../calendar/components/calendar-settings/CalendarSettingsSection';
+import CalendarSettingsSectionHeaderText from '../../calendar/components/calendar-settings/CalendarSettingsSectionHeaderText';
+import ClockSettingsSection from '../../clock/components/clock-settings/ClockSettingsSection';
+import ClockSettingsSectionHeaderText from '../../clock/components/clock-settings/ClockSettingsSectionHeaderText';
+import CommandsSettingsSection from '../../commands/components/commands-settings/CommandsSettingsSection';
+import CommandsSettingsSectionHeaderText from '../../commands/components/commands-settings/CommandsSettingsSectionHeaderText';
+import GreetingSettingsSection from '../../greeting/components/greeting-settings/GreetingSettingsSection';
+import GreetingSettingsSectionHeaderText from '../../greeting/components/greeting-settings/GreetingSettingsSectionHeaderText';
+import MoodSettingsSection from '../../mood/components/mood-settings/MoodSettingsSection';
+import MoodSettingsSectionHeaderText from '../../mood/components/mood-settings/MoodSettingsSectionHeaderText';
+import NotesSettingsSection from '../../notes/components/notes-settings/NotesSettingsSection';
+import NotesSettingsSectionHeaderText from '../../notes/components/notes-settings/NotesSettingsSectionHeaderText';
+import QuoteSettingsSection from '../../quote/components/quote-settings/QuoteSettingsSection';
+import QuoteSettingsSectionHeaderText from '../../quote/components/quote-settings/QuoteSettingsSectionHeaderText';
+import SearchSettingsSection from '../../search/components/search-settings/SearchSettingsSection';
+import SearchSettingsSectionHeaderText from '../../search/components/search-settings/SearchSettingsSectionHeaderText';
+import TasksSettingsSection from '../../tasks/components/tasks-settings/TasksSettingsSection';
+import TasksSettingsSectionHeaderText from '../../tasks/components/tasks-settings/TasksSettingsSectionHeaderText';
 // import WeatherSettingsSection from '../../weather/components/settings/WeatherSettingsSection';
 // import WeatherSettingsSectionHeaderText from '../../weather/components/settings/WeatherSettingsSectionHeaderText';
 import { useSettingsStore } from '../state/settingsStore';
-import GeneralSettingsSection from './general/GeneralSettingsSection';
-import GeneralSettingsSectionHeaderText from './general/GeneralSettingsSectionHeaderText';
+import GeneralSettingsSection from './general-settings/GeneralSettingsSection';
+import GeneralSettingsSectionHeaderText from './general-settings/GeneralSettingsSectionHeaderText';
 
 const tabs = [
   {

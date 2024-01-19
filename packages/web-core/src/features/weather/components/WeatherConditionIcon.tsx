@@ -12,7 +12,7 @@ import {
   TiWeatherWindyCloudy,
 } from 'react-icons/ti';
 
-import { useWeatherStore } from '../../state/weatherStore';
+import { useWeatherStore } from '../state/weatherStore';
 
 const WeatherConditionIcon: React.FC<IconBaseProps> = ({ ...props }) => {
   const { weather } = useWeatherStore();

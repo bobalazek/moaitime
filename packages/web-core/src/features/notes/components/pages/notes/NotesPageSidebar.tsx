@@ -4,7 +4,7 @@ import { Input } from '@moaitime/web-ui';
 
 import { useBreakpoint } from '../../../../core/hooks/useBreakpoint';
 import { useNotesStore } from '../../../state/notesStore';
-import NoteItem from '../../common/NoteItem';
+import NoteItem from '../../note-item/NoteItem';
 import NotesPageSidebarTopButtons from './NotesPageSidebarTopButtons';
 
 const NotesPageSidebar = () => {

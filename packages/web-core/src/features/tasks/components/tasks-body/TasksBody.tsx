@@ -1,6 +1,6 @@
 import { useListsStore } from '../../state/listsStore';
-import TasksForm from '../tasks/TasksForm';
-import TasksList from '../tasks/TasksList';
+import TasksForm from '../tasks-list/TasksForm';
+import TasksList from '../tasks-list/TasksList';
 import TasksBodyHeader from './TasksBodyHeader';
 
 export default function TasksBody() {

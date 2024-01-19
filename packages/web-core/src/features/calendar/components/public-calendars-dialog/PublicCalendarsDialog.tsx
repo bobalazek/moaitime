@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, ScrollArea } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
-import CalendarItem from '../common/CalendarItem';
+import CalendarItem from '../calendar-item/CalendarItem';
 
 export default function PublicCalendarsDialog() {
   const {

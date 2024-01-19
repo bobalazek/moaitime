@@ -5,7 +5,7 @@ import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 import { useAuthUserSetting } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
 import { useWeatherStore } from '../state/weatherStore';
-import WeatherConditionIcon from './misc/WeatherConditionIcon';
+import WeatherConditionIcon from './WeatherConditionIcon';
 
 export default function WeatherCommandsList() {
   const { setPopoverOpen } = useWeatherStore();

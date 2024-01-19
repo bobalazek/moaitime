@@ -13,8 +13,8 @@ import {
 
 import { useListsStore } from '../../../tasks/state/listsStore';
 import { useCalendarStore } from '../../state/calendarStore';
-import CalendarItem from '../common/CalendarItem';
-import ListItem from '../common/ListItem';
+import CalendarItem from '../calendar-item/CalendarItem';
+import ListItem from '../list-item/ListItem';
 import CalendarSettingsDialogMyCalendarsActions from './CalendarSettingsDialogMyCalendarsActions';
 import CalendarSettingsDialogUserCalendarsActions from './CalendarSettingsDialogUserCalendarsActions';
 

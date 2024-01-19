@@ -27,7 +27,7 @@ export default function PublicCalendarsDialog() {
           </div>
         )}
         {publicCalendars.length > 0 && (
-          <ScrollArea className="h-[360px]">
+          <ScrollArea className="max-h-[calc(100vh-12rem)]">
             {publicCalendars.map((calendar) => {
               const userCalendar = userCalendarsMap.get(calendar.id);
 
@@ -36,7 +36,8 @@ export default function PublicCalendarsDialog() {
                   key={calendar.id}
                   calendar={calendar}
                   userCalendar={userCalendar}
-                  showAddUserCalendar
+                  showUserCalendarActions
+                  showSharedText
                   hideCheckbox
                 />
               );

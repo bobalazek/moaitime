@@ -12,9 +12,13 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { UserCalendar } from '@moaitime/database-core';
-import { calendarsManager } from '@moaitime/database-services';
-import { CreateUserCalendar, UpdateUserCalendar, User } from '@moaitime/shared-common';
+import { calendarsManager, usersManager } from '@moaitime/database-services';
+import {
+  CreateUserCalendar,
+  UpdateUserCalendar,
+  User,
+  UserCalendar,
+} from '@moaitime/shared-common';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
@@ -33,25 +37,23 @@ export class UserCalendarsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':userCalendarId')
-  async view(
-    @Req() req: Request,
-    @Param('userCalendarId') userCalendarId: string
-  ): Promise<AbstractResponseDto<UserCalendar | null>> {
-    const data = await calendarsManager.getUserCalendar(req.user.id, userCalendarId);
-
-    return {
-      success: true,
-      data,
-    };
-  }
-
-  @UseGuards(AuthenticatedGuard)
   @Post()
   async create(
     @Req() req: Request,
     @Body() body: CreateUserCalendar
   ): Promise<AbstractResponseDto<User>> {
+    const calendarsMaxUserCalendarsPerUserCount = await usersManager.getUserLimits(
+      req.user,
+      'calendarsMaxUserCalendarsPerUserCount'
+    );
+
+    const calendarsCount = await calendarsManager.countUserCalendarsByUserId(req.user.id);
+    if (calendarsCount >= calendarsMaxUserCalendarsPerUserCount) {
+      throw new ForbiddenException(
+        `You have reached the maximum number of shared calendars per user (${calendarsMaxUserCalendarsPerUserCount}).`
+      );
+    }
+
     const canView = await calendarsManager.userCanView(req.user.id, body.calendarId);
     if (!canView) {
       throw new ForbiddenException('You cannot add this calendar');
@@ -84,11 +86,6 @@ export class UserCalendarsController {
     @Param('userCalendarId') userCalendarId: string,
     @Body() body: UpdateUserCalendar
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await calendarsManager.userCanUpdateUserCalendar(req.user.id, userCalendarId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot update this shared calendar');
-    }
-
     await calendarsManager.updateUserCalendar(req.user.id, userCalendarId, body);
 
     return {

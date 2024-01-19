@@ -10,6 +10,7 @@ export type UserLimits = {
   tagsMaxPerUserCount: number;
   calendarsMaxPerUserCount: number;
   calendarsMaxEventsPerCalendarCount: number;
+  calendarsMaxUserCalendarsPerUserCount: number;
   notesMaxPerUserCount: number;
 };
 
@@ -136,6 +137,7 @@ export class UsersManager {
       tagsMaxPerUserCount: 20,
       calendarsMaxPerUserCount: 10,
       calendarsMaxEventsPerCalendarCount: 500,
+      calendarsMaxUserCalendarsPerUserCount: 10,
       notesMaxPerUserCount: 100,
     };
 

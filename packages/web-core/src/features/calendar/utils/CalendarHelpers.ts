@@ -202,17 +202,6 @@ export const getUserCalendars = async () => {
   return response.data ?? [];
 };
 
-export const getUserCalendar = async (userCalendarId: string): Promise<UserCalendar> => {
-  const response = await fetchJson<ResponseInterface<UserCalendar>>(
-    `${API_URL}/api/v1/user-calendars/${userCalendarId}`,
-    {
-      method: 'GET',
-    }
-  );
-
-  return response.data as UserCalendar;
-};
-
 export const addUserCalendar = async (userCalendar: CreateUserCalendar): Promise<UserCalendar> => {
   const response = await fetchJson<ResponseInterface<UserCalendar>>(
     `${API_URL}/api/v1/user-calendars`,

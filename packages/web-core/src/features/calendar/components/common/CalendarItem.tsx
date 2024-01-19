@@ -9,16 +9,18 @@ import CalendarItemActions from './CalendarItemActions';
 
 export interface CalendarItemProps {
   calendar: Calendar;
-  hideCheckbox?: boolean;
   userCalendar?: UserCalendar;
-  showAddUserCalendar?: boolean;
+  hideCheckbox?: boolean;
+  showSharedText?: boolean;
+  showUserCalendarActions?: boolean;
 }
 
 export default function CalendarItem({
   calendar,
-  hideCheckbox,
   userCalendar,
-  showAddUserCalendar,
+  hideCheckbox,
+  showSharedText,
+  showUserCalendarActions,
 }: CalendarItemProps) {
   const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
 
@@ -64,12 +66,14 @@ export default function CalendarItem({
         )}
         <div className="break-words px-6" data-test="calendar--settings-dialog--calendar--name">
           <span>{calendar.name}</span>
-          {userCalendar && <span className="text-muted-foreground text-xs"> (shared)</span>}
+          {showSharedText && userCalendar && (
+            <span className="text-muted-foreground text-xs"> (shared)</span>
+          )}
         </div>
         <CalendarItemActions
           calendar={calendar}
           userCalendar={userCalendar}
-          showAddUserCalendar={showAddUserCalendar}
+          showUserCalendarActions={showUserCalendarActions}
         />
       </div>
     </div>

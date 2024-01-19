@@ -15,10 +15,7 @@ export const CalendarSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   userId: z.string(),
-  permissions: PermissionsSchema.extend({
-    canAddUserCalendar: z.boolean().optional(),
-    canUpdateUserCalendar: z.boolean().optional(),
-  }).optional(),
+  permissions: PermissionsSchema,
 });
 
 export const CreateCalendarSchema = z.object({

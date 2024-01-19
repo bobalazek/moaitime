@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  ScrollArea,
 } from '@moaitime/web-ui';
 
 import { useListsStore } from '../../../tasks/state/listsStore';
@@ -42,48 +43,50 @@ export default function CalendarSettingsDialog() {
             Here you are able to specify the which events and tasks you want to see.
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4">
-          <div className="mb-2 flex items-center justify-between">
-            <h3 className="font-bold">My Calendars</h3>
-            <CalendarSettingsDialogMyCalendarsActions />
+        <ScrollArea className="max-h-[calc(100vh-12rem)]">
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="font-bold">My Calendars</h3>
+              <CalendarSettingsDialogMyCalendarsActions />
+            </div>
+            {calendars.length === 0 && (
+              <p className="text-xs text-gray-500">You do not have any calendars at the moment.</p>
+            )}
+            {calendars.map((calendar) => (
+              <CalendarItem key={calendar.id} calendar={calendar} />
+            ))}
           </div>
-          {calendars.length === 0 && (
-            <p className="text-xs text-gray-500">You do not have any calendars at the moment.</p>
-          )}
-          {calendars.map((calendar) => (
-            <CalendarItem key={calendar.id} calendar={calendar} />
-          ))}
-        </div>
-        <div className="mt-4">
-          <div className="mb-2 flex items-center justify-between">
-            <h3 className="font-bold">Shared Calendars</h3>
-            <CalendarSettingsDialogUserCalendarsActions />
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="font-bold">Shared Calendars</h3>
+              <CalendarSettingsDialogUserCalendarsActions />
+            </div>
+            {userCalendars.length === 0 && (
+              <p className="text-xs text-gray-500">
+                You do not have any shared calendars at the moment.
+              </p>
+            )}
+            {userCalendars.map((userCalendar) => (
+              <CalendarItem
+                key={userCalendar.id}
+                calendar={userCalendar.calendar}
+                userCalendar={userCalendar}
+                showUserCalendarActions
+              />
+            ))}
           </div>
-          {userCalendars.length === 0 && (
-            <p className="text-xs text-gray-500">
-              You do not have any shared calendars at the moment.
-            </p>
-          )}
-          {userCalendars.map((userCalendar) => (
-            <CalendarItem
-              key={userCalendar.id}
-              calendar={userCalendar.calendar}
-              userCalendar={userCalendar}
-              showAddUserCalendar
-            />
-          ))}
-        </div>
-        <div className="mt-4">
-          <div className="mb-2 flex items-center justify-between">
-            <h3 className="font-bold">My Lists</h3>
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="font-bold">My Lists</h3>
+            </div>
+            {lists.length === 0 && (
+              <p className="text-xs text-gray-500">You do not have any lists at the moment.</p>
+            )}
+            {lists.map((list) => (
+              <ListItem key={list.id} list={list} />
+            ))}
           </div>
-          {lists.length === 0 && (
-            <p className="text-xs text-gray-500">You do not have any lists at the moment.</p>
-          )}
-          {lists.map((list) => (
-            <ListItem key={list.id} list={list} />
-          ))}
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

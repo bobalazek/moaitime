@@ -19,7 +19,7 @@ export default function DeletedCalendarsDialog() {
           </div>
         )}
         {deletedCalendars.length > 0 && (
-          <ScrollArea className="h-[360px]">
+          <ScrollArea className="max-h-[calc(100vh-12rem)]">
             {deletedCalendars.map((calendar) => (
               <CalendarItem key={calendar.id} calendar={calendar} hideCheckbox />
             ))}

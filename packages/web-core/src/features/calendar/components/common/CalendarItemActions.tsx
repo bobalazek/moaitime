@@ -16,11 +16,11 @@ const CalendarItemActions = memo(
   ({
     calendar,
     userCalendar,
-    showAddUserCalendar,
+    showUserCalendarActions,
   }: {
     calendar: Calendar;
     userCalendar?: UserCalendar;
-    showAddUserCalendar?: boolean;
+    showUserCalendarActions?: boolean;
   }) => {
     const {
       setSelectedUserCalendarDialogOpen,
@@ -196,7 +196,7 @@ const CalendarItemActions = memo(
       );
     }
 
-    if (showAddUserCalendar && !userCalendar) {
+    if (showUserCalendarActions && !userCalendar) {
       actions.push(
         <DropdownMenuItem
           key="add-shared"
@@ -209,7 +209,7 @@ const CalendarItemActions = memo(
       );
     }
 
-    if (showAddUserCalendar && userCalendar) {
+    if (showUserCalendarActions && userCalendar) {
       actions.push(
         <DropdownMenuItem
           key="edit-shared"

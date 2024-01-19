@@ -10,7 +10,11 @@ import {
   UserCalendar,
   userCalendars,
 } from '@moaitime/database-core';
-import { Calendar as ApiCalendar, UpdateUserCalendar } from '@moaitime/shared-common';
+import {
+  Calendar as ApiCalendar,
+  UserCalendar as ApiUserCalendar,
+  UpdateUserCalendar,
+} from '@moaitime/shared-common';
 
 import { UsersManager, usersManager } from '../auth/UsersManager';
 
@@ -61,6 +65,18 @@ export class CalendarsManager {
       })
       .from(calendars)
       .where(and(eq(calendars.userId, userId), isNull(calendars.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  async countUserCalendarsByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(userCalendars.id).mapWith(Number),
+      })
+      .from(userCalendars)
+      .where(eq(userCalendars.userId, userId))
       .execute();
 
     return result[0].count ?? 0;
@@ -119,29 +135,6 @@ export class CalendarsManager {
 
   async userCanDelete(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
     return this.userCanUpdate(userId, calendarOrCalendarId);
-  }
-
-  async userCanAddUserCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
-    const calendar =
-      typeof calendarOrCalendarId === 'string'
-        ? await this.findOneById(calendarOrCalendarId)
-        : calendarOrCalendarId;
-    if (!calendar) {
-      return false;
-    }
-
-    return calendar.isPublic;
-  }
-
-  async userCanUpdateUserCalendar(userId: string, calendarOrCalendarId: string | Calendar) {
-    // TODO: this will do far too many queries. Cache and fix it!
-
-    const userCalendar = await this.getUserCalendar(
-      userId,
-      typeof calendarOrCalendarId === 'string' ? calendarOrCalendarId : calendarOrCalendarId.id
-    );
-
-    return !!userCalendar;
   }
 
   // Settings
@@ -256,7 +249,7 @@ export class CalendarsManager {
   }
 
   // User Calendars
-  async getUserCalendarsByUserId(userId: string): Promise<UserCalendar[]> {
+  async getUserCalendarsByUserId(userId: string): Promise<ApiUserCalendar[]> {
     const rows = await getDatabase()
       .select()
       .from(userCalendars)
@@ -265,17 +258,21 @@ export class CalendarsManager {
       .orderBy(asc(calendars.name))
       .execute();
 
-    return rows.map((row) => {
+    const result: ApiUserCalendar[] = [];
+    for (const row of rows) {
       const { calendars, user_calendars } = row;
+      const calendar = calendars as Calendar;
+      const apiCalendars = await this.convertToApiResponse([calendar], userId);
 
-      return {
+      result.push({
         ...user_calendars,
-        calendar: {
-          ...calendars,
-          permissions: this.getCalendarPermissions(userId, calendars!),
-        },
-      };
-    });
+        calendar: apiCalendars[0],
+        createdAt: user_calendars.createdAt!.toISOString(),
+        updatedAt: user_calendars.updatedAt!.toISOString(),
+      });
+    }
+
+    return result;
   }
 
   async getUserCalendar(userId: string, userCalendarId: string): Promise<UserCalendar | null> {
@@ -287,11 +284,6 @@ export class CalendarsManager {
   }
 
   async addUserCalendarToUser(userId: string, calendarId: string) {
-    const canView = await this.userCanAddUserCalendar(userId, calendarId);
-    if (!canView) {
-      return;
-    }
-
     const row = await getDatabase().query.userCalendars.findFirst({
       where: and(eq(userCalendars.userId, userId), eq(userCalendars.calendarId, calendarId)),
     });
@@ -322,11 +314,6 @@ export class CalendarsManager {
       return;
     }
 
-    const canView = await this.userCanAddUserCalendar(userId, userCalendar.calendarId);
-    if (!canView) {
-      return;
-    }
-
     await getDatabase()
       .update(userCalendars)
       .set(data)
@@ -342,18 +329,11 @@ export class CalendarsManager {
     const canView = await this.userCanView(userId, calendarOrCalendarId);
     const canUpdate = await this.userCanUpdate(userId, calendarOrCalendarId);
     const canDelete = await this.userCanDelete(userId, calendarOrCalendarId);
-    const canAddUserCalendar = await this.userCanAddUserCalendar(userId, calendarOrCalendarId);
-    const canUpdateUserCalendar = await this.userCanUpdateUserCalendar(
-      userId,
-      calendarOrCalendarId
-    );
 
     return {
       canView,
       canUpdate,
       canDelete,
-      canAddUserCalendar,
-      canUpdateUserCalendar,
     };
   }
 

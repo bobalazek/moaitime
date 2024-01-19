@@ -13,7 +13,7 @@ export default function CommandsAppButton() {
         setCommandsDialogOpen(true);
       }}
       title="Commands"
-      data-test="commands--dialog--trigger-button"
+      data-test="commands--open-button"
     />
   );
 }

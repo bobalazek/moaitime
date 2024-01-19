@@ -8,25 +8,25 @@ describe('commands.cy.ts', () => {
   });
 
   it('should be shown by default', () => {
-    cy.getBySel('commands--dialog--trigger-button').should('exist');
+    cy.getBySel('commands--open-button').should('exist');
   });
 
   it('should be hidden if disabled in the settings', () => {
-    cy.getBySel('commands--dialog--trigger-button').should('exist');
+    cy.getBySel('commands--open-button').should('exist');
 
     cy.toggleSettingsSwitch('Commands', { commandsEnabled: false });
 
-    cy.getBySel('commands--dialog--trigger-button').should('not.exist');
+    cy.getBySel('commands--open-button').should('not.exist');
   });
 
   it('should open commands dialog on click', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.getBySel('commands--dialog').should('exist');
   });
 
   it('should exit commands dialog on click', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.getBySel('commands--dialog').find('button').first().click();
 
@@ -34,7 +34,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should exit commands dialog if we click outside the popover', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.getBySel('commands--dialog').should('exist');
 
@@ -44,7 +44,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should open Tasks from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="open tasks"]').click();
 
@@ -52,7 +52,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should open add New List from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="new list"]').click();
 
@@ -60,7 +60,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should open Open Inbox List from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="open inbox list"]').click();
 
@@ -68,7 +68,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should open Calendar from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="open calendar"]').click();
 
@@ -76,7 +76,7 @@ describe('commands.cy.ts', () => {
   });
 
   it.skip('should open Weather from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="open weather"]').click();
 
@@ -84,7 +84,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should open Settings from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="open settings"]').click();
 
@@ -92,7 +92,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should open Notes from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="open notes"]').click();
 
@@ -100,7 +100,7 @@ describe('commands.cy.ts', () => {
   });
 
   it('should open Mood from commands dialog', () => {
-    cy.getBySel('commands--dialog--trigger-button').click();
+    cy.getBySel('commands--open-button').click();
 
     cy.get('[data-value="open mood"]').click();
 

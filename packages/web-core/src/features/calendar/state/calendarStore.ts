@@ -202,12 +202,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return calendars;
   },
   addCalendar: async (calendar: CreateCalendar) => {
-    const { reloadCalendars } = get();
+    const { reloadCalendars, reloadCalendarEntries } = get();
 
     const addedTask = await addCalendar(calendar);
 
     await reloadCalendars();
-    await getCalendarEntries();
+    await reloadCalendarEntries();
 
     // We update the settings, so we need to refresh the account
     await useAuthStore.getState().reloadAccount();
@@ -237,7 +237,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     await reloadCalendars();
     await reloadCalendarEntries();
-
     await reloadAccount();
 
     if (deletedCalendarsDialogOpen) {
@@ -259,7 +258,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     await reloadCalendars();
     await reloadCalendarEntries();
-
     await reloadAccount();
 
     if (deletedCalendarsDialogOpen) {
@@ -275,7 +273,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await addVisibleCalendar(calendarId);
 
     await reloadAccount();
-
     await reloadCalendarEntries();
   },
   removeVisibleCalendar: async (calendarId: string) => {
@@ -285,7 +282,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await removeVisibleCalendar(calendarId);
 
     await reloadAccount();
-
     await reloadCalendarEntries();
   },
   // Shared
@@ -304,9 +300,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     const addedUserCalendar = await addUserCalendar(userCalendar);
 
     await reloadUserCalendars();
-
     await reloadAccount();
-
     await reloadCalendarEntries();
 
     return addedUserCalendar;
@@ -318,9 +312,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     const removedUserCalendar = await deleteUserCalendar(userCalendarId);
 
     await reloadUserCalendars();
-
     await reloadAccount();
-
     await reloadCalendarEntries();
 
     return removedUserCalendar;
@@ -331,7 +323,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     const editedTask = await updateUserCalendar(calendarId, userCalendar);
 
     await reloadUserCalendars();
-
     await reloadCalendarEntries();
 
     return editedTask;

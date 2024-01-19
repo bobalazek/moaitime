@@ -104,10 +104,11 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     return editedList;
   },
   deleteList: async (listId: string) => {
-    const { reloadLists, selectedList } = get();
+    const { reloadLists, reloadSelectedListTasks, selectedList } = get();
     const deletedList = await deleteList(listId);
 
     await reloadLists();
+    await reloadSelectedListTasks();
 
     if (selectedList?.id === listId) {
       set({
@@ -119,26 +120,24 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     return deletedList;
   },
   addVisibleList: async (listId: string) => {
-    const { reloadCalendarEntries } = useCalendarStore.getState();
+    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
     const { reloadAccount } = useAuthStore.getState();
 
     await addVisibleList(listId);
 
     // We update the settings, so we need to refresh the account
     await reloadAccount();
-
-    await reloadCalendarEntries();
+    await reloadCalendarEntriesDebounced();
   },
   removeVisibleList: async (listId: string) => {
-    const { reloadCalendarEntries } = useCalendarStore.getState();
+    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
     const { reloadAccount } = useAuthStore.getState();
 
     await removeVisibleList(listId);
 
     // Same as above
     await reloadAccount();
-
-    await reloadCalendarEntries();
+    await reloadCalendarEntriesDebounced();
   },
   // Selected
   selectedList: null,
@@ -196,7 +195,6 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
       selectedListTasksIncludeCompleted,
       selectedListTasksIncludeDeleted,
     } = get();
-    const { calendars, reloadCalendarEntries } = useCalendarStore.getState();
 
     const selectedListTasks = selectedList
       ? await getTasksForList(selectedList.id, {
@@ -210,11 +208,6 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     set({
       selectedListTasks,
     });
-
-    // If we are on the calendar page, we need to reload the calendar entries
-    if (calendars.length > 0) {
-      await reloadCalendarEntries();
-    }
   },
   setSelectedListTasksSortField: async (selectedListTasksSortField: TasksListSortFieldEnum) => {
     const { reloadSelectedListTasks } = get();

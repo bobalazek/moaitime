@@ -44,8 +44,8 @@ export default function CalendarSettingsDialog() {
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
-          <div className="mt-4">
-            <div className="mb-2 flex items-center justify-between">
+          <div>
+            <div className="flex items-center justify-between">
               <h3 className="font-bold">My Calendars</h3>
               <CalendarSettingsDialogMyCalendarsActions />
             </div>
@@ -57,7 +57,7 @@ export default function CalendarSettingsDialog() {
             ))}
           </div>
           <div className="mt-4">
-            <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <h3 className="font-bold">Shared Calendars</h3>
               <CalendarSettingsDialogUserCalendarsActions />
             </div>
@@ -76,7 +76,7 @@ export default function CalendarSettingsDialog() {
             ))}
           </div>
           <div className="mt-4">
-            <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <h3 className="font-bold">My Lists</h3>
             </div>
             {lists.length === 0 && (

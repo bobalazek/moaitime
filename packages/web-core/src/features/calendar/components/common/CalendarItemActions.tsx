@@ -60,10 +60,6 @@ const CalendarItemActions = memo(
 
         sonnerToast.success(`Calendar "${calendar.name}" undeleted`, {
           description: 'The calendar was successfully undeleted!',
-          action: {
-            label: 'Undo',
-            onClick: () => onUndeleteButtonClick(),
-          },
         });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function
@@ -88,10 +84,6 @@ const CalendarItemActions = memo(
 
         sonnerToast.success(`Calendar "${calendar.name}" added to shared calendars`, {
           description: 'The calendar was successfully added to your shared calendars!',
-          action: {
-            label: 'Undo',
-            onClick: () => onRemoveFromSharedButtonClick(),
-          },
         });
       } catch (error) {
         // We are already handling the error by showing a toast message inside in the fetch function

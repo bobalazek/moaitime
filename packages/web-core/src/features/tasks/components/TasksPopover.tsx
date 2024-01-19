@@ -40,7 +40,11 @@ export default function TasksPopover() {
           {/* We need an empty div so it knows where to place that popover */}
           <div className="absolute bottom-0 right-4" />
         </PopoverTrigger>
-        <PopoverContent className="mb-4 w-full" align="end" data-test="tasks--popover">
+        <PopoverContent
+          className="sm: mb-4 w-full min-w-[320px] md:min-w-[380px]"
+          align="end"
+          data-test="tasks--popover"
+        >
           <TasksBody />
         </PopoverContent>
       </Popover>

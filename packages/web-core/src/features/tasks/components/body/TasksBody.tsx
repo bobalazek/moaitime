@@ -9,17 +9,15 @@ export default function TasksBody() {
   return (
     <div data-test="tasks--body">
       <TasksBodyHeader />
-      <div className="w-[360px]">
-        {!selectedList && (
-          <p className="p-4 text-center text-gray-400">Select or create a list to get started.</p>
-        )}
-        {selectedList && (
-          <>
-            <TasksList />
-            <TasksForm />
-          </>
-        )}
-      </div>
+      {!selectedList && (
+        <p className="p-4 text-center text-gray-400">Select or create a list to get started.</p>
+      )}
+      {selectedList && (
+        <>
+          <TasksList />
+          <TasksForm />
+        </>
+      )}
     </div>
   );
 }

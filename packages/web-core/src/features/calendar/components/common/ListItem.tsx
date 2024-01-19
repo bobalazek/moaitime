@@ -6,12 +6,12 @@ import { Checkbox } from '@moaitime/web-ui';
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useListsStore } from '../../../tasks/state/listsStore';
 
-export interface CalendarSettingsSheetListItemProps {
+export interface ListItemProps {
   list: List;
   hideCheckbox?: boolean;
 }
 
-export default function ListItem({ list, hideCheckbox }: CalendarSettingsSheetListItemProps) {
+export default function ListItem({ list, hideCheckbox }: ListItemProps) {
   const { addVisibleList, removeVisibleList } = useListsStore();
 
   const visibleListIds = useAuthUserSetting('calendarVisibleListIds', [] as string[]);

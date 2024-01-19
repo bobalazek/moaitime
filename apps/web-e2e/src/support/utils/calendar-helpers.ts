@@ -17,7 +17,7 @@ export function openCalendar() {
 }
 
 export function openCalendarHeaderSettings() {
-  cy.getBySel('calendar--header--settings-button').click();
+  cy.getBySel('calendar--header--open-settings-button').click();
 
   cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 }

@@ -10,7 +10,7 @@ import {
 
 import { useCalendarStore } from '../../state/calendarStore';
 
-export default function CalendarSettingsSheetUserCalendarsActions() {
+export default function CalendarSettingsDialogUserCalendarsActions() {
   const { setPublicCalendarsDialogOpen } = useCalendarStore();
   const [open, setOpen] = useState(false);
 

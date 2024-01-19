@@ -7,7 +7,7 @@ import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItemActions from './CalendarItemActions';
 
-export interface CalendarSettingsSheetCalendarItemProps {
+export interface CalendarItemProps {
   calendar: Calendar;
   hideCheckbox?: boolean;
   userCalendar?: UserCalendar;
@@ -19,7 +19,7 @@ export default function CalendarItem({
   hideCheckbox,
   userCalendar,
   showAddUserCalendar,
-}: CalendarSettingsSheetCalendarItemProps) {
+}: CalendarItemProps) {
   const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
 
   const visibleCalendarIds = useAuthUserSetting('calendarVisibleCalendarIds', [] as string[]);
@@ -62,7 +62,7 @@ export default function CalendarItem({
             data-test="calendar--calendar-item--visible-checkbox"
           />
         )}
-        <div className="break-words px-6" data-test="calendar--settings-sheet--calendar--name">
+        <div className="break-words px-6" data-test="calendar--settings-dialog--calendar--name">
           <span>{calendar.name}</span>
           {userCalendar && <span className="text-muted-foreground text-xs"> (shared)</span>}
         </div>

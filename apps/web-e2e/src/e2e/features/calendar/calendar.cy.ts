@@ -169,9 +169,9 @@ describe('calendar.cy.ts', () => {
   it('should open calendar settings dialog in calendar', () => {
     openCalendar();
 
-    cy.getBySel('calendar--header--settings-button').click();
+    cy.getBySel('calendar--header--open-settings-button').click();
 
-    cy.getBySel('calendar--settings-sheet').should('exist');
+    cy.getBySel('calendar--settings-dialog').should('exist');
   });
 
   it('should add a new calendar in calendar settings dialog', () => {
@@ -183,7 +183,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('New Calendar');
   });
 
   it('should open edit dialog in calendar settings dialog', () => {
@@ -195,7 +195,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -216,7 +216,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -280,7 +280,7 @@ describe('calendar.cy.ts', () => {
 
     cy.wait(1000);
 
-    cy.getBySel('calendar--settings-sheet').should('exist');
+    cy.getBySel('calendar--settings-dialog').should('exist');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -301,7 +301,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -310,7 +310,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Delete').click();
 
-    cy.getBySel('calendar--settings-sheet').contains('New Calendar').should('not.exist');
+    cy.getBySel('calendar--settings-dialog').contains('New Calendar').should('not.exist');
   });
 
   it('should open deleted calendars dialog', () => {
@@ -337,7 +337,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -346,7 +346,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Delete').click();
 
-    cy.getBySel('calendar--settings-sheet').contains('New Calendar').should('not.exist');
+    cy.getBySel('calendar--settings-dialog').contains('New Calendar').should('not.exist');
 
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
@@ -366,7 +366,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -375,7 +375,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Delete').click();
 
-    cy.getBySel('calendar--settings-sheet').contains('New Calendar').should('not.exist');
+    cy.getBySel('calendar--settings-dialog').contains('New Calendar').should('not.exist');
 
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
@@ -397,7 +397,7 @@ describe('calendar.cy.ts', () => {
 
     cy.wait(1000);
 
-    cy.getBySel('calendar--settings-sheet')
+    cy.getBySel('calendar--settings-dialog')
       .find('div[data-test="calendar--calendar-item"]')
       .contains('New Calendar');
   });
@@ -411,7 +411,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--edit-dialog').find('button[type="submit"]').contains('Save').click();
 
-    cy.getBySel('calendar--settings-sheet--calendar--name').contains('New Calendar');
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('New Calendar');
 
     cy.getBySel('calendar--calendar-item')
       .find('button[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
@@ -420,7 +420,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--calendar-item--actions--dropdown-menu').contains('Delete').click();
 
-    cy.getBySel('calendar--settings-sheet').contains('New Calendar').should('not.exist');
+    cy.getBySel('calendar--settings-dialog').contains('New Calendar').should('not.exist');
 
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
@@ -444,7 +444,7 @@ describe('calendar.cy.ts', () => {
 
     cy.wait(1000);
 
-    cy.getBySel('calendar--settings-sheet')
+    cy.getBySel('calendar--settings-dialog')
       .find('div[data-test="calendar--calendar-item"]')
       .contains('New Calendar')
       .should('not.exist');
@@ -470,7 +470,7 @@ describe('calendar.cy.ts', () => {
 
     cy.wait(1000);
 
-    cy.getBySel('calendar--settings-sheet')
+    cy.getBySel('calendar--settings-dialog')
       .find('div[data-test="calendar--calendar-item"]')
       .contains('New Calendar')
       .should('not.exist');

@@ -49,9 +49,9 @@ export type CalendarStore = {
   selectedDays: Date[];
   reloadSelectedDays: () => Promise<void>;
   isTodayInSelectedDaysRange: boolean;
-  // Settings Sheet
-  settingsSheetOpen: boolean;
-  setSettingsSheetOpen: (settingsSheetOpen: boolean) => void;
+  // Settings Dialog
+  settingsDialogOpen: boolean;
+  setSettingsDialogOpen: (settingsDialogOpen: boolean) => void;
   /********** Calendars **********/
   calendars: Calendar[];
   reloadCalendars: () => Promise<Calendar[]>;
@@ -185,11 +185,11 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     await reloadCalendarEntries();
   },
   isTodayInSelectedDaysRange: false,
-  // Settings Sheet
-  settingsSheetOpen: false,
-  setSettingsSheetOpen: (settingsSheetOpen: boolean) => {
+  // Settings Dialog
+  settingsDialogOpen: false,
+  setSettingsDialogOpen: (settingsDialogOpen: boolean) => {
     set({
-      settingsSheetOpen,
+      settingsDialogOpen,
     });
   },
   /********** Calendars **********/

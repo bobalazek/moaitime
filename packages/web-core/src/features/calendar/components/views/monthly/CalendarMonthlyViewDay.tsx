@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { format, isSameDay, isSameMonth } from 'date-fns';
+import { AnimatePresence, motion } from 'framer-motion';
 import { MouseEvent } from 'react';
 
 import {
@@ -17,6 +18,21 @@ export type CalendarMonthlyViewDayProps = {
   now: Date;
   calendarEntries: CalendarEntryType[];
   isFirstWeeksDay: boolean;
+};
+
+const animationVariants = {
+  initial: {
+    opacity: 0,
+    y: 100,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: -100,
+  },
 };
 
 export default function CalendarMonthlyViewDay({
@@ -86,17 +102,28 @@ export default function CalendarMonthlyViewDay({
       <div className="flex flex-col">
         {shownCalendarEntries.length > 0 && (
           <div className="mt-2 flex flex-col gap-1">
-            {shownCalendarEntries.map((calendarEntry) => (
-              <CalendarEntry key={calendarEntry.id} dayDate={date} calendarEntry={calendarEntry} />
-            ))}
-            {remainingCalendarEntriesCount > 0 && (
-              <div
-                className="cursor-pointer p-2 text-center text-sm text-gray-400 hover:text-gray-500"
-                onClick={onDayClick}
-              >
-                + {remainingCalendarEntriesCount} more
-              </div>
-            )}
+            <AnimatePresence>
+              {shownCalendarEntries.map((calendarEntry) => (
+                <motion.div
+                  key={calendarEntry.id}
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <CalendarEntry dayDate={date} calendarEntry={calendarEntry} />
+                </motion.div>
+              ))}
+              {remainingCalendarEntriesCount > 0 && (
+                <motion.div
+                  className="cursor-pointer p-2 text-center text-sm text-gray-400 hover:text-gray-500"
+                  onClick={onDayClick}
+                >
+                  + {remainingCalendarEntriesCount} more
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>

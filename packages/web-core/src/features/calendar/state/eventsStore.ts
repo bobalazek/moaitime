@@ -21,38 +21,38 @@ export type CalendarStore = {
 
 export const useEventsStore = create<CalendarStore>()((set) => ({
   addEvent: async (event: CreateEvent) => {
-    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const addedTask = await addEvent(event);
 
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return addedTask;
   },
   editEvent: async (eventId: string, event: UpdateEvent) => {
-    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const editedTask = await editEvent(eventId, event);
 
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return editedTask;
   },
   deleteEvent: async (eventId: string) => {
-    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const deletedTask = await deleteEvent(eventId);
 
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return deletedTask;
   },
   undeleteEvent: async (eventId: string) => {
-    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
 
     const undeletedTask = await undeleteEvent(eventId);
 
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return undeletedTask;
   },

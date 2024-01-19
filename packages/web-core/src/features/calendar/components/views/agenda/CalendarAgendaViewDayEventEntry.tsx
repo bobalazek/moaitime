@@ -75,7 +75,7 @@ export default function CalendarAgendaViewDayEventEntry({
         <div className="font-bold">{calendarEntry.title}</div>
         {calendarEntry.description && (
           <div
-            className="text-xs"
+            className="text-muted-foreground mt-1 text-xs"
             dangerouslySetInnerHTML={{
               __html: convertTextToHtml(calendarEntry.description),
             }}

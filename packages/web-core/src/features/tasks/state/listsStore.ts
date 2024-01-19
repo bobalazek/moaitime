@@ -119,7 +119,7 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     return deletedList;
   },
   addVisibleList: async (listId: string) => {
-    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
     const { reloadAccount } = useAuthStore.getState();
 
     await addVisibleList(listId);
@@ -127,10 +127,10 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     // We update the settings, so we need to refresh the account
     await reloadAccount();
 
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
   },
   removeVisibleList: async (listId: string) => {
-    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+    const { reloadCalendarEntries } = useCalendarStore.getState();
     const { reloadAccount } = useAuthStore.getState();
 
     await removeVisibleList(listId);
@@ -138,7 +138,7 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     // Same as above
     await reloadAccount();
 
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
   },
   // Selected
   selectedList: null,
@@ -196,7 +196,7 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
       selectedListTasksIncludeCompleted,
       selectedListTasksIncludeDeleted,
     } = get();
-    const { calendars, reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+    const { calendars, reloadCalendarEntries } = useCalendarStore.getState();
 
     const selectedListTasks = selectedList
       ? await getTasksForList(selectedList.id, {
@@ -213,7 +213,7 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
 
     // If we are on the calendar page, we need to reload the calendar entries
     if (calendars.length > 0) {
-      await reloadCalendarEntriesDebounced();
+      await reloadCalendarEntries();
     }
   },
   setSelectedListTasksSortField: async (selectedListTasksSortField: TasksListSortFieldEnum) => {

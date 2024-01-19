@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from 'framer-motion';
+
 import { CalendarEntry } from '@moaitime/shared-common';
 
 import { useListsStore } from '../../../../tasks/state/listsStore';
@@ -7,6 +9,21 @@ import CalendarAgendaViewDayEventEntry from './CalendarAgendaViewDayEventEntry';
 export type CalendarAgendaViewDayProps = {
   date: string;
   calendarEntries: CalendarEntry[];
+};
+
+const animationVariants = {
+  initial: {
+    opacity: 0,
+    y: 100,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: -100,
+  },
 };
 
 export default function CalendarAgendaViewDay({
@@ -29,24 +46,34 @@ export default function CalendarAgendaViewDay({
     <div className="flex flex-col">
       <div className="mb-2 text-lg font-bold">{dateReadable}</div>
       <div className="mb-4 flex flex-col space-y-4">
-        {calendarEntries.map((calendarEntry) => {
-          const calendar =
-            calendarEntry.raw && 'calendarId' in calendarEntry.raw
-              ? calendarsMap.get(calendarEntry.raw?.calendarId)
-              : undefined;
-          const list =
-            calendarEntry.raw && 'listId' in calendarEntry.raw
-              ? listsMap.get(calendarEntry.raw?.listId)
-              : undefined;
+        <AnimatePresence>
+          {calendarEntries.map((calendarEntry) => {
+            const calendar =
+              calendarEntry.raw && 'calendarId' in calendarEntry.raw
+                ? calendarsMap.get(calendarEntry.raw?.calendarId)
+                : undefined;
+            const list =
+              calendarEntry.raw && 'listId' in calendarEntry.raw
+                ? listsMap.get(calendarEntry.raw?.listId)
+                : undefined;
 
-          return (
-            <CalendarAgendaViewDayEventEntry
-              key={calendarEntry.id}
-              calendarEntry={calendarEntry}
-              calendarOrList={calendar || list}
-            />
-          );
-        })}
+            return (
+              <motion.div
+                key={calendarEntry.id}
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+              >
+                <CalendarAgendaViewDayEventEntry
+                  calendarEntry={calendarEntry}
+                  calendarOrList={calendar || list}
+                />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
     </div>
   );

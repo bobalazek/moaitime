@@ -1,4 +1,5 @@
 import { addMinutes } from 'date-fns';
+import { AnimatePresence, motion } from 'framer-motion';
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 
 import {
@@ -16,6 +17,21 @@ export type CalendarWeeklyViewDayProps = {
   date: string;
   isActive: boolean;
   calendarEntries: CalendarEntryWithVerticalPosition[];
+};
+
+const animationVariants = {
+  initial: {
+    opacity: 0,
+    y: 100,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: -100,
+  },
 };
 
 const totalHeight = CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX * 24;
@@ -108,18 +124,28 @@ export default function CalendarWeeklyViewDay({
       data-test="calendar--weekly-view--day"
       data-date={date}
     >
-      {calendarEntriesWithStyles.map(({ style, ...calendarEntry }) => {
-        return (
-          <CalendarEntry
-            key={calendarEntry.id}
-            dayDate={date}
-            calendarEntry={calendarEntry}
-            className="absolute"
-            style={style}
-            showTimes
-          />
-        );
-      })}
+      <AnimatePresence>
+        {calendarEntriesWithStyles.map(({ style, ...calendarEntry }) => {
+          return (
+            <motion.div
+              key={calendarEntry.id}
+              layout
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={animationVariants}
+            >
+              <CalendarEntry
+                dayDate={date}
+                calendarEntry={calendarEntry}
+                className="absolute"
+                style={style}
+                showTimes
+              />
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
       {currentTimeLineTop !== null && (
         <CalendarWeeklyViewDayCurrentTimeLine top={currentTimeLineTop} />
       )}

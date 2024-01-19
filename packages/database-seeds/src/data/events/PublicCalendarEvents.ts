@@ -10,7 +10,7 @@ import croatiaHolidays from './calendars/CroatiaHolidays';
 import cultureAndHistoryHolidays from './calendars/CultureAndHistoryHolidays';
 import czechRepublicHolidays from './calendars/CzechRepublicHolidays';
 import denmarkHolidays from './calendars/DenmarkHolidays';
-import f1Schedule2024 from './calendars/F1Schedule2024';
+import f1Schedule from './calendars/F1Schedule';
 import finlandHolidays from './calendars/FinlandHolidays';
 import frenchHolidays from './calendars/FrenchHolidays';
 import germanHolidays from './calendars/GermanHolidays';
@@ -75,5 +75,5 @@ export const publicCalendarEvents: PublicCalendarEvent[] = [
   ...jewishHolidays,
   ...sikhHolidays,
   ...cultureAndHistoryHolidays,
-  ...f1Schedule2024,
+  ...f1Schedule,
 ];

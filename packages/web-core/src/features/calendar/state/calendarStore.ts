@@ -1,5 +1,4 @@
 import { addDays, areIntervalsOverlapping, eachDayOfInterval, format } from 'date-fns';
-import { debounce } from 'lodash';
 import { create } from 'zustand';
 
 import {
@@ -106,7 +105,6 @@ export type CalendarStore = {
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   reloadCalendarEntries: () => Promise<CalendarEntry[]>;
-  reloadCalendarEntriesDebounced: () => Promise<void>;
   calendarEntriesYearly: CalendarEntryYearlyEntry[];
   reloadCalendarEntriesYearly: () => Promise<CalendarEntryYearlyEntry[]>;
 };
@@ -148,7 +146,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   // Selected Days
   selectedDays: [],
   reloadSelectedDays: async () => {
-    const { selectedDate, selectedView, reloadCalendarEntriesDebounced } = get();
+    const { selectedDate, selectedView, reloadCalendarEntries } = get();
     const { auth } = useAuthStore.getState();
 
     const generalStartDayOfWeek = auth?.user?.settings?.generalStartDayOfWeek ?? 0;
@@ -185,7 +183,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       isTodayInSelectedDaysRange,
     });
 
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
   },
   isTodayInSelectedDaysRange: false,
   // Settings Dialog
@@ -205,12 +203,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return calendars;
   },
   addCalendar: async (calendar: CreateCalendar) => {
-    const { reloadCalendars, reloadCalendarEntriesDebounced } = get();
+    const { reloadCalendars, reloadCalendarEntries } = get();
 
     const addedTask = await addCalendar(calendar);
 
     await reloadCalendars();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     // We update the settings, so we need to refresh the account
     await useAuthStore.getState().reloadAccount();
@@ -218,19 +216,19 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return addedTask;
   },
   editCalendar: async (calendarId: string, calendar: UpdateCalendar) => {
-    const { reloadCalendars, reloadCalendarEntriesDebounced } = get();
+    const { reloadCalendars, reloadCalendarEntries } = get();
 
     const editedTask = await editCalendar(calendarId, calendar);
 
     await reloadCalendars();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return editedTask;
   },
   deleteCalendar: async (calendarId: string, isHardDelete?: boolean) => {
     const {
       reloadCalendars,
-      reloadCalendarEntriesDebounced,
+      reloadCalendarEntries,
       reloadDeletedCalendars,
       deletedCalendarsDialogOpen,
     } = get();
@@ -239,7 +237,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     const deletedTask = await deleteCalendar(calendarId, isHardDelete);
 
     await reloadCalendars();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
     await reloadAccount();
 
     if (deletedCalendarsDialogOpen) {
@@ -251,7 +249,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   undeleteCalendar: async (calendarId: string) => {
     const {
       reloadCalendars,
-      reloadCalendarEntriesDebounced,
+      reloadCalendarEntries,
       reloadDeletedCalendars,
       deletedCalendarsDialogOpen,
     } = get();
@@ -260,7 +258,7 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     const undeletedTask = await undeleteCalendar(calendarId);
 
     await reloadCalendars();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
     await reloadAccount();
 
     if (deletedCalendarsDialogOpen) {
@@ -270,22 +268,22 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return undeletedTask;
   },
   addVisibleCalendar: async (calendarId: string) => {
-    const { reloadCalendarEntriesDebounced } = get();
+    const { reloadCalendarEntries } = get();
     const { reloadAccount } = useAuthStore.getState();
 
     await addVisibleCalendar(calendarId);
 
     await reloadAccount();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
   },
   removeVisibleCalendar: async (calendarId: string) => {
-    const { reloadCalendarEntriesDebounced } = get();
+    const { reloadCalendarEntries } = get();
     const { reloadAccount } = useAuthStore.getState();
 
     await removeVisibleCalendar(calendarId);
 
     await reloadAccount();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
   },
   // Shared
   userCalendars: [],
@@ -297,36 +295,36 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
     return userCalendars;
   },
   addUserCalendar: async (userCalendar: CreateUserCalendar) => {
-    const { reloadCalendarEntriesDebounced, reloadUserCalendars } = get();
+    const { reloadCalendarEntries, reloadUserCalendars } = get();
     const { reloadAccount } = useAuthStore.getState();
 
     const addedUserCalendar = await addUserCalendar(userCalendar);
 
     await reloadUserCalendars();
     await reloadAccount();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return addedUserCalendar;
   },
   deleteUserCalendar: async (userCalendarId: string) => {
-    const { reloadCalendarEntriesDebounced, reloadUserCalendars } = get();
+    const { reloadCalendarEntries, reloadUserCalendars } = get();
     const { reloadAccount } = useAuthStore.getState();
 
     const removedUserCalendar = await deleteUserCalendar(userCalendarId);
 
     await reloadUserCalendars();
     await reloadAccount();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return removedUserCalendar;
   },
   updateUserCalendar: async (calendarId: string, userCalendar: UpdateUserCalendar) => {
-    const { reloadCalendarEntriesDebounced, reloadUserCalendars } = get();
+    const { reloadCalendarEntries, reloadUserCalendars } = get();
 
     const editedTask = await updateUserCalendar(calendarId, userCalendar);
 
     await reloadUserCalendars();
-    await reloadCalendarEntriesDebounced();
+    await reloadCalendarEntries();
 
     return editedTask;
   },
@@ -444,20 +442,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     return calendarEntries;
   },
-  reloadCalendarEntriesDebounced: (() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let debouncedFn: any = null;
-
-    return async () => {
-      const { reloadCalendarEntries } = get();
-
-      if (!debouncedFn) {
-        debouncedFn = debounce(reloadCalendarEntries, 500);
-      }
-
-      debouncedFn();
-    };
-  })(),
   calendarEntriesYearly: [],
   reloadCalendarEntriesYearly: async () => {
     const { selectedDate } = get();

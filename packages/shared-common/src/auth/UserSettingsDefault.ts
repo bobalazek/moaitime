@@ -10,7 +10,6 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
 
   // Commands
   commandsEnabled: true,
-  commandsSearchButtonEnabled: true,
 
   // Weather
   weatherEnabled: true,
@@ -73,4 +72,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
       color: '#10B981',
     },
   },
+
+  // Focus
+  focusEnabled: true,
 };

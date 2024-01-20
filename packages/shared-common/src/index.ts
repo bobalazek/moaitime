@@ -42,6 +42,9 @@ export * from './core/QueueEnums';
 export * from './core/Response';
 export * from './core/ErrorResponse';
 
+// Focus
+export * from './focus/FocusSessionSchema';
+
 // Greeting
 export * from './greetings/Greeting';
 

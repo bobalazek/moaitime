@@ -14,7 +14,6 @@ export const UserSettingsSchema = z.object({
 
   // Commands
   commandsEnabled: z.boolean(),
-  commandsSearchButtonEnabled: z.boolean(),
 
   // Weather
   weatherEnabled: z.boolean(),
@@ -74,6 +73,9 @@ export const UserSettingsSchema = z.object({
 
       return scoreKeys.length === 5 && scoreKeys.every((score) => MOOD_SCORES.includes(score));
     }),
+
+  // Focus
+  focusEnabled: z.boolean(),
 });
 
 export const UpdateUserSettingsSchema = UserSettingsSchema.partial();

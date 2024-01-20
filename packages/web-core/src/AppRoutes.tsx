@@ -19,6 +19,7 @@ import ProtectedRoute from './features/core/components/ProtectedRoute';
 import PublicOnlyRoute from './features/core/components/PublicOnlyRoute';
 import HomePage from './features/core/pages/HomePage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
+import FocusPage from './features/focus/components/pages/FocusPage';
 import MoodEntryEditDialog from './features/mood/components/mood-entry-edit-dialog/MoodEntryEditDialog';
 import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
@@ -87,6 +88,14 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <MoodPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/focus/*"
+          element={
+            <ProtectedRoute>
+              <FocusPage />
             </ProtectedRoute>
           }
         />

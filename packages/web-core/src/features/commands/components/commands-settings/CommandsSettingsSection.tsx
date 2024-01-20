@@ -7,7 +7,6 @@ export default function CommandsSettingsSection() {
   const { updateAccountSettings } = useAuthStore();
 
   const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
-  const commandsSearchButtonEnabled = useAuthUserSetting('commandsSearchButtonEnabled', false);
 
   return (
     <div>
@@ -35,27 +34,6 @@ export default function CommandsSettingsSection() {
         </div>
         <p className="mt-2 text-xs text-gray-400">Should we enable the commands?</p>
       </div>
-      {commandsEnabled && (
-        <div className="mb-4">
-          <div className="flex items-center">
-            <Switch
-              id="settings-commandsSearchButtonEnabled"
-              checked={commandsSearchButtonEnabled}
-              onCheckedChange={() => {
-                updateAccountSettings({
-                  commandsSearchButtonEnabled: !commandsSearchButtonEnabled,
-                });
-              }}
-            />
-            <Label htmlFor="settings-commandsSearchButtonEnabled" className="ml-2">
-              Search Button Enabled
-            </Label>
-          </div>
-          <p className="mt-2 text-xs text-gray-400">
-            Do you want the search button at the top to be visible to you?
-          </p>
-        </div>
-      )}
     </div>
   );
 }

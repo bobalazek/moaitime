@@ -5,6 +5,7 @@ import { ScrollArea, ScrollBar } from '@moaitime/web-ui';
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import CalendarAppButton from '../../../calendar/components/CalendarAppButton';
 import CommandsAppButton from '../../../commands/components/CommandsAppButton';
+import FocusAppButton from '../../../focus/components/FocusAppButton';
 import MoodAppButton from '../../../mood/components/MoodAppButton';
 import NotesAppButton from '../../../notes/components/NotesAppButton';
 import SettingsAppButton from '../../../settings/components/SettingsAppButton';
@@ -21,11 +22,11 @@ const animationVariants = {
 export default function AppsDock() {
   const calendarEnabled = useAuthUserSetting('calendarEnabled', false);
   const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
-  const commandsSearchButtonEnabled = useAuthUserSetting('commandsSearchButtonEnabled', false);
   const weatherEnabled = useAuthUserSetting('weatherEnabled', false);
   const moodEnabled = useAuthUserSetting('moodEnabled', false);
   const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
   const notesEnabled = useAuthUserSetting('notesEnabled', false);
+  const focusEnabled = useAuthUserSetting('focusEnabled', false);
 
   return (
     <ErrorBoundary>
@@ -81,6 +82,18 @@ export default function AppsDock() {
                   <NotesAppButton />
                 </motion.div>
               )}
+              {focusEnabled && (
+                <motion.div
+                  key="focus"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                >
+                  <FocusAppButton />
+                </motion.div>
+              )}
               {false && weatherEnabled && (
                 <motion.div
                   key="weather"
@@ -93,7 +106,7 @@ export default function AppsDock() {
                   <WeatherAppButton />
                 </motion.div>
               )}
-              {commandsEnabled && commandsSearchButtonEnabled && (
+              {commandsEnabled && (
                 <motion.div
                   key="commands"
                   layout

@@ -15,6 +15,13 @@
       "when": 1705586367848,
       "tag": "0001_clear_microchip",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1705743776348,
+      "tag": "0002_high_taskmaster",
+      "breakpoints": true
     }
   ]
 }

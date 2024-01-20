@@ -1,5 +1,11 @@
 import { relations } from 'drizzle-orm';
-import { index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+
+import {
+  FocusSessionEvent,
+  FocusSessionSettings,
+  FocusSessionStatusEnum,
+} from '@moaitime/shared-common';
 
 import { tasks } from './tasks';
 import { users } from './users';
@@ -8,10 +14,13 @@ export const focusSessions = pgTable(
   'focus_sessions',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    status: text('status').default(FocusSessionStatusEnum.ACTIVE).$type<FocusSessionStatusEnum>(),
     taskText: text('task_text'), // You can set a custom task here, instead of choosing from the list
-    settings: json('settings'),
-    startedAt: timestamp('started_at').defaultNow(),
-    endsAt: timestamp('ends_at'), // if null, it's perpetual/lifetime
+    settings: json('settings').$type<FocusSessionSettings>(),
+    events: json('events').$type<FocusSessionEvent[]>(),
+    activeSeconds: integer('active_seconds').default(0),
+    completedAt: timestamp('completed_at'),
+    lastPingedAt: timestamp('last_pinged_at'),
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

@@ -41,6 +41,21 @@ CREATE TABLE IF NOT EXISTS "events" (
 	"calendar_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "focus_sessions" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"status" text DEFAULT 'active',
+	"task_text" text,
+	"settings" json,
+	"active_seconds" integer DEFAULT 0,
+	"completed_at" timestamp,
+	"last_pinged_at" timestamp,
+	"deleted_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL,
+	"task_id" uuid
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "greetings" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"text" text NOT NULL,
@@ -243,6 +258,7 @@ CREATE TABLE IF NOT EXISTS "user_data_exports" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_calendars" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"color" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL,
@@ -286,6 +302,7 @@ CREATE INDEX IF NOT EXISTS "backgrounds_user_id_idx" ON "backgrounds" ("user_id"
 CREATE INDEX IF NOT EXISTS "calendars_user_id_idx" ON "calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "calendars_team_id_idx" ON "calendars" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "events_calendar_id_idx" ON "events" ("calendar_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "focus_sessions_user_id_idx" ON "focus_sessions" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "greetings_user_id_idx" ON "greetings" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "interests_user_id_idx" ON "interests" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "interests_parent_id_idx" ON "interests" ("parent_id");--> statement-breakpoint
@@ -334,6 +351,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "events" ADD CONSTRAINT "events_calendar_id_calendars_id_fk" FOREIGN KEY ("calendar_id") REFERENCES "calendars"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "focus_sessions" ADD CONSTRAINT "focus_sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "focus_sessions" ADD CONSTRAINT "focus_sessions_task_id_users_id_fk" FOREIGN KEY ("task_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

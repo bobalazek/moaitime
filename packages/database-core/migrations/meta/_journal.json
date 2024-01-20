@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1705560775579,
-      "tag": "0000_lumpy_silver_surfer",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1705586367848,
-      "tag": "0001_clear_microchip",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1705743776348,
-      "tag": "0002_high_taskmaster",
+      "when": 1705772115346,
+      "tag": "0000_sloppy_jamie_braddock",
       "breakpoints": true
     }
   ]

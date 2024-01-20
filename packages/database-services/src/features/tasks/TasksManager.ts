@@ -8,10 +8,12 @@ import {
   desc,
   eq,
   gte,
+  ilike,
   inArray,
   isNotNull,
   isNull,
   lte,
+  or,
   sql,
   SQL,
 } from 'drizzle-orm';
@@ -102,6 +104,29 @@ export class TasksManager {
         children: childrenMap[task.id] ?? [],
       };
     });
+  }
+
+  async findManyByQueryAndUserId(
+    query: string,
+    userId: string,
+    limit: number = 10
+  ): Promise<Task[]> {
+    const where = and(
+      eq(lists.userId, userId),
+      isNull(tasks.deletedAt),
+      isNull(lists.deletedAt),
+      or(ilike(tasks.name, `%${query}%`), ilike(tasks.description, `%${query}%`))
+    );
+
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(where)
+      .limit(limit)
+      .execute();
+
+    return rows.map((row) => this._fixRowColumns(row.tasks));
   }
 
   async findManyByListIdsAndRange(

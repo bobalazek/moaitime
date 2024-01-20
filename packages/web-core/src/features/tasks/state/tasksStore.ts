@@ -9,6 +9,7 @@ import {
   deleteTask,
   duplicateTask,
   editTask,
+  getTasks,
   reorderTask,
   uncompleteTask,
   undeleteTask,
@@ -24,6 +25,7 @@ export type TasksStore = {
   listEndElement: HTMLElement | null;
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Tasks **********/
+  getTasksByQuery: (query: string) => Promise<Task[]>;
   addTask: (task: CreateTask) => Promise<Task>;
   editTask: (taskId: string, task: UpdateTask) => Promise<Task>;
   moveTask: (taskId: string, newListId: string) => Promise<Task>;
@@ -62,6 +64,9 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
   },
   /********** Tasks **********/
+  getTasksByQuery: async (query: string) => {
+    return getTasks(query);
+  },
   addTask: async (task: CreateTask) => {
     const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
 

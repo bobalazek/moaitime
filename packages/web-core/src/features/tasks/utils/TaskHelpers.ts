@@ -10,6 +10,19 @@ import {
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Tasks **********/
+export const getTasks = async (query?: string): Promise<Task[]> => {
+  const url = new URL(`${API_URL}/api/v1/tasks`);
+  if (query) {
+    url.searchParams.append('query', query);
+  }
+
+  const response = await fetchJson<ResponseInterface<Task[]>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response.data ?? [];
+};
+
 export const getTask = async (taskId: string): Promise<Task | null> => {
   const response = await fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/${taskId}`, {
     method: 'GET',

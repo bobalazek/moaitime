@@ -19,7 +19,7 @@ const FocusPageMain = () => {
           className="m-auto w-full rounded-lg px-12 py-8 text-center text-2xl lg:w-[640px]"
           placeholder="5 minutes"
         />
-        <Button className="mt-10 h-20 px-12 text-5xl uppercase">Let's go! 🚀</Button>
+        <Button className="mt-10 h-20 px-12 text-4xl uppercase">Let's go! 🚀</Button>
       </div>
     </main>
   );

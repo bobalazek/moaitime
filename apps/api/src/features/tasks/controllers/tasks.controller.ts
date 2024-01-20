@@ -28,6 +28,15 @@ export class TasksController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Task[]>> {
+    const query = req.query.query as string;
+    if (query) {
+      const data = await tasksManager.findManyByQueryAndUserId(query, req.user.id);
+      return {
+        success: true,
+        data,
+      };
+    }
+
     const listId = req.query.listId as string;
     const list = listsManager.findOneByIdAndUserId(listId, req.user.id);
     if (!list) {

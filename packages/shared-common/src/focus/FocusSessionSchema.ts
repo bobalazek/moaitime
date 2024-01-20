@@ -4,11 +4,10 @@ import { FocusSessionEventTypeEnum } from './FocusSessionEventTypeEnum';
 import { FocusSessionStatusEnum } from './FocusSessionStatusEnum';
 
 export const FocusSessionSettingsSchema = z.object({
-  pomodoroDurationSeconds: z.number(),
-  shortBreakDurationSeconds: z.number(),
-  longBreakDurationSeconds: z.number(),
-  pomodoroCount: z.number(),
-  longBreakInterval: z.number(),
+  focusDurationSeconds: z.number().default(25 * 60),
+  shortBreakDurationSeconds: z.number().default(5 * 60),
+  longBreakDurationSeconds: z.number().default(15 * 60),
+  focusRepetitionsCount: z.number().default(4),
 });
 
 export const FocusSessionEventSchema = z.object({

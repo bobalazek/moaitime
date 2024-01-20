@@ -6,6 +6,7 @@ import { useIntersectionObserver } from 'usehooks-ts';
 import { MoodEntry as MoodEntryType } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
@@ -128,8 +129,13 @@ function MoodEntriesActivityInner() {
 
 export default function MoodEntriesActivity() {
   const [showConfetti, setShowConfetti] = useState(false);
+  const moodSoundsEnabled = useAuthUserSetting('moodSoundsEnabled', false);
 
   useEffect(() => {
+    if (!moodSoundsEnabled) {
+      return;
+    }
+
     const moodEntryAddedCallback = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
       setShowConfetti(true);
 
@@ -141,7 +147,7 @@ export default function MoodEntriesActivity() {
     return () => {
       moodEntriesEmitter.off(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, moodEntryAddedCallback);
     };
-  }, []);
+  }, [moodSoundsEnabled]);
 
   return (
     <div data-test="mood--mood-entries-activity">

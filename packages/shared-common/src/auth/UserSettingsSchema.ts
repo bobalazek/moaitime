@@ -54,6 +54,7 @@ export const UserSettingsSchema = z.object({
 
   // Mood
   moodEnabled: z.boolean(),
+  moodSoundsEnabled: z.boolean(),
   moodScores: z
     .record(
       z.object({

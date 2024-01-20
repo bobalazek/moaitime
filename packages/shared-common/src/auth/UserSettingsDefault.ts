@@ -50,6 +50,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
 
   // Mood
   moodEnabled: true,
+  moodSoundsEnabled: true,
   moodScores: {
     '-2': {
       label: 'terrible',

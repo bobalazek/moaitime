@@ -11,6 +11,7 @@ import MoodSettingsSectionHeaderText from '../mood-settings/MoodSettingsSectionH
 export default function MoodSettingsSection() {
   const { updateAccountSettings } = useAuthStore();
   const moodEnabled = useAuthUserSetting('moodEnabled', false);
+  const moodSoundsEnabled = useAuthUserSetting('moodSoundsEnabled', false);
   const moodScores = useAuthUserSetting('moodScores', DEFAULT_USER_SETTINGS.moodScores);
   // The only reason we need this is, because we are debouncing the label change, meaning a controlled input woulnd't be updated in real time otherwise
   const [moodScoresData, setMoodScoresData] = useState(moodScores);
@@ -94,6 +95,25 @@ export default function MoodSettingsSection() {
         </div>
         <p className="mt-2 text-xs text-gray-400">
           Are you in the mood (sorry, not sorry) for some mood tracking?
+        </p>
+      </div>
+      <div className="mb-4">
+        <div className="flex items-center">
+          <Switch
+            id="settings-moodSoundsEnabled"
+            checked={moodSoundsEnabled}
+            onCheckedChange={() => {
+              updateAccountSettings({
+                moodSoundsEnabled: !moodSoundsEnabled,
+              });
+            }}
+          />
+          <Label htmlFor="settings-moodSoundsEnabled" className="ml-2">
+            Sounds Enabled
+          </Label>
+        </div>
+        <p className="mt-2 text-xs text-gray-400">
+          Do you want to hear any sounds when adding a mood?
         </p>
       </div>
       <hr className="mb-4" />

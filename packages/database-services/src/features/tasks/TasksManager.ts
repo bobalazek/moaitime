@@ -126,7 +126,12 @@ export class TasksManager {
       .limit(limit)
       .execute();
 
-    return rows.map((row) => this._fixRowColumns(row.tasks));
+    return rows.map((row) => {
+      const task = this._fixRowColumns(row.tasks);
+      const list = row.lists;
+
+      return { ...task, list };
+    });
   }
 
   async findManyByListIdsAndRange(

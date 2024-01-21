@@ -44,8 +44,9 @@ CREATE TABLE IF NOT EXISTS "events" (
 CREATE TABLE IF NOT EXISTS "focus_sessions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"status" text DEFAULT 'active',
-	"task_text" text,
+	"task_text" text NOT NULL,
 	"settings" json,
+	"events" json,
 	"active_seconds" integer DEFAULT 0,
 	"completed_at" timestamp,
 	"last_pinged_at" timestamp,

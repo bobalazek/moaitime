@@ -19,7 +19,7 @@ export const FocusSessionEventSchema = z.object({
 export const FocusSessionSchema = z.object({
   id: z.string(),
   status: z.nativeEnum(FocusSessionStatusEnum),
-  taskText: z.string().nullable(),
+  taskText: z.string(),
   settings: FocusSessionSettingsSchema.nullable(),
   events: z.array(FocusSessionEventSchema).nullable(),
   activeSeconds: z.number(),
@@ -32,7 +32,7 @@ export const FocusSessionSchema = z.object({
 });
 
 export const CreateFocusSessionSchema = z.object({
-  taskText: z.string().nullable().optional(),
+  taskText: z.string().optional(),
   settings: FocusSessionSettingsSchema.optional(),
   taskId: z.string().nullable().optional(),
 });

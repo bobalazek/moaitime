@@ -1,5 +1,5 @@
 {
-  "id": "c27c25c7-9916-4123-905b-b1b7a22fbf99",
+  "id": "315ea5dc-4785-45fd-9153-a1b2e2c0ef8e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -335,10 +335,16 @@
           "name": "task_text",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "settings": {
           "name": "settings",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "events": {
+          "name": "events",
           "type": "json",
           "primaryKey": false,
           "notNull": false

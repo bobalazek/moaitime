@@ -4,6 +4,7 @@ import { ColorSchema } from '../core/ColorSchema';
 import { TimezoneSchema } from '../core/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';
 import { TagSchema } from '../tasks/TagSchema';
+import { ListSchema } from './ListSchema';
 
 export const TaskBaseSchema = z.object({
   id: z.string(),
@@ -24,6 +25,7 @@ export const TaskBaseSchema = z.object({
   parentId: z.string().nullable(),
   tags: z.array(TagSchema).optional(),
   tagIds: z.array(z.string()).optional(),
+  list: ListSchema.optional(),
 });
 
 export const TaskSchema = TaskBaseSchema.extend({

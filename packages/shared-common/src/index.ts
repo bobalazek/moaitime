@@ -46,6 +46,7 @@ export * from './core/ErrorResponse';
 export * from './focus/FocusSessionSchema';
 export * from './focus/FocusSessionStatusEnum';
 export * from './focus/FocusSessionEventTypeEnum';
+export * from './focus/FocusSessionUpdateActionEnum';
 
 // Greeting
 export * from './greetings/Greeting';

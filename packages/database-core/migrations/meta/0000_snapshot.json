@@ -1,5 +1,5 @@
 {
-  "id": "6bcc8f32-f384-4e82-9490-be5b1b41a96c",
+  "id": "c2e9e047-f940-44b6-96c5-36dab7b8ebd8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -418,10 +418,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "focus_sessions_task_id_users_id_fk": {
-          "name": "focus_sessions_task_id_users_id_fk",
+        "focus_sessions_task_id_tasks_id_fk": {
+          "name": "focus_sessions_task_id_tasks_id_fk",
           "tableFrom": "focus_sessions",
-          "tableTo": "users",
+          "tableTo": "tasks",
           "columnsFrom": ["task_id"],
           "columnsTo": ["id"],
           "onDelete": "set null",

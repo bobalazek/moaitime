@@ -2,6 +2,7 @@ import {
   API_URL,
   CreateFocusSession,
   FocusSession,
+  FocusSessionUpdateActionEnum,
   ResponseInterface,
   UpdateFocusSession,
 } from '@moaitime/shared-common';
@@ -83,6 +84,20 @@ export const undeleteFocusSession = async (focusSessionId: string): Promise<Focu
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+    }
+  );
+
+  return response.data as FocusSession;
+};
+
+export const updateFocusSessionStatus = async (
+  focusSessionId: string,
+  action: FocusSessionUpdateActionEnum
+): Promise<FocusSession> => {
+  const response = await fetchJson<ResponseInterface<FocusSession>>(
+    `${API_URL}/api/v1/focus-sessions/${focusSessionId}/${action}`,
+    {
+      method: 'POST',
     }
   );
 

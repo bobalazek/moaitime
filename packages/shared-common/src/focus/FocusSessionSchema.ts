@@ -45,7 +45,7 @@ export const FocusSessionSettingsSchema = z.object({
 export const FocusSessionEventSchema = z.object({
   type: z.nativeEnum(FocusSessionEventTypeEnum),
   startedAt: z.string(),
-  endedAt: z.string().nullable(),
+  endedAt: z.string().nullable().optional(),
 });
 
 export const FocusSessionSchema = z.object({

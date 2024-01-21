@@ -1,12 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
+import { useFocusSessionsStore } from '../../state/focusSessionsStore';
 import FocusPageHeader from './focus/FocusPageHeader';
 import FocusPageMain from './focus/FocusPageMain';
 
 export default function FocusPage() {
+  const { reloadActiveFocusSession } = useFocusSessionsStore();
   const navigate = useNavigate();
+  const isInitialized = useRef(false);
+
+  useEffect(() => {
+    if (isInitialized.current) {
+      return;
+    }
+
+    isInitialized.current = true;
+
+    reloadActiveFocusSession();
+  }, [reloadActiveFocusSession]);
 
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {

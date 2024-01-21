@@ -14,6 +14,7 @@ import { Request } from 'express';
 
 import { FocusSession } from '@moaitime/database-core';
 import { focusSessionsManager, tasksManager } from '@moaitime/database-services';
+import { FocusSessionUpdateActionEnum } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -54,15 +55,15 @@ export class FocusSessionsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':id')
+  @Get(':focusSessionId')
   async view(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('focusSessionId') focusSessionId: string
   ): Promise<AbstractResponseDto<FocusSession | null>> {
     const data =
-      id === 'active'
+      focusSessionId === 'active'
         ? await focusSessionsManager.findOneActiveAndByUserId(req.user.id)
-        : await focusSessionsManager.findOneByIdAndUserId(id, req.user.id);
+        : await focusSessionsManager.findOneByIdAndUserId(focusSessionId, req.user.id);
 
     return {
       success: true,
@@ -71,20 +72,44 @@ export class FocusSessionsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id')
+  @Post(':focusSessionId/:action')
+  async action(
+    @Req() req: Request,
+    @Param('focusSessionId') focusSessionId: string,
+    @Param('action') action: FocusSessionUpdateActionEnum
+  ): Promise<AbstractResponseDto<FocusSession>> {
+    const data =
+      focusSessionId === 'active'
+        ? await focusSessionsManager.findOneActiveAndByUserId(req.user.id)
+        : await focusSessionsManager.findOneByIdAndUserId(focusSessionId, req.user.id);
+
+    if (!data) {
+      throw new NotFoundException('Focus session not found');
+    }
+
+    await focusSessionsManager.update(data, action);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete(':focusSessionId')
   async delete(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('focusSessionId') focusSessionId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<FocusSession>> {
-    const hasAccess = await focusSessionsManager.userCanDelete(req.user.id, id);
+    const hasAccess = await focusSessionsManager.userCanDelete(req.user.id, focusSessionId);
     if (!hasAccess) {
       throw new NotFoundException('Focus session not found');
     }
 
     const updatedData = body.isHardDelete
-      ? await focusSessionsManager.deleteOneById(id)
-      : await focusSessionsManager.updateOneById(id, {
+      ? await focusSessionsManager.deleteOneById(focusSessionId)
+      : await focusSessionsManager.updateOneById(focusSessionId, {
           deletedAt: new Date(),
         });
 
@@ -95,17 +120,17 @@ export class FocusSessionsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/undelete')
+  @Post(':focusSessionId/undelete')
   async undelete(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('focusSessionId') focusSessionId: string
   ): Promise<AbstractResponseDto<FocusSession>> {
-    const canDelete = await focusSessionsManager.userCanUpdate(req.user.id, id);
+    const canDelete = await focusSessionsManager.userCanUpdate(req.user.id, focusSessionId);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this focus session');
     }
 
-    const updatedData = await focusSessionsManager.updateOneById(id, {
+    const updatedData = await focusSessionsManager.updateOneById(focusSessionId, {
       deletedAt: null,
     });
 

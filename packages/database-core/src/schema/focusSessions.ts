@@ -30,7 +30,7 @@ export const focusSessions = pgTable(
     userId: uuid('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    taskId: uuid('task_id').references(() => users.id, { onDelete: 'set null' }),
+    taskId: uuid('task_id').references(() => tasks.id, { onDelete: 'set null' }),
   },
   (table) => {
     return {

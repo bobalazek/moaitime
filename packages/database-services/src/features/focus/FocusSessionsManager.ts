@@ -1,7 +1,11 @@
 import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
 
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
-import { FocusSessionStatusEnum } from '@moaitime/shared-common';
+import {
+  FocusSessionEventTypeEnum,
+  FocusSessionStatusEnum,
+  FocusSessionUpdateActionEnum,
+} from '@moaitime/shared-common';
 
 export class FocusSessionsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<FocusSession[]> {
@@ -12,12 +16,18 @@ export class FocusSessionsManager {
     return getDatabase().query.focusSessions.findMany({
       where: and(eq(focusSessions.userId, userId), isNull(focusSessions.deletedAt)),
       orderBy: desc(focusSessions.createdAt),
+      with: {
+        task: true,
+      },
     });
   }
 
   async findOneById(id: string): Promise<FocusSession | null> {
     const row = await getDatabase().query.focusSessions.findFirst({
       where: eq(focusSessions.id, id),
+      with: {
+        task: true,
+      },
     });
 
     return row ?? null;
@@ -26,6 +36,9 @@ export class FocusSessionsManager {
   async findOneByIdAndUserId(id: string, userId: string): Promise<FocusSession | null> {
     const row = await getDatabase().query.focusSessions.findFirst({
       where: and(eq(focusSessions.id, id), eq(focusSessions.userId, userId)),
+      with: {
+        task: true,
+      },
     });
 
     return row ?? null;
@@ -38,6 +51,9 @@ export class FocusSessionsManager {
         eq(focusSessions.userId, userId),
         isNull(focusSessions.deletedAt)
       ),
+      with: {
+        task: true,
+      },
       orderBy: desc(focusSessions.createdAt),
     });
 
@@ -70,18 +86,6 @@ export class FocusSessionsManager {
   }
 
   // Helpers
-  async countByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(focusSessions.id).mapWith(Number),
-      })
-      .from(focusSessions)
-      .where(and(eq(focusSessions.userId, userId), isNull(focusSessions.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
   async userCanView(userId: string, focusSessionId: string): Promise<boolean> {
     const row = await getDatabase().query.focusSessions.findFirst({
       where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
@@ -96,6 +100,83 @@ export class FocusSessionsManager {
 
   async userCanDelete(userId: string, focusSessionId: string): Promise<boolean> {
     return this.userCanUpdate(userId, focusSessionId);
+  }
+
+  async update(
+    focusSession: FocusSession,
+    action: FocusSessionUpdateActionEnum
+  ): Promise<FocusSession> {
+    if (!Object.values(FocusSessionUpdateActionEnum).includes(action)) {
+      throw new Error(`Update action "${action}" not found`);
+    }
+
+    const updateData: Partial<NewFocusSession> = {};
+
+    const now = new Date();
+    const nowString = now.toISOString();
+
+    const focusSessionEvents = focusSession.events ?? [];
+
+    if (action === FocusSessionUpdateActionEnum.PAUSE) {
+      if (focusSession.status !== FocusSessionStatusEnum.ACTIVE) {
+        throw new Error('Focus session is not active, so it can not be paused');
+      }
+
+      updateData.status = FocusSessionStatusEnum.PAUSED;
+
+      // Events
+      focusSessionEvents.push({
+        type: FocusSessionEventTypeEnum.PAUSED,
+        startedAt: nowString,
+      });
+    } else if (action === FocusSessionUpdateActionEnum.CONTINUE) {
+      if (focusSession.status !== FocusSessionStatusEnum.PAUSED) {
+        throw new Error('Focus session is not paused, so it can not be continued');
+      }
+
+      const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
+      if (lastEvent.type !== FocusSessionEventTypeEnum.PAUSED) {
+        throw new Error('Focus session is not paused, so it can not be continued');
+      }
+
+      updateData.status = FocusSessionStatusEnum.ACTIVE;
+
+      // Events
+      lastEvent.endedAt = nowString;
+      focusSessionEvents[focusSessionEvents.length - 1] = lastEvent;
+      focusSessionEvents.push({
+        type: FocusSessionEventTypeEnum.CONTINUED,
+        startedAt: nowString,
+        endedAt: nowString,
+      });
+    } else if (action === FocusSessionUpdateActionEnum.COMPLETE) {
+      updateData.status = FocusSessionStatusEnum.COMPLETED;
+      updateData.completedAt = now;
+
+      // Events
+      focusSessionEvents.push({
+        type: FocusSessionEventTypeEnum.COMPLETED,
+        startedAt: nowString,
+        endedAt: nowString,
+      });
+    }
+
+    updateData.events = focusSessionEvents;
+    updateData.lastPingedAt = now;
+
+    return this.updateOneById(focusSession.id, focusSession);
+  }
+
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(focusSessions.id).mapWith(Number),
+      })
+      .from(focusSessions)
+      .where(and(eq(focusSessions.userId, userId), isNull(focusSessions.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 }
 

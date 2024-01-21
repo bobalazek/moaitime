@@ -254,14 +254,14 @@ export class TasksManager {
 
   // Helpers
   async userCanView(userId: string, taskId: string): Promise<boolean> {
-    const row = await getDatabase().query.tasks.findFirst({
-      where: and(eq(tasks.id, taskId), eq(lists.userId, userId)),
-      with: {
-        list: true,
-      },
-    });
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(and(eq(tasks.id, taskId), eq(lists.userId, userId)))
+      .execute();
 
-    return row !== null;
+    return rows.length > 0;
   }
 
   async userCanUpdate(userId: string, taskId: string): Promise<boolean> {

@@ -8,9 +8,9 @@ import {
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-/********** Focus **********/
-export const getFocusSession = async (focusSessionId: string): Promise<FocusSession> => {
-  const response = await fetchJson<ResponseInterface<FocusSession>>(
+/********** Focus Sessions **********/
+export const getFocusSession = async (focusSessionId: string): Promise<FocusSession | null> => {
+  const response = await fetchJson<ResponseInterface<FocusSession | null>>(
     `${API_URL}/api/v1/focus-sessions/${focusSessionId}`,
     {
       method: 'GET',

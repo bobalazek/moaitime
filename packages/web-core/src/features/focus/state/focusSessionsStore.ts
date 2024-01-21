@@ -8,11 +8,12 @@ import {
   editFocusSession,
   getFocusSession,
   undeleteFocusSession,
-} from '../utils/FocusHelpers';
+} from '../utils/FocusSessionHelpers';
 
-export type FocusStore = {
-  /********** Focus **********/
-  getFocusSession: (focusSessionId: string) => Promise<FocusSession>;
+export type FocusSessionsStore = {
+  /********** Focus Sessions **********/
+  activeFocusSession: FocusSession | null;
+  getFocusSession: (focusSessionId: string) => Promise<FocusSession | null>;
   addFocusSession: (focusSession: CreateFocusSession) => Promise<FocusSession>;
   editFocusSession: (
     focusSessionId: string,
@@ -22,8 +23,9 @@ export type FocusStore = {
   undeleteFocusSession: (focusSessionId: string) => Promise<FocusSession>;
 };
 
-export const useFocusStore = create<FocusStore>()(() => ({
-  /********** Focus **********/
+export const useFocusSessionsStore = create<FocusSessionsStore>()(() => ({
+  /********** Focus Sessions **********/
+  activeFocusSession: null,
   getFocusSession: async (focusSessionId: string) => {
     const focusSession = await getFocusSession(focusSessionId);
 

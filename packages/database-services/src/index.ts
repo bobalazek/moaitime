@@ -14,6 +14,9 @@ export * from './features/calendars/CalendarsManager';
 export * from './features/calendars/CalendarEntriesManager';
 export * from './features/calendars/EventsManager';
 
+// Focus
+export * from './features/focus/FocusSessionsManager';
+
 // Greetings
 export * from './features/greetings/GreetingsManager';
 

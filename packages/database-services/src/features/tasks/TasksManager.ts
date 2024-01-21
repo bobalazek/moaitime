@@ -253,6 +253,25 @@ export class TasksManager {
   }
 
   // Helpers
+  async userCanView(userId: string, taskId: string): Promise<boolean> {
+    const row = await getDatabase().query.tasks.findFirst({
+      where: and(eq(tasks.id, taskId), eq(lists.userId, userId)),
+      with: {
+        list: true,
+      },
+    });
+
+    return row !== null;
+  }
+
+  async userCanUpdate(userId: string, taskId: string): Promise<boolean> {
+    return this.userCanView(userId, taskId);
+  }
+
+  async userCanDelete(userId: string, taskId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, taskId);
+  }
+
   async updateReorder(map: { [key: string]: number }) {
     return getDatabase().transaction(async (tx) => {
       for (const taskId in map) {

@@ -12,6 +12,8 @@ import ClockSettingsSection from '../../clock/components/clock-settings/ClockSet
 import ClockSettingsSectionHeaderText from '../../clock/components/clock-settings/ClockSettingsSectionHeaderText';
 import CommandsSettingsSection from '../../commands/components/commands-settings/CommandsSettingsSection';
 import CommandsSettingsSectionHeaderText from '../../commands/components/commands-settings/CommandsSettingsSectionHeaderText';
+import FocusSettingsSection from '../../focus/components/focus-settings/FocusSettingsSection';
+import FocusSettingsSectionHeaderText from '../../focus/components/focus-settings/FocusSettingsSectionHeaderText';
 import GreetingSettingsSection from '../../greeting/components/greeting-settings/GreetingSettingsSection';
 import GreetingSettingsSectionHeaderText from '../../greeting/components/greeting-settings/GreetingSettingsSectionHeaderText';
 import MoodSettingsSection from '../../mood/components/mood-settings/MoodSettingsSection';
@@ -61,6 +63,11 @@ const tabs = [
     id: 'mood',
     label: <MoodSettingsSectionHeaderText />,
     content: <MoodSettingsSection />,
+  },
+  {
+    id: 'focus',
+    label: <FocusSettingsSectionHeaderText />,
+    content: <FocusSettingsSection />,
   },
   {
     id: 'commands',

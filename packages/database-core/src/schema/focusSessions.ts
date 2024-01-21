@@ -14,11 +14,14 @@ export const focusSessions = pgTable(
   'focus_sessions',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    status: text('status').default(FocusSessionStatusEnum.ACTIVE).$type<FocusSessionStatusEnum>(),
+    status: text('status')
+      .notNull()
+      .default(FocusSessionStatusEnum.ACTIVE)
+      .$type<FocusSessionStatusEnum>(),
     taskText: text('task_text').notNull(), // You can set a custom task here, instead of choosing from the list
     settings: json('settings').$type<FocusSessionSettings>(),
     events: json('events').$type<FocusSessionEvent[]>(),
-    activeSeconds: integer('active_seconds').default(0),
+    activeSeconds: integer('active_seconds').notNull().default(0),
     completedAt: timestamp('completed_at'),
     lastPingedAt: timestamp('last_pinged_at'),
     deletedAt: timestamp('deleted_at'),

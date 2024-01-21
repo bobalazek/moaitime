@@ -4,12 +4,30 @@ import { CreateFocusSession } from '@moaitime/shared-common';
 import { Button, cn, Input } from '@moaitime/web-ui';
 
 import { TaskAutocomplete } from '../../../core/components/selectors/TaskAutocomplete';
+import { useFocusSessionsStore } from '../../state/focusSessionsStore';
 
 export default function CreateFocusSessionForm() {
+  const { addFocusSession } = useFocusSessionsStore();
   const [data, setData] = useState<CreateFocusSession>({
     taskText: '',
     taskId: null,
+    settings: {
+      focusDurationSeconds: 25 * 60,
+      shortBreakDurationSeconds: 5 * 60,
+      longBreakDurationSeconds: 30 * 60,
+      focusRepetitionsCount: 4,
+    },
   });
+
+  const onSubmitButtonClick = async () => {
+    try {
+      await addFocusSession(data);
+
+      // TODO: we now switch into the focus mode
+    } catch (error) {
+      // Already handled
+    }
+  };
 
   return (
     <div>
@@ -38,8 +56,18 @@ export default function CreateFocusSessionForm() {
         <div className="flex flex-row items-center justify-center gap-3">
           <div>for exactly</div>
           <Input
-            className="w-20 rounded-lg px-2 py-6 text-center text-2xl"
-            defaultValue="25"
+            type="number"
+            className="w-24 rounded-lg px-2 py-6 text-center text-2xl"
+            value={data.settings.focusDurationSeconds / 60}
+            onChange={(event) => {
+              setData((current) => ({
+                ...current,
+                settings: {
+                  ...current.settings,
+                  focusDurationSeconds: Number(event.target.value) * 60,
+                },
+              }));
+            }}
             min="1"
             max="3600"
           />
@@ -50,8 +78,18 @@ export default function CreateFocusSessionForm() {
             and then take a <b>break</b> of
           </div>
           <Input
-            className="w-20 rounded-lg px-2 py-6 text-center text-2xl"
-            defaultValue="5"
+            type="number"
+            className="w-24 rounded-lg px-2 py-6 text-center text-2xl"
+            value={data.settings.shortBreakDurationSeconds / 60}
+            onChange={(event) => {
+              setData((current) => ({
+                ...current,
+                settings: {
+                  ...current.settings,
+                  shortBreakDurationSeconds: Number(event.target.value) * 60,
+                },
+              }));
+            }}
             min="1"
             max="3600"
           />
@@ -62,8 +100,18 @@ export default function CreateFocusSessionForm() {
             I want to <b>repeat</b> this
           </div>
           <Input
-            className="w-20 rounded-lg px-2 py-6 text-center text-2xl"
-            defaultValue="4"
+            type="number"
+            className="w-24 rounded-lg px-2 py-6 text-center text-2xl"
+            value={data.settings.focusRepetitionsCount ?? 4}
+            onChange={(event) => {
+              setData((current) => ({
+                ...current,
+                settings: {
+                  ...current.settings,
+                  focusRepetitionsCount: Number(event.target.value),
+                },
+              }));
+            }}
             min="1"
             max="20"
           />
@@ -74,15 +122,27 @@ export default function CreateFocusSessionForm() {
             until I will have a <b>longer break</b> of
           </div>
           <Input
-            className="w-20 rounded-lg px-2 py-6 text-center text-2xl"
-            defaultValue="30"
+            type="number"
+            className="w-24 rounded-lg px-2 py-6 text-center text-2xl"
+            value={data.settings?.longBreakDurationSeconds / 60}
+            onChange={(event) => {
+              setData((current) => ({
+                ...current,
+                settings: {
+                  ...current.settings,
+                  longBreakDurationSeconds: Number(event.target.value) * 60,
+                },
+              }));
+            }}
             min="1"
             max="3600"
           />
           <div>minutes.</div>
         </div>
       </div>
-      <Button className="mt-8 h-20 px-12 text-3xl uppercase">Let's go! 🚀</Button>
+      <Button className="mt-8 h-20 px-12 text-3xl uppercase" onClick={onSubmitButtonClick}>
+        Let's go! 🚀
+      </Button>
     </div>
   );
 }

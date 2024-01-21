@@ -6,6 +6,7 @@ import { AppController } from './controllers/app.controller';
 import { AuthModule } from './features/auth/auth.module';
 import { BackgroundsModule } from './features/backgrounds/backgrounds.module';
 import { CalendarsModule } from './features/calendar/calendar.module';
+import { FocusModule } from './features/focus/focus.module';
 import { GreetingsModule } from './features/greetings/greetings.module';
 import { MoodModule } from './features/mood/mood.module';
 import { NotesModule } from './features/notes/notes.module';
@@ -26,6 +27,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
     CalendarsModule,
     WeatherModule,
     MoodModule,
+    FocusModule,
     TestingModule,
   ],
   controllers: [AppController],

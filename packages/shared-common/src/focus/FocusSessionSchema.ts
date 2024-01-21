@@ -4,10 +4,42 @@ import { FocusSessionEventTypeEnum } from './FocusSessionEventTypeEnum';
 import { FocusSessionStatusEnum } from './FocusSessionStatusEnum';
 
 export const FocusSessionSettingsSchema = z.object({
-  focusDurationSeconds: z.number().default(25 * 60),
-  shortBreakDurationSeconds: z.number().default(5 * 60),
-  longBreakDurationSeconds: z.number().default(15 * 60),
-  focusRepetitionsCount: z.number().default(4),
+  focusDurationSeconds: z
+    .number()
+    .min(60, {
+      message: 'Focus duration must be at least 1 minute',
+    })
+    .max(60 * 1440, {
+      message: 'Focus duration must be at most 3600 minutes',
+    })
+    .default(60 * 25),
+  shortBreakDurationSeconds: z
+    .number()
+    .min(60, {
+      message: 'Short break duration must be at least 1 minute',
+    })
+    .max(60 * 1440, {
+      message: 'Short break duration must be at most 3600 minutes',
+    })
+    .default(5 * 60),
+  longBreakDurationSeconds: z
+    .number()
+    .min(60, {
+      message: 'Long break duration must be at least 1 minute',
+    })
+    .max(60 * 1440, {
+      message: 'Long break duration must be at most 3600 minutes',
+    })
+    .default(15 * 60),
+  focusRepetitionsCount: z
+    .number()
+    .min(1, {
+      message: 'Focus repetitions count must be at least 1',
+    })
+    .max(64, {
+      message: 'Focus repetitions count must be at most 64',
+    })
+    .default(4),
 });
 
 export const FocusSessionEventSchema = z.object({
@@ -20,10 +52,10 @@ export const FocusSessionSchema = z.object({
   id: z.string(),
   status: z.nativeEnum(FocusSessionStatusEnum),
   taskText: z.string(),
-  settings: FocusSessionSettingsSchema.nullable(),
+  settings: FocusSessionSettingsSchema,
   events: z.array(FocusSessionEventSchema).nullable(),
   activeSeconds: z.number(),
-  lastPingAt: z.string().nullable(),
+  lastPingedAt: z.string().nullable(),
   completedAt: z.string().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
@@ -32,8 +64,8 @@ export const FocusSessionSchema = z.object({
 });
 
 export const CreateFocusSessionSchema = z.object({
-  taskText: z.string().optional(),
-  settings: FocusSessionSettingsSchema.optional(),
+  taskText: z.string().min(1, { message: 'Task text must be at least 1 character long' }),
+  settings: FocusSessionSettingsSchema,
   taskId: z.string().nullable().optional(),
 });
 

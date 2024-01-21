@@ -1,5 +1,5 @@
 {
-  "id": "315ea5dc-4785-45fd-9153-a1b2e2c0ef8e",
+  "id": "6bcc8f32-f384-4e82-9490-be5b1b41a96c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -328,7 +328,7 @@
           "name": "status",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'active'"
         },
         "task_text": {
@@ -353,7 +353,7 @@
           "name": "active_seconds",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": 0
         },
         "completed_at": {

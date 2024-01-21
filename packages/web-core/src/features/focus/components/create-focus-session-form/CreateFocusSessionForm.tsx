@@ -1,8 +1,16 @@
+import { useState } from 'react';
+
+import { CreateFocusSession } from '@moaitime/shared-common';
 import { Button, cn, Input } from '@moaitime/web-ui';
 
 import { TaskAutocomplete } from '../../../core/components/selectors/TaskAutocomplete';
 
 export default function CreateFocusSessionForm() {
+  const [data, setData] = useState<CreateFocusSession>({
+    taskText: '',
+    taskId: null,
+  });
+
   return (
     <div>
       <div className="mt-8 flex flex-col gap-4">
@@ -11,7 +19,20 @@ export default function CreateFocusSessionForm() {
           <TaskAutocomplete
             inputWrapperClassName={cn('max-w-[480px]')}
             inputClassName={cn('rounded-lg px-12 py-8 text-center text-2xl')}
-            onChangeValue={() => {}}
+            value={data.taskText ?? null}
+            onChangeValue={(value) => {
+              setData((current) => ({
+                ...current,
+                taskText: value,
+              }));
+            }}
+            taskId={data.taskId ?? undefined}
+            onSelectTask={(taskId) => {
+              setData((current) => ({
+                ...current,
+                taskId: taskId,
+              }));
+            }}
           />
         </div>
         <div className="flex flex-row items-center justify-center gap-3">

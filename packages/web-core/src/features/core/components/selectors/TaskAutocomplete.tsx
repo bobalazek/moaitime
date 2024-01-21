@@ -1,17 +1,9 @@
 import { XIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { Task } from '@moaitime/shared-common';
-import {
-  cn,
-  Command,
-  CommandItem,
-  Input,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@moaitime/web-ui';
+import { cn, Input, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../../tasks/state/tasksStore';
 
@@ -29,34 +21,81 @@ export function TaskAutocomplete({
   inputWrapperClassName?: string;
   inputClassName?: string;
   inputCloseButtonClassName?: string;
-  value?: string;
+  value: string | null;
   taskId?: string;
-  onChangeValue: (value?: string) => void;
-  onSelectTask?: (taskId?: string) => void;
+  onChangeValue: (value: string) => void;
+  onSelectTask?: (taskId?: string | null) => void;
 }) {
   const { getTasksByQuery } = useTasksStore();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState(value || '');
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [selectedTaskId, setSelectedTaskId] = useState(taskId);
+  const [focusedTaskId, setFocusedTaskId] = useState<string | undefined>();
+
+  const inputDisabled = !!taskId;
 
   const searchTasksDebounced = useDebouncedCallback(async (value: string) => {
     const foundTasks = await getTasksByQuery(value);
     setTasks(foundTasks);
-    setOpen(foundTasks.length > 0);
+
+    if (foundTasks.length > 0) {
+      setOpen(foundTasks.length > 0);
+      setFocusedTaskId(foundTasks[0].id);
+    }
   }, 500);
 
-  useEffect(() => {
+  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setText(event.target.value);
+
     onChangeValue(text);
 
-    if (text && !selectedTaskId) {
+    if (text && !taskId) {
       searchTasksDebounced(text);
     }
-  }, [text, selectedTaskId, onChangeValue, searchTasksDebounced]);
+  };
+
+  const onSelectTaskButtonClick = useCallback(
+    (task: Task) => {
+      onSelectTask?.(task.id);
+      setText(task.name);
+      setOpen(false);
+    },
+    [onSelectTask]
+  );
+
+  const onClearButtonClick = () => {
+    onSelectTask?.(null);
+    setText('');
+  };
 
   useEffect(() => {
-    onSelectTask?.(selectedTaskId);
-  }, [selectedTaskId, onSelectTask]);
+    if (!open) {
+      return;
+    }
+
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === 'Space') {
+        const focusedTask = tasks.find((task) => task.id === focusedTaskId);
+        if (focusedTask) {
+          onSelectTaskButtonClick(focusedTask);
+        }
+      } else if (event.key === 'ArrowDown') {
+        const index = tasks.findIndex((task) => task.id === focusedTaskId);
+        if (index < tasks.length - 1) {
+          setFocusedTaskId(tasks[index + 1].id);
+        }
+      } else if (event.key === 'ArrowUp') {
+        const index = tasks.findIndex((task) => task.id === focusedTaskId);
+        if (index > 0) {
+          setFocusedTaskId(tasks[index - 1].id);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', onKeydown);
+
+    return () => document.removeEventListener('keydown', onKeydown);
+  }, [open, focusedTaskId, tasks, setFocusedTaskId, onSelectTaskButtonClick]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,11 +104,9 @@ export function TaskAutocomplete({
           autoFocus
           className={cn('w-full', inputClassName)}
           placeholder="Search tasks ..."
-          disabled={!!selectedTaskId}
+          disabled={inputDisabled}
           value={text}
-          onChange={(event) => {
-            setText(event.target.value);
-          }}
+          onChange={onInputChange}
         />
         <PopoverTrigger asChild>
           <div />
@@ -78,34 +115,35 @@ export function TaskAutocomplete({
           <button
             type="button"
             className={cn('absolute bottom-0 right-2 top-0 p-2', inputCloseButtonClassName)}
-            onClick={() => {
-              setText('');
-              setSelectedTaskId(undefined);
-            }}
+            onClick={onClearButtonClick}
           >
             <XIcon />
           </button>
         )}
       </div>
-
-      <PopoverContent className="p-0" data-test="task-autocomplete">
-        <Command shouldFilter={false} value={selectedTaskId} onValueChange={setSelectedTaskId}>
-          {tasks.map((task) => (
-            <CommandItem
-              key={task.id}
-              value={task.id}
-              onSelect={() => {
-                setSelectedTaskId(task.id);
-                setText(task.name);
-                setOpen(false);
-              }}
-              className="cursor-pointer border-l-4 border-l-transparent"
-            >
-              {task.name}
-              {task.list && ` (${task.list.name})`}
-            </CommandItem>
-          ))}
-        </Command>
+      <PopoverContent
+        className="p-0"
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+        }}
+        data-test="task-autocomplete"
+      >
+        {tasks.map((task) => (
+          <button
+            type="button"
+            key={task.id}
+            onClick={() => onSelectTaskButtonClick(task)}
+            className={cn(
+              'hover:bg-accent hover:text-accent-foreground w-full px-4 py-2 text-left focus:outline-none',
+              {
+                'bg-accent text-accent-foreground': task.id === focusedTaskId,
+              }
+            )}
+          >
+            {task.name}
+            {task.list && ` (${task.list.name})`}
+          </button>
+        ))}
       </PopoverContent>
     </Popover>
   );

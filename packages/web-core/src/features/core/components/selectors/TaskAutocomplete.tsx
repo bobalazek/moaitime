@@ -61,10 +61,11 @@ export function TaskAutocomplete({
   const onSelectTaskButtonClick = useCallback(
     (task: Task) => {
       onSelectTask?.(task.id);
+      onChangeValue(task.name);
       setText(task.name);
       setOpen(false);
     },
-    [onSelectTask]
+    [onSelectTask, onChangeValue]
   );
 
   const onClearButtonClick = () => {

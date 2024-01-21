@@ -39,7 +39,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
   /********** Focus Sessions **********/
   currentFocusSession: null,
   reloadCurrentFocusSession: async () => {
-    const currentFocusSession = await getFocusSession('current');
+    const currentFocusSession = await getFocusSession('current', true);
 
     set({
       currentFocusSession,

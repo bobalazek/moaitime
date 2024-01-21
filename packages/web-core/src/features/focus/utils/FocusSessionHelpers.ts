@@ -10,13 +10,18 @@ import {
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Focus Sessions **********/
-export const getFocusSession = async (focusSessionId: string): Promise<FocusSession | null> => {
-  const response = await fetchJson<ResponseInterface<FocusSession | null>>(
-    `${API_URL}/api/v1/focus-sessions/${focusSessionId}`,
-    {
-      method: 'GET',
-    }
-  );
+export const getFocusSession = async (
+  focusSessionId: string,
+  updatePing?: boolean
+): Promise<FocusSession | null> => {
+  const url = new URL(`${API_URL}/api/v1/focus-sessions/${focusSessionId}`);
+  if (updatePing) {
+    url.searchParams.set('updatePing', 'true');
+  }
+
+  const response = await fetchJson<ResponseInterface<FocusSession | null>>(url.toString(), {
+    method: 'GET',
+  });
 
   return response.data as FocusSession;
 };

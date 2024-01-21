@@ -60,10 +60,15 @@ export class FocusSessionsController {
     @Req() req: Request,
     @Param('focusSessionId') focusSessionId: string
   ): Promise<AbstractResponseDto<FocusSession | null>> {
-    const data =
+    const updatePing = req.query.updatePing === 'true';
+    let data =
       focusSessionId === 'current'
         ? await focusSessionsManager.findOneCurrentAndByUserId(req.user.id)
         : await focusSessionsManager.findOneByIdAndUserId(focusSessionId, req.user.id);
+
+    if (updatePing && data) {
+      data = await focusSessionsManager.update(data, FocusSessionUpdateActionEnum.PING);
+    }
 
     return {
       success: true,

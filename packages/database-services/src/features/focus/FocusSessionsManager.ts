@@ -188,6 +188,12 @@ export class FocusSessionsManager {
         startedAt: nowString,
         endedAt: nowString,
       });
+    } else if (action === FocusSessionUpdateActionEnum.PING) {
+      if (focusSession.status === FocusSessionStatusEnum.ACTIVE) {
+        const lastActive = focusSession.lastPingedAt ?? focusSession.createdAt ?? now;
+        const additionalActiveTime = calculateTimeDifferenceInSeconds(now, lastActive);
+        focusSessionActiveSeconds += additionalActiveTime;
+      }
     }
 
     updateData.events = focusSessionEvents;

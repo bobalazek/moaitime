@@ -23,10 +23,10 @@ export default function CurrentFocusSession() {
     }
 
     // TODO: interval not always working when running in background, so we will need a way to work around this
-    const interval = setInterval(() => {
+    const remainingSecondsInterval = setInterval(() => {
       setRemainingSeconds((prev) => {
         if (prev <= 0) {
-          clearInterval(interval);
+          clearInterval(remainingSecondsInterval);
           return 0;
         }
 
@@ -34,7 +34,14 @@ export default function CurrentFocusSession() {
       });
     }, 1000);
 
-    return () => clearInterval(interval);
+    const pingInterval = setInterval(() => {
+      updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.PING);
+    }, 1000 * 60);
+
+    return () => {
+      clearInterval(remainingSecondsInterval);
+      clearInterval(pingInterval);
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentFocusSession?.status]);

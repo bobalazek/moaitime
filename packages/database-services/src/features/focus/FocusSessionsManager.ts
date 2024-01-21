@@ -44,7 +44,7 @@ export class FocusSessionsManager {
     return row ?? null;
   }
 
-  async findOneActiveAndByUserId(userId: string): Promise<FocusSession | null> {
+  async findOneCurrentAndByUserId(userId: string): Promise<FocusSession | null> {
     const row = await getDatabase().query.focusSessions.findFirst({
       where: and(
         eq(focusSessions.status, FocusSessionStatusEnum.ACTIVE),
@@ -164,7 +164,7 @@ export class FocusSessionsManager {
     updateData.events = focusSessionEvents;
     updateData.lastPingedAt = now;
 
-    return this.updateOneById(focusSession.id, focusSession);
+    return this.updateOneById(focusSession.id, updateData);
   }
 
   async countByUserId(userId: string): Promise<number> {

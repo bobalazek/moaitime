@@ -29,9 +29,9 @@ export class FocusSessionsController {
     @Body() body: CreateFocusSessionDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<FocusSession>> {
-    const activeFocusSession = await focusSessionsManager.findOneActiveAndByUserId(req.user.id);
-    if (activeFocusSession) {
-      throw new ForbiddenException('You already have an active focus session');
+    const currentFocusSession = await focusSessionsManager.findOneCurrentAndByUserId(req.user.id);
+    if (currentFocusSession) {
+      throw new ForbiddenException('You already have an open focus session');
     }
 
     if (body.taskId) {
@@ -61,8 +61,8 @@ export class FocusSessionsController {
     @Param('focusSessionId') focusSessionId: string
   ): Promise<AbstractResponseDto<FocusSession | null>> {
     const data =
-      focusSessionId === 'active'
-        ? await focusSessionsManager.findOneActiveAndByUserId(req.user.id)
+      focusSessionId === 'current'
+        ? await focusSessionsManager.findOneCurrentAndByUserId(req.user.id)
         : await focusSessionsManager.findOneByIdAndUserId(focusSessionId, req.user.id);
 
     return {
@@ -79,8 +79,8 @@ export class FocusSessionsController {
     @Param('action') action: FocusSessionUpdateActionEnum
   ): Promise<AbstractResponseDto<FocusSession>> {
     const data =
-      focusSessionId === 'active'
-        ? await focusSessionsManager.findOneActiveAndByUserId(req.user.id)
+      focusSessionId === 'current'
+        ? await focusSessionsManager.findOneCurrentAndByUserId(req.user.id)
         : await focusSessionsManager.findOneByIdAndUserId(focusSessionId, req.user.id);
 
     if (!data) {

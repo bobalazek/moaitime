@@ -1,15 +1,15 @@
 import { useFocusSessionsStore } from '../../../state/focusSessionsStore';
-import ActiveFocusSession from '../../active-focus-session/ActiveFocusSession';
 import CreateFocusSessionForm from '../../create-focus-session-form/CreateFocusSessionForm';
+import CurrentFocusSession from '../../current-focus-session/CurrentFocusSession';
 
 const FocusPageMain = () => {
-  const { activeFocusSession } = useFocusSessionsStore();
+  const { currentFocusSession } = useFocusSessionsStore();
 
   return (
     <main className="h-full w-full flex-grow overflow-auto p-4" data-test="focus--main">
       <div className="margin-auto container text-center text-2xl">
-        {activeFocusSession && <ActiveFocusSession />}
-        {!activeFocusSession && <CreateFocusSessionForm />}
+        {currentFocusSession && <CurrentFocusSession />}
+        {!currentFocusSession && <CreateFocusSessionForm />}
       </div>
     </main>
   );

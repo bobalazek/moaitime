@@ -18,8 +18,8 @@ import {
 
 export type FocusSessionsStore = {
   /********** Focus Sessions **********/
-  activeFocusSession: FocusSession | null;
-  reloadActiveFocusSession: () => Promise<FocusSession | null>;
+  currentFocusSession: FocusSession | null;
+  reloadCurrentFocusSession: () => Promise<FocusSession | null>;
   getFocusSession: (focusSessionId: string) => Promise<FocusSession | null>;
   addFocusSession: (focusSession: CreateFocusSession) => Promise<FocusSession>;
   editFocusSession: (
@@ -32,20 +32,20 @@ export type FocusSessionsStore = {
     focusSessionId: string,
     action: FocusSessionUpdateActionEnum
   ) => Promise<FocusSession>;
-  updateActiveFocusSessionStatus: (action: FocusSessionUpdateActionEnum) => Promise<FocusSession>;
+  updateCurrentFocusSessionStatus: (action: FocusSessionUpdateActionEnum) => Promise<FocusSession>;
 };
 
 export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => ({
   /********** Focus Sessions **********/
-  activeFocusSession: null,
-  reloadActiveFocusSession: async () => {
-    const activeFocusSession = await getFocusSession('active');
+  currentFocusSession: null,
+  reloadCurrentFocusSession: async () => {
+    const currentFocusSession = await getFocusSession('current');
 
     set({
-      activeFocusSession,
+      currentFocusSession,
     });
 
-    return activeFocusSession;
+    return currentFocusSession;
   },
   getFocusSession: async (focusSessionId: string) => {
     const focusSession = await getFocusSession(focusSessionId);
@@ -56,32 +56,32 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     const newFocusSession = await addFocusSession(focusSession);
 
     set({
-      activeFocusSession: newFocusSession,
+      currentFocusSession: newFocusSession,
     });
 
     return newFocusSession;
   },
   editFocusSession: async (focusSessionId: string, focusSession: UpdateFocusSession) => {
-    const { activeFocusSession } = get();
+    const { currentFocusSession } = get();
 
     const editedFocusSession = await editFocusSession(focusSessionId, focusSession);
 
-    if (activeFocusSession?.id === focusSessionId) {
+    if (currentFocusSession?.id === focusSessionId) {
       set({
-        activeFocusSession: editedFocusSession,
+        currentFocusSession: editedFocusSession,
       });
     }
 
     return editedFocusSession;
   },
   deleteFocusSession: async (focusSessionId: string, isHardDelete?: boolean) => {
-    const { activeFocusSession } = get();
+    const { currentFocusSession } = get();
 
     const deletedFocusSession = await deleteFocusSession(focusSessionId, isHardDelete);
 
-    if (activeFocusSession?.id === focusSessionId) {
+    if (currentFocusSession?.id === focusSessionId) {
       set({
-        activeFocusSession: null,
+        currentFocusSession: null,
       });
     }
 
@@ -100,15 +100,15 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
 
     return updatedFocusSession;
   },
-  updateActiveFocusSessionStatus: async (action: FocusSessionUpdateActionEnum) => {
-    const { activeFocusSession, reloadActiveFocusSession } = get();
-    if (!activeFocusSession) {
-      throw new Error('No active focus session found');
+  updateCurrentFocusSessionStatus: async (action: FocusSessionUpdateActionEnum) => {
+    const { currentFocusSession, reloadCurrentFocusSession } = get();
+    if (!currentFocusSession) {
+      throw new Error('No current focus session found');
     }
 
-    const updatedFocusSession = await updateFocusSessionStatus(activeFocusSession.id, action);
+    const updatedFocusSession = await updateFocusSessionStatus(currentFocusSession.id, action);
 
-    await reloadActiveFocusSession();
+    await reloadCurrentFocusSession();
 
     return updatedFocusSession;
   },

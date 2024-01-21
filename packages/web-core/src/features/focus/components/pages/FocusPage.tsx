@@ -7,7 +7,7 @@ import FocusPageHeader from './focus/FocusPageHeader';
 import FocusPageMain from './focus/FocusPageMain';
 
 export default function FocusPage() {
-  const { reloadActiveFocusSession } = useFocusSessionsStore();
+  const { reloadCurrentFocusSession } = useFocusSessionsStore();
   const navigate = useNavigate();
   const isInitialized = useRef(false);
 
@@ -18,8 +18,8 @@ export default function FocusPage() {
 
     isInitialized.current = true;
 
-    reloadActiveFocusSession();
-  }, [reloadActiveFocusSession]);
+    reloadCurrentFocusSession();
+  }, [reloadCurrentFocusSession]);
 
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {

@@ -101,14 +101,17 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     return updatedFocusSession;
   },
   updateCurrentFocusSessionStatus: async (action: FocusSessionUpdateActionEnum) => {
-    const { currentFocusSession, reloadCurrentFocusSession } = get();
+    const { currentFocusSession, updateFocusSessionStatus } = get();
     if (!currentFocusSession) {
       throw new Error('No current focus session found');
     }
 
     const updatedFocusSession = await updateFocusSessionStatus(currentFocusSession.id, action);
 
-    await reloadCurrentFocusSession();
+    set({
+      currentFocusSession:
+        action === FocusSessionUpdateActionEnum.COMPLETE ? null : updatedFocusSession,
+    });
 
     return updatedFocusSession;
   },

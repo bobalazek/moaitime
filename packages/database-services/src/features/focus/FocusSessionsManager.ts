@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, DBQueryConfig, desc, eq, isNull, ne } from 'drizzle-orm';
 
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
 import {
@@ -47,7 +47,7 @@ export class FocusSessionsManager {
   async findOneCurrentAndByUserId(userId: string): Promise<FocusSession | null> {
     const row = await getDatabase().query.focusSessions.findFirst({
       where: and(
-        eq(focusSessions.status, FocusSessionStatusEnum.ACTIVE),
+        ne(focusSessions.status, FocusSessionStatusEnum.COMPLETED),
         eq(focusSessions.userId, userId),
         isNull(focusSessions.deletedAt)
       ),
@@ -110,12 +110,17 @@ export class FocusSessionsManager {
       throw new Error(`Update action "${action}" not found`);
     }
 
+    const calculateTimeDifferenceInSeconds = (start: Date, end: Date) => {
+      return Math.floor((start.getTime() - end.getTime()) / 1000);
+    };
+
     const updateData: Partial<NewFocusSession> = {};
 
     const now = new Date();
     const nowString = now.toISOString();
 
     const focusSessionEvents = focusSession.events ?? [];
+    let focusSessionActiveSeconds = focusSession.activeSeconds ?? 0;
 
     if (action === FocusSessionUpdateActionEnum.PAUSE) {
       if (focusSession.status !== FocusSessionStatusEnum.ACTIVE) {
@@ -123,6 +128,20 @@ export class FocusSessionsManager {
       }
 
       updateData.status = FocusSessionStatusEnum.PAUSED;
+
+      // Calculate active seconds before pausing
+      if (focusSessionEvents.length > 0) {
+        const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
+        if (lastEvent.type !== FocusSessionEventTypeEnum.PAUSED) {
+          const additionalActiveTime = lastEvent.startedAt
+            ? calculateTimeDifferenceInSeconds(now, new Date(lastEvent.startedAt))
+            : 0;
+          focusSessionActiveSeconds += additionalActiveTime;
+        }
+      } else {
+        const additionalActiveTime = calculateTimeDifferenceInSeconds(now, focusSession.createdAt!);
+        focusSessionActiveSeconds += additionalActiveTime;
+      }
 
       // Events
       focusSessionEvents.push({
@@ -153,6 +172,16 @@ export class FocusSessionsManager {
       updateData.status = FocusSessionStatusEnum.COMPLETED;
       updateData.completedAt = now;
 
+      // Calculate active seconds before completing
+      if (focusSession.status === FocusSessionStatusEnum.ACTIVE && focusSessionEvents.length > 0) {
+        const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
+        if (lastEvent.type !== FocusSessionEventTypeEnum.PAUSED) {
+          const lastEventStartedAt = lastEvent.startedAt ? new Date(lastEvent.startedAt) : now;
+          const additionalActiveTime = calculateTimeDifferenceInSeconds(lastEventStartedAt, now);
+          focusSessionActiveSeconds += additionalActiveTime;
+        }
+      }
+
       // Events
       focusSessionEvents.push({
         type: FocusSessionEventTypeEnum.COMPLETED,
@@ -163,6 +192,17 @@ export class FocusSessionsManager {
 
     updateData.events = focusSessionEvents;
     updateData.lastPingedAt = now;
+
+    // Active seconds validation
+    updateData.activeSeconds = focusSessionActiveSeconds;
+    if (updateData.activeSeconds < 0) {
+      updateData.activeSeconds = 0;
+    } else if (
+      focusSession.settings &&
+      updateData.activeSeconds > focusSession.settings.focusDurationSeconds
+    ) {
+      updateData.activeSeconds = focusSession.settings.focusDurationSeconds;
+    }
 
     return this.updateOneById(focusSession.id, updateData);
   }

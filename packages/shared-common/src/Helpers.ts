@@ -59,6 +59,20 @@ export const getTimezones = () => {
   return ['UTC', ...timeZonesNames].sort();
 };
 
+export const getTimer = (remainingSeconds: number): string => {
+  const hours = Math.floor(remainingSeconds / 3600);
+  const minutes = Math.floor((remainingSeconds - hours * 3600) / 60);
+  const seconds = remainingSeconds - hours * 3600 - minutes * 60;
+
+  if (hours > 0) {
+    return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}:${
+      seconds < 10 ? `0${seconds}` : seconds
+    }`;
+  }
+
+  return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+};
+
 // UUID
 // Could have used the UUID library, but one of our other dependencies requires a lower version,
 // which we are then unable to use

@@ -78,16 +78,16 @@ export class FocusSessionsController {
     @Param('focusSessionId') focusSessionId: string,
     @Param('action') action: FocusSessionUpdateActionEnum
   ): Promise<AbstractResponseDto<FocusSession>> {
-    const data =
+    const focusSession =
       focusSessionId === 'current'
         ? await focusSessionsManager.findOneCurrentAndByUserId(req.user.id)
         : await focusSessionsManager.findOneByIdAndUserId(focusSessionId, req.user.id);
 
-    if (!data) {
+    if (!focusSession) {
       throw new NotFoundException('Focus session not found');
     }
 
-    await focusSessionsManager.update(data, action);
+    const data = await focusSessionsManager.update(focusSession, action);
 
     return {
       success: true,

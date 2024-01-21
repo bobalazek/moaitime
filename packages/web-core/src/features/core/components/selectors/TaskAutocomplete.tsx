@@ -9,23 +9,25 @@ import { useTasksStore } from '../../../tasks/state/tasksStore';
 
 // TODO: need to somehow fix the issue of focusing on the command items once it's open
 
-export function TaskAutocomplete({
-  inputWrapperClassName,
-  inputClassName,
-  inputCloseButtonClassName,
-  value,
-  taskId,
-  onChangeValue,
-  onSelectTask,
-}: {
-  inputWrapperClassName?: string;
-  inputClassName?: string;
-  inputCloseButtonClassName?: string;
+export type TaskAutocompleteProps = {
   value: string | null;
   taskId?: string;
   onChangeValue: (value: string) => void;
   onSelectTask?: (taskId?: string | null) => void;
-}) {
+  inputWrapperClassName?: string;
+  inputClassName?: string;
+  inputCloseButtonClassName?: string;
+};
+
+export function TaskAutocomplete({
+  value,
+  taskId,
+  onChangeValue,
+  onSelectTask,
+  inputWrapperClassName,
+  inputClassName,
+  inputCloseButtonClassName,
+}: TaskAutocompleteProps) {
   const { getTasksByQuery } = useTasksStore();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState(value || '');
@@ -45,12 +47,14 @@ export function TaskAutocomplete({
   }, 500);
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value);
+    const newText = event.target.value;
 
-    onChangeValue(text);
+    setText(newText);
 
-    if (text && !taskId) {
-      searchTasksDebounced(text);
+    onChangeValue(newText);
+
+    if (newText && !taskId) {
+      searchTasksDebounced(newText);
     }
   };
 

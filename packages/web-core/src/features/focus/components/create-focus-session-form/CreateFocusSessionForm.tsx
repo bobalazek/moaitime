@@ -22,8 +22,6 @@ export default function CreateFocusSessionForm() {
   const onSubmitButtonClick = async () => {
     try {
       await addFocusSession(data);
-
-      // TODO: we now switch into the focus mode
     } catch (error) {
       // Already handled
     }

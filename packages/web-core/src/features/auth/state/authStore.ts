@@ -255,7 +255,7 @@ export const useAuthStore = create<AuthStore>()(
       // App Data
       reloadAppData: async () => {
         const { auth, reloadTheme } = get();
-        const { reloadLists } = useListsStore.getState();
+        const { reloadLists, reloadTasksCountMap } = useListsStore.getState();
         const { reloadTags } = useTagsStore.getState();
         const { reloadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
         const { reloadGreetings, setRandomGreeting } = useGreetingStore.getState();
@@ -268,6 +268,7 @@ export const useAuthStore = create<AuthStore>()(
         reloadTheme();
 
         reloadLists();
+        reloadTasksCountMap();
 
         reloadTags();
 

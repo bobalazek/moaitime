@@ -46,14 +46,13 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   popoverOpen: false,
   setPopoverOpen: async (popoverOpen: boolean) => {
     const { popoverOpen: currentPopoverOpen } = get();
-    const { reloadLists, reloadSelectedListTasks } = useListsStore.getState();
+    const { reloadSelectedListTasks } = useListsStore.getState();
 
     set({
       popoverOpen,
     });
 
     if (popoverOpen && !currentPopoverOpen) {
-      await reloadLists();
       await reloadSelectedListTasks();
     }
   },
@@ -69,7 +68,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return getTasks(query);
   },
   addTask: async (task: CreateTask) => {
-    const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
+    const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
 
     const addedTask = await addTask(task);
 
@@ -77,14 +76,19 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       task: addedTask,
     });
 
-    await reloadLists(); // We want to reload the count of tasks
+    await reloadTasksCountMap();
     await reloadSelectedListTasks();
 
     return addedTask;
   },
   editTask: async (taskId: string, task: UpdateTask) => {
-    const { lists, setSelectedList, reloadLists, reloadSelectedListTasks, selectedListTasks } =
-      useListsStore.getState();
+    const {
+      lists,
+      setSelectedList,
+      reloadTasksCountMap,
+      reloadSelectedListTasks,
+      selectedListTasks,
+    } = useListsStore.getState();
 
     const originalTask = selectedListTasks.find((task) => task.id === taskId);
 
@@ -96,7 +100,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       task: editedTask,
     });
 
-    if (task.listId && originalTask?.listId !== editedTask.listId) {
+    if (originalTask?.listId !== editedTask.listId) {
       const selectedList =
         lists.find((list) => {
           return list.id === editedTask.listId;
@@ -104,7 +108,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
       await setSelectedList(selectedList);
 
-      await reloadLists();
+      await reloadTasksCountMap();
     }
 
     await reloadSelectedListTasks();
@@ -112,7 +116,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     return editedTask;
   },
   moveTask: async (taskId: string, newListId?: string) => {
-    const { lists, setSelectedList, reloadSelectedListTasks, reloadLists } =
+    const { lists, setSelectedList, reloadSelectedListTasks, reloadTasksCountMap } =
       useListsStore.getState();
 
     const movedTask = await editTask(taskId, {
@@ -131,13 +135,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     await setSelectedList(selectedList);
 
     await reloadSelectedListTasks();
-    // We need to update the counts of the lists, once it was moved to another list
-    await reloadLists();
+    await reloadTasksCountMap();
 
     return movedTask;
   },
   deleteTask: async (taskId: string, isHardDelete?: boolean) => {
-    const { reloadLists, reloadSelectedListTasks } = useListsStore.getState();
+    const { reloadTasksCountMap, reloadSelectedListTasks } = useListsStore.getState();
 
     const deletedTask = await deleteTask(taskId, isHardDelete);
 
@@ -147,12 +150,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     await reloadSelectedListTasks();
-    await reloadLists(); // We want to reload the count of tasks
+    await reloadTasksCountMap();
 
     return deletedTask;
   },
   undeleteTask: async (taskId: string) => {
-    const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
+    const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
 
     const undeletedTask = await undeleteTask(taskId);
 
@@ -161,12 +164,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     await reloadSelectedListTasks();
-    await reloadLists(); // We want to reload the count of tasks
+    await reloadTasksCountMap();
 
     return undeletedTask;
   },
   duplicateTask: async (taskId: string) => {
-    const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
+    const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
 
     const duplicatedTask = await duplicateTask(taskId);
 
@@ -175,12 +178,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     await reloadSelectedListTasks();
-    await reloadLists(); // We want to reload the count of tasks
+    await reloadTasksCountMap();
 
     return duplicatedTask;
   },
   completeTask: async (taskId: string) => {
-    const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
+    const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
 
     const completedTask = await completeTask(taskId);
 
@@ -189,12 +192,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     await reloadSelectedListTasks();
-    await reloadLists(); // We want to reload the count of tasks
+    await reloadTasksCountMap();
 
     return completedTask;
   },
   uncompleteTask: async (taskId: string) => {
-    const { reloadSelectedListTasks, reloadLists } = useListsStore.getState();
+    const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
 
     const uncompletedTask = await uncompleteTask(taskId);
 
@@ -203,7 +206,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     await reloadSelectedListTasks();
-    await reloadLists(); // We want to reload the count of tasks
+    await reloadTasksCountMap();
 
     return uncompletedTask;
   },

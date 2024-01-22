@@ -142,3 +142,27 @@ export const getTasksForList = async (
 
   return response.data ?? [];
 };
+
+export const getTasksCountMap = async (options?: {
+  includeCompleted?: boolean;
+  includeDeleted?: boolean;
+}): Promise<Record<string, number>> => {
+  const includeCompleted = options?.includeCompleted ?? true;
+  const includeDeleted = options?.includeDeleted ?? false;
+
+  const url = new URL(`${API_URL}/api/v1/lists/tasks-count-map`);
+
+  if (includeCompleted) {
+    url.searchParams.set('includeCompleted', 'true');
+  }
+
+  if (includeDeleted) {
+    url.searchParams.set('includeDeleted', 'true');
+  }
+
+  const response = await fetchJson<ResponseInterface<Record<string, number>>>(url, {
+    method: 'GET',
+  });
+
+  return response.data ?? {};
+};

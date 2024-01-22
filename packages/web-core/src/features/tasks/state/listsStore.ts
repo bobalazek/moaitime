@@ -17,6 +17,7 @@ import {
   deleteList,
   editList,
   getLists,
+  getTasksCountMap,
   getTasksForList,
   removeVisibleList,
 } from '../utils/ListHelpers';
@@ -30,6 +31,9 @@ export type ListsStore = {
   deleteList: (listId: string) => Promise<List | null>;
   addVisibleList: (listId: string) => Promise<void>;
   removeVisibleList: (listId: string) => Promise<void>;
+  // Tasks Count Map
+  tasksCountMap: Record<string, number>;
+  reloadTasksCountMap: () => Promise<Record<string, number>>;
   // Selected
   selectedList: List | null;
   setSelectedList: (selectedList: List | null) => Promise<List | null>;
@@ -139,6 +143,22 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     await reloadAccount();
     await reloadCalendarEntriesDebounced();
   },
+  // Tasks Count Map
+  tasksCountMap: {},
+  reloadTasksCountMap: async () => {
+    const { selectedListTasksIncludeCompleted, selectedListTasksIncludeDeleted } = get();
+
+    const tasksCountMap = await getTasksCountMap({
+      includeCompleted: selectedListTasksIncludeCompleted,
+      includeDeleted: selectedListTasksIncludeDeleted,
+    });
+
+    set({
+      tasksCountMap,
+    });
+
+    return tasksCountMap;
+  },
   // Selected
   selectedList: null,
   setSelectedList: async (selectedList: List | null) => {
@@ -226,23 +246,23 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     await reloadSelectedListTasks();
   },
   setSelectedListTasksIncludeCompleted: async (selectedListTasksIncludeCompleted: boolean) => {
-    const { reloadSelectedListTasks, reloadLists } = get();
+    const { reloadSelectedListTasks, reloadTasksCountMap } = get();
 
     set({
       selectedListTasksIncludeCompleted,
     });
 
     await reloadSelectedListTasks();
-    await reloadLists();
+    await reloadTasksCountMap();
   },
   setSelectedListTasksIncludeDeleted: async (selectedListTasksIncludeDeleted: boolean) => {
-    const { reloadSelectedListTasks, reloadLists } = get();
+    const { reloadSelectedListTasks, reloadTasksCountMap } = get();
 
     set({
       selectedListTasksIncludeDeleted,
     });
 
     await reloadSelectedListTasks();
-    await reloadLists();
+    await reloadTasksCountMap();
   },
 }));

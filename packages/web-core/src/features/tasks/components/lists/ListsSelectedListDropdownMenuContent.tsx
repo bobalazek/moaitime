@@ -21,11 +21,15 @@ export default function ListsSelectedListDropdownMenuContent({
   isSubContent?: boolean;
   onListSelect?: (list?: List) => void;
 }) {
-  const { selectedList, lists, setSelectedList, setSelectedListDialogOpen } = useListsStore();
+  const { selectedList, lists, tasksCountMap, setSelectedList, setSelectedListDialogOpen } =
+    useListsStore();
 
   const Content = isSubContent ? DropdownMenuSubContent : DropdownMenuContent;
   const showHeader = !isSubContent;
   const showListActions = !isSubContent;
+
+  /* Yes, that is not a type - we annotate the unlisted as empty string */
+  const unlistedCount = tasksCountMap[''] ?? 0;
 
   return (
     <Content className="w-56" align="end" data-test="tasks--lists-list--dropdown-menu">
@@ -76,6 +80,7 @@ export default function ListsSelectedListDropdownMenuContent({
         >
           <span className="w-full break-words pr-6">
             <span>Unlisted</span>
+            {unlistedCount > 0 && <span className="text-gray-400"> ({unlistedCount})</span>}
           </span>
         </DropdownMenuRadioItem>
         {lists.map((list) => (
@@ -95,8 +100,8 @@ export default function ListsSelectedListDropdownMenuContent({
           >
             <span className="w-full break-words pr-6">
               <span>{list.name}</span>
-              {typeof list.tasksCount !== 'undefined' && (
-                <span className="text-gray-400"> ({list.tasksCount})</span>
+              {typeof tasksCountMap[list.id] !== 'undefined' && (
+                <span className="text-gray-400"> ({tasksCountMap[list.id]})</span>
               )}
             </span>
             {showListActions && <ListActions list={list} />}

@@ -26,12 +26,28 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<List[]>> {
+    const data = await listsManager.findManyByUserId(req.user.id);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('tasks-count-map')
+  async tasksCountMap(@Req() req: Request): Promise<AbstractResponseDto<Record<string, number>>> {
     const includeCompleted = req.query.includeCompleted === 'true';
     const includeDeleted = req.query.includeDeleted === 'true';
 
-    const data = await listsManager.findManyByUserId(req.user.id, {
+    const map = await listsManager.getTasksCountMap(req.user.id, {
       includeCompleted,
       includeDeleted,
+    });
+
+    const data: Record<string, number> = {};
+    map.forEach((count, listId) => {
+      data[listId ?? ''] = count;
     });
 
     return {

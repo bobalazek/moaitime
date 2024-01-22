@@ -10,7 +10,8 @@ import { Button } from '@moaitime/web-ui';
 import { useFocusSessionsStore } from '../../state/focusSessionsStore';
 
 export default function CurrentFocusSession() {
-  const { currentFocusSession, updateCurrentFocusSessionStatus } = useFocusSessionsStore();
+  const { currentFocusSession, reloadCurrentFocusSession, updateCurrentFocusSessionStatus } =
+    useFocusSessionsStore();
 
   const totalSeconds = currentFocusSession?.settings.focusDurationSeconds ?? 0;
   const activeSeconds = currentFocusSession?.activeSeconds ?? 0;
@@ -19,8 +20,12 @@ export default function CurrentFocusSession() {
 
   useEffect(() => {
     if (!currentFocusSession || currentFocusSession.status !== FocusSessionStatusEnum.ACTIVE) {
+      setRemainingSeconds(0);
+
       return;
     }
+
+    setRemainingSeconds(totalSeconds - activeSeconds);
 
     // TODO: interval not always working when running in background, so we will need a way to work around this
     const remainingSecondsInterval = setInterval(() => {
@@ -44,7 +49,27 @@ export default function CurrentFocusSession() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFocusSession?.status]);
+  }, [currentFocusSession?.status, currentFocusSession?.activeSeconds]);
+
+  useEffect(() => {
+    const onVisibilityChange = async () => {
+      if (document.visibilityState !== 'visible') {
+        return;
+      }
+
+      try {
+        await reloadCurrentFocusSession();
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  });
 
   if (!currentFocusSession) {
     return null;

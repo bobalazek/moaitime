@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { FocusSessionStageEnum } from '..';
 import { FocusSessionEventTypeEnum } from './FocusSessionEventTypeEnum';
 import { FocusSessionStatusEnum } from './FocusSessionStatusEnum';
 
@@ -54,7 +55,7 @@ export const FocusSessionSchema = z.object({
   taskText: z.string(),
   settings: FocusSessionSettingsSchema,
   events: z.array(FocusSessionEventSchema).nullable(),
-  stage: z.string(),
+  stage: z.nativeEnum(FocusSessionStageEnum),
   stageIteration: z.number(),
   stageProgressSeconds: z.number(),
   lastPingedAt: z.string().nullable(),

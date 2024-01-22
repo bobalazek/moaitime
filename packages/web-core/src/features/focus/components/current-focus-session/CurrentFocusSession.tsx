@@ -14,9 +14,9 @@ export default function CurrentFocusSession() {
     useFocusSessionsStore();
 
   const totalSeconds = currentFocusSession?.settings.focusDurationSeconds ?? 0;
-  const activeSeconds = currentFocusSession?.activeSeconds ?? 0;
+  const stageProgressSeconds = currentFocusSession?.stageProgressSeconds ?? 0;
 
-  const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds - activeSeconds);
+  const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds - stageProgressSeconds);
 
   useEffect(() => {
     if (!currentFocusSession || currentFocusSession.status !== FocusSessionStatusEnum.ACTIVE) {
@@ -25,7 +25,7 @@ export default function CurrentFocusSession() {
       return;
     }
 
-    setRemainingSeconds(totalSeconds - activeSeconds);
+    setRemainingSeconds(totalSeconds - stageProgressSeconds);
 
     // TODO: interval not always working when running in background, so we will need a way to work around this
     const remainingSecondsInterval = setInterval(() => {
@@ -49,7 +49,7 @@ export default function CurrentFocusSession() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFocusSession?.status, currentFocusSession?.activeSeconds]);
+  }, [currentFocusSession?.status, currentFocusSession?.stageProgressSeconds]);
 
   useEffect(() => {
     const onVisibilityChange = async () => {

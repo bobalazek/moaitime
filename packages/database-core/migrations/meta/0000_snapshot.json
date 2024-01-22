@@ -1,5 +1,5 @@
 {
-  "id": "c2e9e047-f940-44b6-96c5-36dab7b8ebd8",
+  "id": "68f460d6-2f9d-4dc7-adb1-429507d7a68a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -349,8 +349,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "active_seconds": {
-          "name": "active_seconds",
+        "stage": {
+          "name": "stage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'focus-1'"
+        },
+        "stage_progress_seconds": {
+          "name": "stage_progress_seconds",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

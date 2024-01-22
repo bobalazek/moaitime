@@ -120,15 +120,17 @@ export class FocusSessionsManager {
 
     const now = new Date();
     const nowString = now.toISOString();
+    const lastActiveAt = focusSession.lastPingedAt ?? focusSession.createdAt ?? now;
 
-    const focusSessionStatus = focusSession.status;
-    const focusSessionEvents = focusSession.events ?? [];
-    const focusSessionStage = focusSession.stage;
-    const focusSessionStageIteration = focusSession.stageIteration ?? 1;
+    const currentFocusSessionStatus = focusSession.status;
+    const currentFocusSessionEvents = focusSession.events ?? [];
+    const currentFocusSessionStage = focusSession.stage;
+    const currentFocusSessionStageIteration = focusSession.stageIteration ?? 1;
 
     const focusSessionStageDurationSeconds = getFocusSessionDurationForCurrentStage(focusSession);
     const focusSessionTotalIterations = focusSession.settings?.focusRepetitionsCount ?? 1;
-    const hasDoneAllIterations = focusSessionStageIteration >= focusSessionTotalIterations;
+    const focusSessionHasDoneAllIterations =
+      currentFocusSessionStageIteration >= focusSessionTotalIterations;
 
     let focusSessionStageProgressSeconds = focusSession.stageProgressSeconds ?? 0;
 
@@ -140,8 +142,8 @@ export class FocusSessionsManager {
       updateData.status = FocusSessionStatusEnum.PAUSED;
 
       // Calculate stage progress seconds before pausing
-      if (focusSessionEvents.length > 0) {
-        const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
+      if (currentFocusSessionEvents.length > 0) {
+        const lastEvent = currentFocusSessionEvents[currentFocusSessionEvents.length - 1];
         if (lastEvent.type !== FocusSessionEventTypeEnum.PAUSED) {
           const additionalSeconds = lastEvent.startedAt
             ? calculateTimeDifferenceInSeconds(now, new Date(lastEvent.startedAt))
@@ -149,20 +151,16 @@ export class FocusSessionsManager {
           focusSessionStageProgressSeconds += additionalSeconds;
         }
       } else {
-        const additionalSeconds = calculateTimeDifferenceInSeconds(now, focusSession.createdAt!);
+        const additionalSeconds = calculateTimeDifferenceInSeconds(now, lastActiveAt);
         focusSessionStageProgressSeconds += additionalSeconds;
       }
 
       // Events
-      focusSessionEvents.push({
+      currentFocusSessionEvents.push({
         type: FocusSessionEventTypeEnum.PAUSED,
         startedAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.CONTINUE) {
-      if (hasDoneAllIterations) {
-        throw new Error('Focus session has already completed all iterations');
-      }
-
       if (focusSession.status !== FocusSessionStatusEnum.PAUSED) {
         throw new Error('Focus session is not paused, so it can not be continued');
       }
@@ -170,13 +168,13 @@ export class FocusSessionsManager {
       updateData.status = FocusSessionStatusEnum.ACTIVE;
 
       // Events
-      const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
+      const lastEvent = currentFocusSessionEvents[currentFocusSessionEvents.length - 1];
       if (lastEvent && lastEvent.type === FocusSessionEventTypeEnum.PAUSED) {
         lastEvent.endedAt = nowString;
-        focusSessionEvents[focusSessionEvents.length - 1] = lastEvent;
+        currentFocusSessionEvents[currentFocusSessionEvents.length - 1] = lastEvent;
       }
 
-      focusSessionEvents.push({
+      currentFocusSessionEvents.push({
         type: FocusSessionEventTypeEnum.CONTINUED,
         startedAt: nowString,
         endedAt: nowString,
@@ -186,8 +184,11 @@ export class FocusSessionsManager {
       updateData.completedAt = now;
 
       // Calculate stage progress seconds before completing
-      if (focusSession.status === FocusSessionStatusEnum.ACTIVE && focusSessionEvents.length > 0) {
-        const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
+      if (
+        focusSession.status === FocusSessionStatusEnum.ACTIVE &&
+        currentFocusSessionEvents.length > 0
+      ) {
+        const lastEvent = currentFocusSessionEvents[currentFocusSessionEvents.length - 1];
         if (lastEvent.type !== FocusSessionEventTypeEnum.PAUSED) {
           const lastEventStartedAt = lastEvent.startedAt ? new Date(lastEvent.startedAt) : now;
           const additionalSeconds = calculateTimeDifferenceInSeconds(lastEventStartedAt, now);
@@ -196,15 +197,23 @@ export class FocusSessionsManager {
       }
 
       // Events
-      focusSessionEvents.push({
+      currentFocusSessionEvents.push({
         type: FocusSessionEventTypeEnum.COMPLETED,
+        startedAt: nowString,
+        endedAt: nowString,
+      });
+    } else if (action === FocusSessionUpdateActionEnum.SKIP) {
+      updateData.stageIteration = currentFocusSessionStageIteration + 1;
+
+      // Events
+      currentFocusSessionEvents.push({
+        type: FocusSessionEventTypeEnum.SKIPPED,
         startedAt: nowString,
         endedAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.PING) {
       if (focusSession.status === FocusSessionStatusEnum.ACTIVE) {
-        const lastActive = focusSession.lastPingedAt ?? focusSession.createdAt ?? now;
-        const additionalActiveTime = calculateTimeDifferenceInSeconds(now, lastActive);
+        const additionalActiveTime = calculateTimeDifferenceInSeconds(now, lastActiveAt);
         focusSessionStageProgressSeconds += additionalActiveTime;
       }
     }
@@ -219,24 +228,27 @@ export class FocusSessionsManager {
     ) {
       updateData.stageProgressSeconds = focusSessionStageDurationSeconds;
 
-      if (focusSessionStatus === FocusSessionStatusEnum.ACTIVE) {
+      if (currentFocusSessionStatus === FocusSessionStatusEnum.ACTIVE) {
         updateData.status = FocusSessionStatusEnum.PAUSED;
       }
 
-      if (focusSessionStage === FocusSessionStageEnum.FOCUS && hasDoneAllIterations) {
+      if (
+        currentFocusSessionStage === FocusSessionStageEnum.FOCUS &&
+        focusSessionHasDoneAllIterations
+      ) {
         updateData.stage = FocusSessionStageEnum.LONG_BREAK;
-      } else if (focusSessionStage === FocusSessionStageEnum.FOCUS) {
+      } else if (currentFocusSessionStage === FocusSessionStageEnum.FOCUS) {
         updateData.stage = FocusSessionStageEnum.SHORT_BREAK;
-        updateData.stageIteration = focusSessionStageIteration + 1;
-      } else if (focusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
+        updateData.stageIteration = currentFocusSessionStageIteration + 1;
+      } else if (currentFocusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
         updateData.stage = FocusSessionStageEnum.FOCUS;
-        updateData.stageIteration = focusSessionStageIteration + 1;
-      } else if (focusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
+        updateData.stageIteration = currentFocusSessionStageIteration + 1;
+      } else if (currentFocusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
         updateData.stage = FocusSessionStageEnum.FOCUS;
       }
     }
 
-    updateData.events = focusSessionEvents;
+    updateData.events = currentFocusSessionEvents;
     updateData.lastPingedAt = now;
 
     return this.updateOneById(focusSession.id, updateData);

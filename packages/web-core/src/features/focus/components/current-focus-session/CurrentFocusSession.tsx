@@ -15,14 +15,14 @@ export const FocusSessionStage = ({ stage }: { stage: FocusSessionStageEnum }) =
   if (stage === FocusSessionStageEnum.SHORT_BREAK) {
     return (
       <div className="text-6xl">
-        <div>☕</div>
+        <div className="mb-2">☕</div>
         <div>Short Break</div>
       </div>
     );
   } else if (stage === FocusSessionStageEnum.LONG_BREAK) {
     return (
       <div className="text-6xl">
-        <div>🛑</div>
+        <div className="mb-2">🌇</div>
         <div>Long Break</div>
       </div>
     );
@@ -30,7 +30,7 @@ export const FocusSessionStage = ({ stage }: { stage: FocusSessionStageEnum }) =
 
   return (
     <div className="text-6xl">
-      <div>🧘</div>
+      <div className="mb-2">🧘</div>
       <div>Focus</div>
     </div>
   );
@@ -105,6 +105,10 @@ export default function CurrentFocusSession() {
     return null;
   }
 
+  const onSkipButtonClick = () => {
+    updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.SKIP);
+  };
+
   const onPauseButtonClick = () => {
     updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.PAUSE);
   };
@@ -126,16 +130,20 @@ export default function CurrentFocusSession() {
       </div>
       <div className="mb-4 text-8xl font-bold">{getTimer(remainingSeconds)}</div>
       <div className="text-muted-foreground mb-8 text-sm">
-        Iteration #{currentFocusSession.stageIteration}
+        Iteration #{currentFocusSession.stageIteration} out of{' '}
+        {currentFocusSession.settings.focusRepetitionsCount}
       </div>
       <div className="flex justify-center gap-2">
+        <Button size="lg" variant="outline" onClick={onSkipButtonClick}>
+          Skip
+        </Button>
         {currentFocusSession.status === FocusSessionStatusEnum.ACTIVE && (
           <Button size="lg" variant="outline" onClick={onPauseButtonClick}>
             Pause
           </Button>
         )}
         {currentFocusSession.status === FocusSessionStatusEnum.PAUSED && (
-          <Button size="lg" onClick={onContinueButtonClick}>
+          <Button size="lg" variant="outline" onClick={onContinueButtonClick}>
             Continue
           </Button>
         )}

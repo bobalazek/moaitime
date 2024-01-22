@@ -55,6 +55,7 @@ export const FocusSessionSchema = z.object({
   settings: FocusSessionSettingsSchema,
   events: z.array(FocusSessionEventSchema).nullable(),
   stage: z.string(),
+  stageIteration: z.number(),
   stageProgressSeconds: z.number(),
   lastPingedAt: z.string().nullable(),
   completedAt: z.string().nullable(),

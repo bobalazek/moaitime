@@ -19,6 +19,8 @@ const animationVariants = {
   exit: { opacity: 0, y: 100 },
 };
 
+const delayDuration = 0.1;
+
 export default function AppsDock() {
   const calendarEnabled = useAuthUserSetting('calendarEnabled', false);
   const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
@@ -27,6 +29,8 @@ export default function AppsDock() {
   const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
   const notesEnabled = useAuthUserSetting('notesEnabled', false);
   const focusEnabled = useAuthUserSetting('focusEnabled', false);
+
+  let delay = 0;
 
   return (
     <ErrorBoundary>
@@ -42,6 +46,7 @@ export default function AppsDock() {
                   animate="animate"
                   exit="exit"
                   variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
                 >
                   <MoodAppButton />
                 </motion.div>
@@ -54,6 +59,7 @@ export default function AppsDock() {
                   animate="animate"
                   exit="exit"
                   variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
                 >
                   <CalendarAppButton />
                 </motion.div>
@@ -66,6 +72,7 @@ export default function AppsDock() {
                   animate="animate"
                   exit="exit"
                   variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
                 >
                   <TasksAppButton />
                 </motion.div>
@@ -78,6 +85,7 @@ export default function AppsDock() {
                   animate="animate"
                   exit="exit"
                   variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
                 >
                   <NotesAppButton />
                 </motion.div>
@@ -90,6 +98,7 @@ export default function AppsDock() {
                   animate="animate"
                   exit="exit"
                   variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
                 >
                   <FocusAppButton />
                 </motion.div>
@@ -102,6 +111,7 @@ export default function AppsDock() {
                   animate="animate"
                   exit="exit"
                   variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
                 >
                   <WeatherAppButton />
                 </motion.div>
@@ -114,6 +124,7 @@ export default function AppsDock() {
                   animate="animate"
                   exit="exit"
                   variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
                 >
                   <CommandsAppButton />
                 </motion.div>
@@ -125,6 +136,7 @@ export default function AppsDock() {
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
+                transition={{ delay: delay++ * delayDuration }}
               >
                 <SettingsAppButton />
               </motion.div>

@@ -43,6 +43,7 @@ export * from './core/Response';
 export * from './core/ErrorResponse';
 
 // Focus
+export * from './focus/FocusSessionHelpers';
 export * from './focus/FocusSessionSchema';
 export * from './focus/FocusSessionStatusEnum';
 export * from './focus/FocusSessionEventTypeEnum';

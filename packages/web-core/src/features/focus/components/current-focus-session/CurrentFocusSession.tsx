@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   FocusSessionStatusEnum,
   FocusSessionUpdateActionEnum,
+  getFocusSessionDurationForCurrentStage,
   getTimer,
 } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
@@ -13,10 +14,14 @@ export default function CurrentFocusSession() {
   const { currentFocusSession, reloadCurrentFocusSession, updateCurrentFocusSessionStatus } =
     useFocusSessionsStore();
 
-  const totalSeconds = currentFocusSession?.settings.focusDurationSeconds ?? 0;
+  const stageProgressTotalSeconds = currentFocusSession
+    ? getFocusSessionDurationForCurrentStage(currentFocusSession)
+    : 0;
   const stageProgressSeconds = currentFocusSession?.stageProgressSeconds ?? 0;
 
-  const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds - stageProgressSeconds);
+  const [remainingSeconds, setRemainingSeconds] = useState(
+    stageProgressTotalSeconds - stageProgressSeconds
+  );
 
   useEffect(() => {
     if (!currentFocusSession || currentFocusSession.status !== FocusSessionStatusEnum.ACTIVE) {
@@ -25,7 +30,7 @@ export default function CurrentFocusSession() {
       return;
     }
 
-    setRemainingSeconds(totalSeconds - stageProgressSeconds);
+    setRemainingSeconds(stageProgressTotalSeconds - stageProgressSeconds);
 
     const remainingSecondsInterval = setInterval(() => {
       setRemainingSeconds((prev) => {
@@ -91,8 +96,13 @@ export default function CurrentFocusSession() {
   return (
     <div className="mt-12">
       <div className="text-muted-foreground mb-2 text-lg">I am working on</div>
-      <h3 className="text-3xl">{currentFocusSession.taskText}</h3>
-      <div className="py-8 text-8xl font-bold">{getTimer(remainingSeconds)}</div>
+      <div className="text-3xl">{currentFocusSession.taskText}</div>
+      <div className="text-muted-foreground mt-8 text-lg">Stage</div>
+      <div className="text-3xl">
+        {currentFocusSession.stage}{' '}
+        <small className="text-lg">#{currentFocusSession.stageIteration}</small>
+      </div>
+      <div className="my-8 text-8xl font-bold">{getTimer(remainingSeconds)}</div>
       <div className="flex justify-center gap-2">
         {currentFocusSession.status === FocusSessionStatusEnum.ACTIVE && (
           <Button size="lg" variant="outline" onClick={onPauseButtonClick}>
@@ -104,7 +114,6 @@ export default function CurrentFocusSession() {
             Continue
           </Button>
         )}
-
         <Button size="lg" variant="destructive" onClick={onCompleteButtonClick}>
           Stop
         </Button>

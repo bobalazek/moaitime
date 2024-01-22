@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS "focus_sessions" (
 	"settings" json,
 	"events" json,
 	"stage" text DEFAULT 'focus' NOT NULL,
+	"stage_iteration" integer DEFAULT 1 NOT NULL,
 	"stage_progress_seconds" integer DEFAULT 0 NOT NULL,
 	"completed_at" timestamp,
 	"last_pinged_at" timestamp,

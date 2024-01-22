@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { CreateFocusSession } from '@moaitime/shared-common';
 import { Button, cn, Input } from '@moaitime/web-ui';
@@ -19,13 +19,27 @@ export default function CreateFocusSessionForm() {
     },
   });
 
-  const onSubmitButtonClick = async () => {
+  const onSubmitButtonClick = useCallback(async () => {
     try {
       await addFocusSession(data);
     } catch (error) {
       // Already handled
     }
-  };
+  }, [addFocusSession, data]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        onSubmitButtonClick();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onSubmitButtonClick]);
 
   return (
     <div>

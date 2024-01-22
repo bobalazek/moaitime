@@ -6,9 +6,8 @@ import {
   FocusSessionStageEnum,
   FocusSessionStatusEnum,
   FocusSessionUpdateActionEnum,
+  getFocusSessionDurationForCurrentStage,
 } from '@moaitime/shared-common';
-
-const FOCUS_STAGE_DELIMITER = '__';
 
 export class FocusSessionsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<FocusSession[]> {
@@ -125,15 +124,11 @@ export class FocusSessionsManager {
     const focusSessionStatus = focusSession.status;
     const focusSessionEvents = focusSession.events ?? [];
     const focusSessionStage = focusSession.stage;
+    const focusSessionStageIteration = focusSession.stageIteration ?? 1;
 
-    const focusSessionFocusRounds = focusSession.settings?.focusRepetitionsCount ?? 1;
-
-    const focusSessionStageIsFocus = focusSessionStage.startsWith('focus');
-    const focusSessionStageIsShortBreak = focusSessionStage.startsWith('short_break');
-    const focusSessionStageIsLongBreak = focusSessionStage.startsWith('long_break');
-    const focusSessionStageRound = parseInt(
-      focusSessionStage.split(FOCUS_STAGE_DELIMITER)?.[1] ?? '1'
-    );
+    const focusSessionStageDurationSeconds = getFocusSessionDurationForCurrentStage(focusSession);
+    const focusSessionTotalIterations = focusSession.settings?.focusRepetitionsCount ?? 1;
+    const hasDoneAllIterations = focusSessionStageIteration >= focusSessionTotalIterations;
 
     let focusSessionStageProgressSeconds = focusSession.stageProgressSeconds ?? 0;
 
@@ -164,20 +159,23 @@ export class FocusSessionsManager {
         startedAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.CONTINUE) {
-      if (focusSession.status !== FocusSessionStatusEnum.PAUSED) {
-        throw new Error('Focus session is not paused, so it can not be continued');
+      if (hasDoneAllIterations) {
+        throw new Error('Focus session has already completed all iterations');
       }
 
-      const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
-      if (lastEvent.type !== FocusSessionEventTypeEnum.PAUSED) {
+      if (focusSession.status !== FocusSessionStatusEnum.PAUSED) {
         throw new Error('Focus session is not paused, so it can not be continued');
       }
 
       updateData.status = FocusSessionStatusEnum.ACTIVE;
 
       // Events
-      lastEvent.endedAt = nowString;
-      focusSessionEvents[focusSessionEvents.length - 1] = lastEvent;
+      const lastEvent = focusSessionEvents[focusSessionEvents.length - 1];
+      if (lastEvent && lastEvent.type === FocusSessionEventTypeEnum.PAUSED) {
+        lastEvent.endedAt = nowString;
+        focusSessionEvents[focusSessionEvents.length - 1] = lastEvent;
+      }
+
       focusSessionEvents.push({
         type: FocusSessionEventTypeEnum.CONTINUED,
         startedAt: nowString,
@@ -215,27 +213,27 @@ export class FocusSessionsManager {
     updateData.stageProgressSeconds = focusSessionStageProgressSeconds;
     if (updateData.stageProgressSeconds < 0) {
       updateData.stageProgressSeconds = 0;
+    } else if (
+      focusSession.settings &&
+      updateData.stageProgressSeconds > focusSessionStageDurationSeconds
+    ) {
+      updateData.stageProgressSeconds = focusSessionStageDurationSeconds;
 
       if (focusSessionStatus === FocusSessionStatusEnum.ACTIVE) {
         updateData.status = FocusSessionStatusEnum.PAUSED;
       }
 
-      if (focusSessionStageIsFocus && focusSessionStageRound >= focusSessionFocusRounds) {
+      if (focusSessionStage === FocusSessionStageEnum.FOCUS && hasDoneAllIterations) {
         updateData.stage = FocusSessionStageEnum.LONG_BREAK;
-      } else if (focusSessionStageIsFocus) {
-        updateData.stage = `${FocusSessionStageEnum.SHORT_BREAK}${FOCUS_STAGE_DELIMITER}${focusSessionStageRound}`;
-      } else if (focusSessionStageIsShortBreak) {
-        updateData.stage = `${FocusSessionStageEnum.FOCUS}${FOCUS_STAGE_DELIMITER}${
-          focusSessionStageRound + 1
-        }`;
-      } else if (focusSessionStageIsLongBreak) {
+      } else if (focusSessionStage === FocusSessionStageEnum.FOCUS) {
+        updateData.stage = FocusSessionStageEnum.SHORT_BREAK;
+        updateData.stageIteration = focusSessionStageIteration + 1;
+      } else if (focusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
+        updateData.stage = FocusSessionStageEnum.FOCUS;
+        updateData.stageIteration = focusSessionStageIteration + 1;
+      } else if (focusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
         updateData.stage = FocusSessionStageEnum.FOCUS;
       }
-    } else if (
-      focusSession.settings &&
-      updateData.stageProgressSeconds > focusSession.settings.focusDurationSeconds
-    ) {
-      updateData.stageProgressSeconds = focusSession.settings.focusDurationSeconds;
     }
 
     updateData.events = focusSessionEvents;

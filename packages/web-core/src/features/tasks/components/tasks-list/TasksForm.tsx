@@ -1,5 +1,5 @@
 import { XCircle } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { KeyboardEvent, useRef, useState } from 'react';
 
 import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
@@ -55,7 +55,7 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
     }
   };
 
-  const onKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyPress = async (event: KeyboardEvent<HTMLInputElement>) => {
     event.stopPropagation();
 
     if (event.key === 'Enter') {
@@ -76,7 +76,6 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
           onKeyPress={onKeyPress}
           enterKeyHint="enter"
         />
-
         {onCancel && (
           <Button
             variant="secondary"

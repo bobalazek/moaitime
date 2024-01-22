@@ -20,9 +20,13 @@ export const focusSessions = pgTable(
       .default(FocusSessionStatusEnum.ACTIVE)
       .$type<FocusSessionStatusEnum>(),
     taskText: text('task_text').notNull(), // You can set a custom task here, instead of choosing from the list
-    settings: json('settings').$type<FocusSessionSettings>(),
+    settings: json('settings').$type<FocusSessionSettings>().notNull(),
     events: json('events').$type<FocusSessionEvent[]>(),
-    stage: text('stage').notNull().default(FocusSessionStageEnum.FOCUS),
+    stage: text('stage')
+      .$type<FocusSessionStageEnum>()
+      .notNull()
+      .default(FocusSessionStageEnum.FOCUS),
+    stageIteration: integer('stage_iteration').notNull().default(1),
     stageProgressSeconds: integer('stage_progress_seconds').notNull().default(0),
     completedAt: timestamp('completed_at'),
     lastPingedAt: timestamp('last_pinged_at'),

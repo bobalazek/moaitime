@@ -2,8 +2,12 @@ import { FocusSession } from './FocusSessionSchema';
 import { FocusSessionStageEnum } from './FocusSessionStageEnum';
 
 export const getFocusSessionDurationForCurrentStage = (
-  focusSession: Pick<FocusSession, 'stage' | 'settings'>
+  focusSession?: Pick<FocusSession, 'stage' | 'settings'> | null
 ) => {
+  if (!focusSession) {
+    return 0;
+  }
+
   const focusSessionStage = focusSession.stage;
 
   const focusSessionFocusStageDurationSeconds = focusSession.settings?.focusDurationSeconds ?? 0;

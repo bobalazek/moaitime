@@ -40,21 +40,24 @@ export default function CurrentFocusSession() {
   const { currentFocusSession, reloadCurrentFocusSession, updateCurrentFocusSessionStatus } =
     useFocusSessionsStore();
 
-  const stageProgressTotalSeconds = currentFocusSession
-    ? getFocusSessionDurationForCurrentStage(currentFocusSession)
-    : 0;
-  const stageProgressSeconds = currentFocusSession?.stageProgressSeconds ?? 0;
-
+  const [totalSeconds, setTotalSeconds] = useState(
+    getFocusSessionDurationForCurrentStage(currentFocusSession)
+  );
   const [remainingSeconds, setRemainingSeconds] = useState(
-    stageProgressTotalSeconds - stageProgressSeconds
+    getFocusSessionDurationForCurrentStage(currentFocusSession) -
+      (currentFocusSession?.stageProgressSeconds ?? 0)
   );
 
   useEffect(() => {
+    const newTotalSeconds = getFocusSessionDurationForCurrentStage(currentFocusSession);
+    const newRemainingSeconds = newTotalSeconds - (currentFocusSession?.stageProgressSeconds ?? 0);
+
+    setTotalSeconds(newTotalSeconds);
+    setRemainingSeconds(newRemainingSeconds);
+
     if (!currentFocusSession || currentFocusSession.status !== FocusSessionStatusEnum.ACTIVE) {
       return;
     }
-
-    setRemainingSeconds(stageProgressTotalSeconds - stageProgressSeconds);
 
     const remainingSecondsInterval = setInterval(() => {
       setRemainingSeconds((prev) => {
@@ -128,10 +131,7 @@ export default function CurrentFocusSession() {
       <div className="mb-4 mt-8">
         <FocusSessionStage stage={currentFocusSession.stage} />
       </div>
-      <div
-        className="mb-4 text-8xl font-bold"
-        title={`Total: ${getTimer(stageProgressTotalSeconds)}`}
-      >
+      <div className="mb-4 text-8xl font-bold" title={`Total: ${getTimer(totalSeconds)}`}>
         {getTimer(remainingSeconds)}
       </div>
       <div className="text-muted-foreground mb-8 text-sm">

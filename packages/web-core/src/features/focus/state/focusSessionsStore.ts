@@ -19,6 +19,7 @@ import {
 export type FocusSessionsStore = {
   /********** Focus Sessions **********/
   currentFocusSession: FocusSession | null;
+  setCurrentFocusSession: (focusSession: FocusSession | null) => void;
   reloadCurrentFocusSession: () => Promise<FocusSession | null>;
   getFocusSession: (focusSessionId: string) => Promise<FocusSession | null>;
   addFocusSession: (focusSession: CreateFocusSession) => Promise<FocusSession>;
@@ -38,6 +39,11 @@ export type FocusSessionsStore = {
 export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => ({
   /********** Focus Sessions **********/
   currentFocusSession: null,
+  setCurrentFocusSession: (focusSession: FocusSession | null) => {
+    set({
+      currentFocusSession: focusSession,
+    });
+  },
   reloadCurrentFocusSession: async () => {
     const currentFocusSession = await getFocusSession('current', true);
 

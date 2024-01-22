@@ -184,12 +184,12 @@ export class FocusSessionsManager {
           : FocusSessionStageEnum.SHORT_BREAK;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
         updateData.stage = FocusSessionStageEnum.FOCUS;
+        updateData.stageIteration = currentFocusSessionStageIteration + 1;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
         updateData.completedAt = now;
       }
 
-      updateData.stageIteration = currentFocusSessionStageIteration + 1;
-      updateData.stageProgressSeconds = 0;
+      focusSessionStageProgressSeconds = 0;
 
       // Events
       currentFocusSessionEvents.push({

@@ -37,8 +37,12 @@ export const FocusSessionStage = ({ stage }: { stage: FocusSessionStageEnum }) =
 };
 
 export default function CurrentFocusSession() {
-  const { currentFocusSession, reloadCurrentFocusSession, updateCurrentFocusSessionStatus } =
-    useFocusSessionsStore();
+  const {
+    currentFocusSession,
+    setCurrentFocusSession,
+    reloadCurrentFocusSession,
+    updateCurrentFocusSessionStatus,
+  } = useFocusSessionsStore();
 
   const [totalSeconds, setTotalSeconds] = useState(
     getFocusSessionDurationForCurrentStage(currentFocusSession)
@@ -49,6 +53,11 @@ export default function CurrentFocusSession() {
   );
 
   useEffect(() => {
+    if (currentFocusSession?.completedAt) {
+      setCurrentFocusSession(null);
+      return;
+    }
+
     const newTotalSeconds = getFocusSessionDurationForCurrentStage(currentFocusSession);
     const newRemainingSeconds = newTotalSeconds - (currentFocusSession?.stageProgressSeconds ?? 0);
 
@@ -82,7 +91,11 @@ export default function CurrentFocusSession() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFocusSession?.status, currentFocusSession?.stageProgressSeconds]);
+  }, [
+    currentFocusSession?.status,
+    currentFocusSession?.stageProgressSeconds,
+    currentFocusSession?.completedAt,
+  ]);
 
   useEffect(() => {
     const onVisibilityChange = async () => {

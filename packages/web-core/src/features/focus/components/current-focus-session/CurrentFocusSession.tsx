@@ -25,8 +25,6 @@ export default function CurrentFocusSession() {
 
   useEffect(() => {
     if (!currentFocusSession || currentFocusSession.status !== FocusSessionStatusEnum.ACTIVE) {
-      setRemainingSeconds(0);
-
       return;
     }
 

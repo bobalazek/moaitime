@@ -27,11 +27,12 @@ export default function CurrentFocusSession() {
 
     setRemainingSeconds(totalSeconds - stageProgressSeconds);
 
-    // TODO: interval not always working when running in background, so we will need a way to work around this
     const remainingSecondsInterval = setInterval(() => {
       setRemainingSeconds((prev) => {
         if (prev <= 0) {
           clearInterval(remainingSecondsInterval);
+          reloadCurrentFocusSession();
+
           return 0;
         }
 

@@ -47,6 +47,7 @@ export * from './focus/FocusSessionSchema';
 export * from './focus/FocusSessionStatusEnum';
 export * from './focus/FocusSessionEventTypeEnum';
 export * from './focus/FocusSessionUpdateActionEnum';
+export * from './focus/FocusSessionStageEnum';
 
 // Greeting
 export * from './greetings/Greeting';

@@ -3,9 +3,12 @@ import { and, count, DBQueryConfig, desc, eq, isNull, ne } from 'drizzle-orm';
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
 import {
   FocusSessionEventTypeEnum,
+  FocusSessionStageEnum,
   FocusSessionStatusEnum,
   FocusSessionUpdateActionEnum,
 } from '@moaitime/shared-common';
+
+const FOCUS_STAGE_DELIMITER = '__';
 
 export class FocusSessionsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<FocusSession[]> {
@@ -119,7 +122,19 @@ export class FocusSessionsManager {
     const now = new Date();
     const nowString = now.toISOString();
 
+    const focusSessionStatus = focusSession.status;
     const focusSessionEvents = focusSession.events ?? [];
+    const focusSessionStage = focusSession.stage;
+
+    const focusSessionFocusRounds = focusSession.settings?.focusRepetitionsCount ?? 1;
+
+    const focusSessionStageIsFocus = focusSessionStage.startsWith('focus');
+    const focusSessionStageIsShortBreak = focusSessionStage.startsWith('short_break');
+    const focusSessionStageIsLongBreak = focusSessionStage.startsWith('long_break');
+    const focusSessionStageRound = parseInt(
+      focusSessionStage.split(FOCUS_STAGE_DELIMITER)?.[1] ?? '1'
+    );
+
     let focusSessionStageProgressSeconds = focusSession.stageProgressSeconds ?? 0;
 
     if (action === FocusSessionUpdateActionEnum.PAUSE) {
@@ -196,19 +211,35 @@ export class FocusSessionsManager {
       }
     }
 
-    updateData.events = focusSessionEvents;
-    updateData.lastPingedAt = now;
-
     // Stage progress seconds validation
     updateData.stageProgressSeconds = focusSessionStageProgressSeconds;
     if (updateData.stageProgressSeconds < 0) {
       updateData.stageProgressSeconds = 0;
+
+      if (focusSessionStatus === FocusSessionStatusEnum.ACTIVE) {
+        updateData.status = FocusSessionStatusEnum.PAUSED;
+      }
+
+      if (focusSessionStageIsFocus && focusSessionStageRound >= focusSessionFocusRounds) {
+        updateData.stage = FocusSessionStageEnum.LONG_BREAK;
+      } else if (focusSessionStageIsFocus) {
+        updateData.stage = `${FocusSessionStageEnum.SHORT_BREAK}${FOCUS_STAGE_DELIMITER}${focusSessionStageRound}`;
+      } else if (focusSessionStageIsShortBreak) {
+        updateData.stage = `${FocusSessionStageEnum.FOCUS}${FOCUS_STAGE_DELIMITER}${
+          focusSessionStageRound + 1
+        }`;
+      } else if (focusSessionStageIsLongBreak) {
+        updateData.stage = FocusSessionStageEnum.FOCUS;
+      }
     } else if (
       focusSession.settings &&
       updateData.stageProgressSeconds > focusSession.settings.focusDurationSeconds
     ) {
       updateData.stageProgressSeconds = focusSession.settings.focusDurationSeconds;
     }
+
+    updateData.events = focusSessionEvents;
+    updateData.lastPingedAt = now;
 
     return this.updateOneById(focusSession.id, updateData);
   }

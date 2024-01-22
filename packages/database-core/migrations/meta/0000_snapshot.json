@@ -1,5 +1,5 @@
 {
-  "id": "68f460d6-2f9d-4dc7-adb1-429507d7a68a",
+  "id": "e184f135-7ddd-4ee8-9ede-786ce47bc47b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -354,7 +354,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'focus-1'"
+          "default": "'focus'"
         },
         "stage_progress_seconds": {
           "name": "stage_progress_seconds",

@@ -4,6 +4,7 @@ import { index, integer, json, pgTable, text, timestamp, uuid } from 'drizzle-or
 import {
   FocusSessionEvent,
   FocusSessionSettings,
+  FocusSessionStageEnum,
   FocusSessionStatusEnum,
 } from '@moaitime/shared-common';
 
@@ -21,7 +22,7 @@ export const focusSessions = pgTable(
     taskText: text('task_text').notNull(), // You can set a custom task here, instead of choosing from the list
     settings: json('settings').$type<FocusSessionSettings>(),
     events: json('events').$type<FocusSessionEvent[]>(),
-    stage: text('stage').notNull().default('focus-1'), // focus-1, short_break-1, focus-2, ..., long_break
+    stage: text('stage').notNull().default(FocusSessionStageEnum.FOCUS),
     stageProgressSeconds: integer('stage_progress_seconds').notNull().default(0),
     completedAt: timestamp('completed_at'),
     lastPingedAt: timestamp('last_pinged_at'),

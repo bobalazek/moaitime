@@ -33,3 +33,4 @@ export * from './features/tasks/TagsManager';
 
 // Mood
 export * from './features/mood/MoodEntriesManager';
+export * from './features/mood/MoodStatisticsManager';

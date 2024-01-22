@@ -43,7 +43,6 @@ export default function CurrentFocusSession() {
     reloadCurrentFocusSession,
     updateCurrentFocusSessionStatus,
   } = useFocusSessionsStore();
-
   const [totalSeconds, setTotalSeconds] = useState(
     getFocusSessionDurationForCurrentStage(currentFocusSession)
   );

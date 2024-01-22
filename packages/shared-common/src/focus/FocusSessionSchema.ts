@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { FocusSessionStageEnum } from '..';
 import { FocusSessionEventTypeEnum } from './FocusSessionEventTypeEnum';
+import { FocusSessionStageEnum } from './FocusSessionStageEnum';
 import { FocusSessionStatusEnum } from './FocusSessionStatusEnum';
 
 export const FocusSessionSettingsSchema = z.object({
@@ -45,8 +45,7 @@ export const FocusSessionSettingsSchema = z.object({
 
 export const FocusSessionEventSchema = z.object({
   type: z.nativeEnum(FocusSessionEventTypeEnum),
-  startedAt: z.string(),
-  endedAt: z.string().nullable().optional(),
+  createdAt: z.string(),
 });
 
 export const FocusSessionSchema = z.object({

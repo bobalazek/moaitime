@@ -1,5 +1,5 @@
 {
-  "id": "fd769164-b117-47b8-a44b-7f73a9d5090d",
+  "id": "815c2d0d-8957-4000-ae9e-046fa33a211b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -341,7 +341,7 @@
           "name": "settings",
           "type": "json",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "events": {
           "name": "events",
@@ -1365,11 +1365,17 @@
           "notNull": false,
           "default": "now()"
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "list_id": {
           "name": "list_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "parent_id": {
           "name": "parent_id",
@@ -1379,6 +1385,11 @@
         }
       },
       "indexes": {
+        "tasks_user_id_idx": {
+          "name": "tasks_user_id_idx",
+          "columns": ["list_id"],
+          "isUnique": false
+        },
         "tasks_list_id_idx": {
           "name": "tasks_list_id_idx",
           "columns": ["list_id"],
@@ -1391,6 +1402,15 @@
         }
       },
       "foreignKeys": {
+        "tasks_user_id_users_id_fk": {
+          "name": "tasks_user_id_users_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "tasks_list_id_lists_id_fk": {
           "name": "tasks_list_id_lists_id_fk",
           "tableFrom": "tasks",

@@ -118,11 +118,23 @@ export const getTasksForList = async (
   const includeDeleted = options?.includeDeleted ?? false;
   const sortField = options?.sortField ?? TasksListSortFieldEnum.CREATED_AT;
   const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
-  const url = `${API_URL}/api/v1/tasks?listId=${listId}&includeCompleted=${
-    includeCompleted ? 'true' : 'false'
-  }&includeDeleted=${
-    includeDeleted ? 'true' : 'false'
-  }&sortField=${sortField}&sortDirection=${sortDirection}`;
+
+  const url = new URL(`${API_URL}/api/v1/tasks`);
+
+  if (listId) {
+    url.searchParams.set('listId', listId);
+  }
+
+  if (includeCompleted) {
+    url.searchParams.set('includeCompleted', 'true');
+  }
+
+  if (includeDeleted) {
+    url.searchParams.set('includeDeleted', 'true');
+  }
+
+  url.searchParams.set('sortField', sortField);
+  url.searchParams.set('sortDirection', sortDirection);
 
   const response = await fetchJson<ResponseInterface<Task[]>>(url, {
     method: 'GET',

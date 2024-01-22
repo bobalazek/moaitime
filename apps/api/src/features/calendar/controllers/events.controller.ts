@@ -56,8 +56,8 @@ export class EventsController {
       'calendarsMaxEventsPerCalendarCount'
     );
 
-    const listsCount = await eventsManager.countByCalendarId(body.calendarId);
-    if (listsCount >= calendarsMaxEventsPerCalendarCount) {
+    const eventsCount = await eventsManager.countByCalendarId(body.calendarId);
+    if (eventsCount >= calendarsMaxEventsPerCalendarCount) {
       throw new Error(
         `You have reached the maximum number of events per calendar (${calendarsMaxEventsPerCalendarCount}).`
       );

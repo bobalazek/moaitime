@@ -85,7 +85,7 @@ export class ListsManager {
   }
 
   async getTasksCountMap(ids: string[], options?: ListsManagerFindManyByUserIdTaskCountOptions) {
-    const tasksCountMap = new Map<string, number>();
+    const tasksCountMap = new Map<string | null, number>();
     if (ids.length > 0) {
       let where = inArray(tasks.listId, ids);
 

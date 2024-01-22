@@ -196,14 +196,12 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
       selectedListTasksIncludeDeleted,
     } = get();
 
-    const selectedListTasks = selectedList
-      ? await getTasksForList(selectedList.id, {
-          sortField: selectedListTasksSortField,
-          sortDirection: selectedListTasksSortDirection,
-          includeCompleted: selectedListTasksIncludeCompleted,
-          includeDeleted: selectedListTasksIncludeDeleted,
-        })
-      : [];
+    const selectedListTasks = await getTasksForList(selectedList?.id, {
+      sortField: selectedListTasksSortField,
+      sortDirection: selectedListTasksSortDirection,
+      includeCompleted: selectedListTasksIncludeCompleted,
+      includeDeleted: selectedListTasksIncludeDeleted,
+    });
 
     set({
       selectedListTasks,

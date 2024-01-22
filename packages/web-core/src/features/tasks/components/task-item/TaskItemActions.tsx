@@ -167,7 +167,7 @@ const TaskItemActions = memo(
                 <ListsSelectedListDropdownMenuContent
                   isSubContent={true}
                   onListSelect={async (newList) => {
-                    await moveTask(task.id, newList.id);
+                    await moveTask(task.id, newList?.id);
 
                     setDropdownMenuOpen(false);
                   }}

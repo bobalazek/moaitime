@@ -19,7 +19,7 @@ export default function ListsSelectedListDropdownMenuContent({
   onListSelect,
 }: {
   isSubContent?: boolean;
-  onListSelect?: (list: List) => void;
+  onListSelect?: (list?: List) => void;
 }) {
   const { selectedList, lists, setSelectedList, setSelectedListDialogOpen } = useListsStore();
 
@@ -51,17 +51,33 @@ export default function ListsSelectedListDropdownMenuContent({
       )}
       {lists.length === 0 && (
         <DropdownMenuItem className="flex cursor-pointer items-center justify-center text-gray-400">
-          No lists found yet.
+          No lists found.
         </DropdownMenuItem>
       )}
       <DropdownMenuRadioGroup
-        value={selectedList?.id}
+        value={selectedList?.id ?? ''}
         onValueChange={async (value) => {
           const newSelectedList = lists.find((list) => list.id === value) ?? null;
 
           await setSelectedList(newSelectedList);
         }}
       >
+        <DropdownMenuRadioItem
+          value=""
+          className="relative flex cursor-pointer justify-between border-l-4 border-l-transparent"
+          onClick={(event) => {
+            if (onListSelect) {
+              event.preventDefault();
+              event.stopPropagation();
+
+              onListSelect(undefined);
+            }
+          }}
+        >
+          <span className="w-full break-words pr-6">
+            <span>Unlisted</span>
+          </span>
+        </DropdownMenuRadioItem>
         {lists.map((list) => (
           <DropdownMenuRadioItem
             key={list.id}

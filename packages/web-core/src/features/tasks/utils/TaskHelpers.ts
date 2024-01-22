@@ -115,10 +115,10 @@ export const uncompleteTask = async (taskId: string): Promise<Task> => {
 };
 
 export const reorderTask = async (
-  listId: string,
   originalTaskId: string,
   newTaskId: string,
-  sortDirection: SortDirectionEnum
+  sortDirection: SortDirectionEnum,
+  listId?: string
 ) => {
   return fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/reorder`, {
     method: 'POST',

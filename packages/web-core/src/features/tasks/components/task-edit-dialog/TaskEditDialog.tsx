@@ -147,9 +147,9 @@ export default function TaskEditDialog() {
         <div className="flex flex-col gap-2">
           <Label htmlFor="task-list">List</Label>
           <ListSelector
-            value={data.listId ?? ''}
+            value={data.listId ?? undefined}
             onChangeValue={(value) => {
-              setData((current) => ({ ...current, listId: value }));
+              setData((current) => ({ ...current, listId: value ?? null }));
             }}
           />
         </div>

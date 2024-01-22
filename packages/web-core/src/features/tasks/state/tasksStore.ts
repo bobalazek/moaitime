@@ -28,7 +28,7 @@ export type TasksStore = {
   getTasksByQuery: (query: string) => Promise<Task[]>;
   addTask: (task: CreateTask) => Promise<Task>;
   editTask: (taskId: string, task: UpdateTask) => Promise<Task>;
-  moveTask: (taskId: string, newListId: string) => Promise<Task>;
+  moveTask: (taskId: string, newListId?: string) => Promise<Task>;
   deleteTask: (taskId: string, isHardDelete?: boolean) => Promise<Task>;
   undeleteTask: (taskId: string) => Promise<Task>;
   duplicateTask: (taskId: string) => Promise<Task>;
@@ -46,7 +46,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   popoverOpen: false,
   setPopoverOpen: async (popoverOpen: boolean) => {
     const { popoverOpen: currentPopoverOpen } = get();
-    const { reloadLists } = useListsStore.getState();
+    const { reloadLists, reloadSelectedListTasks } = useListsStore.getState();
 
     set({
       popoverOpen,
@@ -54,6 +54,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     if (popoverOpen && !currentPopoverOpen) {
       await reloadLists();
+      await reloadSelectedListTasks();
     }
   },
   // Tasks List End Element
@@ -110,7 +111,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return editedTask;
   },
-  moveTask: async (taskId: string, newListId: string) => {
+  moveTask: async (taskId: string, newListId?: string) => {
     const { lists, setSelectedList, reloadSelectedListTasks, reloadLists } =
       useListsStore.getState();
 
@@ -214,9 +215,6 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       reloadSelectedListTasks,
       selectedListTasksSortDirection,
     } = useListsStore.getState();
-    if (!selectedList) {
-      return;
-    }
 
     // We want do an optimistic update to prevent the jump animation,
     // while the request is in progress.
@@ -225,7 +223,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const newSelectedListTasks = arrayMove(selectedListTasks, originalTaskIndex, newTaskIndex);
     setSelectedListTasks(newSelectedListTasks);
 
-    await reorderTask(selectedList.id, originalTaskId, newTaskId, selectedListTasksSortDirection);
+    await reorderTask(originalTaskId, newTaskId, selectedListTasksSortDirection, selectedList?.id);
 
     await reloadSelectedListTasks();
   },

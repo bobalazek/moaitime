@@ -13,16 +13,6 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
   const isSubmittingRef = useRef(false);
 
   const onSaveButtonClick = async () => {
-    if (!selectedList) {
-      sonnerToast.error('Oops!', {
-        description:
-          'Oh dear, or dear. Did you, by any chance, forget to select a list? Awkward, right?',
-        position: 'top-right',
-      });
-
-      return;
-    }
-
     const finalName = name.trim();
     if (finalName === '') {
       sonnerToast.error('Oops!', {
@@ -39,7 +29,7 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
 
       await addTask({
         name: finalName,
-        listId: selectedList.id,
+        listId: selectedList?.id,
         parentId,
       });
 

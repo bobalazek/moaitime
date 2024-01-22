@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS "focus_sessions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"status" text DEFAULT 'active' NOT NULL,
 	"task_text" text NOT NULL,
-	"settings" json,
+	"settings" json NOT NULL,
 	"events" json,
 	"stage" text DEFAULT 'focus' NOT NULL,
 	"stage_iteration" integer DEFAULT 1 NOT NULL,
@@ -190,7 +190,8 @@ CREATE TABLE IF NOT EXISTS "tasks" (
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	"list_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
+	"list_id" uuid,
 	"parent_id" uuid
 );
 --> statement-breakpoint
@@ -318,6 +319,7 @@ CREATE INDEX IF NOT EXISTS "organization_users_user_id_idx" ON "organization_use
 CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "subscriptions" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "quotes_user_id_idx" ON "quotes" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tags_user_id_idx" ON "tags" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "tasks_user_id_idx" ON "tasks" ("list_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tasks_list_id_idx" ON "tasks" ("list_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tasks_parent_id_idx" ON "tasks" ("parent_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_tags_task_id_idx" ON "task_tags" ("task_id");--> statement-breakpoint
@@ -432,6 +434,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "tags" ADD CONSTRAINT "tags_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "tasks" ADD CONSTRAINT "tasks_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

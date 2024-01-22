@@ -3,6 +3,7 @@ import { date, index, integer, pgTable, text, time, timestamp, uuid } from 'driz
 
 import { lists } from './lists';
 import { taskTags } from './taskTags';
+import { users } from './users';
 
 export const tasks = pgTable(
   'tasks',
@@ -23,13 +24,15 @@ export const tasks = pgTable(
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
-    listId: uuid('list_id')
+    userId: uuid('user_id')
       .notNull()
-      .references(() => lists.id, { onDelete: 'cascade' }),
+      .references(() => users.id, { onDelete: 'cascade' }),
+    listId: uuid('list_id').references(() => lists.id, { onDelete: 'cascade' }),
     parentId: uuid('parent_id'), // Relationship to self
   },
   (table) => {
     return {
+      userIdIdx: index('tasks_user_id_idx').on(table.listId),
       listIdIdx: index('tasks_list_id_idx').on(table.listId),
       parentIdIdx: index('tasks_parent_id_idx').on(table.parentId),
     };

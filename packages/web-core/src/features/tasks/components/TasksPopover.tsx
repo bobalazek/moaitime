@@ -1,26 +1,11 @@
-import { useEffect } from 'react';
-
 import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
-import { useListsStore } from '../state/listsStore';
 import { useTasksStore } from '../state/tasksStore';
 import TasksBody from './tasks-body/TasksBody';
 
 export default function TasksPopover() {
   const { popoverOpen, setPopoverOpen } = useTasksStore();
-  const { lists, selectedList, setSelectedList } = useListsStore();
-
-  useEffect(() => {
-    if (selectedList || lists.length === 0) {
-      return;
-    }
-
-    // We want to select the first list by default
-    setSelectedList(lists[0]);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedList, lists]);
 
   return (
     <ErrorBoundary>

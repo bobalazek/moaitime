@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { Task } from '@moaitime/database-core';
+import { List, Task } from '@moaitime/database-core';
 import { listsManager, tasksManager, usersManager } from '@moaitime/database-services';
 import { SortDirectionEnum } from '@moaitime/shared-common';
 
@@ -101,14 +101,17 @@ export class TasksController {
     @Body() body: CreateTaskDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Task>> {
-    const list = await listsManager.findOneByIdAndUserId(body.listId, req.user.id);
-    if (!list) {
-      throw new NotFoundException('List not found');
+    let list: List | null = null;
+    if (body.listId) {
+      list = await listsManager.findOneByIdAndUserId(body.listId, req.user.id);
+      if (!list) {
+        throw new NotFoundException('List not found');
+      }
     }
 
     const tasksMaxPerListCount = await usersManager.getUserLimits(req.user, 'tasksMaxPerListCount');
 
-    const tasksCount = await tasksManager.countByListId(list.id);
+    const tasksCount = await tasksManager.countByListId(list?.id ?? null);
     if (tasksCount >= tasksMaxPerListCount) {
       throw new Error(
         `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
@@ -121,10 +124,10 @@ export class TasksController {
 
     const { tagIds, ...insertData } = body;
 
-    const maxOrderForListId = await tasksManager.findMaxOrderByListId(insertData.listId);
+    const maxOrderForListId = await tasksManager.findMaxOrderByListId(insertData?.listId ?? null);
     const order = maxOrderForListId + 1;
 
-    const data = await tasksManager.insertOne({ ...insertData, order });
+    const data = await tasksManager.insertOne({ ...insertData, order, userId: req.user.id });
 
     if (Array.isArray(tagIds)) {
       await tasksManager.setTags(data.id, tagIds);
@@ -149,9 +152,20 @@ export class TasksController {
     }
 
     if (body.listId) {
-      const list = listsManager.findOneByIdAndUserId(body.listId, req.user.id);
+      const list = await listsManager.findOneByIdAndUserId(body.listId, req.user.id);
       if (!list) {
         throw new NotFoundException('List not found');
+      }
+
+      const tasksMaxPerListCount = await usersManager.getUserLimits(
+        req.user,
+        'tasksMaxPerListCount'
+      );
+      const tasksCount = await tasksManager.countByListId(list.id);
+      if (tasksCount >= tasksMaxPerListCount) {
+        throw new Error(
+          `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
+        );
       }
     }
 

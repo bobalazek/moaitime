@@ -47,10 +47,10 @@ export class TasksManager {
   }
 
   async findManyByListId(
-    listId: string,
+    listId: string | null,
     options?: TasksManagerFindManyByListIdOptions
   ): Promise<Task[]> {
-    let where = eq(tasks.listId, listId);
+    let where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
     const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
 
     if (!options?.includeCompleted) {
@@ -112,7 +112,7 @@ export class TasksManager {
     limit: number = 10
   ): Promise<Task[]> {
     const where = and(
-      eq(lists.userId, userId),
+      eq(tasks.userId, userId),
       isNull(tasks.deletedAt),
       isNull(lists.deletedAt),
       or(ilike(tasks.name, `%${query}%`), ilike(tasks.description, `%${query}%`))
@@ -139,6 +139,10 @@ export class TasksManager {
     from?: Date,
     to?: Date
   ): Promise<(Task & { listColor: string | null })[]> {
+    if (listIds.length === 0) {
+      return [];
+    }
+
     let where = and(inArray(lists.id, listIds), isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
 
     if (from && to) {
@@ -192,26 +196,27 @@ export class TasksManager {
     return this._fixRowColumns(row);
   }
 
-  async findOneByIdAndUserId(id: string, userId: string): Promise<Task | null> {
+  async findOneByIdAndUserId(taskId: string, userId: string): Promise<Task | null> {
     const rows = await getDatabase()
       .select()
       .from(tasks)
-      .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(and(eq(tasks.id, id), eq(lists.userId, userId)))
+      .where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)))
       .execute();
 
     if (rows.length === 0) {
       return null;
     }
 
-    return this._fixRowColumns(rows[0].tasks);
+    return this._fixRowColumns(rows[0]);
   }
 
-  async findMaxOrderByListId(listId: string): Promise<number> {
+  async findMaxOrderByListId(listId: string | null): Promise<number> {
+    const where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+
     const rows = await getDatabase()
       .select()
       .from(tasks)
-      .where(eq(tasks.listId, listId))
+      .where(where)
       .orderBy(desc(tasks.order))
       .limit(1)
       .execute();
@@ -257,8 +262,7 @@ export class TasksManager {
     const rows = await getDatabase()
       .select()
       .from(tasks)
-      .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(and(eq(tasks.id, taskId), eq(lists.userId, userId)))
+      .where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)))
       .execute();
 
     return rows.length > 0;
@@ -280,13 +284,15 @@ export class TasksManager {
     });
   }
 
-  async countByListId(listId: string): Promise<number> {
+  async countByListId(listId: string | null): Promise<number> {
+    const where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+
     const result = await getDatabase()
       .select({
         count: count(tasks.id).mapWith(Number),
       })
       .from(tasks)
-      .where(and(eq(tasks.listId, listId), isNull(tasks.deletedAt)))
+      .where(and(where, isNull(tasks.deletedAt)))
       .execute();
 
     return result[0].count ?? 0;
@@ -312,7 +318,7 @@ export class TasksManager {
   }
 
   async reorder(
-    listId: string,
+    listId: string | null,
     sortDirection: SortDirectionEnum,
     originalTaskId: string,
     newTaskId: string

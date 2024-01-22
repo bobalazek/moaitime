@@ -45,7 +45,7 @@ export function ListSelector({
                 backgroundColor: selectedList?.color ?? 'transparent',
               }}
             />
-            {selectedList ? selectedList.name : 'Select list ...'}
+            {selectedList ? selectedList.name : 'Unlisted'}
           </div>
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -55,12 +55,24 @@ export function ListSelector({
           <CommandInput placeholder="Search lists ..." />
           <CommandEmpty>No list found.</CommandEmpty>
           <CommandGroup>
+            <CommandItem
+              onSelect={() => {
+                onChangeValue(undefined);
+                setOpen(false);
+              }}
+              className="cursor-pointer border-l-4 border-l-transparent"
+            >
+              <CheckIcon
+                className={clsx('mr-2 h-4 w-4', value === undefined ? 'opacity-100' : 'opacity-0')}
+              />
+              Unlisted
+            </CommandItem>
             {lists.map((list) => (
               <CommandItem
                 key={list.id}
                 value={list.id}
                 onSelect={(currentValue) => {
-                  onChangeValue(currentValue === value ? '' : currentValue);
+                  onChangeValue(currentValue === value ? undefined : currentValue);
                   setOpen(false);
                 }}
                 className="cursor-pointer border-l-4 border-l-transparent"

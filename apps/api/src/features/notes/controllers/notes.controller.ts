@@ -73,8 +73,8 @@ export class NotesController {
   ): Promise<AbstractResponseDto<Note>> {
     const notesMaxPerUserCount = await usersManager.getUserLimits(req.user, 'notesMaxPerUserCount');
 
-    const listsCount = await notesManager.countByUserId(req.user.id);
-    if (listsCount >= notesMaxPerUserCount) {
+    const notesCount = await notesManager.countByUserId(req.user.id);
+    if (notesCount >= notesMaxPerUserCount) {
       throw new Error(
         `You have reached the maximum number of notes per user (${notesMaxPerUserCount}).`
       );

@@ -20,7 +20,7 @@ export default function TasksBodyHeaderListSelector() {
               borderColor: selectedList?.color ?? 'transparent',
             }}
           >
-            {selectedList ? selectedList.name : 'Tasks'}
+            {selectedList ? selectedList.name : 'Unlisted'}
           </span>
           <button
             type="button"

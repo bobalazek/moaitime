@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, desc, eq, isNull, ne } from 'drizzle-orm';
+import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
 
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
 import {
@@ -7,6 +7,7 @@ import {
   FocusSessionStatusEnum,
   FocusSessionUpdateActionEnum,
   getFocusSessionDurationForCurrentStage,
+  getTimeDifferenceInSeconds,
 } from '@moaitime/shared-common';
 
 export class FocusSessionsManager {
@@ -49,7 +50,7 @@ export class FocusSessionsManager {
   async findOneCurrentAndByUserId(userId: string): Promise<FocusSession | null> {
     const row = await getDatabase().query.focusSessions.findFirst({
       where: and(
-        ne(focusSessions.status, FocusSessionStatusEnum.COMPLETED),
+        isNull(focusSessions.completedAt),
         eq(focusSessions.userId, userId),
         isNull(focusSessions.deletedAt)
       ),
@@ -112,10 +113,11 @@ export class FocusSessionsManager {
       throw new Error(`Update action "${action}" not found`);
     }
 
-    const calculateTimeDifferenceInSeconds = (start: Date, end: Date) => {
-      return Math.floor((start.getTime() - end.getTime()) / 1000);
-    };
+    if (focusSession.completedAt) {
+      throw new Error('Focus session is already completed');
+    }
 
+    // Variables
     const updateData: Partial<NewFocusSession> = {};
 
     const now = new Date();
@@ -129,16 +131,19 @@ export class FocusSessionsManager {
 
     const focusSessionStageDurationSeconds = getFocusSessionDurationForCurrentStage(focusSession);
     const focusSessionTotalIterations = focusSession.settings?.focusRepetitionsCount ?? 1;
+
     const focusSessionHasDoneAllIterations =
       currentFocusSessionStageIteration >= focusSessionTotalIterations;
 
+    // Progress seconds
     let focusSessionStageProgressSeconds = focusSession.stageProgressSeconds ?? 0;
 
     if (currentFocusSessionStatus !== FocusSessionStatusEnum.PAUSED) {
-      const additionalSeconds = calculateTimeDifferenceInSeconds(now, lastActiveAt);
+      const additionalSeconds = getTimeDifferenceInSeconds(now, lastActiveAt);
       focusSessionStageProgressSeconds += additionalSeconds;
     }
 
+    // State and status logic
     if (action === FocusSessionUpdateActionEnum.PAUSE) {
       if (focusSession.status !== FocusSessionStatusEnum.ACTIVE) {
         throw new Error('Focus session is not active, so it can not be paused');
@@ -164,7 +169,7 @@ export class FocusSessionsManager {
         createdAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.COMPLETE) {
-      updateData.status = FocusSessionStatusEnum.COMPLETED;
+      updateData.status = FocusSessionStatusEnum.PAUSED;
       updateData.completedAt = now;
 
       // Events
@@ -173,8 +178,18 @@ export class FocusSessionsManager {
         createdAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.SKIP) {
+      if (currentFocusSessionStage === FocusSessionStageEnum.FOCUS) {
+        updateData.stage = focusSessionHasDoneAllIterations
+          ? FocusSessionStageEnum.LONG_BREAK
+          : FocusSessionStageEnum.SHORT_BREAK;
+      } else if (currentFocusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
+        updateData.stage = FocusSessionStageEnum.FOCUS;
+      } else if (currentFocusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
+        updateData.completedAt = now;
+      }
+
       updateData.stageIteration = currentFocusSessionStageIteration + 1;
-      // TODO switch to next stage
+      updateData.stageProgressSeconds = 0;
 
       // Events
       currentFocusSessionEvents.push({
@@ -183,7 +198,7 @@ export class FocusSessionsManager {
       });
     }
 
-    // Stage progress seconds validation
+    // Stage over and underflow validation
     updateData.stageProgressSeconds = focusSessionStageProgressSeconds;
     if (updateData.stageProgressSeconds < 0) {
       updateData.stageProgressSeconds = 0;
@@ -194,18 +209,15 @@ export class FocusSessionsManager {
         updateData.status = FocusSessionStatusEnum.PAUSED;
       }
 
-      if (
-        currentFocusSessionStage === FocusSessionStageEnum.FOCUS &&
-        focusSessionHasDoneAllIterations
-      ) {
-        updateData.stage = FocusSessionStageEnum.LONG_BREAK;
-      } else if (currentFocusSessionStage === FocusSessionStageEnum.FOCUS) {
-        updateData.stage = FocusSessionStageEnum.SHORT_BREAK;
+      if (currentFocusSessionStage === FocusSessionStageEnum.FOCUS) {
+        updateData.stage = focusSessionHasDoneAllIterations
+          ? FocusSessionStageEnum.LONG_BREAK
+          : FocusSessionStageEnum.SHORT_BREAK;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
         updateData.stage = FocusSessionStageEnum.FOCUS;
         updateData.stageIteration = currentFocusSessionStageIteration + 1;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
-        updateData.stage = FocusSessionStageEnum.FOCUS;
+        updateData.completedAt = now;
       }
     }
 

@@ -128,7 +128,12 @@ export default function CurrentFocusSession() {
       <div className="mb-4 mt-8">
         <FocusSessionStage stage={currentFocusSession.stage} />
       </div>
-      <div className="mb-4 text-8xl font-bold">{getTimer(remainingSeconds)}</div>
+      <div
+        className="mb-4 text-8xl font-bold"
+        title={`Total: ${getTimer(stageProgressTotalSeconds)}`}
+      >
+        {getTimer(remainingSeconds)}
+      </div>
       <div className="text-muted-foreground mb-8 text-sm">
         Iteration #{currentFocusSession.stageIteration} out of{' '}
         {currentFocusSession.settings.focusRepetitionsCount}

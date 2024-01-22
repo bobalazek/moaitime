@@ -73,6 +73,10 @@ export const getTimer = (remainingSeconds: number): string => {
   return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
 };
 
+export const getTimeDifferenceInSeconds = (start: Date, end: Date) => {
+  return Math.floor((start.getTime() - end.getTime()) / 1000);
+};
+
 // UUID
 // Could have used the UUID library, but one of our other dependencies requires a lower version,
 // which we are then unable to use

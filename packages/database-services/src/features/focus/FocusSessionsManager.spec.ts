@@ -14,6 +14,7 @@ import { focusSessionsManager } from './FocusSessionsManager';
 
 describe('FocusSessionManager.ts', () => {
   let initialFocusSession: FocusSession;
+  let initialFocusSessionOneIteration: FocusSession;
 
   beforeEach(async () => {
     await reloadDatabase();
@@ -24,7 +25,7 @@ describe('FocusSessionManager.ts', () => {
       password: 'test',
     });
 
-    initialFocusSession = await focusSessionsManager.insertOne({
+    const data = {
       taskText: 'test task',
       status: FocusSessionStatusEnum.ACTIVE,
       stage: FocusSessionStageEnum.FOCUS,
@@ -38,6 +39,15 @@ describe('FocusSessionManager.ts', () => {
       createdAt: new Date('2020-01-01T00:00:00.000Z'),
       updatedAt: new Date('2020-01-01T00:00:00.000Z'),
       userId: user.id,
+    };
+
+    initialFocusSession = await focusSessionsManager.insertOne(data);
+    initialFocusSessionOneIteration = await focusSessionsManager.insertOne({
+      ...data,
+      settings: {
+        ...data.settings,
+        focusRepetitionsCount: 1,
+      },
     });
   });
 
@@ -60,6 +70,17 @@ describe('FocusSessionManager.ts', () => {
       await expect(result).rejects.toThrow(
         'Focus session is not paused, so it can not be continued'
       );
+    });
+
+    it('should not allow update if already complete', async () => {
+      initialFocusSession = await focusSessionsManager.updateOneById(initialFocusSession.id, {
+        completedAt: new Date(),
+      });
+
+      const result = () =>
+        focusSessionsManager.update(initialFocusSession, FocusSessionUpdateActionEnum.PING);
+
+      await expect(result).rejects.toThrow('Focus session is already completed');
     });
 
     it('should pause and save the active seconds correctly', async () => {
@@ -131,6 +152,36 @@ describe('FocusSessionManager.ts', () => {
 
       expect(newFocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
       expect(newFocusSession.stage).to.be.equal(FocusSessionStageEnum.SHORT_BREAK);
+      expect(newFocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(newFocusSession.stageIteration).to.be.equal(1);
+      expect(newFocusSession.lastPingedAt).to.be.deep.equal(new Date('2020-01-01T00:01:30.000Z'));
+    });
+
+    it('should pause and go to short break stage after it overflows', async () => {
+      // First we set those 90 seconds
+      vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
+      const newFocusSession = await focusSessionsManager.update(
+        initialFocusSession,
+        FocusSessionUpdateActionEnum.PING
+      );
+
+      expect(newFocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(newFocusSession.stage).to.be.equal(FocusSessionStageEnum.SHORT_BREAK);
+      expect(newFocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(newFocusSession.stageIteration).to.be.equal(1);
+      expect(newFocusSession.lastPingedAt).to.be.deep.equal(new Date('2020-01-01T00:01:30.000Z'));
+    });
+
+    it('should pause and go to long break stage after it overflows if we only have one repetition', async () => {
+      // First we set those 90 seconds
+      vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
+      const newFocusSession = await focusSessionsManager.update(
+        initialFocusSessionOneIteration,
+        FocusSessionUpdateActionEnum.PING
+      );
+
+      expect(newFocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(newFocusSession.stage).to.be.equal(FocusSessionStageEnum.LONG_BREAK);
       expect(newFocusSession.stageProgressSeconds).to.be.equal(0);
       expect(newFocusSession.stageIteration).to.be.equal(1);
       expect(newFocusSession.lastPingedAt).to.be.deep.equal(new Date('2020-01-01T00:01:30.000Z'));

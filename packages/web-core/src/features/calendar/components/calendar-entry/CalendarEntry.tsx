@@ -24,6 +24,11 @@ import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesWithStyles } from '../../utils/CalendarHelpers';
 import CalendarEntryTimes from './CalendarEntryTimes';
 
+type Coordinates = {
+  clientX: number;
+  clientY: number;
+};
+
 /**
  * We want to show the "continued" text if the calendar entry is not an all-day event and
  * the start date is not the same as the current/today's date.
@@ -64,19 +69,55 @@ const ifIsCalendarEntryEndDateSameAsToday = (
   return timezonedDate === date;
 };
 
-const getClientY = (event: MouseEvent | TouchEvent) => {
-  return typeof (event as { clientY?: number }).clientY !== 'undefined'
-    ? (event as MouseEvent).clientY
-    : (event as TouchEvent).touches[0].clientY;
+const getClientCoordinates = (
+  event: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent
+) => {
+  if (
+    typeof (event as MouseEvent).clientX !== 'undefined' &&
+    typeof (event as MouseEvent).clientY !== 'undefined'
+  ) {
+    return {
+      clientX: (event as MouseEvent).clientX,
+      clientY: (event as MouseEvent).clientY,
+    };
+  }
+
+  const touch = (event as TouchEvent).touches[0];
+
+  return {
+    clientX: touch.clientX,
+    clientY: touch.clientY,
+  };
 };
 
-const getRoundedMinutes = (event: MouseEvent | TouchEvent, initialClientY: number) => {
-  const currentClientY = getClientY(event);
+const getRoundedMinutes = (
+  event: MouseEvent | TouchEvent,
+  initialCoordinates: Coordinates,
+  weekdayWidth?: number
+) => {
+  const { clientX, clientY } = getClientCoordinates(event);
 
-  const minutesDelta = Math.round(
-    ((currentClientY - initialClientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
+  let minutesDelta = Math.round(
+    ((clientY - initialCoordinates.clientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
   );
+
+  if (weekdayWidth && Math.abs(clientX - initialCoordinates.clientX) > weekdayWidth) {
+    minutesDelta += clientX > initialCoordinates.clientX ? 1440 : -1440;
+  }
+
   return Math.round(minutesDelta / 15) * 15;
+};
+
+const hasReachedThresholdForMove = (
+  event: MouseEvent | TouchEvent,
+  initialCoordinates: Coordinates
+) => {
+  const { clientX, clientY } = getClientCoordinates(event);
+
+  return (
+    Math.abs(clientX - initialCoordinates.clientX) > 10 ||
+    Math.abs(clientY - initialCoordinates.clientY) > 10
+  );
 };
 
 export type CalendarEntryProps = {
@@ -167,24 +208,6 @@ export default function CalendarEntry({
   }, [rawCalendarEntry.raw?.updatedAt, rawStyle]);
 
   // Container
-  const onContainerClick = useCallback(
-    (event: React.MouseEvent, calendarEntry: CalendarEntryType) => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (calendarEventResizing) {
-        return;
-      }
-
-      if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-        setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
-      } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
-        setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
-      }
-    },
-    [calendarEventResizing, setSelectedEventDialogOpen, setSelectedTaskDialogOpen]
-  );
-
   const onContainerMouseEnter = useCallback(() => {
     setHighlightedCalendarEntry(calendarEventResizing ? null : calendarEntry);
   }, [setHighlightedCalendarEntry, calendarEntry, calendarEventResizing]);
@@ -208,10 +231,13 @@ export default function CalendarEntry({
         return;
       }
 
+      const calendarWeekdayElement = document.getElementsByClassName('calendar-week-day')[0];
+      const calendarWeekdayWidth = calendarWeekdayElement?.clientWidth ?? 0;
+
       setCalendarEventResizing(calendarEntry);
 
       const isTouchEvent = event.type.startsWith('touch');
-      const initialClientY = getClientY(event as unknown as MouseEvent | TouchEvent);
+      const initialCoordinates = getClientCoordinates(event);
 
       let newStartsAtString = calendarEntry.startsAt;
       let newEndsAtString = calendarEntry.endsAt;
@@ -222,7 +248,11 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
-        const minutesDeltaRounded = getRoundedMinutes(event, initialClientY);
+        const minutesDeltaRounded = getRoundedMinutes(
+          event,
+          initialCoordinates,
+          calendarWeekdayWidth
+        );
 
         // Starts At
         const newStartsAt = addMinutes(new Date(calendarEntry.startsAt), minutesDeltaRounded);
@@ -260,7 +290,7 @@ export default function CalendarEntry({
         setCalendarEntry(newCalendarEntry);
       };
 
-      const onEnd = async () => {
+      const onEnd = async (event: MouseEvent | TouchEvent) => {
         if (isTouchEvent && calendarContainer) {
           document.body.style.overflow = 'auto';
           calendarContainer.style.overflow = 'auto';
@@ -268,6 +298,16 @@ export default function CalendarEntry({
 
         document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+
+        if (!hasReachedThresholdForMove(event, initialCoordinates)) {
+          if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
+            setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
+          } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
+            setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
+          }
+
+          return;
+        }
 
         // For some reason we are sending the endsAt as local time, not UTC,
         // but it still has a "Z" at the end. This seems to be happening on multiple places,
@@ -293,7 +333,16 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
-    [calendarEntry, style, dayDate, generalTimezone, setCalendarEventResizing, editEvent]
+    [
+      style,
+      calendarEntry,
+      dayDate,
+      generalTimezone,
+      editEvent,
+      setCalendarEventResizing,
+      setSelectedEventDialogOpen,
+      setSelectedTaskDialogOpen,
+    ]
   );
 
   const onBottomResizeHandleStart = useCallback(
@@ -309,7 +358,7 @@ export default function CalendarEntry({
       setCalendarEventResizing(calendarEntry);
 
       const isTouchEvent = event.type.startsWith('touch');
-      const initialClientY = getClientY(event as unknown as MouseEvent | TouchEvent);
+      const initialCoordinates = getClientCoordinates(event);
       let newEndsAtString = calendarEntry.endsAt;
 
       if (isTouchEvent && calendarContainer) {
@@ -318,7 +367,7 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
-        const minutesDeltaRounded = getRoundedMinutes(event, initialClientY);
+        const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 
         const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDeltaRounded);
         const newEndsAtUtc = zonedTimeToUtc(
@@ -378,7 +427,7 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
-    [calendarEntry, style, dayDate, generalTimezone, setCalendarEventResizing, editEvent]
+    [style, calendarEntry, dayDate, generalTimezone, editEvent, setCalendarEventResizing]
   );
 
   return (
@@ -387,7 +436,6 @@ export default function CalendarEntry({
       className={clsx('select-none px-[2px]', !hasAbsoluteClassName && 'relative', className)}
       style={containerStyle}
       title={calendarEntry.title}
-      onClick={(event) => onContainerClick(event, calendarEntry)}
       onMouseDown={canResizeAndMove ? onContainerMoveStart : undefined}
       onTouchStart={canResizeAndMove ? onContainerMoveStart : undefined}
       onMouseEnter={onContainerMouseEnter}

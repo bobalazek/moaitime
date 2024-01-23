@@ -142,7 +142,7 @@ export default function CalendarWeeklyViewDay({
               variants={animationVariants}
               style={{
                 position: 'relative',
-                zIndex: calendarEventResizing?.id === calendarEntry.id ? 100 : 0,
+                zIndex: calendarEventResizing?.id === calendarEntry.id ? 1 : 0,
               }}
             >
               <CalendarEntry

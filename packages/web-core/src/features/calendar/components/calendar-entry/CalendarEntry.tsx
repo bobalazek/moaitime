@@ -148,10 +148,7 @@ export default function CalendarEntry({
   };
 
   // Resize
-  const onResizeHandleMouseDown = (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-
+  const onResizeStart = (event: React.MouseEvent | React.TouchEvent) => {
     // Sometime in the future I will look at this and think "what the hell was I thinking?"
     // Then I will precede and pull my remaining hair out, if, by that time, I still have any left.
     // Timezones are tricky, ok?
@@ -161,16 +158,27 @@ export default function CalendarEntry({
       return;
     }
 
+    const calendarContainer = document.getElementById('calendar');
+
+    const getClientY = (event: MouseEvent | TouchEvent) => {
+      return typeof (event as { clientY?: number }).clientY !== 'undefined'
+        ? (event as MouseEvent).clientY
+        : (event as TouchEvent).touches[0].clientY;
+    };
+
     setCalendarEventIsResizing(true);
 
-    const initialClientY = event.clientY;
+    const isTouchEvent = event.type.startsWith('touch');
+    const initialClientY = getClientY(event as unknown as MouseEvent | TouchEvent);
     let newEndsAtString = calendarEntry.endsAt;
 
-    const onMouseMove = (event: MouseEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
+    if (isTouchEvent && calendarContainer) {
+      document.body.style.overflow = 'hidden';
+      calendarContainer.style.overflow = 'hidden';
+    }
 
-      const currentClientY = event.clientY;
+    const onMove = (event: MouseEvent | TouchEvent) => {
+      const currentClientY = getClientY(event);
 
       const minutesDelta = Math.round(
         ((currentClientY - initialClientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
@@ -210,12 +218,14 @@ export default function CalendarEntry({
       setCalendarEntry(newCalendarEntry);
     };
 
-    const onMouseUp = async (event: MouseEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
+    const onEnd = async () => {
+      if (isTouchEvent && calendarContainer) {
+        document.body.style.overflow = 'auto';
+        calendarContainer.style.overflow = 'auto';
+      }
 
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
+      document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
 
       // For some reason we are sending the endsAt as local time, not UTC,
       // but it still has a "Z" at the end. This seems to be happening on multiple places,
@@ -235,8 +245,8 @@ export default function CalendarEntry({
       }, 200);
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
+    document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
   };
 
   return (
@@ -281,7 +291,8 @@ export default function CalendarEntry({
           <div className="absolute bottom-[4px] left-0 w-full">
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"
-              onMouseDown={onResizeHandleMouseDown}
+              onMouseDown={onResizeStart}
+              onTouchStart={onResizeStart}
               style={{
                 color: colorLighter,
               }}

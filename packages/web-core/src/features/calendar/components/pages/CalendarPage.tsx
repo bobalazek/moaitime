@@ -74,7 +74,11 @@ export default function CalendarPage() {
 
   return (
     <ErrorBoundary>
-      <div className="flex h-screen max-w-none flex-col overflow-auto" data-test="calendar">
+      <div
+        id="calendar"
+        className="flex h-screen max-w-none flex-col overflow-auto"
+        data-test="calendar"
+      >
         <div className="pb-2">
           <CalendarPageHeader ref={headerRef} />
         </div>

@@ -4,7 +4,7 @@ import { addMinutes } from 'date-fns';
 import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
 import { useAtom } from 'jotai';
 import { FlagIcon, GripHorizontalIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
@@ -19,12 +19,18 @@ import {
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useTasksStore } from '../../../tasks/state/tasksStore';
-import { calendarEventIsResizingAtom } from '../../state/calendarAtoms';
-import { useCalendarHighlightedCalendarEntryStore } from '../../state/calendarDynamicStore';
+import {
+  calendarEventIsResizingAtom,
+  highlightedCalendarEntryAtom,
+} from '../../state/calendarAtoms';
 import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesWithStyles } from '../../utils/CalendarHelpers';
 import CalendarEntryTimes from './CalendarEntryTimes';
 
+/**
+ * We want to show the "continued" text if the calendar entry is not an all-day event and
+ * the start date is not the same as the current/today's date.
+ */
 const shouldShowContinuedText = (
   calendarEntry: CalendarEntryType,
   timezone: string,
@@ -43,13 +49,30 @@ const shouldShowContinuedText = (
   return timezonedDate !== date;
 };
 
+/**
+ * This is a helper function to check if the end date of a calendar entry is the same as the
+ * current/today's date. This is used to determine if we should show the resize handle or not.
+ */
+const ifIsCalendarEntryEndDateSameAsToday = (
+  calendarEntry: CalendarEntryType,
+  timezone: string,
+  date?: string
+) => {
+  if (!date) {
+    return false;
+  }
+
+  const timezonedDate = formatInTimeZone(calendarEntry.endsAt, timezone, 'yyyy-MM-dd');
+
+  return timezonedDate === date;
+};
+
 export type CalendarEntryProps = {
   calendarEntry: CalendarEntryType;
   dayDate?: string;
   style?: Record<string, unknown>;
   className?: string;
   showTimes?: boolean;
-  showBottomResizeHandle?: boolean;
 };
 
 export default function CalendarEntry({
@@ -58,14 +81,14 @@ export default function CalendarEntry({
   style: rawStyle,
   className,
   showTimes,
-  showBottomResizeHandle,
 }: CalendarEntryProps) {
   const { setSelectedTaskDialogOpen } = useTasksStore();
   const { setSelectedEventDialogOpen, editEvent } = useEventsStore();
-  const { setHighlightedCalendarEntry, highlightedCalendarEntry } =
-    useCalendarHighlightedCalendarEntryStore();
   const [calendarEntry, setCalendarEntry] = useState(rawCalendarEntry);
   const [style, setStyle] = useState(rawStyle);
+  const [highlightedCalendarEntry, setHighlightedCalendarEntry] = useAtom(
+    highlightedCalendarEntryAtom
+  );
   const [calendarEventIsResizing, setCalendarEventIsResizing] = useAtom(
     calendarEventIsResizingAtom
   );
@@ -86,6 +109,11 @@ export default function CalendarEntry({
     backgroundColor,
     color,
   };
+
+  const showBottomResizeHandle =
+    calendarEntry.permissions?.canUpdate &&
+    !calendarEntry.isAllDay &&
+    ifIsCalendarEntryEndDateSameAsToday(calendarEntry, generalTimezone, dayDate);
 
   const calendarEntryTitle =
     calendarEntry.type === CalendarEntryTypeEnum.TASK && (calendarEntry.raw as Task).priority ? (
@@ -121,31 +149,34 @@ export default function CalendarEntry({
     setStyle(rawStyle);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawCalendarEntry.raw?.updatedAt]);
+  }, [rawCalendarEntry.raw?.updatedAt, rawStyle]);
 
   // Container
-  const onContainerClick = (event: React.MouseEvent, calendarEntry: CalendarEntryType) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const onContainerClick = useCallback(
+    (event: React.MouseEvent, calendarEntry: CalendarEntryType) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    if (calendarEventIsResizing) {
-      return;
-    }
+      if (calendarEventIsResizing) {
+        return;
+      }
 
-    if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-      setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
-    } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
-      setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
-    }
-  };
+      if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
+        setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
+      } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
+        setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
+      }
+    },
+    [calendarEventIsResizing, setSelectedEventDialogOpen, setSelectedTaskDialogOpen]
+  );
 
-  const onContainerMouseEnter = () => {
+  const onContainerMouseEnter = useCallback(() => {
     setHighlightedCalendarEntry(calendarEntry);
-  };
+  }, [setHighlightedCalendarEntry, calendarEntry]);
 
-  const onContainerMouseLeave = () => {
+  const onContainerMouseLeave = useCallback(() => {
     setHighlightedCalendarEntry(null);
-  };
+  }, [setHighlightedCalendarEntry]);
 
   // Resize
   const onResizeStart = (event: React.MouseEvent | React.TouchEvent) => {

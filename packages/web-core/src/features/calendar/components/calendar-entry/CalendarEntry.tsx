@@ -4,7 +4,7 @@ import { addMinutes } from 'date-fns';
 import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
 import { useAtom } from 'jotai';
 import { FlagIcon, GripHorizontalIcon } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
@@ -12,7 +12,6 @@ import {
   // Needs to be a different name to the component name itself
   CalendarEntry as CalendarEntryType,
   CalendarEntryTypeEnum,
-  CalendarEntryWithVerticalPosition,
   Event,
   Task,
 } from '@moaitime/shared-common';
@@ -20,8 +19,8 @@ import {
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useTasksStore } from '../../../tasks/state/tasksStore';
 import { calendarEventResizingAtom, highlightedCalendarEntryAtom } from '../../state/calendarAtoms';
+import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
-import { getCalendarEntriesWithStyles } from '../../utils/CalendarHelpers';
 import CalendarEntryTimes from './CalendarEntryTimes';
 
 type Coordinates = {
@@ -130,17 +129,16 @@ export type CalendarEntryProps = {
 };
 
 export default function CalendarEntry({
-  calendarEntry: rawCalendarEntry,
+  calendarEntry,
   dayDate,
-  style: rawStyle,
+  style,
   className,
   showTimes,
   canResizeAndMove,
 }: CalendarEntryProps) {
   const { setSelectedTaskDialogOpen } = useTasksStore();
   const { setSelectedEventDialogOpen, editEvent } = useEventsStore();
-  const [calendarEntry, setCalendarEntry] = useState(rawCalendarEntry);
-  const [style, setStyle] = useState(rawStyle);
+  const { updateCalendaEntry } = useCalendarStore();
   const [highlightedCalendarEntry, setHighlightedCalendarEntry] = useAtom(
     highlightedCalendarEntryAtom
   );
@@ -199,13 +197,6 @@ export default function CalendarEntry({
           : undefined,
       }
     : undefined;
-
-  useEffect(() => {
-    setCalendarEntry(rawCalendarEntry);
-    setStyle(rawStyle);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawCalendarEntry.raw?.updatedAt, rawStyle]);
 
   // Container
   const onContainerMouseEnter = useCallback(() => {
@@ -267,27 +258,13 @@ export default function CalendarEntry({
         ).toISOString();
         newEndsAtString = newEndsAt.toISOString();
 
-        const calendarEntries: CalendarEntryWithVerticalPosition[] = [
-          {
-            ...calendarEntry,
-            startsAt: newStartsAtString,
-            startsAtUtc: newStartsAtUtc,
-            endsAt: newEndsAtString,
-            endsAtUtc: newEndsAtUtc,
-            left: style.left as string,
-            width: style.width as string,
-          },
-        ];
-
-        const { style: newStyle, ...newCalendarEntry } = getCalendarEntriesWithStyles(
-          calendarEntries,
-          dayDate!,
-          generalTimezone,
-          CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX
-        )[0];
-
-        setStyle(newStyle);
-        setCalendarEntry(newCalendarEntry);
+        updateCalendaEntry({
+          ...calendarEntry,
+          startsAt: newStartsAtString,
+          startsAtUtc: newStartsAtUtc,
+          endsAt: newEndsAtString,
+          endsAtUtc: newEndsAtUtc,
+        });
       };
 
       const onEnd = async (event: MouseEvent | TouchEvent) => {
@@ -334,12 +311,11 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
     [
-      style,
       calendarEntry,
-      dayDate,
-      generalTimezone,
-      editEvent,
+      style,
       setCalendarEventResizing,
+      updateCalendaEntry,
+      editEvent,
       setSelectedEventDialogOpen,
       setSelectedTaskDialogOpen,
     ]
@@ -381,25 +357,11 @@ export default function CalendarEntry({
 
         newEndsAtString = newEndsAt.toISOString();
 
-        const calendarEntries: CalendarEntryWithVerticalPosition[] = [
-          {
-            ...calendarEntry,
-            endsAt: newEndsAtString,
-            endsAtUtc: newEndsAtUtc,
-            left: style.left as string,
-            width: style.width as string,
-          },
-        ];
-
-        const { style: newStyle, ...newCalendarEntry } = getCalendarEntriesWithStyles(
-          calendarEntries,
-          dayDate!,
-          generalTimezone,
-          CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX
-        )[0];
-
-        setStyle(newStyle);
-        setCalendarEntry(newCalendarEntry);
+        updateCalendaEntry({
+          ...calendarEntry,
+          endsAt: newEndsAtString,
+          endsAtUtc: newEndsAtUtc,
+        });
       };
 
       const onEnd = async () => {
@@ -427,7 +389,7 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
-    [style, calendarEntry, dayDate, generalTimezone, editEvent, setCalendarEventResizing]
+    [calendarEntry, style, setCalendarEventResizing, updateCalendaEntry, editEvent]
   );
 
   return (

@@ -107,6 +107,7 @@ export type CalendarStore = {
   calendarEntries: CalendarEntry[];
   calendarEntriesYearly: CalendarEntryYearlyEntry[];
   setCalendarEntries: (calendarEntries: CalendarEntry[]) => void;
+  updateCalendaEntry: (calendarEntry: CalendarEntry) => void;
   reloadCalendarEntries: () => Promise<CalendarEntry[]>;
   reloadCalendarEntriesYearly: () => Promise<CalendarEntryYearlyEntry[]>;
   reloadCalendarEntriesDebounced: () => Promise<void>;
@@ -415,6 +416,21 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   setCalendarEntries: (calendarEntries: CalendarEntry[]) => {
     set({
       calendarEntries,
+    });
+  },
+  updateCalendaEntry: (calendarEntry: CalendarEntry) => {
+    const { calendarEntries } = get();
+
+    const updatedCalendarEntries = calendarEntries.map((entry) => {
+      if (entry.id === calendarEntry.id) {
+        return calendarEntry;
+      }
+
+      return entry;
+    });
+
+    set({
+      calendarEntries: updatedCalendarEntries,
     });
   },
   reloadCalendarEntries: async () => {

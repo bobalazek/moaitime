@@ -186,5 +186,81 @@ describe('FocusSessionManager.ts', () => {
       expect(newFocusSession.stageIteration).to.be.equal(1);
       expect(newFocusSession.lastPingedAt).to.be.deep.equal(new Date('2020-01-01T00:01:30.000Z'));
     });
+
+    it('should skip to the correct stages', async () => {
+      vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
+
+      // First skip
+      const newFocusSession = await focusSessionsManager.update(
+        initialFocusSession,
+        FocusSessionUpdateActionEnum.SKIP
+      );
+
+      expect(newFocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(newFocusSession.stage).to.be.equal(FocusSessionStageEnum.SHORT_BREAK);
+      expect(newFocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(newFocusSession.stageIteration).to.be.equal(1);
+
+      // Second skip
+      const new2FocusSession = await focusSessionsManager.update(
+        newFocusSession,
+        FocusSessionUpdateActionEnum.SKIP
+      );
+
+      expect(new2FocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(new2FocusSession.stage).to.be.equal(FocusSessionStageEnum.FOCUS);
+      expect(new2FocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(new2FocusSession.stageIteration).to.be.equal(2);
+
+      // Third skip
+      const new3FocusSession = await focusSessionsManager.update(
+        new2FocusSession,
+        FocusSessionUpdateActionEnum.SKIP
+      );
+
+      expect(new3FocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(new3FocusSession.stage).to.be.equal(FocusSessionStageEnum.LONG_BREAK);
+      expect(new3FocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(new3FocusSession.stageIteration).to.be.equal(2);
+
+      // Fourth skip
+      const new4FocusSession = await focusSessionsManager.update(
+        new3FocusSession,
+        FocusSessionUpdateActionEnum.SKIP
+      );
+
+      expect(new4FocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(new4FocusSession.stage).to.be.equal(FocusSessionStageEnum.LONG_BREAK);
+      expect(new4FocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(new4FocusSession.stageIteration).to.be.equal(2);
+      expect(new4FocusSession.completedAt).to.be.deep.equal(new Date('2020-01-01T00:00:30.000Z'));
+    });
+
+    it('should skip to the correct stages on single iteration', async () => {
+      vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
+
+      // First skip
+      const newFocusSession = await focusSessionsManager.update(
+        initialFocusSessionOneIteration,
+        FocusSessionUpdateActionEnum.SKIP
+      );
+
+      expect(newFocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(newFocusSession.stage).to.be.equal(FocusSessionStageEnum.LONG_BREAK);
+      expect(newFocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(newFocusSession.stageIteration).to.be.equal(1);
+
+      // Second skip
+      const new2FocusSession = await focusSessionsManager.update(
+        newFocusSession,
+        FocusSessionUpdateActionEnum.SKIP
+      );
+
+      expect(new2FocusSession.status).to.be.equal(FocusSessionStatusEnum.PAUSED);
+      expect(new2FocusSession.stage).to.be.equal(FocusSessionStageEnum.LONG_BREAK);
+      expect(new2FocusSession.stageProgressSeconds).to.be.equal(0);
+      expect(new2FocusSession.stageIteration).to.be.equal(1);
+      expect(new2FocusSession.completedAt).to.be.deep.equal(new Date('2020-01-01T00:00:30.000Z'));
+    });
   });
 });

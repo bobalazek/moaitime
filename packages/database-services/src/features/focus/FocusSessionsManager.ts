@@ -178,6 +178,8 @@ export class FocusSessionsManager {
         createdAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.SKIP) {
+      updateData.status = FocusSessionStatusEnum.PAUSED;
+
       if (currentFocusSessionStage === FocusSessionStageEnum.FOCUS) {
         updateData.stage = focusSessionHasDoneAllIterations
           ? FocusSessionStageEnum.LONG_BREAK

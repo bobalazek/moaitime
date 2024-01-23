@@ -24,6 +24,8 @@ import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
 import CalendarEntryTimes from './CalendarEntryTimes';
 
+const DEBOUNCE_UPDATE_TIME = 50;
+
 type Coordinates = {
   clientX: number;
   clientY: number;
@@ -240,8 +242,8 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
-      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, 100, {
-        maxWait: 100,
+      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, DEBOUNCE_UPDATE_TIME, {
+        maxWait: DEBOUNCE_UPDATE_TIME,
       });
 
       const onMove = (event: MouseEvent | TouchEvent) => {
@@ -348,8 +350,8 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
-      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, 100, {
-        maxWait: 100,
+      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, DEBOUNCE_UPDATE_TIME, {
+        maxWait: DEBOUNCE_UPDATE_TIME,
       });
 
       const onMove = (event: MouseEvent | TouchEvent) => {

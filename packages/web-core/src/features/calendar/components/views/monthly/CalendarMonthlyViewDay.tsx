@@ -11,7 +11,7 @@ import {
   Event,
 } from '@moaitime/shared-common';
 
-import { calendarEventIsResizingAtom } from '../../../state/calendarAtoms';
+import { calendarEventResizingAtom } from '../../../state/calendarAtoms';
 import { useCalendarStore } from '../../../state/calendarStore';
 import { useEventsStore } from '../../../state/eventsStore';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
@@ -46,7 +46,7 @@ export default function CalendarMonthlyViewDay({
 }: CalendarMonthlyViewDayProps) {
   const { selectedDate, setSelectedDate, setSelectedView } = useCalendarStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
-  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
+  const calendarEventResizing = useAtomValue(calendarEventResizingAtom);
 
   const isActive = isSameDay(day, now);
   const isActiveMonth = isSameMonth(day, selectedDate);
@@ -67,7 +67,7 @@ export default function CalendarMonthlyViewDay({
     event.preventDefault();
     event.stopPropagation();
 
-    if (calendarEventIsResizing) {
+    if (calendarEventResizing) {
       return;
     }
 

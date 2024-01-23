@@ -14,7 +14,7 @@ import {
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { convertTextToHtml } from '../../../../core/utils/TextHelpers';
 import { useTasksStore } from '../../../../tasks/state/tasksStore';
-import { calendarEventIsResizingAtom } from '../../../state/calendarAtoms';
+import { calendarEventResizingAtom } from '../../../state/calendarAtoms';
 import { useEventsStore } from '../../../state/eventsStore';
 
 export type CalendarAgendaViewDayEventEntryProps = {
@@ -28,7 +28,7 @@ export default function CalendarAgendaViewDayEventEntry({
 }: CalendarAgendaViewDayEventEntryProps) {
   const { setSelectedEventDialogOpen } = useEventsStore();
   const { setSelectedTaskDialogOpen } = useTasksStore();
-  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
+  const calendarEventResizing = useAtomValue(calendarEventResizingAtom);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
   const clockUse24HourClock = useAuthUserSetting('clockUse24HourClock', false);
@@ -58,7 +58,7 @@ export default function CalendarAgendaViewDayEventEntry({
   const entryColor = calendarEntry.color ?? calendarOrListColor;
 
   const onClick = () => {
-    if (calendarEventIsResizing) {
+    if (calendarEventResizing) {
       return;
     }
 

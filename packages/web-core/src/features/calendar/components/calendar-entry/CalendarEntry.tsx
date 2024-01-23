@@ -19,10 +19,7 @@ import {
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useTasksStore } from '../../../tasks/state/tasksStore';
-import {
-  calendarEventIsResizingAtom,
-  highlightedCalendarEntryAtom,
-} from '../../state/calendarAtoms';
+import { calendarEventResizingAtom, highlightedCalendarEntryAtom } from '../../state/calendarAtoms';
 import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesWithStyles } from '../../utils/CalendarHelpers';
 import CalendarEntryTimes from './CalendarEntryTimes';
@@ -91,9 +88,7 @@ export default function CalendarEntry({
   const [highlightedCalendarEntry, setHighlightedCalendarEntry] = useAtom(
     highlightedCalendarEntryAtom
   );
-  const [calendarEventIsResizing, setCalendarEventIsResizing] = useAtom(
-    calendarEventIsResizingAtom
-  );
+  const [calendarEventResizing, setCalendarEventResizing] = useAtom(calendarEventResizingAtom);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
@@ -162,7 +157,7 @@ export default function CalendarEntry({
       event.preventDefault();
       event.stopPropagation();
 
-      if (calendarEventIsResizing) {
+      if (calendarEventResizing) {
         return;
       }
 
@@ -172,12 +167,12 @@ export default function CalendarEntry({
         setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
       }
     },
-    [calendarEventIsResizing, setSelectedEventDialogOpen, setSelectedTaskDialogOpen]
+    [calendarEventResizing, setSelectedEventDialogOpen, setSelectedTaskDialogOpen]
   );
 
   const onContainerMouseEnter = useCallback(() => {
-    setHighlightedCalendarEntry(calendarEntry);
-  }, [setHighlightedCalendarEntry, calendarEntry]);
+    setHighlightedCalendarEntry(calendarEventResizing ? null : calendarEntry);
+  }, [setHighlightedCalendarEntry, calendarEntry, calendarEventResizing]);
 
   const onContainerMouseLeave = useCallback(() => {
     setHighlightedCalendarEntry(null);
@@ -203,7 +198,7 @@ export default function CalendarEntry({
           : (event as TouchEvent).touches[0].clientY;
       };
 
-      setCalendarEventIsResizing(true);
+      setCalendarEventResizing(calendarEntry);
 
       const isTouchEvent = event.type.startsWith('touch');
       const initialClientY = getClientY(event as unknown as MouseEvent | TouchEvent);
@@ -278,14 +273,14 @@ export default function CalendarEntry({
 
         // To make sure the onClick event has been fired, to prevent opening the dialog
         setTimeout(() => {
-          setCalendarEventIsResizing(false);
+          setCalendarEventResizing(null);
         }, 200);
       };
 
       document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
-    [calendarEntry, style, dayDate, generalTimezone, setCalendarEventIsResizing, editEvent]
+    [calendarEntry, style, dayDate, generalTimezone, setCalendarEventResizing, editEvent]
   );
 
   return (

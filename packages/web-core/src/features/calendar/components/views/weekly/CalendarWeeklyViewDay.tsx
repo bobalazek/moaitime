@@ -10,7 +10,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
-import { calendarEventIsResizingAtom } from '../../../state/calendarAtoms';
+import { calendarEventResizingAtom } from '../../../state/calendarAtoms';
 import { useEventsStore } from '../../../state/eventsStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
@@ -46,7 +46,7 @@ export default function CalendarWeeklyViewDay({
 }: CalendarWeeklyViewDayProps) {
   const { setSelectedEventDialogOpen } = useEventsStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
-  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
+  const calendarEventResizing = useAtomValue(calendarEventResizingAtom);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
 
@@ -68,7 +68,7 @@ export default function CalendarWeeklyViewDay({
       return;
     }
 
-    if (calendarEventIsResizing) {
+    if (calendarEventResizing) {
       return;
     }
 
@@ -140,6 +140,10 @@ export default function CalendarWeeklyViewDay({
               animate="animate"
               exit="exit"
               variants={animationVariants}
+              style={{
+                position: 'relative',
+                zIndex: calendarEventResizing?.id === calendarEntry.id ? 100 : 0,
+              }}
             >
               <CalendarEntry
                 dayDate={date}

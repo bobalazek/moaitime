@@ -13,7 +13,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
-import { calendarEventIsResizingAtom } from '../../state/calendarAtoms';
+import { calendarEventResizingAtom } from '../../state/calendarAtoms';
 import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
@@ -30,7 +30,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     useCalendarStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
   const prevSelectedDateRef = useRef(selectedDate);
-  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
+  const calendarEventResizing = useAtomValue(calendarEventResizingAtom);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
@@ -148,7 +148,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
               event.preventDefault();
               event.stopPropagation();
 
-              if (calendarEventIsResizing) {
+              if (calendarEventResizing) {
                 return;
               }
 

@@ -64,6 +64,21 @@ const ifIsCalendarEntryEndDateSameAsToday = (
   return timezonedDate === date;
 };
 
+const getClientY = (event: MouseEvent | TouchEvent) => {
+  return typeof (event as { clientY?: number }).clientY !== 'undefined'
+    ? (event as MouseEvent).clientY
+    : (event as TouchEvent).touches[0].clientY;
+};
+
+const getRoundedMinutes = (event: MouseEvent | TouchEvent, initialClientY: number) => {
+  const currentClientY = getClientY(event);
+
+  const minutesDelta = Math.round(
+    ((currentClientY - initialClientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
+  );
+  return Math.round(minutesDelta / 15) * 15;
+};
+
 export type CalendarEntryProps = {
   calendarEntry: CalendarEntryType;
   dayDate?: string;
@@ -178,25 +193,118 @@ export default function CalendarEntry({
     setHighlightedCalendarEntry(null);
   }, [setHighlightedCalendarEntry]);
 
-  // Resize
-  const onBottomResizeHandleStart = useCallback(
+  // Resize/move
+  const onContainerMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
-      // Sometime in the future I will look at this and think "what the hell was I thinking?"
+      // Sometimes in the future I will look at this and think "what the hell was I thinking?"
       // Then I will precede and pull my remaining hair out, if, by that time, I still have any left.
       // Timezones are tricky, ok?
 
+      event.stopPropagation();
+
+      const calendarContainer = document.getElementById('calendar');
       const container = (event.target as HTMLDivElement).parentElement;
       if (!container || !style) {
         return;
       }
 
-      const calendarContainer = document.getElementById('calendar');
+      setCalendarEventResizing(calendarEntry);
 
-      const getClientY = (event: MouseEvent | TouchEvent) => {
-        return typeof (event as { clientY?: number }).clientY !== 'undefined'
-          ? (event as MouseEvent).clientY
-          : (event as TouchEvent).touches[0].clientY;
+      const isTouchEvent = event.type.startsWith('touch');
+      const initialClientY = getClientY(event as unknown as MouseEvent | TouchEvent);
+
+      let newStartsAtString = calendarEntry.startsAt;
+      let newEndsAtString = calendarEntry.endsAt;
+
+      if (isTouchEvent && calendarContainer) {
+        document.body.style.overflow = 'hidden';
+        calendarContainer.style.overflow = 'hidden';
+      }
+
+      const onMove = (event: MouseEvent | TouchEvent) => {
+        const minutesDeltaRounded = getRoundedMinutes(event, initialClientY);
+
+        // Starts At
+        const newStartsAt = addMinutes(new Date(calendarEntry.startsAt), minutesDeltaRounded);
+        const newStartsAtUtc = zonedTimeToUtc(newStartsAt, calendarEntry.timezone).toISOString();
+        newStartsAtString = newStartsAt.toISOString();
+
+        // Ends At
+        const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDeltaRounded);
+        const newEndsAtUtc = zonedTimeToUtc(
+          newEndsAt,
+          calendarEntry.endTimezone ?? calendarEntry.timezone
+        ).toISOString();
+        newEndsAtString = newEndsAt.toISOString();
+
+        const calendarEntries: CalendarEntryWithVerticalPosition[] = [
+          {
+            ...calendarEntry,
+            startsAt: newStartsAtString,
+            startsAtUtc: newStartsAtUtc,
+            endsAt: newEndsAtString,
+            endsAtUtc: newEndsAtUtc,
+            left: style.left as string,
+            width: style.width as string,
+          },
+        ];
+
+        const { style: newStyle, ...newCalendarEntry } = getCalendarEntriesWithStyles(
+          calendarEntries,
+          dayDate!,
+          generalTimezone,
+          CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX
+        )[0];
+
+        setStyle(newStyle);
+        setCalendarEntry(newCalendarEntry);
       };
+
+      const onEnd = async () => {
+        if (isTouchEvent && calendarContainer) {
+          document.body.style.overflow = 'auto';
+          calendarContainer.style.overflow = 'auto';
+        }
+
+        document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
+        document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+
+        // For some reason we are sending the endsAt as local time, not UTC,
+        // but it still has a "Z" at the end. This seems to be happening on multiple places,
+        // so DO NOT CHANGE THIS, else it could have negative side effects on other places.
+        // The reason is, that the database stores the local time and omits the timezone.
+        // What we basically do here is us getting the "correct" (local) time, with just the
+        // "Z" at the end, even though it's not UTC.
+        const finalStartsAt = zonedTimeToUtc(newStartsAtString, 'UTC').toISOString();
+        const finalEndsAt = zonedTimeToUtc(newEndsAtString, 'UTC').toISOString();
+
+        await editEvent(calendarEntry.raw!.id, {
+          ...calendarEntry.raw,
+          startsAt: finalStartsAt,
+          endsAt: finalEndsAt,
+        } as Event);
+
+        // To make sure the onClick event has been fired, to prevent opening the dialog
+        setTimeout(() => {
+          setCalendarEventResizing(null);
+        }, 200);
+      };
+
+      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
+      document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+    },
+    [calendarEntry, style, dayDate, generalTimezone, setCalendarEventResizing, editEvent]
+  );
+
+  const onBottomResizeHandleStart = useCallback(
+    (event: React.MouseEvent | React.TouchEvent) => {
+      event.stopPropagation();
+
+      const calendarContainer = document.getElementById('calendar');
+      const container = (event.target as HTMLDivElement).parentElement;
+      if (!container || !style) {
+        return;
+      }
 
       setCalendarEventResizing(calendarEntry);
 
@@ -210,12 +318,7 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
-        const currentClientY = getClientY(event);
-
-        const minutesDelta = Math.round(
-          ((currentClientY - initialClientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
-        );
-        const minutesDeltaRounded = Math.round(minutesDelta / 15) * 15;
+        const minutesDeltaRounded = getRoundedMinutes(event, initialClientY);
 
         const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDeltaRounded);
         const newEndsAtUtc = zonedTimeToUtc(
@@ -259,12 +362,7 @@ export default function CalendarEntry({
         document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
 
-        // For some reason we are sending the endsAt as local time, not UTC,
-        // but it still has a "Z" at the end. This seems to be happening on multiple places,
-        // so DO NOT CHANGE THIS, else it could have negative side effects on other places.
-        // The reason is, that the database stores the local time and omits the timezone.
-        // What we basically do here is us getting the "correct" (local) time, with just the
-        // "Z" at the end, even though it's not UTC.
+        // Same as above
         const finalEndsAt = zonedTimeToUtc(newEndsAtString, 'UTC').toISOString();
         await editEvent(calendarEntry.raw!.id, {
           ...calendarEntry.raw,
@@ -290,6 +388,8 @@ export default function CalendarEntry({
       style={containerStyle}
       title={calendarEntry.title}
       onClick={(event) => onContainerClick(event, calendarEntry)}
+      onMouseDown={onContainerMoveStart}
+      onTouchStart={onContainerMoveStart}
       onMouseEnter={onContainerMouseEnter}
       onMouseLeave={onContainerMouseLeave}
       data-test="calendar--weekly-view--day--calendar-entry"

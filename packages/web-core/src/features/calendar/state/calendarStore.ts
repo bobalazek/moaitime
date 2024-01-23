@@ -105,8 +105,9 @@ export type CalendarStore = {
   reloadPublicCalendars: () => Promise<Calendar[]>;
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
-  reloadCalendarEntries: () => Promise<CalendarEntry[]>;
   calendarEntriesYearly: CalendarEntryYearlyEntry[];
+  setCalendarEntries: (calendarEntries: CalendarEntry[]) => void;
+  reloadCalendarEntries: () => Promise<CalendarEntry[]>;
   reloadCalendarEntriesYearly: () => Promise<CalendarEntryYearlyEntry[]>;
   reloadCalendarEntriesDebounced: () => Promise<void>;
 };
@@ -410,6 +411,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   /********** Calendar Entries **********/
   calendarEntries: [],
+  calendarEntriesYearly: [],
+  setCalendarEntries: (calendarEntries: CalendarEntry[]) => {
+    set({
+      calendarEntries,
+    });
+  },
   reloadCalendarEntries: async () => {
     const { auth } = useAuthStore.getState();
     const { selectedDate, selectedDays, selectedView, reloadCalendarEntriesYearly } = get();
@@ -444,7 +451,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     return calendarEntries;
   },
-  calendarEntriesYearly: [],
   reloadCalendarEntriesYearly: async () => {
     const { selectedDate } = get();
 

@@ -6,7 +6,7 @@ import { MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
-  CalendarEntryWithVerticalPosition,
+  CalendarEntriesPerDay,
   CalendarViewEnum,
   Event,
   getGmtOffset,
@@ -19,11 +19,6 @@ import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
 import CalendarEntry from '../calendar-entry/CalendarEntry';
 import CalendarWeeklyViewDay from './weekly/CalendarWeeklyViewDay';
-
-type CalendarEntriesPerDay = {
-  withouFullDay: CalendarEntryWithVerticalPosition[];
-  fullDayOnly: CalendarEntryWithVerticalPosition[];
-};
 
 export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) {
   const { calendarEntries, selectedDate, selectedView, setSelectedDate, setSelectedView } =
@@ -43,7 +38,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
         });
   }, [singleDay, generalStartDayOfWeek, selectedDate]);
 
-  const calendarEntriesPerDay = useMemo(() => {
+  const calendarEntriesPerDayMap = useMemo(() => {
     const newCalendarEntriesPerDay = new Map<string, CalendarEntriesPerDay>();
     for (const day of days ?? []) {
       const date = format(day, 'yyyy-MM-dd');
@@ -142,7 +137,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             const dayOfMonth = day.getDate();
             const date = format(day, 'yyyy-MM-dd');
             const isActive = date === format(now, 'yyyy-MM-dd');
-            const fullDayCalendarEntries = calendarEntriesPerDay.get(date)?.fullDayOnly ?? [];
+            const fullDayCalendarEntries = calendarEntriesPerDayMap.get(date)?.fullDayOnly ?? [];
 
             const onDayContainerClick = (event: MouseEvent) => {
               event.preventDefault();
@@ -247,7 +242,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
           {days.map((day) => {
             const date = format(day, 'yyyy-MM-dd');
             const isActive = isSameDay(day, now);
-            const calendarEntriesForDay = calendarEntriesPerDay.get(date)?.withouFullDay ?? [];
+            const calendarEntriesForDay = calendarEntriesPerDayMap.get(date)?.withouFullDay ?? [];
 
             return (
               <CalendarWeeklyViewDay

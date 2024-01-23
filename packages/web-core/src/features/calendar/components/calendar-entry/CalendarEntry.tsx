@@ -85,8 +85,8 @@ const getClientCoordinates = (
   const touch = (event as TouchEvent).touches[0];
 
   return {
-    clientX: touch.clientX,
-    clientY: touch.clientY,
+    clientX: touch?.clientX ?? 0,
+    clientY: touch?.clientY ?? 0,
   };
 };
 

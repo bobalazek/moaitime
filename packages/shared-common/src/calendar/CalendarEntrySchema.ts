@@ -37,3 +37,8 @@ export type CalendarEntryYearlyEntry = {
   date: string;
   count: number;
 };
+
+export type CalendarEntriesPerDay = {
+  withouFullDay: CalendarEntryWithVerticalPosition[];
+  fullDayOnly: CalendarEntryWithVerticalPosition[];
+};

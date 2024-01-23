@@ -179,7 +179,7 @@ export default function CalendarEntry({
   }, [setHighlightedCalendarEntry]);
 
   // Resize
-  const onResizeStart = useCallback(
+  const onBottomResizeHandleStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
       // Sometime in the future I will look at this and think "what the hell was I thinking?"
       // Then I will precede and pull my remaining hair out, if, by that time, I still have any left.
@@ -325,8 +325,8 @@ export default function CalendarEntry({
           <div className="absolute bottom-[4px] left-0 w-full">
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"
-              onMouseDown={onResizeStart}
-              onTouchStart={onResizeStart}
+              onMouseDown={onBottomResizeHandleStart}
+              onTouchStart={onBottomResizeHandleStart}
               style={{
                 color: colorLighter,
               }}

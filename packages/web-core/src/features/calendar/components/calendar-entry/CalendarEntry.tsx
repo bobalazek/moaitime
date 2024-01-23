@@ -85,7 +85,7 @@ export type CalendarEntryProps = {
   style?: Record<string, unknown>;
   className?: string;
   showTimes?: boolean;
-  showBottomResizeHandle?: boolean;
+  canResizeAndMove?: boolean;
 };
 
 export default function CalendarEntry({
@@ -94,7 +94,7 @@ export default function CalendarEntry({
   style: rawStyle,
   className,
   showTimes,
-  showBottomResizeHandle,
+  canResizeAndMove,
 }: CalendarEntryProps) {
   const { setSelectedTaskDialogOpen } = useTasksStore();
   const { setSelectedEventDialogOpen, editEvent } = useEventsStore();
@@ -122,9 +122,9 @@ export default function CalendarEntry({
     color,
   };
 
-  if (showBottomResizeHandle) {
+  if (canResizeAndMove) {
     // Do additional checks if we have it enabled
-    showBottomResizeHandle =
+    canResizeAndMove =
       calendarEntry.permissions?.canUpdate &&
       !calendarEntry.isAllDay &&
       ifIsCalendarEntryEndDateSameAsToday(calendarEntry, generalTimezone, dayDate);
@@ -388,8 +388,8 @@ export default function CalendarEntry({
       style={containerStyle}
       title={calendarEntry.title}
       onClick={(event) => onContainerClick(event, calendarEntry)}
-      onMouseDown={onContainerMoveStart}
-      onTouchStart={onContainerMoveStart}
+      onMouseDown={canResizeAndMove ? onContainerMoveStart : undefined}
+      onTouchStart={canResizeAndMove ? onContainerMoveStart : undefined}
       onMouseEnter={onContainerMouseEnter}
       onMouseLeave={onContainerMouseLeave}
       data-test="calendar--weekly-view--day--calendar-entry"
@@ -421,7 +421,7 @@ export default function CalendarEntry({
             <CalendarEntryTimes calendarEntry={calendarEntry} />
           </div>
         )}
-        {showBottomResizeHandle && (
+        {canResizeAndMove && (
           <div className="absolute bottom-[4px] left-0 w-full">
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"

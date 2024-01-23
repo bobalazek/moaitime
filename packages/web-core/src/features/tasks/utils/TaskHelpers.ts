@@ -130,6 +130,18 @@ export const reorderTask = async (
   });
 };
 
+export const playAddTaskSound = () => {
+  const audio = new Audio();
+  audio.src = '/assets/tasks/add_task.mp3';
+  audio.play();
+};
+
+export const playCompleteTaskSound = () => {
+  const audio = new Audio();
+  audio.src = '/assets/tasks/complete_task.mp3';
+  audio.play();
+};
+
 /********** Misc **********/
 export function setCursorToEnd(element: HTMLElement) {
   const range = document.createRange();

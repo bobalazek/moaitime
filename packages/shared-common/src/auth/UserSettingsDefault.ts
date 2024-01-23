@@ -38,6 +38,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
 
   // Tasks
   tasksEnabled: true,
+  tasksSoundsEnabled: true,
 
   // Notes
   notesEnabled: true,

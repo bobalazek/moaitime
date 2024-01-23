@@ -113,20 +113,20 @@ export const undeleteMoodEntry = async (moodEntryId: string): Promise<MoodEntry>
   return response.data as MoodEntry;
 };
 
-// Audio
-export const playAudioAfterNewMoodEntry = (score: number) => {
+// Sounds
+export const playAddMoodEntrySound = (score: number) => {
   let src;
 
   if (score === -2) {
-    src = '/assets/mood/score_m2.mp3';
+    src = '/assets/mood/add_mood_entry_m2.mp3';
   } else if (score === -1) {
-    src = '/assets/mood/score_m1.mp3';
+    src = '/assets/mood/add_mood_entry_m1.mp3';
   } else if (score === 0) {
-    src = '/assets/mood/score_0.mp3';
+    src = '/assets/mood/add_mood_entry_0.mp3';
   } else if (score === 1) {
-    src = '/assets/mood/score_1.mp3';
+    src = '/assets/mood/add_mood_entry_1.mp3';
   } else if (score === 2) {
-    src = '/assets/mood/score_2.mp3';
+    src = '/assets/mood/add_mood_entry_2.mp3';
   }
 
   if (!src) {

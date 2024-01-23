@@ -11,7 +11,7 @@ import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
 import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntriesEmitter';
-import { playAudioAfterNewMoodEntry } from '../../utils/MoodHelpers';
+import { playAddMoodEntrySound } from '../../utils/MoodHelpers';
 import { MoodEntry } from '../mood-entry/MoodEntry';
 
 const animationVariants = {
@@ -139,7 +139,7 @@ export default function MoodEntriesActivity() {
     const moodEntryAddedCallback = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
       setShowConfetti(true);
 
-      playAudioAfterNewMoodEntry(moodEntry.happinessScore);
+      playAddMoodEntrySound(moodEntry.happinessScore);
     };
 
     moodEntriesEmitter.on(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, moodEntryAddedCallback);

@@ -9,6 +9,7 @@ export default function TasksSettingsSection() {
   const { setTagsDialogOpen } = useTagsStore();
 
   const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
+  const tasksSoundsEnabled = useAuthUserSetting('tasksSoundsEnabled', false);
 
   const onOpenTagsButtonClick = () => {
     setTagsDialogOpen(true);
@@ -38,6 +39,25 @@ export default function TasksSettingsSection() {
           </Label>
         </div>
         <p className="mt-2 text-xs text-gray-400">Do you want the feature?</p>
+      </div>
+      <div className="mb-4">
+        <div className="flex items-center">
+          <Switch
+            id="settings-tasksSoundsEnabled"
+            checked={tasksSoundsEnabled}
+            onCheckedChange={() => {
+              updateAccountSettings({
+                tasksSoundsEnabled: !tasksSoundsEnabled,
+              });
+            }}
+          />
+          <Label htmlFor="settings-tasksSoundsEnabled" className="ml-2">
+            Sounds Enabled
+          </Label>
+        </div>
+        <p className="mt-2 text-xs text-gray-400">
+          Do you want to hear any sounds when adding and completing a task?
+        </p>
       </div>
       <hr className="mb-4" />
       <div className="mb-4">

@@ -1,11 +1,39 @@
+import { useEffect } from 'react';
+
 import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
+import { tasksEmitter, TasksEventsEnum } from '../state/tasksEmitter';
 import { useTasksStore } from '../state/tasksStore';
+import { playAddTaskSound, playCompleteTaskSound } from '../utils/TaskHelpers';
 import TasksBody from './tasks-body/TasksBody';
 
 export default function TasksPopover() {
   const { popoverOpen, setPopoverOpen } = useTasksStore();
+  const tasksSoundsEnabled = useAuthUserSetting('tasksSoundsEnabled', false);
+
+  useEffect(() => {
+    if (!tasksSoundsEnabled) {
+      return;
+    }
+
+    const taskAddedCallback = () => {
+      playAddTaskSound();
+    };
+
+    const taskCompletedCallback = () => {
+      playCompleteTaskSound();
+    };
+
+    tasksEmitter.on(TasksEventsEnum.TASK_ADDED, taskAddedCallback);
+    tasksEmitter.on(TasksEventsEnum.TASK_COMPLETED, taskCompletedCallback);
+
+    return () => {
+      tasksEmitter.off(TasksEventsEnum.TASK_ADDED, taskAddedCallback);
+      tasksEmitter.off(TasksEventsEnum.TASK_COMPLETED, taskCompletedCallback);
+    };
+  }, [tasksSoundsEnabled]);
 
   return (
     <ErrorBoundary>

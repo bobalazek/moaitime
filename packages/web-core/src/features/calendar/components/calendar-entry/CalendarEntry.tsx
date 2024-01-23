@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
 import { formatInTimeZone } from 'date-fns-tz';
-import { FlagIcon } from 'lucide-react';
+import { FlagIcon, GripHorizontalIcon } from 'lucide-react';
 import { MouseEvent } from 'react';
 
 import {
@@ -43,6 +43,7 @@ export type CalendarEntryProps = {
   style?: Record<string, unknown>;
   className?: string;
   showTimes?: boolean;
+  showBottomResizeHandle?: boolean;
 };
 
 export default function CalendarEntry({
@@ -51,6 +52,7 @@ export default function CalendarEntry({
   style,
   className,
   showTimes,
+  showBottomResizeHandle,
 }: CalendarEntryProps) {
   const { setSelectedTaskDialogOpen } = useTasksStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
@@ -89,13 +91,12 @@ export default function CalendarEntry({
   const containerStyle = style
     ? {
         ...style,
-        height: `${
-          parseInt(style.height as string, 10) - CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX
-        }px`, // We don't want to overlap with the next entry
+        height: `${parseInt(style.height as string) - CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX}px`, // We don't want to overlap with the next entry
       }
     : undefined;
 
-  const onClick = (event: MouseEvent, calendarEntry: CalendarEntryType) => {
+  // Container
+  const onContainerClick = (event: MouseEvent, calendarEntry: CalendarEntryType) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -106,13 +107,16 @@ export default function CalendarEntry({
     }
   };
 
-  const onMouseEnter = () => {
+  const onContainerMouseEnter = () => {
     setHighlightedCalendarEntry(calendarEntry);
   };
 
-  const onMouseLeave = () => {
+  const onContainerMouseLeave = () => {
     setHighlightedCalendarEntry(null);
   };
+
+  // Resize
+  // TODO
 
   return (
     <div
@@ -120,13 +124,13 @@ export default function CalendarEntry({
       className={clsx('select-none px-[2px]', !hasAbsoluteClassName && 'relative', className)}
       style={containerStyle}
       title={calendarEntry.title}
-      onClick={(event) => onClick(event, calendarEntry)}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onClick={(event) => onContainerClick(event, calendarEntry)}
+      onMouseEnter={onContainerMouseEnter}
+      onMouseLeave={onContainerMouseLeave}
       data-test="calendar--weekly-view--day--calendar-entry"
     >
       <div
-        className="h-full cursor-pointer overflow-hidden rounded-lg border border-transparent px-2 py-1 text-xs transition-all"
+        className="relative h-full cursor-pointer overflow-hidden rounded-lg border border-transparent px-2 py-1 text-xs transition-all"
         data-test="calendar--weekly-view--day--calendar-entry--content"
         style={innerStyle}
       >
@@ -150,6 +154,20 @@ export default function CalendarEntry({
         {showTimes && (
           <div className="break-words text-[0.65rem] font-semibold">
             <CalendarEntryTimes calendarEntry={calendarEntry} />
+          </div>
+        )}
+        {showBottomResizeHandle && (
+          <div
+            className="absolute bottom-[4px] left-0 w-full"
+            data-test="calendar--weekly-view--day--calendar-entry--resize-handle"
+          >
+            <GripHorizontalIcon
+              size={14}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"
+              style={{
+                color: colorLighter,
+              }}
+            />
           </div>
         )}
       </div>

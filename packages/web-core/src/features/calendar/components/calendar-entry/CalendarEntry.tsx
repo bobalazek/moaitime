@@ -161,11 +161,11 @@ export default function CalendarEntry({
     color,
   };
 
+  let canResizeEndHandler = canResizeAndMove;
   if (canResizeAndMove) {
-    // Do additional checks if we have it enabled
-    canResizeAndMove =
-      calendarEntry.permissions?.canUpdate &&
-      !calendarEntry.isAllDay &&
+    canResizeAndMove = calendarEntry.permissions?.canUpdate && !calendarEntry.isAllDay;
+    canResizeEndHandler =
+      canResizeAndMove &&
       ifIsCalendarEntryEndDateSameAsToday(calendarEntry, generalTimezone, dayDate);
   }
 
@@ -431,7 +431,7 @@ export default function CalendarEntry({
             <CalendarEntryTimes calendarEntry={calendarEntry} />
           </div>
         )}
-        {canResizeAndMove && (
+        {canResizeEndHandler && (
           <div className="absolute bottom-[4px] left-0 w-full">
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"

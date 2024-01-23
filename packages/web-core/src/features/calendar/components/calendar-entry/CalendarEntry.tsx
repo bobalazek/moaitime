@@ -99,10 +99,20 @@ export default function CalendarEntry({
       calendarEntry.title
     );
 
+  // We don't want to overlap with the next entry
+  const finalHeight = style?.height
+    ? parseInt(style.height as string) - CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX
+    : undefined;
   const containerStyle = style
     ? {
         ...style,
-        height: `${parseInt(style.height as string) - CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX}px`, // We don't want to overlap with the next entry
+        height: finalHeight
+          ? `${
+              finalHeight > CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX / 4
+                ? finalHeight
+                : CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX / 4
+            }px`
+          : undefined,
       }
     : undefined;
 
@@ -197,17 +207,12 @@ export default function CalendarEntry({
       setCalendarEntry(newCalendarEntry);
     };
 
-    const onMouseUp = (event: MouseEvent) => {
+    const onMouseUp = async (event: MouseEvent) => {
       event.preventDefault();
       event.stopPropagation();
 
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
-
-      // To make sure the onClick event has been fired, to prevent opening the dialog
-      setTimeout(() => {
-        setCalendarEventIsResizing(false);
-      }, 100);
 
       // For some reason we are sending the endsAt as local time, not UTC,
       // but it still has a "Z" at the end. This seems to be happening on multiple places,
@@ -216,10 +221,15 @@ export default function CalendarEntry({
       // What we basically do here is us getting the "correct" (local) time, with just the
       // "Z" at the end, even though it's not UTC.
       const finalEndsAt = zonedTimeToUtc(newCalendarEntryEndsAt, 'UTC').toISOString();
-      editEvent(calendarEntry.raw!.id, {
+      await editEvent(calendarEntry.raw!.id, {
         ...calendarEntry.raw,
         endsAt: finalEndsAt,
       } as Event);
+
+      // To make sure the onClick event has been fired, to prevent opening the dialog
+      setTimeout(() => {
+        setCalendarEventIsResizing(false);
+      }, 100);
     };
 
     document.addEventListener('mousemove', onMouseMove);

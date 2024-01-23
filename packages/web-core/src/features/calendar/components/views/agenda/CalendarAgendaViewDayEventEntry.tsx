@@ -1,5 +1,6 @@
 import { differenceInDays, format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+import { useAtomValue } from 'jotai';
 
 import {
   Calendar,
@@ -13,6 +14,7 @@ import {
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { convertTextToHtml } from '../../../../core/utils/TextHelpers';
 import { useTasksStore } from '../../../../tasks/state/tasksStore';
+import { calendarEventIsResizingAtom } from '../../../state/calendarAtoms';
 import { useEventsStore } from '../../../state/eventsStore';
 
 export type CalendarAgendaViewDayEventEntryProps = {
@@ -26,6 +28,7 @@ export default function CalendarAgendaViewDayEventEntry({
 }: CalendarAgendaViewDayEventEntryProps) {
   const { setSelectedEventDialogOpen } = useEventsStore();
   const { setSelectedTaskDialogOpen } = useTasksStore();
+  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
   const clockUse24HourClock = useAuthUserSetting('clockUse24HourClock', false);
@@ -55,6 +58,10 @@ export default function CalendarAgendaViewDayEventEntry({
   const entryColor = calendarEntry.color ?? calendarOrListColor;
 
   const onClick = () => {
+    if (calendarEventIsResizing) {
+      return;
+    }
+
     if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
       setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
     } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {

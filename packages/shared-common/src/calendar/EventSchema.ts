@@ -27,7 +27,7 @@ export const CreateEventBaseSchema = z.object({
   description: z.string().nullable().optional(),
   color: ColorSchema.nullable().optional(),
   timezone: TimezoneSchema.optional(),
-  endTimezone: z.string().optional(),
+  endTimezone: TimezoneSchema.optional(),
   isAllDay: z.boolean().optional(),
   startsAt: z.string({
     required_error: 'Start date is required',

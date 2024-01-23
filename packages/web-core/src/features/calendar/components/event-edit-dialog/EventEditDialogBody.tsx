@@ -152,7 +152,7 @@ export default function EventEditDialogBody() {
         <Label htmlFor="event-startsAt">Starts At</Label>
         <DateSelector
           includeTime={!dataIsAllDay}
-          disableClear={eventExists}
+          disableClear
           data={convertIsoStringToObject(
             data?.startsAt,
             !dataIsAllDay,
@@ -187,7 +187,7 @@ export default function EventEditDialogBody() {
         <Label htmlFor="event-endsAt">Ends At</Label>
         <DateSelector
           includeTime={!dataIsAllDay}
-          disableClear={eventExists}
+          disableClear
           data={convertIsoStringToObject(
             data?.endsAt,
             !dataIsAllDay,

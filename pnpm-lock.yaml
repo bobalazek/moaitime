@@ -760,6 +760,9 @@ importers:
       framer-motion:
         specifier: ^10.16.4
         version: 10.16.16(react-dom@18.2.0)(react@18.2.0)
+      jotai:
+        specifier: ^2.6.2
+        version: 2.6.2(@types/react@18.2.33)(react@18.2.0)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -10757,6 +10760,22 @@ packages:
 
   /jotai@2.6.0(@types/react@18.2.33)(react@18.2.0):
     resolution: {integrity: sha512-Vt6hsc04Km4j03l+Ax+Sc+FVft5cRJhqgxt6GTz6GM2eM3DyX3CdBdzcG0z2FrlZToL1/0OAkqDghIyARWnSuQ==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=17.0.0'
+      react: '>=17.0.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@types/react': 18.2.33
+      react: 18.2.0
+    dev: false
+
+  /jotai@2.6.2(@types/react@18.2.33)(react@18.2.0):
+    resolution: {integrity: sha512-kl4KguU1Fr+tFiLi3A3h9qPEzhvLTTDA10DO3QZAz6k7BEaQJ+qvSBwolzonnfNI4QzEovyQfUqVgnRxfnnQVQ==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/react': '>=17.0.0'

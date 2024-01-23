@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
 import { eachDayOfInterval, endOfWeek, format, isSameDay, startOfWeek } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAtomValue } from 'jotai';
 import { MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
@@ -11,6 +12,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
+import { calendarEventIsResizingAtom } from '../../state/calendarAtoms';
 import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
 import { getCalendarEntriesForDay } from '../../utils/CalendarHelpers';
@@ -27,6 +29,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     useCalendarStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
   const prevSelectedDateRef = useRef(selectedDate);
+  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
@@ -143,6 +146,10 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             const onDayContainerClick = (event: MouseEvent) => {
               event.preventDefault();
               event.stopPropagation();
+
+              if (calendarEventIsResizing) {
+                return;
+              }
 
               const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 

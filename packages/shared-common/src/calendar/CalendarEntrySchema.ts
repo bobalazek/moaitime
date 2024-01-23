@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { ColorSchema } from '../core/ColorSchema';
+import { PermissionsSchema } from '../core/PermissionsSchema';
 import { TaskSchema } from '../tasks/TaskSchema';
 import { CalendarEntryTypeEnum } from './CalendarEntryTypeEnum';
 import { EventSchema } from './EventSchema';
@@ -18,6 +19,7 @@ export const CalendarEntrySchema = z.object({
   endsAt: z.string(),
   endsAtUtc: z.string(),
   endTimezone: z.string().nullable(),
+  permissions: PermissionsSchema.optional(),
   raw: EventSchema.or(TaskSchema).optional(),
 });
 

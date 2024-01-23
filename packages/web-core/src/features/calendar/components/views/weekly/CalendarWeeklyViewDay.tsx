@@ -141,7 +141,7 @@ export default function CalendarWeeklyViewDay({
                 className="absolute"
                 style={style}
                 showTimes
-                showBottomResizeHandle
+                showBottomResizeHandle={calendarEntry.permissions?.canUpdate ?? false}
               />
             </motion.div>
           );

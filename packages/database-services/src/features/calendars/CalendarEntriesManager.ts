@@ -58,6 +58,7 @@ export class CalendarEntriesManager {
         isAllDay: event.isAllDay,
         color: event.color ?? event.calendarColor ?? null,
         calendarId: event.calendarId,
+        permissions: event.permissions,
         ...timesObject,
         raw: {
           ...event,

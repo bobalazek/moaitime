@@ -106,7 +106,6 @@ export type CalendarStore = {
   /********** Calendar Entries **********/
   calendarEntries: CalendarEntry[];
   calendarEntriesYearly: CalendarEntryYearlyEntry[];
-  setCalendarEntries: (calendarEntries: CalendarEntry[]) => void;
   updateCalendaEntry: (calendarEntry: CalendarEntry) => void;
   reloadCalendarEntries: () => Promise<CalendarEntry[]>;
   reloadCalendarEntriesYearly: () => Promise<CalendarEntryYearlyEntry[]>;
@@ -413,11 +412,6 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   /********** Calendar Entries **********/
   calendarEntries: [],
   calendarEntriesYearly: [],
-  setCalendarEntries: (calendarEntries: CalendarEntry[]) => {
-    set({
-      calendarEntries,
-    });
-  },
   updateCalendaEntry: (calendarEntry: CalendarEntry) => {
     const { calendarEntries } = get();
 

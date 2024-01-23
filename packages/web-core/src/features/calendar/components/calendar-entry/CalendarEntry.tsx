@@ -3,6 +3,7 @@ import { colord } from 'colord';
 import { addMinutes } from 'date-fns';
 import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
 import { useAtom } from 'jotai';
+import { debounce } from 'lodash';
 import { FlagIcon, GripHorizontalIcon } from 'lucide-react';
 import { useCallback } from 'react';
 
@@ -100,8 +101,9 @@ const getRoundedMinutes = (
     ((clientY - initialCoordinates.clientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
   );
 
-  if (weekdayWidth && Math.abs(clientX - initialCoordinates.clientX) > weekdayWidth) {
-    minutesDelta += clientX > initialCoordinates.clientX ? 1440 : -1440;
+  if (weekdayWidth) {
+    const daysDelta = Math.round(Math.abs(clientX - initialCoordinates.clientX) / weekdayWidth);
+    minutesDelta += (clientX > initialCoordinates.clientX ? 1 : -1) * daysDelta * 1440;
   }
 
   return Math.round(minutesDelta / 15) * 15;
@@ -238,6 +240,10 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
+      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, 100, {
+        maxWait: 100,
+      });
+
       const onMove = (event: MouseEvent | TouchEvent) => {
         const minutesDeltaRounded = getRoundedMinutes(
           event,
@@ -258,7 +264,7 @@ export default function CalendarEntry({
         ).toISOString();
         newEndsAtString = newEndsAt.toISOString();
 
-        updateCalendaEntry({
+        debouncedUpdateCalendaEntry({
           ...calendarEntry,
           startsAt: newStartsAtString,
           startsAtUtc: newStartsAtUtc,
@@ -342,6 +348,10 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
+      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, 100, {
+        maxWait: 100,
+      });
+
       const onMove = (event: MouseEvent | TouchEvent) => {
         const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 
@@ -357,7 +367,7 @@ export default function CalendarEntry({
 
         newEndsAtString = newEndsAt.toISOString();
 
-        updateCalendaEntry({
+        debouncedUpdateCalendaEntry({
           ...calendarEntry,
           endsAt: newEndsAtString,
           endsAtUtc: newEndsAtUtc,

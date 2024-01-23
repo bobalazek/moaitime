@@ -1,13 +1,16 @@
 import { addMinutes } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAtomValue } from 'jotai';
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
   CalendarEntryWithVerticalPosition,
+  Event,
 } from '@moaitime/shared-common';
 
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
+import { calendarEventIsResizingAtom } from '../../../state/calendarAtoms';
 import { useEventsStore } from '../../../state/eventsStore';
 import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
@@ -43,6 +46,7 @@ export default function CalendarWeeklyViewDay({
 }: CalendarWeeklyViewDayProps) {
   const { setSelectedEventDialogOpen } = useEventsStore();
   const [currentTimeLineTop, setCurrentTimeLineTop] = useState<number | null>(null);
+  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
 
@@ -64,6 +68,10 @@ export default function CalendarWeeklyViewDay({
       return;
     }
 
+    if (calendarEventIsResizing) {
+      return;
+    }
+
     const rect = container.getBoundingClientRect();
     const relativeTop = clientY - rect.top;
     const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
@@ -81,9 +89,7 @@ export default function CalendarWeeklyViewDay({
       startsAt,
       endsAt,
       timezone: generalTimezone,
-      // TODO: figure out a more optimal way for this
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    } as Event);
   };
 
   useEffect(() => {

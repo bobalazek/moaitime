@@ -8,6 +8,7 @@ import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
   CalendarEntryWithVerticalPosition,
   CalendarViewEnum,
+  Event,
   getGmtOffset,
 } from '@moaitime/shared-common';
 
@@ -157,9 +158,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 startsAt: dayMidnight,
                 endsAt: dayMidnight,
                 isAllDay: true,
-                // TODO: figure out a more optimal way for this
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              } as any);
+              } as Event);
             };
 
             return (

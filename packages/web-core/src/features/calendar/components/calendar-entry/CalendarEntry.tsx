@@ -164,7 +164,7 @@ export default function CalendarEntry({
     setCalendarEventIsResizing(true);
 
     const initialClientY = event.clientY;
-    let newCalendarEntryEndsAt = calendarEntry.endsAt;
+    let newEndsAtString = calendarEntry.endsAt;
 
     const onMouseMove = (event: MouseEvent) => {
       event.preventDefault();
@@ -177,19 +177,22 @@ export default function CalendarEntry({
       );
       const minutesDeltaRounded = Math.round(minutesDelta / 15) * 15;
 
-      newCalendarEntryEndsAt = addMinutes(
-        new Date(calendarEntry.endsAt),
-        minutesDeltaRounded
-      ).toISOString();
+      const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDeltaRounded);
       const newEndsAtUtc = zonedTimeToUtc(
-        newCalendarEntryEndsAt,
+        newEndsAt,
         calendarEntry.endTimezone ?? calendarEntry.timezone
       ).toISOString();
+
+      if (newEndsAt < new Date(calendarEntry.startsAtUtc)) {
+        return;
+      }
+
+      newEndsAtString = newEndsAt.toISOString();
 
       const calendarEntries: CalendarEntryWithVerticalPosition[] = [
         {
           ...calendarEntry,
-          endsAt: newCalendarEntryEndsAt,
+          endsAt: newEndsAtString,
           endsAtUtc: newEndsAtUtc,
           left: style.left as string,
           width: style.width as string,
@@ -220,7 +223,7 @@ export default function CalendarEntry({
       // The reason is, that the database stores the local time and omits the timezone.
       // What we basically do here is us getting the "correct" (local) time, with just the
       // "Z" at the end, even though it's not UTC.
-      const finalEndsAt = zonedTimeToUtc(newCalendarEntryEndsAt, 'UTC').toISOString();
+      const finalEndsAt = zonedTimeToUtc(newEndsAtString, 'UTC').toISOString();
       await editEvent(calendarEntry.raw!.id, {
         ...calendarEntry.raw,
         endsAt: finalEndsAt,
@@ -229,7 +232,7 @@ export default function CalendarEntry({
       // To make sure the onClick event has been fired, to prevent opening the dialog
       setTimeout(() => {
         setCalendarEventIsResizing(false);
-      }, 100);
+      }, 200);
     };
 
     document.addEventListener('mousemove', onMouseMove);

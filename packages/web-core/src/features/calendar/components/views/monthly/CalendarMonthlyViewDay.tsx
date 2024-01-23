@@ -1,14 +1,17 @@
 import { clsx } from 'clsx';
 import { format, isSameDay, isSameMonth } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAtomValue } from 'jotai';
 import { MouseEvent } from 'react';
 
 import {
   CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT,
   CalendarEntry as CalendarEntryType, // We can't have the same name, as it's already used by the component
   CalendarViewEnum,
+  Event,
 } from '@moaitime/shared-common';
 
+import { calendarEventIsResizingAtom } from '../../../state/calendarAtoms';
 import { useCalendarStore } from '../../../state/calendarStore';
 import { useEventsStore } from '../../../state/eventsStore';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
@@ -43,6 +46,8 @@ export default function CalendarMonthlyViewDay({
 }: CalendarMonthlyViewDayProps) {
   const { selectedDate, setSelectedDate, setSelectedView } = useCalendarStore();
   const { setSelectedEventDialogOpen } = useEventsStore();
+  const calendarEventIsResizing = useAtomValue(calendarEventIsResizingAtom);
+
   const isActive = isSameDay(day, now);
   const isActiveMonth = isSameMonth(day, selectedDate);
   const isFirst = day.getDate() === 1 || isFirstWeeksDay;
@@ -62,15 +67,17 @@ export default function CalendarMonthlyViewDay({
     event.preventDefault();
     event.stopPropagation();
 
+    if (calendarEventIsResizing) {
+      return;
+    }
+
     const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 
     setSelectedEventDialogOpen(true, {
       startsAt: dayMidnight,
       endsAt: dayMidnight,
       isAllDay: true,
-      // TODO: figure out a more optimal way for this
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    } as Event);
   };
 
   const shownCalendarEntries = calendarEntries.slice(

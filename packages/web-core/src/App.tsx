@@ -1,4 +1,5 @@
 import { QueryClientProvider } from '@tanstack/react-query';
+import { Provider } from 'jotai';
 
 import { SonnerToaster, Toaster } from '@moaitime/web-ui';
 
@@ -30,7 +31,9 @@ export function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <AppRoutes />
+          <Provider>
+            <AppRoutes />
+          </Provider>
         </TooltipProvider>
       </QueryClientProvider>
       <ToasterContainer />

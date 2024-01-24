@@ -628,6 +628,9 @@ importers:
       pino-pretty:
         specifier: ^10.2.3
         version: 10.2.3
+      pino-syslog:
+        specifier: ^3.0.0
+        version: 3.0.0
     devDependencies:
       typescript:
         specifier: ^5.3.2
@@ -9691,6 +9694,10 @@ packages:
       merge2: 1.4.1
       micromatch: 4.0.5
 
+  /fast-json-parse@1.0.3:
+    resolution: {integrity: sha512-FRWsaZRWEJ1ESVNbDWmsAlqDk96gPQezzLghafp5J4GUKjbCz3OkAHuZs5TuPEtkbVQERysLp9xv6c24fBm8Aw==}
+    dev: false
+
   /fast-json-stable-stringify@2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
     dev: true
@@ -12046,6 +12053,21 @@ packages:
     resolution: {integrity: sha512-cHjPPsE+vhj/tnhCy/wiMh3M3z3h/j15zHQX+S9GkTBgqJuTuJzYJ4gUyACLhDaJ7kk9ba9iRDmbH2tJU03OiA==}
     dev: false
 
+  /pino-syslog@3.0.0:
+    resolution: {integrity: sha512-G5JU0mKaNS95E29uuX125vw76D92cSVppGoPwZMNlYBY+NpkFD7dUBc3PyYTFajXUU8jNbEyp4vPpV7Tbl/eiw==}
+    hasBin: true
+    dependencies:
+      fast-json-parse: 1.0.3
+      fast-safe-stringify: 2.1.1
+      luxon: 3.4.4
+      nopt: 7.2.0
+      pino-abstract-transport: 1.1.0
+      pump: 3.0.0
+      sonic-boom: 3.7.0
+      split2: 4.2.0
+      through2: 4.0.2
+    dev: false
+
   /pino@8.16.2:
     resolution: {integrity: sha512-2advCDGVEvkKu9TTVSa/kWW7Z3htI/sBKEZpqiHk6ive0i/7f5b1rsU8jn0aimxqfnSz5bj/nOYkwhBUn5xxvg==}
     hasBin: true
@@ -13842,6 +13864,12 @@ packages:
 
   /throttleit@1.0.1:
     resolution: {integrity: sha512-vDZpf9Chs9mAdfY046mcPt8fg5QSZr37hEH4TXYBnDF+izxgrbRGUAAaBvIk/fJm9aOFCGFd1EsNg5AZCbnQCQ==}
+    dev: false
+
+  /through2@4.0.2:
+    resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
+    dependencies:
+      readable-stream: 3.6.2
     dev: false
 
   /through@2.3.8:

@@ -16,18 +16,28 @@ COPY . .
 # but we need to run turbo prune to install the correct dependencies.
 # For now we will just install it globally with npm above, and then for actual building,
 # we will use the pnpm version of turbo.
-RUN turbo prune @moaitime/web --docker
+RUN turbo prune @moaitime/api --docker
 
 RUN pnpm install --frozen-lockfile
-RUN pnpm turbo run build --filter=@moaitime/web
+RUN pnpm turbo run build --filter=@moaitime/api
+RUN pnpm --filter=@moaitime/api --prod deploy pruned
 
 # Runner
-FROM nginx:1.25.3-alpine AS runner
+FROM base AS runner
 
-COPY ../../docker/web/nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-COPY --from=builder /app/out/full/apps/web/dist /usr/share/nginx/html
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 
-EXPOSE 80
+ARG API_PORT=3636
+ENV API_PORT=$API_PORT
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=builder /app/.env ./.env
+COPY --from=builder /app/.env.production ./.env.production
+COPY --from=builder /app/pruned/dist .
+COPY --from=builder /app/pruned/node_modules ./node_modules
+
+EXPOSE ${API_PORT}
+
+CMD ["node", "./main.js"]

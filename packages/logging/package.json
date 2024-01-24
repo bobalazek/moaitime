@@ -27,7 +27,8 @@
     "@moaitime/shared-backend": "workspace:*",
     "dotenv": "^16.3.1",
     "pino": "^8.16.2",
-    "pino-pretty": "^10.2.3"
+    "pino-pretty": "^10.2.3",
+    "pino-syslog": "^3.0.0"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

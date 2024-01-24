@@ -11,6 +11,7 @@ import { GreetingsModule } from './features/greetings/greetings.module';
 import { MoodModule } from './features/mood/mood.module';
 import { NotesModule } from './features/notes/notes.module';
 import { QuotesModule } from './features/quotes/quotes.module';
+import { StatisticsModule } from './features/statistics/statistics.module';
 import { TasksModule } from './features/tasks/tasks.module';
 import { TestingModule } from './features/testing/testing.module';
 import { WeatherModule } from './features/weather/weather.module';
@@ -28,6 +29,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
     WeatherModule,
     MoodModule,
     FocusModule,
+    StatisticsModule,
     TestingModule,
   ],
   controllers: [AppController],

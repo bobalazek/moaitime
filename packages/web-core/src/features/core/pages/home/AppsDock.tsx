@@ -9,6 +9,7 @@ import FocusAppButton from '../../../focus/components/FocusAppButton';
 import MoodAppButton from '../../../mood/components/MoodAppButton';
 import NotesAppButton from '../../../notes/components/NotesAppButton';
 import SettingsAppButton from '../../../settings/components/SettingsAppButton';
+import StatisticsAppButton from '../../../statistics/components/StatisticsAppButton';
 import TasksAppButton from '../../../tasks/components/TasksAppButton';
 import WeatherAppButton from '../../../weather/components/WeatherAppButton';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
@@ -129,6 +130,17 @@ export default function AppsDock() {
                   <CommandsAppButton />
                 </motion.div>
               )}
+              <motion.div
+                key="statistics"
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+                transition={{ delay: delay++ * delayDuration }}
+              >
+                <StatisticsAppButton />
+              </motion.div>
               <motion.div
                 key="settings"
                 layout

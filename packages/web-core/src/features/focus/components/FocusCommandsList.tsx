@@ -1,4 +1,4 @@
-import { FilesIcon, PlusIcon } from 'lucide-react';
+import { ExternalLinkIcon, FilesIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
@@ -6,12 +6,12 @@ import { CommandGroup, CommandItem } from '@moaitime/web-ui';
 import { useAuthUserSetting } from '../../auth/state/authStore';
 import { useCommandsStore } from '../../commands/state/commandsStore';
 
-export default function FocussCommandsList() {
+export default function FocusCommandsList() {
   const { setCommandsDialogOpen } = useCommandsStore();
   const navigate = useNavigate();
 
-  const notesEnabled = useAuthUserSetting('notesEnabled', false);
-  if (!notesEnabled) {
+  const focusEnabled = useAuthUserSetting('focusEnabled', false);
+  if (!focusEnabled) {
     return null;
   }
 
@@ -20,21 +20,21 @@ export default function FocussCommandsList() {
       heading={
         <div className="flex items-center">
           <FilesIcon className="mr-2" />
-          <span className="font-bold">Notes</span>
+          <span className="font-bold">Focus</span>
         </div>
       }
     >
       <CommandItem
         className="cursor-pointer"
         onSelect={() => {
-          navigate('/notes');
+          navigate('/focus');
 
           setCommandsDialogOpen(false);
         }}
       >
-        <PlusIcon className="mr-2" />
+        <ExternalLinkIcon className="mr-2" />
         <span>
-          Open <b>Notes</b>
+          Open <b>Focus</b>
         </span>
       </CommandItem>
     </CommandGroup>

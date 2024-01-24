@@ -24,6 +24,7 @@ import MoodEntryEditDialog from './features/mood/components/mood-entry-edit-dial
 import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
 import SettingsDialog from './features/settings/components/SettingsDialog';
+import StatisticsPage from './features/statistics/components/pages/StatisticsPage';
 import ListDeleteAlertDialog from './features/tasks/components/list-delete-alert-dialog/ListDeleteAlertDialog';
 import ListEditDialog from './features/tasks/components/list-edit-dialog/ListEditDialog';
 import TagEditDialog from './features/tasks/components/tag-edit-dialog/TagEditDialog';
@@ -96,6 +97,14 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <FocusPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/statistics/*"
+          element={
+            <ProtectedRoute>
+              <StatisticsPage />
             </ProtectedRoute>
           }
         />

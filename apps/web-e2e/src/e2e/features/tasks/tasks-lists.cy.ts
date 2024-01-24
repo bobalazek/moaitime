@@ -166,7 +166,7 @@ describe('tasks-lists.cy.ts', () => {
   it('should move a task to another list', () => {
     openTasksPopover();
 
-    cy.getBySel('tasks--body-header').contains('Inbox');
+    cy.getBySel('tasks--body-header').contains('Unlisted');
 
     cy.getBySel('tasks--tasks-form').find('input').type('New task{enter}');
 

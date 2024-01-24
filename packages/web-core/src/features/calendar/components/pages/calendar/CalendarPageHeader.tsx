@@ -9,13 +9,13 @@ import {
   subWeeks,
   subYears,
 } from 'date-fns';
-import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { forwardRef, useImperativeHandle } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
+import LayoutPageHeader from '../../../../core/components/layout/LayoutPageHeader';
 import { useCalendarStore } from '../../../state/calendarStore';
 import CalendarSettingsDialog from '../../calendar-settings-dialog/CalendarSettingsDialog';
 import CalendarPageHeaderCalendar from './CalendarPageHeaderCalendar';
@@ -32,7 +32,6 @@ export interface CalendarDialogHeaderRef {
 const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
   const { setSelectedDate, selectedDate, selectedView, isTodayInSelectedDaysRange } =
     useCalendarStore();
-  const navigate = useNavigate();
 
   const onPrevButtonClick = () => {
     if (selectedView === CalendarViewEnum.DAY) {
@@ -76,22 +75,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
     selectedView === CalendarViewEnum.AGENDA ? isToday(selectedDate) : isTodayInSelectedDaysRange;
 
   return (
-    <div
-      className="items-center gap-4 border-b px-4 py-3 text-center  text-2xl md:flex md:justify-between"
-      data-test="calendar--header"
-    >
-      <div className="flex space-x-2 align-middle">
-        <button
-          onClick={() => {
-            navigate('/');
-          }}
-          title="Go home"
-          data-test="calendar--header--home-button"
-        >
-          <HomeIcon />
-        </button>
-        <CalendarPageHeaderText />
-      </div>
+    <LayoutPageHeader testKey="calendar" title={<CalendarPageHeaderText />}>
       <div className="mt-2 justify-center gap-2 sm:flex md:mt-0">
         <CalendarSettingsDialog />
         <CalendarPageHeaderCalendar />
@@ -128,7 +112,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
         </Button>
         <CalendarPageHeaderViewSelector />
       </div>
-    </div>
+    </LayoutPageHeader>
   );
 });
 

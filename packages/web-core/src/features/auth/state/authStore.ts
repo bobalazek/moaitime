@@ -35,6 +35,7 @@ import {
   updateAccountPassword,
   updateAccountSettings,
 } from '../utils/AuthHelpers';
+import { useUserLimitsAndUsageStore } from './userLimitsAndUsageStore';
 
 export type AuthStore = {
   auth: Auth | null;
@@ -255,6 +256,7 @@ export const useAuthStore = create<AuthStore>()(
       // App Data
       reloadAppData: async () => {
         const { auth, reloadTheme } = get();
+        const { reloadUserLimitsAndUsage } = useUserLimitsAndUsageStore.getState();
         const { reloadLists, reloadTasksCountMap } = useListsStore.getState();
         const { reloadTags } = useTagsStore.getState();
         const { reloadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
@@ -265,13 +267,18 @@ export const useAuthStore = create<AuthStore>()(
           return;
         }
 
+        // User Limits and Usage
+        reloadUserLimitsAndUsage();
+
+        // Theme
         reloadTheme();
 
+        // Tasks
         reloadLists();
         reloadTasksCountMap();
-
         reloadTags();
 
+        // Backgrounds
         (async () => {
           await reloadBackgrounds();
 

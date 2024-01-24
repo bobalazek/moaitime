@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { authManager } from '@moaitime/database-services';
+import { authManager, usersManager } from '@moaitime/database-services';
+import { ResponseInterface, UserLimits, UserUsage } from '@moaitime/shared-common';
 
 import { LoginResponseDto } from '../dtos/responses/login-response.dto';
 import { UpdateUserPasswordDto } from '../dtos/update-user-password.dto';
@@ -24,15 +25,12 @@ import { convertToUserDto } from '../utils/auth.utils';
 export class AuthAccountController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async index(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<LoginResponseDto> {
-    res.status(200);
+  async index(@Req() req: Request): Promise<LoginResponseDto> {
+    const data = convertToUserDto(req.user);
 
     return {
       success: true,
-      data: convertToUserDto(req.user),
+      data,
     };
   }
 
@@ -70,6 +68,28 @@ export class AuthAccountController {
     await authManager.updateSettings(req.user.id, body);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('limits')
+  async limits(@Req() req: Request): Promise<ResponseInterface<UserLimits>> {
+    const data = await usersManager.getUserLimits(req.user);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('usage')
+  async usage(@Req() req: Request): Promise<ResponseInterface<UserUsage>> {
+    const data = await usersManager.getUserUsage(req.user);
+
+    return {
+      success: true,
+      data,
+    };
   }
 
   // Private

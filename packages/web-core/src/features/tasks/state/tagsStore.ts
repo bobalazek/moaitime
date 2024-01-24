@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import { CreateTag, Tag, UpdateTag } from '@moaitime/shared-common';
 
+import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { addTag, deleteTag, editTag, getTags, undeleteTag } from '../utils/TagHelpers';
 
 export type TagsStore = {
@@ -67,11 +68,13 @@ export const useTagsStore = create<TagsStore>()((set, get) => ({
   },
   addTag: async (tag: CreateTag) => {
     const { reloadTags, reloadDialogTags } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const addedTag = await addTag(tag);
 
     await reloadTags();
     await reloadDialogTags();
+    await reloadUserUsage();
 
     return addedTag;
   },
@@ -87,21 +90,25 @@ export const useTagsStore = create<TagsStore>()((set, get) => ({
   },
   deleteTag: async (tagId: string, isHardDelete?: boolean) => {
     const { reloadTags, reloadDialogTags } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const deletedTag = await deleteTag(tagId, isHardDelete);
 
     await reloadTags();
     await reloadDialogTags();
+    await reloadUserUsage();
 
     return deletedTag;
   },
   undeleteTag: async (tagId: string) => {
     const { reloadTags, reloadDialogTags } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const undeletedTag = await undeleteTag(tagId);
 
     await reloadTags();
     await reloadDialogTags();
+    await reloadUserUsage();
 
     return undeletedTag;
   },

@@ -11,6 +11,7 @@ import {
   DropdownMenuSubContent,
 } from '@moaitime/web-ui';
 
+import UsageBadge from '../../../core/components/UsageBadge';
 import { useListsStore } from '../../state/listsStore';
 import ListActions from './ListActions';
 
@@ -36,7 +37,10 @@ export default function ListsSelectedListDropdownMenuContent({
       {showHeader && (
         <>
           <DropdownMenuLabel className="flex items-center justify-between">
-            <span className="font-bold">Lists</span>
+            <div>
+              <span className="font-bold">Lists</span>
+              <UsageBadge limitKey="listsMaxPerUserCount" usageKey="listsCount" />
+            </div>
             <DropdownMenuItem asChild>
               <button
                 type="button"

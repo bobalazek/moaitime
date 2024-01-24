@@ -7,6 +7,9 @@ export * from './components/alert-dialog';
 // Alert
 export * from './components/alert';
 
+// Badge
+export * from './components/badge';
+
 // Button
 export * from './components/button';
 

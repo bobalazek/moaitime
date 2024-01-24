@@ -2,7 +2,12 @@ import { format } from 'date-fns';
 import { DBQueryConfig, eq } from 'drizzle-orm';
 
 import { getDatabase, NewUser, User, users } from '@moaitime/database-core';
-import { DEFAULT_USER_SETTINGS, UserSettings } from '@moaitime/shared-common';
+import {
+  DEFAULT_USER_SETTINGS,
+  UserLimits,
+  UserSettings,
+  UserUsage,
+} from '@moaitime/shared-common';
 
 import { calendarsManager } from '../calendars/CalendarsManager';
 import { eventsManager } from '../calendars/EventsManager';
@@ -10,17 +15,8 @@ import { focusSessionsManager } from '../focus/FocusSessionsManager';
 import { moodEntriesManager } from '../mood/MoodEntriesManager';
 import { notesManager } from '../notes/NotesManager';
 import { listsManager } from '../tasks/ListsManager';
+import { tagsManager } from '../tasks/TagsManager';
 import { tasksManager } from '../tasks/TasksManager';
-
-export type UserLimits = {
-  tasksMaxPerListCount: number;
-  listsMaxPerUserCount: number;
-  tagsMaxPerUserCount: number;
-  calendarsMaxPerUserCount: number;
-  calendarsMaxEventsPerCalendarCount: number;
-  calendarsMaxUserCalendarsPerUserCount: number;
-  notesMaxPerUserCount: number;
-};
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
@@ -156,7 +152,7 @@ export class UsersManager {
     return limits[key];
   }
 
-  async getUserUsage(user: User) {
+  async getUserUsage(user: User): Promise<UserUsage> {
     // TODO: cache!
 
     const listsCount = await listsManager.countByUserId(user.id);
@@ -165,7 +161,7 @@ export class UsersManager {
     const moodEntriesCount = await moodEntriesManager.countByUserId(user.id);
     const calendarsCount = await calendarsManager.countByUserId(user.id);
     const eventsCount = await eventsManager.countByUserId(user.id);
-    const tagsCount = await tasksManager.countByUserId(user.id);
+    const tagsCount = await tagsManager.countByUserId(user.id);
     const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
 
     const usage = {

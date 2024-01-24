@@ -1,5 +1,5 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { getClientIp } from 'request-ip';
 
 import { WeatherInterface } from '@moaitime/shared-common';
@@ -11,10 +11,7 @@ import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 export class WeatherController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async view(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<AbstractResponseDto<WeatherInterface>> {
+  async view(@Req() req: Request): Promise<AbstractResponseDto<WeatherInterface>> {
     if (!req.user.settings?.weatherLocation) {
       throw new Error(`Weather location is not set`);
     }
@@ -27,8 +24,6 @@ export class WeatherController {
       windSpeedKilometersPerHour: 0,
     };
 
-    res.status(200);
-
     return {
       success: true,
       data,
@@ -37,10 +32,7 @@ export class WeatherController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('location')
-  async location(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<AbstractResponseDto<string>> {
+  async location(@Req() req: Request): Promise<AbstractResponseDto<string>> {
     // TODO: implement - determine location from latitude and longitude
     //const latitude = req.query.latitude as string;
     //const longitude = req.query.longitude as string;
@@ -59,8 +51,6 @@ export class WeatherController {
     }
 
     const data = `${json.city}, ${json.regionName}, ${json.country}`;
-
-    res.status(200);
 
     return {
       success: true,

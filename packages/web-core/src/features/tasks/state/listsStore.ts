@@ -10,6 +10,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
+import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import {
   addList,
@@ -91,15 +92,19 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
   },
   addList: async (list: CreateList) => {
     const { reloadLists, setSelectedList } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
+
     const addedList = await addList(list);
 
     await reloadLists();
     await setSelectedList(addedList);
+    await reloadUserUsage();
 
     return addedList;
   },
   editList: async (listId: string, list: UpdateList) => {
     const { reloadLists, reloadSelectedListTasks } = get();
+
     const editedList = await editList(listId, list);
 
     await reloadLists();
@@ -109,10 +114,13 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
   },
   deleteList: async (listId: string) => {
     const { reloadLists, reloadSelectedListTasks, selectedList } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
+
     const deletedList = await deleteList(listId);
 
     await reloadLists();
     await reloadSelectedListTasks();
+    await reloadUserUsage();
 
     if (selectedList?.id === listId) {
       set({

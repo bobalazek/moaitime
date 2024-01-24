@@ -2,6 +2,7 @@ import { PlusIcon } from 'lucide-react';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@moaitime/web-ui';
 
+import UsageBadge from '../../../core/components/UsageBadge';
 import { useTagsStore } from '../../../tasks/state/tagsStore';
 import TagItem from '../tags/TagItem';
 
@@ -15,6 +16,7 @@ export default function TagsDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center align-middle">
             <span>Tags</span>
+            <UsageBadge limitKey="tagsMaxPerUserCount" usageKey="tagsCount" />
             <button
               type="button"
               className="ml-2 cursor-pointer rounded-full p-[4px] hover:bg-gray-50 dark:hover:bg-gray-800"

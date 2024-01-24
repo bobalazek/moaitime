@@ -5,6 +5,8 @@ import {
   UpdateUser,
   UpdateUserPassword,
   UpdateUserSettings,
+  UserLimits,
+  UserUsage,
 } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -195,10 +197,6 @@ export const refreshToken = async (token: string) => {
 export const getAccount = async () => {
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/account`, {
     method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
   });
 
   return response;
@@ -246,4 +244,27 @@ export const updateAccountSettings = async (data: UpdateUserSettings) => {
   );
 
   return response;
+};
+
+// User Limits and Usage
+export const getUserLimits = async () => {
+  const response = await fetchJson<ResponseInterface<UserLimits>>(
+    `${API_URL}/api/v1/auth/account/limits`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data ?? null;
+};
+
+export const getUserUsage = async () => {
+  const response = await fetchJson<ResponseInterface<UserUsage>>(
+    `${API_URL}/api/v1/auth/account/usage`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data ?? null;
 };

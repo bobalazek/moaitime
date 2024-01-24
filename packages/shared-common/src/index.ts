@@ -8,6 +8,7 @@ export * from './auth/UserSchema';
 export * from './auth/UserSettingsSchema';
 export * from './auth/UserRoleEnum';
 export * from './auth/UserSettingsDefault';
+export * from './auth/UserLimitsAndUsage';
 export * from './auth/TeamSchema';
 export * from './auth/TeamUserRoleEnum';
 export * from './auth/OrganizationSchema';

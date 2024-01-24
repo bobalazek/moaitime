@@ -14,7 +14,7 @@ export async function bootstrap() {
   });
 
   // Variables
-  const { API_PORT, NODE_ENV } = getEnv();
+  const { API_PORT } = getEnv();
   const port = API_PORT || 3636;
 
   // Shutdown
@@ -37,11 +37,7 @@ export async function bootstrap() {
   );
 
   // Start server
-  if (NODE_ENV === 'test' || NODE_ENV === 'development') {
-    await app.listen(port);
-  } else {
-    await app.listen(port, '127.0.0.1');
-  }
+  await app.listen(port);
 
   const url = await app.getUrl();
 

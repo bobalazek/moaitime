@@ -27,9 +27,16 @@ export default function UsageBadge({
 
   const limit = userLimits[limitKey];
 
+  const isAlmostUsed = used >= limit * 0.8;
+
   return (
-    <Badge variant="outline" className={clsx('ml-2 px-1.5 py-0 text-[0.65rem]')}>
-      Used: {used} / {limit}
-    </Badge>
+    <div className="inline-block">
+      <Badge
+        variant={used === limit ? 'destructive' : isAlmostUsed ? 'warn' : 'outline'}
+        className={clsx('px-[4px] py-[2px] text-xs')}
+      >
+        Used: {used} / {limit}
+      </Badge>
+    </div>
   );
 }

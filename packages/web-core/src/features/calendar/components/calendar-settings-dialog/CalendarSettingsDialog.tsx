@@ -11,6 +11,7 @@ import {
   ScrollArea,
 } from '@moaitime/web-ui';
 
+import UsageBadge from '../../../core/components/UsageBadge';
 import { useListsStore } from '../../../tasks/state/listsStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItem from '../calendar-item/CalendarItem';
@@ -45,9 +46,10 @@ export default function CalendarSettingsDialog() {
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
           <div>
-            <div className="flex items-center gap-1">
+            <div className="mb-1 flex items-center gap-1">
               <h3 className="font-bold">My Calendars</h3>
               <CalendarSettingsDialogMyCalendarsActions />
+              <UsageBadge limitKey="calendarsMaxPerUserCount" usageKey="calendarsCount" />
             </div>
             {calendars.length === 0 && (
               <p className="text-xs text-gray-500">You do not have any calendars at the moment.</p>
@@ -57,9 +59,13 @@ export default function CalendarSettingsDialog() {
             ))}
           </div>
           <div className="mt-4">
-            <div className="flex items-center gap-1">
+            <div className="mb-1 flex items-center gap-1">
               <h3 className="font-bold">Shared Calendars</h3>
               <CalendarSettingsDialogUserCalendarsActions />
+              <UsageBadge
+                limitKey="calendarsMaxUserCalendarsPerUserCount"
+                usageKey="userCalendarsCount"
+              />
             </div>
             {userCalendars.length === 0 && (
               <p className="text-xs text-gray-500">
@@ -76,8 +82,9 @@ export default function CalendarSettingsDialog() {
             ))}
           </div>
           <div className="mt-4">
-            <div className="flex items-center justify-between">
+            <div className="mb-1 flex items-center gap-2">
               <h3 className="font-bold">My Lists</h3>
+              <UsageBadge limitKey="listsMaxPerUserCount" usageKey="listsCount" />
             </div>
             {lists.length === 0 && (
               <p className="text-xs text-gray-500">You do not have any lists at the moment.</p>

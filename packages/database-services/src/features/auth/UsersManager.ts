@@ -160,6 +160,7 @@ export class UsersManager {
     const notesCount = await notesManager.countByUserId(user.id);
     const moodEntriesCount = await moodEntriesManager.countByUserId(user.id);
     const calendarsCount = await calendarsManager.countByUserId(user.id);
+    const userCalendarsCount = await calendarsManager.countUserCalendarsByUserId(user.id);
     const eventsCount = await eventsManager.countByUserId(user.id);
     const tagsCount = await tagsManager.countByUserId(user.id);
     const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
@@ -170,6 +171,7 @@ export class UsersManager {
       notesCount,
       moodEntriesCount,
       calendarsCount,
+      userCalendarsCount,
       eventsCount,
       tagsCount,
       focusSessionsCount,

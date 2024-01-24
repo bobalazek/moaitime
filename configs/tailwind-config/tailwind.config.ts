@@ -38,6 +38,11 @@ const config: Config = {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
+        /* CUSTOM */
+        warn: {
+          DEFAULT: 'hsl(var(--warn))',
+          foreground: 'hsl(var(--warn-foreground))',
+        },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',

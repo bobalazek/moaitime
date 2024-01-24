@@ -38,7 +38,7 @@ export default function ListsSelectedListDropdownMenuContent({
         <>
           <DropdownMenuLabel className="flex items-center justify-between">
             <div>
-              <span className="font-bold">Lists</span>
+              <span className="mr-1 font-bold">Lists</span>
               <UsageBadge limitKey="listsMaxPerUserCount" usageKey="listsCount" />
             </div>
             <DropdownMenuItem asChild>

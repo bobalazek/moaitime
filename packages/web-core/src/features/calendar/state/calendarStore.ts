@@ -15,6 +15,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
+import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import {
   addCalendar,
   addUserCalendar,
@@ -207,14 +208,15 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   addCalendar: async (calendar: CreateCalendar) => {
     const { reloadCalendars, reloadCalendarEntriesDebounced } = get();
+    const { reloadAccount } = useAuthStore.getState();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const addedTask = await addCalendar(calendar);
 
     await reloadCalendars();
     await reloadCalendarEntriesDebounced();
-
-    // We update the settings, so we need to refresh the account
-    await useAuthStore.getState().reloadAccount();
+    await reloadAccount();
+    await reloadUserUsage();
 
     return addedTask;
   },
@@ -236,12 +238,14 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       deletedCalendarsDialogOpen,
     } = get();
     const { reloadAccount } = useAuthStore.getState();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const deletedTask = await deleteCalendar(calendarId, isHardDelete);
 
     await reloadCalendars();
     await reloadCalendarEntriesDebounced();
     await reloadAccount();
+    await reloadUserUsage();
 
     if (deletedCalendarsDialogOpen) {
       await reloadDeletedCalendars();
@@ -257,12 +261,14 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
       deletedCalendarsDialogOpen,
     } = get();
     const { reloadAccount } = useAuthStore.getState();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const undeletedTask = await undeleteCalendar(calendarId);
 
     await reloadCalendars();
     await reloadCalendarEntriesDebounced();
     await reloadAccount();
+    await reloadUserUsage();
 
     if (deletedCalendarsDialogOpen) {
       await reloadDeletedCalendars();
@@ -300,24 +306,28 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   addUserCalendar: async (userCalendar: CreateUserCalendar) => {
     const { reloadCalendarEntriesDebounced, reloadUserCalendars } = get();
     const { reloadAccount } = useAuthStore.getState();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const addedUserCalendar = await addUserCalendar(userCalendar);
 
     await reloadUserCalendars();
     await reloadAccount();
     await reloadCalendarEntriesDebounced();
+    await reloadUserUsage();
 
     return addedUserCalendar;
   },
   deleteUserCalendar: async (userCalendarId: string) => {
     const { reloadCalendarEntriesDebounced, reloadUserCalendars } = get();
     const { reloadAccount } = useAuthStore.getState();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const removedUserCalendar = await deleteUserCalendar(userCalendarId);
 
     await reloadUserCalendars();
     await reloadAccount();
     await reloadCalendarEntriesDebounced();
+    await reloadUserUsage();
 
     return removedUserCalendar;
   },

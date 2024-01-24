@@ -16,7 +16,6 @@ export default function TagsDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center align-middle">
             <span>Tags</span>
-            <UsageBadge limitKey="tagsMaxPerUserCount" usageKey="tagsCount" />
             <button
               type="button"
               className="ml-2 cursor-pointer rounded-full p-[4px] hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -28,6 +27,7 @@ export default function TagsDialog() {
             >
               <PlusIcon className="h-4 w-4" />
             </button>
+            <UsageBadge limitKey="tagsMaxPerUserCount" usageKey="tagsCount" />
           </DialogTitle>
         </DialogHeader>
         <div>

@@ -14,6 +14,7 @@ export type UserUsage = {
   notesCount: number;
   moodEntriesCount: number;
   calendarsCount: number;
+  userCalendarsCount: number; // those are the user_calendars, or rather "shared calendars" as we call them on the frontend
   eventsCount: number;
   tagsCount: number;
   focusSessionsCount: number;

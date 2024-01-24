@@ -220,6 +220,18 @@ export default function CalendarEntry({
 
       event.stopPropagation();
 
+      // If we can't resize or move, we still want to keep the onClick functionality,
+      // that opens the dialog of that entry.
+      if (!canResizeAndMove) {
+        if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
+          setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
+        } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
+          setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
+        }
+
+        return;
+      }
+
       const calendarContainer = document.getElementById('calendar');
       const container = (event.target as HTMLDivElement).parentElement;
       if (!container || !style) {
@@ -321,6 +333,7 @@ export default function CalendarEntry({
     [
       calendarEntry,
       style,
+      canResizeAndMove,
       setCalendarEventResizing,
       updateCalendaEntry,
       editEvent,
@@ -410,8 +423,8 @@ export default function CalendarEntry({
       className={clsx('select-none px-[2px]', !hasAbsoluteClassName && 'relative', className)}
       style={containerStyle}
       title={calendarEntry.title}
-      onMouseDown={canResizeAndMove ? onContainerMoveStart : undefined}
-      onTouchStart={canResizeAndMove ? onContainerMoveStart : undefined}
+      onMouseDown={onContainerMoveStart}
+      onTouchStart={onContainerMoveStart}
       onMouseEnter={onContainerMouseEnter}
       onMouseLeave={onContainerMouseLeave}
       data-test="calendar--weekly-view--day--calendar-entry"

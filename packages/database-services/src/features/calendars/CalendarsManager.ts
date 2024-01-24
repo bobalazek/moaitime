@@ -16,13 +16,11 @@ import {
   UpdateUserCalendar,
 } from '@moaitime/shared-common';
 
-import { UsersManager, usersManager } from '../auth/UsersManager';
+import { usersManager } from '../auth/UsersManager';
 
 export type CalendarsManagerVisibleCalendarsMap = Map<string, 'user' | 'team' | 'user-shared'>;
 
 export class CalendarsManager {
-  constructor(private _usersManager: UsersManager) {}
-
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Calendar[]> {
     return getDatabase().query.calendars.findMany(options);
   }
@@ -141,13 +139,13 @@ export class CalendarsManager {
   async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
     const user =
       typeof userOrUserId === 'string'
-        ? await this._usersManager.findOneById(userOrUserId)
+        ? await usersManager.findOneById(userOrUserId)
         : userOrUserId;
     if (!user) {
       return [];
     }
 
-    const userSettings = this._usersManager.getUserSettings(user);
+    const userSettings = usersManager.getUserSettings(user);
 
     return userSettings.calendarVisibleCalendarIds ?? [];
   }
@@ -200,12 +198,12 @@ export class CalendarsManager {
   }
 
   async addVisibleCalendarIdByUserId(userId: string, calendarId: string) {
-    const user = await this._usersManager.findOneById(userId);
+    const user = await usersManager.findOneById(userId);
     if (!user) {
       return;
     }
 
-    const userSettings = this._usersManager.getUserSettings(user);
+    const userSettings = usersManager.getUserSettings(user);
     const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
     const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (userCalendarIds.includes(calendarId)) {
@@ -214,7 +212,7 @@ export class CalendarsManager {
 
     userCalendarIds.push(calendarId);
 
-    return this._usersManager.updateOneById(userId, {
+    return usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleCalendarIds: userCalendarIds,
@@ -223,12 +221,12 @@ export class CalendarsManager {
   }
 
   async removeVisibleCalendarIdByUserId(userId: string, calendarId: string) {
-    const user = await this._usersManager.findOneById(userId);
+    const user = await usersManager.findOneById(userId);
     if (!user) {
       return;
     }
 
-    const userSettings = this._usersManager.getUserSettings(user);
+    const userSettings = usersManager.getUserSettings(user);
     const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
     const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (!userCalendarIds.includes(calendarId)) {
@@ -240,7 +238,7 @@ export class CalendarsManager {
       userCalendarIds.splice(index, 1);
     }
 
-    return this._usersManager.updateOneById(userId, {
+    return usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleCalendarIds: userCalendarIds,
@@ -357,4 +355,4 @@ export class CalendarsManager {
   }
 }
 
-export const calendarsManager = new CalendarsManager(usersManager);
+export const calendarsManager = new CalendarsManager();

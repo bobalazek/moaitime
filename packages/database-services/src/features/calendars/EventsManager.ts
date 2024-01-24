@@ -213,6 +213,18 @@ export class EventsManager {
     });
   }
 
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(events.id).mapWith(Number),
+      })
+      .from(events)
+      .where(and(eq(events.userId, userId), isNull(events.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
   async countByCalendarId(calendarId: string): Promise<number> {
     const result = await getDatabase()
       .select({

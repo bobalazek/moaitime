@@ -4,6 +4,14 @@ import { DBQueryConfig, eq } from 'drizzle-orm';
 import { getDatabase, NewUser, User, users } from '@moaitime/database-core';
 import { DEFAULT_USER_SETTINGS, UserSettings } from '@moaitime/shared-common';
 
+import { calendarsManager } from '../calendars/CalendarsManager';
+import { eventsManager } from '../calendars/EventsManager';
+import { focusSessionsManager } from '../focus/FocusSessionsManager';
+import { moodEntriesManager } from '../mood/MoodEntriesManager';
+import { notesManager } from '../notes/NotesManager';
+import { listsManager } from '../tasks/ListsManager';
+import { tasksManager } from '../tasks/TasksManager';
+
 export type UserLimits = {
   tasksMaxPerListCount: number;
   listsMaxPerUserCount: number;
@@ -128,10 +136,10 @@ export class UsersManager {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getUserLimits(user: User, key: keyof UserLimits): Promise<number> {
+  async getUserLimits(user: User): Promise<UserLimits> {
     // TODO: once we have plans, we need to adjust the limits depending on that
 
-    const limits: UserLimits = {
+    return {
       tasksMaxPerListCount: 50,
       listsMaxPerUserCount: 10,
       tagsMaxPerUserCount: 20,
@@ -140,8 +148,38 @@ export class UsersManager {
       calendarsMaxUserCalendarsPerUserCount: 5,
       notesMaxPerUserCount: 100,
     };
+  }
+
+  async getUserLimit(user: User, key: keyof UserLimits): Promise<number> {
+    const limits = await this.getUserLimits(user);
 
     return limits[key];
+  }
+
+  async getUserUsage(user: User) {
+    // TODO: cache!
+
+    const listsCount = await listsManager.countByUserId(user.id);
+    const tasksCount = await tasksManager.countByUserId(user.id);
+    const notesCount = await notesManager.countByUserId(user.id);
+    const moodEntriesCount = await moodEntriesManager.countByUserId(user.id);
+    const calendarsCount = await calendarsManager.countByUserId(user.id);
+    const eventsCount = await eventsManager.countByUserId(user.id);
+    const tagsCount = await tasksManager.countByUserId(user.id);
+    const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
+
+    const usage = {
+      listsCount,
+      tasksCount,
+      notesCount,
+      moodEntriesCount,
+      calendarsCount,
+      eventsCount,
+      tagsCount,
+      focusSessionsCount,
+    };
+
+    return usage;
   }
 
   // Private

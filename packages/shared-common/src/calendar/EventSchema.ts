@@ -19,6 +19,7 @@ export const EventSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   calendarId: z.string(),
+  userId: z.string(),
   permissions: PermissionsSchema.optional(),
 });
 

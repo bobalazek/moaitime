@@ -51,7 +51,7 @@ export class EventsController {
     @Body() body: CreateEventDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Event>> {
-    const calendarsMaxEventsPerCalendarCount = await usersManager.getUserLimits(
+    const calendarsMaxEventsPerCalendarCount = await usersManager.getUserLimit(
       req.user,
       'calendarsMaxEventsPerCalendarCount'
     );
@@ -73,6 +73,7 @@ export class EventsController {
     const insertData = {
       ...body,
       timezone,
+      userId: req.user.id,
       startsAt: new Date(body.startsAt),
       endsAt: new Date(body.endsAt),
     };

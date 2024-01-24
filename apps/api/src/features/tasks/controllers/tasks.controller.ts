@@ -109,7 +109,7 @@ export class TasksController {
       }
     }
 
-    const tasksMaxPerListCount = await usersManager.getUserLimits(req.user, 'tasksMaxPerListCount');
+    const tasksMaxPerListCount = await usersManager.getUserLimit(req.user, 'tasksMaxPerListCount');
 
     const tasksCount = await tasksManager.countByListId(list?.id ?? null);
     if (tasksCount >= tasksMaxPerListCount) {
@@ -157,7 +157,7 @@ export class TasksController {
         throw new NotFoundException('List not found');
       }
 
-      const tasksMaxPerListCount = await usersManager.getUserLimits(
+      const tasksMaxPerListCount = await usersManager.getUserLimit(
         req.user,
         'tasksMaxPerListCount'
       );

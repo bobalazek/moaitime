@@ -61,7 +61,7 @@ export class TagsController {
   @UseGuards(AuthenticatedGuard)
   @Post()
   async create(@Body() body: CreateTagDto, @Req() req: Request): Promise<AbstractResponseDto<Tag>> {
-    const tagsMaxPerUserCount = await usersManager.getUserLimits(req.user, 'listsMaxPerUserCount');
+    const tagsMaxPerUserCount = await usersManager.getUserLimit(req.user, 'listsMaxPerUserCount');
 
     const tagsCount = await tagsManager.countByUserId(req.user.id);
     if (tagsCount >= tagsMaxPerUserCount) {

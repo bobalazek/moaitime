@@ -284,6 +284,18 @@ export class TasksManager {
     });
   }
 
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(tasks.id).mapWith(Number),
+      })
+      .from(tasks)
+      .where(and(eq(tasks.userId, userId), isNull(tasks.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
   async countByListId(listId: string | null): Promise<number> {
     const where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
 

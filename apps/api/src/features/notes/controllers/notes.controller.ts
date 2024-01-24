@@ -71,7 +71,7 @@ export class NotesController {
     @Body() body: CreateNoteDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Note>> {
-    const notesMaxPerUserCount = await usersManager.getUserLimits(req.user, 'notesMaxPerUserCount');
+    const notesMaxPerUserCount = await usersManager.getUserLimit(req.user, 'notesMaxPerUserCount');
 
     const notesCount = await notesManager.countByUserId(req.user.id);
     if (notesCount >= notesMaxPerUserCount) {

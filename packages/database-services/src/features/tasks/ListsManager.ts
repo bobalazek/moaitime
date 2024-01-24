@@ -2,7 +2,7 @@ import { and, asc, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-o
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
 
-import { UsersManager, usersManager } from '../auth/UsersManager';
+import { usersManager } from '../auth/UsersManager';
 
 export type ListsManagerFindManyByUserIdTaskCountOptions = {
   includeCompleted?: boolean;
@@ -10,8 +10,6 @@ export type ListsManagerFindManyByUserIdTaskCountOptions = {
 };
 
 export class ListsManager {
-  constructor(private _usersManager: UsersManager) {}
-
   async findMany(options?: DBQueryConfig<'many', true>): Promise<List[]> {
     return getDatabase().query.lists.findMany(options);
   }
@@ -121,13 +119,13 @@ export class ListsManager {
   async getUserSettingsListIds(userOrUserId: string | User): Promise<string[]> {
     const user =
       typeof userOrUserId === 'string'
-        ? await this._usersManager.findOneById(userOrUserId)
+        ? await usersManager.findOneById(userOrUserId)
         : userOrUserId;
     if (!user) {
       return [];
     }
 
-    const userSettings = this._usersManager.getUserSettings(user);
+    const userSettings = usersManager.getUserSettings(user);
 
     return userSettings.calendarVisibleListIds ?? [];
   }
@@ -165,12 +163,12 @@ export class ListsManager {
   }
 
   async addVisibleListIdByUserId(userId: string, listId: string) {
-    const user = await this._usersManager.findOneById(userId);
+    const user = await usersManager.findOneById(userId);
     if (!user) {
       return;
     }
 
-    const userSettings = this._usersManager.getUserSettings(user);
+    const userSettings = usersManager.getUserSettings(user);
     const userListIds = await this.getVisibleListIdsByUserId(userId);
     if (userListIds.includes(listId)) {
       return user;
@@ -178,7 +176,7 @@ export class ListsManager {
 
     userListIds.push(listId);
 
-    return this._usersManager.updateOneById(userId, {
+    return usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleListIds: userListIds,
@@ -187,12 +185,12 @@ export class ListsManager {
   }
 
   async removeVisibleListIdByUserId(userId: string, listId: string) {
-    const user = await this._usersManager.findOneById(userId);
+    const user = await usersManager.findOneById(userId);
     if (!user) {
       return;
     }
 
-    const userSettings = this._usersManager.getUserSettings(user);
+    const userSettings = usersManager.getUserSettings(user);
     const userListIds = await this.getVisibleListIdsByUserId(userId);
     if (!userListIds.includes(listId)) {
       return user;
@@ -203,7 +201,7 @@ export class ListsManager {
       userListIds.splice(index, 1);
     }
 
-    return this._usersManager.updateOneById(userId, {
+    return usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleListIds: userListIds,
@@ -212,4 +210,4 @@ export class ListsManager {
   }
 }
 
-export const listsManager = new ListsManager(usersManager);
+export const listsManager = new ListsManager();

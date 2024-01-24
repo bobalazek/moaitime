@@ -42,7 +42,7 @@ export class UserCalendarsController {
     @Req() req: Request,
     @Body() body: CreateUserCalendar
   ): Promise<AbstractResponseDto<User>> {
-    const calendarsMaxUserCalendarsPerUserCount = await usersManager.getUserLimits(
+    const calendarsMaxUserCalendarsPerUserCount = await usersManager.getUserLimit(
       req.user,
       'calendarsMaxUserCalendarsPerUserCount'
     );

@@ -81,7 +81,7 @@ export class ListsController {
     @Body() body: CreateListDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<List>> {
-    const listsMaxPerUserCount = await usersManager.getUserLimits(req.user, 'listsMaxPerUserCount');
+    const listsMaxPerUserCount = await usersManager.getUserLimit(req.user, 'listsMaxPerUserCount');
 
     const listsCount = await listsManager.countByUserId(req.user.id);
     if (listsCount >= listsMaxPerUserCount) {

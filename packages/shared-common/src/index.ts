@@ -77,3 +77,6 @@ export * from './mood/MoodEntrySchema';
 
 // Weather
 export * from './weather/Weather';
+
+// Statistics
+export * from './statistics/StatisticsGeneral';

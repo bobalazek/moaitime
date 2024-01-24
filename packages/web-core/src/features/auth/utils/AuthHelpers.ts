@@ -255,7 +255,7 @@ export const getUserLimits = async () => {
     }
   );
 
-  return response.data ?? null;
+  return response.data as UserLimits;
 };
 
 export const getUserUsage = async () => {
@@ -266,5 +266,5 @@ export const getUserUsage = async () => {
     }
   );
 
-  return response.data ?? null;
+  return response.data as UserUsage;
 };

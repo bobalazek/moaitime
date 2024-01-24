@@ -50,6 +50,7 @@ export const getEventSeeds = async (): Promise<NewEvent[]> => {
 
     events.push({
       ...eventData,
+      userId: calendar.userId,
       startsAt: new Date(eventData.startsAt),
       endsAt: new Date(eventData.endsAt),
     });

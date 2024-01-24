@@ -35,4 +35,5 @@ export * from './features/tasks/TagsManager';
 export * from './features/mood/MoodEntriesManager';
 
 // Statistics
+export * from './features/statistics/StatisticsManager';
 export * from './features/statistics/MoodStatisticsManager';

@@ -10,12 +10,12 @@ const StatisticsPageMain = () => {
   return (
     <main className="h-full w-full flex-grow overflow-auto p-4" data-test="statistics--main">
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="mb-4">
+        <TabsList className="mb-2">
           <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="Mood">Mood</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="Mood">Mood</TabsTrigger>
           <TabsTrigger value="focus">Focus</TabsTrigger>
         </TabsList>
         <TabsContent value="general">

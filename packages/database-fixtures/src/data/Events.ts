@@ -14,6 +14,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
     }
 
     const calendarId = calendar.id;
+    const userId = calendar.userId;
     const timezone = calendar.timezone ?? 'UTC';
     const todaysDate = format(now, 'yyyy-MM-dd');
     const tomorrowsDate = format(new Date(now.getTime() + 86400000), 'yyyy-MM-dd');
@@ -28,6 +29,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: zonedTimeToUtc(`${todaysDate}T12:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${todaysDate}T13:00:00.000`, timezone),
           calendarId,
+          userId,
         },
         {
           title: 'Event 2',
@@ -37,6 +39,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: zonedTimeToUtc(`${todaysDate}T14:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${todaysDate}T17:00:00.000`, timezone),
           calendarId,
+          userId,
         },
         {
           title: 'Event 3 Overlap',
@@ -46,6 +49,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: zonedTimeToUtc(`${todaysDate}T12:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${todaysDate}T19:00:00.000`, timezone),
           calendarId,
+          userId,
         },
         {
           title: 'Event 4 Overlap',
@@ -55,6 +59,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: zonedTimeToUtc(`${todaysDate}T10:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${todaysDate}T20:00:00.000`, timezone),
           calendarId,
+          userId,
         },
         {
           title: 'Event Full Day',
@@ -64,6 +69,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: new Date(`${todaysDate}T00:00:00.000`),
           endsAt: new Date(`${todaysDate}T00:00:00.000`),
           calendarId,
+          userId,
         },
         {
           title: 'Second Event Full Day',
@@ -73,6 +79,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: new Date(`${todaysDate}T00:00:00.000`),
           endsAt: new Date(`${todaysDate}T00:00:00.000`),
           calendarId,
+          userId,
         },
         {
           title: 'Third Event 2-Full Day',
@@ -82,6 +89,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: new Date(`${todaysDate}T00:00:00.000`),
           endsAt: new Date(`${tomorrowsDate}T00:00:00.000`),
           calendarId,
+          userId,
         },
 
         {
@@ -92,6 +100,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: zonedTimeToUtc(`${todaysDate}T20:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${tomorrowsDate}T10:00:00.000`, timezone),
           calendarId,
+          userId,
         },
         {
           title: 'Event 6 Two Day Overlap',
@@ -101,6 +110,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: zonedTimeToUtc(`${todaysDate}T16:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${tomorrowsDate}T18:00:00.000`, timezone),
           calendarId,
+          userId,
         },
         {
           title: 'Event 7 Next Week',
@@ -110,6 +120,7 @@ export const getEventFixtures = async (): Promise<NewEvent[]> => {
           startsAt: zonedTimeToUtc(`${nextWeeksDate}T16:00:00.000`, timezone),
           endsAt: zonedTimeToUtc(`${nextWeeksDate}T18:00:00.000`, timezone),
           calendarId,
+          userId,
         },
       ]
     );

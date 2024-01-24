@@ -39,19 +39,6 @@ export default function AppsDock() {
         <ScrollArea>
           <div className="flex flex-row gap-3 rounded-2xl border border-gray-300 bg-white/30 p-2 backdrop-blur-3xl">
             <AnimatePresence>
-              {moodEnabled && (
-                <motion.div
-                  key="mood"
-                  layout
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  variants={animationVariants}
-                  transition={{ delay: delay++ * delayDuration }}
-                >
-                  <MoodAppButton />
-                </motion.div>
-              )}
               {calendarEnabled && (
                 <motion.div
                   key="calendar"
@@ -89,6 +76,19 @@ export default function AppsDock() {
                   transition={{ delay: delay++ * delayDuration }}
                 >
                   <NotesAppButton />
+                </motion.div>
+              )}
+              {moodEnabled && (
+                <motion.div
+                  key="mood"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
+                >
+                  <MoodAppButton />
                 </motion.div>
               )}
               {focusEnabled && (

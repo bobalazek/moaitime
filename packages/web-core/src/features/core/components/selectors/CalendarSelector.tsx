@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Calendar } from '@moaitime/shared-common';
 import {
@@ -17,19 +17,33 @@ import {
 
 import { useCalendarStore } from '../../../calendar/state/calendarStore';
 
+export type CalendarSelectorProps = {
+  value?: string;
+  onChangeValue: (value?: string, calendar?: Calendar) => void;
+  isReadonly?: boolean;
+  autoSelectFirstIfValueNoneSet?: boolean;
+};
+
 export function CalendarSelector({
   value,
   onChangeValue,
   isReadonly,
-}: {
-  value?: string;
-  onChangeValue: (value?: string, calendar?: Calendar) => void;
-  isReadonly?: boolean;
-}) {
+  autoSelectFirstIfValueNoneSet,
+}: CalendarSelectorProps) {
   const { calendars } = useCalendarStore();
   const [open, setOpen] = useState(false);
 
   const selectedCalendar = calendars.find((calendar) => calendar.id === value) ?? null;
+
+  useEffect(() => {
+    if (!autoSelectFirstIfValueNoneSet) {
+      return;
+    }
+
+    if (!selectedCalendar) {
+      onChangeValue(calendars[0]?.id ?? undefined);
+    }
+  }, [autoSelectFirstIfValueNoneSet, calendars, selectedCalendar, onChangeValue]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

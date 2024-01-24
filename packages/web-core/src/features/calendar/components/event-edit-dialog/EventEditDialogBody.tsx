@@ -232,6 +232,7 @@ export default function EventEditDialogBody() {
             );
           }}
           isReadonly={eventExists}
+          autoSelectFirstIfValueNoneSet
         />
       </div>
       <div className="flex flex-col gap-2">

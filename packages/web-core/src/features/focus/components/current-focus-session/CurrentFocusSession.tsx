@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import {
+  FocusSession,
   FocusSessionStageEnum,
   FocusSessionStatusEnum,
   FocusSessionUpdateActionEnum,
@@ -10,6 +11,25 @@ import {
 import { Button } from '@moaitime/web-ui';
 
 import { useFocusSessionsStore } from '../../state/focusSessionsStore';
+
+export const getTitleText = (remainingSecondsTimer: string, focusSession?: FocusSession) => {
+  if (!focusSession || focusSession.completedAt) {
+    return `Focus | MoaiTime`;
+  }
+
+  const stageText =
+    focusSession.stage === FocusSessionStageEnum.FOCUS
+      ? 'Focus'
+      : focusSession.stage === FocusSessionStageEnum.LONG_BREAK
+        ? 'Long Break'
+        : 'Short Break';
+
+  if (focusSession.status === FocusSessionStatusEnum.PAUSED) {
+    return `Paused | ${stageText} | MoaiTime`;
+  }
+
+  return `${remainingSecondsTimer} | ${stageText} | MoaiTime`;
+};
 
 export const FocusSessionStage = ({ stage }: { stage: FocusSessionStageEnum }) => {
   if (stage === FocusSessionStageEnum.SHORT_BREAK) {
@@ -50,6 +70,13 @@ export default function CurrentFocusSession() {
     getFocusSessionDurationForCurrentStage(currentFocusSession) -
       (currentFocusSession?.stageProgressSeconds ?? 0)
   );
+
+  const remainingSecondsTimer = getTimer(remainingSeconds);
+  const totalSecondsTimer = getTimer(totalSeconds);
+
+  useEffect(() => {
+    document.title = getTitleText(remainingSecondsTimer, currentFocusSession ?? undefined);
+  }, [currentFocusSession, remainingSecondsTimer]);
 
   useEffect(() => {
     if (currentFocusSession?.completedAt) {
@@ -143,8 +170,8 @@ export default function CurrentFocusSession() {
       <div className="mb-4 mt-8">
         <FocusSessionStage stage={currentFocusSession.stage} />
       </div>
-      <div className="mb-4 text-8xl font-bold" title={`Total: ${getTimer(totalSeconds)}`}>
-        {getTimer(remainingSeconds)}
+      <div className="mb-4 text-8xl font-bold" title={`Total: ${totalSecondsTimer}`}>
+        {remainingSecondsTimer}
       </div>
       <div className="text-muted-foreground mb-8 text-sm">
         Iteration #{currentFocusSession.stageIteration} out of{' '}

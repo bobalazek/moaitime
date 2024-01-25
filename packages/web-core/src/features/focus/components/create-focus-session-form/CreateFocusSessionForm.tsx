@@ -19,6 +19,10 @@ export default function CreateFocusSessionForm() {
     },
   });
 
+  useEffect(() => {
+    document.title = 'Focus | MoaiTime';
+  }, []);
+
   const onSubmitButtonClick = useCallback(async () => {
     try {
       await addFocusSession(data);

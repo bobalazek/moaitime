@@ -82,3 +82,6 @@ export * from './weather/Weather';
 export * from './statistics/StatisticsGeneralBasicData';
 export * from './statistics/StatisticsCalendarBasicData';
 export * from './statistics/StatisticsTasksBasicData';
+export * from './statistics/StatisticsNotesBasicData';
+export * from './statistics/StatisticsMoodBasicData';
+export * from './statistics/StatisticsFocusBasicData';

@@ -9,7 +9,10 @@ import {
   API_URL,
   ResponseInterface,
   StatisticsCalendarBasicData,
+  StatisticsFocusBasicData,
   StatisticsGeneralBasicData,
+  StatisticsMoodBasicData,
+  StatisticsNotesBasicData,
   StatisticsTasksBasicData,
 } from '@moaitime/shared-common';
 
@@ -75,5 +78,68 @@ export const useStatisticsTasksQuery = () => {
   return useQuery<StatisticsTasksBasicData>({
     queryKey: [STATISTICS_TASKS_KEY],
     queryFn: getTasksStatistics,
+  });
+};
+
+// Notes
+export const STATISTICS_NOTES_KEY = 'statistics:notes';
+
+export const getNotesStatistics = async () => {
+  const response = await fetchJson<ResponseInterface<StatisticsNotesBasicData>>(
+    `${API_URL}/api/v1/notes-statistics`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as StatisticsNotesBasicData;
+};
+
+export const useStatisticsNotesQuery = () => {
+  return useQuery<StatisticsNotesBasicData>({
+    queryKey: [STATISTICS_NOTES_KEY],
+    queryFn: getNotesStatistics,
+  });
+};
+
+// Mood
+export const STATISTICS_MOOD_KEY = 'statistics:mood';
+
+export const getMoodStatistics = async () => {
+  const response = await fetchJson<ResponseInterface<StatisticsMoodBasicData>>(
+    `${API_URL}/api/v1/mood-statistics`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as StatisticsMoodBasicData;
+};
+
+export const useStatisticsMoodQuery = () => {
+  return useQuery<StatisticsMoodBasicData>({
+    queryKey: [STATISTICS_MOOD_KEY],
+    queryFn: getMoodStatistics,
+  });
+};
+
+// Focus
+export const STATISTICS_FOCUS_KEY = 'statistics:focus';
+
+export const getFocusStatistics = async () => {
+  const response = await fetchJson<ResponseInterface<StatisticsFocusBasicData>>(
+    `${API_URL}/api/v1/focus-statistics`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as StatisticsFocusBasicData;
+};
+
+export const useStatisticsFocusQuery = () => {
+  return useQuery<StatisticsFocusBasicData>({
+    queryKey: [STATISTICS_FOCUS_KEY],
+    queryFn: getFocusStatistics,
   });
 };

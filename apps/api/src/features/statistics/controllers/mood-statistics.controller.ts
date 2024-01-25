@@ -9,6 +9,17 @@ import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 @Controller('/api/v1/mood-statistics')
 export class MoodStatisticsController {
   @UseGuards(AuthenticatedGuard)
+  @Get()
+  async index(@Req() req: Request) {
+    const data = await moodStatisticsManager.getBasics(req.user);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Get('daily')
   async daily(@Req() req: Request) {
     const to = new Date();

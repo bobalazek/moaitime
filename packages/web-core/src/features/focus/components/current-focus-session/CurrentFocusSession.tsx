@@ -41,7 +41,7 @@ export default function CurrentFocusSession() {
     currentFocusSession,
     setCurrentFocusSession,
     reloadCurrentFocusSession,
-    updateCurrentFocusSessionStatus,
+    triggerCurrentFocusSessionAction,
   } = useFocusSessionsStore();
   const [totalSeconds, setTotalSeconds] = useState(
     getFocusSessionDurationForCurrentStage(currentFocusSession)
@@ -81,7 +81,7 @@ export default function CurrentFocusSession() {
     }, 1000);
 
     const pingInterval = setInterval(() => {
-      updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.PING);
+      triggerCurrentFocusSessionAction(FocusSessionUpdateActionEnum.PING);
     }, 1000 * 60);
 
     return () => {
@@ -121,19 +121,19 @@ export default function CurrentFocusSession() {
   }
 
   const onSkipButtonClick = () => {
-    updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.SKIP);
+    triggerCurrentFocusSessionAction(FocusSessionUpdateActionEnum.SKIP);
   };
 
   const onPauseButtonClick = () => {
-    updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.PAUSE);
+    triggerCurrentFocusSessionAction(FocusSessionUpdateActionEnum.PAUSE);
   };
 
   const onContinueButtonClick = () => {
-    updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.CONTINUE);
+    triggerCurrentFocusSessionAction(FocusSessionUpdateActionEnum.CONTINUE);
   };
 
   const onCompleteButtonClick = () => {
-    updateCurrentFocusSessionStatus(FocusSessionUpdateActionEnum.COMPLETE);
+    triggerCurrentFocusSessionAction(FocusSessionUpdateActionEnum.COMPLETE);
   };
 
   return (

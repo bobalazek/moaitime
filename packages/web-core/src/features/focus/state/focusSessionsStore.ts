@@ -12,15 +12,13 @@ import {
   deleteFocusSession,
   editFocusSession,
   getFocusSession,
+  triggerFocusSessionAction,
   undeleteFocusSession,
-  updateFocusSessionStatus,
 } from '../utils/FocusSessionHelpers';
+import { focusSessionsEmitter, FocusSessionsEventsEnum } from './focusSessionsEmitter';
 
 export type FocusSessionsStore = {
   /********** Focus Sessions **********/
-  currentFocusSession: FocusSession | null;
-  setCurrentFocusSession: (focusSession: FocusSession | null) => void;
-  reloadCurrentFocusSession: () => Promise<FocusSession | null>;
   getFocusSession: (focusSessionId: string) => Promise<FocusSession | null>;
   addFocusSession: (focusSession: CreateFocusSession) => Promise<FocusSession>;
   editFocusSession: (
@@ -29,66 +27,64 @@ export type FocusSessionsStore = {
   ) => Promise<FocusSession>;
   deleteFocusSession: (focusSessionId: string, isHardDelete?: boolean) => Promise<FocusSession>;
   undeleteFocusSession: (focusSessionId: string) => Promise<FocusSession>;
-  updateFocusSessionStatus: (
+  triggerFocusSessionAction: (
     focusSessionId: string,
     action: FocusSessionUpdateActionEnum
   ) => Promise<FocusSession>;
-  updateCurrentFocusSessionStatus: (action: FocusSessionUpdateActionEnum) => Promise<FocusSession>;
+  // Current
+  currentFocusSession: FocusSession | null;
+  setCurrentFocusSession: (focusSession: FocusSession | null) => void;
+  reloadCurrentFocusSession: () => Promise<FocusSession | null>;
+  triggerCurrentFocusSessionAction: (action: FocusSessionUpdateActionEnum) => Promise<FocusSession>;
 };
 
 export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => ({
   /********** Focus Sessions **********/
-  currentFocusSession: null,
-  setCurrentFocusSession: (focusSession: FocusSession | null) => {
-    set({
-      currentFocusSession: focusSession,
-    });
-  },
-  reloadCurrentFocusSession: async () => {
-    const currentFocusSession = await getFocusSession('current', true);
-
-    set({
-      currentFocusSession,
-    });
-
-    return currentFocusSession;
-  },
   getFocusSession: async (focusSessionId: string) => {
     const focusSession = await getFocusSession(focusSessionId);
 
     return focusSession;
   },
   addFocusSession: async (focusSession: CreateFocusSession) => {
+    const { setCurrentFocusSession } = get();
+
     const newFocusSession = await addFocusSession(focusSession);
 
-    set({
-      currentFocusSession: newFocusSession,
+    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_ADDED, {
+      focusSession: newFocusSession,
     });
+
+    setCurrentFocusSession(newFocusSession);
 
     return newFocusSession;
   },
   editFocusSession: async (focusSessionId: string, focusSession: UpdateFocusSession) => {
-    const { currentFocusSession } = get();
+    const { currentFocusSession, setCurrentFocusSession } = get();
 
     const editedFocusSession = await editFocusSession(focusSessionId, focusSession);
 
+    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_EDITED, {
+      focusSession: editedFocusSession,
+    });
+
     if (currentFocusSession?.id === focusSessionId) {
-      set({
-        currentFocusSession: editedFocusSession,
-      });
+      setCurrentFocusSession(editedFocusSession);
     }
 
     return editedFocusSession;
   },
   deleteFocusSession: async (focusSessionId: string, isHardDelete?: boolean) => {
-    const { currentFocusSession } = get();
+    const { currentFocusSession, setCurrentFocusSession } = get();
 
     const deletedFocusSession = await deleteFocusSession(focusSessionId, isHardDelete);
 
+    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_DELETED, {
+      focusSession: deletedFocusSession,
+      isHardDelete: !!isHardDelete,
+    });
+
     if (currentFocusSession?.id === focusSessionId) {
-      set({
-        currentFocusSession: null,
-      });
+      setCurrentFocusSession(null);
     }
 
     return deletedFocusSession;
@@ -96,28 +92,61 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
   undeleteFocusSession: async (focusSessionId: string) => {
     const undeletedFocusSession = await undeleteFocusSession(focusSessionId);
 
+    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_UNDELETED, {
+      focusSession: undeletedFocusSession,
+    });
+
     return undeletedFocusSession;
   },
-  updateFocusSessionStatus: async (
+  triggerFocusSessionAction: async (
     focusSessionId: string,
     action: FocusSessionUpdateActionEnum
   ) => {
-    const updatedFocusSession = await updateFocusSessionStatus(focusSessionId, action);
+    const updatedFocusSession = await triggerFocusSessionAction(focusSessionId, action);
+
+    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_ACTION_TRIGGERED, {
+      focusSession: updatedFocusSession,
+      action,
+    });
 
     return updatedFocusSession;
   },
-  updateCurrentFocusSessionStatus: async (action: FocusSessionUpdateActionEnum) => {
-    const { currentFocusSession, updateFocusSessionStatus } = get();
+  // Current
+  currentFocusSession: null,
+  setCurrentFocusSession: (focusSession: FocusSession | null) => {
+    const { currentFocusSession } = get();
+
+    if (focusSession && focusSession.stage !== currentFocusSession?.stage) {
+      focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_CURRENT_STAGE_CHANGED, {
+        focusSession,
+        stage: focusSession.stage,
+      });
+    }
+
+    set({
+      currentFocusSession: focusSession,
+    });
+  },
+  reloadCurrentFocusSession: async () => {
+    const { setCurrentFocusSession } = get();
+
+    const currentFocusSession = await getFocusSession('current', true);
+
+    setCurrentFocusSession(currentFocusSession);
+
+    return currentFocusSession;
+  },
+  triggerCurrentFocusSessionAction: async (action: FocusSessionUpdateActionEnum) => {
+    const { currentFocusSession, setCurrentFocusSession, triggerFocusSessionAction } = get();
     if (!currentFocusSession) {
       throw new Error('No current focus session found');
     }
 
-    const updatedFocusSession = await updateFocusSessionStatus(currentFocusSession.id, action);
+    const updatedFocusSession = await triggerFocusSessionAction(currentFocusSession.id, action);
 
-    set({
-      currentFocusSession:
-        action === FocusSessionUpdateActionEnum.COMPLETE ? null : updatedFocusSession,
-    });
+    setCurrentFocusSession(
+      action === FocusSessionUpdateActionEnum.COMPLETE ? null : updatedFocusSession
+    );
 
     return updatedFocusSession;
   },

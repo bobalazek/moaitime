@@ -95,7 +95,7 @@ export const undeleteFocusSession = async (focusSessionId: string): Promise<Focu
   return response.data as FocusSession;
 };
 
-export const updateFocusSessionStatus = async (
+export const triggerFocusSessionAction = async (
   focusSessionId: string,
   action: FocusSessionUpdateActionEnum
 ): Promise<FocusSession> => {

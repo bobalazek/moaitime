@@ -76,4 +76,5 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
 
   // Focus
   focusEnabled: true,
+  focusSoundsEnabled: true,
 };

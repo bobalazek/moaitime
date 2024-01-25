@@ -108,3 +108,15 @@ export const triggerFocusSessionAction = async (
 
   return response.data as FocusSession;
 };
+
+export const playStartFocusSessionSound = () => {
+  const audio = new Audio();
+  audio.src = '/assets/focus/start_focus_session.mp3';
+  audio.play();
+};
+
+export const playChangeFocusSessionStageSound = () => {
+  const audio = new Audio();
+  audio.src = '/assets/focus/change_focus_session_stage.mp3';
+  audio.play();
+};

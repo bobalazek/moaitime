@@ -77,6 +77,7 @@ export const UserSettingsSchema = z.object({
 
   // Focus
   focusEnabled: z.boolean(),
+  focusSoundsEnabled: z.boolean(),
 });
 
 export const UpdateUserSettingsSchema = UserSettingsSchema.partial();

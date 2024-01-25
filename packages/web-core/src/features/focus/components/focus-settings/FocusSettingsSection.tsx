@@ -1,15 +1,13 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../auth/state/authStore';
+import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import FocusSettingsSectionHeaderText from './FocusSettingsSectionHeaderText';
 
 export default function FocusSettingsSection() {
-  const { auth, updateAccountSettings } = useAuthStore();
+  const { updateAccountSettings } = useAuthStore();
 
-  const settings = auth?.user?.settings;
-  if (!settings) {
-    return null;
-  }
+  const focusEnabled = useAuthUserSetting('focusEnabled', false);
+  const focusSoundsEnabled = useAuthUserSetting('focusSoundsEnabled', false);
 
   return (
     <div>
@@ -23,10 +21,10 @@ export default function FocusSettingsSection() {
         <div className="flex items-center">
           <Switch
             id="settings-focusEnabled"
-            checked={settings.focusEnabled}
+            checked={focusEnabled}
             onCheckedChange={() => {
               updateAccountSettings({
-                focusEnabled: !settings.focusEnabled,
+                focusEnabled: !focusEnabled,
               });
             }}
           />
@@ -35,6 +33,25 @@ export default function FocusSettingsSection() {
           </Label>
         </div>
         <p className="mt-2 text-xs text-gray-400">Do you want to have the focus on not?</p>
+      </div>
+      <div className="mb-4">
+        <div className="flex items-center">
+          <Switch
+            id="settings-focusSoundsEnabled"
+            checked={focusSoundsEnabled}
+            onCheckedChange={() => {
+              updateAccountSettings({
+                focusSoundsEnabled: !focusSoundsEnabled,
+              });
+            }}
+          />
+          <Label htmlFor="settings-focusSoundsEnabled" className="ml-2">
+            Sounds Enabled
+          </Label>
+        </div>
+        <p className="mt-2 text-xs text-gray-400">
+          Do you want to hear any sounds when starting or updating a focus session?
+        </p>
       </div>
     </div>
   );

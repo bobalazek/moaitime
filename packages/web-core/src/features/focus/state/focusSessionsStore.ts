@@ -116,7 +116,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
   setCurrentFocusSession: (focusSession: FocusSession | null) => {
     const { currentFocusSession } = get();
 
-    if (focusSession && focusSession.stage !== currentFocusSession?.stage) {
+    if (focusSession && currentFocusSession && focusSession.stage !== currentFocusSession.stage) {
       focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_CURRENT_STAGE_CHANGED, {
         focusSession,
         stage: focusSession.stage,

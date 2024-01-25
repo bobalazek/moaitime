@@ -79,6 +79,7 @@ export * from './mood/MoodEntrySchema';
 export * from './weather/Weather';
 
 // Statistics
+export * from './statistics/StatisticsDateCountData';
 export * from './statistics/StatisticsGeneralBasicData';
 export * from './statistics/StatisticsCalendarBasicData';
 export * from './statistics/StatisticsTasksBasicData';

@@ -1,8 +1,8 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, count, eq, gte, isNull, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
 
 import { getDatabase, tasks, User } from '@moaitime/database-core';
-import { StatisticsTasksBasicData } from '@moaitime/shared-common';
+import { StatisticsDateCountData, StatisticsTasksBasicData } from '@moaitime/shared-common';
 
 export class TasksStatisticsManager {
   async getBasics(user: User): Promise<StatisticsTasksBasicData> {
@@ -16,36 +16,28 @@ export class TasksStatisticsManager {
     const startOfThisWeek = startOfWeek(today);
     const startOfThisMonth = startOfMonth(today);
 
-    const createdAtDate = sql<Date>`DATE(${tasks.createdAt})`;
-    const rows = await getDatabase()
-      .select({ date: createdAtDate, count: count(tasks).mapWith(Number) })
-      .from(tasks)
-      .where(
-        and(
-          eq(tasks.userId, user.id),
-          isNull(tasks.deletedAt),
-          gte(tasks.createdAt, startOfThisMonth)
-        )
-      )
-      .groupBy(createdAtDate)
-      .execute();
+    const todayString = format(today, 'yyyy-MM-dd');
+    const yesterdayString = format(yesterday, 'yyyy-MM-dd');
 
-    for (const row of rows) {
-      const rowDateString = format(row.date, 'yyyy-MM-dd');
-      if (rowDateString === format(today, 'yyyy-MM-dd')) {
-        tasksCreatedTodayCount = row.count;
+    const rows = await this.getDateCountMap(user, startOfThisMonth);
+    for (const date in rows) {
+      const count = rows[date];
+      const dateObject = new Date(date);
+
+      if (date === todayString) {
+        tasksCreatedTodayCount = count;
       }
 
-      if (rowDateString === format(yesterday, 'yyyy-MM-dd')) {
-        tasksCreatedYesterdayCount = row.count;
+      if (date === yesterdayString) {
+        tasksCreatedYesterdayCount = count;
       }
 
-      if (row.date >= startOfThisWeek) {
-        tasksCreatedThisWeekCount += row.count;
+      if (dateObject >= startOfThisWeek) {
+        tasksCreatedThisWeekCount += count;
       }
 
-      if (row.date >= startOfThisMonth) {
-        tasksCreatedThisMonthCount += row.count;
+      if (dateObject >= startOfThisMonth) {
+        tasksCreatedThisMonthCount += count;
       }
     }
 
@@ -55,6 +47,33 @@ export class TasksStatisticsManager {
       tasksCreatedThisWeekCount,
       tasksCreatedThisMonthCount,
     };
+  }
+
+  async getDateCountMap(user: User, from?: Date, to?: Date): Promise<StatisticsDateCountData> {
+    let where = and(eq(tasks.userId, user.id), isNull(tasks.deletedAt));
+
+    if (from && to) {
+      where = and(where, between(tasks.createdAt, from, to)) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(tasks.createdAt, from)) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(tasks.createdAt, to)) as SQL<unknown>;
+    }
+
+    const createdAtDate = sql<Date>`DATE(${tasks.createdAt})`;
+    const rows = await getDatabase()
+      .select({ date: createdAtDate, count: count(tasks).mapWith(Number) })
+      .from(tasks)
+      .where(where)
+      .groupBy(createdAtDate)
+      .execute();
+
+    const result: StatisticsDateCountData = {};
+    for (const row of rows) {
+      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+    }
+
+    return result;
   }
 }
 

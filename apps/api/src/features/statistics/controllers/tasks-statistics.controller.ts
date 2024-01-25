@@ -17,4 +17,15 @@ export class TasksStatisticsController {
       data,
     };
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('date-count-map')
+  async dateCountMap(@Req() req: Request) {
+    const data = await tasksStatisticsManager.getDateCountMap(req.user);
+
+    return {
+      success: true,
+      data,
+    };
+  }
 }

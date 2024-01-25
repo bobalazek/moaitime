@@ -61,6 +61,7 @@ export const useStatisticsCalendarQuery = () => {
 };
 
 // Tasks
+// Tasks - Basics
 export const STATISTICS_TASKS_KEY = 'statistics:tasks';
 
 export const getTasksStatistics = async () => {
@@ -78,6 +79,27 @@ export const useStatisticsTasksQuery = () => {
   return useQuery<StatisticsTasksBasicData>({
     queryKey: [STATISTICS_TASKS_KEY],
     queryFn: getTasksStatistics,
+  });
+};
+
+// Tasks - Date Count Map
+export const STATISTICS_TASKS_DATE_COUNT_MAP_KEY = 'statistics:tasks:date-count-map';
+
+export const getTasksDateCountMapStatistics = async () => {
+  const response = await fetchJson<ResponseInterface<StatisticsTasksBasicData>>(
+    `${API_URL}/api/v1/tasks-statistics/date-count-map`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as StatisticsTasksBasicData;
+};
+
+export const useStatisticsTasksDateCountMapQuery = () => {
+  return useQuery<StatisticsTasksBasicData>({
+    queryKey: [STATISTICS_TASKS_DATE_COUNT_MAP_KEY],
+    queryFn: getTasksDateCountMapStatistics,
   });
 };
 

@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 
 import { UpdateUserCalendar } from '@moaitime/shared-common';
-import { Button, Dialog, DialogContent, Label, sonnerToast } from '@moaitime/web-ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Label,
+  sonnerToast,
+} from '@moaitime/web-ui';
 
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useCalendarStore } from '../../state/calendarStore';
@@ -54,6 +62,9 @@ export default function UserCalendarEditDialog() {
   return (
     <Dialog open={selectedUserCalendarDialogOpen} onOpenChange={setSelectedUserCalendarDialogOpen}>
       <DialogContent data-test="user-calendar--edit-dialog">
+        <DialogHeader>
+          <DialogTitle>{selectedUserCalendar?.calendar?.name ?? 'Shared Calendar'}</DialogTitle>
+        </DialogHeader>
         <div className="flex flex-col gap-2">
           <Label htmlFor="user-calendar-edit-color">Color</Label>
           <ColorSelector

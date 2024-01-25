@@ -54,7 +54,7 @@ export default function CalendarAgendaViewDayEventEntry({
   });
   const daysDifference = differenceInDays(new Date(endDate), new Date(startDate));
 
-  const calendarOrListColor = calendarOrList?.color ?? 'transparent';
+  const calendarOrListColor = calendarOrList?.color ?? undefined;
   const entryColor = calendarEntry.color ?? calendarOrListColor;
 
   const onClick = () => {

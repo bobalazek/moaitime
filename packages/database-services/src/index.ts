@@ -37,4 +37,5 @@ export * from './features/mood/MoodEntriesManager';
 // Statistics
 export * from './features/statistics/StatisticsManager';
 export * from './features/statistics/CalendarStatisticsManager';
+export * from './features/statistics/TasksStatisticsManager';
 export * from './features/statistics/MoodStatisticsManager';

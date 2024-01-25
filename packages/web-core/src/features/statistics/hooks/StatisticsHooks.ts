@@ -10,6 +10,7 @@ import {
   ResponseInterface,
   StatisticsCalendarBasicData,
   StatisticsGeneralBasicData,
+  StatisticsTasksBasicData,
 } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -53,5 +54,26 @@ export const useStatisticsCalendarQuery = () => {
   return useQuery<StatisticsCalendarBasicData>({
     queryKey: [STATISTICS_CALENDAR_KEY],
     queryFn: getCalendarStatistics,
+  });
+};
+
+// Tasks
+export const STATISTICS_TASKS_KEY = 'statistics:tasks';
+
+export const getTasksStatistics = async () => {
+  const response = await fetchJson<ResponseInterface<StatisticsTasksBasicData>>(
+    `${API_URL}/api/v1/tasks-statistics`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as StatisticsTasksBasicData;
+};
+
+export const useStatisticsTasksQuery = () => {
+  return useQuery<StatisticsTasksBasicData>({
+    queryKey: [STATISTICS_TASKS_KEY],
+    queryFn: getTasksStatistics,
   });
 };

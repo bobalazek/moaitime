@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@moaitime/web-ui';
 
 import StatisticsCalendarTabContent from '../../tabs/StatisticsCalendarTabContent';
 import StatisticsGeneralTabContent from '../../tabs/StatisticsGeneralTabContent';
+import StatisticsTasksTabContent from '../../tabs/StatisticsTasksTabContent';
 
 const StatisticsPageMain = () => {
   const [tab, setTab] = useState('general');
@@ -24,6 +25,9 @@ const StatisticsPageMain = () => {
         </TabsContent>
         <TabsContent value="calendar">
           <StatisticsCalendarTabContent />
+        </TabsContent>
+        <TabsContent value="tasks">
+          <StatisticsTasksTabContent />
         </TabsContent>
       </Tabs>
     </main>

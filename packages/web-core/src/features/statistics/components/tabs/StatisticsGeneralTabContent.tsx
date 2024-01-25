@@ -28,16 +28,16 @@ const StatisticsGeneralTabContent = () => {
   return (
     <div className="grid grid-cols-4 gap-4">
       <StatisticsCard
-        title="Lists"
-        value={data.listsCountTotal}
-        icon={ListIcon}
-        description="The number of lists you created in total"
-      />
-      <StatisticsCard
         title="Tasks"
         value={data.tasksCountTotal}
         icon={ListChecksIcon}
         description="The number of tasks you created in total"
+      />
+      <StatisticsCard
+        title="Lists"
+        value={data.listsCountTotal}
+        icon={ListIcon}
+        description="The number of lists you created in total"
       />
       <StatisticsCard
         title="Tags"

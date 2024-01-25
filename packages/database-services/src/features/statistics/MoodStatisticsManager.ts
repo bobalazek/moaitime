@@ -1,10 +1,15 @@
+import { format } from 'date-fns';
 import { and, avg, gte, isNull, lte, sql } from 'drizzle-orm';
 
-import { getDatabase, moodEntries } from '@moaitime/database-core';
+import { getDatabase, moodEntries, User } from '@moaitime/database-core';
 
 export class MoodStatisticsManager {
-  async getDailyAverage(from: Date, to: Date): Promise<{ date: string; score: number }[]> {
-    const loggedAtDate = sql<string>`DATE(${moodEntries.loggedAt})`;
+  async getDailyAverage(
+    user: User,
+    from: Date,
+    to: Date
+  ): Promise<{ date: string; score: number }[]> {
+    const loggedAtDate = sql<Date>`DATE(${moodEntries.loggedAt})`;
 
     const where = and(
       gte(moodEntries.loggedAt, from.toISOString()),
@@ -20,7 +25,7 @@ export class MoodStatisticsManager {
       .execute();
 
     return rows.map((row) => ({
-      date: row.date,
+      date: format(row.date, 'yyyy-MM-dd'),
       score: row.score ?? 0,
     }));
   }

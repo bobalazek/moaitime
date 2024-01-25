@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@moaitime/web-ui';
 
+import StatisticsCalendarTabContent from '../../tabs/StatisticsCalendarTabContent';
 import StatisticsGeneralTabContent from '../../tabs/StatisticsGeneralTabContent';
 
 const StatisticsPageMain = () => {
@@ -20,6 +21,9 @@ const StatisticsPageMain = () => {
         </TabsList>
         <TabsContent value="general">
           <StatisticsGeneralTabContent />
+        </TabsContent>
+        <TabsContent value="calendar">
+          <StatisticsCalendarTabContent />
         </TabsContent>
       </Tabs>
     </main>

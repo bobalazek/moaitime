@@ -1,10 +1,10 @@
 import { User } from '@moaitime/database-core';
-import { StatisticsGeneral } from '@moaitime/shared-common';
+import { StatisticsGeneralBasicData } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
 
 export class StatisticsManager {
-  async getGeneral(user: User): Promise<StatisticsGeneral> {
+  async getGeneral(user: User): Promise<StatisticsGeneralBasicData> {
     const userUsage = await usersManager.getUserUsage(user);
 
     return {

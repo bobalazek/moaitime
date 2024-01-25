@@ -1,4 +1,4 @@
-export type StatisticsGeneral = {
+export type StatisticsGeneralBasicData = {
   listsCountTotal: number;
   tasksCountTotal: number;
   tagsCountTotal: number;

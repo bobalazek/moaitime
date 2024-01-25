@@ -2,7 +2,7 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { statisticsManager } from '@moaitime/database-services';
-import { ResponseInterface, StatisticsGeneral } from '@moaitime/shared-common';
+import { ResponseInterface, StatisticsGeneralBasicData } from '@moaitime/shared-common';
 
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 
@@ -10,7 +10,7 @@ import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 export class StatisticsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async index(@Req() req: Request): Promise<ResponseInterface<StatisticsGeneral>> {
+  async index(@Req() req: Request): Promise<ResponseInterface<StatisticsGeneralBasicData>> {
     const data = await statisticsManager.getGeneral(req.user);
 
     return {

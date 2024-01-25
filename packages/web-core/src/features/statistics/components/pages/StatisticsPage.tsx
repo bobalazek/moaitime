@@ -9,6 +9,10 @@ export default function StatisticsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = 'Statistics | MoaiTime';
+  }, []);
+
+  useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();

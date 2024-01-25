@@ -31,6 +31,10 @@ export default function CalendarPage() {
   const headerRef = useRef<CalendarDialogHeaderRef>(null); // Not sure why we couldn't just use typeof CalendarDialogHeader
   const isInitializedRef = useRef(false); // Prevents react to trigger useEffect twice
 
+  useEffect(() => {
+    document.title = 'Calendar | MoaiTime';
+  }, []);
+
   const updateStateByUrl = useDebouncedCallback(() => {
     const newSelectedView = location.pathname.replace('/calendar/', '') as CalendarViewEnum;
     if (

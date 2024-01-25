@@ -29,6 +29,10 @@ export default function NotesPage() {
   const selectedNoteDatadRef = useRef(selectedNoteData);
   const selectedNoteDataChangedRef = useRef(selectedNoteDataChanged);
 
+  useEffect(() => {
+    document.title = 'Notes | MoaiTime';
+  }, []);
+
   const updateStateByUrl = useDebouncedCallback(async () => {
     const noteId = location.pathname.replace('/notes/', '');
     if (isValidUuid(noteId)) {

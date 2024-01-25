@@ -12,6 +12,10 @@ export default function FocusPage() {
   const isInitialized = useRef(false);
 
   useEffect(() => {
+    document.title = 'Focus | MoaiTime';
+  }, []);
+
+  useEffect(() => {
     if (isInitialized.current) {
       return;
     }

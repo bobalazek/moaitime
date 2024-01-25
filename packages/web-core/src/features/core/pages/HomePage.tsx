@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 import Auth from '../../auth/components/Auth';
 import { useAuthUserSetting } from '../../auth/state/authStore';
@@ -22,6 +23,10 @@ export default function HomePage() {
   const greetingEnabled = useAuthUserSetting('greetingEnabled', false);
   const searchEnabled = useAuthUserSetting('searchEnabled', false);
   const quoteEnabled = useAuthUserSetting('quoteEnabled', false);
+
+  useEffect(() => {
+    document.title = 'MoaiTime';
+  }, []);
 
   return (
     <ErrorBoundary>

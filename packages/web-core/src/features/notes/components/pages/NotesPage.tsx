@@ -69,9 +69,6 @@ export default function NotesPage() {
   }, []);
 
   useEffect(() => {
-    // Not really sure why we need separate effect for this,
-    // but otherwise it doesn't work.
-
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();

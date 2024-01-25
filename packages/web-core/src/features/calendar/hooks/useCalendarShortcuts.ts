@@ -24,6 +24,10 @@ export const useCalendarShortcuts = (headerRef: RefObject<CalendarDialogHeaderRe
         event.preventDefault();
 
         setSelectedDateAndView(new Date(), selectedViewByKey);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+
+        navigate('/');
       } else if (event.key === 'PageUp') {
         event.preventDefault();
 
@@ -36,10 +40,6 @@ export const useCalendarShortcuts = (headerRef: RefObject<CalendarDialogHeaderRe
         event.preventDefault();
 
         headerRef.current?.onTodayButtonClick();
-      } else if (event.key === 'Escape') {
-        event.preventDefault();
-
-        navigate('/');
       }
     };
 

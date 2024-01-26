@@ -219,8 +219,8 @@ export default function DateSelector({
                 onChange={(event) => setDateTimeValue(event.target.value)}
                 onKeyDown={onKeyPress}
                 autoComplete="off"
+                maxLength={5}
               />
-              {/* Add TimeRangesDropdownMenu here, once we sort out the focus issue */}
             </div>
             {!disableTimeZone && (
               <div>

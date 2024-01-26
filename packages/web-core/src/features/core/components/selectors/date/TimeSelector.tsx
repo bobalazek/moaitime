@@ -1,25 +1,20 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Input,
 } from '@moaitime/web-ui';
 
-type TimeRangesDropdownMenuProps = {
-  onSelect: (value: string | null) => void;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  filterValue?: string;
+type TimeSelectorProps = {
+  value?: string;
+  onChangeValue: (value?: string) => void;
 };
 
-export default function TimeRangesDropdownMenu({
-  onSelect,
-  open,
-  onOpenChange,
-  filterValue,
-}: TimeRangesDropdownMenuProps) {
+export default function TimeSelector({ value, onChangeValue }: TimeSelectorProps) {
+  const [open, setOpen] = useState(false);
   const times = useMemo(() => {
     const times = [];
     for (let i = 0; i < 24; i++) {
@@ -50,13 +45,18 @@ export default function TimeRangesDropdownMenu({
     return [...timesAfter, ...timesBefore];
   }, []);
 
-  const timesFiltered = filterValue ? times.filter((time) => time.startsWith(filterValue)) : times;
+  const timesFiltered = value ? times.filter((time) => time.startsWith(value)) : times;
 
   return (
-    <DropdownMenu open={open} onOpenChange={onOpenChange}>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        {/* The reason we need that empty div is, because the dropdown menu needs a child to be able to position itself */}
-        <div />
+        <Input
+          id="time-selector"
+          value={value ?? ''}
+          onChange={(event) => onChangeValue(event.target.value)}
+          autoComplete="off"
+          maxLength={5}
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
@@ -73,8 +73,8 @@ export default function TimeRangesDropdownMenu({
             <DropdownMenuItem
               key={time}
               onClick={() => {
-                onSelect(time);
-                onOpenChange(false);
+                onChangeValue(time);
+                setOpen(false);
               }}
               className="m-0"
             >

@@ -1,8 +1,12 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, count, eq, gte, isNull, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
 
 import { getDatabase, notes, User } from '@moaitime/database-core';
-import { StatisticsNotesBasicData } from '@moaitime/shared-common';
+import {
+  padDataForRangeMap,
+  StatisticsDateCountData,
+  StatisticsNotesBasicData,
+} from '@moaitime/shared-common';
 
 export class NotesStatisticsManager {
   async getBasics(user: User): Promise<StatisticsNotesBasicData> {
@@ -16,36 +20,28 @@ export class NotesStatisticsManager {
     const startOfThisWeek = startOfWeek(today);
     const startOfThisMonth = startOfMonth(today);
 
-    const createdAtDate = sql<Date>`DATE(${notes.createdAt})`;
-    const rows = await getDatabase()
-      .select({ date: createdAtDate, count: count(notes).mapWith(Number) })
-      .from(notes)
-      .where(
-        and(
-          eq(notes.userId, user.id),
-          isNull(notes.deletedAt),
-          gte(notes.createdAt, startOfThisMonth)
-        )
-      )
-      .groupBy(createdAtDate)
-      .execute();
+    const todayString = format(today, 'yyyy-MM-dd');
+    const yesterdayString = format(yesterday, 'yyyy-MM-dd');
 
-    for (const row of rows) {
-      const rowDateString = format(row.date, 'yyyy-MM-dd');
-      if (rowDateString === format(today, 'yyyy-MM-dd')) {
-        notesCreatedTodayCount = row.count;
+    const rows = await this.getNotesCreated(user, startOfThisMonth);
+    for (const date in rows) {
+      const count = rows[date];
+      const dateObject = new Date(date);
+
+      if (date === todayString) {
+        notesCreatedTodayCount = count;
       }
 
-      if (rowDateString === format(yesterday, 'yyyy-MM-dd')) {
-        notesCreatedYesterdayCount = row.count;
+      if (date === yesterdayString) {
+        notesCreatedYesterdayCount = count;
       }
 
-      if (row.date >= startOfThisWeek) {
-        notesCreatedThisWeekCount += row.count;
+      if (dateObject >= startOfThisWeek) {
+        notesCreatedThisWeekCount += count;
       }
 
-      if (row.date >= startOfThisMonth) {
-        notesCreatedThisMonthCount += row.count;
+      if (dateObject >= startOfThisMonth) {
+        notesCreatedThisMonthCount += count;
       }
     }
 
@@ -55,6 +51,37 @@ export class NotesStatisticsManager {
       notesCreatedThisWeekCount,
       notesCreatedThisMonthCount,
     };
+  }
+
+  async getNotesCreated(user: User, from?: Date, to?: Date): Promise<StatisticsDateCountData> {
+    let where = and(eq(notes.userId, user.id), isNull(notes.deletedAt));
+
+    if (from && to) {
+      where = and(where, between(notes.createdAt, from, to)) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(notes.createdAt, from)) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(notes.createdAt, to)) as SQL<unknown>;
+    }
+
+    const createdAtDate = sql<Date>`DATE(${notes.createdAt})`;
+    const rows = await getDatabase()
+      .select({ date: createdAtDate, count: count(notes).mapWith(Number) })
+      .from(notes)
+      .where(where)
+      .groupBy(createdAtDate)
+      .execute();
+
+    const result: StatisticsDateCountData = {};
+    for (const row of rows) {
+      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+    }
+
+    if (from && to) {
+      return padDataForRangeMap(result, from, to);
+    }
+
+    return result;
   }
 }
 

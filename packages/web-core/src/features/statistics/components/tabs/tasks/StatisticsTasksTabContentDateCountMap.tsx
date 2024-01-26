@@ -2,7 +2,7 @@ import Chart from 'react-apexcharts';
 
 import { ErrorAlert } from '../../../../core/components/ErrorAlert';
 import { Loader } from '../../../../core/components/Loader';
-import { useTasksStatisticsTasksCreatedQuery } from '../../../hooks/StatisticsHooks';
+import { useTasksStatisticsTasksCreatedQuery } from '../../../hooks/StatisticsTasksHooks';
 
 export default function StatisticsTasksTabContentDateCountMap({
   from,

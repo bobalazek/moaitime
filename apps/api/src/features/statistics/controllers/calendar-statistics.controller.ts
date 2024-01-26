@@ -17,4 +17,18 @@ export class CalendarStatisticsController {
       data,
     };
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('events-created')
+  async eventsCreated(@Req() req: Request) {
+    const from = req.query.from ? new Date(req.query.from as string) : undefined;
+    const to = req.query.to ? new Date(req.query.to as string) : undefined;
+
+    const data = await calendarStatisticsManager.getEventsCreated(req.user, from, to);
+
+    return {
+      success: true,
+      data,
+    };
+  }
 }

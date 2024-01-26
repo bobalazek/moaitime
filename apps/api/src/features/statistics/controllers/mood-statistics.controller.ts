@@ -1,5 +1,4 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { subDays } from 'date-fns';
 import { Request } from 'express';
 
 import { moodStatisticsManager } from '@moaitime/database-services';
@@ -20,12 +19,12 @@ export class MoodStatisticsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get('daily')
-  async daily(@Req() req: Request) {
-    const to = new Date();
-    const from = subDays(to, 28);
+  @Get('mood-entries-created')
+  async moodEntriesCreated(@Req() req: Request) {
+    const from = req.query.from ? new Date(req.query.from as string) : undefined;
+    const to = req.query.to ? new Date(req.query.to as string) : undefined;
 
-    const data = await moodStatisticsManager.getDailyAverage(req.user, from, to);
+    const data = await moodStatisticsManager.getMoodEntriesCreated(req.user, from, to);
 
     return {
       success: true,

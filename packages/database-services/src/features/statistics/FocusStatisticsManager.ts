@@ -1,8 +1,12 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, count, eq, gte, isNull, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
 
 import { focusSessions, getDatabase, User } from '@moaitime/database-core';
-import { StatisticsFocusBasicData } from '@moaitime/shared-common';
+import {
+  padDataForRangeMap,
+  StatisticsDateCountData,
+  StatisticsFocusBasicData,
+} from '@moaitime/shared-common';
 
 export class FocusStatisticsManager {
   async getBasics(user: User): Promise<StatisticsFocusBasicData> {
@@ -16,36 +20,28 @@ export class FocusStatisticsManager {
     const startOfThisWeek = startOfWeek(today);
     const startOfThisMonth = startOfMonth(today);
 
-    const createdAtDate = sql<Date>`DATE(${focusSessions.createdAt})`;
-    const rows = await getDatabase()
-      .select({ date: createdAtDate, count: count(focusSessions).mapWith(Number) })
-      .from(focusSessions)
-      .where(
-        and(
-          eq(focusSessions.userId, user.id),
-          isNull(focusSessions.deletedAt),
-          gte(focusSessions.createdAt, startOfThisMonth)
-        )
-      )
-      .groupBy(createdAtDate)
-      .execute();
+    const todayString = format(today, 'yyyy-MM-dd');
+    const yesterdayString = format(yesterday, 'yyyy-MM-dd');
 
-    for (const row of rows) {
-      const rowDateString = format(row.date, 'yyyy-MM-dd');
-      if (rowDateString === format(today, 'yyyy-MM-dd')) {
-        focusSessionsCreatedTodayCount = row.count;
+    const rows = await this.getFocusSessionsCreated(user, startOfThisMonth);
+    for (const date in rows) {
+      const count = rows[date];
+      const dateObject = new Date(date);
+
+      if (date === todayString) {
+        focusSessionsCreatedTodayCount = count;
       }
 
-      if (rowDateString === format(yesterday, 'yyyy-MM-dd')) {
-        focusSessionsCreatedYesterdayCount = row.count;
+      if (date === yesterdayString) {
+        focusSessionsCreatedYesterdayCount = count;
       }
 
-      if (row.date >= startOfThisWeek) {
-        focusSessionsCreatedThisWeekCount += row.count;
+      if (dateObject >= startOfThisWeek) {
+        focusSessionsCreatedThisWeekCount += count;
       }
 
-      if (row.date >= startOfThisMonth) {
-        focusSessionsCreatedThisMonthCount += row.count;
+      if (dateObject >= startOfThisMonth) {
+        focusSessionsCreatedThisMonthCount += count;
       }
     }
 
@@ -55,6 +51,41 @@ export class FocusStatisticsManager {
       focusSessionsCreatedThisWeekCount,
       focusSessionsCreatedThisMonthCount,
     };
+  }
+
+  async getFocusSessionsCreated(
+    user: User,
+    from?: Date,
+    to?: Date
+  ): Promise<StatisticsDateCountData> {
+    let where = and(eq(focusSessions.userId, user.id), isNull(focusSessions.deletedAt));
+
+    if (from && to) {
+      where = and(where, between(focusSessions.createdAt, from, to)) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(focusSessions.createdAt, from)) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(focusSessions.createdAt, to)) as SQL<unknown>;
+    }
+
+    const createdAtDate = sql<Date>`DATE(${focusSessions.createdAt})`;
+    const rows = await getDatabase()
+      .select({ date: createdAtDate, count: count(focusSessions).mapWith(Number) })
+      .from(focusSessions)
+      .where(where)
+      .groupBy(createdAtDate)
+      .execute();
+
+    const result: StatisticsDateCountData = {};
+    for (const row of rows) {
+      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+    }
+
+    if (from && to) {
+      return padDataForRangeMap(result, from, to);
+    }
+
+    return result;
   }
 }
 

@@ -1,6 +1,6 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useFocusStatisticsQuery } from '../../hooks/StatisticsHooks';
+import { useFocusStatisticsQuery } from '../../hooks/StatisticsFocusHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsFocusTabContent = () => {

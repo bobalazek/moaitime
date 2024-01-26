@@ -1,6 +1,6 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useMoodStatisticsQuery } from '../../hooks/StatisticsHooks';
+import { useMoodStatisticsQuery } from '../../hooks/StatisticsMoodHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsMoodTabContent = () => {

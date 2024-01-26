@@ -1,6 +1,6 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useCalendarStatisticsQuery } from '../../hooks/StatisticsHooks';
+import { useCalendarStatisticsQuery } from '../../hooks/StatisticsCalendarHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsCalendarTabContent = () => {

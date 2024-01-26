@@ -1,6 +1,6 @@
 import { ErrorAlert } from '../../../../core/components/ErrorAlert';
 import { Loader } from '../../../../core/components/Loader';
-import { useTasksStatisticsQuery } from '../../../hooks/StatisticsHooks';
+import { useTasksStatisticsQuery } from '../../../hooks/StatisticsTasksHooks';
 import StatisticsCard from '../../statistics-card/StatisticsCard';
 
 export default function StatisticsTasksTabContentBasics() {

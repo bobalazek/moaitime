@@ -1,8 +1,12 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, count, eq, gte, isNull, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
 
 import { events, getDatabase, User } from '@moaitime/database-core';
-import { StatisticsCalendarBasicData } from '@moaitime/shared-common';
+import {
+  padDataForRangeMap,
+  StatisticsCalendarBasicData,
+  StatisticsDateCountData,
+} from '@moaitime/shared-common';
 
 export class CalendarStatisticsManager {
   async getBasics(user: User): Promise<StatisticsCalendarBasicData> {
@@ -16,36 +20,28 @@ export class CalendarStatisticsManager {
     const startOfThisWeek = startOfWeek(today);
     const startOfThisMonth = startOfMonth(today);
 
-    const createdAtDate = sql<Date>`DATE(${events.createdAt})`;
-    const rows = await getDatabase()
-      .select({ date: createdAtDate, count: count(events).mapWith(Number) })
-      .from(events)
-      .where(
-        and(
-          eq(events.userId, user.id),
-          isNull(events.deletedAt),
-          gte(events.createdAt, startOfThisMonth)
-        )
-      )
-      .groupBy(createdAtDate)
-      .execute();
+    const todayString = format(today, 'yyyy-MM-dd');
+    const yesterdayString = format(yesterday, 'yyyy-MM-dd');
 
-    for (const row of rows) {
-      const rowDateString = format(row.date, 'yyyy-MM-dd');
-      if (rowDateString === format(today, 'yyyy-MM-dd')) {
-        eventsCreatedTodayCount = row.count;
+    const rows = await this.getEventsCreated(user, startOfThisMonth);
+    for (const date in rows) {
+      const count = rows[date];
+      const dateObject = new Date(date);
+
+      if (date === todayString) {
+        eventsCreatedTodayCount = count;
       }
 
-      if (rowDateString === format(yesterday, 'yyyy-MM-dd')) {
-        eventsCreatedYesterdayCount = row.count;
+      if (date === yesterdayString) {
+        eventsCreatedYesterdayCount = count;
       }
 
-      if (row.date >= startOfThisWeek) {
-        eventsCreatedThisWeekCount += row.count;
+      if (dateObject >= startOfThisWeek) {
+        eventsCreatedThisWeekCount += count;
       }
 
-      if (row.date >= startOfThisMonth) {
-        eventsCreatedThisMonthCount += row.count;
+      if (dateObject >= startOfThisMonth) {
+        eventsCreatedThisMonthCount += count;
       }
     }
 
@@ -55,6 +51,37 @@ export class CalendarStatisticsManager {
       eventsCreatedThisWeekCount,
       eventsCreatedThisMonthCount,
     };
+  }
+
+  async getEventsCreated(user: User, from?: Date, to?: Date): Promise<StatisticsDateCountData> {
+    let where = and(eq(events.userId, user.id), isNull(events.deletedAt));
+
+    if (from && to) {
+      where = and(where, between(events.createdAt, from, to)) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(events.createdAt, from)) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(events.createdAt, to)) as SQL<unknown>;
+    }
+
+    const createdAtDate = sql<Date>`DATE(${events.createdAt})`;
+    const rows = await getDatabase()
+      .select({ date: createdAtDate, count: count(events).mapWith(Number) })
+      .from(events)
+      .where(where)
+      .groupBy(createdAtDate)
+      .execute();
+
+    const result: StatisticsDateCountData = {};
+    for (const row of rows) {
+      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+    }
+
+    if (from && to) {
+      return padDataForRangeMap(result, from, to);
+    }
+
+    return result;
   }
 }
 

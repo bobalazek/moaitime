@@ -1,6 +1,6 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useNotesStatisticsQuery } from '../../hooks/StatisticsHooks';
+import { useNotesStatisticsQuery } from '../../hooks/StatisticsNotesHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsNotesTabContent = () => {

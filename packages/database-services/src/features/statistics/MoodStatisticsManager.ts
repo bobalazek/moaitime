@@ -1,8 +1,12 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, avg, count, eq, gte, isNull, lte, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
 
 import { getDatabase, moodEntries, User } from '@moaitime/database-core';
-import { StatisticsMoodBasicData } from '@moaitime/shared-common';
+import {
+  padDataForRangeMap,
+  StatisticsDateCountData,
+  StatisticsMoodBasicData,
+} from '@moaitime/shared-common';
 
 export class MoodStatisticsManager {
   async getBasics(user: User): Promise<StatisticsMoodBasicData> {
@@ -16,36 +20,28 @@ export class MoodStatisticsManager {
     const startOfThisWeek = startOfWeek(today);
     const startOfThisMonth = startOfMonth(today);
 
-    const createdAtDate = sql<Date>`DATE(${moodEntries.createdAt})`;
-    const rows = await getDatabase()
-      .select({ date: createdAtDate, count: count(moodEntries).mapWith(Number) })
-      .from(moodEntries)
-      .where(
-        and(
-          eq(moodEntries.userId, user.id),
-          isNull(moodEntries.deletedAt),
-          gte(moodEntries.createdAt, startOfThisMonth)
-        )
-      )
-      .groupBy(createdAtDate)
-      .execute();
+    const todayString = format(today, 'yyyy-MM-dd');
+    const yesterdayString = format(yesterday, 'yyyy-MM-dd');
 
-    for (const row of rows) {
-      const rowDateString = format(row.date, 'yyyy-MM-dd');
-      if (rowDateString === format(today, 'yyyy-MM-dd')) {
-        moodEntriesCreatedTodayCount = row.count;
+    const rows = await this.getMoodEntriesCreated(user, startOfThisMonth);
+    for (const date in rows) {
+      const count = rows[date];
+      const dateObject = new Date(date);
+
+      if (date === todayString) {
+        moodEntriesCreatedTodayCount = count;
       }
 
-      if (rowDateString === format(yesterday, 'yyyy-MM-dd')) {
-        moodEntriesCreatedYesterdayCount = row.count;
+      if (date === yesterdayString) {
+        moodEntriesCreatedYesterdayCount = count;
       }
 
-      if (row.date >= startOfThisWeek) {
-        moodEntriesCreatedThisWeekCount += row.count;
+      if (dateObject >= startOfThisWeek) {
+        moodEntriesCreatedThisWeekCount += count;
       }
 
-      if (row.date >= startOfThisMonth) {
-        moodEntriesCreatedThisMonthCount += row.count;
+      if (dateObject >= startOfThisMonth) {
+        moodEntriesCreatedThisMonthCount += count;
       }
     }
 
@@ -57,31 +53,39 @@ export class MoodStatisticsManager {
     };
   }
 
-  async getDailyAverage(
+  async getMoodEntriesCreated(
     user: User,
-    from: Date,
-    to: Date
-  ): Promise<{ date: string; score: number }[]> {
-    const loggedAtDate = sql<Date>`DATE(${moodEntries.loggedAt})`;
+    from?: Date,
+    to?: Date
+  ): Promise<StatisticsDateCountData> {
+    let where = and(eq(moodEntries.userId, user.id), isNull(moodEntries.deletedAt));
 
-    const where = and(
-      eq(moodEntries.userId, user.id),
-      gte(moodEntries.loggedAt, from.toISOString()),
-      lte(moodEntries.loggedAt, to.toISOString()),
-      isNull(moodEntries.deletedAt)
-    );
+    if (from && to) {
+      where = and(where, between(moodEntries.createdAt, from, to)) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(moodEntries.createdAt, from)) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(moodEntries.createdAt, to)) as SQL<unknown>;
+    }
 
+    const createdAtDate = sql<Date>`DATE(${moodEntries.createdAt})`;
     const rows = await getDatabase()
-      .select({ date: loggedAtDate, score: avg(moodEntries.happinessScore).mapWith(Number) })
+      .select({ date: createdAtDate, count: count(moodEntries).mapWith(Number) })
       .from(moodEntries)
       .where(where)
-      .groupBy(loggedAtDate)
+      .groupBy(createdAtDate)
       .execute();
 
-    return rows.map((row) => ({
-      date: format(row.date, 'yyyy-MM-dd'),
-      score: row.score ?? 0,
-    }));
+    const result: StatisticsDateCountData = {};
+    for (const row of rows) {
+      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+    }
+
+    if (from && to) {
+      return padDataForRangeMap(result, from, to);
+    }
+
+    return result;
   }
 }
 

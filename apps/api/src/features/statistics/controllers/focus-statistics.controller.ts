@@ -17,4 +17,18 @@ export class FocusStatisticsController {
       data,
     };
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('focus-sessions-created')
+  async focusSessionsCreated(@Req() req: Request) {
+    const from = req.query.from ? new Date(req.query.from as string) : undefined;
+    const to = req.query.to ? new Date(req.query.to as string) : undefined;
+
+    const data = await focusStatisticsManager.getFocusSessionsCreated(req.user, from, to);
+
+    return {
+      success: true,
+      data,
+    };
+  }
 }

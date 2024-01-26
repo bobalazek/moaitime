@@ -10,6 +10,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -53,7 +54,11 @@ export function TaskParentSelector({
   });
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+      modal={true /* Must have, else scroll won't work! */}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -74,35 +79,40 @@ export function TaskParentSelector({
         <Command>
           <CommandInput placeholder="Search tasks ..." />
           <CommandEmpty>No task found.</CommandEmpty>
-          <CommandGroup>
-            <CommandItem
-              value={EMPTY_VALUE_PLACEHOLDER}
-              onSelect={() => {
-                onChangeValue(undefined);
-                setOpen(false);
-              }}
-              className="cursor-pointer"
-            >
-              <CheckIcon className={clsx('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
-              <i>None</i>
-            </CommandItem>
-            {tasks.map((task) => (
+          <CommandList>
+            <CommandGroup className="w-full">
               <CommandItem
-                key={task.id}
-                value={task.id}
-                onSelect={(currentValue) => {
-                  onChangeValue(currentValue, task);
+                value={EMPTY_VALUE_PLACEHOLDER}
+                onSelect={() => {
+                  onChangeValue(undefined);
                   setOpen(false);
                 }}
                 className="cursor-pointer"
               >
-                <CheckIcon
-                  className={clsx('mr-2 h-4 w-4', value === task.id ? 'opacity-100' : 'opacity-0')}
-                />
-                {task.name}
+                <CheckIcon className={clsx('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
+                <i>None</i>
               </CommandItem>
-            ))}
-          </CommandGroup>
+              {tasks.map((task) => (
+                <CommandItem
+                  key={task.id}
+                  value={task.id}
+                  onSelect={(currentValue) => {
+                    onChangeValue(currentValue, task);
+                    setOpen(false);
+                  }}
+                  className="w-full cursor-pointer"
+                >
+                  <CheckIcon
+                    className={clsx(
+                      'mr-2 h-4 w-4',
+                      value === task.id ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  <div className="truncate">{task.name}</div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

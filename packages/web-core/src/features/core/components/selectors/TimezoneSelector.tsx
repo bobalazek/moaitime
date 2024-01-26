@@ -10,10 +10,10 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  ScrollArea,
 } from '@moaitime/web-ui';
 
 const timezones = getTimezones();
@@ -108,7 +108,7 @@ export const GeneralTimezoneSettingContent = ({ value, onValueChange }: Timezone
   return (
     <Command>
       <CommandInput placeholder="Search timezone ..." />
-      <ScrollArea ref={scrollAreaRef} className="h-64" data-test="timezone-selector--content">
+      <CommandList ref={scrollAreaRef} className="h-64" data-test="timezone-selector--content">
         <CommandEmpty>No timezone found</CommandEmpty>
         <CommandGroup>
           {timezones.map((timezone) => (
@@ -128,7 +128,7 @@ export const GeneralTimezoneSettingContent = ({ value, onValueChange }: Timezone
             </CommandItem>
           ))}
         </CommandGroup>
-      </ScrollArea>
+      </CommandList>
     </Command>
   );
 };

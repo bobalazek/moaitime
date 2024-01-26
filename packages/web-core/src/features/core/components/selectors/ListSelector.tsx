@@ -9,6 +9,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -54,39 +55,47 @@ export function ListSelector({
         <Command>
           <CommandInput placeholder="Search lists ..." />
           <CommandEmpty>No list found.</CommandEmpty>
-          <CommandGroup>
-            <CommandItem
-              onSelect={() => {
-                onChangeValue(undefined);
-                setOpen(false);
-              }}
-              className="cursor-pointer border-l-4 border-l-transparent"
-            >
-              <CheckIcon
-                className={clsx('mr-2 h-4 w-4', value === undefined ? 'opacity-100' : 'opacity-0')}
-              />
-              Unlisted
-            </CommandItem>
-            {lists.map((list) => (
+          <CommandList>
+            <CommandGroup>
               <CommandItem
-                key={list.id}
-                value={list.id}
-                onSelect={(currentValue) => {
-                  onChangeValue(currentValue === value ? undefined : currentValue);
+                onSelect={() => {
+                  onChangeValue(undefined);
                   setOpen(false);
                 }}
                 className="cursor-pointer border-l-4 border-l-transparent"
-                style={{
-                  borderColor: list?.color ?? 'transparent',
-                }}
               >
                 <CheckIcon
-                  className={clsx('mr-2 h-4 w-4', value === list.id ? 'opacity-100' : 'opacity-0')}
+                  className={clsx(
+                    'mr-2 h-4 w-4',
+                    value === undefined ? 'opacity-100' : 'opacity-0'
+                  )}
                 />
-                {list.name}
+                Unlisted
               </CommandItem>
-            ))}
-          </CommandGroup>
+              {lists.map((list) => (
+                <CommandItem
+                  key={list.id}
+                  value={list.id}
+                  onSelect={(currentValue) => {
+                    onChangeValue(currentValue === value ? undefined : currentValue);
+                    setOpen(false);
+                  }}
+                  className="cursor-pointer border-l-4 border-l-transparent"
+                  style={{
+                    borderColor: list?.color ?? 'transparent',
+                  }}
+                >
+                  <CheckIcon
+                    className={clsx(
+                      'mr-2 h-4 w-4',
+                      value === list.id ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  {list.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

@@ -1,9 +1,9 @@
-import { ErrorAlert } from '../../../core/components/ErrorAlert';
-import { Loader } from '../../../core/components/Loader';
-import { useFocusStatisticsQuery } from '../../hooks/StatisticsFocusHooks';
-import StatisticsCard from '../statistics-common/StatisticsCard';
+import { ErrorAlert } from '../../../../core/components/ErrorAlert';
+import { Loader } from '../../../../core/components/Loader';
+import { useFocusStatisticsQuery } from '../../../hooks/StatisticsFocusHooks';
+import StatisticsCard from '../../statistics-common/StatisticsCard';
 
-const StatisticsFocusTabContent = () => {
+export default function FocusBasicsSection() {
   const { isLoading, error, data } = useFocusStatisticsQuery();
 
   if (isLoading) {
@@ -41,6 +41,4 @@ const StatisticsFocusTabContent = () => {
       </div>
     </div>
   );
-};
-
-export default StatisticsFocusTabContent;
+}

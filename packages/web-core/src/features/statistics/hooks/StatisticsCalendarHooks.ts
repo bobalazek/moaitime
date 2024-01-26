@@ -5,7 +5,12 @@ import type { UseQueryResult } from '@tanstack/react-query';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { API_URL, ResponseInterface, StatisticsCalendarBasicData } from '@moaitime/shared-common';
+import {
+  API_URL,
+  ResponseInterface,
+  StatisticsCalendarBasicData,
+  StatisticsDateCountData,
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
@@ -27,5 +32,42 @@ export const useCalendarStatisticsQuery = () => {
   return useQuery<StatisticsCalendarBasicData>({
     queryKey: [STATISTICS_CALENDAR_KEY],
     queryFn: getCalendarStatistics,
+  });
+};
+
+// Calendar - Events Created Map
+export const STATISTICS_CALENDAR_EVENTS_CREATED_KEY = 'statistics:calendar:events-created';
+
+export const getCalendarStatisticsEventsCreated = async (from?: Date, to?: Date) => {
+  const url = new URL(`${API_URL}/api/v1/calendar-statistics/events-created`);
+
+  if (from) {
+    url.searchParams.append('from', from.toISOString());
+  }
+
+  if (to) {
+    url.searchParams.append('to', to.toISOString());
+  }
+
+  const response = await fetchJson<ResponseInterface<StatisticsDateCountData>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response.data as StatisticsDateCountData;
+};
+
+export const useCalendarStatisticsEventsCreatedQuery = ({
+  from,
+  to,
+}: {
+  from?: Date;
+  to?: Date;
+}) => {
+  const queryKey = [STATISTICS_CALENDAR_EVENTS_CREATED_KEY, from, to];
+  const queryFn = () => getCalendarStatisticsEventsCreated(from, to);
+
+  return useQuery<StatisticsDateCountData>({
+    queryKey,
+    queryFn,
   });
 };

@@ -1,5 +1,5 @@
-import NotesBasicsSection from './notes/NotesBasicsSection';
-import NotesCreatedSection from './notes/NotesCreatedSection';
+import NotesBasicsSection from './NotesBasicsSection';
+import NotesCreatedSection from './NotesCreatedSection';
 
 export default function StatisticsNotesTabContent() {
   return (

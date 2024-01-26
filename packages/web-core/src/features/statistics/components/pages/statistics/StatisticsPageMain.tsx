@@ -2,12 +2,12 @@ import { useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@moaitime/web-ui';
 
-import StatisticsCalendarTabContent from '../../tabs/StatisticsCalendarTabContent';
-import StatisticsFocusTabContent from '../../tabs/StatisticsFocusTabContent';
+import StatisticsCalendarTabContent from '../../tabs/calendar/StatisticsCalendarTabContent';
+import StatisticsFocusTabContent from '../../tabs/focus/StatisticsFocusTabContent';
+import StatisticsMoodTabContent from '../../tabs/mood/StatisticsMoodTabContent';
+import StatisticsNotesTabContent from '../../tabs/notes/StatisticsNotesTabContent';
 import StatisticsGeneralTabContent from '../../tabs/StatisticsGeneralTabContent';
-import StatisticsMoodTabContent from '../../tabs/StatisticsMoodTabContent';
-import StatisticsNotesTabContent from '../../tabs/StatisticsNotesTabContent';
-import StatisticsTasksTabContent from '../../tabs/StatisticsTasksTabContent';
+import StatisticsTasksTabContent from '../../tabs/tasks/StatisticsTasksTabContent';
 
 const StatisticsPageMain = () => {
   const [tab, setTab] = useState('general');

@@ -5,7 +5,12 @@ import type { UseQueryResult } from '@tanstack/react-query';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { API_URL, ResponseInterface, StatisticsFocusBasicData } from '@moaitime/shared-common';
+import {
+  API_URL,
+  ResponseInterface,
+  StatisticsDateCountData,
+  StatisticsFocusBasicData,
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
@@ -27,5 +32,43 @@ export const useFocusStatisticsQuery = () => {
   return useQuery<StatisticsFocusBasicData>({
     queryKey: [STATISTICS_FOCUS_KEY],
     queryFn: getFocusStatistics,
+  });
+};
+
+// Focus - Focus Sessions Created Map
+export const STATISTICS_FOCUS_FOCUS_SESSIONS_CREATED_KEY =
+  'statistics:focus:focus-sessions-created';
+
+export const getFocusStatisticsFocusSessionsCreated = async (from?: Date, to?: Date) => {
+  const url = new URL(`${API_URL}/api/v1/focus-statistics/focus-sessions-created`);
+
+  if (from) {
+    url.searchParams.append('from', from.toISOString());
+  }
+
+  if (to) {
+    url.searchParams.append('to', to.toISOString());
+  }
+
+  const response = await fetchJson<ResponseInterface<StatisticsDateCountData>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response.data as StatisticsDateCountData;
+};
+
+export const useFocusStatisticsFocusSessionsCreatedQuery = ({
+  from,
+  to,
+}: {
+  from?: Date;
+  to?: Date;
+}) => {
+  const queryKey = [STATISTICS_FOCUS_FOCUS_SESSIONS_CREATED_KEY, from, to];
+  const queryFn = () => getFocusStatisticsFocusSessionsCreated(from, to);
+
+  return useQuery<StatisticsDateCountData>({
+    queryKey,
+    queryFn,
   });
 };

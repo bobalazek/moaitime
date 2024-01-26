@@ -1,5 +1,5 @@
-import TasksBasicsSection from './tasks/TasksBasicsSection';
-import TasksCreatedSection from './tasks/TasksCreatedSection';
+import TasksBasicsSection from './TasksBasicsSection';
+import TasksCreatedSection from './TasksCreatedSection';
 
 export default function StatisticsTasksTabContent() {
   return (

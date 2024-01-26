@@ -35,8 +35,8 @@ export const useTasksStatisticsQuery = () => {
   });
 };
 
-// Tasks Created Map
-export const STATISTICS_TASKS_DATE_COUNT_MAP_KEY = 'statistics:tasks:tasks-created';
+// Tasks - Tasks Created Map
+export const STATISTICS_TASKS_TASKS_CREATED_KEY = 'statistics:tasks:tasks-created';
 
 export const getTasksStatisticsTasksCreated = async (from?: Date, to?: Date) => {
   const url = new URL(`${API_URL}/api/v1/tasks-statistics/tasks-created`);
@@ -57,7 +57,7 @@ export const getTasksStatisticsTasksCreated = async (from?: Date, to?: Date) => 
 };
 
 export const useTasksStatisticsTasksCreatedQuery = ({ from, to }: { from?: Date; to?: Date }) => {
-  const queryKey = [STATISTICS_TASKS_DATE_COUNT_MAP_KEY, from, to];
+  const queryKey = [STATISTICS_TASKS_TASKS_CREATED_KEY, from, to];
   const queryFn = () => getTasksStatisticsTasksCreated(from, to);
 
   return useQuery<StatisticsDateCountData>({

@@ -35,8 +35,8 @@ export const useNotesStatisticsQuery = () => {
   });
 };
 
-// Notes Created Map
-export const STATISTICS_NOTES_DATE_COUNT_MAP_KEY = 'statistics:notes:notes-created';
+// Notes - Notes Created Map
+export const STATISTICS_NOTES_NOTES_CREATED_KEY = 'statistics:notes:notes-created';
 
 export const getNotesStatisticsNotesCreated = async (from?: Date, to?: Date) => {
   const url = new URL(`${API_URL}/api/v1/notes-statistics/notes-created`);
@@ -57,7 +57,7 @@ export const getNotesStatisticsNotesCreated = async (from?: Date, to?: Date) => 
 };
 
 export const useNotesStatisticsNotesCreatedQuery = ({ from, to }: { from?: Date; to?: Date }) => {
-  const queryKey = [STATISTICS_NOTES_DATE_COUNT_MAP_KEY, from, to];
+  const queryKey = [STATISTICS_NOTES_NOTES_CREATED_KEY, from, to];
   const queryFn = () => getNotesStatisticsNotesCreated(from, to);
 
   return useQuery<StatisticsDateCountData>({

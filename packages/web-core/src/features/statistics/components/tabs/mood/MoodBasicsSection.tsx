@@ -1,10 +1,10 @@
-import { ErrorAlert } from '../../../core/components/ErrorAlert';
-import { Loader } from '../../../core/components/Loader';
-import { useCalendarStatisticsQuery } from '../../hooks/StatisticsCalendarHooks';
-import StatisticsCard from '../statistics-common/StatisticsCard';
+import { ErrorAlert } from '../../../../core/components/ErrorAlert';
+import { Loader } from '../../../../core/components/Loader';
+import { useMoodStatisticsQuery } from '../../../hooks/StatisticsMoodHooks';
+import StatisticsCard from '../../statistics-common/StatisticsCard';
 
-const StatisticsCalendarTabContent = () => {
-  const { isLoading, error, data } = useCalendarStatisticsQuery();
+export default function MoodBasicsSection() {
+  const { isLoading, error, data } = useMoodStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;
@@ -16,31 +16,29 @@ const StatisticsCalendarTabContent = () => {
 
   return (
     <div>
-      <h3 className="mb-2 text-2xl font-bold">Events</h3>
+      <h3 className="mb-2 text-2xl font-bold">Mood Entries</h3>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <StatisticsCard
           title="Created Today"
-          value={data.eventsCreatedTodayCount}
+          value={data.moodEntriesCreatedTodayCount}
           description="How many did you create today?"
         />
         <StatisticsCard
           title="Created Yesterday"
-          value={data.eventsCreatedYesterdayCount}
+          value={data.moodEntriesCreatedYesterdayCount}
           description="How many did you create yesterday?"
         />
         <StatisticsCard
           title="Created This Week"
-          value={data.eventsCreatedThisWeekCount}
+          value={data.moodEntriesCreatedThisWeekCount}
           description="How many did you create this week?"
         />
         <StatisticsCard
           title="Created This Month"
-          value={data.eventsCreatedThisMonthCount}
+          value={data.moodEntriesCreatedThisMonthCount}
           description="How many did you create this month?"
         />
       </div>
     </div>
   );
-};
-
-export default StatisticsCalendarTabContent;
+}

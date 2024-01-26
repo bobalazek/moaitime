@@ -1,10 +1,10 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useStatisticsMoodQuery } from '../../hooks/StatisticsHooks';
+import { useMoodStatisticsQuery } from '../../hooks/StatisticsHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsMoodTabContent = () => {
-  const { isLoading, error, data } = useStatisticsMoodQuery();
+  const { isLoading, error, data } = useMoodStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;

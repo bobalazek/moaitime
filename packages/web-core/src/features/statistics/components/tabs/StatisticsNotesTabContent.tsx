@@ -1,10 +1,10 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useStatisticsNotesQuery } from '../../hooks/StatisticsHooks';
+import { useNotesStatisticsQuery } from '../../hooks/StatisticsHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsNotesTabContent = () => {
-  const { isLoading, error, data } = useStatisticsNotesQuery();
+  const { isLoading, error, data } = useNotesStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;

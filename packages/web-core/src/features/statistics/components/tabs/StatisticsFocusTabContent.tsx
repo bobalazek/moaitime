@@ -1,10 +1,10 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useStatisticsFocusQuery } from '../../hooks/StatisticsHooks';
+import { useFocusStatisticsQuery } from '../../hooks/StatisticsHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsFocusTabContent = () => {
-  const { isLoading, error, data } = useStatisticsFocusQuery();
+  const { isLoading, error, data } = useFocusStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;

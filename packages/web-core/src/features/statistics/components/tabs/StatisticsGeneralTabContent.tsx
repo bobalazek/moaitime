@@ -11,11 +11,11 @@ import {
 
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useStatisticsGeneralQuery } from '../../hooks/StatisticsHooks';
+import { useGeneralStatisticsQuery } from '../../hooks/StatisticsHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsGeneralTabContent = () => {
-  const { isLoading, error, data } = useStatisticsGeneralQuery();
+  const { isLoading, error, data } = useGeneralStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;
@@ -26,7 +26,7 @@ const StatisticsGeneralTabContent = () => {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <StatisticsCard
         title="Tasks"
         value={data.tasksCountTotal}

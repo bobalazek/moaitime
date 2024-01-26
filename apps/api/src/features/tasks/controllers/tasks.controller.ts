@@ -164,7 +164,7 @@ export class TasksController {
       const tasksCount = await tasksManager.countByListId(list.id);
       if (tasksCount >= tasksMaxPerListCount) {
         throw new Error(
-          `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
+          `You have reached the maximum number of tasks for that list (${tasksMaxPerListCount}).`
         );
       }
     }

@@ -1,10 +1,10 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useStatisticsCalendarQuery } from '../../hooks/StatisticsHooks';
+import { useCalendarStatisticsQuery } from '../../hooks/StatisticsHooks';
 import StatisticsCard from '../statistics-card/StatisticsCard';
 
 const StatisticsCalendarTabContent = () => {
-  const { isLoading, error, data } = useStatisticsCalendarQuery();
+  const { isLoading, error, data } = useCalendarStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;

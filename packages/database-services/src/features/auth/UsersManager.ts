@@ -136,13 +136,13 @@ export class UsersManager {
     // TODO: once we have plans, we need to adjust the limits depending on that
 
     return {
-      tasksMaxPerListCount: 50,
+      tasksMaxPerListCount: 10,
       listsMaxPerUserCount: 10,
-      tagsMaxPerUserCount: 20,
+      tagsMaxPerUserCount: 10,
       calendarsMaxPerUserCount: 10,
-      calendarsMaxEventsPerCalendarCount: 500,
+      calendarsMaxEventsPerCalendarCount: 100,
       calendarsMaxUserCalendarsPerUserCount: 5,
-      notesMaxPerUserCount: 100,
+      notesMaxPerUserCount: 10,
     };
   }
 

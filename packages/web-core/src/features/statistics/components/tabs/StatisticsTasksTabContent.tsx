@@ -5,15 +5,12 @@ import StatisticsTasksTabContentDateCountMap from './tasks/StatisticsTasksTabCon
 
 export default function StatisticsTasksTabContent() {
   const to = new Date();
-  const from = subDays(to, 28);
+  const from = subDays(to, 14);
 
   return (
-    <div>
-      <h3 className="mb-2 text-2xl font-bold">Tasks</h3>
-      <div className="space-y-4">
-        <StatisticsTasksTabContentBasics />
-        <StatisticsTasksTabContentDateCountMap from={from} to={to} />
-      </div>
+    <div className="space-y-4">
+      <StatisticsTasksTabContentBasics />
+      <StatisticsTasksTabContentDateCountMap from={from} to={to} />
     </div>
   );
 }

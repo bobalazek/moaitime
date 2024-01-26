@@ -1,10 +1,10 @@
 import { ErrorAlert } from '../../../../core/components/ErrorAlert';
 import { Loader } from '../../../../core/components/Loader';
-import { useStatisticsTasksQuery } from '../../../hooks/StatisticsHooks';
+import { useTasksStatisticsQuery } from '../../../hooks/StatisticsHooks';
 import StatisticsCard from '../../statistics-card/StatisticsCard';
 
 export default function StatisticsTasksTabContentBasics() {
-  const { isLoading, error, data } = useStatisticsTasksQuery();
+  const { isLoading, error, data } = useTasksStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;
@@ -16,6 +16,7 @@ export default function StatisticsTasksTabContentBasics() {
 
   return (
     <div>
+      <h3 className="mb-2 text-2xl font-bold">Tasks</h3>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <StatisticsCard
           title="Created Today"

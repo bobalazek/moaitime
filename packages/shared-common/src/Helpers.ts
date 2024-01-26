@@ -1,6 +1,8 @@
 import { timeZonesNames } from '@vvo/tzdb';
-import { endOfDay, startOfDay } from 'date-fns';
+import { addDays, endOfDay, startOfDay } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+
+import { StatisticsDateCountData } from '@moaitime/shared-common';
 
 // General
 export const sleep = (milliseconds: number): Promise<unknown> => {
@@ -75,6 +77,25 @@ export const getTimer = (remainingSeconds: number): string => {
 
 export const getTimeDifferenceInSeconds = (start: Date, end: Date) => {
   return Math.floor((start.getTime() - end.getTime()) / 1000);
+};
+
+export const padDataForRangeMap = (data: StatisticsDateCountData, from: Date, to: Date) => {
+  const map: StatisticsDateCountData = {};
+  const range: Date[] = [];
+
+  let date = from;
+  while (date <= to) {
+    range.push(date);
+    date = addDays(date, 1);
+  }
+
+  for (const date of range) {
+    const key = format(date, 'yyyy-MM-dd');
+
+    map[key] = data[key] || 0;
+  }
+
+  return map;
 };
 
 // UUID

@@ -32,7 +32,7 @@ export const getGeneralStatistics = async () => {
   return response.data as StatisticsGeneralBasicData;
 };
 
-export const useStatisticsGeneralQuery = () => {
+export const useGeneralStatisticsQuery = () => {
   return useQuery<StatisticsGeneralBasicData>({
     queryKey: [STATISTICS_GENERAL_KEY],
     queryFn: getGeneralStatistics,
@@ -53,7 +53,7 @@ export const getCalendarStatistics = async () => {
   return response.data as StatisticsCalendarBasicData;
 };
 
-export const useStatisticsCalendarQuery = () => {
+export const useCalendarStatisticsQuery = () => {
   return useQuery<StatisticsCalendarBasicData>({
     queryKey: [STATISTICS_CALENDAR_KEY],
     queryFn: getCalendarStatistics,
@@ -75,31 +75,41 @@ export const getTasksStatistics = async () => {
   return response.data as StatisticsTasksBasicData;
 };
 
-export const useStatisticsTasksQuery = () => {
+export const useTasksStatisticsQuery = () => {
   return useQuery<StatisticsTasksBasicData>({
     queryKey: [STATISTICS_TASKS_KEY],
     queryFn: getTasksStatistics,
   });
 };
 
-// Tasks - Date Count Map
-export const STATISTICS_TASKS_DATE_COUNT_MAP_KEY = 'statistics:tasks:date-count-map';
+// Tasks - Tasks Created Map
+export const STATISTICS_TASKS_DATE_COUNT_MAP_KEY = 'statistics:tasks:tasks-created';
 
-export const getTasksDateCountMapStatistics = async () => {
-  const response = await fetchJson<ResponseInterface<StatisticsTasksBasicData>>(
-    `${API_URL}/api/v1/tasks-statistics/date-count-map`,
-    {
-      method: 'GET',
-    }
-  );
+export const getTasksStatisticsTasksCreated = async (from?: Date, to?: Date) => {
+  const url = new URL(`${API_URL}/api/v1/tasks-statistics/tasks-created`);
+
+  if (from) {
+    url.searchParams.append('from', from.toISOString());
+  }
+
+  if (to) {
+    url.searchParams.append('to', to.toISOString());
+  }
+
+  const response = await fetchJson<ResponseInterface<StatisticsTasksBasicData>>(url.toString(), {
+    method: 'GET',
+  });
 
   return response.data as StatisticsTasksBasicData;
 };
 
-export const useStatisticsTasksDateCountMapQuery = () => {
+export const useTasksStatisticsTasksCreatedQuery = ({ from, to }: { from?: Date; to?: Date }) => {
+  const queryKey = [STATISTICS_TASKS_DATE_COUNT_MAP_KEY, from, to];
+  const queryFn = () => getTasksStatisticsTasksCreated(from, to);
+
   return useQuery<StatisticsTasksBasicData>({
-    queryKey: [STATISTICS_TASKS_DATE_COUNT_MAP_KEY],
-    queryFn: getTasksDateCountMapStatistics,
+    queryKey,
+    queryFn,
   });
 };
 
@@ -117,7 +127,7 @@ export const getNotesStatistics = async () => {
   return response.data as StatisticsNotesBasicData;
 };
 
-export const useStatisticsNotesQuery = () => {
+export const useNotesStatisticsQuery = () => {
   return useQuery<StatisticsNotesBasicData>({
     queryKey: [STATISTICS_NOTES_KEY],
     queryFn: getNotesStatistics,
@@ -138,7 +148,7 @@ export const getMoodStatistics = async () => {
   return response.data as StatisticsMoodBasicData;
 };
 
-export const useStatisticsMoodQuery = () => {
+export const useMoodStatisticsQuery = () => {
   return useQuery<StatisticsMoodBasicData>({
     queryKey: [STATISTICS_MOOD_KEY],
     queryFn: getMoodStatistics,
@@ -159,7 +169,7 @@ export const getFocusStatistics = async () => {
   return response.data as StatisticsFocusBasicData;
 };
 
-export const useStatisticsFocusQuery = () => {
+export const useFocusStatisticsQuery = () => {
   return useQuery<StatisticsFocusBasicData>({
     queryKey: [STATISTICS_FOCUS_KEY],
     queryFn: getFocusStatistics,

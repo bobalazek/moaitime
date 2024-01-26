@@ -2,7 +2,11 @@ import { format, startOfMonth, startOfWeek } from 'date-fns';
 import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
 
 import { getDatabase, tasks, User } from '@moaitime/database-core';
-import { StatisticsDateCountData, StatisticsTasksBasicData } from '@moaitime/shared-common';
+import {
+  padDataForRangeMap,
+  StatisticsDateCountData,
+  StatisticsTasksBasicData,
+} from '@moaitime/shared-common';
 
 export class TasksStatisticsManager {
   async getBasics(user: User): Promise<StatisticsTasksBasicData> {
@@ -19,7 +23,7 @@ export class TasksStatisticsManager {
     const todayString = format(today, 'yyyy-MM-dd');
     const yesterdayString = format(yesterday, 'yyyy-MM-dd');
 
-    const rows = await this.getDateCountMap(user, startOfThisMonth);
+    const rows = await this.getTasksCreated(user, startOfThisMonth);
     for (const date in rows) {
       const count = rows[date];
       const dateObject = new Date(date);
@@ -49,7 +53,7 @@ export class TasksStatisticsManager {
     };
   }
 
-  async getDateCountMap(user: User, from?: Date, to?: Date): Promise<StatisticsDateCountData> {
+  async getTasksCreated(user: User, from?: Date, to?: Date): Promise<StatisticsDateCountData> {
     let where = and(eq(tasks.userId, user.id), isNull(tasks.deletedAt));
 
     if (from && to) {
@@ -71,6 +75,10 @@ export class TasksStatisticsManager {
     const result: StatisticsDateCountData = {};
     for (const row of rows) {
       result[format(row.date, 'yyyy-MM-dd')] = row.count;
+    }
+
+    if (from && to) {
+      return padDataForRangeMap(result, from, to);
     }
 
     return result;

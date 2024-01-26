@@ -11,7 +11,7 @@ export default function CalendarWeeklyViewDayCurrentTimeLine({
 
   return (
     <div
-      className="absolute w-full"
+      className="absolute z-[10] w-full"
       style={{
         top,
       }}

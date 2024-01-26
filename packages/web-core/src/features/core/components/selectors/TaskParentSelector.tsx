@@ -33,6 +33,7 @@ export function TaskParentSelector({
   const { selectedTask } = useTasksStore();
   const { selectedListTasks } = useListsStore();
   const [open, setOpen] = useState(false);
+  const [commandValue, setCommandValue] = useState('');
 
   const hasSelectedTaskChildren = selectedTask?.children?.length ?? 0 > 0;
   if (hasSelectedTaskChildren) {
@@ -46,11 +47,7 @@ export function TaskParentSelector({
   const selectedParentTask = selectedListTasks.find((task) => task.id === value) ?? null;
 
   const tasks = selectedListTasks.filter((task) => {
-    if (selectedTask) {
-      return task.id !== selectedTask.id;
-    }
-
-    return true;
+    return task.name.toLowerCase().includes(commandValue.toLowerCase());
   });
 
   return (
@@ -68,7 +65,7 @@ export function TaskParentSelector({
           disabled={isReadonly}
           data-test="task-parent-selector--trigger-button"
         >
-          <div>
+          <div className="truncate">
             {selectedParentTask && <span>{selectedParentTask.name}</span>}
             {!value && <span className="text-muted-foreground">Select task ...</span>}
           </div>
@@ -76,22 +73,35 @@ export function TaskParentSelector({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0" data-test="task-parent-selector">
-        <Command>
-          <CommandInput placeholder="Search tasks ..." />
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search tasks ..."
+            value={commandValue}
+            onValueChange={setCommandValue}
+          />
           <CommandEmpty>No task found.</CommandEmpty>
           <CommandList>
             <CommandGroup className="w-full">
-              <CommandItem
-                value={EMPTY_VALUE_PLACEHOLDER}
-                onSelect={() => {
-                  onChangeValue(undefined);
-                  setOpen(false);
-                }}
-                className="cursor-pointer"
-              >
-                <CheckIcon className={clsx('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
-                <i>None</i>
-              </CommandItem>
+              {!commandValue && (
+                <CommandItem
+                  value={EMPTY_VALUE_PLACEHOLDER}
+                  onSelect={() => {
+                    onChangeValue(undefined);
+                    setOpen(false);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <CheckIcon
+                    className={clsx('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')}
+                  />
+                  <i>None</i>
+                </CommandItem>
+              )}
+              {tasks.length === 0 && (
+                <CommandItem disabled className="text-muted-foreground">
+                  No tasks found
+                </CommandItem>
+              )}
               {tasks.map((task) => (
                 <CommandItem
                   key={task.id}

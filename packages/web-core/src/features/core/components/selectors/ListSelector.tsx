@@ -39,7 +39,7 @@ export function ListSelector({
           className="w-full justify-between"
           data-test="list-selector--trigger-button"
         >
-          <div>
+          <div className="truncate">
             <span
               className="mr-2 inline-block h-2 w-2 rounded-full"
               style={{

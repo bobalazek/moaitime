@@ -53,7 +53,7 @@ export function TagSelector({
           className="w-full justify-between overflow-hidden"
           data-test="tag-selector--trigger-button"
         >
-          <div className="w-full text-left">
+          <div className="w-full truncate text-left">
             {selectedTags.length > 0 && (
               <span>{selectedTags.map((tag) => tag.name).join(', ')}</span>
             )}

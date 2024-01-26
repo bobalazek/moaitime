@@ -118,10 +118,12 @@ export default function TaskEditDialog() {
 
   return (
     <Dialog open={selectedTaskDialogOpen} onOpenChange={setSelectedTaskDialogOpen}>
-      <DialogContent data-test="tasks--task-edit-dialog">
+      <DialogContent data-test="tasks--task-edit-dialog" className="flex flex-col">
         <DialogHeader>
-          {selectedTask?.id && <>Edit "{selectedTask.name}" Task</>}
-          {!selectedTask?.id && <>Create Task</>}
+          <div className="truncate">
+            {selectedTask?.id && <>Edit "{selectedTask.name}" Task</>}
+            {!selectedTask?.id && <>Create Task</>}
+          </div>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <Label htmlFor="task-name">Name</Label>

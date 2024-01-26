@@ -57,7 +57,7 @@ export function CalendarSelector({
           disabled={isReadonly}
           data-test="calendar-selector--trigger-button"
         >
-          <div>
+          <div className="truncate">
             <span
               className="mr-2 inline-block h-2 w-2 rounded-full"
               style={{

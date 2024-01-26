@@ -5,7 +5,12 @@ import type { UseQueryResult } from '@tanstack/react-query';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { API_URL, ResponseInterface, StatisticsNotesBasicData } from '@moaitime/shared-common';
+import {
+  API_URL,
+  ResponseInterface,
+  StatisticsDateCountData,
+  StatisticsNotesBasicData,
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
@@ -27,5 +32,36 @@ export const useNotesStatisticsQuery = () => {
   return useQuery<StatisticsNotesBasicData>({
     queryKey: [STATISTICS_NOTES_KEY],
     queryFn: getNotesStatistics,
+  });
+};
+
+// Notes Created Map
+export const STATISTICS_NOTES_DATE_COUNT_MAP_KEY = 'statistics:notes:notes-created';
+
+export const getNotesStatisticsNotesCreated = async (from?: Date, to?: Date) => {
+  const url = new URL(`${API_URL}/api/v1/notes-statistics/notes-created`);
+
+  if (from) {
+    url.searchParams.append('from', from.toISOString());
+  }
+
+  if (to) {
+    url.searchParams.append('to', to.toISOString());
+  }
+
+  const response = await fetchJson<ResponseInterface<StatisticsDateCountData>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response.data as StatisticsDateCountData;
+};
+
+export const useNotesStatisticsNotesCreatedQuery = ({ from, to }: { from?: Date; to?: Date }) => {
+  const queryKey = [STATISTICS_NOTES_DATE_COUNT_MAP_KEY, from, to];
+  const queryFn = () => getNotesStatisticsNotesCreated(from, to);
+
+  return useQuery<StatisticsDateCountData>({
+    queryKey,
+    queryFn,
   });
 };

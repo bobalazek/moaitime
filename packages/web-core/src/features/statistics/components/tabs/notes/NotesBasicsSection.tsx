@@ -1,10 +1,10 @@
 import { ErrorAlert } from '../../../../core/components/ErrorAlert';
 import { Loader } from '../../../../core/components/Loader';
-import { useTasksStatisticsQuery } from '../../../hooks/StatisticsTasksHooks';
-import StatisticsCard from '../../statistics-card/StatisticsCard';
+import { useNotesStatisticsQuery } from '../../../hooks/StatisticsNotesHooks';
+import StatisticsCard from '../../statistics-common/StatisticsCard';
 
-export default function StatisticsTasksTabContentBasics() {
-  const { isLoading, error, data } = useTasksStatisticsQuery();
+export default function NotesBasicsSection() {
+  const { isLoading, error, data } = useNotesStatisticsQuery();
 
   if (isLoading) {
     return <Loader />;
@@ -16,26 +16,26 @@ export default function StatisticsTasksTabContentBasics() {
 
   return (
     <div>
-      <h3 className="mb-2 text-2xl font-bold">Tasks</h3>
+      <h3 className="mb-2 text-2xl font-bold">Notes</h3>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <StatisticsCard
           title="Created Today"
-          value={data.tasksCreatedTodayCount}
+          value={data.notesCreatedTodayCount}
           description="How many did you create today?"
         />
         <StatisticsCard
           title="Created Yesterday"
-          value={data.tasksCreatedYesterdayCount}
+          value={data.notesCreatedYesterdayCount}
           description="How many did you create yesterday?"
         />
         <StatisticsCard
           title="Created This Week"
-          value={data.tasksCreatedThisWeekCount}
+          value={data.notesCreatedThisWeekCount}
           description="How many did you create this week?"
         />
         <StatisticsCard
           title="Created This Month"
-          value={data.tasksCreatedThisMonthCount}
+          value={data.notesCreatedThisMonthCount}
           description="How many did you create this month?"
         />
       </div>

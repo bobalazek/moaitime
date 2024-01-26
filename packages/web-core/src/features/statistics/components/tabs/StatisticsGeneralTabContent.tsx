@@ -12,7 +12,7 @@ import {
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useGeneralStatisticsQuery } from '../../hooks/StatisticsHooks';
-import StatisticsCard from '../statistics-card/StatisticsCard';
+import StatisticsCard from '../statistics-common/StatisticsCard';
 
 const StatisticsGeneralTabContent = () => {
   const { isLoading, error, data } = useGeneralStatisticsQuery();

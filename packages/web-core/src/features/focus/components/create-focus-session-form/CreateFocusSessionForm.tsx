@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { CreateFocusSession } from '@moaitime/shared-common';
+import { CreateFocusSession, DEFAULT_USER_SETTINGS } from '@moaitime/shared-common';
 import { Button, cn, Input } from '@moaitime/web-ui';
 
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { TaskAutocomplete } from '../../../core/components/selectors/TaskAutocomplete';
 import { useFocusSessionsStore } from '../../state/focusSessionsStore';
 
 export default function CreateFocusSessionForm() {
   const { addFocusSession } = useFocusSessionsStore();
+  const focusSessionSettings = useAuthUserSetting(
+    'focusSessionSettings',
+    DEFAULT_USER_SETTINGS.focusSessionSettings
+  );
   const [data, setData] = useState<CreateFocusSession>({
     taskText: '',
     taskId: null,
-    settings: {
-      focusDurationSeconds: 25 * 60,
-      shortBreakDurationSeconds: 5 * 60,
-      longBreakDurationSeconds: 30 * 60,
-      focusRepetitionsCount: 4,
-    },
+    settings: focusSessionSettings,
   });
 
   useEffect(() => {

@@ -77,4 +77,10 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   // Focus
   focusEnabled: true,
   focusSoundsEnabled: true,
+  focusSessionSettings: {
+    focusDurationSeconds: 60 * 25,
+    shortBreakDurationSeconds: 5 * 60,
+    longBreakDurationSeconds: 15 * 60,
+    focusRepetitionsCount: 4,
+  },
 };

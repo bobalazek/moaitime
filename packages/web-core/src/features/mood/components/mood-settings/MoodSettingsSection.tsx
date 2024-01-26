@@ -13,7 +13,6 @@ export default function MoodSettingsSection() {
   const moodEnabled = useAuthUserSetting('moodEnabled', false);
   const moodSoundsEnabled = useAuthUserSetting('moodSoundsEnabled', false);
   const moodScores = useAuthUserSetting('moodScores', DEFAULT_USER_SETTINGS.moodScores);
-  // The only reason we need this is, because we are debouncing the label change, meaning a controlled input woulnd't be updated in real time otherwise
   const [moodScoresData, setMoodScoresData] = useState(moodScores);
 
   useEffect(() => {

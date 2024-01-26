@@ -13,7 +13,10 @@ export const FocusSessionSettingsSchema = z.object({
     .max(60 * 1440, {
       message: 'Focus duration must be at most 3600 minutes',
     })
-    .default(60 * 25),
+    .default(60 * 25)
+    .refine((value) => value % 60 === 0, {
+      message: 'Focus duration must be a round number of minutes',
+    }),
   shortBreakDurationSeconds: z
     .number()
     .min(60, {
@@ -22,7 +25,10 @@ export const FocusSessionSettingsSchema = z.object({
     .max(60 * 1440, {
       message: 'Short break duration must be at most 3600 minutes',
     })
-    .default(5 * 60),
+    .default(5 * 60)
+    .refine((value) => value % 60 === 0, {
+      message: 'Focus duration must be a round number of minutes',
+    }),
   longBreakDurationSeconds: z
     .number()
     .min(60, {
@@ -31,7 +37,10 @@ export const FocusSessionSettingsSchema = z.object({
     .max(60 * 1440, {
       message: 'Long break duration must be at most 3600 minutes',
     })
-    .default(15 * 60),
+    .default(15 * 60)
+    .refine((value) => value % 60 === 0, {
+      message: 'Focus duration must be a round number of minutes',
+    }),
   focusRepetitionsCount: z
     .number()
     .min(1, {

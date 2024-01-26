@@ -4,6 +4,7 @@ import { MOOD_SCORES } from '../Constants';
 import { DayOfWeek } from '../core/DayOfWeek';
 import { HexColorSchema } from '../core/HexColorSchema';
 import { ThemeEnum } from '../core/ThemeEnum';
+import { FocusSessionSettingsSchema } from '../focus/FocusSessionSchema';
 import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
 
 export const UserSettingsSchema = z.object({
@@ -78,6 +79,7 @@ export const UserSettingsSchema = z.object({
   // Focus
   focusEnabled: z.boolean(),
   focusSoundsEnabled: z.boolean(),
+  focusSessionSettings: FocusSessionSettingsSchema,
 });
 
 export const UpdateUserSettingsSchema = UserSettingsSchema.partial();

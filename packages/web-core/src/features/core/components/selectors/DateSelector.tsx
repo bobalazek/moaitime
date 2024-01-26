@@ -6,7 +6,6 @@ import { isValidTime } from '@moaitime/shared-common';
 import {
   Button,
   Calendar,
-  Input,
   Label,
   Popover,
   PopoverContent,
@@ -15,6 +14,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
+import TimeSelector from './date/TimeSelector';
 import TimezoneSelector from './TimezoneSelector';
 
 export type DateSelectorData = {
@@ -76,14 +76,6 @@ export default function DateSelector({
 
   const onSelectDate = (value?: Date) => {
     setDateValue(value ? format(value, 'yyyy-MM-dd') : null);
-  };
-
-  const onKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== 'Enter') {
-      return;
-    }
-
-    onSaveButtonClick(event);
   };
 
   const onSaveButtonClick = (event?: MouseEvent | KeyboardEvent) => {
@@ -213,13 +205,9 @@ export default function DateSelector({
                   </button>
                 </div>
               </div>
-              <Input
-                id="date-selector--time"
-                value={dateTimeValue ?? ''}
-                onChange={(event) => setDateTimeValue(event.target.value)}
-                onKeyDown={onKeyPress}
-                autoComplete="off"
-                maxLength={5}
+              <TimeSelector
+                value={dateTimeValue ?? undefined}
+                onChangeValue={(value) => setDateTimeValue(value ?? null)}
               />
             </div>
             {!disableTimeZone && (

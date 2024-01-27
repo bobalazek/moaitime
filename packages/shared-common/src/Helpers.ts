@@ -79,6 +79,16 @@ export const getTimeDifferenceInSeconds = (start: Date, end: Date) => {
   return Math.floor((start.getTime() - end.getTime()) / 1000);
 };
 
+export const removeDateTimezoneFromItself = (date: Date): Date => {
+  const tzOffset = date.getTimezoneOffset();
+  return new Date(date.valueOf() + tzOffset * 60 * 1000);
+};
+
+export const addDateTimezoneToItself = (date: Date): Date => {
+  const tzOffset = date.getTimezoneOffset();
+  return new Date(date.valueOf() - tzOffset * 60 * 1000);
+};
+
 export const padDataForRangeMap = (data: StatisticsDateCountData, from: Date, to: Date) => {
   const map: StatisticsDateCountData = {};
   const range: Date[] = [];

@@ -4,6 +4,7 @@ import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 import { Frequency, RRule } from 'rrule';
 
+import { addDateTimezoneToItself, removeDateTimezoneFromItself } from '@moaitime/shared-common';
 import {
   Button,
   Input,
@@ -196,15 +197,21 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
         <div>
           <h4 className="text-muted-foreground">Starts</h4>
           <DateSelector
-            data={convertIsoStringToObject(rule.options.dtstart.toISOString(), true, undefined)}
+            data={convertIsoStringToObject(
+              removeDateTimezoneFromItself(rule.options.dtstart).toISOString(),
+              true,
+              undefined
+            )}
             onSaveData={(saveData) => {
               const result = convertObjectToIsoString(saveData);
 
               setRule((current) => {
-                const dateStart = new Date(result?.iso ?? 'now');
+                const dateStart = addDateTimezoneToItself(new Date(result?.iso ?? 'now'));
+
                 current.options.dtstart = dateStart;
                 current.options.bysecond = [0];
-                current.options.byminute = [dateStart.getMinutes()];
+                current.options.byminute = [dateStart.getUTCMinutes()];
+                current.options.byhour = [dateStart.getUTCHours()];
 
                 return RRule.fromString(RRule.optionsToString(current.options));
               });
@@ -221,7 +228,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             onValueChange={(value) => {
               setEndsType(value as RepeatSelectorEndsType);
             }}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-2"
           >
             <div className="flex items-center">
               <div className="flex w-32 gap-2">
@@ -277,7 +284,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
                 .all((_, index) => index < 5)
                 .map((date) => (
                   <li key={date.toISOString()} className="flex-grow">
-                    {date.toLocaleString()}
+                    {removeDateTimezoneFromItself(date).toLocaleString()}
                   </li>
                 ))}
             </ul>

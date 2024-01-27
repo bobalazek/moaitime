@@ -17,10 +17,10 @@ import { useTagsStore } from '../../../tasks/state/tagsStore';
 
 export type TagSelectorProps = {
   values?: string[];
-  onChangeValue: (values: string[]) => void;
+  onChangeValues: (values: string[]) => void;
 };
 
-export function TagSelector({ values, onChangeValue }: TagSelectorProps) {
+export function TagSelector({ values, onChangeValues }: TagSelectorProps) {
   const { tags, addTag } = useTagsStore();
   const [open, setOpen] = useState(false);
   const [commandValue, setCommandValue] = useState('');
@@ -36,7 +36,7 @@ export function TagSelector({ values, onChangeValue }: TagSelectorProps) {
 
       setCommandValue('');
 
-      onChangeValue([...(values ?? []), addedTag.id]);
+      onChangeValues([...(values ?? []), addedTag.id]);
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
@@ -85,7 +85,7 @@ export function TagSelector({ values, onChangeValue }: TagSelectorProps) {
                     ? values.filter((value) => value !== currentValue) ?? []
                     : [...(values ?? []), currentValue];
 
-                  onChangeValue(newValues);
+                  onChangeValues(newValues);
                 }}
                 className="cursor-pointer border-l-4 border-l-transparent"
                 style={{

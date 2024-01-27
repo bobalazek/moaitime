@@ -193,22 +193,6 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </ToggleGroup>
           </div>
         )}
-        {ruleString && (
-          <div>
-            <h4 className="text-muted-foreground mt-2">
-              Dates for <b className="text-sm">{ruleString}</b>:
-            </h4>
-            <ul className="list-disc pl-5 text-xs leading-5">
-              {rule
-                .all((_, index) => index < 5)
-                .map((date) => (
-                  <li key={date.toISOString()} className="flex-grow">
-                    {date.toLocaleString()}
-                  </li>
-                ))}
-            </ul>
-          </div>
-        )}
         <div>
           <h4 className="text-muted-foreground">Starts</h4>
           <DateSelector
@@ -283,6 +267,22 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </div>
           </RadioGroup>
         </div>
+        {ruleString && (
+          <div>
+            <h4 className="text-muted-foreground mt-2">
+              Dates for <b className="text-sm">{ruleString}</b>:
+            </h4>
+            <ul className="list-disc pl-5 text-xs leading-5">
+              {rule
+                .all((_, index) => index < 5)
+                .map((date) => (
+                  <li key={date.toISOString()} className="flex-grow">
+                    {date.toLocaleString()}
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
         <div>
           <Button className="w-full" onClick={onSaveButtonSave}>
             Save

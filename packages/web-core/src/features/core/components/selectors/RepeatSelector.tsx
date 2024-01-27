@@ -7,9 +7,12 @@ import { Frequency, RRule } from 'rrule';
 import {
   Button,
   Input,
+  Label,
   Popover,
   PopoverContent,
   PopoverTrigger,
+  RadioGroup,
+  RadioGroupItem,
   ToggleGroup,
   ToggleGroupItem,
 } from '@moaitime/web-ui';
@@ -20,11 +23,25 @@ import {
 } from '../../../calendar/utils/CalendarHelpers';
 import DateSelector from './DateSelector';
 
+const getClosestNextHalfHour = () => {
+  const now = new Date();
+  const minutes = now.getMinutes();
+
+  let halfHour = Math.ceil(minutes / 30) * 30;
+  if (30 - minutes <= 5) {
+    halfHour += 30;
+  }
+
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), halfHour);
+};
+
 const DEFAULT_RRULE_OPTIONS: Partial<Options> = {
   freq: Frequency.DAILY,
   interval: 1,
   bysecond: [0],
 };
+
+export type RepeatSelectorEndsType = 'never' | 'after_date' | 'after_count';
 
 export type RepeatSelectorProps = {
   value?: string;
@@ -33,18 +50,33 @@ export type RepeatSelectorProps = {
 
 export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [rule, setRule] = useState(new RRule(DEFAULT_RRULE_OPTIONS));
+  const [rule, setRule] = useState(
+    new RRule({
+      ...DEFAULT_RRULE_OPTIONS,
+      dtstart: getClosestNextHalfHour(),
+    })
+  );
+  const [endsType, setEndsType] = useState<RepeatSelectorEndsType>('never');
+  const [endsAt, setEndsAt] = useState(new Date());
+  const [endsAfterCount, setEndsAfterCount] = useState(1);
 
   const ruleString = rule.toText();
 
   useEffect(() => {
-    setRule(value ? RRule.fromString(value) : new RRule(DEFAULT_RRULE_OPTIONS));
+    setRule(
+      value
+        ? RRule.fromString(value)
+        : new RRule({
+            ...DEFAULT_RRULE_OPTIONS,
+            dtstart: getClosestNextHalfHour(),
+          })
+    );
   }, [value]);
 
   const onClearButtonClick = (event: MouseEvent) => {
     event.preventDefault();
 
-    onChangeValue(undefined);
+    onChangeValue(); // basically means I provided 3 "undefined" values
 
     setOpen(false);
   };
@@ -52,7 +84,18 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    onChangeValue(RRule.optionsToString(rule.options) ?? undefined);
+    const startsAtDate = rule.options.dtstart;
+    let endsAtDate = undefined;
+
+    if (endsType === 'after_date') {
+      endsAtDate = endsAt;
+    } else if (endsType === 'after_count' && endsAfterCount) {
+      rule.options.count = endsAfterCount;
+    }
+
+    const ruleString = RRule.optionsToString(rule.options) ?? undefined;
+
+    onChangeValue(ruleString, startsAtDate, endsAtDate);
 
     setOpen(false);
   };
@@ -113,7 +156,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
           </div>
         </div>
         <div>
-          <h4 className="text-muted-foreground">Start Time</h4>
+          <h4 className="text-muted-foreground">Starts</h4>
           <DateSelector
             data={convertIsoStringToObject(rule.options.dtstart.toISOString(), true, undefined)}
             onSaveData={(saveData) => {
@@ -132,6 +175,57 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             disableTimeZone={true}
             disableClear={true}
           />
+        </div>
+        <div>
+          <h4 className="text-muted-foreground mb-1">Ends</h4>
+          <RadioGroup
+            value={endsType}
+            onValueChange={(value) => {
+              setEndsType(value as RepeatSelectorEndsType);
+            }}
+            className="flex flex-col gap-4"
+          >
+            <div className="flex items-center">
+              <div className="flex w-32 gap-2">
+                <RadioGroupItem id="repeat-ends-type-never" value="never" />
+                <Label htmlFor="repeat-ends-type-never">Never</Label>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <div className="flex w-32 flex-grow gap-2">
+                <RadioGroupItem id="repeat-ends-type-after-date" value="after_date" />
+                <Label htmlFor="repeat-ends-type-after-date">After Date</Label>
+              </div>
+              <DateSelector
+                data={convertIsoStringToObject(endsAt.toISOString(), true, undefined)}
+                onSaveData={(saveData) => {
+                  const result = convertObjectToIsoString(saveData);
+
+                  setEndsAt(new Date(result?.iso ?? 'now'));
+                }}
+                includeTime={false}
+                disableTimeZone={true}
+                disableClear={true}
+              />
+            </div>
+            <div className="flex items-center">
+              <div className="flex w-32 gap-2">
+                <RadioGroupItem id="repeat-ends-type-after-count" value="after_count" />
+                <Label htmlFor="repeat-ends-type-after-count">After Count</Label>
+              </div>
+              <Input
+                type="number"
+                value={endsAfterCount}
+                onChange={(event) => {
+                  setEndsAfterCount(parseInt(event.target.value));
+                }}
+                className="w-20"
+                min={1}
+                max={999}
+              />
+              <span>occurences</span>
+            </div>
+          </RadioGroup>
         </div>
         {rule.options.freq === Frequency.WEEKLY && (
           <div>

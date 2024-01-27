@@ -66,19 +66,36 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
     message: 'Start date must be before end date',
     path: ['startsAt', 'endsAt'],
   }
-).refine(
-  (data) => {
-    if (!data.isAllDay) {
-      return true;
-    }
+)
+  .refine(
+    (data) => {
+      if (!data.isAllDay) {
+        return true;
+      }
 
-    return data.startsAt.endsWith('T00:00:00.000') && data.endsAt.endsWith('T00:00:00.000');
-  },
-  {
-    message: 'All day events must start at T00:00:00.000Z and end at T00:00:00.000',
-    path: ['isAllDay'],
-  }
-);
+      return data.startsAt.endsWith('T00:00:00.000') && data.endsAt.endsWith('T00:00:00.000');
+    },
+    {
+      message: 'All day events must start at T00:00:00.000Z and end at T00:00:00.000',
+      path: ['isAllDay'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.repeatStartsAt || !data.repeatEndsAt) {
+        return true;
+      }
+
+      const startTime = new Date(data.repeatStartsAt).getTime();
+      const endTime = new Date(data.repeatEndsAt).getTime();
+
+      return startTime <= endTime;
+    },
+    {
+      message: 'Start date must be before end date',
+      path: ['repeatStartsAt', 'repeatEndsAt'],
+    }
+  );
 
 export const UpdateEventSchema = CreateEventBaseSchema.omit({
   timezone: true,

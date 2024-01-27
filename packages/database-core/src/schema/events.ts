@@ -14,9 +14,7 @@ export const events = pgTable(
     timezone: text('timezone').default('UTC'),
     endTimezone: text('end_timezone'), // In case the endsAt is in a different timezone
     isAllDay: boolean('is_all_day').notNull().default(false),
-    //repeatStartsAt: timestamp('repeat_starts_at'),
-    //repeatEndsAt: timestamp('repeat_ends_at'),
-    //repeatPattern: text('repeat_pattern'), // the resulting pattern from rrule
+    repeatPattern: text('repeat_pattern'), // the resulting pattern from rrule
     startsAt: timestamp('starts_at'),
     endsAt: timestamp('ends_at'),
     deletedAt: timestamp('deleted_at'),

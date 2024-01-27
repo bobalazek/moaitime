@@ -13,6 +13,7 @@ export const EventSchema = z.object({
   timezone: z.string().nullable(),
   endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),
+  repeatPattern: z.string().nullable(),
   startsAt: z.string(),
   endsAt: z.string(),
   deletedAt: z.string().nullable(),
@@ -30,6 +31,7 @@ export const CreateEventBaseSchema = z.object({
   timezone: TimezoneSchema.nullable().optional(),
   endTimezone: TimezoneSchema.nullable().optional(),
   isAllDay: z.boolean().optional(),
+  repeatPattern: z.string().nullable().optional(),
   startsAt: z.string({
     required_error: 'Start date is required',
   }),

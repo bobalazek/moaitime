@@ -52,6 +52,10 @@ export * from './components/switch';
 // Tabs
 export * from './components/tabs';
 
+// Toggle
+export * from './components/toggle';
+export * from './components/toggle-group';
+
 // Switch
 export * from './components/switch';
 

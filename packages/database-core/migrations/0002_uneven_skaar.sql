@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "repeat_pattern" text;

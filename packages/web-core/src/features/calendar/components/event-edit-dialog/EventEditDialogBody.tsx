@@ -9,6 +9,7 @@ import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
+import { RepeatSelector } from '../../../core/components/selectors/RepeatSelector';
 import { useEventsStore } from '../../state/eventsStore';
 import { convertIsoStringToObject, convertObjectToIsoString } from '../../utils/CalendarHelpers';
 
@@ -40,6 +41,7 @@ export default function EventEditDialogBody() {
   const dataTimezone = data && 'timezone' in data ? data.timezone : undefined;
   const dataEndTimezone = data && 'endTimezone' in data ? data.endTimezone : undefined;
   const dataIsAllDay = data && 'isAllDay' in data ? data.isAllDay ?? false : false;
+  const dataRepeatPattern = data && 'repeatPattern' in data ? data.repeatPattern : undefined;
   const dataCalendarId = data && 'calendarId' in data ? data.calendarId : undefined;
 
   const startDateInCurrentTimezone =
@@ -217,6 +219,15 @@ export default function EventEditDialogBody() {
             timezone
           </div>
         )}
+      </div>
+      <div className="mb-4 flex flex-col gap-2">
+        <Label htmlFor="event-repeat">Repeat</Label>
+        <RepeatSelector
+          value={dataRepeatPattern ?? undefined}
+          onChangeValue={(value) => {
+            setData((current) => ({ ...current, repeatPattern: value ?? null }) as CreateEvent);
+          }}
+        />
       </div>
       <div className="mb-4 flex flex-col gap-2">
         <Label htmlFor="event-calendar">Calendar</Label>

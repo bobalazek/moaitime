@@ -21,15 +21,14 @@ import {
 import DateSelector from './DateSelector';
 
 const DEFAULT_RRULE_OPTIONS: Partial<Options> = {
-  freq: Frequency.HOURLY,
+  freq: Frequency.DAILY,
   interval: 1,
-  byweekday: [],
   bysecond: [0],
 };
 
 export type RepeatSelectorProps = {
   value?: string;
-  onChangeValue: (value?: string) => void;
+  onChangeValue: (value?: string, startsAt?: Date, endsAt?: Date) => void;
 };
 
 export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
@@ -64,7 +63,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
         <Button
           variant="outline"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between text-xs"
           data-test="repeat-selector--trigger-button"
         >
           {!value && <span className="text-muted-foreground italic">Does not repeat</span>}
@@ -78,7 +77,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="flex w-[380px] flex-col gap-4 p-2" data-test="repeat-selector">
+      <PopoverContent className="flex w-[380px] flex-col gap-2 p-2" data-test="repeat-selector">
         <h3 className="text-xl font-bold">Repeat</h3>
         <div className="text-muted-foreground">
           <div className="flex flex-row items-center gap-2">
@@ -106,7 +105,6 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
             >
-              <option value={Frequency.HOURLY}>hours</option>
               <option value={Frequency.DAILY}>days</option>
               <option value={Frequency.WEEKLY}>weeks</option>
               <option value={Frequency.MONTHLY}>months</option>
@@ -115,7 +113,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
           </div>
         </div>
         <div>
-          <h4 className="text-muted-foreground">Repeat Start Time</h4>
+          <h4 className="text-muted-foreground">Start Time</h4>
           <DateSelector
             data={convertIsoStringToObject(rule.options.dtstart.toISOString(), true, undefined)}
             onSaveData={(saveData) => {
@@ -131,12 +129,13 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
               });
             }}
             includeTime={true}
+            disableTimeZone={true}
             disableClear={true}
           />
         </div>
         {rule.options.freq === Frequency.WEEKLY && (
           <div>
-            <h4 className="text-muted-foreground mb-2">Repeat on</h4>
+            <h4 className="text-muted-foreground">Repeat on</h4>
             <ToggleGroup
               type="multiple"
               value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
@@ -174,9 +173,9 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
         )}
         {ruleString && (
           <div>
-            <h4 className="text-muted-foreground">Result</h4>
-            <span className="flex text-xs">{ruleString}</span>
-            <h4 className="text-muted-foreground mt-2">Dates</h4>
+            <h4 className="text-muted-foreground mt-2">
+              Dates for <b className="text-sm">{ruleString}</b>:
+            </h4>
             <ul className="list-disc pl-5 text-xs leading-5">
               {rule
                 .all((_, index) => index < 5)

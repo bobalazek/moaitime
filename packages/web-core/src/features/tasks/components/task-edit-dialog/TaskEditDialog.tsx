@@ -228,8 +228,8 @@ export default function TaskEditDialog() {
             </button>
           </Label>
           <TagSelector
-            values={data?.tagIds ?? []}
-            onChangeValues={(values) => setData((current) => ({ ...current, tagIds: values }))}
+            value={data?.tagIds ?? []}
+            onChangeValue={(value) => setData((current) => ({ ...current, tagIds: value }))}
           />
         </div>
         <div className="flex flex-col gap-2">

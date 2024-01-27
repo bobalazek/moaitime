@@ -16,16 +16,16 @@ import {
 import { useTagsStore } from '../../../tasks/state/tagsStore';
 
 export type TagSelectorProps = {
-  values?: string[];
-  onChangeValues: (values: string[]) => void;
+  value?: string[];
+  onChangeValue: (value: string[]) => void;
 };
 
-export function TagSelector({ values, onChangeValues }: TagSelectorProps) {
+export function TagSelector({ value, onChangeValue }: TagSelectorProps) {
   const { tags, addTag } = useTagsStore();
   const [open, setOpen] = useState(false);
   const [commandValue, setCommandValue] = useState('');
 
-  const selectedTags = tags.filter((tag) => values?.includes(tag.id));
+  const selectedTags = tags.filter((tag) => value?.includes(tag.id));
   const filteredTags = tags.filter((tag) => tag.name.includes(commandValue));
 
   const onCreateTag = async () => {
@@ -36,7 +36,7 @@ export function TagSelector({ values, onChangeValues }: TagSelectorProps) {
 
       setCommandValue('');
 
-      onChangeValues([...(values ?? []), addedTag.id]);
+      onChangeValue([...(value ?? []), addedTag.id]);
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
@@ -81,11 +81,11 @@ export function TagSelector({ values, onChangeValues }: TagSelectorProps) {
                 key={tag.id}
                 value={tag.id}
                 onSelect={(currentValue) => {
-                  const newValues = values?.includes(currentValue)
-                    ? values.filter((value) => value !== currentValue) ?? []
-                    : [...(values ?? []), currentValue];
+                  const newValues = value?.includes(currentValue)
+                    ? value.filter((val) => val !== currentValue) ?? []
+                    : [...(value ?? []), currentValue];
 
-                  onChangeValues(newValues);
+                  onChangeValue(newValues);
                 }}
                 className="cursor-pointer border-l-4 border-l-transparent"
                 style={{

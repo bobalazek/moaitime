@@ -139,33 +139,34 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             <h4 className="text-muted-foreground mb-2">Repeat on</h4>
             <ToggleGroup
               type="multiple"
-              value={rule.options.byweekday.map((day) => day.toString()) ?? []}
+              value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
                 setRule((current) => {
-                  current.options.byweekday = value.map((day) => parseInt(day));
+                  current.options.byweekday = value?.map((day) => parseInt(day));
                   return RRule.fromString(RRule.optionsToString(current.options));
                 });
               }}
             >
-              <ToggleGroupItem value="1" className="flex-grow">
+              {/* For some strange reason it's 0 for mMnday, where as usually that's Sunday */}
+              <ToggleGroupItem value="0" className="flex-grow">
                 Mo
               </ToggleGroupItem>
-              <ToggleGroupItem value="2" className="flex-grow">
+              <ToggleGroupItem value="1" className="flex-grow">
                 Tu
               </ToggleGroupItem>
-              <ToggleGroupItem value="3" className="flex-grow">
+              <ToggleGroupItem value="2" className="flex-grow">
                 We
               </ToggleGroupItem>
-              <ToggleGroupItem value="4" className="flex-grow">
+              <ToggleGroupItem value="3" className="flex-grow">
                 Th
               </ToggleGroupItem>
-              <ToggleGroupItem value="5" className="flex-grow">
+              <ToggleGroupItem value="4" className="flex-grow">
                 Fr
               </ToggleGroupItem>
-              <ToggleGroupItem value="6" className="flex-grow">
+              <ToggleGroupItem value="5" className="flex-grow">
                 Sa
               </ToggleGroupItem>
-              <ToggleGroupItem value="0" className="flex-grow">
+              <ToggleGroupItem value="6" className="flex-grow">
                 Su
               </ToggleGroupItem>
             </ToggleGroup>
@@ -176,7 +177,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             <h4 className="text-muted-foreground">Result</h4>
             <span className="flex text-xs">{ruleString}</span>
             <h4 className="text-muted-foreground mt-2">Dates</h4>
-            <ul className="text-xs leading-5">
+            <ul className="list-disc pl-5 text-xs leading-5">
               {rule
                 .all((_, index) => index < 5)
                 .map((date) => (

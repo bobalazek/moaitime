@@ -1,3 +1,5 @@
+import type { Options } from 'rrule';
+
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 import { Frequency, RRule } from 'rrule';
@@ -12,6 +14,19 @@ import {
   ToggleGroupItem,
 } from '@moaitime/web-ui';
 
+import {
+  convertIsoStringToObject,
+  convertObjectToIsoString,
+} from '../../../calendar/utils/CalendarHelpers';
+import DateSelector from './DateSelector';
+
+const DEFAULT_RRULE_OPTIONS: Partial<Options> = {
+  freq: Frequency.HOURLY,
+  interval: 1,
+  byweekday: [],
+  bysecond: [0],
+};
+
 export type RepeatSelectorProps = {
   value?: string;
   onChangeValue: (value?: string) => void;
@@ -19,22 +34,12 @@ export type RepeatSelectorProps = {
 
 export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [rule, setRule] = useState(
-    new RRule({
-      freq: Frequency.HOURLY,
-    })
-  );
+  const [rule, setRule] = useState(new RRule(DEFAULT_RRULE_OPTIONS));
 
   const ruleString = rule.toText();
 
   useEffect(() => {
-    setRule(
-      value
-        ? RRule.fromString(value)
-        : new RRule({
-            freq: Frequency.HOURLY,
-          })
-    );
+    setRule(value ? RRule.fromString(value) : new RRule(DEFAULT_RRULE_OPTIONS));
   }, [value]);
 
   const onClearButtonClick = (event: MouseEvent) => {
@@ -109,6 +114,26 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </select>
           </div>
         </div>
+        <div>
+          <h4 className="text-muted-foreground">Repeat Start Time</h4>
+          <DateSelector
+            data={convertIsoStringToObject(rule.options.dtstart.toISOString(), true, undefined)}
+            onSaveData={(saveData) => {
+              const result = convertObjectToIsoString(saveData);
+
+              setRule((current) => {
+                const dateStart = new Date(result?.iso ?? 'now');
+                current.options.dtstart = dateStart;
+                current.options.bysecond = [0];
+                current.options.byminute = [dateStart.getMinutes()];
+
+                return RRule.fromString(RRule.optionsToString(current.options));
+              });
+            }}
+            includeTime={true}
+            disableClear={true}
+          />
+        </div>
         {rule.options.freq === Frequency.WEEKLY && (
           <div>
             <h4 className="text-muted-foreground mb-2">Repeat on</h4>
@@ -146,11 +171,22 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </ToggleGroup>
           </div>
         )}
-        <div>
-          <h4 className="text-muted-foreground">Result</h4>
-          {!ruleString && <span className="text-muted-foreground">Does not repeat</span>}
-          {ruleString && <span className="flex">{ruleString}</span>}
-        </div>
+        {ruleString && (
+          <div>
+            <h4 className="text-muted-foreground">Result</h4>
+            <span className="flex text-xs">{ruleString}</span>
+            <h4 className="text-muted-foreground mt-2">Dates</h4>
+            <ul className="text-xs leading-5">
+              {rule
+                .all((_, index) => index < 5)
+                .map((date) => (
+                  <li key={date.toISOString()} className="flex-grow">
+                    {date.toLocaleString()}
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
         <div>
           <Button className="w-full" onClick={onSaveButtonSave}>
             Save

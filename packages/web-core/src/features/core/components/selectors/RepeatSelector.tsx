@@ -41,7 +41,7 @@ const DEFAULT_RRULE_OPTIONS: Partial<Options> = {
   bysecond: [0],
 };
 
-export type RepeatSelectorEndsType = 'never' | 'after_date' | 'after_count';
+export type RepeatSelectorEndsType = 'never' | 'until_date' | 'count';
 
 export type RepeatSelectorProps = {
   value?: string;
@@ -87,9 +87,9 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
     const startsAtDate = rule.options.dtstart;
     let endsAtDate = undefined;
 
-    if (endsType === 'after_date') {
+    if (endsType === 'until_date') {
       endsAtDate = endsAt;
-    } else if (endsType === 'after_count' && endsAfterCount) {
+    } else if (endsType === 'count' && endsAfterCount) {
       rule.options.count = endsAfterCount;
     }
 
@@ -155,78 +155,6 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </select>
           </div>
         </div>
-        <div>
-          <h4 className="text-muted-foreground">Starts</h4>
-          <DateSelector
-            data={convertIsoStringToObject(rule.options.dtstart.toISOString(), true, undefined)}
-            onSaveData={(saveData) => {
-              const result = convertObjectToIsoString(saveData);
-
-              setRule((current) => {
-                const dateStart = new Date(result?.iso ?? 'now');
-                current.options.dtstart = dateStart;
-                current.options.bysecond = [0];
-                current.options.byminute = [dateStart.getMinutes()];
-
-                return RRule.fromString(RRule.optionsToString(current.options));
-              });
-            }}
-            includeTime={true}
-            disableTimeZone={true}
-            disableClear={true}
-          />
-        </div>
-        <div>
-          <h4 className="text-muted-foreground mb-1">Ends</h4>
-          <RadioGroup
-            value={endsType}
-            onValueChange={(value) => {
-              setEndsType(value as RepeatSelectorEndsType);
-            }}
-            className="flex flex-col gap-4"
-          >
-            <div className="flex items-center">
-              <div className="flex w-32 gap-2">
-                <RadioGroupItem id="repeat-ends-type-never" value="never" />
-                <Label htmlFor="repeat-ends-type-never">Never</Label>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="flex w-32 flex-grow gap-2">
-                <RadioGroupItem id="repeat-ends-type-after-date" value="after_date" />
-                <Label htmlFor="repeat-ends-type-after-date">After Date</Label>
-              </div>
-              <DateSelector
-                data={convertIsoStringToObject(endsAt.toISOString(), true, undefined)}
-                onSaveData={(saveData) => {
-                  const result = convertObjectToIsoString(saveData);
-
-                  setEndsAt(new Date(result?.iso ?? 'now'));
-                }}
-                includeTime={false}
-                disableTimeZone={true}
-                disableClear={true}
-              />
-            </div>
-            <div className="flex items-center">
-              <div className="flex w-32 gap-2">
-                <RadioGroupItem id="repeat-ends-type-after-count" value="after_count" />
-                <Label htmlFor="repeat-ends-type-after-count">After Count</Label>
-              </div>
-              <Input
-                type="number"
-                value={endsAfterCount}
-                onChange={(event) => {
-                  setEndsAfterCount(parseInt(event.target.value));
-                }}
-                className="w-20"
-                min={1}
-                max={999}
-              />
-              <span>occurences</span>
-            </div>
-          </RadioGroup>
-        </div>
         {rule.options.freq === Frequency.WEEKLY && (
           <div>
             <h4 className="text-muted-foreground">Repeat on</h4>
@@ -281,6 +209,80 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </ul>
           </div>
         )}
+        <div>
+          <h4 className="text-muted-foreground">Starts</h4>
+          <DateSelector
+            data={convertIsoStringToObject(rule.options.dtstart.toISOString(), true, undefined)}
+            onSaveData={(saveData) => {
+              const result = convertObjectToIsoString(saveData);
+
+              setRule((current) => {
+                const dateStart = new Date(result?.iso ?? 'now');
+                current.options.dtstart = dateStart;
+                current.options.bysecond = [0];
+                current.options.byminute = [dateStart.getMinutes()];
+
+                return RRule.fromString(RRule.optionsToString(current.options));
+              });
+            }}
+            includeTime={true}
+            disableTimeZone={true}
+            disableClear={true}
+          />
+        </div>
+        <div>
+          <h4 className="text-muted-foreground mb-1">Ends</h4>
+          <RadioGroup
+            value={endsType}
+            onValueChange={(value) => {
+              setEndsType(value as RepeatSelectorEndsType);
+            }}
+            className="flex flex-col gap-4"
+          >
+            <div className="flex items-center">
+              <div className="flex w-32 gap-2">
+                <RadioGroupItem id="repeat-ends-type-never" value="never" />
+                <Label htmlFor="repeat-ends-type-never">Never</Label>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <div className="flex min-w-[80px] flex-grow gap-2">
+                <RadioGroupItem id="repeat-ends-type-after-date" value="after_date" />
+                <Label htmlFor="repeat-ends-type-after-date">Until</Label>
+              </div>
+              <DateSelector
+                data={convertIsoStringToObject(endsAt.toISOString(), true, undefined)}
+                onSaveData={(saveData) => {
+                  const result = convertObjectToIsoString(saveData);
+
+                  setEndsAt(new Date(result?.iso ?? 'now'));
+                }}
+                includeTime={false}
+                disableTimeZone={true}
+                disableClear={true}
+              />
+            </div>
+            <div className="flex items-center">
+              <div className="flex min-w-[80px] gap-2">
+                <RadioGroupItem id="repeat-ends-type-after-count" value="after_count" />
+                <Label htmlFor="repeat-ends-type-after-count">After</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={endsAfterCount}
+                  onChange={(event) => {
+                    setEndsAfterCount(parseInt(event.target.value));
+                  }}
+                  className="w-20"
+                  min={1}
+                  max={999}
+                />
+                <span>occurences</span>
+              </div>
+            </div>
+          </RadioGroup>
+        </div>
         <div>
           <Button className="w-full" onClick={onSaveButtonSave}>
             Save

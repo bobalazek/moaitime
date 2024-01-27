@@ -73,40 +73,53 @@ export function DurationSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="flex w-[360px] flex-col gap-4 p-2" data-test="duration-selector">
+      <PopoverContent className="flex w-[300px] flex-col gap-2 p-2" data-test="duration-selector">
         <div className="flex gap-2">
-          <Input
-            type="number"
-            placeholder="Hours"
-            value={hours}
-            onChange={(e) => setHours(parseInt(e.target.value))}
-            min={0}
-            max={24}
-          />
-          <Input
-            type="number"
-            placeholder="Minutes"
-            value={minutes}
-            onChange={(e) => setMinutes(parseInt(e.target.value))}
-            min={0}
-            max={60}
-          />
-          <Input
-            type="number"
-            placeholder="Seconds"
-            value={seconds}
-            onChange={(e) => setSeconds(parseInt(e.target.value))}
-            min={0}
-            max={60}
-          />
+          <div className="flex flex-grow">
+            <Input
+              type="number"
+              value={hours}
+              onChange={(e) => setHours(parseInt(e.target.value))}
+              min={0}
+              max={24}
+              className="px-1.5"
+              aria-label="Hours"
+            />
+            <div className="text-muted-foreground flex items-center pl-1.5 text-sm">hrs</div>
+          </div>
+          <div className="flex flex-grow">
+            <Input
+              type="number"
+              value={minutes}
+              onChange={(e) => setMinutes(parseInt(e.target.value))}
+              min={0}
+              max={60}
+              className="px-1.5"
+              aria-label="Minutes"
+            />
+            <div className="text-muted-foreground flex items-center pl-1.5 text-sm">mins</div>
+          </div>
+          <div className="flex flex-grow">
+            <Input
+              type="number"
+              value={seconds}
+              onChange={(e) => setSeconds(parseInt(e.target.value))}
+              min={0}
+              max={60}
+              className="px-1.5"
+              aria-label="Seconds"
+            />
+            <div className="text-muted-foreground flex items-center pl-1.5 text-sm">secs</div>
+          </div>
         </div>
+        <h4 className="mt-2 text-center text-sm font-bold">Presets</h4>
         <div className="flex w-full flex-wrap gap-2">
           {durationPresets.map((duration) => (
             <Button
               key={duration}
               variant="outline"
               onClick={() => setHoursMinutesSeconds(duration * 60)}
-              className="flex flex-grow"
+              className="text-muted-foreground flex h-4 flex-grow px-2 py-3 text-xs"
             >
               {`${duration} min`}
             </Button>

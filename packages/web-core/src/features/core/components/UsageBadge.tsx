@@ -5,15 +5,13 @@ import { Badge } from '@moaitime/web-ui';
 
 import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 
-export default function UsageBadge({
-  limitKey,
-  usageKey,
-  usageValue,
-}: {
+export type UsageBadgeProps = {
   limitKey: keyof UserLimits;
   usageKey?: keyof UserUsage;
   usageValue?: number;
-}) {
+};
+
+export default function UsageBadge({ limitKey, usageKey, usageValue }: UsageBadgeProps) {
   const { userLimits, userUsage } = useUserLimitsAndUsageStore();
 
   if (!userLimits || !userUsage) {

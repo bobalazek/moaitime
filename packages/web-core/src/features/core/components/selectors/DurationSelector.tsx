@@ -4,15 +4,14 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { durationToHoursMinutesSeconds, getDurationText } from '@moaitime/shared-common';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
-const durationPresets = [5, 10, 15, 30, 45, 60];
+const durationPresetsMinutes = [5, 10, 15, 30, 45, 60];
 
-export function DurationSelector({
-  value,
-  onChangeValue,
-}: {
+export type DurationSelectorProps = {
   value?: number;
   onChangeValue: (value?: number) => void;
-}) {
+};
+
+export function DurationSelector({ value, onChangeValue }: DurationSelectorProps) {
   const [open, setOpen] = useState(false);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -114,7 +113,7 @@ export function DurationSelector({
         </div>
         <h4 className="mt-2 text-center text-sm font-bold">Presets</h4>
         <div className="flex w-full flex-wrap gap-2">
-          {durationPresets.map((duration) => (
+          {durationPresetsMinutes.map((duration) => (
             <Button
               key={duration}
               variant="outline"

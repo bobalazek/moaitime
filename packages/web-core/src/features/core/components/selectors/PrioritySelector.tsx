@@ -3,19 +3,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const EMPTY_VALUE_PLACEHOLDER = '__empty';
 
+export type PrioritySelectorProps = {
+  value?: string;
+  onChangeValue: (value?: string) => void;
+  placeholderText?: string;
+  triggerProps?: Record<string, string>;
+  contentProps?: Record<string, string>;
+};
+
 export function PrioritySelector({
   value,
   onChangeValue,
   placeholderText,
   triggerProps,
   contentProps,
-}: {
-  value?: string;
-  onChangeValue: (value?: string) => void;
-  placeholderText?: string;
-  triggerProps?: Record<string, string>;
-  contentProps?: Record<string, string>;
-}) {
+}: PrioritySelectorProps) {
   return (
     <Select
       value={value ?? EMPTY_VALUE_PLACEHOLDER}

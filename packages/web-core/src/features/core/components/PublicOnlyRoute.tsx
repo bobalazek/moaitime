@@ -3,9 +3,9 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import { useAuthStore } from '../../auth/state/authStore';
 
-interface PublicOnlyRouteProps {
+export type PublicOnlyRouteProps = {
   children: ReactNode;
-}
+};
 
 export default function PublicOnlyRoute({ children }: PublicOnlyRouteProps) {
   const { auth } = useAuthStore();

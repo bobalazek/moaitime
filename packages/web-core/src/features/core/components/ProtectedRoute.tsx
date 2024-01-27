@@ -3,9 +3,9 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import { useAuthStore } from '../../auth/state/authStore';
 
-interface ProtectedRouteProps {
+export type ProtectedRouteProps = {
   children: ReactNode;
-}
+};
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { auth } = useAuthStore();

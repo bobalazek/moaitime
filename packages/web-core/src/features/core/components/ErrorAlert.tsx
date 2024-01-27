@@ -2,7 +2,11 @@ import { AlertTriangleIcon } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle, Button } from '@moaitime/web-ui';
 
-export const ErrorAlert = ({ error }: { error: unknown }) => {
+export type ErrorAlertProps = {
+  error: unknown;
+};
+
+export const ErrorAlert = ({ error }: ErrorAlertProps) => {
   const errorMessage =
     error instanceof Error
       ? error.message

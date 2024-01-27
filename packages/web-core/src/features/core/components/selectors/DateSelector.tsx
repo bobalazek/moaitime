@@ -14,7 +14,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
-import TimeSelector from './date/TimeSelector';
+import TimeSelector from './TimeSelector';
 import TimezoneSelector from './TimezoneSelector';
 
 export type DateSelectorData = {
@@ -140,11 +140,12 @@ export default function DateSelector({
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
 
   const isDateDisabled = (date: Date) => {
-    if (disablePast && date < new Date()) {
+    const now = new Date();
+    if (disablePast && date < now) {
       return true;
     }
 
-    if (disableFuture && date > new Date()) {
+    if (disableFuture && date > now) {
       return true;
     }
 

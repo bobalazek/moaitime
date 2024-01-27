@@ -21,15 +21,13 @@ import { useTasksStore } from '../../../tasks/state/tasksStore';
 
 const EMPTY_VALUE_PLACEHOLDER = '__empty';
 
-export function TaskParentSelector({
-  value,
-  onChangeValue,
-  isReadonly,
-}: {
+export type TaskParentSelectorProps = {
   value?: string;
   onChangeValue: (value?: string, task?: Task) => void;
   isReadonly?: boolean;
-}) {
+};
+
+export function TaskParentSelector({ value, onChangeValue, isReadonly }: TaskParentSelectorProps) {
   const { selectedTask } = useTasksStore();
   const { selectedListTasks } = useListsStore();
   const [open, setOpen] = useState(false);

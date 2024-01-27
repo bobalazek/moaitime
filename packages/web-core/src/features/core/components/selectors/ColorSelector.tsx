@@ -14,6 +14,16 @@ import {
 const EMPTY_VALUE_PLACEHOLDER = '__empty';
 const CUSTOM_VALUE_PLACEHOLDER = '__custom';
 
+export type ColorSelectorProps = {
+  value?: string;
+  onChangeValue: (value?: string) => void;
+  disableClear?: boolean;
+  allowCustomColors?: boolean;
+  placeholderText?: string;
+  triggerProps?: Record<string, string>;
+  contentProps?: Record<string, string>;
+};
+
 export function ColorSelector({
   value,
   onChangeValue,
@@ -22,15 +32,7 @@ export function ColorSelector({
   allowCustomColors,
   triggerProps,
   contentProps,
-}: {
-  value?: string;
-  onChangeValue: (value?: string) => void;
-  disableClear?: boolean;
-  allowCustomColors?: boolean;
-  placeholderText?: string;
-  triggerProps?: Record<string, string>;
-  contentProps?: Record<string, string>;
-}) {
+}: ColorSelectorProps) {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(value);
   const isSelectedColorCustom =
     value && !MAIN_COLORS.some((color) => color.value === selectedColor);

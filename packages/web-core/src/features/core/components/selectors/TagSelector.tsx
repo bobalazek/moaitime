@@ -15,13 +15,12 @@ import {
 
 import { useTagsStore } from '../../../tasks/state/tagsStore';
 
-export function TagSelector({
-  values,
-  onChangeValue,
-}: {
-  values: string[];
+export type TagSelectorProps = {
+  values?: string[];
   onChangeValue: (values: string[]) => void;
-}) {
+};
+
+export function TagSelector({ values, onChangeValue }: TagSelectorProps) {
   const { tags, addTag } = useTagsStore();
   const [open, setOpen] = useState(false);
   const [commandValue, setCommandValue] = useState('');

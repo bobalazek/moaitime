@@ -17,13 +17,12 @@ import {
 
 import { useListsStore } from '../../../tasks/state/listsStore';
 
-export function ListSelector({
-  value,
-  onChangeValue,
-}: {
+export type ListSelectorProps = {
   value?: string;
   onChangeValue: (value?: string) => void;
-}) {
+};
+
+export function ListSelector({ value, onChangeValue }: ListSelectorProps) {
   const { lists } = useListsStore();
   const [open, setOpen] = useState(false);
 

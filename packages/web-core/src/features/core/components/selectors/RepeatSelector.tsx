@@ -235,7 +235,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
                 <Label htmlFor="repeat-ends-type-after-date">Until</Label>
               </div>
               <DateSelector
-                data={convertIsoStringToObject(endsAt.toISOString(), true, undefined)}
+                data={convertIsoStringToObject(endsAt.toISOString(), false, undefined)}
                 onSaveData={(saveData) => {
                   const result = convertObjectToIsoString(saveData);
 

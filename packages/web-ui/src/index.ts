@@ -40,6 +40,9 @@ export * from './components/label';
 // Popover
 export * from './components/popover';
 
+// Radio Group
+export * from './components/radio-group';
+
 // Scroll area
 export * from './components/scroll-area';
 
@@ -56,11 +59,11 @@ export * from './components/tabs';
 export * from './components/toggle';
 export * from './components/toggle-group';
 
-// Switch
-export * from './components/switch';
-
 // Sheet
 export * from './components/sheet';
+
+// Switch
+export * from './components/switch';
 
 // Textarea
 export * from './components/textarea';

@@ -166,14 +166,21 @@ export class CalendarEntriesManager {
     };
 
     if (eventIterationDate) {
-      const startTime = new Date(event.startsAt ?? nowString).toTimeString();
-      const endTime = new Date(event.endsAt ?? nowString).toTimeString();
+      const originalStartDate = new Date(event.startsAt ?? nowString);
+      const originalEndDate = new Date(event.endsAt ?? nowString);
+      const duration = originalEndDate.getTime() - originalStartDate.getTime();
 
-      const iteratedStartDate = new Date(eventIterationDate.toDateString() + ' ' + startTime);
-      const iteratedEndDate = new Date(eventIterationDate.toDateString() + ' ' + endTime);
+      const iteratedStartDateTime = new Date(eventIterationDate);
+      iteratedStartDateTime.setHours(
+        originalStartDate.getHours(),
+        originalStartDate.getMinutes(),
+        originalStartDate.getSeconds()
+      );
 
-      const iteratedStartsAt = iteratedStartDate.toISOString().slice(0, -1);
-      const iteratedEndsAt = iteratedEndDate.toISOString().slice(0, -1);
+      const iteratedEndDateTime = new Date(iteratedStartDateTime.getTime() + duration);
+
+      const iteratedStartsAt = iteratedStartDateTime.toISOString().slice(0, -1);
+      const iteratedEndsAt = iteratedEndDateTime.toISOString().slice(0, -1);
 
       const iteratedStartsAtUtc = zonedTimeToUtc(iteratedStartsAt, timezone).toISOString();
       const iteratedEndsAtUtc = zonedTimeToUtc(iteratedEndsAt, endTimezone).toISOString();

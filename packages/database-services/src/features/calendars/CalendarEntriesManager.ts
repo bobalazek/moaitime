@@ -52,14 +52,14 @@ export class CalendarEntriesManager {
           continue;
         }
 
-        const eventOriginalStartsAt = new Date(event.startsAt ?? new Date());
-
         const eventIterations = getRuleIterationsBetween(event.repeatPattern, from, to);
         for (const eventIteration of eventIterations) {
           const calendarEntry = this._convertEventToCalendarEntry(event, eventIteration);
 
+          // Since we are only dealing with recurring events more than da
           const calendarEntryIsOriginal =
-            eventIteration.getTime() === eventOriginalStartsAt.getTime();
+            event.startsAt &&
+            format(eventIteration, 'yyyy-MM-dd') === format(event.startsAt, 'yyyy-MM-dd');
 
           // We ignore the original event from which this all stems from,
           // as that is already added above.
@@ -166,11 +166,22 @@ export class CalendarEntriesManager {
     };
 
     if (eventIterationDate) {
-      // TODO
-      // Here we just need to change the date part from the start end end date...
-      // Probably need to calculate the diff between the original start date and the iteration date,
-      // and then add that diff to the iteration date.
-      // We get the start date, and for the end date we just add the difference
+      const startTime = new Date(event.startsAt ?? nowString).toTimeString();
+      const endTime = new Date(event.endsAt ?? nowString).toTimeString();
+
+      const iteratedStartDate = new Date(eventIterationDate.toDateString() + ' ' + startTime);
+      const iteratedEndDate = new Date(eventIterationDate.toDateString() + ' ' + endTime);
+
+      const iteratedStartsAt = iteratedStartDate.toISOString().slice(0, -1);
+      const iteratedEndsAt = iteratedEndDate.toISOString().slice(0, -1);
+
+      const iteratedStartsAtUtc = zonedTimeToUtc(iteratedStartsAt, timezone).toISOString();
+      const iteratedEndsAtUtc = zonedTimeToUtc(iteratedEndsAt, endTimezone).toISOString();
+
+      timesObject.startsAt = iteratedStartsAt;
+      timesObject.startsAtUtc = iteratedStartsAtUtc;
+      timesObject.endsAt = iteratedEndsAt;
+      timesObject.endsAtUtc = iteratedEndsAtUtc;
     }
 
     const id = eventIterationDate

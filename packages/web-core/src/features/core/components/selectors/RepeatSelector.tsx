@@ -1,6 +1,5 @@
 import type { Options } from 'rrule';
 
-import { endOfDay } from 'date-fns';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 import { Frequency, RRule } from 'rrule';
@@ -44,71 +43,63 @@ const DEFAULT_RRULE_OPTIONS: Partial<Options> = {
 };
 const MAX_DATES_TO_SHOW = 5;
 
+const getClonedRule = (
+  original: RRule,
+  overwriteOptions?: Partial<Options>,
+  disableTime?: boolean
+) => {
+  if (overwriteOptions) {
+    Object.assign(original.options, overwriteOptions);
+  }
+
+  if (!disableTime) {
+    original.options.bysecond = [0];
+    original.options.byminute = [original.options.dtstart.getUTCMinutes()];
+    original.options.byhour = [original.options.dtstart.getUTCHours()];
+  } else {
+    original.options.bysecond = [];
+    original.options.byminute = [];
+    original.options.byhour = [];
+  }
+
+  return RRule.fromString(RRule.optionsToString(original.options));
+};
+
 export type RepeatSelectorEndsType = 'never' | 'until_date' | 'count';
 
 export type RepeatSelectorProps = {
   value?: string;
-  startsAt?: string;
-  endsAt?: string;
   onChangeValue: (value?: string, startsAt?: Date, endsAt?: Date) => void;
   disableTime?: boolean;
 };
 
-export function RepeatSelector({
-  value,
-  startsAt,
-  endsAt,
-  onChangeValue,
-  disableTime,
-}: RepeatSelectorProps) {
+export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
   const [rule, setRule] = useState(new RRule());
   const [endsType, setEndsType] = useState<RepeatSelectorEndsType>('never');
-  const [endsAtDate, setEndsAtDate] = useState(endsAt ? new Date(endsAt) : new Date());
-  const [endsAfterCount, setEndsAfterCount] = useState(1);
 
   const ruleString = rule.toText();
-
-  const datesMaxCount = endsAfterCount
-    ? Math.min(MAX_DATES_TO_SHOW, endsAfterCount)
-    : MAX_DATES_TO_SHOW;
 
   useEffect(() => {
     let newRule: RRule | undefined = undefined;
     if (value) {
       newRule = RRule.fromString(value);
     } else {
-      const dtstart = (startsAt ? new Date(startsAt) : undefined) ?? getClosestNextHalfHour();
-
-      const tmpRule = new RRule({
+      newRule = new RRule({
         ...DEFAULT_RRULE_OPTIONS,
-        dtstart,
+        dtstart: getClosestNextHalfHour(),
       });
-
-      if (!disableTime) {
-        tmpRule.options.bysecond = [0];
-        tmpRule.options.byminute = [dtstart.getUTCMinutes()];
-        tmpRule.options.byhour = [dtstart.getUTCHours()];
-      } else {
-        tmpRule.options.bysecond = [];
-        tmpRule.options.byminute = [];
-        tmpRule.options.byhour = [];
-      }
-
-      newRule = RRule.fromString(RRule.optionsToString(tmpRule.options));
     }
 
     setRule(newRule);
 
     // Make sure ends at is always first, so we set the correct endsType
-    if (endsAt) {
+    if (newRule.options.until) {
       setEndsType('until_date');
-      setEndsAtDate(new Date(endsAt));
     } else if (newRule.options.count) {
       setEndsType('count');
-      setEndsAfterCount(newRule.options.count ?? 1);
     }
-  }, [value, startsAt, endsAt, disableTime, setEndsType, setEndsAfterCount]);
+  }, [value, disableTime, setEndsType]);
 
   const onClearButtonClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -121,19 +112,9 @@ export function RepeatSelector({
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    const startsAtDate = rule.options.dtstart;
-    let newEndsAtDate: Date | undefined = undefined;
-
-    rule.options.count = null;
-    if (endsType === 'until_date' && endsAtDate) {
-      newEndsAtDate = endOfDay(endsAtDate);
-    } else if (endsType === 'count' && endsAfterCount) {
-      rule.options.count = endsAfterCount;
-    }
-
     const ruleString = RRule.optionsToString(rule.options) ?? undefined;
 
-    onChangeValue(ruleString, startsAtDate, newEndsAtDate);
+    onChangeValue(ruleString, rule.options.dtstart, rule.options.until ?? undefined);
 
     setOpen(false);
   };
@@ -251,19 +232,7 @@ export function RepeatSelector({
                   result?.iso ? new Date(result?.iso) : new Date()
                 );
 
-                current.options.dtstart = dateStart;
-
-                if (!disableTime) {
-                  current.options.bysecond = [0];
-                  current.options.byminute = [dateStart.getUTCMinutes()];
-                  current.options.byhour = [dateStart.getUTCHours()];
-                } else {
-                  current.options.bysecond = [];
-                  current.options.byminute = [];
-                  current.options.byhour = [];
-                }
-
-                return RRule.fromString(RRule.optionsToString(current.options));
+                return getClonedRule(current, { dtstart: dateStart }, disableTime);
               });
             }}
             includeTime={!disableTime}
@@ -278,6 +247,16 @@ export function RepeatSelector({
             value={endsType}
             onValueChange={(value) => {
               setEndsType(value as RepeatSelectorEndsType);
+
+              if (value === 'never') {
+                setRule((current) => {
+                  return getClonedRule(
+                    current,
+                    { until: null, count: null, bysecond: [], byminute: [], byhour: [] },
+                    disableTime
+                  );
+                });
+              }
             }}
             className="flex flex-col gap-2"
           >
@@ -293,11 +272,23 @@ export function RepeatSelector({
                 <Label htmlFor="repeat-ends-type-after-date">Until</Label>
               </div>
               <DateSelector
-                data={convertIsoStringToObject(endsAtDate.toISOString(), false, undefined)}
+                data={convertIsoStringToObject(
+                  rule.options.until
+                    ? removeDateTimezoneFromItself(rule.options.until).toISOString()
+                    : new Date().toISOString(),
+                  !disableTime,
+                  undefined
+                )}
                 onSaveData={(saveData) => {
                   const result = convertObjectToIsoString(saveData);
 
-                  setEndsAtDate(result?.iso ? new Date(result?.iso) : new Date());
+                  setRule((current) => {
+                    const dateEnd = addDateTimezoneToItself(
+                      result?.iso ? new Date(result?.iso) : new Date()
+                    );
+
+                    return getClonedRule(current, { until: dateEnd, count: null }, disableTime);
+                  });
                 }}
                 disabled={endsType !== 'until_date'}
                 includeTime={false}
@@ -314,9 +305,15 @@ export function RepeatSelector({
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
-                  value={endsAfterCount}
+                  value={rule.options.count ?? 5}
                   onChange={(event) => {
-                    setEndsAfterCount(parseInt(event.target.value));
+                    setRule((current) => {
+                      return getClonedRule(
+                        current,
+                        { count: parseInt(event.target.value), until: null },
+                        disableTime
+                      );
+                    });
                   }}
                   disabled={endsType !== 'count'}
                   className="w-20"
@@ -335,7 +332,7 @@ export function RepeatSelector({
             </h4>
             <ul className="list-disc pl-5 text-xs leading-5">
               {rule
-                .all((_, index) => index < datesMaxCount)
+                .all((_, index) => index < MAX_DATES_TO_SHOW)
                 .map((date) => {
                   const finalDate = removeDateTimezoneFromItself(date);
                   return (
@@ -344,7 +341,6 @@ export function RepeatSelector({
                     </li>
                   );
                 })}
-              {endsAfterCount > MAX_DATES_TO_SHOW && <li>...</li>}
             </ul>
           </div>
         )}

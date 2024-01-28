@@ -9,6 +9,7 @@ import {
   gt,
   gte,
   inArray,
+  isNotNull,
   isNull,
   lt,
   lte,
@@ -29,6 +30,11 @@ import { Permissions } from '@moaitime/shared-common';
 
 import { calendarsManager, CalendarsManagerVisibleCalendarsMap } from './CalendarsManager';
 
+export type EventsManagerEvent = Event & {
+  calendarColor: string | null;
+  permissions?: Permissions;
+};
+
 export class EventsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
     return getDatabase().query.events.findMany(options);
@@ -44,8 +50,9 @@ export class EventsManager {
     calendarIdsMap: CalendarsManagerVisibleCalendarsMap,
     userId: string,
     from?: Date,
-    to?: Date
-  ) {
+    to?: Date,
+    onlyRecurring?: boolean
+  ): Promise<EventsManagerEvent[]> {
     const calendarIds = Array.from(calendarIdsMap.keys());
     if (calendarIds.length === 0) {
       return [];
@@ -57,19 +64,67 @@ export class EventsManager {
       isNull(events.deletedAt)
     );
 
-    if (from && to) {
-      where = and(
-        where,
-        or(
-          and(gte(events.startsAt, from), lte(events.startsAt, to)),
-          and(gte(events.endsAt, from), lte(events.endsAt, to)),
-          and(lt(events.startsAt, from), gt(events.endsAt, to))
-        )
-      ) as SQL<unknown>;
-    } else if (from) {
-      where = and(where, gte(events.startsAt, from)) as SQL<unknown>;
-    } else if (to) {
-      where = and(where, lte(events.endsAt, to)) as SQL<unknown>;
+    if (onlyRecurring) {
+      where = and(where, isNotNull(events.repeatPattern)) as SQL<unknown>;
+
+      if (from && to) {
+        where = and(
+          where,
+          or(
+            and(
+              isNull(events.repeatStartsAt),
+              or(isNull(events.repeatEndsAt), gte(events.repeatEndsAt, from))
+            ),
+            and(
+              isNull(events.repeatEndsAt),
+              or(isNull(events.repeatStartsAt), lt(events.repeatStartsAt, to))
+            ),
+            and(gte(events.repeatStartsAt, from), lte(events.repeatStartsAt, to)),
+            and(gte(events.repeatEndsAt, from), lte(events.repeatEndsAt, to)),
+            and(lt(events.repeatStartsAt, from), gt(events.repeatEndsAt, to)),
+            and(
+              lt(events.repeatStartsAt, from),
+              or(isNull(events.repeatEndsAt), gt(events.repeatEndsAt, to))
+            )
+          )
+        ) as SQL<unknown>;
+      } else if (from) {
+        where = and(
+          where,
+          or(
+            isNull(events.repeatStartsAt),
+            gte(events.repeatStartsAt, from),
+            and(
+              lt(events.repeatStartsAt, from),
+              or(isNull(events.repeatEndsAt), gt(events.repeatEndsAt, from))
+            )
+          )
+        ) as SQL<unknown>;
+      } else if (to) {
+        where = and(
+          where,
+          or(
+            isNull(events.repeatEndsAt),
+            lte(events.repeatEndsAt, to),
+            and(isNull(events.repeatStartsAt), lte(events.repeatStartsAt, to))
+          )
+        ) as SQL<unknown>;
+      }
+    } else {
+      if (from && to) {
+        where = and(
+          where,
+          or(
+            and(gte(events.startsAt, from), lte(events.startsAt, to)),
+            and(gte(events.endsAt, from), lte(events.endsAt, to)),
+            and(lt(events.startsAt, from), gt(events.endsAt, to))
+          )
+        ) as SQL<unknown>;
+      } else if (from) {
+        where = and(where, gte(events.startsAt, from)) as SQL<unknown>;
+      } else if (to) {
+        where = and(where, lte(events.endsAt, to)) as SQL<unknown>;
+      }
     }
 
     const result = await getDatabase()

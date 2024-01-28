@@ -4,13 +4,13 @@ import { MouseEvent, useEffect, useState } from 'react';
 
 import {
   addDateTimezoneToItself,
-  cloneRule,
   convertRuleToString,
   createRule,
   getRuleFromString,
   removeDateTimezoneFromItself,
   RuleFrequency,
   RuleOptions,
+  updateRule,
 } from '@moaitime/shared-common';
 import {
   Button,
@@ -74,7 +74,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
   useEffect(() => {
     const newRule = value
       ? getRuleFromString(value)
-      : cloneRule(
+      : updateRule(
           rule,
           {
             dtstart: getClosestNextHalfHour(),
@@ -150,7 +150,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.interval}
               onChange={(event) => {
                 setRule((current) => {
-                  return cloneRule(
+                  return updateRule(
                     current,
                     { interval: parseInt(event.target.value) },
                     disableTime
@@ -165,7 +165,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.freq}
               onChange={(event) => {
                 setRule((current) => {
-                  return cloneRule(current, { freq: parseInt(event.target.value) }, disableTime);
+                  return updateRule(current, { freq: parseInt(event.target.value) }, disableTime);
                 });
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
@@ -185,7 +185,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
                 setRule((current) => {
-                  return cloneRule(
+                  return updateRule(
                     current,
                     { byweekday: value?.map((day) => parseInt(day)) ?? null },
                     disableTime
@@ -234,13 +234,12 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                   result?.iso ? new Date(result?.iso) : new Date()
                 );
 
-                return cloneRule(current, { dtstart: dateStart }, disableTime);
+                return updateRule(current, { dtstart: dateStart }, disableTime);
               });
             }}
             includeTime={!disableTime}
             disableTimeZone={true}
             disableClear={true}
-            disablePast={true}
           />
         </div>
         <div>
@@ -265,7 +264,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               };
 
               setRule((current) => {
-                return cloneRule(current, options, disableTime);
+                return updateRule(current, options, disableTime);
               });
             }}
             className="flex flex-col gap-2"
@@ -300,14 +299,13 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                       result?.iso ? new Date(result?.iso) : new Date()
                     );
 
-                    return cloneRule(current, { until: dateEnd, count: null }, disableTime);
+                    return updateRule(current, { until: dateEnd, count: null }, disableTime);
                   });
                 }}
                 disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
                 includeTime={false}
                 disableTimeZone={true}
                 disableClear={true}
-                disablePast={true}
               />
             </div>
             <div className="flex items-center">
@@ -324,7 +322,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                   value={rule.options.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
                     setRule((current) => {
-                      return cloneRule(
+                      return updateRule(
                         current,
                         { count: parseInt(event.target.value), until: null },
                         disableTime

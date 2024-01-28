@@ -2,12 +2,18 @@ import { addDays, format, subMinutes } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import { User } from '@moaitime/database-core';
-import { CalendarEntry, CalendarEntryTypeEnum, Event, Task } from '@moaitime/shared-common';
+import {
+  CalendarEntry,
+  CalendarEntryTypeEnum,
+  Event,
+  getRuleIterationsBetween,
+  Task,
+} from '@moaitime/shared-common';
 
 import { ListsManager, listsManager } from '../tasks/ListsManager';
 import { TasksManager, tasksManager } from '../tasks/TasksManager';
 import { CalendarsManager, calendarsManager } from './CalendarsManager';
-import { EventsManager, eventsManager } from './EventsManager';
+import { EventsManager, eventsManager, EventsManagerEvent } from './EventsManager';
 
 export class CalendarEntriesManager {
   constructor(
@@ -18,7 +24,6 @@ export class CalendarEntriesManager {
   ) {}
 
   async findAllForRange(user: User, from?: Date, to?: Date): Promise<CalendarEntry[]> {
-    const nowString = new Date().toISOString().slice(0, -1);
     const timezone = user.settings?.generalTimezone ?? 'UTC';
 
     const calendarIdsMap = await this._calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
@@ -29,43 +34,43 @@ export class CalendarEntriesManager {
       to
     );
     const calendarEntries: CalendarEntry[] = events.map((event) => {
-      const timezone = event.timezone ?? 'UTC';
-      const endTimezone = event.endTimezone ?? timezone;
-
-      // The startsAt and endsAt fields are retrived as Date objects from drizzle-orm,
-      // but they are actually timezoned strings, so we need to remove the last "Z" character,
-      // as that is not really that is actually what is stored in the database.
-      const startsAt = event.startsAt?.toISOString().slice(0, -1) ?? nowString;
-      const endsAt = event.endsAt?.toISOString().slice(0, -1) ?? nowString;
-
-      const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
-      const endsAtUtc = zonedTimeToUtc(endsAt, endTimezone).toISOString();
-
-      const timesObject = {
-        timezone,
-        startsAt,
-        startsAtUtc,
-        endTimezone,
-        endsAt,
-        endsAtUtc,
-      };
-
-      return {
-        id: `events:${event.id}`,
-        type: CalendarEntryTypeEnum.EVENT,
-        title: event.title,
-        description: event.description,
-        isAllDay: event.isAllDay,
-        color: event.color ?? event.calendarColor ?? null,
-        calendarId: event.calendarId,
-        permissions: event.permissions,
-        ...timesObject,
-        raw: {
-          ...event,
-          ...timesObject,
-        } as unknown as Event,
-      };
+      return this._convertEventToCalendarEntry(event);
     });
+
+    // Repeating events
+    if (from && to) {
+      const recurringEvents = await this._eventsManager.findManyByCalendarIdsAndRange(
+        calendarIdsMap,
+        user.id,
+        from,
+        to,
+        true
+      );
+      for (const event of recurringEvents) {
+        // This will never happen, but we need typescript to be happy.
+        if (!event.repeatPattern) {
+          continue;
+        }
+
+        const eventOriginalStartsAt = new Date(event.startsAt ?? new Date());
+
+        const eventIterations = getRuleIterationsBetween(event.repeatPattern, from, to);
+        for (const eventIteration of eventIterations) {
+          const calendarEntry = this._convertEventToCalendarEntry(event, eventIteration);
+
+          const calendarEntryIsOriginal =
+            eventIteration.getTime() === eventOriginalStartsAt.getTime();
+
+          // We ignore the original event from which this all stems from,
+          // as that is already added above.
+          if (calendarEntryIsOriginal) {
+            continue;
+          }
+
+          calendarEntries.push(calendarEntry);
+        }
+      }
+    }
 
     const listIds = await this._listsManager.getVisibleListIdsByUserId(user.id);
     const tasks = await this._tasksManager.findManyByListIdsAndRange(listIds, from, to);
@@ -129,6 +134,63 @@ export class CalendarEntriesManager {
     });
 
     return calendarEntries;
+  }
+
+  private _convertEventToCalendarEntry(
+    event: EventsManagerEvent,
+    eventIterationDate?: Date
+  ): CalendarEntry {
+    const nowString = new Date().toISOString().slice(0, -1);
+    const timezone = event.timezone ?? 'UTC';
+    const endTimezone = event.endTimezone ?? timezone;
+
+    // The startsAt and endsAt fields are retrived as Date objects from drizzle-orm,
+    // but they are actually timezoned strings, so we need to remove the last "Z" character,
+    // as that is not really that is actually what is stored in the database.
+    const startsAt = event.startsAt?.toISOString().slice(0, -1) ?? nowString;
+    const endsAt = event.endsAt?.toISOString().slice(0, -1) ?? nowString;
+
+    const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
+    const endsAtUtc = zonedTimeToUtc(endsAt, endTimezone).toISOString();
+
+    const timesObject = {
+      timezone,
+      startsAt,
+      startsAtUtc,
+      endTimezone,
+      endsAt,
+      endsAtUtc,
+    };
+    const eventTimesObject = {
+      ...timesObject,
+    };
+
+    if (eventIterationDate) {
+      // TODO
+      // Here we just need to change the date part from the start end end date...
+      // Probably need to calculate the diff between the original start date and the iteration date,
+      // and then add that diff to the iteration date.
+      // We get the start date, and for the end date we just add the difference
+    }
+
+    const id = eventIterationDate
+      ? `events:${event.id}:${eventIterationDate.getTime()}`
+      : `events:${event.id}`;
+
+    return {
+      id,
+      type: CalendarEntryTypeEnum.EVENT,
+      title: event.title,
+      description: event.description,
+      isAllDay: event.isAllDay,
+      color: event.color ?? event.calendarColor ?? null,
+      permissions: event.permissions,
+      ...timesObject,
+      raw: {
+        ...event,
+        ...eventTimesObject,
+      } as unknown as Event,
+    };
   }
 }
 

@@ -224,14 +224,16 @@ export default function EventEditDialogBody() {
         <Label htmlFor="event-repeat">Repeat</Label>
         <RepeatSelector
           value={dataRepeatPattern ?? undefined}
+          startsAt={data?.repeatStartsAt ?? undefined}
+          endsAt={data?.repeatEndsAt ?? undefined}
           onChangeValue={(value, startsAt, endsAt) => {
             setData(
               (current) =>
                 ({
                   ...current,
                   repeatPattern: value ?? null,
-                  repeatStartsAt: startsAt,
-                  repeatEndsAt: endsAt,
+                  repeatStartsAt: startsAt ?? null,
+                  repeatEndsAt: endsAt ?? null,
                 }) as CreateEvent
             );
           }}

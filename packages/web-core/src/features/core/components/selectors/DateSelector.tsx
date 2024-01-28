@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { CalendarIcon, XIcon } from 'lucide-react';
 import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 
@@ -26,6 +26,7 @@ export type DateSelectorData = {
 export type DateSelectorProps = {
   data: DateSelectorData;
   onSaveData: (value: DateSelectorData) => void;
+  disabled?: boolean;
   includeTime?: boolean;
   disableClear?: boolean;
   disablePast?: boolean;
@@ -56,6 +57,7 @@ export default function DateSelector({
   data,
   onSaveData,
   includeTime,
+  disabled,
   disableClear,
   disablePast,
   disableFuture,
@@ -140,7 +142,7 @@ export default function DateSelector({
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
 
   const isDateDisabled = (date: Date) => {
-    const now = new Date();
+    const now = startOfDay(new Date());
     if (disablePast && date < now) {
       return true;
     }
@@ -159,6 +161,7 @@ export default function DateSelector({
           variant="outline"
           className="flex w-full justify-between font-normal"
           data-test="date-selector--trigger-button"
+          disabled={disabled}
         >
           <span className="flex">
             <CalendarIcon className="mr-2 h-4 w-4" />

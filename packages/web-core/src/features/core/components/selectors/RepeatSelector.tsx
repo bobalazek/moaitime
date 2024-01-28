@@ -41,15 +41,18 @@ const DEFAULT_RRULE_OPTIONS: Partial<Options> = {
   interval: 1,
   bysecond: [0],
 };
+const MAX_DATES_TO_SHOW = 5;
 
 export type RepeatSelectorEndsType = 'never' | 'until_date' | 'count';
 
 export type RepeatSelectorProps = {
   value?: string;
+  startsAt?: string;
+  endsAt?: string;
   onChangeValue: (value?: string, startsAt?: Date, endsAt?: Date) => void;
 };
 
-export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
+export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
   const [rule, setRule] = useState(
     new RRule({
@@ -58,21 +61,34 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
     })
   );
   const [endsType, setEndsType] = useState<RepeatSelectorEndsType>('never');
-  const [endsAt, setEndsAt] = useState(new Date());
+  const [endsAtDate, setEndsAtDate] = useState(endsAt ? new Date(endsAt) : new Date());
   const [endsAfterCount, setEndsAfterCount] = useState(1);
 
   const ruleString = rule.toText();
 
+  const datesMaxCount = endsAfterCount
+    ? Math.min(MAX_DATES_TO_SHOW, endsAfterCount)
+    : MAX_DATES_TO_SHOW;
+
   useEffect(() => {
-    setRule(
-      value
-        ? RRule.fromString(value)
-        : new RRule({
-            ...DEFAULT_RRULE_OPTIONS,
-            dtstart: getClosestNextHalfHour(),
-          })
-    );
-  }, [value]);
+    const newRule = value
+      ? RRule.fromString(value)
+      : new RRule({
+          ...DEFAULT_RRULE_OPTIONS,
+          dtstart: (startsAt ? new Date(startsAt) : undefined) ?? getClosestNextHalfHour(),
+        });
+
+    setRule(newRule);
+
+    // Make sure ends at is always first, so we set the correct endsType
+    if (endsAt) {
+      setEndsType('until_date');
+      setEndsAtDate(new Date(endsAt));
+    } else if (newRule.options.count) {
+      setEndsType('count');
+      setEndsAfterCount(newRule.options.count ?? 1);
+    }
+  }, [value, startsAt, endsAt, setEndsType, setEndsAfterCount]);
 
   const onClearButtonClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -86,17 +102,18 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
     event.preventDefault();
 
     const startsAtDate = rule.options.dtstart;
-    let endsAtDate = undefined;
+    let newEndsAtDate: Date | undefined = undefined;
 
-    if (endsType === 'until_date') {
-      endsAtDate = endsAt;
+    rule.options.count = null;
+    if (endsType === 'until_date' && endsAtDate) {
+      newEndsAtDate = endsAtDate;
     } else if (endsType === 'count' && endsAfterCount) {
       rule.options.count = endsAfterCount;
     }
 
     const ruleString = RRule.optionsToString(rule.options) ?? undefined;
 
-    onChangeValue(ruleString, startsAtDate, endsAtDate);
+    onChangeValue(ruleString, startsAtDate, newEndsAtDate);
 
     setOpen(false);
   };
@@ -121,7 +138,11 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="flex w-[380px] flex-col gap-2 p-2" data-test="repeat-selector">
+      <PopoverContent
+        side="top"
+        className="flex w-[380px] flex-col gap-2 p-2"
+        data-test="repeat-selector"
+      >
         <h3 className="text-xl font-bold">Repeat</h3>
         <div className="text-muted-foreground">
           <div className="flex flex-row items-center gap-2">
@@ -169,7 +190,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
                 });
               }}
             >
-              {/* For some strange reason it's 0 for mMnday, where as usually that's Sunday */}
+              {/* For some strange reason it's 0 for Monday, where as usually that's Sunday */}
               <ToggleGroupItem value="0" className="flex-grow">
                 Mo
               </ToggleGroupItem>
@@ -206,7 +227,9 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
               const result = convertObjectToIsoString(saveData);
 
               setRule((current) => {
-                const dateStart = addDateTimezoneToItself(new Date(result?.iso ?? 'now'));
+                const dateStart = addDateTimezoneToItself(
+                  result?.iso ? new Date(result?.iso) : new Date()
+                );
 
                 current.options.dtstart = dateStart;
                 current.options.bysecond = [0];
@@ -219,6 +242,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             includeTime={true}
             disableTimeZone={true}
             disableClear={true}
+            disablePast={true}
           />
         </div>
         <div>
@@ -238,24 +262,26 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </div>
             <div className="flex items-center">
               <div className="flex min-w-[80px] flex-grow gap-2">
-                <RadioGroupItem id="repeat-ends-type-after-date" value="after_date" />
+                <RadioGroupItem id="repeat-ends-type-after-date" value="until_date" />
                 <Label htmlFor="repeat-ends-type-after-date">Until</Label>
               </div>
               <DateSelector
-                data={convertIsoStringToObject(endsAt.toISOString(), false, undefined)}
+                data={convertIsoStringToObject(endsAtDate.toISOString(), false, undefined)}
                 onSaveData={(saveData) => {
                   const result = convertObjectToIsoString(saveData);
 
-                  setEndsAt(new Date(result?.iso ?? 'now'));
+                  setEndsAtDate(result?.iso ? new Date(result?.iso) : new Date());
                 }}
+                disabled={endsType !== 'until_date'}
                 includeTime={false}
                 disableTimeZone={true}
                 disableClear={true}
+                disablePast={true}
               />
             </div>
             <div className="flex items-center">
               <div className="flex min-w-[80px] gap-2">
-                <RadioGroupItem id="repeat-ends-type-after-count" value="after_count" />
+                <RadioGroupItem id="repeat-ends-type-after-count" value="count" />
                 <Label htmlFor="repeat-ends-type-after-count">After</Label>
               </div>
               <div className="flex items-center gap-2">
@@ -265,6 +291,7 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
                   onChange={(event) => {
                     setEndsAfterCount(parseInt(event.target.value));
                   }}
+                  disabled={endsType !== 'count'}
                   className="w-20"
                   min={1}
                   max={999}
@@ -281,12 +308,13 @@ export function RepeatSelector({ value, onChangeValue }: RepeatSelectorProps) {
             </h4>
             <ul className="list-disc pl-5 text-xs leading-5">
               {rule
-                .all((_, index) => index < 5)
+                .all((_, index) => index < datesMaxCount)
                 .map((date) => (
-                  <li key={date.toISOString()} className="flex-grow">
+                  <li key={date.toISOString()}>
                     {removeDateTimezoneFromItself(date).toLocaleString()}
                   </li>
                 ))}
+              {endsAfterCount > MAX_DATES_TO_SHOW && <li>...</li>}
             </ul>
           </div>
         )}

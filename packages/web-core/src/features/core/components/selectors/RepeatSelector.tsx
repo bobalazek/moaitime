@@ -58,7 +58,11 @@ const getClonedRule = (
   return clone;
 };
 
-export type RepeatSelectorEndsType = 'never' | 'until_date' | 'count';
+export enum RepeatSelectorEndsEnum {
+  NEVER = 'never',
+  UNTIL_DATE = 'until_date',
+  COUNT = 'count',
+}
 
 export type RepeatSelectorProps = {
   value?: string;
@@ -74,7 +78,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
       interval: 1,
     })
   );
-  const [endsType, setEndsType] = useState<RepeatSelectorEndsType>('never');
+  const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
   const ruleString = rule.toText();
   const ruleDates = rule.all((_, index) => index < MAX_DATES_TO_SHOW);
@@ -100,9 +104,9 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
 
     // Make sure ends at is always first, so we set the correct endsType
     if (newRule.options.until) {
-      setEndsType('until_date');
+      setEndsType(RepeatSelectorEndsEnum.UNTIL_DATE);
     } else if (newRule.options.count) {
-      setEndsType('count');
+      setEndsType(RepeatSelectorEndsEnum.COUNT);
     }
   }, [value, rule, disableTime, setEndsType]);
 
@@ -260,11 +264,17 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
           <RadioGroup
             value={endsType}
             onValueChange={(value) => {
-              setEndsType(value as RepeatSelectorEndsType);
+              setEndsType(value as RepeatSelectorEndsEnum);
 
               const options: Partial<Options> = {
-                until: value === 'until_date' ? rule.options.until ?? addDays(new Date(), 7) : null,
-                count: value === 'count' ? rule.options.count ?? DEFAULT_OCCURENCES : null,
+                until:
+                  value === RepeatSelectorEndsEnum.UNTIL_DATE
+                    ? rule.options.until ?? addDays(new Date(), 7)
+                    : null,
+                count:
+                  value === RepeatSelectorEndsEnum.COUNT
+                    ? rule.options.count ?? DEFAULT_OCCURENCES
+                    : null,
                 bysecond: null,
                 byminute: null,
                 byhour: null,
@@ -278,13 +288,16 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
           >
             <div className="flex items-center">
               <div className="flex w-32 gap-2">
-                <RadioGroupItem id="repeat-ends-type-never" value="never" />
+                <RadioGroupItem id="repeat-ends-type-never" value={RepeatSelectorEndsEnum.NEVER} />
                 <Label htmlFor="repeat-ends-type-never">Never</Label>
               </div>
             </div>
             <div className="flex items-center">
               <div className="flex min-w-[80px] flex-grow gap-2">
-                <RadioGroupItem id="repeat-ends-type-until-date" value="until_date" />
+                <RadioGroupItem
+                  id="repeat-ends-type-until-date"
+                  value={RepeatSelectorEndsEnum.UNTIL_DATE}
+                />
                 <Label htmlFor="repeat-ends-type-until-date">Until</Label>
               </div>
               <DateSelector
@@ -306,7 +319,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                     return getClonedRule(current, { until: dateEnd, count: null }, disableTime);
                   });
                 }}
-                disabled={endsType !== 'until_date'}
+                disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
                 includeTime={false}
                 disableTimeZone={true}
                 disableClear={true}
@@ -315,7 +328,10 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
             </div>
             <div className="flex items-center">
               <div className="flex min-w-[80px] gap-2">
-                <RadioGroupItem id="repeat-ends-type-after-count" value="count" />
+                <RadioGroupItem
+                  id="repeat-ends-type-after-count"
+                  value={RepeatSelectorEndsEnum.COUNT}
+                />
                 <Label htmlFor="repeat-ends-type-after-count">After</Label>
               </div>
               <div className="flex items-center gap-2">
@@ -331,7 +347,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                       );
                     });
                   }}
-                  disabled={endsType !== 'count'}
+                  disabled={endsType !== RepeatSelectorEndsEnum.COUNT}
                   className="w-20"
                   min={1}
                   max={999}

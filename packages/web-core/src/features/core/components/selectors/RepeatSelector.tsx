@@ -1,11 +1,17 @@
-import type { Options } from 'rrule';
-
 import { addDays } from 'date-fns';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
-import { Frequency, RRule } from 'rrule';
 
-import { addDateTimezoneToItself, removeDateTimezoneFromItself } from '@moaitime/shared-common';
+import {
+  addDateTimezoneToItself,
+  cloneRule,
+  convertRuleToString,
+  createRule,
+  getRuleFromString,
+  removeDateTimezoneFromItself,
+  RuleFrequency,
+  RuleOptions,
+} from '@moaitime/shared-common';
 import {
   Button,
   Input,
@@ -40,24 +46,6 @@ const getClosestNextHalfHour = () => {
 const DEFAULT_OCCURENCES = 5;
 const MAX_DATES_TO_SHOW = 5;
 
-const getClonedRule = (
-  original: RRule,
-  overwriteOptions?: Partial<Options>,
-  disableTime?: boolean
-) => {
-  const clone = original.clone();
-
-  if (overwriteOptions) {
-    Object.assign(clone.options, overwriteOptions);
-  }
-
-  clone.options.bysecond = [0];
-  clone.options.byminute = !disableTime ? [clone.options.dtstart.getUTCMinutes()] : [0];
-  clone.options.byhour = !disableTime ? [clone.options.dtstart.getUTCHours()] : [0];
-
-  return clone;
-};
-
 export enum RepeatSelectorEndsEnum {
   NEVER = 'never',
   UNTIL_DATE = 'until_date',
@@ -73,8 +61,8 @@ export type RepeatSelectorProps = {
 export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
   const [rule, setRule] = useState(
-    new RRule({
-      freq: Frequency.DAILY,
+    createRule({
+      freq: RuleFrequency.DAILY,
       interval: 1,
     })
   );
@@ -85,8 +73,8 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
 
   useEffect(() => {
     const newRule = value
-      ? RRule.fromString(value)
-      : getClonedRule(
+      ? getRuleFromString(value)
+      : cloneRule(
           rule,
           {
             dtstart: getClosestNextHalfHour(),
@@ -94,8 +82,8 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
           disableTime
         );
 
-    const ruleValue = RRule.optionsToString(newRule.options);
-    const newRuleValue = RRule.optionsToString(newRule.options);
+    const ruleValue = convertRuleToString(newRule);
+    const newRuleValue = convertRuleToString(newRule);
     if (ruleValue === newRuleValue) {
       return;
     }
@@ -121,7 +109,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    const ruleValue = RRule.optionsToString(rule.options) ?? undefined;
+    const ruleValue = convertRuleToString(rule) ?? undefined;
 
     onChangeValue(ruleValue, rule.options.dtstart, rule.options.until ?? undefined);
 
@@ -140,7 +128,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
           {!value && <span className="text-muted-foreground italic">Does not repeat</span>}
           {value && (
             <>
-              <span className="flex text-left">{RRule.fromString(value).toText()}</span>
+              <span className="flex text-left">{getRuleFromString(value).toText()}</span>
               <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
                 <XIcon />
               </span>
@@ -162,7 +150,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.interval}
               onChange={(event) => {
                 setRule((current) => {
-                  return getClonedRule(
+                  return cloneRule(
                     current,
                     { interval: parseInt(event.target.value) },
                     disableTime
@@ -177,23 +165,19 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.freq}
               onChange={(event) => {
                 setRule((current) => {
-                  return getClonedRule(
-                    current,
-                    { freq: parseInt(event.target.value) },
-                    disableTime
-                  );
+                  return cloneRule(current, { freq: parseInt(event.target.value) }, disableTime);
                 });
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
             >
-              <option value={Frequency.DAILY}>days</option>
-              <option value={Frequency.WEEKLY}>weeks</option>
-              <option value={Frequency.MONTHLY}>months</option>
-              <option value={Frequency.YEARLY}>years</option>
+              <option value={RuleFrequency.DAILY}>days</option>
+              <option value={RuleFrequency.WEEKLY}>weeks</option>
+              <option value={RuleFrequency.MONTHLY}>months</option>
+              <option value={RuleFrequency.YEARLY}>years</option>
             </select>
           </div>
         </div>
-        {rule.options.freq === Frequency.WEEKLY && (
+        {rule.options.freq === RuleFrequency.WEEKLY && (
           <div>
             <h4 className="text-muted-foreground">Repeat on</h4>
             <ToggleGroup
@@ -201,7 +185,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
                 setRule((current) => {
-                  return getClonedRule(
+                  return cloneRule(
                     current,
                     { byweekday: value?.map((day) => parseInt(day)) ?? null },
                     disableTime
@@ -250,7 +234,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                   result?.iso ? new Date(result?.iso) : new Date()
                 );
 
-                return getClonedRule(current, { dtstart: dateStart }, disableTime);
+                return cloneRule(current, { dtstart: dateStart }, disableTime);
               });
             }}
             includeTime={!disableTime}
@@ -266,7 +250,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
             onValueChange={(value) => {
               setEndsType(value as RepeatSelectorEndsEnum);
 
-              const options: Partial<Options> = {
+              const options: Partial<RuleOptions> = {
                 until:
                   value === RepeatSelectorEndsEnum.UNTIL_DATE
                     ? rule.options.until ?? addDays(new Date(), 7)
@@ -281,7 +265,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               };
 
               setRule((current) => {
-                return getClonedRule(current, options, disableTime);
+                return cloneRule(current, options, disableTime);
               });
             }}
             className="flex flex-col gap-2"
@@ -316,7 +300,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                       result?.iso ? new Date(result?.iso) : new Date()
                     );
 
-                    return getClonedRule(current, { until: dateEnd, count: null }, disableTime);
+                    return cloneRule(current, { until: dateEnd, count: null }, disableTime);
                   });
                 }}
                 disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
@@ -340,7 +324,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                   value={rule.options.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
                     setRule((current) => {
-                      return getClonedRule(
+                      return cloneRule(
                         current,
                         { count: parseInt(event.target.value), until: null },
                         disableTime

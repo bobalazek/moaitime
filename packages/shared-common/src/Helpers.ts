@@ -2,7 +2,7 @@ import { timeZonesNames } from '@vvo/tzdb';
 import { addDays, endOfDay, startOfDay } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
-import { StatisticsDateCountData } from '@moaitime/shared-common';
+import { StatisticsDateCountData } from './statistics/StatisticsDateCountData';
 
 // General
 export const sleep = (milliseconds: number): Promise<unknown> => {
@@ -11,7 +11,7 @@ export const sleep = (milliseconds: number): Promise<unknown> => {
   });
 };
 
-// Time
+// Date & Time
 export const getGmtOffset = (timezone: string) => {
   const now = new Date();
   const zonedDate = utcToZonedTime(now, timezone);
@@ -108,6 +108,40 @@ export const padDataForRangeMap = (data: StatisticsDateCountData, from: Date, to
   return map;
 };
 
+export const getTimezonedStartOfDay = (timezone: string, date?: string): Date | null => {
+  if (!date) {
+    return null;
+  }
+
+  const zonedToDate = utcToZonedTime(date, timezone);
+  return zonedTimeToUtc(startOfDay(zonedToDate), timezone);
+};
+
+export const getTimezonedEndOfDay = (timezone: string, date: string): Date | null => {
+  if (!date) {
+    return null;
+  }
+
+  const zonedToDate = utcToZonedTime(date, timezone);
+  return zonedTimeToUtc(endOfDay(zonedToDate), timezone);
+};
+
+export const durationToHoursMinutesSeconds = (durationSeconds: number) => {
+  const hours = durationSeconds ? Math.floor(durationSeconds / 3600) : 0;
+  const minutes = durationSeconds ? Math.floor((durationSeconds - hours * 3600) / 60) : 0;
+  const seconds = durationSeconds ? durationSeconds - hours * 3600 - minutes * 60 : 0;
+
+  return { hours, minutes, seconds };
+};
+
+export const getDurationText = (durationSeconds: number) => {
+  const { hours, minutes, seconds } = durationToHoursMinutesSeconds(durationSeconds);
+
+  return `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${
+    seconds ? `${seconds}s` : ''
+  }`;
+};
+
 // UUID
 // Could have used the UUID library, but one of our other dependencies requires a lower version,
 // which we are then unable to use
@@ -169,39 +203,4 @@ export const convertObjectNullPropertiesToUndefined = <T extends Record<string, 
   }
 
   return newObj;
-};
-
-// Time
-export const getTimezonedStartOfDay = (timezone: string, date?: string): Date | null => {
-  if (!date) {
-    return null;
-  }
-
-  const zonedToDate = utcToZonedTime(date, timezone);
-  return zonedTimeToUtc(startOfDay(zonedToDate), timezone);
-};
-
-export const getTimezonedEndOfDay = (timezone: string, date: string): Date | null => {
-  if (!date) {
-    return null;
-  }
-
-  const zonedToDate = utcToZonedTime(date, timezone);
-  return zonedTimeToUtc(endOfDay(zonedToDate), timezone);
-};
-
-export const durationToHoursMinutesSeconds = (durationSeconds: number) => {
-  const hours = durationSeconds ? Math.floor(durationSeconds / 3600) : 0;
-  const minutes = durationSeconds ? Math.floor((durationSeconds - hours * 3600) / 60) : 0;
-  const seconds = durationSeconds ? durationSeconds - hours * 3600 - minutes * 60 : 0;
-
-  return { hours, minutes, seconds };
-};
-
-export const getDurationText = (durationSeconds: number) => {
-  const { hours, minutes, seconds } = durationToHoursMinutesSeconds(durationSeconds);
-
-  return `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${
-    seconds ? `${seconds}s` : ''
-  }`;
 };

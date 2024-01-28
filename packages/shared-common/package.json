@@ -26,7 +26,8 @@
   "dependencies": {
     "@vvo/tzdb": "^6.124.0",
     "date-fns": "^2.30.0",
-    "date-fns-tz": "^2.0.0"
+    "date-fns-tz": "^2.0.0",
+    "rrule": "^2.8.1"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

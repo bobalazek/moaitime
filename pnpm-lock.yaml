@@ -695,6 +695,9 @@ importers:
       date-fns-tz:
         specifier: ^2.0.0
         version: 2.0.0(date-fns@2.30.0)
+      rrule:
+        specifier: ^2.8.1
+        version: 2.8.1
     devDependencies:
       typescript:
         specifier: ^5.3.2
@@ -799,9 +802,6 @@ importers:
       react-router-dom:
         specifier: 6.20.0
         version: 6.20.0(react-dom@18.2.0)(react@18.2.0)
-      rrule:
-        specifier: ^2.8.1
-        version: 2.8.1
       use-debounce:
         specifier: ^10.0.0
         version: 10.0.0(react@18.2.0)

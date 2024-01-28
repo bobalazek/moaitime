@@ -1,5 +1,6 @@
 import type { Options } from 'rrule';
 
+import { addDays } from 'date-fns';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 import { Frequency, RRule } from 'rrule';
@@ -36,11 +37,7 @@ const getClosestNextHalfHour = () => {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), halfHour);
 };
 
-const DEFAULT_RRULE_OPTIONS: Partial<Options> = {
-  freq: Frequency.DAILY,
-  interval: 1,
-  bysecond: [0],
-};
+const DEFAULT_OCCURENCES = 5;
 const MAX_DATES_TO_SHOW = 5;
 
 const getClonedRule = (
@@ -48,21 +45,17 @@ const getClonedRule = (
   overwriteOptions?: Partial<Options>,
   disableTime?: boolean
 ) => {
+  const clone = original.clone();
+
   if (overwriteOptions) {
-    Object.assign(original.options, overwriteOptions);
+    Object.assign(clone.options, overwriteOptions);
   }
 
-  if (!disableTime) {
-    original.options.bysecond = [0];
-    original.options.byminute = [original.options.dtstart.getUTCMinutes()];
-    original.options.byhour = [original.options.dtstart.getUTCHours()];
-  } else {
-    original.options.bysecond = [];
-    original.options.byminute = [];
-    original.options.byhour = [];
-  }
+  clone.options.bysecond = [0];
+  clone.options.byminute = !disableTime ? [clone.options.dtstart.getUTCMinutes()] : [0];
+  clone.options.byhour = !disableTime ? [clone.options.dtstart.getUTCHours()] : [0];
 
-  return RRule.fromString(RRule.optionsToString(original.options));
+  return clone;
 };
 
 export type RepeatSelectorEndsType = 'never' | 'until_date' | 'count';
@@ -75,20 +68,32 @@ export type RepeatSelectorProps = {
 
 export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [rule, setRule] = useState(new RRule());
+  const [rule, setRule] = useState(
+    new RRule({
+      freq: Frequency.DAILY,
+      interval: 1,
+    })
+  );
   const [endsType, setEndsType] = useState<RepeatSelectorEndsType>('never');
 
   const ruleString = rule.toText();
+  const ruleDates = rule.all((_, index) => index < MAX_DATES_TO_SHOW);
 
   useEffect(() => {
-    let newRule: RRule | undefined = undefined;
-    if (value) {
-      newRule = RRule.fromString(value);
-    } else {
-      newRule = new RRule({
-        ...DEFAULT_RRULE_OPTIONS,
-        dtstart: getClosestNextHalfHour(),
-      });
+    const newRule = value
+      ? RRule.fromString(value)
+      : getClonedRule(
+          rule,
+          {
+            dtstart: getClosestNextHalfHour(),
+          },
+          disableTime
+        );
+
+    const ruleValue = RRule.optionsToString(newRule.options);
+    const newRuleValue = RRule.optionsToString(newRule.options);
+    if (ruleValue === newRuleValue) {
+      return;
     }
 
     setRule(newRule);
@@ -99,7 +104,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
     } else if (newRule.options.count) {
       setEndsType('count');
     }
-  }, [value, disableTime, setEndsType]);
+  }, [value, rule, disableTime, setEndsType]);
 
   const onClearButtonClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -112,9 +117,9 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    const ruleString = RRule.optionsToString(rule.options) ?? undefined;
+    const ruleValue = RRule.optionsToString(rule.options) ?? undefined;
 
-    onChangeValue(ruleString, rule.options.dtstart, rule.options.until ?? undefined);
+    onChangeValue(ruleValue, rule.options.dtstart, rule.options.until ?? undefined);
 
     setOpen(false);
   };
@@ -257,15 +262,17 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
             onValueChange={(value) => {
               setEndsType(value as RepeatSelectorEndsType);
 
-              if (value === 'never') {
-                setRule((current) => {
-                  return getClonedRule(
-                    current,
-                    { until: null, count: null, bysecond: [], byminute: [], byhour: [] },
-                    disableTime
-                  );
-                });
-              }
+              const options: Partial<Options> = {
+                until: value === 'until_date' ? rule.options.until ?? addDays(new Date(), 7) : null,
+                count: value === 'count' ? rule.options.count ?? DEFAULT_OCCURENCES : null,
+                bysecond: null,
+                byminute: null,
+                byhour: null,
+              };
+
+              setRule((current) => {
+                return getClonedRule(current, options, disableTime);
+              });
             }}
             className="flex flex-col gap-2"
           >
@@ -277,14 +284,14 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
             </div>
             <div className="flex items-center">
               <div className="flex min-w-[80px] flex-grow gap-2">
-                <RadioGroupItem id="repeat-ends-type-after-date" value="until_date" />
-                <Label htmlFor="repeat-ends-type-after-date">Until</Label>
+                <RadioGroupItem id="repeat-ends-type-until-date" value="until_date" />
+                <Label htmlFor="repeat-ends-type-until-date">Until</Label>
               </div>
               <DateSelector
                 data={convertIsoStringToObject(
                   rule.options.until
                     ? removeDateTimezoneFromItself(rule.options.until).toISOString()
-                    : new Date().toISOString(),
+                    : addDays(new Date(), 7).toISOString(),
                   !disableTime,
                   undefined
                 )}
@@ -314,7 +321,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
-                  value={rule.options.count ?? 5}
+                  value={rule.options.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
                     setRule((current) => {
                       return getClonedRule(
@@ -339,10 +346,14 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
             <h4 className="text-muted-foreground mt-2">
               Dates for <b className="text-sm">{ruleString}</b>:
             </h4>
-            <ul className="list-disc pl-5 text-xs leading-5">
-              {rule
-                .all((_, index) => index < MAX_DATES_TO_SHOW)
-                .map((date) => {
+            {ruleDates.length === 0 && (
+              <div className="text-muted-foreground text-xs">
+                No dates for the specified parameters
+              </div>
+            )}
+            {ruleDates.length > 0 && (
+              <ul className="list-disc pl-5 text-xs leading-5">
+                {ruleDates.map((date) => {
                   const finalDate = removeDateTimezoneFromItself(date);
                   return (
                     <li key={date.toISOString()}>
@@ -350,7 +361,8 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                     </li>
                   );
                 })}
-            </ul>
+              </ul>
+            )}
           </div>
         )}
         <div>

@@ -38,6 +38,7 @@ const TaskItemTags = ({ task }: { task: TaskType }) => {
               key={tag.id}
               className="m-[2px] inline-block rounded-full px-1.5 py-[1px] text-white"
               data-test="tasks--task--tags--tag"
+              data-tag-color={backgroundColor}
               style={{
                 color: textColor,
                 backgroundColor,

@@ -82,7 +82,6 @@ describe('tasks-tasks.cy.ts', () => {
       .first()
       .find('[data-test="tasks--task--name"]')
       .type('My edited task{enter}');
-
     cy.getBySel('tasks--task')
       .first()
       .find('[data-test="tasks--task--name"]')
@@ -373,5 +372,154 @@ describe('tasks-tasks.cy.ts', () => {
       .contains(
         'A task with children cannot have a parent task. Please remove the children first.'
       );
+  });
+
+  it('Should create a new tag in settings', () => {
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.getBySel('settings--dialog--sidebar').contains('Tasks').click();
+
+    cy.getBySel('settings--dialog--content').find('button').contains('View Tags').click();
+
+    cy.getBySel('tasks--tags-dialog--add-new-button').click();
+
+    cy.getBySel('tasks--tag-edit-dialog--name-input').type('tag1');
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--tags-dialog').contains('tag1');
+  });
+
+  it('Should add color to existing tag in settings', () => {
+    const LIST_COLOR_OPTION = {
+      name: 'Lime',
+      value: '#84CC16',
+    };
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.getBySel('settings--dialog--sidebar').contains('Tasks').click();
+
+    cy.getBySel('settings--dialog--content').find('button').contains('View Tags').click();
+
+    cy.getBySel('tasks--tags-dialog--add-new-button').click();
+
+    cy.getBySel('tasks--tag-edit-dialog--name-input').type('tag1');
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--tags-dialog').contains('tag1');
+
+    cy.getBySel('tasks--tag-actions--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--tag-actions--dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Edit')
+      .click();
+
+    cy.getBySel('tasks--tag-edit-dialog--color-select--trigger-button').click();
+
+    cy.getBySel('tasks--tag-edit-dialog--color-select')
+      .find('div[role="option"]')
+      .contains(LIST_COLOR_OPTION.name)
+      .click();
+
+    cy.getBySel('tasks--tag-edit-dialog--color-select--trigger-button')
+      .find('span')
+      .contains(LIST_COLOR_OPTION.name);
+  });
+
+  it('Should add a new tag to a task', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('tag-selector--trigger-button').click();
+
+    cy.getBySel('tag-selector').type('tag1{enter}');
+
+    cy.getBySel('tag-selector').contains('tag1').click();
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--task').find('[data-test="tasks--task--tags--tag"]').contains('tag1');
+  });
+
+  it('Should add already existing tag to a task', () => {
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.getBySel('settings--dialog--sidebar').contains('Tasks').click();
+
+    cy.getBySel('settings--dialog--content').find('button').contains('View Tags').click();
+
+    cy.getBySel('tasks--tags-dialog--add-new-button').click();
+
+    cy.getBySel('tasks--tag-edit-dialog--name-input').type('tag1');
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--tags-dialog').find('[data-test="dialog--close"]').click();
+
+    cy.getBySel('settings--dialog').find('[data-test="dialog--close"]').click();
+
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('tag-selector--trigger-button').click();
+
+    cy.getBySel('tag-selector').contains('tag1').click();
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--task').find('[data-test="tasks--task--tags--tag"]').contains('tag1');
+  });
+
+  it.only('Should check if tag has a color in task', () => {
+    const LIST_COLOR_OPTION = {
+      name: 'Lime',
+      value: '#84CC16',
+    };
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.getBySel('settings--dialog--sidebar').contains('Tasks').click();
+
+    cy.getBySel('settings--dialog--content').find('button').contains('View Tags').click();
+
+    cy.getBySel('tasks--tags-dialog--add-new-button').click();
+
+    cy.getBySel('tasks--tag-edit-dialog--name-input').type('tag1');
+
+    cy.getBySel('tasks--tag-edit-dialog--color-select--trigger-button').click();
+
+    cy.getBySel('tasks--tag-edit-dialog--color-select')
+      .find('div[role="option"]')
+      .contains(LIST_COLOR_OPTION.name)
+      .click();
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--tags-dialog').find('[data-test="dialog--close"]').click();
+
+    cy.getBySel('settings--dialog').find('[data-test="dialog--close"]').click();
+
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('tag-selector--trigger-button').click();
+
+    cy.getBySel('tag-selector').contains('tag1').click();
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--task--tags')
+      .find('[data-test="tasks--task--tags--tag"]')
+      .should('have.attr', 'data-tag-color', LIST_COLOR_OPTION.value);
   });
 });

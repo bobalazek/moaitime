@@ -153,8 +153,11 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.interval}
               onChange={(event) => {
                 setRule((current) => {
-                  current.options.interval = parseInt(event.target.value);
-                  return RRule.fromString(RRule.optionsToString(rule.options));
+                  return getClonedRule(
+                    current,
+                    { interval: parseInt(event.target.value) },
+                    disableTime
+                  );
                 });
               }}
               className="w-20"
@@ -165,8 +168,11 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.freq}
               onChange={(event) => {
                 setRule((current) => {
-                  current.options.freq = parseInt(event.target.value);
-                  return RRule.fromString(RRule.optionsToString(current.options));
+                  return getClonedRule(
+                    current,
+                    { freq: parseInt(event.target.value) },
+                    disableTime
+                  );
                 });
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
@@ -186,8 +192,11 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
                 setRule((current) => {
-                  current.options.byweekday = value?.map((day) => parseInt(day));
-                  return RRule.fromString(RRule.optionsToString(current.options));
+                  return getClonedRule(
+                    current,
+                    { byweekday: value?.map((day) => parseInt(day)) ?? null },
+                    disableTime
+                  );
                 });
               }}
             >

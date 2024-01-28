@@ -374,7 +374,7 @@ describe('tasks-tasks.cy.ts', () => {
       );
   });
 
-  it('Should create a new tag in settings', () => {
+  it('should create a new tag in settings', () => {
     cy.getBySel('settings--dialog--trigger-button').click();
 
     cy.getBySel('settings--dialog--sidebar').contains('Tasks').click();
@@ -390,7 +390,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--tags-dialog').contains('tag1');
   });
 
-  it('Should add color to existing tag in settings', () => {
+  it('should add color to existing tag in settings', () => {
     const LIST_COLOR_OPTION = {
       name: 'Lime',
       value: '#84CC16',
@@ -478,7 +478,7 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--task').find('[data-test="tasks--task--tags--tag"]').contains('tag1');
   });
 
-  it.only('Should check if tag has a color in task', () => {
+  it('should check if tag has a color in task', () => {
     const LIST_COLOR_OPTION = {
       name: 'Lime',
       value: '#84CC16',
@@ -521,5 +521,45 @@ describe('tasks-tasks.cy.ts', () => {
     cy.getBySel('tasks--task--tags')
       .find('[data-test="tasks--task--tags--tag"]')
       .should('have.attr', 'data-tag-color', LIST_COLOR_OPTION.value);
+  });
+
+  it('should add custom duration to a task in edit task', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('duration-selector--trigger-button').click();
+
+    cy.getBySel('duration-selector').find('input').first().click().clear().type('1');
+
+    cy.getBySel('duration-selector').find('input').eq(1).click().clear().type('30');
+
+    cy.getBySel('duration-selector').find('input').eq(2).click().clear().type('15');
+
+    cy.getBySel('duration-selector').find('button').contains('Save').click();
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--task--duration').contains('1h 30m 15s');
+  });
+
+  it('should add preset duration to a task in edit task', () => {
+    openTasksPopover();
+
+    cy.getBySel('tasks--tasks-form').find('input').type('My new task{enter}');
+
+    cy.getBySel('tasks--task').first().click();
+
+    cy.getBySel('duration-selector--trigger-button').click();
+
+    cy.getBySel('duration-selector').find('button').contains('30 min').click();
+
+    cy.getBySel('duration-selector').find('button').contains('Save').click();
+
+    cy.get('button').contains('Save').click();
+
+    cy.getBySel('tasks--task--duration').contains('30m');
   });
 });

@@ -1,5 +1,6 @@
 import type { Options } from 'rrule';
 
+import { endOfDay } from 'date-fns';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 import { Frequency, RRule } from 'rrule';
@@ -50,16 +51,18 @@ export type RepeatSelectorProps = {
   startsAt?: string;
   endsAt?: string;
   onChangeValue: (value?: string, startsAt?: Date, endsAt?: Date) => void;
+  disableTime?: boolean;
 };
 
-export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: RepeatSelectorProps) {
+export function RepeatSelector({
+  value,
+  startsAt,
+  endsAt,
+  onChangeValue,
+  disableTime,
+}: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [rule, setRule] = useState(
-    new RRule({
-      ...DEFAULT_RRULE_OPTIONS,
-      dtstart: getClosestNextHalfHour(),
-    })
-  );
+  const [rule, setRule] = useState(new RRule());
   const [endsType, setEndsType] = useState<RepeatSelectorEndsType>('never');
   const [endsAtDate, setEndsAtDate] = useState(endsAt ? new Date(endsAt) : new Date());
   const [endsAfterCount, setEndsAfterCount] = useState(1);
@@ -71,12 +74,29 @@ export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: Repea
     : MAX_DATES_TO_SHOW;
 
   useEffect(() => {
-    const newRule = value
-      ? RRule.fromString(value)
-      : new RRule({
-          ...DEFAULT_RRULE_OPTIONS,
-          dtstart: (startsAt ? new Date(startsAt) : undefined) ?? getClosestNextHalfHour(),
-        });
+    let newRule: RRule | undefined = undefined;
+    if (value) {
+      newRule = RRule.fromString(value);
+    } else {
+      const dtstart = (startsAt ? new Date(startsAt) : undefined) ?? getClosestNextHalfHour();
+
+      const tmpRule = new RRule({
+        ...DEFAULT_RRULE_OPTIONS,
+        dtstart,
+      });
+
+      if (!disableTime) {
+        tmpRule.options.bysecond = [0];
+        tmpRule.options.byminute = [dtstart.getUTCMinutes()];
+        tmpRule.options.byhour = [dtstart.getUTCHours()];
+      } else {
+        tmpRule.options.bysecond = [];
+        tmpRule.options.byminute = [];
+        tmpRule.options.byhour = [];
+      }
+
+      newRule = RRule.fromString(RRule.optionsToString(tmpRule.options));
+    }
 
     setRule(newRule);
 
@@ -88,7 +108,7 @@ export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: Repea
       setEndsType('count');
       setEndsAfterCount(newRule.options.count ?? 1);
     }
-  }, [value, startsAt, endsAt, setEndsType, setEndsAfterCount]);
+  }, [value, startsAt, endsAt, disableTime, setEndsType, setEndsAfterCount]);
 
   const onClearButtonClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -106,7 +126,7 @@ export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: Repea
 
     rule.options.count = null;
     if (endsType === 'until_date' && endsAtDate) {
-      newEndsAtDate = endsAtDate;
+      newEndsAtDate = endOfDay(endsAtDate);
     } else if (endsType === 'count' && endsAfterCount) {
       rule.options.count = endsAfterCount;
     }
@@ -220,7 +240,7 @@ export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: Repea
           <DateSelector
             data={convertIsoStringToObject(
               removeDateTimezoneFromItself(rule.options.dtstart).toISOString(),
-              true,
+              !disableTime,
               undefined
             )}
             onSaveData={(saveData) => {
@@ -232,14 +252,21 @@ export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: Repea
                 );
 
                 current.options.dtstart = dateStart;
-                current.options.bysecond = [0];
-                current.options.byminute = [dateStart.getUTCMinutes()];
-                current.options.byhour = [dateStart.getUTCHours()];
+
+                if (!disableTime) {
+                  current.options.bysecond = [0];
+                  current.options.byminute = [dateStart.getUTCMinutes()];
+                  current.options.byhour = [dateStart.getUTCHours()];
+                } else {
+                  current.options.bysecond = [];
+                  current.options.byminute = [];
+                  current.options.byhour = [];
+                }
 
                 return RRule.fromString(RRule.optionsToString(current.options));
               });
             }}
-            includeTime={true}
+            includeTime={!disableTime}
             disableTimeZone={true}
             disableClear={true}
             disablePast={true}
@@ -309,11 +336,14 @@ export function RepeatSelector({ value, startsAt, endsAt, onChangeValue }: Repea
             <ul className="list-disc pl-5 text-xs leading-5">
               {rule
                 .all((_, index) => index < datesMaxCount)
-                .map((date) => (
-                  <li key={date.toISOString()}>
-                    {removeDateTimezoneFromItself(date).toLocaleString()}
-                  </li>
-                ))}
+                .map((date) => {
+                  const finalDate = removeDateTimezoneFromItself(date);
+                  return (
+                    <li key={date.toISOString()}>
+                      {disableTime ? finalDate.toLocaleDateString() : finalDate.toLocaleString()}
+                    </li>
+                  );
+                })}
               {endsAfterCount > MAX_DATES_TO_SHOW && <li>...</li>}
             </ul>
           </div>

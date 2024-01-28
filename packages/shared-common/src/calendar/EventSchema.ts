@@ -92,7 +92,7 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
       return startTime <= endTime;
     },
     {
-      message: 'Start date must be before end date',
+      message: 'Repeat start date must be before end date',
       path: ['repeatStartsAt', 'repeatEndsAt'],
     }
   );

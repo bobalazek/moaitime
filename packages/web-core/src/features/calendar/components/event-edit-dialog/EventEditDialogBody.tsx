@@ -237,6 +237,7 @@ export default function EventEditDialogBody() {
                 }) as CreateEvent
             );
           }}
+          disableTime={dataIsAllDay}
         />
       </div>
       <div className="mb-4 flex flex-col gap-2">

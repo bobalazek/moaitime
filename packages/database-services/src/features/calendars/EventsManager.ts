@@ -72,18 +72,15 @@ export class EventsManager {
           where,
           or(
             and(
-              isNull(events.repeatStartsAt),
+              isNull(events.startsAt),
               or(isNull(events.repeatEndsAt), gte(events.repeatEndsAt, from))
             ),
-            and(
-              isNull(events.repeatEndsAt),
-              or(isNull(events.repeatStartsAt), lt(events.repeatStartsAt, to))
-            ),
-            and(gte(events.repeatStartsAt, from), lte(events.repeatStartsAt, to)),
+            and(isNull(events.repeatEndsAt), or(isNull(events.startsAt), lt(events.startsAt, to))),
+            and(gte(events.startsAt, from), lte(events.startsAt, to)),
             and(gte(events.repeatEndsAt, from), lte(events.repeatEndsAt, to)),
-            and(lt(events.repeatStartsAt, from), gt(events.repeatEndsAt, to)),
+            and(lt(events.startsAt, from), gt(events.repeatEndsAt, to)),
             and(
-              lt(events.repeatStartsAt, from),
+              lt(events.startsAt, from),
               or(isNull(events.repeatEndsAt), gt(events.repeatEndsAt, to))
             )
           )
@@ -92,10 +89,10 @@ export class EventsManager {
         where = and(
           where,
           or(
-            isNull(events.repeatStartsAt),
-            gte(events.repeatStartsAt, from),
+            isNull(events.startsAt),
+            gte(events.startsAt, from),
             and(
-              lt(events.repeatStartsAt, from),
+              lt(events.startsAt, from),
               or(isNull(events.repeatEndsAt), gt(events.repeatEndsAt, from))
             )
           )
@@ -106,7 +103,7 @@ export class EventsManager {
           or(
             isNull(events.repeatEndsAt),
             lte(events.repeatEndsAt, to),
-            and(isNull(events.repeatStartsAt), lte(events.repeatStartsAt, to))
+            and(isNull(events.startsAt), lte(events.startsAt, to))
           )
         ) as SQL<unknown>;
       }

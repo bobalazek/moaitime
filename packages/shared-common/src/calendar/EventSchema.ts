@@ -14,7 +14,6 @@ export const EventSchema = z.object({
   endTimezone: z.string().nullable(),
   isAllDay: z.boolean(),
   repeatPattern: z.string().nullable(),
-  repeatStartsAt: z.string().nullable(),
   repeatEndsAt: z.string().nullable(),
   startsAt: z.string(),
   endsAt: z.string(),
@@ -34,7 +33,6 @@ export const CreateEventBaseSchema = z.object({
   endTimezone: TimezoneSchema.nullable().optional(),
   isAllDay: z.boolean().optional(),
   repeatPattern: z.string().nullable().optional(),
-  repeatStartsAt: z.string().nullable().optional(),
   repeatEndsAt: z.string().nullable().optional(),
   startsAt: z.string({
     required_error: 'Start date is required',
@@ -66,36 +64,19 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
     message: 'Start date must be before end date',
     path: ['startsAt', 'endsAt'],
   }
-)
-  .refine(
-    (data) => {
-      if (!data.isAllDay) {
-        return true;
-      }
-
-      return data.startsAt.endsWith('T00:00:00.000') && data.endsAt.endsWith('T00:00:00.000');
-    },
-    {
-      message: 'All day events must start at T00:00:00.000Z and end at T00:00:00.000',
-      path: ['isAllDay'],
+).refine(
+  (data) => {
+    if (!data.isAllDay) {
+      return true;
     }
-  )
-  .refine(
-    (data) => {
-      if (!data.repeatStartsAt || !data.repeatEndsAt) {
-        return true;
-      }
 
-      const startTime = new Date(data.repeatStartsAt).getTime();
-      const endTime = new Date(data.repeatEndsAt).getTime();
-
-      return startTime <= endTime;
-    },
-    {
-      message: 'Repeat start date must be before end date',
-      path: ['repeatStartsAt', 'repeatEndsAt'],
-    }
-  );
+    return data.startsAt.endsWith('T00:00:00.000') && data.endsAt.endsWith('T00:00:00.000');
+  },
+  {
+    message: 'All day events must start at T00:00:00.000Z and end at T00:00:00.000',
+    path: ['isAllDay'],
+  }
+);
 
 export const UpdateEventSchema = CreateEventBaseSchema.omit({
   timezone: true,

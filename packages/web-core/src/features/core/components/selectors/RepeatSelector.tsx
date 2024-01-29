@@ -28,7 +28,6 @@ import {
 import {
   convertIsoStringToObject,
   convertObjectToIsoString,
-  getClosestNextHalfHour,
 } from '../../../calendar/utils/CalendarHelpers';
 import DateSelector from './DateSelector';
 
@@ -43,11 +42,17 @@ export enum RepeatSelectorEndsEnum {
 
 export type RepeatSelectorProps = {
   value?: string;
-  onChangeValue: (value?: string, startsAt?: Date, endsAt?: Date) => void;
+  startsAt: Date;
+  onChangeValue: (value?: string, endsAt?: Date) => void;
   disableTime?: boolean;
 };
 
-export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSelectorProps) {
+export function RepeatSelector({
+  value,
+  startsAt,
+  onChangeValue,
+  disableTime,
+}: RepeatSelectorProps) {
   const [open, setOpen] = useState(false);
   const [rule, setRule] = useState(
     createRule({
@@ -66,16 +71,10 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
       : updateRule(
           rule,
           {
-            dtstart: getClosestNextHalfHour(),
+            dtstart: startsAt,
           },
           disableTime
         );
-
-    const ruleValue = convertRuleToString(newRule);
-    const newRuleValue = convertRuleToString(newRule);
-    if (ruleValue === newRuleValue) {
-      return;
-    }
 
     setRule(newRule);
 
@@ -85,7 +84,10 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
     } else if (newRule.options.count) {
       setEndsType(RepeatSelectorEndsEnum.COUNT);
     }
-  }, [value, rule, disableTime, setEndsType]);
+
+    // We do not want to update the rule when the value changes, because it constantly just overides the old value
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, startsAt, disableTime, setEndsType]);
 
   const onClearButtonClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -100,7 +102,7 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
 
     const ruleValue = convertRuleToString(rule) ?? undefined;
 
-    onChangeValue(ruleValue, rule.options.dtstart, rule.options.until ?? undefined);
+    onChangeValue(ruleValue, rule.options.until ?? undefined);
 
     setOpen(false);
   };
@@ -141,7 +143,9 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                 setRule((current) => {
                   return updateRule(
                     current,
-                    { interval: parseInt(event.target.value) },
+                    {
+                      interval: parseInt(event.target.value),
+                    },
                     disableTime
                   );
                 });
@@ -154,7 +158,13 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
               value={rule.options.freq}
               onChange={(event) => {
                 setRule((current) => {
-                  return updateRule(current, { freq: parseInt(event.target.value) }, disableTime);
+                  return updateRule(
+                    current,
+                    {
+                      freq: parseInt(event.target.value),
+                    },
+                    disableTime
+                  );
                 });
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
@@ -176,7 +186,9 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                 setRule((current) => {
                   return updateRule(
                     current,
-                    { byweekday: value?.map((day) => parseInt(day)) ?? null },
+                    {
+                      byweekday: value?.map((day) => parseInt(day)) ?? null,
+                    },
                     disableTime
                   );
                 });
@@ -208,30 +220,6 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
           </div>
         )}
         <div>
-          <h4 className="text-muted-foreground">Starts</h4>
-          <DateSelector
-            data={convertIsoStringToObject(
-              removeDateTimezoneFromItself(rule.options.dtstart).toISOString(),
-              !disableTime,
-              undefined
-            )}
-            onSaveData={(saveData) => {
-              const result = convertObjectToIsoString(saveData);
-
-              setRule((current) => {
-                const dateStart = addDateTimezoneToItself(
-                  result?.iso ? new Date(result?.iso) : new Date()
-                );
-
-                return updateRule(current, { dtstart: dateStart }, disableTime);
-              });
-            }}
-            includeTime={!disableTime}
-            disableTimeZone={true}
-            disableClear={true}
-          />
-        </div>
-        <div>
           <h4 className="text-muted-foreground mb-1">Ends</h4>
           <RadioGroup
             value={endsType}
@@ -247,9 +235,6 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                   value === RepeatSelectorEndsEnum.COUNT
                     ? rule.options.count ?? DEFAULT_OCCURENCES
                     : null,
-                bysecond: null,
-                byminute: null,
-                byhour: null,
               };
 
               setRule((current) => {
@@ -288,7 +273,14 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                       result?.iso ? new Date(result?.iso) : new Date()
                     );
 
-                    return updateRule(current, { until: dateEnd, count: null }, disableTime);
+                    return updateRule(
+                      current,
+                      {
+                        until: dateEnd,
+                        count: null,
+                      },
+                      disableTime
+                    );
                   });
                 }}
                 disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
@@ -313,7 +305,10 @@ export function RepeatSelector({ value, onChangeValue, disableTime }: RepeatSele
                     setRule((current) => {
                       return updateRule(
                         current,
-                        { count: parseInt(event.target.value), until: null },
+                        {
+                          count: parseInt(event.target.value),
+                          until: null,
+                        },
                         disableTime
                       );
                     });

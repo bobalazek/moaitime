@@ -11,17 +11,12 @@ export const updateRule = (
   overrideOptions?: Partial<Options>,
   disableTime?: boolean
 ) => {
-  const clone = original.clone();
+  const newOptions = { ...original.options, ...overrideOptions };
+  newOptions.bysecond = !disableTime ? [0] : null;
+  newOptions.byminute = !disableTime ? [newOptions.dtstart!.getUTCMinutes()] : null;
+  newOptions.byhour = !disableTime ? [newOptions.dtstart!.getUTCHours()] : null;
 
-  if (overrideOptions) {
-    Object.assign(clone.options, overrideOptions);
-  }
-
-  clone.options.bysecond = [0];
-  clone.options.byminute = !disableTime ? [clone.options.dtstart.getUTCMinutes()] : [0];
-  clone.options.byhour = !disableTime ? [clone.options.dtstart.getUTCHours()] : [0];
-
-  return clone;
+  return new RRule(newOptions);
 };
 
 export const getRuleFromString = (ruleString: string) => {

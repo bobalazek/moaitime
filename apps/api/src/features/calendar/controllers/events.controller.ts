@@ -76,7 +76,6 @@ export class EventsController {
       userId: req.user.id,
       startsAt: new Date(body.startsAt),
       endsAt: new Date(body.endsAt),
-      repeatStartsAt: body.repeatStartsAt ? new Date(body.repeatStartsAt) : undefined,
       repeatEndsAt: body.repeatEndsAt ? new Date(body.repeatEndsAt) : undefined,
     };
 
@@ -116,11 +115,6 @@ export class EventsController {
 
     // We need to account for the null value, which means to unset the value,
     // where as undefined means to not update the value.
-    const repeatStartsAt = body.repeatStartsAt
-      ? new Date(body.repeatStartsAt)
-      : body.repeatStartsAt === null
-        ? null
-        : undefined;
     const repeatEndsAt = body.repeatEndsAt
       ? new Date(body.repeatEndsAt)
       : body.repeatEndsAt === null
@@ -131,7 +125,6 @@ export class EventsController {
       ...body,
       startsAt,
       endsAt,
-      repeatStartsAt,
       repeatEndsAt,
     };
 

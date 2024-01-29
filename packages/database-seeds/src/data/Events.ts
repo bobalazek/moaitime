@@ -53,7 +53,6 @@ export const getEventSeeds = async (): Promise<NewEvent[]> => {
       userId: calendar.userId,
       startsAt: new Date(eventData.startsAt),
       endsAt: new Date(eventData.endsAt),
-      repeatStartsAt: eventData.repeatStartsAt ? new Date(eventData.repeatStartsAt) : undefined,
       repeatEndsAt: eventData.repeatEndsAt ? new Date(eventData.repeatEndsAt) : undefined,
     });
   }

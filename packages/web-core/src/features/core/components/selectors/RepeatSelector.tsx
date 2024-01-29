@@ -1,4 +1,5 @@
 import { addDays } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
@@ -71,7 +72,7 @@ export function RepeatSelector({
       : updateRule(
           rule,
           {
-            dtstart: startsAt,
+            dtstart: zonedTimeToUtc(startsAt, 'UTC'),
           },
           disableTime
         );

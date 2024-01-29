@@ -89,4 +89,85 @@ describe('mood.cy.ts', () => {
 
     cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
   });
+
+  it('should delete mood entry', () => {
+    cy.getBySel('mood--open-button').click();
+
+    cy.getBySel('mood--header--add-new-mood-button').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').should('exist');
+
+    cy.getBySel('mood--mood-entry-edit-dialog--scores').contains('great').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('mood--mood-entry').should('exist');
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu--trigger-button').click();
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Delete')
+      .click();
+
+    cy.getBySel('mood--mood-entry').should('not.exist');
+  });
+
+  it('should check if success message is displayed when adding mood entry', () => {
+    cy.getBySel('mood--open-button').click();
+
+    cy.getBySel('mood--header--add-new-mood-button').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').should('exist');
+
+    cy.getBySel('mood--mood-entry-edit-dialog--scores').contains('great').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
+
+    cy.hasToastWithText('You have successfully saved the mood entry.');
+  });
+
+  it('should check if success message is displayed when deleting mood entry', () => {
+    cy.getBySel('mood--open-button').click();
+
+    cy.getBySel('mood--header--add-new-mood-button').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').should('exist');
+
+    cy.getBySel('mood--mood-entry-edit-dialog--scores').contains('great').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu--trigger-button').click();
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Delete')
+      .click();
+
+    cy.hasToastWithText('The mood entry was successfully deleted!');
+  });
+
+  it('should undo delete mood entry if undo in toast is clicked', () => {
+    cy.getBySel('mood--open-button').click();
+
+    cy.getBySel('mood--header--add-new-mood-button').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').should('exist');
+
+    cy.getBySel('mood--mood-entry-edit-dialog--scores').contains('great').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu--trigger-button').click();
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Delete')
+      .click();
+
+    cy.getToastsContainer().find('button').contains('Undo').click({ force: true });
+
+    cy.getBySel('mood--mood-entry').should('exist');
+  });
 });

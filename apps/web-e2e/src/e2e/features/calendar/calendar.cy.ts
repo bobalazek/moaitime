@@ -475,4 +475,100 @@ describe('calendar.cy.ts', () => {
       .contains('New Calendar')
       .should('not.exist');
   });
+
+  it('should add shared calendar in calendar', () => {
+    openCalendar();
+
+    cy.getBySel('calendar--header--open-settings-button').click();
+
+    cy.getBySel('calendar--settings--shared-calendars--actions--trigger-button').click();
+
+    cy.getBySel('calendar--settings--shared-calendars--actions').click();
+
+    cy.getBySel('calendar--public-calendars-dialog')
+      .find('[data-test="calendar--calendar-item"]')
+      .find('[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .first()
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Add')
+      .click();
+
+    cy.getBySel('calendar--settings-dialog--calendar--name').contains('(shared)');
+  });
+
+  it('should add shared calendar with search otpion', () => {
+    openCalendar();
+
+    cy.getBySel('calendar--header--open-settings-button').click();
+
+    cy.getBySel('calendar--settings--shared-calendars--actions--trigger-button').click();
+
+    cy.getBySel('calendar--settings--shared-calendars--actions').click();
+
+    cy.get('input[placeholder="Search calendars"]').click().type('Animal');
+
+    cy.getBySel('calendar--public-calendars-dialog')
+      .find('[data-test="calendar--calendar-item"]')
+      .find('[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Add')
+      .click();
+
+    cy.getBySel('calendar--public-calendars-dialog').find('[data-test="dialog--close"]').click();
+
+    cy.getBySel('calendar--settings-dialog')
+      .find('[data-test="calendar--calendar-item"]')
+      .find('[data-test="calendar--settings-dialog--calendar--name"]')
+      .contains('Animal Holidays');
+  });
+
+  it('should remove shared calendar', () => {
+    openCalendar();
+
+    cy.getBySel('calendar--header--open-settings-button').click();
+
+    cy.getBySel('calendar--settings--shared-calendars--actions--trigger-button').click();
+
+    cy.getBySel('calendar--settings--shared-calendars--actions').click();
+
+    cy.get('input[placeholder="Search calendars"]').click().type('Animal');
+
+    cy.getBySel('calendar--public-calendars-dialog')
+      .find('[data-test="calendar--calendar-item"]')
+      .find('[data-test="calendar--calendar-item--actions--dropdown-menu--trigger-button"]')
+      .click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Add')
+      .click();
+
+    cy.getBySel('calendar--public-calendars-dialog').find('[data-test="dialog--close"]').click();
+
+    cy.wait(1000);
+
+    cy.getBySel('calendar--settings-dialog')
+      .find('[data-test="calendar--calendar-item"]')
+      .find('[data-test="calendar--settings-dialog--calendar--name"]')
+      .contains('Animal Holidays');
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu--trigger-button').eq(1).click();
+
+    cy.getBySel('calendar--calendar-item--actions--dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Remove')
+      .click();
+
+    cy.getBySel('calendar--settings-dialog')
+      .find('[data-test="calendar--calendar-item"]')
+      .find('[data-test="calendar--settings-dialog--calendar--name"]')
+      .contains('Animal Holidays')
+      .should('not.exist');
+  });
 });

@@ -14,7 +14,7 @@ import {
 
 import { useAuthStore } from '../../state/authStore';
 
-export default function AuthSettingsAccountPasswordDialog() {
+export default function AccountSettingsAccountPasswordDialog() {
   const {
     accountPasswordSettingsDialogOpen,
     setAccountPasswordSettingsDialogOpen,
@@ -53,7 +53,7 @@ export default function AuthSettingsAccountPasswordDialog() {
     <Dialog
       open={accountPasswordSettingsDialogOpen}
       onOpenChange={setAccountPasswordSettingsDialogOpen}
-      data-test="auth--settings--account-password-dialog"
+      data-test="account--settings--account-password-dialog"
     >
       <DialogContent>
         <DialogHeader>

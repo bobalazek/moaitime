@@ -3,8 +3,8 @@ import { useState } from 'react';
 
 import { Dialog, DialogContent } from '@moaitime/web-ui';
 
-import AuthSettingsSection from '../../auth/components/auth-settings/AuthSettingsSection';
-import AuthSettingsSectionHeaderText from '../../auth/components/auth-settings/AuthSettingsSectionHeaderText';
+import AccountSettingsSection from '../../auth/components/account-settings/AccountSettingsSection';
+import AccountSettingsSectionHeaderText from '../../auth/components/account-settings/AccountSettingsSectionHeaderText';
 import { useAuthStore } from '../../auth/state/authStore';
 import CalendarSettingsSection from '../../calendar/components/calendar-settings/CalendarSettingsSection';
 import CalendarSettingsSectionHeaderText from '../../calendar/components/calendar-settings/CalendarSettingsSectionHeaderText';
@@ -39,9 +39,9 @@ const tabs = [
     content: <GeneralSettingsSection />,
   },
   {
-    id: 'auth',
-    label: <AuthSettingsSectionHeaderText />,
-    content: <AuthSettingsSection />,
+    id: 'account',
+    label: <AccountSettingsSectionHeaderText />,
+    content: <AccountSettingsSection />,
   },
 
   {

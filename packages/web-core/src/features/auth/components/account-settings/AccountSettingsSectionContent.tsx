@@ -4,7 +4,7 @@ import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../state/authStore';
 
-export default function AuthSettingsSectionContent() {
+export default function AccountSettingsSectionContent() {
   const {
     auth,
     logout,

@@ -19,6 +19,17 @@ describe('focus.cy.ts', () => {
     cy.getBySel('focus--open-button').should('not.exist');
   });
 
+  it.skip('should change default session settings in settings and show them in focus', () => {
+    cy.getBySel('settings--dialog--trigger-button').click();
+
+    cy.getBySel('settings--dialog--sidebar').contains('Focus').click();
+
+    cy.get('input[id="settings-focusSessionSettings-focusDurationSeconds"]')
+      .click()
+      .clear()
+      .type('45');
+  });
+
   it('should open focus', () => {
     cy.getBySel('focus--open-button').click();
 
@@ -53,7 +64,7 @@ describe('focus.cy.ts', () => {
     cy.getBySel('focus--main').contains('Task1');
   });
 
-  it.only('should add existing task in focus and start', () => {
+  it('should add existing task in focus and start', () => {
     cy.getBySel('tasks--popover--trigger-button').click();
 
     cy.getBySel('tasks--tasks-form').find('input').type('My focus task{enter}');
@@ -69,5 +80,33 @@ describe('focus.cy.ts', () => {
     cy.get('button').contains("Let's go!").click();
 
     cy.getBySel('focus--main').contains('My focus task');
+  });
+
+  it('should end focus when clicked completed', () => {
+    cy.getBySel('focus--open-button').click();
+
+    cy.get('input[placeholder="Search tasks ..."]').type('Task1');
+
+    cy.get('button').contains("Let's go!").click();
+
+    cy.getBySel('focus--main').contains('Focus');
+
+    cy.get('button').contains('Complete').click();
+
+    cy.getBySel('focus--main').contains('Focus').should('not.exist');
+  });
+
+  it('should skip focus and go to short break when clicked skip', () => {
+    cy.getBySel('focus--open-button').click();
+
+    cy.get('input[placeholder="Search tasks ..."]').type('Task1');
+
+    cy.get('button').contains("Let's go!").click();
+
+    cy.getBySel('focus--main').contains('Focus');
+
+    cy.get('button').contains('Skip').click();
+
+    cy.getBySel('focus--main').contains('Short Break');
   });
 });

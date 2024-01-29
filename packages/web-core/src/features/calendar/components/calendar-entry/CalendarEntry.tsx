@@ -142,7 +142,7 @@ export default function CalendarEntry({
 }: CalendarEntryProps) {
   const { setSelectedTaskDialogOpen } = useTasksStore();
   const { setSelectedEventDialogOpen, editEvent } = useEventsStore();
-  const { updateCalendaEntry } = useCalendarStore();
+  const { updateCalendarEntry } = useCalendarStore();
   const [highlightedCalendarEntry, setHighlightedCalendarEntry] = useAtom(
     highlightedCalendarEntryAtom
   );
@@ -254,7 +254,7 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
-      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, DEBOUNCE_UPDATE_TIME, {
+      const debouncedUpdateCalendarEntry = debounce(updateCalendarEntry, DEBOUNCE_UPDATE_TIME, {
         maxWait: DEBOUNCE_UPDATE_TIME,
       });
 
@@ -278,7 +278,7 @@ export default function CalendarEntry({
         ).toISOString();
         newEndsAtString = newEndsAt.toISOString();
 
-        debouncedUpdateCalendaEntry({
+        debouncedUpdateCalendarEntry({
           ...calendarEntry,
           startsAt: newStartsAtString,
           startsAtUtc: newStartsAtUtc,
@@ -335,7 +335,7 @@ export default function CalendarEntry({
       style,
       canResizeAndMove,
       setCalendarEventResizing,
-      updateCalendaEntry,
+      updateCalendarEntry,
       editEvent,
       setSelectedEventDialogOpen,
       setSelectedTaskDialogOpen,
@@ -363,7 +363,7 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
-      const debouncedUpdateCalendaEntry = debounce(updateCalendaEntry, DEBOUNCE_UPDATE_TIME, {
+      const debouncedUpdaterCalendaEntry = debounce(updateCalendarEntry, DEBOUNCE_UPDATE_TIME, {
         maxWait: DEBOUNCE_UPDATE_TIME,
       });
 
@@ -382,7 +382,7 @@ export default function CalendarEntry({
 
         newEndsAtString = newEndsAt.toISOString();
 
-        debouncedUpdateCalendaEntry({
+        debouncedUpdaterCalendaEntry({
           ...calendarEntry,
           endsAt: newEndsAtString,
           endsAtUtc: newEndsAtUtc,
@@ -414,7 +414,7 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
-    [calendarEntry, style, setCalendarEventResizing, updateCalendaEntry, editEvent]
+    [calendarEntry, style, setCalendarEventResizing, updateCalendarEntry, editEvent]
   );
 
   return (

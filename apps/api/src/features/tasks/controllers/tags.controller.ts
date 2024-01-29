@@ -40,14 +40,17 @@ export class TagsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':id')
-  async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Tag>> {
-    const canView = await tagsManager.userCanView(id, req.user.id);
+  @Get(':tagId')
+  async view(
+    @Req() req: Request,
+    @Param('tagId') tagId: string
+  ): Promise<AbstractResponseDto<Tag>> {
+    const canView = await tagsManager.userCanView(tagId, req.user.id);
     if (!canView) {
       throw new NotFoundException('You cannot view this tag');
     }
 
-    const data = await tagsManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await tagsManager.findOneByIdAndUserId(tagId, req.user.id);
     if (!data) {
       throw new NotFoundException('Tag not found');
     }
@@ -79,18 +82,18 @@ export class TagsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Patch(':id')
+  @Patch(':tagId')
   async update(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('tagId') tagId: string,
     @Body() body: UpdateTagDto
   ): Promise<AbstractResponseDto<Tag>> {
-    const canUpdate = await tagsManager.userCanUpdate(id, req.user.id);
+    const canUpdate = await tagsManager.userCanUpdate(tagId, req.user.id);
     if (!canUpdate) {
       throw new NotFoundException('You cannot update this tag');
     }
 
-    const updatedData = await tagsManager.updateOneById(id, body);
+    const updatedData = await tagsManager.updateOneById(tagId, body);
 
     return {
       success: true,
@@ -99,20 +102,20 @@ export class TagsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id')
+  @Delete(':tagId')
   async delete(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('tagId') tagId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Tag>> {
-    const canDelete = await tagsManager.userCanDelete(id, req.user.id);
+    const canDelete = await tagsManager.userCanDelete(tagId, req.user.id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot delete this tag');
     }
 
     const updatedData = body.isHardDelete
-      ? await tagsManager.deleteOneById(id)
-      : await tagsManager.updateOneById(id, {
+      ? await tagsManager.deleteOneById(tagId)
+      : await tagsManager.updateOneById(tagId, {
           deletedAt: new Date(),
         });
 
@@ -123,14 +126,17 @@ export class TagsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/undelete')
-  async undelete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Tag>> {
-    const canDelete = await tagsManager.userCanUpdate(req.user.id, id);
+  @Post(':tagId/undelete')
+  async undelete(
+    @Req() req: Request,
+    @Param('tagId') tagId: string
+  ): Promise<AbstractResponseDto<Tag>> {
+    const canDelete = await tagsManager.userCanUpdate(req.user.id, tagId);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this tag');
     }
 
-    const updatedData = await tagsManager.updateOneById(id, {
+    const updatedData = await tagsManager.updateOneById(tagId, {
       deletedAt: null,
     });
 

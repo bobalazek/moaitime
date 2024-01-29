@@ -47,14 +47,17 @@ export class NotesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':id')
-  async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Note>> {
-    const canView = await notesManager.userCanView(id, req.user.id);
+  @Get(':noteId')
+  async view(
+    @Req() req: Request,
+    @Param('noteId') noteId: string
+  ): Promise<AbstractResponseDto<Note>> {
+    const canView = await notesManager.userCanView(noteId, req.user.id);
     if (!canView) {
       throw new NotFoundException('You cannot view this note');
     }
 
-    const data = await notesManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await notesManager.findOneByIdAndUserId(noteId, req.user.id);
     if (!data) {
       throw new NotFoundException('Note not found');
     }
@@ -94,25 +97,25 @@ export class NotesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Patch(':id')
+  @Patch(':noteId')
   async update(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('noteId') noteId: string,
     @Body() body: UpdateNoteDto
   ): Promise<AbstractResponseDto<Note>> {
-    const canView = await notesManager.userCanUpdate(req.user.id, id);
+    const canView = await notesManager.userCanUpdate(req.user.id, noteId);
     if (!canView) {
       throw new ForbiddenException('You cannot update this note');
     }
 
-    const data = await notesManager.findOneById(id);
+    const data = await notesManager.findOneById(noteId);
     if (!data) {
       throw new NotFoundException('Note not found');
     }
 
     const updateData = body;
 
-    const updatedData = await notesManager.updateOneById(id, updateData);
+    const updatedData = await notesManager.updateOneById(noteId, updateData);
 
     return {
       success: true,
@@ -121,20 +124,20 @@ export class NotesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id')
+  @Delete(':noteId')
   async delete(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('noteId') noteId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Note>> {
-    const hasAccess = await notesManager.userCanDelete(req.user.id, id);
+    const hasAccess = await notesManager.userCanDelete(req.user.id, noteId);
     if (!hasAccess) {
       throw new NotFoundException('Note not found');
     }
 
     const updatedData = body.isHardDelete
-      ? await notesManager.deleteOneById(id)
-      : await notesManager.updateOneById(id, {
+      ? await notesManager.deleteOneById(noteId)
+      : await notesManager.updateOneById(noteId, {
           deletedAt: new Date(),
         });
 
@@ -145,14 +148,17 @@ export class NotesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/undelete')
-  async undelete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Note>> {
-    const canDelete = await notesManager.userCanUpdate(req.user.id, id);
+  @Post(':noteId/undelete')
+  async undelete(
+    @Req() req: Request,
+    @Param('noteId') noteId: string
+  ): Promise<AbstractResponseDto<Note>> {
+    const canDelete = await notesManager.userCanUpdate(req.user.id, noteId);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this note');
     }
 
-    const updatedData = await notesManager.updateOneById(id, {
+    const updatedData = await notesManager.updateOneById(noteId, {
       deletedAt: null,
     });
 

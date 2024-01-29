@@ -57,14 +57,17 @@ export class ListsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':id')
-  async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<List>> {
-    const canView = await listsManager.userCanView(id, req.user.id);
+  @Get(':listId')
+  async view(
+    @Req() req: Request,
+    @Param('listId') listId: string
+  ): Promise<AbstractResponseDto<List>> {
+    const canView = await listsManager.userCanView(listId, req.user.id);
     if (!canView) {
       throw new NotFoundException('You cannot view this list');
     }
 
-    const data = await listsManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await listsManager.findOneByIdAndUserId(listId, req.user.id);
     if (!data) {
       throw new NotFoundException('List not found');
     }
@@ -99,18 +102,18 @@ export class ListsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Put(':id')
+  @Put(':listId')
   async update(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('listId') listId: string,
     @Body() body: UpdateListDto
   ): Promise<AbstractResponseDto<List>> {
-    const canUpdate = await listsManager.userCanUpdate(id, req.user.id);
+    const canUpdate = await listsManager.userCanUpdate(listId, req.user.id);
     if (!canUpdate) {
       throw new NotFoundException('You cannot update this list');
     }
 
-    const updatedData = await listsManager.updateOneById(id, body);
+    const updatedData = await listsManager.updateOneById(listId, body);
 
     return {
       success: true,
@@ -119,14 +122,17 @@ export class ListsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id')
-  async delete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<List>> {
-    const canDelete = await listsManager.userCanDelete(id, req.user.id);
+  @Delete(':listId')
+  async delete(
+    @Req() req: Request,
+    @Param('listId') listId: string
+  ): Promise<AbstractResponseDto<List>> {
+    const canDelete = await listsManager.userCanDelete(listId, req.user.id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot delete this list');
     }
 
-    const updatedData = await listsManager.updateOneById(id, {
+    const updatedData = await listsManager.updateOneById(listId, {
       deletedAt: new Date(),
     });
 
@@ -138,17 +144,17 @@ export class ListsController {
 
   // Visible
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/visible')
+  @Post(':listId/visible')
   async addVisible(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('listId') listId: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await listsManager.userCanView(req.user.id, id);
+    const canView = await listsManager.userCanView(req.user.id, listId);
     if (!canView) {
       throw new ForbiddenException('You cannot view this list');
     }
 
-    await listsManager.addVisibleListIdByUserId(req.user.id, id);
+    await listsManager.addVisibleListIdByUserId(req.user.id, listId);
 
     return {
       success: true,
@@ -156,17 +162,17 @@ export class ListsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id/visible')
+  @Delete(':listId/visible')
   async removeVisible(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('listId') listId: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await listsManager.userCanView(req.user.id, id);
+    const canView = await listsManager.userCanView(req.user.id, listId);
     if (!canView) {
-      throw new ForbiddenException('You cannot view this calendar');
+      throw new ForbiddenException('You cannot view this list');
     }
 
-    await listsManager.removeVisibleListIdByUserId(req.user.id, id);
+    await listsManager.removeVisibleListIdByUserId(req.user.id, listId);
 
     return {
       success: true,

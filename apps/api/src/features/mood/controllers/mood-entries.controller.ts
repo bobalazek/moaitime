@@ -45,17 +45,17 @@ export class MoodEntriesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':id')
+  @Get(':moodEntryId')
   async view(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('moodEntryId') moodEntryId: string
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canView = await moodEntriesManager.userCanView(id, req.user.id);
+    const canView = await moodEntriesManager.userCanView(moodEntryId, req.user.id);
     if (!canView) {
       throw new NotFoundException('You cannot view this mood entry');
     }
 
-    const data = await moodEntriesManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await moodEntriesManager.findOneByIdAndUserId(moodEntryId, req.user.id);
     if (!data) {
       throw new NotFoundException('Mood entry not found');
     }
@@ -87,13 +87,13 @@ export class MoodEntriesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Patch(':id')
+  @Patch(':moodEntryId')
   async update(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('moodEntryId') moodEntryId: string,
     @Body() body: UpdateMoodEntryDto
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canUpdate = await moodEntriesManager.userCanUpdate(id, req.user.id);
+    const canUpdate = await moodEntriesManager.userCanUpdate(moodEntryId, req.user.id);
     if (!canUpdate) {
       throw new NotFoundException('You cannot update this mood entry');
     }
@@ -103,7 +103,7 @@ export class MoodEntriesController {
       loggedAt: body.loggedAt ? new Date(body.loggedAt).toISOString() : undefined,
     };
 
-    const updatedData = await moodEntriesManager.updateOneById(id, updateData);
+    const updatedData = await moodEntriesManager.updateOneById(moodEntryId, updateData);
 
     return {
       success: true,
@@ -112,20 +112,20 @@ export class MoodEntriesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id')
+  @Delete(':moodEntryId')
   async delete(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('moodEntryId') moodEntryId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canDelete = await moodEntriesManager.userCanDelete(id, req.user.id);
+    const canDelete = await moodEntriesManager.userCanDelete(moodEntryId, req.user.id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot delete this mood entry');
     }
 
     const updatedData = body.isHardDelete
-      ? await moodEntriesManager.deleteOneById(id)
-      : await moodEntriesManager.updateOneById(id, {
+      ? await moodEntriesManager.deleteOneById(moodEntryId)
+      : await moodEntriesManager.updateOneById(moodEntryId, {
           deletedAt: new Date(),
         });
 
@@ -136,17 +136,17 @@ export class MoodEntriesController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/undelete')
+  @Post(':moodEntryId/undelete')
   async undelete(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('moodEntryId') moodEntryId: string
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canDelete = await moodEntriesManager.userCanUpdate(id, req.user.id);
+    const canDelete = await moodEntriesManager.userCanUpdate(moodEntryId, req.user.id);
     if (!canDelete) {
       throw new ForbiddenException('You cannot undelete this mood entry');
     }
 
-    const updatedData = await moodEntriesManager.updateOneById(id, {
+    const updatedData = await moodEntriesManager.updateOneById(moodEntryId, {
       deletedAt: null,
     });
 

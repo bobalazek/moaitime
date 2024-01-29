@@ -80,9 +80,12 @@ export class TasksController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':id')
-  async view(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    const row = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+  @Get(':taskId')
+  async view(
+    @Req() req: Request,
+    @Param('taskId') taskId: string
+  ): Promise<AbstractResponseDto<Task>> {
+    const row = await tasksManager.findOneByIdAndUserId(taskId, req.user.id);
     if (!row) {
       throw new NotFoundException('Task not found');
     }
@@ -140,13 +143,13 @@ export class TasksController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Patch(':id')
+  @Patch(':taskId')
   async update(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('taskId') taskId: string,
     @Body() body: UpdateTaskDto
   ): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await tasksManager.findOneByIdAndUserId(taskId, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
     }
@@ -170,12 +173,12 @@ export class TasksController {
     }
 
     if (body.parentId) {
-      await tasksManager.validateParentId(id, body.parentId);
+      await tasksManager.validateParentId(taskId, body.parentId);
     }
 
     const { tagIds, ...updateData } = body;
 
-    const updatedData = await tasksManager.updateOneById(id, updateData);
+    const updatedData = await tasksManager.updateOneById(taskId, updateData);
 
     if (Array.isArray(tagIds)) {
       await tasksManager.setTags(data.id, tagIds);
@@ -188,20 +191,20 @@ export class TasksController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':id')
+  @Delete(':taskId')
   async delete(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('taskId') taskId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await tasksManager.findOneByIdAndUserId(taskId, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
     }
 
     const updatedData = body.isHardDelete
-      ? await tasksManager.deleteOneById(id)
-      : await tasksManager.updateOneById(id, {
+      ? await tasksManager.deleteOneById(taskId)
+      : await tasksManager.updateOneById(taskId, {
           deletedAt: new Date(),
         });
 
@@ -212,14 +215,17 @@ export class TasksController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/undelete')
-  async undelete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+  @Post(':taskId/undelete')
+  async undelete(
+    @Req() req: Request,
+    @Param('taskId') taskId: string
+  ): Promise<AbstractResponseDto<Task>> {
+    const data = await tasksManager.findOneByIdAndUserId(taskId, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
     }
 
-    const updatedData = await tasksManager.updateOneById(id, {
+    const updatedData = await tasksManager.updateOneById(taskId, {
       deletedAt: null,
     });
 
@@ -230,17 +236,17 @@ export class TasksController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/duplicate')
+  @Post(':taskId/duplicate')
   async duplicate(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('taskId') taskId: string
   ): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await tasksManager.findOneByIdAndUserId(taskId, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
     }
 
-    const updatedData = await tasksManager.duplicate(id);
+    const updatedData = await tasksManager.duplicate(taskId);
 
     return {
       success: true,
@@ -249,14 +255,17 @@ export class TasksController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/complete')
-  async complete(@Req() req: Request, @Param('id') id: string): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+  @Post(':taskId/complete')
+  async complete(
+    @Req() req: Request,
+    @Param('taskId') taskId: string
+  ): Promise<AbstractResponseDto<Task>> {
+    const data = await tasksManager.findOneByIdAndUserId(taskId, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
     }
 
-    const updatedData = await tasksManager.updateOneById(id, {
+    const updatedData = await tasksManager.updateOneById(taskId, {
       completedAt: new Date(),
     });
 
@@ -267,17 +276,17 @@ export class TasksController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':id/uncomplete')
+  @Post(':taskId/uncomplete')
   async uncomplete(
     @Req() req: Request,
-    @Param('id') id: string
+    @Param('taskId') taskId: string
   ): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.findOneByIdAndUserId(id, req.user.id);
+    const data = await tasksManager.findOneByIdAndUserId(taskId, req.user.id);
     if (!data) {
       throw new NotFoundException('Task not found');
     }
 
-    const updatedData = await tasksManager.updateOneById(id, {
+    const updatedData = await tasksManager.updateOneById(taskId, {
       completedAt: null,
     });
 

@@ -14,11 +14,12 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { formatInTimeZone, getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   API_URL,
   Calendar,
+  CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
   CalendarEntry,
   CalendarEntryWithVerticalPosition,
   CalendarEntryYearlyEntry,
@@ -515,4 +516,102 @@ export const convertObjectToIsoString = <T extends Record<string, string | null>
   }
 
   return { iso: `${object.date}T00:00:00.000`, timezone: undefined };
+};
+
+// Calendar Entry
+type Coordinates = {
+  clientX: number;
+  clientY: number;
+};
+
+/**
+ * We want to show the "continued" text if the calendar entry is not an all-day event and
+ * the start date is not the same as the current/today's date.
+ */
+export const shouldShowContinuedText = (
+  calendarEntry: CalendarEntry,
+  timezone: string,
+  date?: string
+) => {
+  if (!date) {
+    return false;
+  }
+
+  if (calendarEntry.isAllDay) {
+    return !calendarEntry.startsAt.includes(date);
+  }
+
+  const timezonedDate = formatInTimeZone(calendarEntry.startsAt, timezone, 'yyyy-MM-dd');
+
+  return timezonedDate !== date;
+};
+
+/**
+ * This is a helper function to check if the end date of a calendar entry is the same as the
+ * current/today's date. This is used to determine if we should show the resize handle or not.
+ */
+export const ifIsCalendarEntryEndDateSameAsToday = (
+  calendarEntry: CalendarEntry,
+  timezone: string,
+  date?: string
+) => {
+  if (!date) {
+    return false;
+  }
+
+  const timezonedDate = formatInTimeZone(calendarEntry.endsAt, timezone, 'yyyy-MM-dd');
+
+  return timezonedDate === date;
+};
+
+export const getClientCoordinates = (
+  event: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent
+) => {
+  if (
+    typeof (event as MouseEvent).clientX !== 'undefined' &&
+    typeof (event as MouseEvent).clientY !== 'undefined'
+  ) {
+    return {
+      clientX: (event as MouseEvent).clientX,
+      clientY: (event as MouseEvent).clientY,
+    };
+  }
+
+  const touch = (event as TouchEvent).touches[0];
+
+  return {
+    clientX: touch?.clientX ?? 0,
+    clientY: touch?.clientY ?? 0,
+  };
+};
+
+export const getRoundedMinutes = (
+  event: MouseEvent | TouchEvent,
+  initialCoordinates: Coordinates,
+  weekdayWidth?: number
+) => {
+  const { clientX, clientY } = getClientCoordinates(event);
+
+  let minutesDelta = Math.round(
+    ((clientY - initialCoordinates.clientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
+  );
+
+  if (weekdayWidth) {
+    const daysDelta = Math.round(Math.abs(clientX - initialCoordinates.clientX) / weekdayWidth);
+    minutesDelta += (clientX > initialCoordinates.clientX ? 1 : -1) * daysDelta * 1440;
+  }
+
+  return Math.round(minutesDelta / 15) * 15;
+};
+
+export const hasReachedThresholdForMove = (
+  event: MouseEvent | TouchEvent,
+  initialCoordinates: Coordinates
+) => {
+  const { clientX, clientY } = getClientCoordinates(event);
+
+  return (
+    Math.abs(clientX - initialCoordinates.clientX) > 10 ||
+    Math.abs(clientY - initialCoordinates.clientY) > 10
+  );
 };

@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
 import { addMinutes } from 'date-fns';
-import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { useAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { FlagIcon, GripHorizontalIcon } from 'lucide-react';
@@ -9,7 +9,6 @@ import { useCallback } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
-  CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
   // Needs to be a different name to the component name itself
   CalendarEntry as CalendarEntryType,
   CalendarEntryTypeEnum,
@@ -22,106 +21,16 @@ import { useTasksStore } from '../../../tasks/state/tasksStore';
 import { calendarEventResizingAtom, highlightedCalendarEntryAtom } from '../../state/calendarAtoms';
 import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
+import {
+  getClientCoordinates,
+  getRoundedMinutes,
+  hasReachedThresholdForMove,
+  ifIsCalendarEntryEndDateSameAsToday,
+  shouldShowContinuedText,
+} from '../../utils/CalendarHelpers';
 import CalendarEntryTimes from './CalendarEntryTimes';
 
 const DEBOUNCE_UPDATE_TIME = 50;
-
-type Coordinates = {
-  clientX: number;
-  clientY: number;
-};
-
-/**
- * We want to show the "continued" text if the calendar entry is not an all-day event and
- * the start date is not the same as the current/today's date.
- */
-const shouldShowContinuedText = (
-  calendarEntry: CalendarEntryType,
-  timezone: string,
-  date?: string
-) => {
-  if (!date) {
-    return false;
-  }
-
-  if (calendarEntry.isAllDay) {
-    return !calendarEntry.startsAt.includes(date);
-  }
-
-  const timezonedDate = formatInTimeZone(calendarEntry.startsAt, timezone, 'yyyy-MM-dd');
-
-  return timezonedDate !== date;
-};
-
-/**
- * This is a helper function to check if the end date of a calendar entry is the same as the
- * current/today's date. This is used to determine if we should show the resize handle or not.
- */
-const ifIsCalendarEntryEndDateSameAsToday = (
-  calendarEntry: CalendarEntryType,
-  timezone: string,
-  date?: string
-) => {
-  if (!date) {
-    return false;
-  }
-
-  const timezonedDate = formatInTimeZone(calendarEntry.endsAt, timezone, 'yyyy-MM-dd');
-
-  return timezonedDate === date;
-};
-
-const getClientCoordinates = (
-  event: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent
-) => {
-  if (
-    typeof (event as MouseEvent).clientX !== 'undefined' &&
-    typeof (event as MouseEvent).clientY !== 'undefined'
-  ) {
-    return {
-      clientX: (event as MouseEvent).clientX,
-      clientY: (event as MouseEvent).clientY,
-    };
-  }
-
-  const touch = (event as TouchEvent).touches[0];
-
-  return {
-    clientX: touch?.clientX ?? 0,
-    clientY: touch?.clientY ?? 0,
-  };
-};
-
-const getRoundedMinutes = (
-  event: MouseEvent | TouchEvent,
-  initialCoordinates: Coordinates,
-  weekdayWidth?: number
-) => {
-  const { clientX, clientY } = getClientCoordinates(event);
-
-  let minutesDelta = Math.round(
-    ((clientY - initialCoordinates.clientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
-  );
-
-  if (weekdayWidth) {
-    const daysDelta = Math.round(Math.abs(clientX - initialCoordinates.clientX) / weekdayWidth);
-    minutesDelta += (clientX > initialCoordinates.clientX ? 1 : -1) * daysDelta * 1440;
-  }
-
-  return Math.round(minutesDelta / 15) * 15;
-};
-
-const hasReachedThresholdForMove = (
-  event: MouseEvent | TouchEvent,
-  initialCoordinates: Coordinates
-) => {
-  const { clientX, clientY } = getClientCoordinates(event);
-
-  return (
-    Math.abs(clientX - initialCoordinates.clientX) > 10 ||
-    Math.abs(clientY - initialCoordinates.clientY) > 10
-  );
-};
 
 export type CalendarEntryProps = {
   calendarEntry: CalendarEntryType;

@@ -212,7 +212,10 @@ export default function CalendarEntry({
         }
 
         if (minutesDelta !== 0) {
-          const { startsAt, endsAt } = adjustStartAndEndDates(calendarEntry, minutesDelta);
+          const { startsAt, endsAt } = adjustStartAndEndDates(
+            calendarEntry.raw as unknown as CalendarEntryType,
+            minutesDelta
+          );
           const startsAtString = zonedTimeToUtc(startsAt, 'UTC').toISOString();
           const endsAtString = zonedTimeToUtc(endsAt, 'UTC').toISOString();
 
@@ -298,7 +301,11 @@ export default function CalendarEntry({
 
         // Same as above
         if (minutesDelta !== 0) {
-          const { endsAt } = adjustStartAndEndDates(calendarEntry, minutesDelta, 'end_only');
+          const { endsAt } = adjustStartAndEndDates(
+            calendarEntry as unknown as CalendarEntryType,
+            minutesDelta,
+            'end_only'
+          );
           const endsAtString = zonedTimeToUtc(endsAt, 'UTC').toISOString();
 
           await editEvent(calendarEntry.raw!.id, {

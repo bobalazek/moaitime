@@ -213,7 +213,7 @@ export default function CalendarEntry({
 
         if (minutesDelta !== 0) {
           const { startsAt, endsAt } = adjustStartAndEndDates(
-            calendarEntry.raw as unknown as CalendarEntryType,
+            calendarEntry.raw as Event,
             minutesDelta
           );
           const startsAtString = zonedTimeToUtc(startsAt, 'UTC').toISOString();
@@ -302,7 +302,7 @@ export default function CalendarEntry({
         // Same as above
         if (minutesDelta !== 0) {
           const { endsAt } = adjustStartAndEndDates(
-            calendarEntry as unknown as CalendarEntryType,
+            calendarEntry.raw as Event,
             minutesDelta,
             'end_only'
           );

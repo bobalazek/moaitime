@@ -27,6 +27,7 @@ import {
   CreateCalendar,
   CreateUserCalendar,
   DayOfWeek,
+  Event,
   ResponseInterface,
   UpdateCalendar,
   UpdateUserCalendar,
@@ -618,7 +619,7 @@ export const hasReachedThresholdForMove = (
 };
 
 export const adjustStartAndEndDates = (
-  calendarEntry: CalendarEntry,
+  calendarEntryOrEvent: CalendarEntry | Event,
   minutesDelta: number,
   mode: 'start_and_end' | 'end_only' = 'start_and_end'
 ) => {
@@ -630,20 +631,19 @@ export const adjustStartAndEndDates = (
   // "Z" at the end, even though it's not UTC.
 
   // Starts At
+  const startTimezone = calendarEntryOrEvent.timezone ?? 'UTC';
   const newStartsAt = addMinutes(
-    new Date(calendarEntry.startsAt),
+    new Date(calendarEntryOrEvent.startsAt),
     mode === 'end_only' ? 0 : minutesDelta
   );
   const newStartsAtString = newStartsAt.toISOString();
-  const newStartsAtUtc = zonedTimeToUtc(newStartsAt, calendarEntry.timezone).toISOString();
+  const newStartsAtUtc = zonedTimeToUtc(newStartsAt, startTimezone).toISOString();
 
   // Ends At
-  const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDelta);
+  const endTimezone = calendarEntryOrEvent.endTimezone ?? startTimezone;
+  const newEndsAt = addMinutes(new Date(calendarEntryOrEvent.endsAt), minutesDelta);
   const newEndsAtString = newEndsAt.toISOString();
-  const newEndsAtUtc = zonedTimeToUtc(
-    newEndsAt,
-    calendarEntry.endTimezone ?? calendarEntry.timezone
-  ).toISOString();
+  const newEndsAtUtc = zonedTimeToUtc(newEndsAt, endTimezone).toISOString();
 
   if (newEndsAt < newStartsAt) {
     throw new Error('Ends At cannot be before Starts At');

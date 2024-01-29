@@ -46,4 +46,47 @@ describe('mood.cy.ts', () => {
 
     cy.getBySel('mood--mood-entry').should('exist');
   });
+
+  it('should add a note to new mood entry', () => {
+    cy.getBySel('mood--open-button').click();
+
+    cy.getBySel('mood--header--add-new-mood-button').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').should('exist');
+
+    cy.getBySel('mood--mood-entry-edit-dialog--scores').contains('great').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog')
+      .find('[id="moodEntry-note"]')
+      .type("I'm feeling great!");
+
+    cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('mood--mood-entry--note').contains("I'm feeling great!");
+  });
+
+  it.skip('should edit mood entry', () => {
+    cy.getBySel('mood--open-button').click();
+
+    cy.getBySel('mood--header--add-new-mood-button').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').should('exist');
+
+    cy.getBySel('mood--mood-entry-edit-dialog--scores').contains('great').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
+
+    cy.getBySel('mood--mood-entry').should('exist');
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu--trigger-button').click();
+
+    cy.getBySel('mood--mood-entry--actions-dropdown-menu')
+      .find('div[role="menuitem"]')
+      .contains('Edit')
+      .click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog--scores').contains('bad').click();
+
+    cy.getBySel('mood--mood-entry-edit-dialog').find('button').contains('Save').click();
+  });
 });

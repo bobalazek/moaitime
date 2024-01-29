@@ -73,11 +73,15 @@ export const MoodEntryActions = ({ moodEntry }: { moodEntry: MoodEntry }) => {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm">
+        <Button
+          variant="ghost"
+          size="sm"
+          data-test="mood--mood-entry--actions-dropdown-menu--trigger-button"
+        >
           <MoreVerticalIcon />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent data-test="mood--mood-entry--actions-dropdown-menu">
         {!moodEntry.deletedAt && (
           <>
             <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>

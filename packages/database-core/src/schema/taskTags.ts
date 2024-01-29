@@ -29,9 +29,15 @@ export const taskTags = pgTable(
   }
 );
 
-export const taskTagsRelations = relations(taskTags, ({ many }) => ({
-  task: many(tasks),
-  tag: many(tags),
+export const taskTagsRelations = relations(taskTags, ({ one }) => ({
+  task: one(tasks, {
+    fields: [taskTags.taskId],
+    references: [tasks.id],
+  }),
+  tag: one(tags, {
+    fields: [taskTags.tagId],
+    references: [tags.id],
+  }),
 }));
 
 export type TaskTag = typeof taskTags.$inferSelect;

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
+import { Module, OnApplicationShutdown } from '@nestjs/common';
 
 import { destroyDatabase } from '@moaitime/database-core';
 
@@ -15,7 +15,6 @@ import { StatisticsModule } from './features/statistics/statistics.module';
 import { TasksModule } from './features/tasks/tasks.module';
 import { TestingModule } from './features/testing/testing.module';
 import { WeatherModule } from './features/weather/weather.module';
-import { AppMiddleware } from './middlewares/app.middleware';
 
 @Module({
   imports: [
@@ -35,11 +34,7 @@ import { AppMiddleware } from './middlewares/app.middleware';
   controllers: [AppController],
   providers: [],
 })
-export class AppModule implements NestModule, OnApplicationShutdown {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AppMiddleware).forRoutes('*');
-  }
-
+export class AppModule implements OnApplicationShutdown {
   async onApplicationShutdown() {
     await destroyDatabase();
   }

@@ -5,6 +5,7 @@ export * from './features/auth/UserDataExportsManager';
 export * from './features/auth/UserAccessTokensManager';
 export * from './features/auth/UserDeletionProcessor';
 export * from './features/auth/UserDataExportProcessor';
+export * from './features/auth/TeamsManager';
 
 // Backgrounds
 export * from './features/backgrounds/BackgroundsManager';

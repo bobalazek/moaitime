@@ -136,6 +136,7 @@ export class UsersManager {
     // TODO: once we have plans, we need to adjust the limits depending on that
 
     return {
+      teamsMaxPerUserCount: 1,
       tasksMaxPerListCount: 10,
       listsMaxPerUserCount: 10,
       tagsMaxPerUserCount: 10,

@@ -1,4 +1,5 @@
 export type UserLimits = {
+  teamsMaxPerUserCount: number;
   tasksMaxPerListCount: number;
   listsMaxPerUserCount: number;
   tagsMaxPerUserCount: number;

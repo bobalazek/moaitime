@@ -36,9 +36,15 @@ export const teamUsers = pgTable(
   }
 );
 
-export const teamUsersRelations = relations(teamUsers, ({ many }) => ({
-  team: many(teams),
-  user: many(users),
+export const teamUsersRelations = relations(teamUsers, ({ one }) => ({
+  team: one(teams, {
+    fields: [teamUsers.teamId],
+    references: [teams.id],
+  }),
+  user: one(users, {
+    fields: [teamUsers.userId],
+    references: [users.id],
+  }),
 }));
 
 export type TeamUser = typeof teamUsers.$inferSelect;

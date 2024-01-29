@@ -5,6 +5,8 @@ import { Dialog, DialogContent } from '@moaitime/web-ui';
 
 import AccountSettingsSection from '../../auth/components/account-settings/AccountSettingsSection';
 import AccountSettingsSectionHeaderText from '../../auth/components/account-settings/AccountSettingsSectionHeaderText';
+import TeamSettingsSection from '../../auth/components/team-settings/TeamSettingsSection';
+import TeamSettingsSectionHeaderText from '../../auth/components/team-settings/TeamSettingsSectionHeaderText';
 import { useAuthStore } from '../../auth/state/authStore';
 import CalendarSettingsSection from '../../calendar/components/calendar-settings/CalendarSettingsSection';
 import CalendarSettingsSectionHeaderText from '../../calendar/components/calendar-settings/CalendarSettingsSectionHeaderText';
@@ -43,7 +45,11 @@ const tabs = [
     label: <AccountSettingsSectionHeaderText />,
     content: <AccountSettingsSection />,
   },
-
+  {
+    id: 'team',
+    label: <TeamSettingsSectionHeaderText />,
+    content: <TeamSettingsSection />,
+  },
   {
     id: 'calendar',
     label: <CalendarSettingsSectionHeaderText />,

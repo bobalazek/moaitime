@@ -1,12 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
-import { AuthAccountController } from './controllers/auth-account.controller';
+import { AccountController } from './controllers/account.controller';
 import { AuthController } from './controllers/auth.controller';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 
 @Module({
   imports: [],
-  controllers: [AuthController, AuthAccountController],
+  controllers: [AuthController, AccountController],
   providers: [],
 })
 export class AuthModule implements NestModule {

@@ -195,7 +195,7 @@ export const refreshToken = async (token: string) => {
 };
 
 export const getAccount = async () => {
-  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/account`, {
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account`, {
     method: 'GET',
   });
 
@@ -203,7 +203,7 @@ export const getAccount = async () => {
 };
 
 export const updateAccount = async (data: UpdateUser) => {
-  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/account`, {
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account`, {
     method: 'PATCH',
     body: JSON.stringify(data),
     headers: {
@@ -216,32 +216,26 @@ export const updateAccount = async (data: UpdateUser) => {
 };
 
 export const updateAccountPassword = async (data: UpdateUserPassword) => {
-  const response = await fetchJson<ResponseInterface<Auth>>(
-    `${API_URL}/api/v1/auth/account/password`,
-    {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account/password`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
   return response;
 };
 export const updateAccountSettings = async (data: UpdateUserSettings) => {
-  const response = await fetchJson<ResponseInterface<Auth>>(
-    `${API_URL}/api/v1/auth/account/settings`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account/settings`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 
   return response;
 };
@@ -249,7 +243,7 @@ export const updateAccountSettings = async (data: UpdateUserSettings) => {
 // User Limits and Usage
 export const getUserLimits = async () => {
   const response = await fetchJson<ResponseInterface<UserLimits>>(
-    `${API_URL}/api/v1/auth/account/limits`,
+    `${API_URL}/api/v1/account/limits`,
     {
       method: 'GET',
     }
@@ -260,7 +254,7 @@ export const getUserLimits = async () => {
 
 export const getUserUsage = async () => {
   const response = await fetchJson<ResponseInterface<UserUsage>>(
-    `${API_URL}/api/v1/auth/account/usage`,
+    `${API_URL}/api/v1/account/usage`,
     {
       method: 'GET',
     }

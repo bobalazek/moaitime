@@ -21,8 +21,8 @@ import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { convertToUserDto } from '../utils/auth.utils';
 
-@Controller('/api/v1/auth/account')
-export class AuthAccountController {
+@Controller('/api/v1/account')
+export class AccountController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async index(@Req() req: Request): Promise<LoginResponseDto> {

@@ -35,7 +35,7 @@ import {
   updateAccountPassword,
   updateAccountSettings,
 } from '../utils/AuthHelpers';
-import { useJoinedTeamStore } from './joinedTeamStore';
+import { useTeamsStore } from './teamsStore';
 import { useUserLimitsAndUsageStore } from './userLimitsAndUsageStore';
 
 export type AuthStore = {
@@ -263,7 +263,7 @@ export const useAuthStore = create<AuthStore>()(
         const { reloadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
         const { reloadGreetings, setRandomGreeting } = useGreetingStore.getState();
         const { reloadQuotes, setRandomQuote } = useQuoteStore.getState();
-        const { reloadJoinedTeam } = useJoinedTeamStore.getState();
+        const { reloadJoinedTeam } = useTeamsStore.getState();
 
         if (!auth?.userAccessToken?.token) {
           return;

@@ -11,6 +11,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogHeader,
   Input,
   Label,
   sonnerToast,
@@ -38,18 +39,18 @@ export default function CalendarEditDialog() {
       return;
     }
 
-    const parsedSelectedTask = UpdateCalendarSchema.safeParse(
+    const parsedSelectedCalendar = UpdateCalendarSchema.safeParse(
       convertObjectNullPropertiesToUndefined(selectedCalendar)
     );
-    if (!parsedSelectedTask.success) {
+    if (!parsedSelectedCalendar.success) {
       sonnerToast.error('Oops!', {
-        description: zodErrorToString(parsedSelectedTask.error),
+        description: zodErrorToString(parsedSelectedCalendar.error),
       });
 
       return;
     }
 
-    setData(parsedSelectedTask.data);
+    setData(parsedSelectedCalendar.data);
   }, [selectedCalendar]);
 
   const calendarExists = !!selectedCalendar?.id;
@@ -108,6 +109,12 @@ export default function CalendarEditDialog() {
   return (
     <Dialog open={selectedCalendarDialogOpen} onOpenChange={setSelectedCalendarDialogOpen}>
       <DialogContent data-test="calendar--edit-dialog">
+        <DialogHeader>
+          <div className="truncate">
+            {selectedCalendar?.id && <>Edit "{selectedCalendar.name}" Calendar</>}
+            {!selectedCalendar?.id && <>Create Calendar</>}
+          </div>
+        </DialogHeader>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="calendar-name">Name</Label>
           <Input

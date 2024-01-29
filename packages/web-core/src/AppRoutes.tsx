@@ -6,6 +6,7 @@ import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotP
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
+import TeamEditDialog from './features/auth/components/team-edit-dialog/TeamEditDialog';
 import { useAuthUserSetting } from './features/auth/state/authStore';
 import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
 import CalendarEditDialog from './features/calendar/components/calendar-edit-dialog/CalendarEditDialog';
@@ -50,6 +51,7 @@ function GlobalDialogs() {
       <PublicCalendarsDialog />
       <CalendarDeleteAlertDialog />
       <MoodEntryEditDialog />
+      <TeamEditDialog />
       <TasksPopover />
       {commandsEnabled && <CommandsDialog />}
     </>

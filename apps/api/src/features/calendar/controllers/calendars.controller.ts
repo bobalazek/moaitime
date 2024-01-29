@@ -125,7 +125,7 @@ export class CalendarsController {
       throw new ForbiddenException('You cannot delete this calendar');
     }
 
-    const updatedData = body.isHardDelete
+    const data = body.isHardDelete
       ? await calendarsManager.deleteOneById(calendarId)
       : await calendarsManager.updateOneById(calendarId, {
           deletedAt: new Date(),
@@ -133,7 +133,7 @@ export class CalendarsController {
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -148,13 +148,13 @@ export class CalendarsController {
       throw new ForbiddenException('You cannot undelete this calendar');
     }
 
-    const updatedData = await calendarsManager.updateOneById(calendarId, {
+    const data = await calendarsManager.updateOneById(calendarId, {
       deletedAt: null,
     });
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 

@@ -93,11 +93,11 @@ export class TagsController {
       throw new NotFoundException('You cannot update this tag');
     }
 
-    const updatedData = await tagsManager.updateOneById(tagId, body);
+    const data = await tagsManager.updateOneById(tagId, body);
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -113,7 +113,7 @@ export class TagsController {
       throw new ForbiddenException('You cannot delete this tag');
     }
 
-    const updatedData = body.isHardDelete
+    const data = body.isHardDelete
       ? await tagsManager.deleteOneById(tagId)
       : await tagsManager.updateOneById(tagId, {
           deletedAt: new Date(),
@@ -121,7 +121,7 @@ export class TagsController {
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -136,13 +136,13 @@ export class TagsController {
       throw new ForbiddenException('You cannot undelete this tag');
     }
 
-    const updatedData = await tagsManager.updateOneById(tagId, {
+    const data = await tagsManager.updateOneById(tagId, {
       deletedAt: null,
     });
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 }

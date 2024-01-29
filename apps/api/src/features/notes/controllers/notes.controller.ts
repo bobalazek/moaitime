@@ -113,9 +113,7 @@ export class NotesController {
       throw new NotFoundException('Note not found');
     }
 
-    const updateData = body;
-
-    const updatedData = await notesManager.updateOneById(noteId, updateData);
+    const updatedData = await notesManager.updateOneById(noteId, body);
 
     return {
       success: true,
@@ -158,13 +156,13 @@ export class NotesController {
       throw new ForbiddenException('You cannot undelete this note');
     }
 
-    const updatedData = await notesManager.updateOneById(noteId, {
+    const data = await notesManager.updateOneById(noteId, {
       deletedAt: null,
     });
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 }

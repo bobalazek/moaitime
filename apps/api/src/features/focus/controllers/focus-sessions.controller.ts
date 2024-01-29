@@ -112,7 +112,7 @@ export class FocusSessionsController {
       throw new NotFoundException('Focus session not found');
     }
 
-    const updatedData = body.isHardDelete
+    const data = body.isHardDelete
       ? await focusSessionsManager.deleteOneById(focusSessionId)
       : await focusSessionsManager.updateOneById(focusSessionId, {
           deletedAt: new Date(),
@@ -120,7 +120,7 @@ export class FocusSessionsController {
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -135,13 +135,13 @@ export class FocusSessionsController {
       throw new ForbiddenException('You cannot undelete this focus session');
     }
 
-    const updatedData = await focusSessionsManager.updateOneById(focusSessionId, {
+    const data = await focusSessionsManager.updateOneById(focusSessionId, {
       deletedAt: null,
     });
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 }

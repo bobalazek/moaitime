@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS "teams" (
 CREATE TABLE IF NOT EXISTS "team_users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"roles" json DEFAULT '[]' NOT NULL,
+	"invite_email" text,
 	"invited_at" timestamp DEFAULT now(),
 	"invite_expires_at" timestamp,
 	"invite_accepted_at" timestamp,
@@ -227,7 +228,8 @@ CREATE TABLE IF NOT EXISTS "team_users" (
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"team_id" uuid NOT NULL,
-	"user_id" uuid NOT NULL
+	"user_id" uuid,
+	"invited_by_user_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "testing_emails" (
@@ -334,6 +336,7 @@ CREATE INDEX IF NOT EXISTS "task_tags_tag_id_idx" ON "task_tags" ("tag_id");--> 
 CREATE INDEX IF NOT EXISTS "teams_organization_id_idx" ON "teams" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_user_id_idx" ON "team_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "team_users_invite_by_user_id_idx" ON "team_users" ("invited_by_user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_access_tokens_user_id_idx" ON "user_access_tokens" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
@@ -500,7 +503,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "team_users" ADD CONSTRAINT "team_users_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "team_users" ADD CONSTRAINT "team_users_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "team_users" ADD CONSTRAINT "team_users_invited_by_user_id_users_id_fk" FOREIGN KEY ("invited_by_user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

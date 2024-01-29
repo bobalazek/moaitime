@@ -142,18 +142,18 @@ export class EventsController {
     @Req() req: Request,
     @Param('eventId') eventId: string
   ): Promise<AbstractResponseDto<Event>> {
-    const hasAccess = await eventsManager.userCanDelete(req.user.id, eventId);
-    if (!hasAccess) {
+    const canDelete = await eventsManager.userCanDelete(req.user.id, eventId);
+    if (!canDelete) {
       throw new NotFoundException('Calendar not found');
     }
 
-    const updatedData = await eventsManager.updateOneById(eventId, {
+    const data = await eventsManager.updateOneById(eventId, {
       deletedAt: new Date(),
     });
 
     return {
       success: true,
-      data: updatedData,
+      data: data,
     };
   }
 
@@ -168,13 +168,13 @@ export class EventsController {
       throw new ForbiddenException('You cannot undelete this event');
     }
 
-    const updatedData = await eventsManager.updateOneById(eventId, {
+    const data = await eventsManager.updateOneById(eventId, {
       deletedAt: null,
     });
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 }

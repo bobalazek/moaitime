@@ -103,11 +103,11 @@ export class MoodEntriesController {
       loggedAt: body.loggedAt ? new Date(body.loggedAt).toISOString() : undefined,
     };
 
-    const updatedData = await moodEntriesManager.updateOneById(moodEntryId, updateData);
+    const data = await moodEntriesManager.updateOneById(moodEntryId, updateData);
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -123,7 +123,7 @@ export class MoodEntriesController {
       throw new ForbiddenException('You cannot delete this mood entry');
     }
 
-    const updatedData = body.isHardDelete
+    const data = body.isHardDelete
       ? await moodEntriesManager.deleteOneById(moodEntryId)
       : await moodEntriesManager.updateOneById(moodEntryId, {
           deletedAt: new Date(),
@@ -131,7 +131,7 @@ export class MoodEntriesController {
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -146,13 +146,13 @@ export class MoodEntriesController {
       throw new ForbiddenException('You cannot undelete this mood entry');
     }
 
-    const updatedData = await moodEntriesManager.updateOneById(moodEntryId, {
+    const data = await moodEntriesManager.updateOneById(moodEntryId, {
       deletedAt: null,
     });
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 }

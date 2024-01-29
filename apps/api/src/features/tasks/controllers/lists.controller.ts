@@ -113,11 +113,11 @@ export class ListsController {
       throw new NotFoundException('You cannot update this list');
     }
 
-    const updatedData = await listsManager.updateOneById(listId, body);
+    const data = await listsManager.updateOneById(listId, body);
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -132,13 +132,13 @@ export class ListsController {
       throw new ForbiddenException('You cannot delete this list');
     }
 
-    const updatedData = await listsManager.updateOneById(listId, {
+    const data = await listsManager.updateOneById(listId, {
       deletedAt: new Date(),
     });
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 

@@ -1,5 +1,5 @@
 {
-  "id": "0e6c2392-4d06-4af4-adb5-b39c2e754bc4",
+  "id": "bd277996-f89f-44f1-99ce-96a84c1b2b32",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1649,6 +1649,12 @@
           "notNull": true,
           "default": "'[]'"
         },
+        "invite_email": {
+          "name": "invite_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "invited_at": {
           "name": "invited_at",
           "type": "timestamp",
@@ -1698,7 +1704,13 @@
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "invited_by_user_id": {
+          "name": "invited_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -1710,6 +1722,11 @@
         "team_users_user_id_idx": {
           "name": "team_users_user_id_idx",
           "columns": ["user_id"],
+          "isUnique": false
+        },
+        "team_users_invite_by_user_id_idx": {
+          "name": "team_users_invite_by_user_id_idx",
+          "columns": ["invited_by_user_id"],
           "isUnique": false
         }
       },
@@ -1729,7 +1746,16 @@
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "team_users_invited_by_user_id_users_id_fk": {
+          "name": "team_users_invited_by_user_id_users_id_fk",
+          "tableFrom": "team_users",
+          "tableTo": "users",
+          "columnsFrom": ["invited_by_user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },

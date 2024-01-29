@@ -20,7 +20,9 @@ export const notes = pgTable(
     updatedAt: timestamp('updated_at').defaultNow(),
     userId: uuid('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
   },
   (table) => {
     return {

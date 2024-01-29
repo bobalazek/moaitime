@@ -12,10 +12,14 @@ export const taskTags = pgTable(
     updatedAt: timestamp('updated_at').defaultNow(),
     taskId: uuid('task_id')
       .notNull()
-      .references(() => tasks.id, { onDelete: 'cascade' }),
+      .references(() => tasks.id, {
+        onDelete: 'cascade',
+      }),
     tagId: uuid('tag_id')
       .notNull()
-      .references(() => tags.id, { onDelete: 'cascade' }),
+      .references(() => tags.id, {
+        onDelete: 'cascade',
+      }),
   },
   (table) => {
     return {

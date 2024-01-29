@@ -17,7 +17,9 @@ export const subscriptions = pgTable(
     updatedAt: timestamp('updated_at').defaultNow(),
     organizationId: uuid('organization_id')
       .notNull()
-      .references(() => organizations.id, { onDelete: 'cascade' }),
+      .references(() => organizations.id, {
+        onDelete: 'cascade',
+      }),
   },
   (table) => {
     return {

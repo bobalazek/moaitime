@@ -13,7 +13,9 @@ export const quotes = pgTable(
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
-    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').references(() => users.id, {
+      onDelete: 'cascade',
+    }),
   },
   (table) => {
     return {

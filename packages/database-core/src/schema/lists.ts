@@ -16,8 +16,12 @@ export const lists = pgTable(
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
-    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
-    teamId: uuid('team_id').references(() => teams.id, { onDelete: 'set null' }),
+    userId: uuid('user_id').references(() => users.id, {
+      onDelete: 'set null',
+    }),
+    teamId: uuid('team_id').references(() => teams.id, {
+      onDelete: 'set null',
+    }),
   },
   (table) => {
     return {

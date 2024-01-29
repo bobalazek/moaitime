@@ -35,8 +35,12 @@ export const focusSessions = pgTable(
     updatedAt: timestamp('updated_at').defaultNow(),
     userId: uuid('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    taskId: uuid('task_id').references(() => tasks.id, { onDelete: 'set null' }),
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
+    taskId: uuid('task_id').references(() => tasks.id, {
+      onDelete: 'set null',
+    }),
   },
   (table) => {
     return {

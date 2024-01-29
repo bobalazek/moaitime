@@ -33,11 +33,14 @@ CREATE TABLE IF NOT EXISTS "events" (
 	"timezone" text DEFAULT 'UTC',
 	"end_timezone" text,
 	"is_all_day" boolean DEFAULT false NOT NULL,
+	"repeat_pattern" text,
+	"repeat_ends_at" timestamp,
 	"starts_at" timestamp,
 	"ends_at" timestamp,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid,
 	"calendar_id" uuid NOT NULL
 );
 --> statement-breakpoint
@@ -124,7 +127,8 @@ CREATE TABLE IF NOT EXISTS "organizations" (
 	"name" text NOT NULL,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "organization_users" (
@@ -209,7 +213,8 @@ CREATE TABLE IF NOT EXISTS "teams" (
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	"organization_id" uuid NOT NULL
+	"user_id" uuid,
+	"organization_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "team_users" (
@@ -305,6 +310,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE INDEX IF NOT EXISTS "backgrounds_user_id_idx" ON "backgrounds" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "calendars_user_id_idx" ON "calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "calendars_team_id_idx" ON "calendars" ("team_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "events_user_id_idx" ON "events" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "events_calendar_id_idx" ON "events" ("calendar_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "focus_sessions_user_id_idx" ON "focus_sessions" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "greetings_user_id_idx" ON "greetings" ("user_id");--> statement-breakpoint
@@ -314,6 +320,7 @@ CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "lists" ("user_id");--> statem
 CREATE INDEX IF NOT EXISTS "lists_team_id_idx" ON "lists" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "mood_entries_user_id_idx" ON "mood_entries" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "notes_user_id_idx" ON "notes" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "organizations_user_id_idx" ON "organizations" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_users_organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_users_user_id_idx" ON "organization_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "subscriptions" ("organization_id");--> statement-breakpoint
@@ -350,6 +357,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "calendars" ADD CONSTRAINT "calendars_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "events" ADD CONSTRAINT "events_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -409,6 +422,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "organizations" ADD CONSTRAINT "organizations_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "organization_users" ADD CONSTRAINT "organization_users_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -463,7 +482,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "teams" ADD CONSTRAINT "teams_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "teams" ADD CONSTRAINT "teams_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "teams" ADD CONSTRAINT "teams_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

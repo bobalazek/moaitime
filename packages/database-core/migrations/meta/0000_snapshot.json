@@ -1,5 +1,5 @@
 {
-  "id": "815c2d0d-8957-4000-ae9e-046fa33a211b",
+  "id": "0e6c2392-4d06-4af4-adb5-b39c2e754bc4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -253,6 +253,18 @@
           "notNull": true,
           "default": false
         },
+        "repeat_pattern": {
+          "name": "repeat_pattern",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repeat_ends_at": {
+          "name": "repeat_ends_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "starts_at": {
           "name": "starts_at",
           "type": "timestamp",
@@ -285,6 +297,12 @@
           "notNull": false,
           "default": "now()"
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "calendar_id": {
           "name": "calendar_id",
           "type": "uuid",
@@ -293,6 +311,11 @@
         }
       },
       "indexes": {
+        "events_user_id_idx": {
+          "name": "events_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
         "events_calendar_id_idx": {
           "name": "events_calendar_id_idx",
           "columns": ["calendar_id"],
@@ -300,6 +323,15 @@
         }
       },
       "foreignKeys": {
+        "events_user_id_users_id_fk": {
+          "name": "events_user_id_users_id_fk",
+          "tableFrom": "events",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "events_calendar_id_calendars_id_fk": {
           "name": "events_calendar_id_calendars_id_fk",
           "tableFrom": "events",
@@ -917,10 +949,32 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
+      "indexes": {
+        "organizations_user_id_idx": {
+          "name": "organizations_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "organizations_user_id_users_id_fk": {
+          "name": "organizations_user_id_users_id_fk",
+          "tableFrom": "organizations",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -1534,11 +1588,17 @@
           "notNull": false,
           "default": "now()"
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "organization_id": {
           "name": "organization_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {
@@ -1549,13 +1609,22 @@
         }
       },
       "foreignKeys": {
+        "teams_user_id_users_id_fk": {
+          "name": "teams_user_id_users_id_fk",
+          "tableFrom": "teams",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "teams_organization_id_organizations_id_fk": {
           "name": "teams_organization_id_organizations_id_fk",
           "tableFrom": "teams",
           "tableTo": "organizations",
           "columnsFrom": ["organization_id"],
           "columnsTo": ["id"],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },

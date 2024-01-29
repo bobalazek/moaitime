@@ -13,10 +13,14 @@ export const userCalendars = pgTable(
     updatedAt: timestamp('updated_at').defaultNow(),
     userId: uuid('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
     calendarId: uuid('calendar_id')
       .notNull()
-      .references(() => calendars.id, { onDelete: 'cascade' }),
+      .references(() => calendars.id, {
+        onDelete: 'cascade',
+      }),
   },
   (table) => {
     return {

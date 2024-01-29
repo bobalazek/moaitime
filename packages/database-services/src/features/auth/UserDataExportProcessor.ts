@@ -17,6 +17,8 @@ import { ProcessingStatusEnum } from '@moaitime/shared-common';
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { EventsManager, eventsManager } from '../calendars/EventsManager';
+import { focusSessionsManager, FocusSessionsManager } from '../focus/FocusSessionsManager';
+import { MoodEntriesManager, moodEntriesManager } from '../mood/MoodEntriesManager';
 import { NotesManager, notesManager } from '../notes/NotesManager';
 import { listsManager, ListsManager } from '../tasks/ListsManager';
 import { TasksManager, tasksManager } from '../tasks/TasksManager';
@@ -30,7 +32,9 @@ export class UserDataExportProcessor {
     private _eventsManager: EventsManager,
     private _listsManager: ListsManager,
     private _tasksManager: TasksManager,
-    private _notesManager: NotesManager
+    private _notesManager: NotesManager,
+    private _focusSessionsManager: FocusSessionsManager,
+    private _moodEntriesManager: MoodEntriesManager
   ) {}
 
   async processNextPending() {
@@ -68,6 +72,8 @@ export class UserDataExportProcessor {
       const lists = await this._saveLists(userDataExport.userId, tmpUserDataExportDir);
       await this._saveTasks(userDataExport.userId, tmpUserDataExportDir, lists);
       await this._saveNotes(userDataExport.userId, tmpUserDataExportDir);
+      await this._saveFocusSessions(userDataExport.userId, tmpUserDataExportDir);
+      await this._saveMoodEntries(userDataExport.userId, tmpUserDataExportDir);
 
       const completedAt = new Date();
       const expiresAt = addSeconds(completedAt, AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS);
@@ -193,6 +199,38 @@ export class UserDataExportProcessor {
     writeFileSync(notesFilePath, notesJson);
   }
 
+  async _saveMoodEntries(userId: string, tmpUserDataExportDir: string) {
+    this._logger.debug(`Fetching mood enries for user (id: ${userId}) ...`);
+
+    const { data: moodEntries } = await this._moodEntriesManager.findManyByUserId(userId);
+
+    this._logger.debug(`Found ${moodEntries.length} mood entries for user (id: ${userId}).`);
+
+    const moodEntriesJson = JSON.stringify(moodEntries, null, 2);
+
+    this._logger.debug(`Writing mood entries for user (id: ${userId}) to file ...`);
+
+    const moodEntriesFilePath = `${tmpUserDataExportDir}/mood-entries.json`;
+
+    writeFileSync(moodEntriesFilePath, moodEntriesJson);
+  }
+
+  async _saveFocusSessions(userId: string, tmpUserDataExportDir: string) {
+    this._logger.debug(`Fetching focus sessions for user (id: ${userId}) ...`);
+
+    const focusSessions = await this._focusSessionsManager.findManyByUserId(userId);
+
+    this._logger.debug(`Found ${focusSessions.length} focus sessions for user (id: ${userId}).`);
+
+    const focusSessionsJson = JSON.stringify(focusSessions, null, 2);
+
+    this._logger.debug(`Writing focus sessions for user (id: ${userId}) to file ...`);
+
+    const focusSessionsFilePath = `${tmpUserDataExportDir}/focus-sessions.json`;
+
+    writeFileSync(focusSessionsFilePath, focusSessionsJson);
+  }
+
   async _zipFolder(tmpUserDataExportDir: string) {
     this._logger.debug(`Zipping folder (${tmpUserDataExportDir}) ...`);
 
@@ -290,5 +328,7 @@ export const userDataExportProcessor = new UserDataExportProcessor(
   eventsManager,
   listsManager,
   tasksManager,
-  notesManager
+  notesManager,
+  focusSessionsManager,
+  moodEntriesManager
 );

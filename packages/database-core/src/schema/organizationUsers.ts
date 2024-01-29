@@ -20,8 +20,12 @@ export const organizationUsers = pgTable(
     updatedAt: timestamp('updated_at').defaultNow(),
     organizationId: uuid('organization_id')
       .notNull()
-      .references(() => organizations.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+      .references(() => organizations.id, {
+        onDelete: 'cascade',
+      }),
+    userId: uuid('user_id').references(() => users.id, {
+      onDelete: 'cascade',
+    }),
   },
   (table) => {
     return {

@@ -656,3 +656,15 @@ export const adjustStartAndEndDates = (
     endsAtUtc: newEndsAtUtc,
   };
 };
+
+export const getClosestNextHalfHour = () => {
+  const now = new Date();
+  const minutes = now.getMinutes();
+
+  let halfHour = Math.ceil(minutes / 30) * 30;
+  if (30 - minutes <= 5) {
+    halfHour += 30;
+  }
+
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), halfHour);
+};

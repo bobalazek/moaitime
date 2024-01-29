@@ -28,20 +28,9 @@ import {
 import {
   convertIsoStringToObject,
   convertObjectToIsoString,
+  getClosestNextHalfHour,
 } from '../../../calendar/utils/CalendarHelpers';
 import DateSelector from './DateSelector';
-
-const getClosestNextHalfHour = () => {
-  const now = new Date();
-  const minutes = now.getMinutes();
-
-  let halfHour = Math.ceil(minutes / 30) * 30;
-  if (30 - minutes <= 5) {
-    halfHour += 30;
-  }
-
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), halfHour);
-};
 
 const DEFAULT_OCCURENCES = 5;
 const MAX_DATES_TO_SHOW = 5;

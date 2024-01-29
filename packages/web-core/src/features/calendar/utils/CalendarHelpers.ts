@@ -1,5 +1,6 @@
 import {
   addDays,
+  addMinutes,
   addMonths,
   eachDayOfInterval,
   endOfDay,
@@ -614,4 +615,44 @@ export const hasReachedThresholdForMove = (
     Math.abs(clientX - initialCoordinates.clientX) > 10 ||
     Math.abs(clientY - initialCoordinates.clientY) > 10
   );
+};
+
+export const adjustStartAndEndDates = (
+  calendarEntry: CalendarEntry,
+  minutesDelta: number,
+  mode: 'start_and_end' | 'end_only' = 'start_and_end'
+) => {
+  // For some reason we are sending the endsAt as local time, not UTC,
+  // but it still has a "Z" at the end. This seems to be happening on multiple places,
+  // so DO NOT CHANGE THIS, else it could have negative side effects on other places.
+  // The reason is, that the database stores the local time and omits the timezone.
+  // What we basically do here is us getting the "correct" (local) time, with just the
+  // "Z" at the end, even though it's not UTC.
+
+  // Starts At
+  const newStartsAt = addMinutes(
+    new Date(calendarEntry.startsAt),
+    mode === 'end_only' ? 0 : minutesDelta
+  );
+  const newStartsAtString = newStartsAt.toISOString();
+  const newStartsAtUtc = zonedTimeToUtc(newStartsAt, calendarEntry.timezone).toISOString();
+
+  // Ends At
+  const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDelta);
+  const newEndsAtString = newEndsAt.toISOString();
+  const newEndsAtUtc = zonedTimeToUtc(
+    newEndsAt,
+    calendarEntry.endTimezone ?? calendarEntry.timezone
+  ).toISOString();
+
+  if (newEndsAt < newStartsAt) {
+    throw new Error('Ends At cannot be before Starts At');
+  }
+
+  return {
+    startsAt: newStartsAtString,
+    startsAtUtc: newStartsAtUtc,
+    endsAt: newEndsAtString,
+    endsAtUtc: newEndsAtUtc,
+  };
 };

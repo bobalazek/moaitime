@@ -1,6 +1,5 @@
 import { clsx } from 'clsx';
 import { colord } from 'colord';
-import { addMinutes } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { useAtom } from 'jotai';
 import { debounce } from 'lodash';
@@ -22,6 +21,7 @@ import { calendarEventResizingAtom, highlightedCalendarEntryAtom } from '../../s
 import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
 import {
+  adjustStartAndEndDates,
   getClientCoordinates,
   getRoundedMinutes,
   hasReachedThresholdForMove,
@@ -120,6 +120,10 @@ export default function CalendarEntry({
     setHighlightedCalendarEntry(null);
   }, [setHighlightedCalendarEntry]);
 
+  const debouncedUpdateCalendarEntry = debounce(updateCalendarEntry, DEBOUNCE_UPDATE_TIME, {
+    maxWait: DEBOUNCE_UPDATE_TIME,
+  });
+
   // Resize/move
   const onContainerMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
@@ -154,18 +158,12 @@ export default function CalendarEntry({
 
       const isTouchEvent = event.type.startsWith('touch');
       const initialCoordinates = getClientCoordinates(event);
-
-      let newStartsAtString = calendarEntry.startsAt;
-      let newEndsAtString = calendarEntry.endsAt;
+      let minutesDelta = 0;
 
       if (isTouchEvent && calendarContainer) {
         document.body.style.overflow = 'hidden';
         calendarContainer.style.overflow = 'hidden';
       }
-
-      const debouncedUpdateCalendarEntry = debounce(updateCalendarEntry, DEBOUNCE_UPDATE_TIME, {
-        maxWait: DEBOUNCE_UPDATE_TIME,
-      });
 
       const onMove = (event: MouseEvent | TouchEvent) => {
         const minutesDeltaRounded = getRoundedMinutes(
@@ -174,26 +172,24 @@ export default function CalendarEntry({
           calendarWeekdayWidth
         );
 
-        // Starts At
-        const newStartsAt = addMinutes(new Date(calendarEntry.startsAt), minutesDeltaRounded);
-        const newStartsAtUtc = zonedTimeToUtc(newStartsAt, calendarEntry.timezone).toISOString();
-        newStartsAtString = newStartsAt.toISOString();
+        try {
+          const { startsAt, startsAtUtc, endsAt, endsAtUtc } = adjustStartAndEndDates(
+            calendarEntry,
+            minutesDeltaRounded
+          );
 
-        // Ends At
-        const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDeltaRounded);
-        const newEndsAtUtc = zonedTimeToUtc(
-          newEndsAt,
-          calendarEntry.endTimezone ?? calendarEntry.timezone
-        ).toISOString();
-        newEndsAtString = newEndsAt.toISOString();
+          minutesDelta = minutesDeltaRounded;
 
-        debouncedUpdateCalendarEntry({
-          ...calendarEntry,
-          startsAt: newStartsAtString,
-          startsAtUtc: newStartsAtUtc,
-          endsAt: newEndsAtString,
-          endsAtUtc: newEndsAtUtc,
-        });
+          debouncedUpdateCalendarEntry({
+            ...calendarEntry,
+            startsAt,
+            startsAtUtc,
+            endsAt,
+            endsAtUtc,
+          });
+        } catch (error) {
+          // Nothing to do - the start time is probably before the end time
+        }
       };
 
       const onEnd = async (event: MouseEvent | TouchEvent) => {
@@ -215,20 +211,17 @@ export default function CalendarEntry({
           return;
         }
 
-        // For some reason we are sending the endsAt as local time, not UTC,
-        // but it still has a "Z" at the end. This seems to be happening on multiple places,
-        // so DO NOT CHANGE THIS, else it could have negative side effects on other places.
-        // The reason is, that the database stores the local time and omits the timezone.
-        // What we basically do here is us getting the "correct" (local) time, with just the
-        // "Z" at the end, even though it's not UTC.
-        const finalStartsAt = zonedTimeToUtc(newStartsAtString, 'UTC').toISOString();
-        const finalEndsAt = zonedTimeToUtc(newEndsAtString, 'UTC').toISOString();
+        if (minutesDelta !== 0) {
+          const { startsAt, endsAt } = adjustStartAndEndDates(calendarEntry, minutesDelta);
+          const startsAtString = zonedTimeToUtc(startsAt, 'UTC').toISOString();
+          const endsAtString = zonedTimeToUtc(endsAt, 'UTC').toISOString();
 
-        await editEvent(calendarEntry.raw!.id, {
-          ...calendarEntry.raw,
-          startsAt: finalStartsAt,
-          endsAt: finalEndsAt,
-        } as Event);
+          await editEvent(calendarEntry.raw!.id, {
+            ...calendarEntry.raw,
+            startsAt: startsAtString,
+            endsAt: endsAtString,
+          } as Event);
+        }
 
         // To make sure the onClick event has been fired, to prevent opening the dialog
         setTimeout(() => {
@@ -240,14 +233,14 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
     [
-      calendarEntry,
-      style,
       canResizeAndMove,
-      setCalendarEventResizing,
-      updateCalendarEntry,
-      editEvent,
+      style,
+      calendarEntry,
       setSelectedEventDialogOpen,
       setSelectedTaskDialogOpen,
+      setCalendarEventResizing,
+      editEvent,
+      debouncedUpdateCalendarEntry,
     ]
   );
 
@@ -265,37 +258,33 @@ export default function CalendarEntry({
 
       const isTouchEvent = event.type.startsWith('touch');
       const initialCoordinates = getClientCoordinates(event);
-      let newEndsAtString = calendarEntry.endsAt;
+      let minutesDelta = 0;
 
       if (isTouchEvent && calendarContainer) {
         document.body.style.overflow = 'hidden';
         calendarContainer.style.overflow = 'hidden';
       }
 
-      const debouncedUpdaterCalendaEntry = debounce(updateCalendarEntry, DEBOUNCE_UPDATE_TIME, {
-        maxWait: DEBOUNCE_UPDATE_TIME,
-      });
-
       const onMove = (event: MouseEvent | TouchEvent) => {
         const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 
-        const newEndsAt = addMinutes(new Date(calendarEntry.endsAt), minutesDeltaRounded);
-        const newEndsAtUtc = zonedTimeToUtc(
-          newEndsAt,
-          calendarEntry.endTimezone ?? calendarEntry.timezone
-        ).toISOString();
+        try {
+          const { endsAt, endsAtUtc } = adjustStartAndEndDates(
+            calendarEntry,
+            minutesDeltaRounded,
+            'end_only'
+          );
 
-        if (newEndsAt < new Date(calendarEntry.startsAtUtc)) {
-          return;
+          debouncedUpdateCalendarEntry({
+            ...calendarEntry,
+            endsAt,
+            endsAtUtc,
+          });
+
+          minutesDelta = minutesDeltaRounded;
+        } catch (error) {
+          // Nothing to do - the start time is probably before the end time
         }
-
-        newEndsAtString = newEndsAt.toISOString();
-
-        debouncedUpdaterCalendaEntry({
-          ...calendarEntry,
-          endsAt: newEndsAtString,
-          endsAtUtc: newEndsAtUtc,
-        });
       };
 
       const onEnd = async () => {
@@ -308,11 +297,15 @@ export default function CalendarEntry({
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
 
         // Same as above
-        const finalEndsAt = zonedTimeToUtc(newEndsAtString, 'UTC').toISOString();
-        await editEvent(calendarEntry.raw!.id, {
-          ...calendarEntry.raw,
-          endsAt: finalEndsAt,
-        } as Event);
+        if (minutesDelta !== 0) {
+          const { endsAt } = adjustStartAndEndDates(calendarEntry, minutesDelta, 'end_only');
+          const endsAtString = zonedTimeToUtc(endsAt, 'UTC').toISOString();
+
+          await editEvent(calendarEntry.raw!.id, {
+            ...calendarEntry.raw,
+            endsAt: endsAtString,
+          } as Event);
+        }
 
         // To make sure the onClick event has been fired, to prevent opening the dialog
         setTimeout(() => {
@@ -323,7 +316,7 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
-    [calendarEntry, style, setCalendarEventResizing, updateCalendarEntry, editEvent]
+    [style, calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]
   );
 
   return (

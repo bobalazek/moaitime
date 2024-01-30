@@ -22,6 +22,11 @@ export default function TeamInvitationsSection() {
 
   const onDeleteInvitationClick = async (teamUserInvitationId: string) => {
     try {
+      const result = confirm('Are you sure you want to remove this team invitation?');
+      if (!result) {
+        return;
+      }
+
       await deleteTeamInvitation(teamUserInvitationId);
 
       sonnerToast.success('Team invitation removed', {

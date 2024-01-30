@@ -25,6 +25,9 @@ export * from './components/checkbox';
 // Command
 export * from './components/command';
 
+// Context Menu
+export * from './components/context-menu';
+
 // Dropdown Menu
 export * from './components/dropdown-menu';
 

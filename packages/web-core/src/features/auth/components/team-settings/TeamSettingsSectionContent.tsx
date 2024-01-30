@@ -22,7 +22,7 @@ export default function TeamSettingsSectionContent() {
   }, [reloadJoinedTeam]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       {joinedTeam && (
         <>
           <JoinedTeamSection />

@@ -8,9 +8,11 @@ import {
   TableRow,
 } from '@moaitime/web-ui';
 
+import { useAuthStore } from '../../../state/authStore';
 import { useTeamsStore } from '../../../state/teamsStore';
 
 export default function TeamMembersSection() {
+  const { auth } = useAuthStore();
   const { joinedTeamMembers, removeJoinedTeamMember } = useTeamsStore();
 
   const onRemoveTeamMemberClick = async (userId: string) => {
@@ -58,13 +60,15 @@ export default function TeamMembersSection() {
                 <TableCell>{joinedTeamMember.roles.join(', ')}</TableCell>
                 <TableCell>{new Date(joinedTeamMember.createdAt).toLocaleString()}</TableCell>
                 <TableCell>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => onRemoveTeamMemberClick(joinedTeamMember.userId)}
-                  >
-                    Remove
-                  </Button>
+                  {auth?.user?.id !== joinedTeamMember.userId && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => onRemoveTeamMemberClick(joinedTeamMember.userId)}
+                    >
+                      Remove
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

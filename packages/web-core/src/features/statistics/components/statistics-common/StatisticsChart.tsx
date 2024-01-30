@@ -44,6 +44,9 @@ export default function StatisticsChart({
       <h4 className="mb-2 text-lg font-bold">{heading}</h4>
       <Chart
         options={{
+          theme: {
+            mode: document.body.classList.contains('dark') ? 'dark' : 'light',
+          },
           chart: {
             id: chartId,
             toolbar: {

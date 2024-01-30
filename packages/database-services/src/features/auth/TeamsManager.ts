@@ -12,7 +12,8 @@ import {
   teamUsers,
   users,
 } from '@moaitime/database-core';
-import { TeamUserRoleEnum } from '@moaitime/shared-common';
+import { mailer } from '@moaitime/emails-mailer';
+import { TeamUserRoleEnum, WEB_URL } from '@moaitime/shared-common';
 
 export class TeamsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Team[]> {
@@ -98,6 +99,14 @@ export class TeamsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  async getInvitationById(teamUserInvitationId: string): Promise<TeamUserInvitation | null> {
+    const row = await getDatabase().query.teamUserInvitations.findFirst({
+      where: eq(teamUserInvitations.id, teamUserInvitationId),
+    });
+
+    return row ?? null;
   }
 
   async getJoinedTeamByUserId(userId: string): Promise<{ team: Team; teamUser: TeamUser } | null> {
@@ -198,13 +207,13 @@ export class TeamsManager {
     });
   }
 
-  async acceptInvitationByUserId(
-    userId: string,
-    teamUserId: string
+  async acceptInvitationByIdAndUserId(
+    teamUserInvitationId: string,
+    userId: string
   ): Promise<TeamUserInvitation | null> {
     const now = new Date();
     const where = and(
-      eq(teamUserInvitations.id, teamUserId),
+      eq(teamUserInvitations.id, teamUserInvitationId),
       eq(teamUserInvitations.userId, userId),
       isNull(teamUserInvitations.acceptedAt),
       isNull(teamUserInvitations.rejectedAt),
@@ -217,26 +226,26 @@ export class TeamsManager {
       .where(where)
       .returning();
 
-    const teamUserInvite = rows[0] ?? null;
+    const row = rows[0] ?? null;
 
-    if (teamUserInvite) {
+    if (row) {
       await getDatabase().insert(teamUsers).values({
-        teamId: teamUserInvite.teamId,
+        teamId: row.teamId,
         userId,
-        roles: teamUserInvite.roles,
+        roles: row.roles,
       });
     }
 
-    return teamUserInvite;
+    return row;
   }
 
-  async rejectInvitationByUserId(
-    userId: string,
-    teamUserId: string
+  async rejectInvitationByIdAndUserId(
+    teamUserInvitationId: string,
+    userId: string
   ): Promise<TeamUserInvitation | null> {
     const now = new Date();
     const where = and(
-      eq(teamUserInvitations.id, teamUserId),
+      eq(teamUserInvitations.id, teamUserInvitationId),
       eq(teamUserInvitations.userId, userId),
       isNull(teamUserInvitations.acceptedAt),
       isNull(teamUserInvitations.rejectedAt),
@@ -252,9 +261,30 @@ export class TeamsManager {
     return rows[0] ?? null;
   }
 
+  async deleteInvitationByIdAndUserId(
+    teamUserInvitationId: string,
+    userId: string
+  ): Promise<TeamUserInvitation | null> {
+    const teamUserInvitation = await this.getInvitationById(teamUserInvitationId);
+    if (!teamUserInvitation) {
+      return null;
+    }
+
+    if (teamUserInvitation.userId !== userId && teamUserInvitation.invitedByUserId !== userId) {
+      throw new Error('You cannot delete this invitation');
+    }
+
+    const rows = await getDatabase()
+      .delete(teamUserInvitations)
+      .where(eq(teamUserInvitations.id, teamUserInvitation.id))
+      .returning();
+
+    return rows[0] ?? null;
+  }
+
   async sendInvitation(
-    invitedByUserId: string,
     teamId: string,
+    invitedByUserId: string,
     email: string
   ): Promise<TeamUserInvitation> {
     const existingUser = await getDatabase().query.users.findFirst({
@@ -274,9 +304,27 @@ export class TeamsManager {
       throw new Error('User is already invited');
     }
 
+    if (userId) {
+      const existingTeamMember = await getDatabase().query.teamUsers.findFirst({
+        where: and(eq(teamUsers.teamId, teamId), eq(teamUsers.userId, userId)),
+      });
+      if (existingTeamMember) {
+        throw new Error('User is already a member');
+      }
+    }
+
+    const invitedByUser = await getDatabase().query.users.findFirst({
+      where: eq(users.id, invitedByUserId),
+    });
+
+    const team = await this.findOneById(teamId);
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
     const expiresAt = addDays(new Date(), 7);
 
-    const teamUserRows = await getDatabase()
+    const teamUserInvitationRows = await getDatabase()
       .insert(teamUserInvitations)
       .values({
         roles: [TeamUserRoleEnum.MEMBER],
@@ -288,11 +336,16 @@ export class TeamsManager {
       })
       .returning();
 
-    const teamUser = teamUserRows[0];
+    const teamUserInvitation = teamUserInvitationRows[0];
 
-    // TODO: send invite email
+    await mailer.sendAuthTeamInviteMemberEmail({
+      userEmail: email,
+      teamName: team.name,
+      invitedByUserDisplayName: invitedByUser?.displayName ?? 'Someone',
+      registerUrl: `${WEB_URL}/register?teamUserInvitationId=${teamUserInvitation.id}`,
+    });
 
-    return teamUser;
+    return teamUserInvitation;
   }
 
   async createAndJoin(
@@ -319,13 +372,18 @@ export class TeamsManager {
     };
   }
 
-  async leave(userId: string, teamId: string) {
+  async leaveTeam(userId: string, teamId: string) {
+    const team = await this.findOneById(teamId);
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
     const rows = await getDatabase()
       .delete(teamUsers)
       .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
       .returning();
 
-    return rows[0];
+    return rows[0] ?? null;
   }
 }
 

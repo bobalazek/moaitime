@@ -1,7 +1,6 @@
-import { TrashIcon } from 'lucide-react';
-
 import {
   Button,
+  sonnerToast,
   Table,
   TableBody,
   TableCell,
@@ -14,10 +13,23 @@ import { useTeamsStore } from '../../../state/teamsStore';
 import InviteTeamMemberDialog from '../../invite-team-member-dialog/InviteTeamMemberDialog';
 
 export default function TeamInvitationsSection() {
-  const { joinedTeamUserInvitations, setInviteTeamMemberDialogOpen } = useTeamsStore();
+  const { joinedTeamUserInvitations, setInviteTeamMemberDialogOpen, deleteTeamInvitation } =
+    useTeamsStore();
 
   const onInviteButtonClick = () => {
     setInviteTeamMemberDialogOpen(true);
+  };
+
+  const onDeleteInvitationClick = async (teamUserInvitationId: string) => {
+    try {
+      await deleteTeamInvitation(teamUserInvitationId);
+
+      sonnerToast.success('Team invitation removed', {
+        description: 'The team invitation has been removed',
+      });
+    } catch (error) {
+      // Already handled
+    }
   };
 
   return (
@@ -47,8 +59,12 @@ export default function TeamInvitationsSection() {
                     : ''}
                 </TableCell>
                 <TableCell>
-                  <Button size="sm" variant="destructive">
-                    <TrashIcon size={16} />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => onDeleteInvitationClick(teamUserInvitation.id)}
+                  >
+                    Remove
                   </Button>
                 </TableCell>
               </TableRow>

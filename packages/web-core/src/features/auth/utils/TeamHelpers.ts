@@ -122,3 +122,14 @@ export const rejectTeamInvitation = async (teamUserInvitationId: string) => {
 
   return response.data as TeamUserInvitation;
 };
+
+export const deleteTeamInvitation = async (teamUserInvitationId: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUserInvitation>>(
+    `${API_URL}/api/v1/team-user-invitations/${teamUserInvitationId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return response.data as TeamUserInvitation;
+};

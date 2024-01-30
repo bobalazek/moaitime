@@ -136,12 +136,7 @@ export class TeamsController {
     @Req() req: Request,
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUser>> {
-    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
-    if (!userCanInvite) {
-      throw new ForbiddenException('You cannot send invites for this team');
-    }
-
-    const data = await teamsManager.leave(req.user.id, teamId);
+    const data = await teamsManager.leaveTeam(req.user.id, teamId);
 
     return {
       success: true,
@@ -161,7 +156,7 @@ export class TeamsController {
       throw new ForbiddenException('You cannot send invites for this team');
     }
 
-    const data = await teamsManager.sendInvitation(req.user.id, teamId, body.email);
+    const data = await teamsManager.sendInvitation(teamId, req.user.id, body.email);
 
     return {
       success: true,
@@ -207,7 +202,7 @@ export class TeamsController {
     };
   }
 
-  // Joined Team
+  // Joined
   @UseGuards(AuthenticatedGuard)
   @Get('joined')
   async joined(@Req() req: Request): Promise<AbstractResponseDto<JoinedTeam | null>> {

@@ -10,6 +10,7 @@ import {
   AuthConfirmNewEmailEmail,
   AuthPasswordChangedEmail,
   AuthResetPasswordEmail,
+  AuthTeamInviteMemberEmail,
   AuthWelcomeEmail,
 } from '@moaitime/emails-core';
 import { logger, Logger } from '@moaitime/logging';
@@ -43,6 +44,13 @@ export type MailerSendAuthAccountDeletionEmailOptions = {
   userEmail: string;
   userDisplayName: string;
   deleteAccountUrl: string;
+};
+
+export type MailerSendAuthInviteMemberEmailOptions = {
+  userEmail: string;
+  invitedByUserDisplayName: string;
+  teamName: string;
+  registerUrl: string;
 };
 
 export class Mailer {
@@ -110,6 +118,15 @@ export class Mailer {
     return this.send(AuthAccountDeletionEmail(rest), {
       to: userEmail,
       subject: '😔 MoaiTime Account Deletion',
+    });
+  }
+
+  async sendAuthTeamInviteMemberEmail(options: MailerSendAuthInviteMemberEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthTeamInviteMemberEmail(rest), {
+      to: userEmail,
+      subject: '📨 MoaiTime Invitation',
     });
   }
 

@@ -13,6 +13,7 @@ import {
   acceptTeamInvitation,
   addTeam,
   deleteTeam,
+  deleteTeamInvitation,
   editTeam,
   getJoinedTeam,
   getTeamInvitations,
@@ -40,6 +41,7 @@ export type TeamsStore = {
   sendTeamInvitation: (teamId: string, email: string) => Promise<TeamUserInvitation>;
   acceptTeamInvitation: (teamUserInvitationId: string) => Promise<TeamUserInvitation>;
   rejectTeamInvitation: (teamUserInvitationId: string) => Promise<TeamUserInvitation>;
+  deleteTeamInvitation: (teamUserInvitationId: string) => Promise<TeamUserInvitation>;
   // Invite Team Member Dialog
   inviteTeamMemberDialogOpen: boolean;
   setInviteTeamMemberDialogOpen: (inviteTeamMemberDialogOpen: boolean) => void;
@@ -133,12 +135,29 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
     return teamUserInvitation;
   },
   acceptTeamInvitation: async (teamUserInvitationId: string) => {
+    const { reloadJoinedTeam } = get();
+
     const teamUserInvitation = await acceptTeamInvitation(teamUserInvitationId);
+
+    await reloadJoinedTeam();
 
     return teamUserInvitation;
   },
   rejectTeamInvitation: async (teamUserInvitationId: string) => {
+    const { reloadJoinedTeamUserInvitations } = get();
+
     const teamUserInvitation = await rejectTeamInvitation(teamUserInvitationId);
+
+    await reloadJoinedTeamUserInvitations();
+
+    return teamUserInvitation;
+  },
+  deleteTeamInvitation: async (teamUserInvitationId: string) => {
+    const { reloadJoinedTeamUserInvitations } = get();
+
+    const teamUserInvitation = await deleteTeamInvitation(teamUserInvitationId);
+
+    await reloadJoinedTeamUserInvitations();
 
     return teamUserInvitation;
   },

@@ -50,17 +50,7 @@ export const deleteTeam = async (teamId: string): Promise<Team> => {
   return response.data as Team;
 };
 
-export const getTeamMembers = async (teamId: string) => {
-  const response = await fetchJson<ResponseInterface<TeamUser[]>>(
-    `${API_URL}/api/v1/teams/${teamId}/members`,
-    {
-      method: 'GET',
-    }
-  );
-
-  return response.data as TeamUser[];
-};
-
+/********** Team Invitations **********/
 export const getTeamInvitations = async (teamId: string) => {
   const response = await fetchJson<ResponseInterface<TeamUserInvitation[]>>(
     `${API_URL}/api/v1/teams/${teamId}/invitations`,
@@ -86,6 +76,29 @@ export const sendTeamInvitation = async (teamId: string, email: string) => {
   );
 
   return response.data as TeamUserInvitation;
+};
+
+/********** Team Members **********/
+export const getTeamMembers = async (teamId: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUser[]>>(
+    `${API_URL}/api/v1/teams/${teamId}/members`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as TeamUser[];
+};
+
+export const removeTeamMember = async (teamId: string, userId: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUser>>(
+    `${API_URL}/api/v1/teams/${teamId}/members/${userId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return response.data as TeamUser;
 };
 
 /********** Joined Team **********/

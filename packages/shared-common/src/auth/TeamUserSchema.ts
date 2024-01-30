@@ -8,6 +8,7 @@ export const TeamUserSchema = z.object({
   id: z.string(),
   roles: z.array(z.nativeEnum(TeamUserRoleEnum)),
   teamId: z.string(),
+  userId: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
   team: TeamSchema.optional(),

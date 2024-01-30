@@ -1,9 +1,30 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@moaitime/web-ui';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@moaitime/web-ui';
 
 import { useTeamsStore } from '../../../state/teamsStore';
 
 export default function TeamMembersSection() {
-  const { joinedTeamMembers } = useTeamsStore();
+  const { joinedTeamMembers, removeJoinedTeamMember } = useTeamsStore();
+
+  const onRemoveTeamMemberClick = async (userId: string) => {
+    try {
+      const result = confirm('Are you sure you want to remove this team member?');
+      if (!result) {
+        return;
+      }
+
+      await removeJoinedTeamMember(userId);
+    } catch (error) {
+      // Already handled
+    }
+  };
 
   return (
     <div data-test="settings--team-settings--team-members">
@@ -20,6 +41,7 @@ export default function TeamMembersSection() {
               <TableHead>Member</TableHead>
               <TableHead>Roles</TableHead>
               <TableHead>Joined At</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -35,6 +57,15 @@ export default function TeamMembersSection() {
                 </TableCell>
                 <TableCell>{joinedTeamMember.roles.join(', ')}</TableCell>
                 <TableCell>{new Date(joinedTeamMember.createdAt).toLocaleString()}</TableCell>
+                <TableCell>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => onRemoveTeamMemberClick(joinedTeamMember.userId)}
+                  >
+                    Remove
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

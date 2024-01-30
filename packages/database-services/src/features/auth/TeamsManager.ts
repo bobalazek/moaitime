@@ -69,7 +69,7 @@ export class TeamsManager {
 
   // Permissions
   async userCanView(userId: string, teamId: string): Promise<boolean> {
-    const row = await getDatabase().query.teams.findFirst({
+    const row = await getDatabase().query.teamUsers.findFirst({
       where: and(eq(teams.id, teamId), eq(teams.userId, userId)),
     });
 
@@ -77,14 +77,26 @@ export class TeamsManager {
   }
 
   async userCanUpdate(userId: string, teamId: string): Promise<boolean> {
-    return this.userCanView(userId, teamId);
+    const row = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.teamId, teamId), eq(teamUsers.userId, userId)),
+    });
+
+    if (!row) {
+      return false;
+    }
+
+    return row.roles.includes(TeamUserRoleEnum.ADMIN);
   }
 
   async userCanDelete(userId: string, teamId: string): Promise<boolean> {
     return this.userCanUpdate(userId, teamId);
   }
 
-  async userCanInvite(userId: string, teamId: string): Promise<boolean> {
+  async userCanInviteMember(userId: string, teamId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, teamId);
+  }
+
+  async userCanRemoveMember(userId: string, teamId: string): Promise<boolean> {
     return this.userCanUpdate(userId, teamId);
   }
 
@@ -290,7 +302,7 @@ export class TeamsManager {
       throw new Error('You cannot delete this invitation');
     }
 
-    const canInvite = await this.userCanInvite(userId, teamUserInvitation.teamId);
+    const canInvite = await this.userCanInviteMember(userId, teamUserInvitation.teamId);
     if (!canInvite) {
       throw new Error('You cannot remove invites for this team');
     }
@@ -308,7 +320,7 @@ export class TeamsManager {
     invitedByUserId: string,
     email: string
   ): Promise<TeamUserInvitation> {
-    const canInvite = await this.userCanInvite(invitedByUserId, teamId);
+    const canInvite = await this.userCanInviteMember(invitedByUserId, teamId);
     if (!canInvite) {
       throw new Error('You cannot send invites for this team');
     }
@@ -396,6 +408,29 @@ export class TeamsManager {
       team,
       teamUser: teamUserRows[0],
     };
+  }
+
+  async removeMemberFromTeam(adminUserId: string, userId: string, teamId: string) {
+    if (adminUserId === userId) {
+      throw new Error('You cannot remove yourself from the team');
+    }
+
+    const team = await this.findOneById(teamId);
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    const canRemoveMember = await this.userCanRemoveMember(adminUserId, teamId);
+    if (!canRemoveMember) {
+      throw new Error('You cannot remove this members from the team');
+    }
+
+    const rows = await getDatabase()
+      .delete(teamUsers)
+      .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
+      .returning();
+
+    return rows[0] ?? null;
   }
 
   async leaveTeam(userId: string, teamId: string) {

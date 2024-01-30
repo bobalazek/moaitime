@@ -144,6 +144,21 @@ export class TeamsController {
     };
   }
 
+  // Invitations
+  @UseGuards(AuthenticatedGuard)
+  @Get(':teamId/invitations')
+  async invitations(
+    @Req() req: Request,
+    @Param('teamId') teamId: string
+  ): Promise<AbstractResponseDto<TeamUserInvitation[]>> {
+    const data = await teamsManager.getInvitationsByTeamId(teamId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
   @UseGuards(AuthenticatedGuard)
   @Post(':teamId/invite')
   async invite(
@@ -159,6 +174,7 @@ export class TeamsController {
     };
   }
 
+  // Members
   @UseGuards(AuthenticatedGuard)
   @Get(':teamId/members')
   async members(@Param('teamId') teamId: string): Promise<AbstractResponseDto<TeamUser[]>> {
@@ -171,12 +187,13 @@ export class TeamsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get(':teamId/invitations')
-  async invitations(
+  @Delete(':teamId/members/:userId')
+  async deleteMember(
     @Req() req: Request,
-    @Param('teamId') teamId: string
-  ): Promise<AbstractResponseDto<TeamUserInvitation[]>> {
-    const data = await teamsManager.getInvitationsByTeamId(teamId);
+    @Param('teamId') teamId: string,
+    @Param('userId') userId: string
+  ): Promise<AbstractResponseDto<TeamUser>> {
+    const data = await teamsManager.removeMemberFromTeam(req.user.id, userId, teamId);
 
     return {
       success: true,

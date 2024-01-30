@@ -20,6 +20,7 @@ import {
   getTeamInvitations,
   getTeamMembers,
   rejectTeamInvitation,
+  removeTeamMember,
   sendTeamInvitation,
 } from '../utils/TeamHelpers';
 
@@ -36,6 +37,7 @@ export type TeamsStore = {
   reloadJoinedTeam: () => Promise<void>;
   joinedTeamMembers: TeamUser[];
   reloadJoinedTeamMembers: () => Promise<void>;
+  removeJoinedTeamMember: (userId: string) => Promise<void>;
   // Joined Team Invitations
   joinedTeamUserInvitations: TeamUserInvitation[]; // Open invitation for that specific team
   reloadJoinedTeamUserInvitations: () => Promise<void>;
@@ -115,6 +117,16 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
     set({
       joinedTeamMembers,
     });
+  },
+  removeJoinedTeamMember: async (userId: string) => {
+    const { joinedTeam, reloadJoinedTeamMembers } = get();
+    if (!joinedTeam || !joinedTeam.team) {
+      return;
+    }
+
+    await removeTeamMember(joinedTeam.team.id, userId);
+
+    await reloadJoinedTeamMembers();
   },
   // Joined Team Invitations
   joinedTeamUserInvitations: [],

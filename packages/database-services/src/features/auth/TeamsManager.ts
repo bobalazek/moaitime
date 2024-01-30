@@ -10,10 +10,13 @@ import {
   TeamUserInvitation,
   teamUserInvitations,
   teamUsers,
+  User,
   users,
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import { TeamUserRoleEnum, WEB_URL } from '@moaitime/shared-common';
+
+import { usersManager } from './UsersManager';
 
 export class TeamsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Team[]> {
@@ -101,6 +104,88 @@ export class TeamsManager {
   }
 
   // Helpers
+  async update(userId: string, teamId: string, body: Partial<NewTeam>) {
+    const canView = await this.userCanUpdate(userId, teamId);
+    if (!canView) {
+      throw new Error('You cannot update this team');
+    }
+
+    const data = await this.findOneById(teamId);
+    if (!data) {
+      throw new Error('Team not found');
+    }
+
+    return this.updateOneById(teamId, body);
+  }
+
+  async delete(userId: string, teamId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(userId, teamId);
+    if (!canDelete) {
+      throw new Error('Team not found');
+    }
+
+    return isHardDelete
+      ? this.deleteOneById(teamId)
+      : this.updateOneById(teamId, {
+          deletedAt: new Date(),
+        });
+  }
+
+  async undelete(userId: string, teamId: string) {
+    const canDelete = await this.userCanUpdate(userId, teamId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this team');
+    }
+
+    return this.updateOneById(teamId, {
+      deletedAt: null,
+    });
+  }
+
+  async createAndJoin(user: User, teamName: string): Promise<{ team: Team; teamUser: TeamUser }> {
+    const teamsMaxPerUserCount = await usersManager.getUserLimit(user, 'teamsMaxPerUserCount');
+
+    const teamsCount = await this.countByUserId(user.id);
+    if (teamsCount >= teamsMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of teams per user (${teamsMaxPerUserCount}).`
+      );
+    }
+
+    const team = await this.insertOne({
+      name: teamName,
+      userId: user.id,
+    });
+
+    const teamUserRows = await getDatabase()
+      .insert(teamUsers)
+      .values({
+        teamId: team.id,
+        userId: user.id,
+        roles: [TeamUserRoleEnum.ADMIN],
+      })
+      .returning();
+
+    return {
+      team,
+      teamUser: teamUserRows[0],
+    };
+  }
+
+  async leave(userId: string, teamId: string) {
+    const team = await this.findOneById(teamId);
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    const rows = await getDatabase()
+      .delete(teamUsers)
+      .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
+      .returning();
+
+    return rows[0] ?? null;
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({
@@ -386,30 +471,6 @@ export class TeamsManager {
     return teamUserInvitation;
   }
 
-  async createAndJoin(
-    userId: string,
-    teamName: string
-  ): Promise<{ team: Team; teamUser: TeamUser }> {
-    const team = await this.insertOne({
-      name: teamName,
-      userId,
-    });
-
-    const teamUserRows = await getDatabase()
-      .insert(teamUsers)
-      .values({
-        teamId: team.id,
-        userId,
-        roles: [TeamUserRoleEnum.ADMIN],
-      })
-      .returning();
-
-    return {
-      team,
-      teamUser: teamUserRows[0],
-    };
-  }
-
   async removeMemberFromTeam(adminUserId: string, userId: string, teamId: string) {
     if (adminUserId === userId) {
       throw new Error('You cannot remove yourself from the team');
@@ -423,20 +484,6 @@ export class TeamsManager {
     const canRemoveMember = await this.userCanRemoveMember(adminUserId, teamId);
     if (!canRemoveMember) {
       throw new Error('You cannot remove this members from the team');
-    }
-
-    const rows = await getDatabase()
-      .delete(teamUsers)
-      .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
-      .returning();
-
-    return rows[0] ?? null;
-  }
-
-  async leaveTeam(userId: string, teamId: string) {
-    const team = await this.findOneById(teamId);
-    if (!team) {
-      throw new Error('Team not found');
     }
 
     const rows = await getDatabase()

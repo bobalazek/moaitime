@@ -1,20 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { Team, TeamUser, TeamUserInvitation } from '@moaitime/database-core';
-import { teamsManager, usersManager } from '@moaitime/database-services';
+import { teamsManager } from '@moaitime/database-services';
 import { JoinedTeam } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
@@ -43,16 +31,7 @@ export class TeamsController {
     @Body() body: CreateTeamDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Team>> {
-    const teamsMaxPerUserCount = await usersManager.getUserLimit(req.user, 'teamsMaxPerUserCount');
-
-    const teamsCount = await teamsManager.countByUserId(req.user.id);
-    if (teamsCount >= teamsMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of teams per user (${teamsMaxPerUserCount}).`
-      );
-    }
-
-    const data = await teamsManager.createAndJoin(req.user.id, body.name);
+    const data = await teamsManager.createAndJoin(req.user, body.name);
 
     return {
       success: true,
@@ -67,21 +46,11 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Body() body: UpdateTeamDto
   ): Promise<AbstractResponseDto<Team>> {
-    const canView = await teamsManager.userCanUpdate(req.user.id, teamId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot update this team');
-    }
-
-    const data = await teamsManager.findOneById(teamId);
-    if (!data) {
-      throw new NotFoundException('Team not found');
-    }
-
-    const updatedData = await teamsManager.updateOneById(teamId, body);
+    const data = await teamsManager.update(req.user.id, teamId, body);
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -92,16 +61,7 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Team>> {
-    const canDelete = await teamsManager.userCanDelete(req.user.id, teamId);
-    if (!canDelete) {
-      throw new NotFoundException('Team not found');
-    }
-
-    const data = body.isHardDelete
-      ? await teamsManager.deleteOneById(teamId)
-      : await teamsManager.updateOneById(teamId, {
-          deletedAt: new Date(),
-        });
+    const data = await teamsManager.delete(req.user.id, teamId, body.isHardDelete);
 
     return {
       success: true,
@@ -115,14 +75,7 @@ export class TeamsController {
     @Req() req: Request,
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<Team>> {
-    const canDelete = await teamsManager.userCanUpdate(req.user.id, teamId);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot undelete this team');
-    }
-
-    const data = await teamsManager.updateOneById(teamId, {
-      deletedAt: null,
-    });
+    const data = await teamsManager.undelete(req.user.id, teamId);
 
     return {
       success: true,
@@ -136,7 +89,7 @@ export class TeamsController {
     @Req() req: Request,
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUser>> {
-    const data = await teamsManager.leaveTeam(req.user.id, teamId);
+    const data = await teamsManager.leave(req.user.id, teamId);
 
     return {
       success: true,

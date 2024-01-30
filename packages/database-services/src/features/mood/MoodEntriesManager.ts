@@ -207,19 +207,7 @@ export class MoodEntriesManager {
     return this._fixRowColumns(rows[0]);
   }
 
-  // Helpers
-  async countByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(moodEntries.id).mapWith(Number),
-      })
-      .from(moodEntries)
-      .where(and(eq(moodEntries.userId, userId), isNull(moodEntries.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
+  // Permissions
   async userCanView(userId: string, moodEntryId: string): Promise<boolean> {
     const row = await getDatabase().query.moodEntries.findFirst({
       where: and(eq(moodEntries.id, moodEntryId), eq(moodEntries.userId, userId)),
@@ -234,6 +222,19 @@ export class MoodEntriesManager {
 
   async userCanDelete(userId: string, moodEntryId: string): Promise<boolean> {
     return this.userCanUpdate(userId, moodEntryId);
+  }
+
+  // Helpers
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(moodEntries.id).mapWith(Number),
+      })
+      .from(moodEntries)
+      .where(and(eq(moodEntries.userId, userId), isNull(moodEntries.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 
   // Private

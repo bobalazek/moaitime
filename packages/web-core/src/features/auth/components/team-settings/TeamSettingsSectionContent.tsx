@@ -4,6 +4,7 @@ import { useTeamsStore } from '../../state/teamsStore';
 import CreateTeamSection from './sections/CreateTeamSection';
 import JoinedTeamSection from './sections/JoinedTeamSection';
 import TeamInvitationsSection from './sections/TeamInvitationsSection';
+import TeamMembersSection from './sections/TeamMembersSection';
 
 export default function TeamSettingsSectionContent() {
   const { joinedTeam, reloadJoinedTeam } = useTeamsStore();
@@ -24,6 +25,7 @@ export default function TeamSettingsSectionContent() {
       {joinedTeam && (
         <>
           <JoinedTeamSection />
+          <TeamMembersSection />
           <TeamInvitationsSection />
         </>
       )}

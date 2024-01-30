@@ -106,7 +106,7 @@ export class CalendarsManager {
     });
   }
 
-  // Helpers
+  // Permissions
   async userCanView(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
     const calendar =
       typeof calendarOrCalendarId === 'string'

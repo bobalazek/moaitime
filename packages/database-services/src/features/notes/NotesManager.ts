@@ -91,19 +91,7 @@ export class NotesManager {
     return rows[0];
   }
 
-  // Helpers
-  async countByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(notes.id).mapWith(Number),
-      })
-      .from(notes)
-      .where(and(eq(notes.userId, userId), isNull(notes.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
+  // Permissions
   async userCanView(userId: string, noteId: string): Promise<boolean> {
     const row = await getDatabase().query.notes.findFirst({
       where: and(eq(notes.id, noteId), eq(notes.userId, userId)),
@@ -118,6 +106,19 @@ export class NotesManager {
 
   async userCanDelete(userId: string, noteId: string): Promise<boolean> {
     return this.userCanUpdate(userId, noteId);
+  }
+
+  // Helpers
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(notes.id).mapWith(Number),
+      })
+      .from(notes)
+      .where(and(eq(notes.userId, userId), isNull(notes.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 }
 

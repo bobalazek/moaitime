@@ -257,7 +257,7 @@ export class TasksManager {
     return this._fixRowColumns(rows[0]);
   }
 
-  // Helpers
+  // Permissions
   async userCanView(userId: string, taskId: string): Promise<boolean> {
     const rows = await getDatabase()
       .select()
@@ -276,6 +276,7 @@ export class TasksManager {
     return this.userCanUpdate(userId, taskId);
   }
 
+  // Helpers
   async updateReorder(map: { [key: string]: number }) {
     return getDatabase().transaction(async (tx) => {
       for (const taskId in map) {

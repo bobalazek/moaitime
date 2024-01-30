@@ -4,6 +4,7 @@ import {
   CreateTeam,
   JoinedTeam,
   Team,
+  TeamUser,
   TeamUserInvitation,
   UpdateTeam,
 } from '@moaitime/shared-common';
@@ -15,6 +16,7 @@ import {
   editTeam,
   getJoinedTeam,
   getTeamInvitations,
+  getTeamMembers,
   rejectTeamInvitation,
   sendTeamInvitation,
 } from '../utils/TeamHelpers';
@@ -30,6 +32,8 @@ export type TeamsStore = {
   // Joined
   joinedTeam: JoinedTeam | null;
   reloadJoinedTeam: () => Promise<void>;
+  joinedTeamMembers: TeamUser[];
+  reloadJoinedTeamMembers: () => Promise<void>;
   // Invitations
   joinedTeamUserInvitations: TeamUserInvitation[]; // those are the invitations for that specific team
   reloadJoinedTeamUserInvitations: () => Promise<void>;
@@ -81,7 +85,7 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
   // Joined
   joinedTeam: null,
   reloadJoinedTeam: async () => {
-    const { reloadJoinedTeamUserInvitations } = get();
+    const { reloadJoinedTeamMembers, reloadJoinedTeamUserInvitations } = get();
 
     const joinedTeam = await getJoinedTeam();
 
@@ -89,7 +93,21 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
       joinedTeam,
     });
 
+    await reloadJoinedTeamMembers();
     await reloadJoinedTeamUserInvitations();
+  },
+  joinedTeamMembers: [],
+  reloadJoinedTeamMembers: async () => {
+    const { joinedTeam } = get();
+    if (!joinedTeam || !joinedTeam.team) {
+      return;
+    }
+
+    const joinedTeamMembers = await getTeamMembers(joinedTeam.team.id);
+
+    set({
+      joinedTeamMembers,
+    });
   },
   // Invitations
   joinedTeamUserInvitations: [],

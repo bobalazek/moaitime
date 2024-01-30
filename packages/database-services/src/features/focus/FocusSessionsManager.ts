@@ -88,7 +88,7 @@ export class FocusSessionsManager {
     return rows[0];
   }
 
-  // Helpers
+  // Permissions
   async userCanView(userId: string, focusSessionId: string): Promise<boolean> {
     const row = await getDatabase().query.focusSessions.findFirst({
       where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
@@ -105,6 +105,7 @@ export class FocusSessionsManager {
     return this.userCanUpdate(userId, focusSessionId);
   }
 
+  // Helpers
   async update(
     focusSession: FocusSession,
     action: FocusSessionUpdateActionEnum

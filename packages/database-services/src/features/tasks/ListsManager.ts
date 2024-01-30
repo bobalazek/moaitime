@@ -61,6 +61,23 @@ export class ListsManager {
     return rows[0];
   }
 
+  // Permissions
+  async userCanView(userId: string, listId: string): Promise<boolean> {
+    const row = await getDatabase().query.lists.findFirst({
+      where: and(eq(lists.id, listId), eq(lists.userId, userId)),
+    });
+
+    return row !== null;
+  }
+
+  async userCanUpdate(userId: string, listId: string): Promise<boolean> {
+    return this.userCanView(userId, listId);
+  }
+
+  async userCanDelete(userId: string, listId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, listId);
+  }
+
   // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
@@ -98,22 +115,6 @@ export class ListsManager {
     }
 
     return tasksCountMap;
-  }
-
-  async userCanView(userId: string, listId: string): Promise<boolean> {
-    const row = await getDatabase().query.lists.findFirst({
-      where: and(eq(lists.id, listId), eq(lists.userId, userId)),
-    });
-
-    return row !== null;
-  }
-
-  async userCanUpdate(userId: string, listId: string): Promise<boolean> {
-    return this.userCanView(userId, listId);
-  }
-
-  async userCanDelete(userId: string, listId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, listId);
   }
 
   async getUserSettingsListIds(userOrUserId: string | User): Promise<string[]> {

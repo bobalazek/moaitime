@@ -21,13 +21,13 @@ export default function TeamInvitationsSection() {
   };
 
   return (
-    <div data-test="settings--team-settings--invitations">
+    <div data-test="settings--team-settings--team-invitations">
       <h4 className="text-lg font-bold">Team Invitations</h4>
       {joinedTeamUserInvitations.length === 0 && (
         <div className="text-muted-foreground mb-2 text-sm">You have no team invitations</div>
       )}
       {joinedTeamUserInvitations.length > 0 && (
-        <Table data-test="settings--team-settings--invitations--table">
+        <Table data-test="settings--team-settings--team-invitations--table">
           <TableHeader>
             <TableRow>
               <TableHead>Member</TableHead>
@@ -58,7 +58,7 @@ export default function TeamInvitationsSection() {
       )}
       <Button
         onClick={onInviteButtonClick}
-        data-test="settings--team-settings--invitations--invite-member-button"
+        data-test="settings--team-settings--team-invitations--invite-member-button"
       >
         Invite a Member
       </Button>

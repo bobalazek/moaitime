@@ -149,19 +149,6 @@ export class TeamsController {
     };
   }
 
-  // Joined Team
-  @UseGuards(AuthenticatedGuard)
-  @Get('joined')
-  async joined(@Req() req: Request): Promise<AbstractResponseDto<JoinedTeam | null>> {
-    const data = await teamsManager.getJoinedTeamByUserId(req.user.id);
-
-    return {
-      success: true,
-      data: data as unknown as JoinedTeam,
-    };
-  }
-
-  // Invitations
   @UseGuards(AuthenticatedGuard)
   @Post(':teamId/invite')
   async invite(
@@ -175,6 +162,25 @@ export class TeamsController {
     }
 
     const data = await teamsManager.sendInvitation(req.user.id, teamId, body.email);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get(':teamId/members')
+  async members(
+    @Req() req: Request,
+    @Param('teamId') teamId: string
+  ): Promise<AbstractResponseDto<TeamUser[]>> {
+    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
+    if (!userCanInvite) {
+      throw new ForbiddenException('You cannot send invites for this team');
+    }
+
+    const data = await teamsManager.getMembersByTeamId(teamId);
 
     return {
       success: true,
@@ -201,48 +207,15 @@ export class TeamsController {
     };
   }
 
+  // Joined Team
   @UseGuards(AuthenticatedGuard)
-  @Get('user-invitations')
-  async userInvitations(@Req() req: Request): Promise<AbstractResponseDto<TeamUser[]>> {
-    const data = await teamsManager.getInvitationsByUser(req.user.id, req.user.email);
+  @Get('joined')
+  async joined(@Req() req: Request): Promise<AbstractResponseDto<JoinedTeam | null>> {
+    const data = await teamsManager.getJoinedTeamByUserId(req.user.id);
 
     return {
       success: true,
-      data,
-    };
-  }
-
-  @UseGuards(AuthenticatedGuard)
-  @Get('invitations/:teamUserId/accept')
-  async invitationsAccept(
-    @Req() req: Request,
-    @Param('teamUserId') teamUserId: string
-  ): Promise<AbstractResponseDto<TeamUser>> {
-    const data = await teamsManager.acceptInvitationByUserId(req.user.id, teamUserId);
-    if (!data) {
-      throw new NotFoundException('Invitation not found');
-    }
-
-    return {
-      success: true,
-      data,
-    };
-  }
-
-  @UseGuards(AuthenticatedGuard)
-  @Get('invitations/:teamUserId/reject')
-  async invitationsReject(
-    @Req() req: Request,
-    @Param('teamUserId') teamUserId: string
-  ): Promise<AbstractResponseDto<TeamUser>> {
-    const data = await teamsManager.rejectInvitationByUserId(req.user.id, teamUserId);
-    if (!data) {
-      throw new NotFoundException('Invitation not found');
-    }
-
-    return {
-      success: true,
-      data,
+      data: data as unknown as JoinedTeam,
     };
   }
 }

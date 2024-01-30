@@ -66,19 +66,7 @@ export class TeamsManager {
     return rows[0];
   }
 
-  // Helpers
-  async countByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(teams.id).mapWith(Number),
-      })
-      .from(teams)
-      .where(and(eq(teams.userId, userId), isNull(teams.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
+  // Permissions
   async userCanView(userId: string, teamId: string): Promise<boolean> {
     const row = await getDatabase().query.teams.findFirst({
       where: and(eq(teams.id, teamId), eq(teams.userId, userId)),
@@ -97,6 +85,19 @@ export class TeamsManager {
 
   async userCanInvite(userId: string, teamId: string): Promise<boolean> {
     return this.userCanUpdate(userId, teamId);
+  }
+
+  // Helpers
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(teams.id).mapWith(Number),
+      })
+      .from(teams)
+      .where(and(eq(teams.userId, userId), isNull(teams.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 
   async getJoinedTeamByUserId(userId: string): Promise<{ team: Team; teamUser: TeamUser } | null> {
@@ -121,6 +122,36 @@ export class TeamsManager {
       team: row.teams,
       teamUser: row.team_users,
     };
+  }
+
+  async getMembersByTeamId(teamId: string): Promise<TeamUser[]> {
+    const where = and(eq(teamUsers.teamId, teamId), isNull(teams.deletedAt));
+
+    const rows = await getDatabase()
+      .select()
+      .from(teamUsers)
+      .leftJoin(teams, eq(teams.id, teamUsers.teamId))
+      .leftJoin(users, eq(users.id, teamUsers.userId))
+      .where(where)
+      .execute();
+
+    return rows.map((row) => {
+      // Really be mindful that we only want to expose the minimum required fields here!
+      const user = row.users
+        ? {
+            id: row.users.id,
+            displayName: row.users.displayName,
+            birthDate: row.users.birthDate,
+            email: row.users.email,
+            createdAt: row.users.createdAt,
+          }
+        : undefined;
+
+      return {
+        ...row.team_users,
+        user,
+      };
+    });
   }
 
   async getInvitationsByTeamId(teamId: string): Promise<TeamUserInvitation[]> {

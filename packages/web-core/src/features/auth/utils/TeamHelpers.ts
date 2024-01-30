@@ -4,6 +4,7 @@ import {
   JoinedTeam,
   ResponseInterface,
   Team,
+  TeamUser,
   TeamUserInvitation,
   UpdateTeam,
 } from '@moaitime/shared-common';
@@ -49,19 +50,17 @@ export const deleteTeam = async (teamId: string): Promise<Team> => {
   return response.data as Team;
 };
 
-/********** Joined Team **********/
-export const getJoinedTeam = async () => {
-  const response = await fetchJson<ResponseInterface<JoinedTeam>>(
-    `${API_URL}/api/v1/teams/joined`,
+export const getTeamMembers = async (teamId: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUser[]>>(
+    `${API_URL}/api/v1/teams/${teamId}/members`,
     {
       method: 'GET',
     }
   );
 
-  return response.data as JoinedTeam;
+  return response.data as TeamUser[];
 };
 
-/********** Team Invitations **********/
 export const getTeamInvitations = async (teamId: string) => {
   const response = await fetchJson<ResponseInterface<TeamUserInvitation[]>>(
     `${API_URL}/api/v1/teams/${teamId}/invitations`,
@@ -89,9 +88,22 @@ export const sendTeamInvitation = async (teamId: string, email: string) => {
   return response.data as TeamUserInvitation;
 };
 
+/********** Joined Team **********/
+export const getJoinedTeam = async () => {
+  const response = await fetchJson<ResponseInterface<JoinedTeam>>(
+    `${API_URL}/api/v1/teams/joined`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as JoinedTeam;
+};
+
+/********** Team User Invitations **********/
 export const acceptTeamInvitation = async (teamUserInvitationId: string) => {
   const response = await fetchJson<ResponseInterface<TeamUserInvitation>>(
-    `${API_URL}/api/v1/teams/${teamUserInvitationId}/accept`,
+    `${API_URL}/api/v1/team-user-invitations/${teamUserInvitationId}/accept`,
     {
       method: 'POST',
     }
@@ -102,7 +114,7 @@ export const acceptTeamInvitation = async (teamUserInvitationId: string) => {
 
 export const rejectTeamInvitation = async (teamUserInvitationId: string) => {
   const response = await fetchJson<ResponseInterface<TeamUserInvitation>>(
-    `${API_URL}/api/v1/teams/${teamUserInvitationId}/reject`,
+    `${API_URL}/api/v1/team-user-invitations/${teamUserInvitationId}/reject`,
     {
       method: 'POST',
     }

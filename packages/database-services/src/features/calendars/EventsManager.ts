@@ -229,6 +229,27 @@ export class EventsManager {
     return rows;
   }
 
+  // Permissions
+  async userCanView(userId: string, eventId: string): Promise<boolean> {
+    const result = await getDatabase()
+      .select()
+      .from(events)
+      .leftJoin(calendars, eq(events.calendarId, calendars.id))
+      .where(and(eq(events.id, eventId), eq(calendars.userId, userId)))
+      .limit(1)
+      .execute();
+
+    return result.length > 0;
+  }
+
+  async userCanUpdate(userId: string, calendarId: string): Promise<boolean> {
+    return this.userCanView(userId, calendarId);
+  }
+
+  async userCanDelete(userId: string, calendarId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, calendarId);
+  }
+
   // Helpers
   async getCountsByCalendarIdsAndYear(calendarIds: string[], year: number) {
     const startOfYear = new Date(year, 0, 1);
@@ -287,26 +308,6 @@ export class EventsManager {
       .execute();
 
     return result[0].count ?? 0;
-  }
-
-  async userCanView(userId: string, eventId: string): Promise<boolean> {
-    const result = await getDatabase()
-      .select()
-      .from(events)
-      .leftJoin(calendars, eq(events.calendarId, calendars.id))
-      .where(and(eq(events.id, eventId), eq(calendars.userId, userId)))
-      .limit(1)
-      .execute();
-
-    return result.length > 0;
-  }
-
-  async userCanUpdate(userId: string, calendarId: string): Promise<boolean> {
-    return this.userCanView(userId, calendarId);
-  }
-
-  async userCanDelete(userId: string, calendarId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, calendarId);
   }
 }
 

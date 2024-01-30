@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useTeamsStore } from '../../state/teamsStore';
 import CreateTeamSection from './sections/CreateTeamSection';
 import JoinedTeamSection from './sections/JoinedTeamSection';
+import TeamInvitationsSection from './sections/TeamInvitationsSection';
 
 export default function TeamSettingsSectionContent() {
   const { joinedTeam, reloadJoinedTeam } = useTeamsStore();
@@ -19,8 +20,13 @@ export default function TeamSettingsSectionContent() {
   }, [reloadJoinedTeam]);
 
   return (
-    <div>
-      {joinedTeam && <JoinedTeamSection />}
+    <div className="flex flex-col gap-4">
+      {joinedTeam && (
+        <>
+          <JoinedTeamSection />
+          <TeamInvitationsSection />
+        </>
+      )}
       {!joinedTeam && <CreateTeamSection />}
     </div>
   );

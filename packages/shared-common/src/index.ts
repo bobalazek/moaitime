@@ -12,6 +12,7 @@ export * from './auth/UserSettingsDefault';
 export * from './auth/UserLimitsAndUsage';
 export * from './auth/TeamSchema';
 export * from './auth/TeamUserSchema';
+export * from './auth/TeamUserInvitationSchema';
 export * from './auth/TeamUserRoleEnum';
 export * from './auth/JoinedTeam';
 export * from './auth/OrganizationSchema';

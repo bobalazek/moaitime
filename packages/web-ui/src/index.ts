@@ -52,6 +52,9 @@ export * from './components/select';
 // Switch
 export * from './components/switch';
 
+// Table
+export * from './components/table';
+
 // Tabs
 export * from './components/tabs';
 

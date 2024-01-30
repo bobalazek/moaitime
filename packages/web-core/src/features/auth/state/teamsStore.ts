@@ -1,8 +1,23 @@
 import { create } from 'zustand';
 
-import { CreateTeam, JoinedTeam, Team, UpdateTeam } from '@moaitime/shared-common';
+import {
+  CreateTeam,
+  JoinedTeam,
+  Team,
+  TeamUserInvitation,
+  UpdateTeam,
+} from '@moaitime/shared-common';
 
-import { addTeam, deleteTeam, editTeam, getJoinedTeam } from '../utils/TeamHelpers';
+import {
+  acceptTeamInvitation,
+  addTeam,
+  deleteTeam,
+  editTeam,
+  getJoinedTeam,
+  getTeamInvitations,
+  rejectTeamInvitation,
+  sendTeamInvitation,
+} from '../utils/TeamHelpers';
 
 export type TeamsStore = {
   addTeam: (team: CreateTeam) => Promise<Team>;
@@ -15,6 +30,15 @@ export type TeamsStore = {
   // Joined
   joinedTeam: JoinedTeam | null;
   reloadJoinedTeam: () => Promise<void>;
+  // Invitations
+  joinedTeamUserInvitations: TeamUserInvitation[]; // those are the invitations for that specific team
+  reloadJoinedTeamUserInvitations: () => Promise<void>;
+  sendTeamInvitation: (teamId: string, email: string) => Promise<TeamUserInvitation>;
+  acceptTeamInvitation: (teamUserInvitationId: string) => Promise<TeamUserInvitation>;
+  rejectTeamInvitation: (teamUserInvitationId: string) => Promise<TeamUserInvitation>;
+  // Invite Team Member Dialog
+  inviteTeamMemberDialogOpen: boolean;
+  setInviteTeamMemberDialogOpen: (inviteTeamMemberDialogOpen: boolean) => void;
 };
 
 export const useTeamsStore = create<TeamsStore>()((set, get) => ({
@@ -57,10 +81,54 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
   // Joined
   joinedTeam: null,
   reloadJoinedTeam: async () => {
+    const { reloadJoinedTeamUserInvitations } = get();
+
     const joinedTeam = await getJoinedTeam();
 
     set({
       joinedTeam,
+    });
+
+    await reloadJoinedTeamUserInvitations();
+  },
+  // Invitations
+  joinedTeamUserInvitations: [],
+  reloadJoinedTeamUserInvitations: async () => {
+    const { joinedTeam } = get();
+    if (!joinedTeam || !joinedTeam.team) {
+      return;
+    }
+
+    const teamUserInvitations = await getTeamInvitations(joinedTeam.team.id);
+
+    set({
+      joinedTeamUserInvitations: teamUserInvitations,
+    });
+  },
+  sendTeamInvitation: async (teamId: string, email: string) => {
+    const { reloadJoinedTeamUserInvitations } = get();
+
+    const teamUserInvitation = await sendTeamInvitation(teamId, email);
+
+    await reloadJoinedTeamUserInvitations();
+
+    return teamUserInvitation;
+  },
+  acceptTeamInvitation: async (teamUserInvitationId: string) => {
+    const teamUserInvitation = await acceptTeamInvitation(teamUserInvitationId);
+
+    return teamUserInvitation;
+  },
+  rejectTeamInvitation: async (teamUserInvitationId: string) => {
+    const teamUserInvitation = await rejectTeamInvitation(teamUserInvitationId);
+
+    return teamUserInvitation;
+  },
+  // Invite Team Member Dialog
+  inviteTeamMemberDialogOpen: false,
+  setInviteTeamMemberDialogOpen: (inviteTeamMemberDialogOpen: boolean) => {
+    set({
+      inviteTeamMemberDialogOpen,
     });
   },
 }));

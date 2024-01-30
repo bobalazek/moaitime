@@ -4,6 +4,7 @@ import {
   JoinedTeam,
   ResponseInterface,
   Team,
+  TeamUserInvitation,
   UpdateTeam,
 } from '@moaitime/shared-common';
 
@@ -58,4 +59,54 @@ export const getJoinedTeam = async () => {
   );
 
   return response.data as JoinedTeam;
+};
+
+/********** Team Invitations **********/
+export const getTeamInvitations = async (teamId: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUserInvitation[]>>(
+    `${API_URL}/api/v1/teams/${teamId}/invitations`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as TeamUserInvitation[];
+};
+
+export const sendTeamInvitation = async (teamId: string, email: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUserInvitation>>(
+    `${API_URL}/api/v1/teams/${teamId}/invite`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as TeamUserInvitation;
+};
+
+export const acceptTeamInvitation = async (teamUserInvitationId: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUserInvitation>>(
+    `${API_URL}/api/v1/teams/${teamUserInvitationId}/accept`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as TeamUserInvitation;
+};
+
+export const rejectTeamInvitation = async (teamUserInvitationId: string) => {
+  const response = await fetchJson<ResponseInterface<TeamUserInvitation>>(
+    `${API_URL}/api/v1/teams/${teamUserInvitationId}/reject`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as TeamUserInvitation;
 };

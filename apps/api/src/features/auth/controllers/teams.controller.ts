@@ -13,14 +13,14 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { Team, TeamUser } from '@moaitime/database-core';
+import { Team, TeamUser, TeamUserInvitation } from '@moaitime/database-core';
 import { teamsManager, usersManager } from '@moaitime/database-services';
 import { JoinedTeam } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
+import { EmailDto } from '../../../dtos/email.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { CreateTeamDto } from '../dtos/create-team.dto';
-import { SendTeamInviteDto } from '../dtos/send-team-invite.dto';
 import { UpdateTeamDto } from '../dtos/update-team.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 
@@ -131,26 +131,6 @@ export class TeamsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post(':teamId/invite')
-  async invite(
-    @Req() req: Request,
-    @Param('teamId') teamId: string,
-    @Body() body: SendTeamInviteDto
-  ): Promise<AbstractResponseDto<TeamUser>> {
-    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
-    if (!userCanInvite) {
-      throw new ForbiddenException('You cannot send invites for this team');
-    }
-
-    const data = await teamsManager.sendInvitation(req.user.id, teamId, body.email);
-
-    return {
-      success: true,
-      data,
-    };
-  }
-
-  @UseGuards(AuthenticatedGuard)
   @Post(':teamId/leave')
   async leave(
     @Req() req: Request,
@@ -183,9 +163,48 @@ export class TeamsController {
 
   // Invitations
   @UseGuards(AuthenticatedGuard)
-  @Get('invitations/pending')
-  async invitationsPending(@Req() req: Request): Promise<AbstractResponseDto<TeamUser[]>> {
-    const data = await teamsManager.getPendingInvitationsByUserId(req.user.id);
+  @Post(':teamId/invite')
+  async invite(
+    @Req() req: Request,
+    @Param('teamId') teamId: string,
+    @Body() body: EmailDto
+  ): Promise<AbstractResponseDto<TeamUser>> {
+    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
+    if (!userCanInvite) {
+      throw new ForbiddenException('You cannot send invites for this team');
+    }
+
+    const data = await teamsManager.sendInvitation(req.user.id, teamId, body.email);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get(':teamId/invitations')
+  async invitations(
+    @Req() req: Request,
+    @Param('teamId') teamId: string
+  ): Promise<AbstractResponseDto<TeamUserInvitation[]>> {
+    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
+    if (!userCanInvite) {
+      throw new ForbiddenException('You cannot send invites for this team');
+    }
+
+    const data = await teamsManager.getInvitationsByTeamId(teamId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('user-invitations')
+  async userInvitations(@Req() req: Request): Promise<AbstractResponseDto<TeamUser[]>> {
+    const data = await teamsManager.getInvitationsByUser(req.user.id, req.user.email);
 
     return {
       success: true,

@@ -1,5 +1,5 @@
 {
-  "id": "bd277996-f89f-44f1-99ce-96a84c1b2b32",
+  "id": "7012db73-fa31-4fb6-9baf-c49a6723a323",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1649,33 +1649,106 @@
           "notNull": true,
           "default": "'[]'"
         },
-        "invite_email": {
-          "name": "invite_email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "invited_at": {
-          "name": "invited_at",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
-        "invite_expires_at": {
-          "name": "invite_expires_at",
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "team_users_team_id_idx": {
+          "name": "team_users_team_id_idx",
+          "columns": ["team_id"],
+          "isUnique": false
+        },
+        "team_users_user_id_idx": {
+          "name": "team_users_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "team_users_team_id_teams_id_fk": {
+          "name": "team_users_team_id_teams_id_fk",
+          "tableFrom": "team_users",
+          "tableTo": "teams",
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "team_users_user_id_users_id_fk": {
+          "name": "team_users_user_id_users_id_fk",
+          "tableFrom": "team_users",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "team_user_invitations": {
+      "name": "team_user_invitations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "roles": {
+          "name": "roles",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "invite_accepted_at": {
-          "name": "invite_accepted_at",
+        "accepted_at": {
+          "name": "accepted_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "invite_rejected_at": {
-          "name": "invite_rejected_at",
+        "rejected_at": {
+          "name": "rejected_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -1714,44 +1787,44 @@
         }
       },
       "indexes": {
-        "team_users_team_id_idx": {
-          "name": "team_users_team_id_idx",
+        "team_user_invitations_team_id_idx": {
+          "name": "team_user_invitations_team_id_idx",
           "columns": ["team_id"],
           "isUnique": false
         },
-        "team_users_user_id_idx": {
-          "name": "team_users_user_id_idx",
+        "team_user_invitations_user_id_idx": {
+          "name": "team_user_invitations_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
         },
-        "team_users_invite_by_user_id_idx": {
-          "name": "team_users_invite_by_user_id_idx",
+        "team_user_invitations_invite_by_user_id_idx": {
+          "name": "team_user_invitations_invite_by_user_id_idx",
           "columns": ["invited_by_user_id"],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "team_users_team_id_teams_id_fk": {
-          "name": "team_users_team_id_teams_id_fk",
-          "tableFrom": "team_users",
+        "team_user_invitations_team_id_teams_id_fk": {
+          "name": "team_user_invitations_team_id_teams_id_fk",
+          "tableFrom": "team_user_invitations",
           "tableTo": "teams",
           "columnsFrom": ["team_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "team_users_user_id_users_id_fk": {
-          "name": "team_users_user_id_users_id_fk",
-          "tableFrom": "team_users",
+        "team_user_invitations_user_id_users_id_fk": {
+          "name": "team_user_invitations_user_id_users_id_fk",
+          "tableFrom": "team_user_invitations",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "team_users_invited_by_user_id_users_id_fk": {
-          "name": "team_users_invited_by_user_id_users_id_fk",
-          "tableFrom": "team_users",
+        "team_user_invitations_invited_by_user_id_users_id_fk": {
+          "name": "team_user_invitations_invited_by_user_id_users_id_fk",
+          "tableFrom": "team_user_invitations",
           "tableTo": "users",
           "columnsFrom": ["invited_by_user_id"],
           "columnsTo": ["id"],

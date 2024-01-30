@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, desc, eq, isNotNull, isNull, lt } from 'drizzle-orm';
+import { and, count, DBQueryConfig, desc, eq, isNull, lt, or } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -6,6 +6,8 @@ import {
   Team,
   teams,
   TeamUser,
+  TeamUserInvitation,
+  teamUserInvitations,
   teamUsers,
   users,
 } from '@moaitime/database-core';
@@ -101,13 +103,8 @@ export class TeamsManager {
       .select()
       .from(teamUsers)
       .leftJoin(teams, eq(teamUsers.teamId, teams.id))
-      .where(
-        and(
-          eq(teamUsers.userId, userId),
-          isNotNull(teamUsers.inviteAcceptedAt),
-          isNull(teams.deletedAt)
-        )
-      )
+      .where(and(eq(teamUsers.userId, userId), isNull(teams.deletedAt)))
+      .orderBy(desc(teamUsers.updatedAt))
       .limit(1)
       .execute();
     if (rows.length === 0) {
@@ -125,56 +122,98 @@ export class TeamsManager {
     };
   }
 
-  async getPendingInvitationsByUserId(userId: string): Promise<TeamUser[]> {
-    const now = new Date();
+  async getInvitationsByTeamId(teamId: string): Promise<TeamUserInvitation[]> {
     const where = and(
-      eq(teamUsers.userId, userId),
-      isNull(teamUsers.inviteAcceptedAt),
-      isNull(teamUsers.inviteRejectedAt),
-      lt(teamUsers.inviteExpiresAt, now),
+      eq(teamUserInvitations.teamId, teamId),
+      isNull(teamUserInvitations.acceptedAt),
+      isNull(teamUserInvitations.rejectedAt),
       isNull(teams.deletedAt)
     );
 
-    return getDatabase().query.teamUsers.findMany({
-      where,
-      with: {
-        team: true,
-      },
+    const rows = await getDatabase()
+      .select()
+      .from(teamUserInvitations)
+      .leftJoin(teams, eq(teams.id, teamUserInvitations.teamId))
+      .where(where)
+      .execute();
+
+    return rows.map((row) => {
+      return row.team_user_invitations;
     });
   }
 
-  async acceptInvitationByUserId(userId: string, teamUserId: string): Promise<TeamUser | null> {
+  async getInvitationsByUser(userId: string, userEmail?: string): Promise<TeamUserInvitation[]> {
     const now = new Date();
     const where = and(
-      eq(teamUsers.id, teamUserId),
-      eq(teamUsers.userId, userId),
-      isNull(teamUsers.inviteAcceptedAt),
-      isNull(teamUsers.inviteRejectedAt),
-      lt(teamUsers.inviteExpiresAt, now)
+      userEmail
+        ? or(eq(teamUserInvitations.userId, userId), eq(teamUserInvitations.email, userEmail))
+        : eq(teamUserInvitations.userId, userId),
+      isNull(teamUserInvitations.acceptedAt),
+      isNull(teamUserInvitations.rejectedAt),
+      lt(teamUserInvitations.expiresAt, now),
+      isNull(teams.deletedAt)
     );
 
     const rows = await getDatabase()
-      .update(teamUsers)
-      .set({ inviteAcceptedAt: now })
+      .select()
+      .from(teamUserInvitations)
+      .leftJoin(teams, eq(teams.id, teamUserInvitations.teamId))
+      .where(where)
+      .execute();
+
+    return rows.map((row) => {
+      return row.team_user_invitations;
+    });
+  }
+
+  async acceptInvitationByUserId(
+    userId: string,
+    teamUserId: string
+  ): Promise<TeamUserInvitation | null> {
+    const now = new Date();
+    const where = and(
+      eq(teamUserInvitations.id, teamUserId),
+      eq(teamUserInvitations.userId, userId),
+      isNull(teamUserInvitations.acceptedAt),
+      isNull(teamUserInvitations.rejectedAt),
+      lt(teamUserInvitations.expiresAt, now)
+    );
+
+    const rows = await getDatabase()
+      .update(teamUserInvitations)
+      .set({ acceptedAt: now })
       .where(where)
       .returning();
 
-    return rows[0] ?? null;
+    const teamUserInvite = rows[0] ?? null;
+
+    if (teamUserInvite) {
+      await getDatabase().insert(teamUsers).values({
+        teamId: teamUserInvite.teamId,
+        userId,
+        roles: teamUserInvite.roles,
+      });
+    }
+
+    return teamUserInvite;
   }
 
-  async rejectInvitationByUserId(userId: string, teamUserId: string): Promise<TeamUser | null> {
+  async rejectInvitationByUserId(
+    userId: string,
+    teamUserId: string
+  ): Promise<TeamUserInvitation | null> {
     const now = new Date();
     const where = and(
-      eq(teamUsers.id, teamUserId),
-      eq(teamUsers.userId, userId),
-      isNull(teamUsers.inviteAcceptedAt),
-      isNull(teamUsers.inviteRejectedAt),
-      lt(teamUsers.inviteExpiresAt, now)
+      eq(teamUserInvitations.id, teamUserId),
+      eq(teamUserInvitations.userId, userId),
+      isNull(teamUserInvitations.acceptedAt),
+      isNull(teamUserInvitations.rejectedAt),
+      lt(teamUserInvitations.expiresAt, now)
     );
 
     const rows = await getDatabase()
-      .update(teamUsers)
-      .set({ inviteRejectedAt: now })
+      .update(teamUserInvitations)
+      .set({ rejectedAt: now })
       .where(where)
       .returning();
 
@@ -184,18 +223,18 @@ export class TeamsManager {
   async sendInvitation(
     invitedByUserId: string,
     teamId: string,
-    inviteEmail: string
-  ): Promise<TeamUser> {
+    email: string
+  ): Promise<TeamUserInvitation> {
     const existingUser = await getDatabase().query.users.findFirst({
-      where: eq(users.email, inviteEmail),
+      where: eq(users.email, email),
     });
     const userId = existingUser?.id ?? null;
 
     const teamUserRows = await getDatabase()
-      .insert(teamUsers)
+      .insert(teamUserInvitations)
       .values({
         roles: [TeamUserRoleEnum.MEMBER],
-        inviteEmail,
+        email,
         teamId,
         userId,
         invitedByUserId,
@@ -224,7 +263,6 @@ export class TeamsManager {
         teamId: team.id,
         userId,
         roles: [TeamUserRoleEnum.ADMIN],
-        inviteAcceptedAt: new Date(),
       })
       .returning();
 

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { TeamSchema } from './TeamSchema';
 import { TeamUserRoleEnum } from './TeamUserRoleEnum';
 
 export const TeamUserSchema = z.object({
@@ -8,6 +9,7 @@ export const TeamUserSchema = z.object({
   teamId: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  team: TeamSchema,
 });
 
 export const CreateTeamUserSchema = z.object({

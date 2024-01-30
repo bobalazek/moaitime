@@ -12,6 +12,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   Input,
   Label,
   sonnerToast,
@@ -110,13 +111,13 @@ export default function CalendarEditDialog() {
     <Dialog open={selectedCalendarDialogOpen} onOpenChange={setSelectedCalendarDialogOpen}>
       <DialogContent data-test="calendar--edit-dialog">
         <DialogHeader>
-          <div className="truncate">
+          <DialogTitle className="truncate">
             {selectedCalendar?.id && <>Edit "{selectedCalendar.name}" Calendar</>}
             {!selectedCalendar?.id && <>Create Calendar</>}
-          </div>
+          </DialogTitle>
         </DialogHeader>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="calendar-name">Name</Label>
+          <Label htmlFor="calendar-edit-name">Name</Label>
           <Input
             id="calendar-edit-name"
             value={data?.name ?? ''}

@@ -16,6 +16,7 @@ export * from './schema/tasks';
 export * from './schema/taskTags';
 export * from './schema/teams';
 export * from './schema/teamUsers';
+export * from './schema/teamUserInvitations';
 export * from './schema/testingEmails';
 export * from './schema/userAccessTokens';
 export * from './schema/userDataExports';

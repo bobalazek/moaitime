@@ -12,6 +12,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   Input,
   Label,
   sonnerToast,
@@ -120,10 +121,10 @@ export default function TaskEditDialog() {
     <Dialog open={selectedTaskDialogOpen} onOpenChange={setSelectedTaskDialogOpen}>
       <DialogContent data-test="tasks--task-edit-dialog" className="flex flex-col">
         <DialogHeader>
-          <div className="truncate">
+          <DialogTitle className="truncate">
             {selectedTask?.id && <>Edit "{selectedTask.name}" Task</>}
             {!selectedTask?.id && <>Create Task</>}
-          </div>
+          </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <Label htmlFor="task-name">Name</Label>

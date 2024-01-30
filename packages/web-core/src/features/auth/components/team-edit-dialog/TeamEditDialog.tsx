@@ -12,6 +12,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   Input,
   Label,
   sonnerToast,
@@ -115,10 +116,10 @@ export default function TeamEditDialog() {
     <Dialog open={selectedTeamDialogOpen} onOpenChange={setSelectedTeamDialogOpen}>
       <DialogContent data-test="team--edit-dialog">
         <DialogHeader>
-          <div className="truncate">
+          <DialogTitle className="truncate">
             {selectedTeam?.id && <>Edit "{selectedTeam.name}" Team</>}
             {!selectedTeam?.id && <>Create Team</>}
-          </div>
+          </DialogTitle>
         </DialogHeader>
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="team-name">Name</Label>

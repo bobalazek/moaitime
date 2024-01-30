@@ -83,7 +83,7 @@ export class TagsManager {
       where: and(eq(tags.id, noteId), eq(tags.userId, userId)),
     });
 
-    return row !== null;
+    return !!row;
   }
 
   async userCanUpdate(userId: string, noteId: string): Promise<boolean> {

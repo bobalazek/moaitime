@@ -73,7 +73,7 @@ export class TeamsManager {
       where: and(eq(teams.id, teamId), eq(teams.userId, userId)),
     });
 
-    return row !== null;
+    return !!row;
   }
 
   async userCanUpdate(userId: string, teamId: string): Promise<boolean> {

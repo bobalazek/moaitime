@@ -213,7 +213,7 @@ export class MoodEntriesManager {
       where: and(eq(moodEntries.id, moodEntryId), eq(moodEntries.userId, userId)),
     });
 
-    return row !== null;
+    return !!row;
   }
 
   async userCanUpdate(userId: string, moodEntryId: string): Promise<boolean> {

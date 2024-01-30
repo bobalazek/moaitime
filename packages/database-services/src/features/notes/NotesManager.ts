@@ -97,7 +97,7 @@ export class NotesManager {
       where: and(eq(notes.id, noteId), eq(notes.userId, userId)),
     });
 
-    return row !== null;
+    return !!row;
   }
 
   async userCanUpdate(userId: string, noteId: string): Promise<boolean> {

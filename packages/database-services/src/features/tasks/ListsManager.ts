@@ -67,7 +67,7 @@ export class ListsManager {
       where: and(eq(lists.id, listId), eq(lists.userId, userId)),
     });
 
-    return row !== null;
+    return !!row;
   }
 
   async userCanUpdate(userId: string, listId: string): Promise<boolean> {

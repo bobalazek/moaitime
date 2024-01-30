@@ -94,7 +94,7 @@ export class FocusSessionsManager {
       where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
     });
 
-    return row !== null;
+    return !!row;
   }
 
   async userCanUpdate(userId: string, focusSessionId: string): Promise<boolean> {

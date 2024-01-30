@@ -290,6 +290,11 @@ export class TeamsManager {
       throw new Error('You cannot delete this invitation');
     }
 
+    const canInvite = await this.userCanInvite(userId, teamUserInvitation.teamId);
+    if (!canInvite) {
+      throw new Error('You cannot remove invites for this team');
+    }
+
     const rows = await getDatabase()
       .delete(teamUserInvitations)
       .where(eq(teamUserInvitations.id, teamUserInvitation.id))
@@ -303,8 +308,8 @@ export class TeamsManager {
     invitedByUserId: string,
     email: string
   ): Promise<TeamUserInvitation> {
-    const userCanInvite = await this.userCanInvite(invitedByUserId, teamId);
-    if (!userCanInvite) {
+    const canInvite = await this.userCanInvite(invitedByUserId, teamId);
+    if (!canInvite) {
       throw new Error('You cannot send invites for this team');
     }
 

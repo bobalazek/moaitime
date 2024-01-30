@@ -35,8 +35,8 @@ export class FocusSessionsController {
     }
 
     if (body.taskId) {
-      const userCanView = await tasksManager.userCanView(req.user.id, body.taskId);
-      if (!userCanView) {
+      const canView = await tasksManager.userCanView(req.user.id, body.taskId);
+      if (!canView) {
         throw new NotFoundException('Task not found');
       }
     }

@@ -14,13 +14,18 @@ export default function JoinedTeamSection() {
   };
 
   return (
-    <div>
+    <div data-test="settings--team-settings--joined-team">
       <h4 className="text-lg font-bold">Team</h4>
       <div className="mb-2">
         You have created a team called "<span className="font-bold">{joinedTeam.team.name}</span>"
       </div>
       <div className="flex gap-2">
-        <Button size="sm" variant="default" onClick={onEditTeamButtonClick}>
+        <Button
+          size="sm"
+          variant="default"
+          onClick={onEditTeamButtonClick}
+          data-test="settings--team-settings--joined-team--edit-team-button"
+        >
           Edit Team
         </Button>
       </div>

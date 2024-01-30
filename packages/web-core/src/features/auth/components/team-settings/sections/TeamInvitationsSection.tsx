@@ -1,3 +1,5 @@
+import { TrashIcon } from 'lucide-react';
+
 import {
   Button,
   Table,
@@ -19,34 +21,47 @@ export default function TeamInvitationsSection() {
   };
 
   return (
-    <div>
+    <div data-test="settings--team-settings--invitations">
       <h4 className="text-lg font-bold">Team Invitations</h4>
       {joinedTeamUserInvitations.length === 0 && (
         <div className="text-muted-foreground mb-2 text-sm">You have no team invitations</div>
       )}
       {joinedTeamUserInvitations.length > 0 && (
-        <Table>
+        <Table data-test="settings--team-settings--invitations--table">
           <TableHeader>
             <TableRow>
               <TableHead>Member</TableHead>
               <TableHead>Invited At</TableHead>
               <TableHead>Expires At</TableHead>
-              <TableHead></TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {joinedTeamUserInvitations.map((teamUserInvitation) => (
               <TableRow key={teamUserInvitation.id}>
                 <TableCell>{teamUserInvitation.email}</TableCell>
-                <TableCell>{teamUserInvitation.createdAt}</TableCell>
-                <TableCell>{teamUserInvitation.expiresAt}</TableCell>
-                <TableCell></TableCell>
+                <TableCell>{new Date(teamUserInvitation.createdAt).toLocaleString()}</TableCell>
+                <TableCell>
+                  {teamUserInvitation.expiresAt
+                    ? new Date(teamUserInvitation.expiresAt).toLocaleString()
+                    : ''}
+                </TableCell>
+                <TableCell>
+                  <Button size="sm" variant="destructive">
+                    <TrashIcon size={16} />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       )}
-      <Button onClick={onInviteButtonClick}>Invite a Member</Button>
+      <Button
+        onClick={onInviteButtonClick}
+        data-test="settings--team-settings--invitations--invite-member-button"
+      >
+        Invite a Member
+      </Button>
       <InviteTeamMemberDialog />
     </div>
   );

@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { and, count, DBQueryConfig, desc, eq, isNull, lt, or } from 'drizzle-orm';
 
 import {
@@ -230,11 +231,26 @@ export class TeamsManager {
     });
     const userId = existingUser?.id ?? null;
 
+    const existingInvitation = await getDatabase().query.teamUserInvitations.findFirst({
+      where: and(
+        eq(teamUserInvitations.teamId, teamId),
+        userId ? eq(teamUserInvitations.userId, userId) : eq(teamUserInvitations.email, email),
+        isNull(teamUserInvitations.acceptedAt),
+        isNull(teamUserInvitations.rejectedAt)
+      ),
+    });
+    if (existingInvitation) {
+      throw new Error('User is already invited');
+    }
+
+    const expiresAt = addDays(new Date(), 7);
+
     const teamUserRows = await getDatabase()
       .insert(teamUserInvitations)
       .values({
         roles: [TeamUserRoleEnum.MEMBER],
         email,
+        expiresAt,
         teamId,
         userId,
         invitedByUserId,

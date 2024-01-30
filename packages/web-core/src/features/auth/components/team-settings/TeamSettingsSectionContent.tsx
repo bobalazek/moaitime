@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useTeamsStore } from '../../state/teamsStore';
 import CreateTeamSection from './sections/CreateTeamSection';
 import JoinedTeamSection from './sections/JoinedTeamSection';
+import MyTeamInvitationsSection from './sections/MyTeamInvitationsSection';
 import TeamInvitationsSection from './sections/TeamInvitationsSection';
 import TeamMembersSection from './sections/TeamMembersSection';
 
@@ -29,7 +30,12 @@ export default function TeamSettingsSectionContent() {
           <TeamInvitationsSection />
         </>
       )}
-      {!joinedTeam && <CreateTeamSection />}
+      {!joinedTeam && (
+        <>
+          <CreateTeamSection />
+          <MyTeamInvitationsSection />
+        </>
+      )}
     </div>
   );
 }

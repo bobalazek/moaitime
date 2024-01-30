@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns';
-import { and, count, DBQueryConfig, desc, eq, isNull, lt, or } from 'drizzle-orm';
+import { and, count, DBQueryConfig, desc, eq, gt, isNull, or } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -191,7 +191,7 @@ export class TeamsManager {
         : eq(teamUserInvitations.userId, userId),
       isNull(teamUserInvitations.acceptedAt),
       isNull(teamUserInvitations.rejectedAt),
-      lt(teamUserInvitations.expiresAt, now),
+      gt(teamUserInvitations.expiresAt, now),
       isNull(teams.deletedAt)
     );
 
@@ -199,11 +199,27 @@ export class TeamsManager {
       .select()
       .from(teamUserInvitations)
       .leftJoin(teams, eq(teams.id, teamUserInvitations.teamId))
+      .leftJoin(users, eq(users.id, teamUserInvitations.invitedByUserId))
       .where(where)
       .execute();
 
     return rows.map((row) => {
-      return row.team_user_invitations;
+      // Again, really be mindful that we only want to expose the minimum required fields here!
+      const user = row.users
+        ? {
+            id: row.users.id,
+            displayName: row.users.displayName,
+            birthDate: row.users.birthDate,
+            email: row.users.email,
+            createdAt: row.users.createdAt,
+          }
+        : undefined;
+
+      return {
+        ...row.team_user_invitations,
+        team: row.teams,
+        invitedByUser: user,
+      };
     });
   }
 
@@ -217,7 +233,7 @@ export class TeamsManager {
       eq(teamUserInvitations.userId, userId),
       isNull(teamUserInvitations.acceptedAt),
       isNull(teamUserInvitations.rejectedAt),
-      lt(teamUserInvitations.expiresAt, now)
+      gt(teamUserInvitations.expiresAt, now)
     );
 
     const rows = await getDatabase()
@@ -249,7 +265,7 @@ export class TeamsManager {
       eq(teamUserInvitations.userId, userId),
       isNull(teamUserInvitations.acceptedAt),
       isNull(teamUserInvitations.rejectedAt),
-      lt(teamUserInvitations.expiresAt, now)
+      gt(teamUserInvitations.expiresAt, now)
     );
 
     const rows = await getDatabase()
@@ -287,6 +303,11 @@ export class TeamsManager {
     invitedByUserId: string,
     email: string
   ): Promise<TeamUserInvitation> {
+    const userCanInvite = await this.userCanInvite(invitedByUserId, teamId);
+    if (!userCanInvite) {
+      throw new Error('You cannot send invites for this team');
+    }
+
     const existingUser = await getDatabase().query.users.findFirst({
       where: eq(users.email, email),
     });
@@ -341,7 +362,7 @@ export class TeamsManager {
     await mailer.sendAuthTeamInviteMemberEmail({
       userEmail: email,
       teamName: team.name,
-      invitedByUserDisplayName: invitedByUser?.displayName ?? 'Someone',
+      invitedByUserDisplayName: invitedByUser?.displayName ?? 'Unknown',
       registerUrl: `${WEB_URL}/register?teamUserInvitationId=${teamUserInvitation.id}`,
     });
 

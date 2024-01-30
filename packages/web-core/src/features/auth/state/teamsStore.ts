@@ -16,6 +16,7 @@ import {
   deleteTeamInvitation,
   editTeam,
   getJoinedTeam,
+  getMyTeamInvitations,
   getTeamInvitations,
   getTeamMembers,
   rejectTeamInvitation,
@@ -35,9 +36,13 @@ export type TeamsStore = {
   reloadJoinedTeam: () => Promise<void>;
   joinedTeamMembers: TeamUser[];
   reloadJoinedTeamMembers: () => Promise<void>;
-  // Invitations
-  joinedTeamUserInvitations: TeamUserInvitation[]; // those are the invitations for that specific team
+  // Joined Team Invitations
+  joinedTeamUserInvitations: TeamUserInvitation[]; // Open invitation for that specific team
   reloadJoinedTeamUserInvitations: () => Promise<void>;
+  // My Team Invitations
+  myTeamUserInvitations: TeamUserInvitation[]; // Invitations from teams I have been invited to
+  reloadMyTeamUserInvitations: () => Promise<void>;
+  // Team Invitations
   sendTeamInvitation: (teamId: string, email: string) => Promise<TeamUserInvitation>;
   acceptTeamInvitation: (teamUserInvitationId: string) => Promise<TeamUserInvitation>;
   rejectTeamInvitation: (teamUserInvitationId: string) => Promise<TeamUserInvitation>;
@@ -111,7 +116,7 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
       joinedTeamMembers,
     });
   },
-  // Invitations
+  // Joined Team Invitations
   joinedTeamUserInvitations: [],
   reloadJoinedTeamUserInvitations: async () => {
     const { joinedTeam } = get();
@@ -125,6 +130,16 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
       joinedTeamUserInvitations: teamUserInvitations,
     });
   },
+  // My Team Invitations
+  myTeamUserInvitations: [],
+  reloadMyTeamUserInvitations: async () => {
+    const teamUserInvitations = await getMyTeamInvitations();
+
+    set({
+      myTeamUserInvitations: teamUserInvitations,
+    });
+  },
+  // Team Invitations
   sendTeamInvitation: async (teamId: string, email: string) => {
     const { reloadJoinedTeamUserInvitations } = get();
 

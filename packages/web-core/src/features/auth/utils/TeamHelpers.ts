@@ -133,3 +133,15 @@ export const deleteTeamInvitation = async (teamUserInvitationId: string) => {
 
   return response.data as TeamUserInvitation;
 };
+
+/********** My Team Invitations **********/
+export const getMyTeamInvitations = async () => {
+  const response = await fetchJson<ResponseInterface<TeamUserInvitation[]>>(
+    `${API_URL}/api/v1/team-user-invitations/my-invitations`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as TeamUserInvitation[];
+};

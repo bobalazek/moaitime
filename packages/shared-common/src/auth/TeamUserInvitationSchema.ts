@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { TeamSchema } from './TeamSchema';
 import { TeamUserRoleEnum } from './TeamUserRoleEnum';
+import { UserSchema } from './UserSchema';
 
 export const TeamUserInvitationSchema = z.object({
   id: z.string(),
@@ -13,7 +14,8 @@ export const TeamUserInvitationSchema = z.object({
   rejectedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  team: TeamSchema,
+  team: TeamSchema.optional(),
+  invitedByUser: UserSchema.optional(),
 });
 
 export const CreateTeamUserInvitationSchema = z.object({

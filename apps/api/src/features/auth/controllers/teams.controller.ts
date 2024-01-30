@@ -92,8 +92,8 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Team>> {
-    const hasAccess = await teamsManager.userCanDelete(req.user.id, teamId);
-    if (!hasAccess) {
+    const canDelete = await teamsManager.userCanDelete(req.user.id, teamId);
+    if (!canDelete) {
       throw new NotFoundException('Team not found');
     }
 
@@ -151,11 +151,6 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Body() body: EmailDto
   ): Promise<AbstractResponseDto<TeamUser>> {
-    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
-    if (!userCanInvite) {
-      throw new ForbiddenException('You cannot send invites for this team');
-    }
-
     const data = await teamsManager.sendInvitation(teamId, req.user.id, body.email);
 
     return {
@@ -166,15 +161,7 @@ export class TeamsController {
 
   @UseGuards(AuthenticatedGuard)
   @Get(':teamId/members')
-  async members(
-    @Req() req: Request,
-    @Param('teamId') teamId: string
-  ): Promise<AbstractResponseDto<TeamUser[]>> {
-    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
-    if (!userCanInvite) {
-      throw new ForbiddenException('You cannot send invites for this team');
-    }
-
+  async members(@Param('teamId') teamId: string): Promise<AbstractResponseDto<TeamUser[]>> {
     const data = await teamsManager.getMembersByTeamId(teamId);
 
     return {
@@ -189,11 +176,6 @@ export class TeamsController {
     @Req() req: Request,
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUserInvitation[]>> {
-    const userCanInvite = await teamsManager.userCanInvite(req.user.id, teamId);
-    if (!userCanInvite) {
-      throw new ForbiddenException('You cannot send invites for this team');
-    }
-
     const data = await teamsManager.getInvitationsByTeamId(teamId);
 
     return {

@@ -5,29 +5,70 @@ import { User } from '@moaitime/database-core';
 import {
   CalendarEntry,
   CalendarEntryTypeEnum,
+  CalendarEntryYearlyEntry,
   Event,
   getRuleIterationsBetween,
+  getTimezonedEndOfDay,
+  getTimezonedStartOfDay,
+  isValidDate,
   Task,
 } from '@moaitime/shared-common';
 
-import { ListsManager, listsManager } from '../tasks/ListsManager';
-import { TasksManager, tasksManager } from '../tasks/TasksManager';
-import { CalendarsManager, calendarsManager } from './CalendarsManager';
-import { EventsManager, eventsManager, EventsManagerEvent } from './EventsManager';
+import { listsManager } from '../tasks/ListsManager';
+import { tasksManager } from '../tasks/TasksManager';
+import { calendarsManager } from './CalendarsManager';
+import { eventsManager, EventsManagerEvent } from './EventsManager';
 
 export class CalendarEntriesManager {
-  constructor(
-    private _calendarsManager: CalendarsManager,
-    private _eventsManager: EventsManager,
-    private _listsManager: ListsManager,
-    private _tasksManager: TasksManager
-  ) {}
+  // Helpers
+  async list(user: User, from: string, to: string) {
+    if (!isValidDate(from)) {
+      throw new Error('Invalid from date');
+    }
+
+    if (!isValidDate(to)) {
+      throw new Error('Invalid to date');
+    }
+
+    const timezone = user?.settings?.generalTimezone ?? 'UTC';
+    const fromFinal = getTimezonedStartOfDay(timezone, from) ?? undefined;
+    const toFinal = getTimezonedEndOfDay(timezone, to) ?? undefined;
+
+    return calendarEntriesManager.findAllForRange(user, fromFinal, toFinal);
+  }
+
+  async yearly(userId: string, year: number) {
+    // Calendar
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(userId);
+    const calendarIds = Array.from(calendarIdsMap.keys());
+    const calendarCounts = await eventsManager.getCountsByCalendarIdsAndYear(calendarIds, year);
+
+    // Tasks
+    const listIds = await listsManager.getVisibleListIdsByUserId(userId);
+    const taskCounts = await tasksManager.getCountsByListIdsAndYear(listIds, year);
+
+    // Merge
+    const daysMap = new Map<string, number>();
+    for (const calendarCount of calendarCounts) {
+      daysMap.set(calendarCount.date, calendarCount.count);
+    }
+
+    for (const taskCount of taskCounts) {
+      const count = daysMap.get(taskCount.date) ?? 0;
+      daysMap.set(taskCount.date, count + taskCount.count);
+    }
+
+    return [...daysMap.entries()].map(([date, count]) => ({
+      date,
+      count,
+    })) as CalendarEntryYearlyEntry[];
+  }
 
   async findAllForRange(user: User, from?: Date, to?: Date): Promise<CalendarEntry[]> {
     const timezone = user.settings?.generalTimezone ?? 'UTC';
 
-    const calendarIdsMap = await this._calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
-    const events = await this._eventsManager.findManyByCalendarIdsAndRange(
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
+    const events = await eventsManager.findManyByCalendarIdsAndRange(
       calendarIdsMap,
       user.id,
       from,
@@ -39,7 +80,7 @@ export class CalendarEntriesManager {
 
     // Repeating events
     if (from && to) {
-      const recurringEvents = await this._eventsManager.findManyByCalendarIdsAndRange(
+      const recurringEvents = await eventsManager.findManyByCalendarIdsAndRange(
         calendarIdsMap,
         user.id,
         from,
@@ -72,8 +113,8 @@ export class CalendarEntriesManager {
       }
     }
 
-    const listIds = await this._listsManager.getVisibleListIdsByUserId(user.id);
-    const tasks = await this._tasksManager.findManyByListIdsAndRange(listIds, from, to);
+    const listIds = await listsManager.getVisibleListIdsByUserId(user.id);
+    const tasks = await tasksManager.findManyByListIdsAndRange(listIds, from, to);
     for (const task of tasks) {
       // We should never have a task without a due date,
       // but we need to apease typescript.
@@ -136,6 +177,7 @@ export class CalendarEntriesManager {
     return calendarEntries;
   }
 
+  // Private
   private _convertEventToCalendarEntry(
     event: EventsManagerEvent,
     eventIterationDate?: Date
@@ -212,9 +254,4 @@ export class CalendarEntriesManager {
   }
 }
 
-export const calendarEntriesManager = new CalendarEntriesManager(
-  calendarsManager,
-  eventsManager,
-  listsManager,
-  tasksManager
-);
+export const calendarEntriesManager = new CalendarEntriesManager();

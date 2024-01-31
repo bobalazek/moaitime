@@ -23,8 +23,6 @@ export const getTaskSeeds = async (): Promise<NewTask[]> => {
 
     for (const list of userLists) {
       const name = list.name as keyof typeof TASKS_DEFAULT_ENTRIES;
-      console.log('name', name);
-
       const defaultTasks = TASKS_DEFAULT_ENTRIES[name] ?? [];
       for (let j = 0; j < defaultTasks.length; j++) {
         tasks.push({

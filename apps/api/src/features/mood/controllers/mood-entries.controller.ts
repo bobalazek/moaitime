@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { MoodEntry } from '@moaitime/database-core';
@@ -31,7 +19,7 @@ export class MoodEntriesController {
     const previousCursorParameter = req.query.previousCursor as string | undefined;
     const nextCursorParameter = req.query.nextCursor as string | undefined;
 
-    const { data, meta } = await moodEntriesManager.findManyByUserId(req.user.id, {
+    const { data, meta } = await moodEntriesManager.findManyByUserIdWithDataAndMeta(req.user.id, {
       limit,
       previousCursor: previousCursorParameter,
       nextCursor: nextCursorParameter,
@@ -50,15 +38,7 @@ export class MoodEntriesController {
     @Req() req: Request,
     @Param('moodEntryId') moodEntryId: string
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canView = await moodEntriesManager.userCanView(moodEntryId, req.user.id);
-    if (!canView) {
-      throw new NotFoundException('You cannot view this mood entry');
-    }
-
-    const data = await moodEntriesManager.findOneByIdAndUserId(moodEntryId, req.user.id);
-    if (!data) {
-      throw new NotFoundException('Mood entry not found');
-    }
+    const data = await moodEntriesManager.view(req.user.id, moodEntryId);
 
     return {
       success: true,
@@ -72,13 +52,7 @@ export class MoodEntriesController {
     @Body() body: CreateMoodEntryDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const insertData = {
-      ...body,
-      loggedAt: body.loggedAt ?? new Date().toISOString(),
-      userId: req.user.id,
-    };
-
-    const data = await moodEntriesManager.insertOne(insertData);
+    const data = await moodEntriesManager.create(req.user.id, body);
 
     return {
       success: true,
@@ -93,17 +67,7 @@ export class MoodEntriesController {
     @Param('moodEntryId') moodEntryId: string,
     @Body() body: UpdateMoodEntryDto
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canUpdate = await moodEntriesManager.userCanUpdate(moodEntryId, req.user.id);
-    if (!canUpdate) {
-      throw new NotFoundException('You cannot update this mood entry');
-    }
-
-    const updateData = {
-      ...body,
-      loggedAt: body.loggedAt ? new Date(body.loggedAt).toISOString() : undefined,
-    };
-
-    const data = await moodEntriesManager.updateOneById(moodEntryId, updateData);
+    const data = await moodEntriesManager.update(req.user.id, moodEntryId, body);
 
     return {
       success: true,
@@ -118,16 +82,7 @@ export class MoodEntriesController {
     @Param('moodEntryId') moodEntryId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canDelete = await moodEntriesManager.userCanDelete(moodEntryId, req.user.id);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot delete this mood entry');
-    }
-
-    const data = body.isHardDelete
-      ? await moodEntriesManager.deleteOneById(moodEntryId)
-      : await moodEntriesManager.updateOneById(moodEntryId, {
-          deletedAt: new Date(),
-        });
+    const data = await moodEntriesManager.delete(req.user.id, moodEntryId, body.isHardDelete);
 
     return {
       success: true,
@@ -141,14 +96,7 @@ export class MoodEntriesController {
     @Req() req: Request,
     @Param('moodEntryId') moodEntryId: string
   ): Promise<AbstractResponseDto<MoodEntry>> {
-    const canDelete = await moodEntriesManager.userCanUpdate(moodEntryId, req.user.id);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot undelete this mood entry');
-    }
-
-    const data = await moodEntriesManager.updateOneById(moodEntryId, {
-      deletedAt: null,
-    });
+    const data = await moodEntriesManager.undelete(req.user.id, moodEntryId);
 
     return {
       success: true,

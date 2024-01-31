@@ -137,7 +137,7 @@ export class NotesManager {
     return data;
   }
 
-  async create(user: User, body: CreateNote) {
+  async create(user: User, data: CreateNote) {
     const notesMaxPerUserCount = await usersManager.getUserLimit(user, 'notesMaxPerUserCount');
 
     const notesCount = await this.countByUserId(user.id);
@@ -147,12 +147,10 @@ export class NotesManager {
       );
     }
 
-    const insertData = {
-      ...body,
+    return this.insertOne({
+      ...data,
       userId: user.id,
-    };
-
-    return this.insertOne(insertData);
+    });
   }
 
   async update(userId: string, noteId: string, updateData: UpdateNote) {

@@ -16,7 +16,7 @@ import {
 } from 'drizzle-orm';
 
 import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/database-core';
-import { SortDirectionEnum } from '@moaitime/shared-common';
+import { CreateMoodEntry, SortDirectionEnum, UpdateMoodEntry } from '@moaitime/shared-common';
 
 export type MoodEntriesManagerFindOptions = {
   includeDeleted?: boolean;
@@ -37,7 +37,7 @@ export class MoodEntriesManager {
     });
   }
 
-  async findManyByUserId(
+  async findManyByUserIdWithDataAndMeta(
     userId: string,
     options?: MoodEntriesManagerFindOptions
   ): Promise<{
@@ -225,6 +225,64 @@ export class MoodEntriesManager {
   }
 
   // Helpers
+  async view(userId: string, moodEntryId: string) {
+    const canView = await moodEntriesManager.userCanView(moodEntryId, userId);
+    if (!canView) {
+      throw new Error('You cannot view this mood entry');
+    }
+
+    const data = await moodEntriesManager.findOneByIdAndUserId(moodEntryId, userId);
+    if (!data) {
+      throw new Error('Mood entry not found');
+    }
+
+    return data;
+  }
+
+  async create(userId: string, data: CreateMoodEntry) {
+    return moodEntriesManager.insertOne({
+      ...data,
+      loggedAt: data.loggedAt ?? new Date().toISOString(),
+      userId,
+    });
+  }
+
+  async update(userId: string, moodEntryId: string, data: UpdateMoodEntry) {
+    const canUpdate = await moodEntriesManager.userCanUpdate(moodEntryId, userId);
+    if (!canUpdate) {
+      throw new Error('You cannot update this mood entry');
+    }
+
+    return moodEntriesManager.updateOneById(moodEntryId, {
+      ...data,
+      loggedAt: data.loggedAt ? new Date(data.loggedAt).toISOString() : undefined,
+    });
+  }
+
+  async delete(userId: string, moodEntryId: string, isHardDelete?: boolean) {
+    const canDelete = await moodEntriesManager.userCanDelete(moodEntryId, userId);
+    if (!canDelete) {
+      throw new Error('You cannot delete this mood entry');
+    }
+
+    return isHardDelete
+      ? await moodEntriesManager.deleteOneById(moodEntryId)
+      : await moodEntriesManager.updateOneById(moodEntryId, {
+          deletedAt: new Date(),
+        });
+  }
+
+  async undelete(userId: string, moodEntryId: string) {
+    const canDelete = await moodEntriesManager.userCanUpdate(moodEntryId, userId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this mood entry');
+    }
+
+    return await moodEntriesManager.updateOneById(moodEntryId, {
+      deletedAt: null,
+    });
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

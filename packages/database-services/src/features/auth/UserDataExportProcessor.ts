@@ -202,7 +202,8 @@ export class UserDataExportProcessor {
   async _saveMoodEntries(userId: string, tmpUserDataExportDir: string) {
     this._logger.debug(`Fetching mood enries for user (id: ${userId}) ...`);
 
-    const { data: moodEntries } = await this._moodEntriesManager.findManyByUserId(userId);
+    const { data: moodEntries } =
+      await this._moodEntriesManager.findManyByUserIdWithDataAndMeta(userId);
 
     this._logger.debug(`Found ${moodEntries.length} mood entries for user (id: ${userId}).`);
 

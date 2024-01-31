@@ -20,6 +20,7 @@ import {
 
 import {
   getDatabase,
+  List,
   lists,
   NewTask,
   Tag,
@@ -27,8 +28,17 @@ import {
   Task,
   tasks,
   taskTags,
+  User,
 } from '@moaitime/database-core';
-import { SortDirectionEnum, TasksListSortFieldEnum } from '@moaitime/shared-common';
+import {
+  CreateTask,
+  SortDirectionEnum,
+  TasksListSortFieldEnum,
+  UpdateTask,
+} from '@moaitime/shared-common';
+
+import { usersManager } from '../auth/UsersManager';
+import { listsManager } from './ListsManager';
 
 export type TasksManagerFindManyByListIdOptions = {
   includeCompleted?: boolean;
@@ -277,6 +287,200 @@ export class TasksManager {
   }
 
   // Helpers
+  async list(
+    userId: string,
+    listId: string,
+    {
+      query,
+      includeCompleted,
+      includeDeleted,
+      sortField,
+      sortDirection,
+    }: {
+      query?: string;
+      includeCompleted?: boolean;
+      includeDeleted?: boolean;
+      sortField?: keyof Task;
+      sortDirection?: SortDirectionEnum;
+    }
+  ) {
+    if (query) {
+      return this.findManyByQueryAndUserId(query, userId);
+    }
+
+    const list = listsManager.findOneByIdAndUserId(listId, userId);
+    if (!list) {
+      throw new Error('List not found');
+    }
+
+    const tags = await this.findManyByListId(listId, {
+      includeCompleted,
+      includeDeleted,
+      sortField,
+      sortDirection,
+    });
+
+    return this._populateTags(tags);
+  }
+
+  async reorder(
+    userId: string,
+    listId: string,
+    data: {
+      sortDirection: SortDirectionEnum;
+      listId: string;
+      originalTaskId: string;
+      newTaskId: string;
+    }
+  ) {
+    const list = listsManager.findOneByIdAndUserId(listId, userId);
+    if (!list) {
+      throw new Error('List not found');
+    }
+
+    const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
+
+    await this.reorderList(newListId, sortDirection, originalTaskId, newTaskId);
+  }
+
+  async view(userId: string, taskId: string) {
+    const row = await this.findOneByIdAndUserId(taskId, userId);
+    if (!row) {
+      throw new Error('Task not found');
+    }
+
+    return (await this._populateTags([row]))[0];
+  }
+
+  async create(user: User, createData: CreateTask) {
+    let list: List | null = null;
+    if (createData.listId) {
+      list = await listsManager.findOneByIdAndUserId(createData.listId, user.id);
+      if (!list) {
+        throw new Error('List not found');
+      }
+    }
+
+    const tasksMaxPerListCount = await usersManager.getUserLimit(user, 'tasksMaxPerListCount');
+
+    const tasksCount = await this.countByListId(list?.id ?? null);
+    if (tasksCount >= tasksMaxPerListCount) {
+      throw new Error(
+        `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
+      );
+    }
+
+    if (createData.parentId) {
+      await this.validateParentId(null, createData.parentId);
+    }
+
+    const { tagIds, ...insertData } = createData;
+
+    const maxOrderForListId = await this.findMaxOrderByListId(insertData?.listId ?? null);
+    const order = maxOrderForListId + 1;
+
+    const data = await this.insertOne({ ...insertData, order, userId: user.id });
+
+    if (Array.isArray(tagIds)) {
+      await this.setTags(data.id, tagIds);
+    }
+
+    return data;
+  }
+
+  async update(user: User, taskId: string, body: UpdateTask) {
+    const data = await this.findOneByIdAndUserId(taskId, user.id);
+    if (!data) {
+      throw new Error('Task not found');
+    }
+
+    if (body.listId) {
+      const list = await listsManager.findOneByIdAndUserId(body.listId, user.id);
+      if (!list) {
+        throw new Error('List not found');
+      }
+
+      const tasksMaxPerListCount = await usersManager.getUserLimit(user, 'tasksMaxPerListCount');
+      const tasksCount = await this.countByListId(list.id);
+      if (tasksCount >= tasksMaxPerListCount) {
+        throw new Error(
+          `You have reached the maximum number of tasks for that list (${tasksMaxPerListCount}).`
+        );
+      }
+    }
+
+    if (body.parentId) {
+      await this.validateParentId(taskId, body.parentId);
+    }
+
+    const { tagIds, ...updateData } = body;
+
+    const updatedData = await this.updateOneById(taskId, updateData);
+
+    if (Array.isArray(tagIds)) {
+      await this.setTags(data.id, tagIds);
+    }
+
+    return updatedData;
+  }
+
+  async delete(userId: string, taskId: string, isHardDelete?: boolean) {
+    const data = await this.findOneByIdAndUserId(taskId, userId);
+    if (!data) {
+      throw new Error('Task not found');
+    }
+
+    return isHardDelete
+      ? await this.deleteOneById(taskId)
+      : await this.updateOneById(taskId, {
+          deletedAt: new Date(),
+        });
+  }
+
+  async undelete(userId: string, taskId: string) {
+    const data = await this.findOneByIdAndUserId(taskId, userId);
+    if (!data) {
+      throw new Error('Task not found');
+    }
+
+    const updatedData = await this.updateOneById(taskId, {
+      deletedAt: null,
+    });
+
+    return updatedData;
+  }
+
+  async duplicate(userId: string, taskId: string) {
+    const data = await this.findOneByIdAndUserId(taskId, userId);
+    if (!data) {
+      throw new Error('Task not found');
+    }
+
+    return this.duplicateTask(taskId);
+  }
+
+  async complete(userId: string, taskId: string) {
+    const data = await this.findOneByIdAndUserId(taskId, userId);
+    if (!data) {
+      throw new Error('Task not found');
+    }
+
+    return this.updateOneById(taskId, {
+      completedAt: new Date(),
+    });
+  }
+
+  async uncomplete(userId: string, taskId: string) {
+    const data = await this.findOneByIdAndUserId(taskId, userId);
+    if (!data) {
+      throw new Error('Task not found');
+    }
+
+    return this.updateOneById(taskId, {
+      completedAt: null,
+    });
+  }
+
   async updateReorder(map: { [key: string]: number }) {
     return getDatabase().transaction(async (tx) => {
       for (const taskId in map) {
@@ -311,7 +515,7 @@ export class TasksManager {
     return result[0].count ?? 0;
   }
 
-  async duplicate(id: string): Promise<Task> {
+  async duplicateTask(id: string): Promise<Task> {
     const task = await this.findOneById(id);
     if (!task) {
       throw new Error('Task not found');
@@ -325,18 +529,18 @@ export class TasksManager {
       name: `${task.name} (copy)`,
     });
 
-    await this.reorder(task.listId, SortDirectionEnum.ASC, task.id, duplicatedTask.id);
+    await this.reorderList(task.listId, SortDirectionEnum.ASC, task.id, duplicatedTask.id);
 
     return this._fixRowColumns(duplicatedTask);
   }
 
-  async reorder(
+  async reorderList(
     listId: string | null,
     sortDirection: SortDirectionEnum,
     originalTaskId: string,
     newTaskId: string
   ) {
-    const result = await tasksManager.findManyByListId(listId, {
+    const result = await this.findManyByListId(listId, {
       includeCompleted: true,
       includeDeleted: true,
       sortField: 'order',
@@ -360,7 +564,7 @@ export class TasksManager {
       });
     }
 
-    await tasksManager.updateReorder(reorderMap);
+    await this.updateReorder(reorderMap);
   }
 
   /**
@@ -532,6 +736,22 @@ export class TasksManager {
     }
 
     return task;
+  }
+
+  private async _populateTags(tasks: Task[]) {
+    const taskIds = tasks.map((task) => task.id);
+    const tagsMap = await this.getTagIdsForTaskIds(taskIds);
+
+    return tasks.map((task) => {
+      const tags = tagsMap[task.id] || [];
+      const tagIds = tags.map((tag) => tag.id);
+
+      return {
+        ...task,
+        tags,
+        tagIds,
+      };
+    });
   }
 }
 

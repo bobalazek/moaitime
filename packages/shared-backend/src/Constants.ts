@@ -23,7 +23,13 @@ export const AUTH_DELETION_HARD_DELETE_SECONDS = 60 * 60 * 24 * 30;
 export const MAILER_FROM = 'MoaiTime Mailer <mailer@bobalazek.com>';
 
 // Tasks, Lists & Tags
-export const LISTS_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal'];
+export const LISTS_DEFAULT_NAMES = [
+  'Inbox',
+  'Errands',
+  'Work',
+  'Personal',
+  'World Domination Checklist',
+];
 
 // Queue
 export const QUEUE_WORKERS_SHARED_QUEUE_NAME = 'shared-queue';

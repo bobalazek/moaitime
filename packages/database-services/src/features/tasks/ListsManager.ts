@@ -1,6 +1,7 @@
 import { and, asc, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
+import { CreateList, UpdateList } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
 
@@ -79,6 +80,75 @@ export class ListsManager {
   }
 
   // Helpers
+  async list(userId: string) {
+    return this.findManyByUserId(userId);
+  }
+
+  async view(userId: string, listId: string) {
+    const canView = await this.userCanView(listId, userId);
+    if (!canView) {
+      throw new Error('You cannot view this list');
+    }
+
+    const data = await this.findOneByIdAndUserId(listId, userId);
+    if (!data) {
+      throw new Error('List not found');
+    }
+
+    return data;
+  }
+
+  async create(user: User, data: CreateList) {
+    const listsMaxPerUserCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
+
+    const listsCount = await this.countByUserId(user.id);
+    if (listsCount >= listsMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of lists per user (${listsMaxPerUserCount}).`
+      );
+    }
+
+    return this.insertOne({ ...data, userId: user.id });
+  }
+
+  async update(userId: string, listId: string, data: UpdateList) {
+    const canUpdate = await this.userCanUpdate(listId, userId);
+    if (!canUpdate) {
+      throw new Error('You cannot update this list');
+    }
+
+    return this.updateOneById(listId, data);
+  }
+
+  async delete(userId: string, listId: string) {
+    const canDelete = await this.userCanDelete(listId, userId);
+    if (!canDelete) {
+      throw new Error('You cannot delete this list');
+    }
+
+    return this.updateOneById(listId, {
+      deletedAt: new Date(),
+    });
+  }
+
+  async addVisible(userId: string, listId: string) {
+    const canView = await this.userCanView(userId, listId);
+    if (!canView) {
+      throw new Error('You cannot view this list');
+    }
+
+    await this.addVisibleListIdByUserId(userId, listId);
+  }
+
+  async removeVisible(userId: string, listId: string) {
+    const canView = await this.userCanView(userId, listId);
+    if (!canView) {
+      throw new Error('You cannot view this list');
+    }
+
+    await this.removeVisibleListIdByUserId(userId, listId);
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

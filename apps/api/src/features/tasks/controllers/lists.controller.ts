@@ -1,20 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-  Put,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { List, User } from '@moaitime/database-core';
-import { listsManager, usersManager } from '@moaitime/database-services';
+import { listsManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
@@ -26,7 +14,7 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<List[]>> {
-    const data = await listsManager.findManyByUserId(req.user.id);
+    const data = await listsManager.list(req.user.id);
 
     return {
       success: true,
@@ -62,15 +50,7 @@ export class ListsController {
     @Req() req: Request,
     @Param('listId') listId: string
   ): Promise<AbstractResponseDto<List>> {
-    const canView = await listsManager.userCanView(listId, req.user.id);
-    if (!canView) {
-      throw new NotFoundException('You cannot view this list');
-    }
-
-    const data = await listsManager.findOneByIdAndUserId(listId, req.user.id);
-    if (!data) {
-      throw new NotFoundException('List not found');
-    }
+    const data = await listsManager.view(req.user.id, listId);
 
     return {
       success: true,
@@ -84,16 +64,7 @@ export class ListsController {
     @Body() body: CreateListDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<List>> {
-    const listsMaxPerUserCount = await usersManager.getUserLimit(req.user, 'listsMaxPerUserCount');
-
-    const listsCount = await listsManager.countByUserId(req.user.id);
-    if (listsCount >= listsMaxPerUserCount) {
-      throw new ForbiddenException(
-        `You have reached the maximum number of lists per user (${listsMaxPerUserCount}).`
-      );
-    }
-
-    const data = await listsManager.insertOne({ ...body, userId: req.user.id });
+    const data = await listsManager.create(req.user, body);
 
     return {
       success: true,
@@ -108,12 +79,7 @@ export class ListsController {
     @Param('listId') listId: string,
     @Body() body: UpdateListDto
   ): Promise<AbstractResponseDto<List>> {
-    const canUpdate = await listsManager.userCanUpdate(listId, req.user.id);
-    if (!canUpdate) {
-      throw new NotFoundException('You cannot update this list');
-    }
-
-    const data = await listsManager.updateOneById(listId, body);
+    const data = await listsManager.update(req.user.id, listId, body);
 
     return {
       success: true,
@@ -127,14 +93,7 @@ export class ListsController {
     @Req() req: Request,
     @Param('listId') listId: string
   ): Promise<AbstractResponseDto<List>> {
-    const canDelete = await listsManager.userCanDelete(listId, req.user.id);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot delete this list');
-    }
-
-    const data = await listsManager.updateOneById(listId, {
-      deletedAt: new Date(),
-    });
+    const data = await listsManager.delete(req.user.id, listId);
 
     return {
       success: true,
@@ -149,12 +108,7 @@ export class ListsController {
     @Req() req: Request,
     @Param('listId') listId: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await listsManager.userCanView(req.user.id, listId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot view this list');
-    }
-
-    await listsManager.addVisibleListIdByUserId(req.user.id, listId);
+    await listsManager.addVisible(req.user.id, listId);
 
     return {
       success: true,
@@ -167,12 +121,7 @@ export class ListsController {
     @Req() req: Request,
     @Param('listId') listId: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await listsManager.userCanView(req.user.id, listId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot view this list');
-    }
-
-    await listsManager.removeVisibleListIdByUserId(req.user.id, listId);
+    await listsManager.removeVisible(req.user.id, listId);
 
     return {
       success: true,

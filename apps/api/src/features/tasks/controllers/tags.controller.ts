@@ -1,20 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { Tag } from '@moaitime/database-core';
-import { tagsManager, usersManager } from '@moaitime/database-services';
+import { tagsManager } from '@moaitime/database-services';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -29,9 +17,7 @@ export class TagsController {
   async list(@Req() req: Request): Promise<AbstractResponseDto<Tag[]>> {
     const includeDeleted = req.query.includeDeleted === 'true';
 
-    const data = await tagsManager.findManyByUserId(req.user.id, {
-      includeDeleted,
-    });
+    const data = await tagsManager.list(req.user.id, includeDeleted);
 
     return {
       success: true,
@@ -45,15 +31,7 @@ export class TagsController {
     @Req() req: Request,
     @Param('tagId') tagId: string
   ): Promise<AbstractResponseDto<Tag>> {
-    const canView = await tagsManager.userCanView(tagId, req.user.id);
-    if (!canView) {
-      throw new NotFoundException('You cannot view this tag');
-    }
-
-    const data = await tagsManager.findOneByIdAndUserId(tagId, req.user.id);
-    if (!data) {
-      throw new NotFoundException('Tag not found');
-    }
+    const data = await tagsManager.view(req.user.id, tagId);
 
     return {
       success: true,
@@ -64,16 +42,7 @@ export class TagsController {
   @UseGuards(AuthenticatedGuard)
   @Post()
   async create(@Body() body: CreateTagDto, @Req() req: Request): Promise<AbstractResponseDto<Tag>> {
-    const tagsMaxPerUserCount = await usersManager.getUserLimit(req.user, 'listsMaxPerUserCount');
-
-    const tagsCount = await tagsManager.countByUserId(req.user.id);
-    if (tagsCount >= tagsMaxPerUserCount) {
-      throw new ForbiddenException(
-        `You have reached the maximum number of tags per user (${tagsMaxPerUserCount}).`
-      );
-    }
-
-    const data = await tagsManager.insertOne({ ...body, userId: req.user.id });
+    const data = await tagsManager.create(req.user, body);
 
     return {
       success: true,
@@ -88,12 +57,7 @@ export class TagsController {
     @Param('tagId') tagId: string,
     @Body() body: UpdateTagDto
   ): Promise<AbstractResponseDto<Tag>> {
-    const canUpdate = await tagsManager.userCanUpdate(tagId, req.user.id);
-    if (!canUpdate) {
-      throw new NotFoundException('You cannot update this tag');
-    }
-
-    const data = await tagsManager.updateOneById(tagId, body);
+    const data = await tagsManager.update(req.user.id, tagId, body);
 
     return {
       success: true,
@@ -108,16 +72,7 @@ export class TagsController {
     @Param('tagId') tagId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Tag>> {
-    const canDelete = await tagsManager.userCanDelete(tagId, req.user.id);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot delete this tag');
-    }
-
-    const data = body.isHardDelete
-      ? await tagsManager.deleteOneById(tagId)
-      : await tagsManager.updateOneById(tagId, {
-          deletedAt: new Date(),
-        });
+    const data = await tagsManager.delete(req.user.id, tagId, body.isHardDelete);
 
     return {
       success: true,
@@ -131,14 +86,7 @@ export class TagsController {
     @Req() req: Request,
     @Param('tagId') tagId: string
   ): Promise<AbstractResponseDto<Tag>> {
-    const canDelete = await tagsManager.userCanUpdate(req.user.id, tagId);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot undelete this tag');
-    }
-
-    const data = await tagsManager.updateOneById(tagId, {
-      deletedAt: null,
-    });
+    const data = await tagsManager.undelete(req.user.id, tagId);
 
     return {
       success: true,

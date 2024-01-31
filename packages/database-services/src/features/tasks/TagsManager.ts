@@ -1,6 +1,9 @@
 import { and, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
 
-import { getDatabase, NewTag, Tag, tags } from '@moaitime/database-core';
+import { getDatabase, NewTag, Tag, tags, User } from '@moaitime/database-core';
+import { CreateTag, UpdateTag } from '@moaitime/shared-common';
+
+import { usersManager } from '../auth/UsersManager';
 
 export type TagsManagerFindManyByUserIdOptions = {
   includeDeleted?: boolean;
@@ -65,19 +68,7 @@ export class TagsManager {
     return rows[0];
   }
 
-  // Helpers
-  async countByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(tags.id).mapWith(Number),
-      })
-      .from(tags)
-      .where(and(eq(tags.userId, userId), isNull(tags.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
+  // Permissions
   async userCanView(userId: string, noteId: string): Promise<boolean> {
     const row = await getDatabase().query.tags.findFirst({
       where: and(eq(tags.id, noteId), eq(tags.userId, userId)),
@@ -92,6 +83,85 @@ export class TagsManager {
 
   async userCanDelete(userId: string, noteId: string): Promise<boolean> {
     return this.userCanUpdate(userId, noteId);
+  }
+
+  // Helpers
+  async list(userId: string, includeDeleted?: boolean) {
+    return this.findManyByUserId(userId, {
+      includeDeleted,
+    });
+  }
+
+  async view(userId: string, tagId: string) {
+    const canView = await this.userCanView(tagId, userId);
+    if (!canView) {
+      throw new Error('You cannot view this tag');
+    }
+
+    const data = await this.findOneByIdAndUserId(tagId, userId);
+    if (!data) {
+      throw new Error('Tag not found');
+    }
+
+    return data;
+  }
+
+  async create(user: User, data: CreateTag) {
+    const tagsMaxPerUserCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
+
+    const tagsCount = await this.countByUserId(user.id);
+    if (tagsCount >= tagsMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of tags per user (${tagsMaxPerUserCount}).`
+      );
+    }
+
+    return this.insertOne({ ...data, userId: user.id });
+  }
+
+  async update(userId: string, tagId: string, data: UpdateTag) {
+    const canUpdate = await this.userCanUpdate(tagId, userId);
+    if (!canUpdate) {
+      throw new Error('You cannot update this tag');
+    }
+
+    return this.updateOneById(tagId, data);
+  }
+
+  async delete(userId: string, tagId: string, isHardDelete?: boolean) {
+    const canDelete = await tagsManager.userCanDelete(tagId, userId);
+    if (!canDelete) {
+      throw new Error('You cannot delete this tag');
+    }
+
+    return isHardDelete
+      ? await this.deleteOneById(tagId)
+      : await this.updateOneById(tagId, {
+          deletedAt: new Date(),
+        });
+  }
+
+  async undelete(userId: string, tagId: string) {
+    const canDelete = await tagsManager.userCanUpdate(tagId, userId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this tag');
+    }
+
+    return this.updateOneById(tagId, {
+      deletedAt: null,
+    });
+  }
+
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(tags.id).mapWith(Number),
+      })
+      .from(tags)
+      .where(and(eq(tags.userId, userId), isNull(tags.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 }
 

@@ -1,3 +1,4 @@
+import { UsersIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -17,8 +18,10 @@ import {
   Input,
   Label,
   sonnerToast,
+  Switch,
 } from '@moaitime/web-ui';
 
+import { useTeamsStore } from '../../../auth/state/teamsStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useListsStore } from '../../state/listsStore';
 
@@ -30,7 +33,8 @@ export default function ListEditDialog() {
     addList,
     editList,
   } = useListsStore();
-  const [data, setData] = useState<UpdateList>();
+  const { joinedTeam } = useTeamsStore();
+  const [data, setData] = useState<CreateList | UpdateList>();
 
   useEffect(() => {
     if (!selectedListDialog) {
@@ -106,6 +110,35 @@ export default function ListEditDialog() {
               }}
             />
           </div>
+          {selectedListDialog && selectedListDialog?.teamId && (
+            <div className="text-muted-foreground text-xs">
+              <UsersIcon className="mr-1 inline-block" size={16} />
+              This list is a list created and owned by your team.
+            </div>
+          )}
+          {!selectedListDialog && joinedTeam && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center">
+                <Switch
+                  id="list-teamId"
+                  checked={(data as CreateList)?.teamId === joinedTeam?.team.id}
+                  disabled={!joinedTeam}
+                  onCheckedChange={() => {
+                    setData((current) => ({
+                      ...current,
+                      teamId: (data as CreateList)?.teamId ? undefined : joinedTeam?.team.id,
+                    }));
+                  }}
+                />
+                <Label htmlFor="list-teamId" className="ml-2">
+                  Is Team List?
+                </Label>
+              </div>
+              <p className="text-muted-foreground text-xs">
+                With this toggle you will create a list and transfer the ownership to your team.
+              </p>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <DialogClose asChild>

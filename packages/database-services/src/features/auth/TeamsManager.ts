@@ -14,8 +14,16 @@ import {
   users,
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
-import { TeamUserRoleEnum, UpdateTeam, WEB_URL } from '@moaitime/shared-common';
+import {
+  TeamLimits,
+  TeamUsage,
+  TeamUserRoleEnum,
+  UpdateTeam,
+  WEB_URL,
+} from '@moaitime/shared-common';
 
+import { calendarsManager } from '../calendars/CalendarsManager';
+import { listsManager } from '../tasks/ListsManager';
 import { usersManager } from './UsersManager';
 
 export class TeamsManager {
@@ -200,6 +208,36 @@ export class TeamsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getTeamLimits(team: Team): Promise<TeamLimits> {
+    // TODO: once we have plans, we need to adjust the limits depending on that
+
+    return {
+      tasksMaxPerListCount: 10,
+      listsMaxPerTeamCount: 3,
+      calendarsMaxPerTeamCount: 3,
+      calendarsMaxEventsPerCalendarCount: 100,
+    };
+  }
+
+  async getTeamLimit(team: Team, key: keyof TeamLimits): Promise<number> {
+    const limits = await this.getTeamLimits(team);
+
+    return limits[key];
+  }
+
+  async getTeamUsage(team: Team): Promise<TeamUsage> {
+    // TODO: cache!
+
+    const listsCount = await listsManager.countByTeamId(team.id);
+    const calendarsCount = await calendarsManager.countByTeamId(team.id);
+
+    return {
+      listsCount,
+      calendarsCount,
+    };
   }
 
   async getInvitationById(teamUserInvitationId: string): Promise<TeamUserInvitation | null> {

@@ -1,4 +1,4 @@
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, UsersIcon } from 'lucide-react';
 
 import { List } from '@moaitime/shared-common';
 import {
@@ -102,10 +102,16 @@ export default function ListsSelectedListDropdownMenuContent({
               }
             }}
           >
-            <span className="w-full break-words pr-6">
-              <span>{list.name}</span>
+            <span className="w-full items-center gap-1  pr-6">
+              <span className="break-words">{list.name}</span>
               {typeof tasksCountMap[list.id] !== 'undefined' && (
                 <span className="text-gray-400"> ({tasksCountMap[list.id]})</span>
+              )}
+              {list.teamId && (
+                <span>
+                  {' '}
+                  <UsersIcon className="inline text-gray-400" size={16} />
+                </span>
               )}
             </span>
             {showListActions && <ListActions list={list} />}

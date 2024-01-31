@@ -14,6 +14,7 @@ export * from './auth/TeamSchema';
 export * from './auth/TeamUserSchema';
 export * from './auth/TeamUserInvitationSchema';
 export * from './auth/TeamUserRoleEnum';
+export * from './auth/TeamLimitsAndUsage';
 export * from './auth/JoinedTeam';
 export * from './auth/OrganizationSchema';
 export * from './auth/OrganizationUserRoleEnum';

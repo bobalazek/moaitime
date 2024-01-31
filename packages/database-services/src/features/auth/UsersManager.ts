@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { and, DBQueryConfig, eq, isNull } from 'drizzle-orm';
 
-import { getDatabase, NewUser, User, users } from '@moaitime/database-core';
+import { getDatabase, NewUser, teams, teamUsers, User, users } from '@moaitime/database-core';
 import {
   DEFAULT_USER_SETTINGS,
   UserLimits,
@@ -10,7 +10,6 @@ import {
 } from '@moaitime/shared-common';
 
 import { calendarsManager } from '../calendars/CalendarsManager';
-import { eventsManager } from '../calendars/EventsManager';
 import { focusSessionsManager } from '../focus/FocusSessionsManager';
 import { moodEntriesManager } from '../mood/MoodEntriesManager';
 import { notesManager } from '../notes/NotesManager';
@@ -124,11 +123,19 @@ export class UsersManager {
   }
 
   // Helpers
-  getUserSettings(user: User): UserSettings {
-    return {
-      ...DEFAULT_USER_SETTINGS,
-      ...(user.settings ?? {}),
-    };
+  async getTeamIds(userId: string): Promise<string[]> {
+    // TODO: cache this, we must.
+
+    const rows = await getDatabase()
+      .select()
+      .from(teamUsers)
+      .leftJoin(teams, eq(teams.id, teamUsers.teamId))
+      .where(and(eq(teamUsers.userId, userId), isNull(teams.deletedAt)))
+      .execute();
+
+    return rows.map((row) => {
+      return row.team_users.teamId;
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -162,23 +169,26 @@ export class UsersManager {
     const moodEntriesCount = await moodEntriesManager.countByUserId(user.id);
     const calendarsCount = await calendarsManager.countByUserId(user.id);
     const userCalendarsCount = await calendarsManager.countUserCalendarsByUserId(user.id);
-    const eventsCount = await eventsManager.countByUserId(user.id);
     const tagsCount = await tagsManager.countByUserId(user.id);
     const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
 
-    const usage = {
+    return {
       listsCount,
       tasksCount,
       notesCount,
       moodEntriesCount,
       calendarsCount,
       userCalendarsCount,
-      eventsCount,
       tagsCount,
       focusSessionsCount,
     };
+  }
 
-    return usage;
+  getUserSettings(user: User): UserSettings {
+    return {
+      ...DEFAULT_USER_SETTINGS,
+      ...(user.settings ?? {}),
+    };
   }
 
   // Private

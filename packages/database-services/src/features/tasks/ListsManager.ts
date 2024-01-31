@@ -1,11 +1,12 @@
-import { and, asc, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
 import { CreateList, UpdateList } from '@moaitime/shared-common';
 
+import { teamsManager } from '../auth/TeamsManager';
 import { usersManager } from '../auth/UsersManager';
 
-export type ListsManagerFindManyByUserIdTaskCountOptions = {
+export type ListsManagerTaskCountOptions = {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
 };
@@ -16,8 +17,20 @@ export class ListsManager {
   }
 
   async findManyByUserId(userId: string): Promise<List[]> {
+    let where = isNull(lists.deletedAt);
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(lists.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(lists.userId, userId), inArray(lists.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
     const result = await getDatabase().query.lists.findMany({
-      where: and(eq(lists.userId, userId), isNull(lists.deletedAt)),
+      where,
       orderBy: [desc(lists.order), asc(lists.createdAt)],
     });
 
@@ -32,9 +45,21 @@ export class ListsManager {
     return row ?? null;
   }
 
-  async findOneByIdAndUserId(id: string, userId: string): Promise<List | null> {
+  async findOneByIdAndUserId(listId: string, userId: string): Promise<List | null> {
+    let where = and(eq(lists.id, listId), isNull(lists.deletedAt));
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(lists.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(lists.userId, userId), inArray(lists.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
     const row = await getDatabase().query.lists.findFirst({
-      where: and(eq(lists.id, id), eq(lists.userId, userId)),
+      where,
     });
 
     return row ?? null;
@@ -99,20 +124,31 @@ export class ListsManager {
   }
 
   async create(user: User, data: CreateList) {
-    const listsMaxPerUserCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
+    let listsMaxCount = 0;
+    let listsCount = 0;
 
-    const listsCount = await this.countByUserId(user.id);
-    if (listsCount >= listsMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of lists per user (${listsMaxPerUserCount}).`
-      );
+    if (data.teamId) {
+      const team = await teamsManager.findOneById(data.teamId);
+      if (!team) {
+        throw new Error('Team not found');
+      }
+
+      listsMaxCount = await teamsManager.getTeamLimit(team, 'listsMaxPerTeamCount');
+      listsCount = await this.countByTeamId(team.id);
+    } else {
+      listsMaxCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
+      listsCount = await this.countByUserId(user.id);
+    }
+
+    if (listsCount >= listsMaxCount) {
+      throw new Error(`You have reached the maximum number of lists per user (${listsMaxCount}).`);
     }
 
     return this.insertOne({ ...data, userId: user.id });
   }
 
   async update(userId: string, listId: string, data: UpdateList) {
-    const canUpdate = await this.userCanUpdate(listId, userId);
+    const canUpdate = await this.userCanUpdate(userId, listId);
     if (!canUpdate) {
       throw new Error('You cannot update this list');
     }
@@ -121,7 +157,7 @@ export class ListsManager {
   }
 
   async delete(userId: string, listId: string) {
-    const canDelete = await this.userCanDelete(listId, userId);
+    const canDelete = await this.userCanDelete(userId, listId);
     if (!canDelete) {
       throw new Error('You cannot delete this list');
     }
@@ -155,15 +191,31 @@ export class ListsManager {
         count: count(lists.id).mapWith(Number),
       })
       .from(lists)
-      .where(and(eq(lists.userId, userId), isNull(lists.deletedAt)))
+      .where(and(eq(lists.userId, userId), isNull(lists.teamId), isNull(lists.deletedAt)))
       .execute();
 
     return result[0].count ?? 0;
   }
 
-  async getTasksCountMap(userId: string, options?: ListsManagerFindManyByUserIdTaskCountOptions) {
+  async countByTeamId(teamId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(lists.id).mapWith(Number),
+      })
+      .from(lists)
+      .where(and(eq(lists.teamId, teamId), isNull(lists.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  async getTasksCountMap(userId: string, options?: ListsManagerTaskCountOptions) {
+    const lists = await this.findManyByUserId(userId);
+    const listIds = lists.map((list) => list.id);
+
     const tasksCountMap = new Map<string | null, number>();
-    let where = eq(tasks.userId, userId);
+
+    let where = inArray(tasks.listId, listIds);
 
     if (!options?.includeCompleted) {
       where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
@@ -176,7 +228,6 @@ export class ListsManager {
     const tasksCountData = await getDatabase()
       .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
       .from(tasks)
-      .leftJoin(lists, eq(tasks.listId, lists.id))
       .where(where)
       .groupBy(tasks.listId)
       .execute();

@@ -9,6 +9,8 @@ import {
   UpdateTeam,
 } from '@moaitime/shared-common';
 
+import { useCalendarStore } from '../../calendar/state/calendarStore';
+import { useListsStore } from '../../tasks/state/listsStore';
 import {
   acceptTeamInvitation,
   addTeam,
@@ -95,6 +97,8 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
   joinedTeam: null,
   reloadJoinedTeam: async () => {
     const { reloadJoinedTeamMembers, reloadJoinedTeamUserInvitations } = get();
+    const { reloadLists } = useListsStore.getState();
+    const { reloadCalendars } = useCalendarStore.getState();
 
     const joinedTeam = await getJoinedTeam();
 
@@ -104,6 +108,9 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
 
     await reloadJoinedTeamMembers();
     await reloadJoinedTeamUserInvitations();
+
+    await reloadLists();
+    await reloadCalendars();
   },
   joinedTeamMembers: [],
   reloadJoinedTeamMembers: async () => {

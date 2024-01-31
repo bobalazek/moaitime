@@ -70,6 +70,18 @@ export class CalendarsManager {
     return result[0].count ?? 0;
   }
 
+  async countByTeamId(teamId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(calendars.id).mapWith(Number),
+      })
+      .from(calendars)
+      .where(and(eq(calendars.teamId, teamId), isNull(calendars.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
   async countUserCalendarsByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

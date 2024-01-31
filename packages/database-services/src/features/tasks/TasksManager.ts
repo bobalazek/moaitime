@@ -37,6 +37,7 @@ import {
   UpdateTask,
 } from '@moaitime/shared-common';
 
+import { teamsManager } from '../auth/TeamsManager';
 import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
 
@@ -361,14 +362,7 @@ export class TasksManager {
       }
     }
 
-    const tasksMaxPerListCount = await usersManager.getUserLimit(user, 'tasksMaxPerListCount');
-
-    const tasksCount = await this.countByListId(list?.id ?? null);
-    if (tasksCount >= tasksMaxPerListCount) {
-      throw new Error(
-        `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
-      );
-    }
+    await this._doMaxTasksPerListCheck(user, list);
 
     if (createData.parentId) {
       await this.validateParentId(null, createData.parentId);
@@ -400,13 +394,7 @@ export class TasksManager {
         throw new Error('List not found');
       }
 
-      const tasksMaxPerListCount = await usersManager.getUserLimit(user, 'tasksMaxPerListCount');
-      const tasksCount = await this.countByListId(list.id);
-      if (tasksCount >= tasksMaxPerListCount) {
-        throw new Error(
-          `You have reached the maximum number of tasks for that list (${tasksMaxPerListCount}).`
-        );
-      }
+      await this._doMaxTasksPerListCheck(user, list);
     }
 
     if (body.parentId) {
@@ -752,6 +740,26 @@ export class TasksManager {
         tagIds,
       };
     });
+  }
+
+  private async _doMaxTasksPerListCheck(user: User, list: List | null) {
+    let tasksMaxPerListCount = 0;
+
+    if (list && list.teamId) {
+      const team = await teamsManager.findOneById(list.teamId);
+      tasksMaxPerListCount = team
+        ? await teamsManager.getTeamLimit(team, 'tasksMaxPerListCount')
+        : 0;
+    } else {
+      tasksMaxPerListCount = await usersManager.getUserLimit(user, 'tasksMaxPerListCount');
+    }
+
+    const tasksCount = await this.countByListId(list?.id ?? null);
+    if (tasksCount >= tasksMaxPerListCount) {
+      throw new Error(
+        `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
+      );
+    }
   }
 }
 

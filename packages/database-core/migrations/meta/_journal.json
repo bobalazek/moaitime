@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1706606033889,
-      "tag": "0000_silent_zaladane",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1706710636486,
-      "tag": "0001_wonderful_gamma_corps",
+      "when": 1706716069531,
+      "tag": "0000_woozy_thunderbolt",
       "breakpoints": true
     }
   ]

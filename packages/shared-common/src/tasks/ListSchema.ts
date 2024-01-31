@@ -10,6 +10,7 @@ export const ListSchema = z.object({
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  teamId: z.string().nullable(),
 });
 
 export const CreateListSchema = z.object({
@@ -17,9 +18,12 @@ export const CreateListSchema = z.object({
     message: 'List name must be provided',
   }),
   color: ColorSchema.nullable().optional(),
+  teamId: z.string().nullable().optional(),
 });
 
-export const UpdateListSchema = CreateListSchema.partial();
+export const UpdateListSchema = CreateListSchema.partial().omit({
+  teamId: true,
+});
 
 // Types
 export type List = z.infer<typeof ListSchema>;

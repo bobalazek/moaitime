@@ -103,12 +103,9 @@ export const removeTeamMember = async (teamId: string, userId: string) => {
 
 /********** Joined Team **********/
 export const getJoinedTeam = async () => {
-  const response = await fetchJson<ResponseInterface<JoinedTeam>>(
-    `${API_URL}/api/v1/teams/joined`,
-    {
-      method: 'GET',
-    }
-  );
+  const response = await fetchJson<ResponseInterface<JoinedTeam>>(`${API_URL}/api/v1/joined-team`, {
+    method: 'GET',
+  });
 
   return response.data as JoinedTeam;
 };
@@ -150,7 +147,7 @@ export const deleteTeamInvitation = async (teamUserInvitationId: string) => {
 /********** My Team Invitations **********/
 export const getMyTeamInvitations = async () => {
   const response = await fetchJson<ResponseInterface<TeamUserInvitation[]>>(
-    `${API_URL}/api/v1/team-user-invitations/my-invitations`,
+    `${API_URL}/api/v1/my-team-user-invitations`,
     {
       method: 'GET',
     }

@@ -3,7 +3,6 @@ import { Request } from 'express';
 
 import { Team, TeamUser, TeamUserInvitation } from '@moaitime/database-core';
 import { teamsManager } from '@moaitime/database-services';
-import { JoinedTeam } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { EmailDto } from '../../../dtos/email.dto';
@@ -151,18 +150,6 @@ export class TeamsController {
     return {
       success: true,
       data,
-    };
-  }
-
-  // Joined
-  @UseGuards(AuthenticatedGuard)
-  @Get('joined')
-  async joined(@Req() req: Request): Promise<AbstractResponseDto<JoinedTeam | null>> {
-    const data = await teamsManager.getJoinedTeamByUserId(req.user.id);
-
-    return {
-      success: true,
-      data: data as unknown as JoinedTeam,
     };
   }
 }

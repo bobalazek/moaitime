@@ -1,16 +1,6 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Delete, NotFoundException, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
-import { TeamUser } from '@moaitime/database-core';
 import { teamsManager } from '@moaitime/database-services';
 import { TeamUserInvitation } from '@moaitime/shared-common';
 
@@ -76,18 +66,6 @@ export class TeamUserInvitationsController {
     return {
       success: true,
       data: data as unknown as TeamUserInvitation,
-    };
-  }
-
-  // My Invitations
-  @UseGuards(AuthenticatedGuard)
-  @Get('my-invitations')
-  async myInvitations(@Req() req: Request): Promise<AbstractResponseDto<TeamUser[]>> {
-    const data = await teamsManager.getInvitationsByUser(req.user.id, req.user.email);
-
-    return {
-      success: true,
-      data,
     };
   }
 }

@@ -2,6 +2,7 @@ import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
 
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
 import {
+  CreateFocusSession,
   FocusSessionEventTypeEnum,
   FocusSessionStageEnum,
   FocusSessionStatusEnum,
@@ -9,6 +10,8 @@ import {
   getFocusSessionDurationForCurrentStage,
   getTimeDifferenceInSeconds,
 } from '@moaitime/shared-common';
+
+import { tasksManager } from '../tasks/TasksManager';
 
 export class FocusSessionsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<FocusSession[]> {
@@ -106,7 +109,76 @@ export class FocusSessionsManager {
   }
 
   // Helpers
-  async update(
+  async create(userId: string, data: CreateFocusSession) {
+    const currentFocusSession = await this.findOneCurrentAndByUserId(userId);
+    if (currentFocusSession) {
+      throw new Error('You already have an open focus session');
+    }
+
+    if (data.taskId) {
+      const canView = await tasksManager.userCanView(userId, data.taskId);
+      if (!canView) {
+        throw new Error('Task not found');
+      }
+    }
+
+    return this.insertOne({
+      ...data,
+      userId,
+    });
+  }
+
+  async view(userId: string, focusSessionId: string, updatePing?: boolean) {
+    let data =
+      focusSessionId === 'current'
+        ? await this.findOneCurrentAndByUserId(userId)
+        : await this.findOneByIdAndUserId(focusSessionId, userId);
+
+    if (updatePing && data) {
+      data = await this.updateFocusSession(data, FocusSessionUpdateActionEnum.PING);
+    }
+
+    return data;
+  }
+
+  async doAction(userId: string, focusSessionId: string, action: FocusSessionUpdateActionEnum) {
+    const focusSession =
+      focusSessionId === 'current'
+        ? await this.findOneCurrentAndByUserId(userId)
+        : await this.findOneByIdAndUserId(focusSessionId, userId);
+
+    if (!focusSession) {
+      throw new Error('Focus session not found');
+    }
+
+    return this.updateFocusSession(focusSession, action);
+  }
+
+  async delete(userId: string, focusSessionId: string, isHardDelete?: boolean) {
+    const hasAccess = await this.userCanDelete(userId, focusSessionId);
+    if (!hasAccess) {
+      throw new Error('Focus session not found');
+    }
+
+    return isHardDelete
+      ? await this.deleteOneById(focusSessionId)
+      : await this.updateOneById(focusSessionId, {
+          deletedAt: new Date(),
+        });
+  }
+
+  async undelete(userId: string, focusSessionId: string) {
+    const canDelete = await this.userCanUpdate(userId, focusSessionId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this focus session');
+    }
+
+    return this.updateOneById(focusSessionId, {
+      deletedAt: null,
+    });
+  }
+
+  async updateFocusSession(
     focusSession: FocusSession,
     action: FocusSessionUpdateActionEnum
   ): Promise<FocusSession> {

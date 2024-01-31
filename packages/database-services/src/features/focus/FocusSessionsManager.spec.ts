@@ -58,14 +58,20 @@ describe('FocusSessionManager.ts', () => {
       });
 
       const result = () =>
-        focusSessionsManager.update(initialFocusSession, FocusSessionUpdateActionEnum.PAUSE);
+        focusSessionsManager.updateFocusSession(
+          initialFocusSession,
+          FocusSessionUpdateActionEnum.PAUSE
+        );
 
       await expect(result).rejects.toThrow('Focus session is not active, so it can not be paused');
     });
 
     it('should not continue if it is already active', async () => {
       const result = () =>
-        focusSessionsManager.update(initialFocusSession, FocusSessionUpdateActionEnum.CONTINUE);
+        focusSessionsManager.updateFocusSession(
+          initialFocusSession,
+          FocusSessionUpdateActionEnum.CONTINUE
+        );
 
       await expect(result).rejects.toThrow(
         'Focus session is not paused, so it can not be continued'
@@ -78,7 +84,10 @@ describe('FocusSessionManager.ts', () => {
       });
 
       const result = () =>
-        focusSessionsManager.update(initialFocusSession, FocusSessionUpdateActionEnum.PING);
+        focusSessionsManager.updateFocusSession(
+          initialFocusSession,
+          FocusSessionUpdateActionEnum.PING
+        );
 
       await expect(result).rejects.toThrow('Focus session is already completed');
     });
@@ -86,7 +95,7 @@ describe('FocusSessionManager.ts', () => {
     it('should pause and save the active seconds correctly', async () => {
       vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
 
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSession,
         FocusSessionUpdateActionEnum.PAUSE
       );
@@ -107,14 +116,14 @@ describe('FocusSessionManager.ts', () => {
     it('should not add additional seconds if it is paused', async () => {
       // First we set those 30 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSession,
         FocusSessionUpdateActionEnum.PAUSE
       );
 
       // We pause for 10 seconds and then continue
       vitest.setSystemTime(new Date('2020-01-01T00:00:40.000Z'));
-      const newFocusSession2 = await focusSessionsManager.update(
+      const newFocusSession2 = await focusSessionsManager.updateFocusSession(
         newFocusSession,
         FocusSessionUpdateActionEnum.CONTINUE
       );
@@ -130,7 +139,7 @@ describe('FocusSessionManager.ts', () => {
     it('should not overflow the total time for the stage', async () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSession,
         FocusSessionUpdateActionEnum.PING
       );
@@ -145,7 +154,7 @@ describe('FocusSessionManager.ts', () => {
     it('should not overflow the total time for the stage', async () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSession,
         FocusSessionUpdateActionEnum.PING
       );
@@ -160,7 +169,7 @@ describe('FocusSessionManager.ts', () => {
     it('should pause and go to short break stage after it overflows', async () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSession,
         FocusSessionUpdateActionEnum.PING
       );
@@ -175,7 +184,7 @@ describe('FocusSessionManager.ts', () => {
     it('should pause and go to long break stage after it overflows if we only have one repetition', async () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSessionOneIteration,
         FocusSessionUpdateActionEnum.PING
       );
@@ -191,7 +200,7 @@ describe('FocusSessionManager.ts', () => {
       vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
 
       // First skip
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -202,7 +211,7 @@ describe('FocusSessionManager.ts', () => {
       expect(newFocusSession.stageIteration).to.be.equal(1);
 
       // Second skip
-      const new2FocusSession = await focusSessionsManager.update(
+      const new2FocusSession = await focusSessionsManager.updateFocusSession(
         newFocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -213,7 +222,7 @@ describe('FocusSessionManager.ts', () => {
       expect(new2FocusSession.stageIteration).to.be.equal(2);
 
       // Third skip
-      const new3FocusSession = await focusSessionsManager.update(
+      const new3FocusSession = await focusSessionsManager.updateFocusSession(
         new2FocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -224,7 +233,7 @@ describe('FocusSessionManager.ts', () => {
       expect(new3FocusSession.stageIteration).to.be.equal(2);
 
       // Fourth skip
-      const new4FocusSession = await focusSessionsManager.update(
+      const new4FocusSession = await focusSessionsManager.updateFocusSession(
         new3FocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -240,7 +249,7 @@ describe('FocusSessionManager.ts', () => {
       vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
 
       // First skip
-      const newFocusSession = await focusSessionsManager.update(
+      const newFocusSession = await focusSessionsManager.updateFocusSession(
         initialFocusSessionOneIteration,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -251,7 +260,7 @@ describe('FocusSessionManager.ts', () => {
       expect(newFocusSession.stageIteration).to.be.equal(1);
 
       // Second skip
-      const new2FocusSession = await focusSessionsManager.update(
+      const new2FocusSession = await focusSessionsManager.updateFocusSession(
         newFocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );

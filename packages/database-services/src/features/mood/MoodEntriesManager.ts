@@ -226,12 +226,12 @@ export class MoodEntriesManager {
 
   // Helpers
   async view(userId: string, moodEntryId: string) {
-    const canView = await moodEntriesManager.userCanView(moodEntryId, userId);
+    const canView = await this.userCanView(moodEntryId, userId);
     if (!canView) {
       throw new Error('You cannot view this mood entry');
     }
 
-    const data = await moodEntriesManager.findOneByIdAndUserId(moodEntryId, userId);
+    const data = await this.findOneByIdAndUserId(moodEntryId, userId);
     if (!data) {
       throw new Error('Mood entry not found');
     }
@@ -240,7 +240,7 @@ export class MoodEntriesManager {
   }
 
   async create(userId: string, data: CreateMoodEntry) {
-    return moodEntriesManager.insertOne({
+    return this.insertOne({
       ...data,
       loggedAt: data.loggedAt ?? new Date().toISOString(),
       userId,
@@ -248,37 +248,37 @@ export class MoodEntriesManager {
   }
 
   async update(userId: string, moodEntryId: string, data: UpdateMoodEntry) {
-    const canUpdate = await moodEntriesManager.userCanUpdate(moodEntryId, userId);
+    const canUpdate = await this.userCanUpdate(moodEntryId, userId);
     if (!canUpdate) {
       throw new Error('You cannot update this mood entry');
     }
 
-    return moodEntriesManager.updateOneById(moodEntryId, {
+    return this.updateOneById(moodEntryId, {
       ...data,
       loggedAt: data.loggedAt ? new Date(data.loggedAt).toISOString() : undefined,
     });
   }
 
   async delete(userId: string, moodEntryId: string, isHardDelete?: boolean) {
-    const canDelete = await moodEntriesManager.userCanDelete(moodEntryId, userId);
+    const canDelete = await this.userCanDelete(moodEntryId, userId);
     if (!canDelete) {
       throw new Error('You cannot delete this mood entry');
     }
 
     return isHardDelete
-      ? await moodEntriesManager.deleteOneById(moodEntryId)
-      : await moodEntriesManager.updateOneById(moodEntryId, {
+      ? await this.deleteOneById(moodEntryId)
+      : await this.updateOneById(moodEntryId, {
           deletedAt: new Date(),
         });
   }
 
   async undelete(userId: string, moodEntryId: string) {
-    const canDelete = await moodEntriesManager.userCanUpdate(moodEntryId, userId);
+    const canDelete = await this.userCanUpdate(moodEntryId, userId);
     if (!canDelete) {
       throw new Error('You cannot undelete this mood entry');
     }
 
-    return await moodEntriesManager.updateOneById(moodEntryId, {
+    return await this.updateOneById(moodEntryId, {
       deletedAt: null,
     });
   }

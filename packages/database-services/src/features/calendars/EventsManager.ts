@@ -24,10 +24,18 @@ import {
   events,
   getDatabase,
   NewEvent,
+  User,
   userCalendars,
 } from '@moaitime/database-core';
-import { Permissions } from '@moaitime/shared-common';
+import {
+  CreateEvent,
+  getTimezonedEndOfDay,
+  getTimezonedStartOfDay,
+  Permissions,
+  UpdateEvent,
+} from '@moaitime/shared-common';
 
+import { usersManager } from '../auth/UsersManager';
 import { calendarsManager, CalendarsManagerVisibleCalendarsMap } from './CalendarsManager';
 
 export type EventsManagerEvent = Event & {
@@ -251,6 +259,103 @@ export class EventsManager {
   }
 
   // Helpers
+  async list(user: User, from: string, to: string) {
+    const timezone = user.settings?.generalTimezone ?? 'UTC';
+    const timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
+    const timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
+
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
+    return this.findManyByCalendarIdsAndRange(calendarIdsMap, user.id, timezonedFrom, timezonedTo);
+  }
+
+  async create(user: User, data: CreateEvent) {
+    const calendarsMaxEventsPerCalendarCount = await usersManager.getUserLimit(
+      user,
+      'calendarsMaxEventsPerCalendarCount'
+    );
+
+    const eventsCount = await eventsManager.countByCalendarId(data.calendarId);
+    if (eventsCount >= calendarsMaxEventsPerCalendarCount) {
+      throw new Error(
+        `You have reached the maximum number of events per calendar (${calendarsMaxEventsPerCalendarCount}).`
+      );
+    }
+
+    const canView = await calendarsManager.userCanView(user.id, data.calendarId);
+    if (!canView) {
+      throw new Error('Calendar not found');
+    }
+
+    const timezone = data.timezone ?? user?.settings?.generalTimezone ?? 'UTC';
+
+    return this.insertOne({
+      ...data,
+      timezone,
+      userId: user.id,
+      startsAt: new Date(data.startsAt),
+      endsAt: new Date(data.endsAt),
+      repeatEndsAt: data.repeatEndsAt ? new Date(data.repeatEndsAt) : undefined,
+    });
+  }
+
+  async update(userId: string, eventId: string, updateData: UpdateEvent) {
+    const canView = await this.userCanUpdate(userId, eventId);
+    if (!canView) {
+      throw new Error('You cannot update this event');
+    }
+
+    const data = await this.findOneById(eventId);
+    if (!data) {
+      throw new Error('Event not found');
+    }
+
+    const now = new Date();
+    const startsAt = updateData.startsAt ? new Date(updateData.startsAt) : undefined;
+    const endsAt = updateData.endsAt ? new Date(updateData.endsAt) : undefined;
+    const finalStartsAt = startsAt ?? data.startsAt ?? now;
+    const finalEndsAt = endsAt ?? data.endsAt ?? now;
+    if (finalStartsAt > finalEndsAt) {
+      throw new Error('Start date must be before end date');
+    }
+
+    // We need to account for the null value, which means to unset the value,
+    // where as undefined means to not update the value.
+    const repeatEndsAt = updateData.repeatEndsAt
+      ? new Date(updateData.repeatEndsAt)
+      : updateData.repeatEndsAt === null
+        ? null
+        : undefined;
+
+    return this.updateOneById(eventId, {
+      ...updateData,
+      startsAt,
+      endsAt,
+      repeatEndsAt,
+    });
+  }
+
+  async delete(userId: string, eventId: string) {
+    const canDelete = await this.userCanDelete(userId, eventId);
+    if (!canDelete) {
+      throw new Error('Event not found');
+    }
+
+    return this.updateOneById(eventId, {
+      deletedAt: new Date(),
+    });
+  }
+
+  async undelete(userId: string, eventId: string) {
+    const canDelete = await this.userCanUpdate(userId, eventId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this event');
+    }
+
+    return this.updateOneById(eventId, {
+      deletedAt: null,
+    });
+  }
+
   async getCountsByCalendarIdsAndYear(calendarIds: string[], year: number) {
     const startOfYear = new Date(year, 0, 1);
     const endOfYear = new Date(year + 1, 0, 1);

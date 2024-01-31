@@ -31,10 +31,10 @@ export class CalendarEntriesManager {
     }
 
     const timezone = user?.settings?.generalTimezone ?? 'UTC';
-    const fromFinal = getTimezonedStartOfDay(timezone, from) ?? undefined;
-    const toFinal = getTimezonedEndOfDay(timezone, to) ?? undefined;
+    const timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
+    const timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
 
-    return calendarEntriesManager.findAllForRange(user, fromFinal, toFinal);
+    return calendarEntriesManager.findAllForRange(user, timezonedFrom, timezonedTo);
   }
 
   async yearly(userId: string, year: number) {

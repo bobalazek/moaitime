@@ -9,7 +9,7 @@ export default function TeamSettingsSection() {
   }
 
   return (
-    <div>
+    <div className="mb-4">
       <h4 className="flex items-center gap-3 text-lg font-bold">
         <TeamSettingsSectionHeaderText />
       </h4>

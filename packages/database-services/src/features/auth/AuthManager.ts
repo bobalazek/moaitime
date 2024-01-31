@@ -11,6 +11,7 @@ import {
   compareHash,
   generateHash,
   LISTS_DEFAULT_NAMES,
+  TASKS_DEFAULT_ENTRIES,
 } from '@moaitime/shared-backend';
 import {
   MAIN_COLORS,
@@ -23,6 +24,7 @@ import {
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
+import { TasksManager, tasksManager } from '../tasks/TasksManager';
 import { UserAccessTokensManager, userAccessTokensManager } from './UserAccessTokensManager';
 import { UserDataExportsManager, userDataExportsManager } from './UserDataExportsManager';
 import { UsersManager, usersManager } from './UsersManager';
@@ -38,6 +40,7 @@ export class AuthManager {
     private _userAccessTokensManager: UserAccessTokensManager,
     private _userExportsManager: UserDataExportsManager,
     private _listsManager: ListsManager,
+    private _tasksManager: TasksManager,
     private _calendarsManager: CalendarsManager
   ) {}
 
@@ -93,14 +96,23 @@ export class AuthManager {
     } as NewUser);
 
     for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
-      const name = LISTS_DEFAULT_NAMES[i];
+      const name = LISTS_DEFAULT_NAMES[i] as keyof typeof TASKS_DEFAULT_ENTRIES;
       const color = MAIN_COLORS[i % MAIN_COLORS.length].value;
 
-      await this._listsManager.insertOne({
+      const newList = await this._listsManager.insertOne({
         name,
         color,
         userId: newUser.id,
       });
+
+      const defaultTasks = TASKS_DEFAULT_ENTRIES[name] ?? [];
+      for (let j = 0; j < defaultTasks.length; j++) {
+        await this._tasksManager.insertOne({
+          name: defaultTasks[j],
+          listId: newList.id,
+          userId: newUser.id,
+        });
+      }
     }
 
     const userSetings = this._usersManager.getUserSettings(newUser);
@@ -613,5 +625,6 @@ export const authManager = new AuthManager(
   userAccessTokensManager,
   userDataExportsManager,
   listsManager,
+  tasksManager,
   calendarsManager
 );

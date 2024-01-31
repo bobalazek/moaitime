@@ -9,11 +9,12 @@ import {
   interests,
   lists,
   quotes,
+  tasks,
   users,
 } from '@moaitime/database-core';
 import { logger } from '@moaitime/logging';
 
-import { getEventSeeds } from '.';
+import { getEventSeeds, getTaskSeeds } from '.';
 import { getBackgroundsSeeds } from './data/Backgrounds';
 import { getCalendarSeeds } from './data/Calendars';
 import { getGreetingSeeds } from './data/Greetings';
@@ -55,6 +56,10 @@ export const insertDatabaseSeedData = async () => {
     logger.debug('Inserting list seeds ...');
     const listSeeds = await getListSeeds();
     await database.insert(lists).values(listSeeds).execute();
+
+    logger.debug('Inserting task seeds ...');
+    const taskSeeds = await getTaskSeeds();
+    await database.insert(tasks).values(taskSeeds).execute();
 
     logger.debug('Inserting interest seeds ...');
     const interestSeeds = await getInterestsSeeds();

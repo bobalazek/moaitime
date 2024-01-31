@@ -5,6 +5,7 @@ export * from './schema/focusSessions';
 export * from './schema/greetings';
 export * from './schema/interests';
 export * from './schema/lists';
+export * from './schema/listTeams';
 export * from './schema/moodEntries';
 export * from './schema/notes';
 export * from './schema/organizations';

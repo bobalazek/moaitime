@@ -23,13 +23,19 @@ export const AUTH_DELETION_HARD_DELETE_SECONDS = 60 * 60 * 24 * 30;
 export const MAILER_FROM = 'MoaiTime Mailer <mailer@bobalazek.com>';
 
 // Tasks, Lists & Tags
-export const LISTS_DEFAULT_NAMES = [
-  'Inbox',
-  'Errands',
-  'Work',
-  'Personal',
-  'World Domination Checklist',
-];
+export const LISTS_DEFAULT_NAMES = ['Inbox', 'Errands', 'Work', 'Personal', 'World Domination'];
+export const TASKS_DEFAULT_ENTRIES = {
+  Inbox: ['Welcome to MoaiTime!'],
+  Errands: ['Buy groceries', 'Pick up laundry'],
+  Work: ['Have a coffee', 'Do something', 'Prepare to leave early'],
+  Personal: ['Go for a walk', 'Go to the gym', 'Go to sleep'],
+  'World Domination': [
+    'Practice your evil laugh',
+    'Hack into the mainframe',
+    'Beat your arch-enemy',
+    'Take over the world',
+  ],
+};
 
 // Queue
 export const QUEUE_WORKERS_SHARED_QUEUE_NAME = 'shared-queue';

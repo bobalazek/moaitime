@@ -43,6 +43,11 @@ export class GreetingsManager {
 
     return rows[0];
   }
+
+  // Helpers
+  async list() {
+    return this.findManyRandom();
+  }
 }
 
 export const greetingsManager = new GreetingsManager();

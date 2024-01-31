@@ -36,6 +36,11 @@ export class QuotesManager {
 
     return rows[0];
   }
+
+  // Helpers
+  async list() {
+    return this.findMany();
+  }
 }
 
 export const quotesManager = new QuotesManager();

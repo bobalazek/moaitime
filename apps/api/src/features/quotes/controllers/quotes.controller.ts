@@ -11,7 +11,7 @@ export class QuotesController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(): Promise<AbstractResponseDto<Quote[]>> {
-    const data = await quotesManager.findMany();
+    const data = await quotesManager.list();
 
     return {
       success: true,

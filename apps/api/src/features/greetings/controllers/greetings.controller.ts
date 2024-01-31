@@ -11,7 +11,7 @@ export class GreetingsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(): Promise<AbstractResponseDto<Greeting[]>> {
-    const data = await greetingsManager.findManyRandom();
+    const data = await greetingsManager.list();
 
     return {
       success: true,

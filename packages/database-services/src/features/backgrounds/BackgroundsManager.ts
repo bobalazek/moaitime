@@ -36,6 +36,11 @@ export class BackgroundsManager {
 
     return rows[0];
   }
+
+  // Helpers
+  async list() {
+    return this.findMany();
+  }
 }
 
 export const backgroundsManager = new BackgroundsManager();

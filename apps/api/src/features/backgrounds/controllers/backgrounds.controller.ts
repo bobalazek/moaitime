@@ -11,7 +11,7 @@ export class BackgroundsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(): Promise<AbstractResponseDto<Background[]>> {
-    const data = await backgroundsManager.findMany();
+    const data = await backgroundsManager.list();
 
     return {
       success: true,

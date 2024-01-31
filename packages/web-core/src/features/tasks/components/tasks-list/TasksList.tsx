@@ -95,7 +95,10 @@ export default function TasksList() {
     selectedListTasks.length === 0 || selectedListTasksSortField !== TasksListSortFieldEnum.ORDER;
 
   return (
-    <div className="relative h-[320px] max-w-[320px] overflow-auto" data-test="tasks--tasks-list">
+    <div
+      className="relative h-[320px] max-w-[320px] overflow-auto md:max-w-[380px]"
+      data-test="tasks--tasks-list"
+    >
       {showConfetti && (
         <ConfettiExplosion
           zIndex={9999}

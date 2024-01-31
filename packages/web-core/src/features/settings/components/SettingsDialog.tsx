@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 
 import { Dialog, DialogContent } from '@moaitime/web-ui';
@@ -93,7 +94,7 @@ export default function SettingsDialog() {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent
-        className="max-h-[90%] max-w-screen-lg overflow-auto p-0 shadow-lg md:flex"
+        className="max-h-full max-w-screen-lg overflow-auto p-0 shadow-lg md:flex"
         data-test="settings--dialog"
       >
         <div className="w-full p-4 md:w-1/4" data-test="settings--dialog--sidebar">
@@ -112,7 +113,9 @@ export default function SettingsDialog() {
           ))}
         </div>
         <div className="w-full p-4 md:w-3/4" data-test="settings--dialog--content">
-          {renderContent()}
+          <AnimatePresence>
+            <motion.div layout>{renderContent()}</motion.div>
+          </AnimatePresence>
         </div>
       </DialogContent>
     </Dialog>

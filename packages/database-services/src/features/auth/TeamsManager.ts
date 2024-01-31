@@ -14,7 +14,7 @@ import {
   users,
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
-import { TeamUserRoleEnum, WEB_URL } from '@moaitime/shared-common';
+import { TeamUserRoleEnum, UpdateTeam, WEB_URL } from '@moaitime/shared-common';
 
 import { usersManager } from './UsersManager';
 
@@ -104,7 +104,7 @@ export class TeamsManager {
   }
 
   // Helpers
-  async update(userId: string, teamId: string, body: Partial<NewTeam>) {
+  async update(userId: string, teamId: string, updateData: UpdateTeam) {
     const canView = await this.userCanUpdate(userId, teamId);
     if (!canView) {
       throw new Error('You cannot update this team');
@@ -115,7 +115,7 @@ export class TeamsManager {
       throw new Error('Team not found');
     }
 
-    return this.updateOneById(teamId, body);
+    return this.updateOneById(teamId, updateData);
   }
 
   async delete(userId: string, teamId: string, isHardDelete?: boolean) {

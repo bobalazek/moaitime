@@ -1,7 +1,21 @@
 import { and, asc, count, DBQueryConfig, desc, eq, ilike, isNull, SQL } from 'drizzle-orm';
 
-import { getDatabase, NewNote, Note, notes, NoteWithoutContent } from '@moaitime/database-core';
-import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
+import {
+  getDatabase,
+  NewNote,
+  Note,
+  notes,
+  NoteWithoutContent,
+  User,
+} from '@moaitime/database-core';
+import {
+  CreateNote,
+  NotesListSortFieldEnum,
+  SortDirectionEnum,
+  UpdateNote,
+} from '@moaitime/shared-common';
+
+import { usersManager } from '../auth/UsersManager';
 
 export type NotesManagerFindManyByUserIdWithOptions = {
   search?: string;
@@ -109,6 +123,76 @@ export class NotesManager {
   }
 
   // Helpers
+  async view(userId: string, noteId: string) {
+    const canView = await this.userCanView(noteId, userId);
+    if (!canView) {
+      throw new Error('You cannot view this note');
+    }
+
+    const data = await this.findOneByIdAndUserId(noteId, userId);
+    if (!data) {
+      throw new Error('Note not found');
+    }
+
+    return data;
+  }
+
+  async create(user: User, body: CreateNote) {
+    const notesMaxPerUserCount = await usersManager.getUserLimit(user, 'notesMaxPerUserCount');
+
+    const notesCount = await this.countByUserId(user.id);
+    if (notesCount >= notesMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of notes per user (${notesMaxPerUserCount}).`
+      );
+    }
+
+    const insertData = {
+      ...body,
+      userId: user.id,
+    };
+
+    return this.insertOne(insertData);
+  }
+
+  async update(userId: string, noteId: string, updateData: UpdateNote) {
+    const canView = await this.userCanUpdate(userId, noteId);
+    if (!canView) {
+      throw new Error('You cannot update this note');
+    }
+
+    const data = await this.findOneById(noteId);
+    if (!data) {
+      throw new Error('Note not found');
+    }
+
+    return this.updateOneById(noteId, updateData);
+  }
+
+  async delete(userId: string, noteId: string, isHardDelete?: boolean) {
+    const hasAccess = await this.userCanDelete(userId, noteId);
+    if (!hasAccess) {
+      throw new Error('Note not found');
+    }
+
+    return isHardDelete
+      ? await this.deleteOneById(noteId)
+      : await this.updateOneById(noteId, {
+          deletedAt: new Date(),
+        });
+  }
+
+  async undelete(userId: string, noteId: string) {
+    const canDelete = await notesManager.userCanUpdate(userId, noteId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this note');
+    }
+
+    return notesManager.updateOneById(noteId, {
+      deletedAt: null,
+    });
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

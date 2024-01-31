@@ -1,20 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  NotFoundException,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { Note, NoteWithoutContent } from '@moaitime/database-core';
-import { notesManager, usersManager } from '@moaitime/database-services';
+import { notesManager } from '@moaitime/database-services';
 import { NotesListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
@@ -52,15 +40,7 @@ export class NotesController {
     @Req() req: Request,
     @Param('noteId') noteId: string
   ): Promise<AbstractResponseDto<Note>> {
-    const canView = await notesManager.userCanView(noteId, req.user.id);
-    if (!canView) {
-      throw new NotFoundException('You cannot view this note');
-    }
-
-    const data = await notesManager.findOneByIdAndUserId(noteId, req.user.id);
-    if (!data) {
-      throw new NotFoundException('Note not found');
-    }
+    const data = await notesManager.view(req.user.id, noteId);
 
     return {
       success: true,
@@ -74,21 +54,7 @@ export class NotesController {
     @Body() body: CreateNoteDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Note>> {
-    const notesMaxPerUserCount = await usersManager.getUserLimit(req.user, 'notesMaxPerUserCount');
-
-    const notesCount = await notesManager.countByUserId(req.user.id);
-    if (notesCount >= notesMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of notes per user (${notesMaxPerUserCount}).`
-      );
-    }
-
-    const insertData = {
-      ...body,
-      userId: req.user.id,
-    };
-
-    const data = await notesManager.insertOne(insertData);
+    const data = await notesManager.create(req.user, body);
 
     return {
       success: true,
@@ -103,21 +69,11 @@ export class NotesController {
     @Param('noteId') noteId: string,
     @Body() body: UpdateNoteDto
   ): Promise<AbstractResponseDto<Note>> {
-    const canView = await notesManager.userCanUpdate(req.user.id, noteId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot update this note');
-    }
-
-    const data = await notesManager.findOneById(noteId);
-    if (!data) {
-      throw new NotFoundException('Note not found');
-    }
-
-    const updatedData = await notesManager.updateOneById(noteId, body);
+    const data = await notesManager.update(req.user.id, noteId, body);
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -128,20 +84,11 @@ export class NotesController {
     @Param('noteId') noteId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Note>> {
-    const hasAccess = await notesManager.userCanDelete(req.user.id, noteId);
-    if (!hasAccess) {
-      throw new NotFoundException('Note not found');
-    }
-
-    const updatedData = body.isHardDelete
-      ? await notesManager.deleteOneById(noteId)
-      : await notesManager.updateOneById(noteId, {
-          deletedAt: new Date(),
-        });
+    const data = await notesManager.delete(req.user.id, noteId, body.isHardDelete);
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -151,14 +98,7 @@ export class NotesController {
     @Req() req: Request,
     @Param('noteId') noteId: string
   ): Promise<AbstractResponseDto<Note>> {
-    const canDelete = await notesManager.userCanUpdate(req.user.id, noteId);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot undelete this note');
-    }
-
-    const data = await notesManager.updateOneById(noteId, {
-      deletedAt: null,
-    });
+    const data = await notesManager.undelete(req.user.id, noteId);
 
     return {
       success: true,

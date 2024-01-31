@@ -17,7 +17,7 @@ export class TeamsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Team[]>> {
-    const data = await teamsManager.findManyByUserId(req.user.id);
+    const data = await teamsManager.list(req.user.id);
 
     return {
       success: true,

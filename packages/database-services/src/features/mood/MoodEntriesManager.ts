@@ -225,6 +225,10 @@ export class MoodEntriesManager {
   }
 
   // Helpers
+  async list(userId: string, options?: MoodEntriesManagerFindOptions) {
+    return this.findManyByUserIdWithDataAndMeta(userId, options);
+  }
+
   async view(userId: string, moodEntryId: string) {
     const canView = await this.userCanView(moodEntryId, userId);
     if (!canView) {

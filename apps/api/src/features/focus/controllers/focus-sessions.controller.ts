@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { FocusSession } from '@moaitime/database-core';
@@ -58,7 +49,7 @@ export class FocusSessionsController {
     @Param('focusSessionId') focusSessionId: string,
     @Param('action') action: FocusSessionUpdateActionEnum
   ): Promise<AbstractResponseDto<FocusSession>> {
-    const data = await focusSessionsManager.doAction(req.user.id, focusSessionId, action);
+    const data = await focusSessionsManager.action(req.user.id, focusSessionId, action);
 
     return {
       success: true,

@@ -104,6 +104,10 @@ export class TeamsManager {
   }
 
   // Helpers
+  async list(userId: string) {
+    return this.findManyByUserId(userId);
+  }
+
   async update(userId: string, teamId: string, updateData: UpdateTeam) {
     const canView = await this.userCanUpdate(userId, teamId);
     if (!canView) {

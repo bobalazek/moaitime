@@ -123,6 +123,10 @@ export class NotesManager {
   }
 
   // Helpers
+  async list(userId: string, options?: NotesManagerFindManyByUserIdWithOptions) {
+    return this.findManyByUserIdWithOptions(userId, options);
+  }
+
   async view(userId: string, noteId: string) {
     const canView = await this.userCanView(noteId, userId);
     if (!canView) {

@@ -141,7 +141,7 @@ export class FocusSessionsManager {
     return data;
   }
 
-  async doAction(userId: string, focusSessionId: string, action: FocusSessionUpdateActionEnum) {
+  async action(userId: string, focusSessionId: string, action: FocusSessionUpdateActionEnum) {
     const focusSession =
       focusSessionId === 'current'
         ? await this.findOneCurrentAndByUserId(userId)

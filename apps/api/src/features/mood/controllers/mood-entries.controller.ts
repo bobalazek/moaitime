@@ -19,7 +19,7 @@ export class MoodEntriesController {
     const previousCursorParameter = req.query.previousCursor as string | undefined;
     const nextCursorParameter = req.query.nextCursor as string | undefined;
 
-    const { data, meta } = await moodEntriesManager.findManyByUserIdWithDataAndMeta(req.user.id, {
+    const { data, meta } = await moodEntriesManager.list(req.user.id, {
       limit,
       previousCursor: previousCursorParameter,
       nextCursor: nextCursorParameter,

@@ -21,7 +21,7 @@ export class NotesController {
     const sortDirection = req.query.sortDirection as SortDirectionEnum;
     const includeDeleted = req.query.includeDeleted === 'true';
 
-    const data = await notesManager.findManyByUserIdWithOptions(req.user.id, {
+    const data = await notesManager.list(req.user.id, {
       search,
       sortField,
       sortDirection,

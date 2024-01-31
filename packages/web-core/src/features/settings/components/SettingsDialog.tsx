@@ -10,29 +10,19 @@ import TeamSettingsSectionHeaderText from '../../auth/components/team-settings/T
 import { useAuthStore } from '../../auth/state/authStore';
 import CalendarSettingsSection from '../../calendar/components/calendar-settings/CalendarSettingsSection';
 import CalendarSettingsSectionHeaderText from '../../calendar/components/calendar-settings/CalendarSettingsSectionHeaderText';
-import ClockSettingsSection from '../../clock/components/clock-settings/ClockSettingsSection';
-import ClockSettingsSectionHeaderText from '../../clock/components/clock-settings/ClockSettingsSectionHeaderText';
-import CommandsSettingsSection from '../../commands/components/commands-settings/CommandsSettingsSection';
-import CommandsSettingsSectionHeaderText from '../../commands/components/commands-settings/CommandsSettingsSectionHeaderText';
 import FocusSettingsSection from '../../focus/components/focus-settings/FocusSettingsSection';
 import FocusSettingsSectionHeaderText from '../../focus/components/focus-settings/FocusSettingsSectionHeaderText';
-import GreetingSettingsSection from '../../greeting/components/greeting-settings/GreetingSettingsSection';
-import GreetingSettingsSectionHeaderText from '../../greeting/components/greeting-settings/GreetingSettingsSectionHeaderText';
 import MoodSettingsSection from '../../mood/components/mood-settings/MoodSettingsSection';
 import MoodSettingsSectionHeaderText from '../../mood/components/mood-settings/MoodSettingsSectionHeaderText';
 import NotesSettingsSection from '../../notes/components/notes-settings/NotesSettingsSection';
 import NotesSettingsSectionHeaderText from '../../notes/components/notes-settings/NotesSettingsSectionHeaderText';
-import QuoteSettingsSection from '../../quote/components/quote-settings/QuoteSettingsSection';
-import QuoteSettingsSectionHeaderText from '../../quote/components/quote-settings/QuoteSettingsSectionHeaderText';
-import SearchSettingsSection from '../../search/components/search-settings/SearchSettingsSection';
-import SearchSettingsSectionHeaderText from '../../search/components/search-settings/SearchSettingsSectionHeaderText';
 import TasksSettingsSection from '../../tasks/components/tasks-settings/TasksSettingsSection';
 import TasksSettingsSectionHeaderText from '../../tasks/components/tasks-settings/TasksSettingsSectionHeaderText';
-// import WeatherSettingsSection from '../../weather/components/settings/WeatherSettingsSection';
-// import WeatherSettingsSectionHeaderText from '../../weather/components/settings/WeatherSettingsSectionHeaderText';
 import { useSettingsStore } from '../state/settingsStore';
 import GeneralSettingsSection from './general-settings/GeneralSettingsSection';
 import GeneralSettingsSectionHeaderText from './general-settings/GeneralSettingsSectionHeaderText';
+import WidgetsSettingsSection from './widgets-settings/WidgetsSettingsSection';
+import WidgetsSettingsSectionHeaderText from './widgets-settings/WidgetsSettingsSectionHeaderText';
 
 const tabs = [
   {
@@ -76,37 +66,10 @@ const tabs = [
     content: <FocusSettingsSection />,
   },
   {
-    id: 'commands',
-    label: <CommandsSettingsSectionHeaderText />,
-    content: <CommandsSettingsSection />,
+    id: 'widgets',
+    label: <WidgetsSettingsSectionHeaderText />,
+    content: <WidgetsSettingsSection />,
   },
-  {
-    id: 'clock',
-    label: <ClockSettingsSectionHeaderText />,
-    content: <ClockSettingsSection />,
-  },
-  {
-    id: 'greeting',
-    label: <GreetingSettingsSectionHeaderText />,
-    content: <GreetingSettingsSection />,
-  },
-  {
-    id: 'quote',
-    label: <QuoteSettingsSectionHeaderText />,
-    content: <QuoteSettingsSection />,
-  },
-  {
-    id: 'search',
-    label: <SearchSettingsSectionHeaderText />,
-    content: <SearchSettingsSection />,
-  },
-  /*
-  {
-    id: 'weather',
-    label: <WeatherSettingsSectionHeaderText />,
-    content: <WeatherSettingsSection />,
-  },
-  */
 ];
 
 export default function SettingsDialog() {

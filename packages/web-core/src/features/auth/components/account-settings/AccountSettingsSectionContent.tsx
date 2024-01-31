@@ -107,8 +107,8 @@ export default function AccountSettingsSectionContent() {
   };
 
   return (
-    <div>
-      <div className="mb-4">
+    <div className="mb-4 flex flex-col gap-4">
+      <div>
         <h4 className="text-lg font-bold">Display Name</h4>
         <p className="mb-2 text-xs text-gray-400">What shall we call you?</p>
         <Input
@@ -118,7 +118,7 @@ export default function AccountSettingsSectionContent() {
           }}
         />
       </div>
-      <div className="mb-4">
+      <div>
         <h4 className="text-lg font-bold">Email</h4>
         <p className="mb-2 text-xs text-gray-400">What is your email?</p>
         <Input
@@ -165,7 +165,7 @@ export default function AccountSettingsSectionContent() {
           </div>
         )}
       </div>
-      <div className="mb-4">
+      <div>
         <h4 className="text-lg font-bold">Password</h4>
         <p className="mb-2 text-xs text-gray-400">What is your password?</p>
         <Button
@@ -179,29 +179,29 @@ export default function AccountSettingsSectionContent() {
           Change Password
         </Button>
       </div>
-      <div className="mb-4 text-right">
+      <div className="text-right">
         <Button size="sm" variant="default" onClick={onSaveButtonClick}>
           Save
         </Button>
       </div>
-      <hr className="mb-4" />
-      <div className="mb-4">
+      <hr />
+      <div>
         <h4 className="text-lg font-bold">Data export</h4>
         <p className="mb-2 text-xs text-gray-400">Get your data!</p>
         <Button size="sm" variant="default" onClick={onRequestDataExportButtonClick}>
           Request data export
         </Button>
       </div>
-      <hr className="mb-4" />
-      <div className="mb-4">
+      <hr />
+      <div>
         <h4 className="text-lg font-bold">Logout</h4>
         <p className="mb-2 text-xs text-gray-400">Want to get a breath of fresh air?</p>
         <Button size="sm" variant="destructive" onClick={onLogoutButtonClick}>
           Log me out
         </Button>
       </div>
-      <hr className="mb-4" />
-      <div className="mb-4">
+      <hr />
+      <div>
         <h4 className="text-lg font-bold">Delete Account</h4>
         <p className="mb-2 text-xs text-gray-400">
           Ayou you really sure you want to leave us? After pressing the button below, we will send

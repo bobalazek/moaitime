@@ -14,7 +14,7 @@ describe('commands.cy.ts', () => {
   it('should be hidden if disabled in the settings', () => {
     cy.getBySel('commands--open-button').should('exist');
 
-    cy.toggleSettingsSwitch('Commands', { commandsEnabled: false });
+    cy.toggleSettingsSwitch('Widgets', { commandsEnabled: false });
 
     cy.getBySel('commands--open-button').should('not.exist');
   });

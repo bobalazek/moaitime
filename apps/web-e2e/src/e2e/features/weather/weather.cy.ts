@@ -38,7 +38,7 @@ describe.skip('weather.cy.ts', () => {
   it.skip('should not be visible if we disable it in the settings', () => {
     cy.getBySel('weather--popover--trigger-button').should('exist');
 
-    cy.toggleSettingsSwitch('Weather', { weatherEnabled: false });
+    cy.toggleSettingsSwitch('Widgets', { weatherEnabled: false });
 
     cy.getBySel('weather--popover--trigger-button').should('not.exist');
   });
@@ -51,7 +51,7 @@ describe.skip('weather.cy.ts', () => {
   });
 
   it.skip('should correctly switch to the imperial system once settings change', () => {
-    cy.toggleSettingsSwitch('Weather', { weatherUseMetricUnits: false });
+    cy.toggleSettingsSwitch('Widgets', { weatherUseMetricUnits: false });
 
     cy.getBySel('weather--popover--trigger-button').click();
 

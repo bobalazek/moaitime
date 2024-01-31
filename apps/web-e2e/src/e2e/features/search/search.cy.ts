@@ -14,7 +14,7 @@ describe('search.cy.ts', () => {
   it('should be hidden if disabled in the settings', () => {
     cy.getBySel('search').should('exist');
 
-    cy.toggleSettingsSwitch('Search', { searchEnabled: false });
+    cy.toggleSettingsSwitch('Widgets', { searchEnabled: false });
 
     cy.getBySel('search').should('not.exist');
   });

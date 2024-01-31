@@ -13,6 +13,8 @@ import {
 import {
   Calendar as ApiCalendar,
   UserCalendar as ApiUserCalendar,
+  CreateCalendar,
+  UpdateCalendar,
   UpdateUserCalendar,
 } from '@moaitime/shared-common';
 
@@ -135,19 +137,92 @@ export class CalendarsManager {
     return this.userCanUpdate(userId, calendarOrCalendarId);
   }
 
-  // Settings
-  async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
-    const user =
-      typeof userOrUserId === 'string'
-        ? await usersManager.findOneById(userOrUserId)
-        : userOrUserId;
-    if (!user) {
-      return [];
+  // Helpers
+  async list(userId: string) {
+    const calendars = await this.findManyByUserId(userId);
+
+    return this.convertToApiResponse(calendars, userId);
+  }
+
+  async listDeleted(userId: string) {
+    const calendars = await this.findManyDeletedByUserId(userId);
+
+    return this.convertToApiResponse(calendars, userId);
+  }
+
+  async listPublic(userId: string) {
+    const calendars = await this.findManyPublic();
+
+    return this.convertToApiResponse(calendars, userId);
+  }
+
+  async create(user: User, createData: CreateCalendar) {
+    const calendarsMaxPerUserCount = await usersManager.getUserLimit(
+      user,
+      'calendarsMaxPerUserCount'
+    );
+
+    const calendarsCount = await this.countByUserId(user.id);
+    if (calendarsCount >= calendarsMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of calendars per user (${calendarsMaxPerUserCount}).`
+      );
     }
 
-    const userSettings = usersManager.getUserSettings(user);
+    const data = await this.insertOne({
+      ...createData,
+      userId: user.id,
+    });
 
-    return userSettings.calendarVisibleCalendarIds ?? [];
+    await this.addVisibleCalendarIdByUserId(user.id, data.id);
+
+    return data;
+  }
+
+  async update(userId: string, calendarId: string, body: UpdateCalendar) {
+    const canUpdate = await this.userCanUpdate(userId, calendarId);
+    if (!canUpdate) {
+      throw new Error('You cannot update this calendar');
+    }
+
+    return this.updateOneById(calendarId, body);
+  }
+
+  async delete(userId: string, calendarId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(userId, calendarId);
+    if (!canDelete) {
+      throw new Error('You cannot delete this calendar');
+    }
+
+    return isHardDelete
+      ? await this.deleteOneById(calendarId)
+      : await this.updateOneById(calendarId, {
+          deletedAt: new Date(),
+        });
+  }
+
+  async undelete(userId: string, calendarId: string) {
+    const canDelete = await this.userCanUpdate(userId, calendarId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this calendar');
+    }
+
+    return this.updateOneById(calendarId, {
+      deletedAt: null,
+    });
+  }
+
+  async addVisible(userId: string, calendarId: string) {
+    const canView = await this.userCanView(userId, calendarId);
+    if (!canView) {
+      throw new Error('You cannot view this calendar');
+    }
+
+    return this.addVisibleCalendarIdByUserId(userId, calendarId);
+  }
+
+  async removeVisible(userId: string, calendarId: string) {
+    return this.removeVisibleCalendarIdByUserId(userId, calendarId);
   }
 
   // Visible
@@ -247,7 +322,32 @@ export class CalendarsManager {
   }
 
   // User Calendars
-  async getUserCalendarsByUserId(userId: string): Promise<ApiUserCalendar[]> {
+  async listUserCalendars(userId: string) {
+    return calendarsManager.getUserCalendars(userId);
+  }
+
+  async createUserCalendar(user: User, calendarId: string) {
+    const calendarsMaxUserCalendarsPerUserCount = await usersManager.getUserLimit(
+      user,
+      'calendarsMaxUserCalendarsPerUserCount'
+    );
+
+    const calendarsCount = await calendarsManager.countUserCalendarsByUserId(user.id);
+    if (calendarsCount >= calendarsMaxUserCalendarsPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of shared calendars per user (${calendarsMaxUserCalendarsPerUserCount}).`
+      );
+    }
+
+    const canView = await calendarsManager.userCanView(user.id, calendarId);
+    if (!canView) {
+      throw new Error('You cannot add this calendar');
+    }
+
+    return calendarsManager.addUserCalendarToUser(user.id, calendarId);
+  }
+
+  async getUserCalendars(userId: string): Promise<ApiUserCalendar[]> {
     const rows = await getDatabase()
       .select()
       .from(userCalendars)
@@ -295,7 +395,7 @@ export class CalendarsManager {
     await this.addVisibleCalendarIdByUserId(userId, calendarId);
   }
 
-  async deleteUserCalendarFromUser(userId: string, userCalendarId: string) {
+  async deleteUserCalendar(userId: string, userCalendarId: string) {
     const userCalendar = await this.getUserCalendar(userId, userCalendarId);
     if (!userCalendar) {
       return;
@@ -319,7 +419,6 @@ export class CalendarsManager {
       .execute();
   }
 
-  // Permissions
   async getCalendarPermissions(
     userId: string,
     calendarOrCalendarId: string | Calendar
@@ -333,6 +432,20 @@ export class CalendarsManager {
       canUpdate,
       canDelete,
     };
+  }
+
+  async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
+    const user =
+      typeof userOrUserId === 'string'
+        ? await usersManager.findOneById(userOrUserId)
+        : userOrUserId;
+    if (!user) {
+      return [];
+    }
+
+    const userSettings = usersManager.getUserSettings(user);
+
+    return userSettings.calendarVisibleCalendarIds ?? [];
   }
 
   async convertToApiResponse(calendars: Calendar[], userId: string): Promise<ApiCalendar[]> {

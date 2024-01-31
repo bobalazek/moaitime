@@ -1,20 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { Calendar } from '@moaitime/database-core';
-import { calendarsManager, usersManager } from '@moaitime/database-services';
-import { Calendar as ApiCalendar, CreateCalendar, User } from '@moaitime/shared-common';
+import { calendarsManager } from '@moaitime/database-services';
+import { Calendar as ApiCalendar, User } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -27,8 +16,7 @@ export class CalendarsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
-    const calendars = await calendarsManager.findManyByUserId(req.user.id);
-    const data = await calendarsManager.convertToApiResponse(calendars, req.user.id);
+    const data = await calendarsManager.list(req.user.id);
 
     return {
       success: true,
@@ -39,8 +27,7 @@ export class CalendarsController {
   @UseGuards(AuthenticatedGuard)
   @Get('deleted')
   async listDeleted(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
-    const calendars = await calendarsManager.findManyDeletedByUserId(req.user.id);
-    const data = await calendarsManager.convertToApiResponse(calendars, req.user.id);
+    const data = await calendarsManager.listDeleted(req.user.id);
 
     return {
       success: true,
@@ -51,8 +38,7 @@ export class CalendarsController {
   @UseGuards(AuthenticatedGuard)
   @Get('public')
   async listPublic(@Req() req: Request): Promise<AbstractResponseDto<ApiCalendar[]>> {
-    const calendars = await calendarsManager.findManyPublic();
-    const data = await calendarsManager.convertToApiResponse(calendars, req.user.id);
+    const data = await calendarsManager.listPublic(req.user.id);
 
     return {
       success: true,
@@ -66,26 +52,7 @@ export class CalendarsController {
     @Body() body: CreateCalendarDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<Calendar>> {
-    const calendarsMaxPerUserCount = await usersManager.getUserLimit(
-      req.user,
-      'calendarsMaxPerUserCount'
-    );
-
-    const calendarsCount = await calendarsManager.countByUserId(req.user.id);
-    if (calendarsCount >= calendarsMaxPerUserCount) {
-      throw new ForbiddenException(
-        `You have reached the maximum number of calendars per user (${calendarsMaxPerUserCount}).`
-      );
-    }
-
-    const insertData = {
-      ...body,
-      userId: req.user.id,
-    } as CreateCalendar;
-
-    const data = await calendarsManager.insertOne(insertData);
-
-    await calendarsManager.addVisibleCalendarIdByUserId(req.user.id, data.id);
+    const data = await calendarsManager.create(req.user, body);
 
     return {
       success: true,
@@ -100,16 +67,11 @@ export class CalendarsController {
     @Param('calendarId') calendarId: string,
     @Body() body: UpdateCalendarDto
   ): Promise<AbstractResponseDto<Calendar>> {
-    const canUpdate = await calendarsManager.userCanUpdate(req.user.id, calendarId);
-    if (!canUpdate) {
-      throw new ForbiddenException('You cannot update this calendar');
-    }
-
-    const updatedData = await calendarsManager.updateOneById(calendarId, body);
+    const data = await calendarsManager.update(req.user.id, calendarId, body);
 
     return {
       success: true,
-      data: updatedData,
+      data,
     };
   }
 
@@ -120,16 +82,7 @@ export class CalendarsController {
     @Param('calendarId') calendarId: string,
     @Body() body: DeleteDto
   ): Promise<AbstractResponseDto<Calendar>> {
-    const canDelete = await calendarsManager.userCanDelete(req.user.id, calendarId);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot delete this calendar');
-    }
-
-    const data = body.isHardDelete
-      ? await calendarsManager.deleteOneById(calendarId)
-      : await calendarsManager.updateOneById(calendarId, {
-          deletedAt: new Date(),
-        });
+    const data = await calendarsManager.delete(req.user.id, calendarId, body.isHardDelete);
 
     return {
       success: true,
@@ -143,14 +96,7 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('calendarId') calendarId: string
   ): Promise<AbstractResponseDto<Calendar>> {
-    const canDelete = await calendarsManager.userCanUpdate(req.user.id, calendarId);
-    if (!canDelete) {
-      throw new ForbiddenException('You cannot undelete this calendar');
-    }
-
-    const data = await calendarsManager.updateOneById(calendarId, {
-      deletedAt: null,
-    });
+    const data = await calendarsManager.undelete(req.user.id, calendarId);
 
     return {
       success: true,
@@ -165,12 +111,7 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('calendarId') calendarId: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await calendarsManager.userCanView(req.user.id, calendarId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot view this calendar');
-    }
-
-    await calendarsManager.addVisibleCalendarIdByUserId(req.user.id, calendarId);
+    await calendarsManager.addVisible(req.user.id, calendarId);
 
     return {
       success: true,
@@ -183,12 +124,7 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('calendarId') calendarId: string
   ): Promise<AbstractResponseDto<User>> {
-    const canView = await calendarsManager.userCanView(req.user.id, calendarId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot view this calendar');
-    }
-
-    await calendarsManager.removeVisibleCalendarIdByUserId(req.user.id, calendarId);
+    await calendarsManager.removeVisible(req.user.id, calendarId);
 
     return {
       success: true,

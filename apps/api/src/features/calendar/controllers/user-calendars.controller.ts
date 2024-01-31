@@ -1,18 +1,7 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ForbiddenException,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
-import { calendarsManager, usersManager } from '@moaitime/database-services';
+import { calendarsManager } from '@moaitime/database-services';
 import {
   CreateUserCalendar,
   UpdateUserCalendar,
@@ -28,7 +17,7 @@ export class UserCalendarsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<UserCalendar[]>> {
-    const data = await calendarsManager.getUserCalendarsByUserId(req.user.id);
+    const data = await calendarsManager.listUserCalendars(req.user.id);
 
     return {
       success: true,
@@ -42,24 +31,7 @@ export class UserCalendarsController {
     @Req() req: Request,
     @Body() body: CreateUserCalendar
   ): Promise<AbstractResponseDto<User>> {
-    const calendarsMaxUserCalendarsPerUserCount = await usersManager.getUserLimit(
-      req.user,
-      'calendarsMaxUserCalendarsPerUserCount'
-    );
-
-    const calendarsCount = await calendarsManager.countUserCalendarsByUserId(req.user.id);
-    if (calendarsCount >= calendarsMaxUserCalendarsPerUserCount) {
-      throw new ForbiddenException(
-        `You have reached the maximum number of shared calendars per user (${calendarsMaxUserCalendarsPerUserCount}).`
-      );
-    }
-
-    const canView = await calendarsManager.userCanView(req.user.id, body.calendarId);
-    if (!canView) {
-      throw new ForbiddenException('You cannot add this calendar');
-    }
-
-    await calendarsManager.addUserCalendarToUser(req.user.id, body.calendarId);
+    await calendarsManager.createUserCalendar(req.user, body.calendarId);
 
     return {
       success: true,
@@ -72,7 +44,7 @@ export class UserCalendarsController {
     @Req() req: Request,
     @Param('userCalendarId') userCalendarId: string
   ): Promise<AbstractResponseDto<User>> {
-    await calendarsManager.deleteUserCalendarFromUser(req.user.id, userCalendarId);
+    await calendarsManager.deleteUserCalendar(req.user.id, userCalendarId);
 
     return {
       success: true,

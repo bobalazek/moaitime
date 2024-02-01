@@ -216,7 +216,6 @@ export class ListsManager {
     const tasksCountMap = new Map<string | null, number>();
 
     let where = inArray(tasks.listId, listIds);
-
     if (!options?.includeCompleted) {
       where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
     }
@@ -226,13 +225,38 @@ export class ListsManager {
     }
 
     const tasksCountData = await getDatabase()
-      .select({ listId: tasks.listId, tasksCount: count(tasks.id).mapWith(Number) })
+      .select({
+        listId: tasks.listId,
+        tasksCount: count(tasks.id).mapWith(Number),
+      })
       .from(tasks)
       .where(where)
       .groupBy(tasks.listId)
       .execute();
     for (const item of tasksCountData) {
       tasksCountMap.set(item.listId, item.tasksCount);
+    }
+
+    // Separate query for tasks without list
+    let whereWithoutList = and(isNull(tasks.listId), eq(tasks.userId, userId));
+    if (!options?.includeCompleted) {
+      whereWithoutList = and(whereWithoutList, isNull(tasks.completedAt)) as SQL<unknown>;
+    }
+
+    if (!options?.includeDeleted) {
+      whereWithoutList = and(whereWithoutList, isNull(tasks.deletedAt)) as SQL<unknown>;
+    }
+
+    const tasksWithoutListCountData = await getDatabase()
+      .select({
+        tasksCount: count(tasks.id).mapWith(Number),
+      })
+      .from(tasks)
+      .where(whereWithoutList)
+      .groupBy(tasks.listId)
+      .execute();
+    if (tasksWithoutListCountData.length > 0) {
+      tasksCountMap.set(null, tasksWithoutListCountData[0].tasksCount);
     }
 
     return tasksCountMap;

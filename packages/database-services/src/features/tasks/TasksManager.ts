@@ -309,14 +309,18 @@ export class TasksManager {
   // Helpers
   async list(userId: string, listId: string, options: TaskManagerListOptions) {
     const { query, includeCompleted, includeDeleted, sortField, sortDirection } = options;
+
+    const includeList = !!query; // the only place for now where we need the list is the search
+    const limit = !query ? undefined : 10; // Same as above
+
     const tasks = await this.findManyByUserId(userId, listId, {
       includeCompleted,
       includeDeleted,
-      includeList: !!query, // the only place for now where we need the list is the search
+      includeList,
       sortField,
       sortDirection,
       query,
-      limit: !query ? undefined : 10, // Same as above
+      limit,
     });
 
     return this._populateTags(tasks);
@@ -332,12 +336,12 @@ export class TasksManager {
       newTaskId: string;
     }
   ) {
+    const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
+
     const list = listsManager.findOneByIdAndUserId(listId, userId);
     if (!list) {
       throw new Error('List not found');
     }
-
-    const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
 
     await this.reorderList(newListId, userId, sortDirection, originalTaskId, newTaskId);
   }

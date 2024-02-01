@@ -4,6 +4,13 @@ import { useAuthStore, useAuthUserSetting } from '../../auth/state/authStore';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import AnalogClock from './AnalogClock';
 import DigitalClock from './DigitalClock';
+import { AnimatePresence, motion } from 'framer-motion';
+
+const animationVariants = {
+  initial: { opacity: 0, y: -100 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 100 },
+};
 
 export default function Clock() {
   const { updateAccountSettings } = useAuthStore();
@@ -25,7 +32,13 @@ export default function Clock() {
 
   return (
     <ErrorBoundary>
-      <div
+      <AnimatePresence>
+      <motion.div
+        layout
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={animationVariants}
         className="select-none"
         data-test="clock"
         onDoubleClick={() => {
@@ -42,7 +55,8 @@ export default function Clock() {
           />
         )}
         {!clockUseDigitalClock && <AnalogClock time={time} showSeconds={clockShowSeconds} />}
-      </div>
+      </motion.div>
+      </AnimatePresence>
     </ErrorBoundary>
   );
 }

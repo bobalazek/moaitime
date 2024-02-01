@@ -161,6 +161,7 @@ export class UserDataExportProcessor {
   async _saveTasks(userId: string, tmpUserDataExportDir: string, lists: List[]) {
     this._logger.debug(`Fetching tasks for user (id: ${userId}) ...`);
 
+    // TODO: we also want to export tasks that are not assigned to a list!
     for (const list of lists) {
       const listsDir = `${tmpUserDataExportDir}/tasks`;
       if (!existsSync(listsDir)) {
@@ -171,7 +172,7 @@ export class UserDataExportProcessor {
 
       const listFilePath = `${listsDir}/${list.id}.json`;
 
-      const tasks = await this._tasksManager.findManyByQueryAndUserId('', userId, 999999);
+      const tasks = await this._tasksManager.findManyByUserId(userId, list.id);
 
       this._logger.debug(`Found ${tasks.length} tasks for user (id: ${userId}).`);
 

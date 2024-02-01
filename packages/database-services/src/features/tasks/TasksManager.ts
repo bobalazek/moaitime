@@ -41,20 +41,15 @@ import { teamsManager } from '../auth/TeamsManager';
 import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
 
-export type TasksManagerFindManyByListIdOptions = {
+export type TaskManagerListOptions = {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
+  includeList?: boolean;
   sortField?: keyof Task;
   sortDirection?: SortDirectionEnum;
   excludeChildren?: boolean;
-};
-
-export type TaskManagerListOptions = {
+  limit?: number;
   query?: string;
-  includeCompleted?: boolean;
-  includeDeleted?: boolean;
-  sortField?: keyof Task;
-  sortDirection?: SortDirectionEnum;
 };
 
 export class TasksManager {
@@ -66,10 +61,10 @@ export class TasksManager {
     });
   }
 
-  async findManyByListAndUserId(
-    listId: string | null,
+  async findManyByUserId(
     userId: string,
-    options?: TasksManagerFindManyByListIdOptions
+    listId: string | null,
+    options?: TaskManagerListOptions
   ): Promise<Task[]> {
     let where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
     const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
@@ -82,6 +77,13 @@ export class TasksManager {
       if (!list) {
         throw new Error('List for task not found');
       }
+    }
+
+    if (options?.query) {
+      where = and(
+        where,
+        or(ilike(tasks.name, `%${options.query}%`), ilike(tasks.description, `%${options.query}%`))
+      ) as SQL<unknown>;
     }
 
     if (!options?.includeCompleted) {
@@ -106,10 +108,17 @@ export class TasksManager {
     const childrenMap: { [key: string]: Task[] } = {};
 
     const rootWhere = and(where, isNull(tasks.parentId)) as SQL<unknown>;
-    const rows = await getDatabase().query.tasks.findMany({
-      where: rootWhere,
-      orderBy,
-    });
+
+    const query = getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(rootWhere);
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    const rows = await query.execute();
 
     if (!options?.excludeChildren) {
       const childrenWhere = and(where, isNotNull(tasks.parentId)) as SQL<unknown>;
@@ -132,41 +141,14 @@ export class TasksManager {
     }
 
     return rows.map((row) => {
-      const task = this._fixRowColumns(row);
+      const task = this._fixRowColumns(row.tasks);
+      const list = options?.includeList ? row.lists : undefined;
 
       return {
         ...task,
+        list,
         children: childrenMap[task.id] ?? [],
       };
-    });
-  }
-
-  // TODO: remove this and move the logic into findManyByListAndUserId
-  async findManyByQueryAndUserId(
-    query: string,
-    userId: string,
-    limit: number = 10
-  ): Promise<Task[]> {
-    const where = and(
-      eq(tasks.userId, userId),
-      isNull(tasks.deletedAt),
-      isNull(lists.deletedAt),
-      or(ilike(tasks.name, `%${query}%`), ilike(tasks.description, `%${query}%`))
-    );
-
-    const rows = await getDatabase()
-      .select()
-      .from(tasks)
-      .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(where)
-      .limit(limit)
-      .execute();
-
-    return rows.map((row) => {
-      const task = this._fixRowColumns(row.tasks);
-      const list = row.lists;
-
-      return { ...task, list };
     });
   }
 
@@ -325,20 +307,16 @@ export class TasksManager {
   }
 
   // Helpers
-  async list(
-    userId: string,
-    listId: string,
-    { query, includeCompleted, includeDeleted, sortField, sortDirection }: TaskManagerListOptions
-  ) {
-    if (query) {
-      return this.findManyByQueryAndUserId(query, userId);
-    }
-
-    const tasks = await this.findManyByListAndUserId(listId, userId, {
+  async list(userId: string, listId: string, options: TaskManagerListOptions) {
+    const { query, includeCompleted, includeDeleted, sortField, sortDirection } = options;
+    const tasks = await this.findManyByUserId(userId, listId, {
       includeCompleted,
       includeDeleted,
+      includeList: !!query, // the only place for now where we need the list is the search
       sortField,
       sortDirection,
+      query,
+      limit: !query ? undefined : 10, // Same as above
     });
 
     return this._populateTags(tasks);
@@ -544,7 +522,7 @@ export class TasksManager {
     originalTaskId: string,
     newTaskId: string
   ) {
-    const result = await this.findManyByListAndUserId(listId, userId, {
+    const result = await this.findManyByUserId(userId, listId, {
       includeCompleted: true,
       includeDeleted: true,
       sortField: 'order',

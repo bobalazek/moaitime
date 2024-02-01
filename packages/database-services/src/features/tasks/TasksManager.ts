@@ -113,7 +113,8 @@ export class TasksManager {
       .select()
       .from(tasks)
       .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(rootWhere);
+      .where(rootWhere)
+      .orderBy(...orderBy);
     if (options?.limit) {
       query.limit(options.limit);
     }

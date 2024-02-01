@@ -224,9 +224,15 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const originalTaskIndex = selectedListTasks.findIndex((task) => task.id === originalTaskId);
     const newTaskIndex = selectedListTasks.findIndex((task) => task.id === newTaskId);
     const newSelectedListTasks = arrayMove(selectedListTasks, originalTaskIndex, newTaskIndex);
+
     setSelectedListTasks(newSelectedListTasks);
 
-    await reorderTask(originalTaskId, newTaskId, selectedListTasksSortDirection, selectedList?.id);
+    await reorderTask(
+      originalTaskId,
+      newTaskId,
+      selectedListTasksSortDirection,
+      selectedList?.id ?? null
+    );
 
     await reloadSelectedListTasks();
   },

@@ -118,7 +118,7 @@ export const reorderTask = async (
   originalTaskId: string,
   newTaskId: string,
   sortDirection: SortDirectionEnum,
-  listId?: string
+  listId: string | null
 ) => {
   return fetchJson<ResponseInterface<Task>>(`${API_URL}/api/v1/tasks/reorder`, {
     method: 'POST',

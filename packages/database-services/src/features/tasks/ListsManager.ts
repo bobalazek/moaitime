@@ -45,8 +45,8 @@ export class ListsManager {
     return row ?? null;
   }
 
-  async findOneByIdAndUserId(listId: string, userId: string): Promise<List | null> {
-    let where = and(eq(lists.id, listId), isNull(lists.deletedAt));
+  async findOneByIdAndUserId(listId: string | null, userId: string): Promise<List | null> {
+    let where = and(listId ? eq(lists.id, listId) : isNull(lists.id), isNull(lists.deletedAt));
 
     const teamIds = await usersManager.getTeamIds(userId);
     if (teamIds.length === 0) {

@@ -328,10 +328,10 @@ export class TasksManager {
 
   async reorder(
     userId: string,
-    listId: string,
+    listId: string | null,
     data: {
       sortDirection: SortDirectionEnum;
-      listId: string;
+      listId: string | null;
       originalTaskId: string;
       newTaskId: string;
     }

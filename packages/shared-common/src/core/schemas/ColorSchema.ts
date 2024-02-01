@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { MAIN_COLORS } from './MainColors';
+import { MAIN_COLORS } from '../MainColors';
 
 export const ColorSchema = z
   .string({

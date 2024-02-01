@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { ColorSchema } from '../core/ColorSchema';
-import { TimezoneSchema } from '../core/TimezoneSchema';
+import { ColorSchema } from '../core/schemas/ColorSchema';
+import { TimezoneSchema } from '../core/schemas/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';
 import { TagSchema } from '../tasks/TagSchema';
 import { ListSchema } from './ListSchema';

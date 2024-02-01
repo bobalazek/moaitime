@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { ColorSchema } from '../core/ColorSchema';
-import { PermissionsSchema } from '../core/PermissionsSchema';
+import { ColorSchema } from '../core/schemas/ColorSchema';
+import { PermissionsSchema } from '../core/schemas/PermissionsSchema';
 
 // Calendar
 export const CalendarSchema = z.object({

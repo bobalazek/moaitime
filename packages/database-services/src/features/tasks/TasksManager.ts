@@ -385,14 +385,18 @@ export class TasksManager {
     return data;
   }
 
-  async update(user: User, taskId: string, body: UpdateTask) {
-    const data = await this.findOneByIdAndUserId(taskId, user.id);
-    if (!data) {
+  async update(user: User, taskId: string, data: UpdateTask) {
+    const task = await this.findOneByIdAndUserId(taskId, user.id);
+    if (!task) {
       throw new Error('Task not found');
     }
 
-    if (body.listId) {
-      const list = await listsManager.findOneByIdAndUserId(body.listId, user.id);
+    if (task.deletedAt) {
+      throw new Error('You can not update a deleted task');
+    }
+
+    if (data.listId) {
+      const list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
       if (!list) {
         throw new Error('List not found');
       }
@@ -400,24 +404,24 @@ export class TasksManager {
       await this._doMaxTasksPerListCheck(user, list);
     }
 
-    if (body.parentId) {
-      await this.validateParentId(taskId, body.parentId);
+    if (data.parentId) {
+      await this.validateParentId(taskId, data.parentId);
     }
 
-    const { tagIds, ...updateData } = body;
+    const { tagIds, ...updateData } = data;
 
     const updatedData = await this.updateOneById(taskId, updateData);
 
     if (Array.isArray(tagIds)) {
-      await this.setTags(data.id, tagIds);
+      await this.setTags(task.id, tagIds);
     }
 
     return updatedData;
   }
 
   async delete(userId: string, taskId: string, isHardDelete?: boolean) {
-    const data = await this.findOneByIdAndUserId(taskId, userId);
-    if (!data) {
+    const task = await this.findOneByIdAndUserId(taskId, userId);
+    if (!task) {
       throw new Error('Task not found');
     }
 
@@ -428,10 +432,24 @@ export class TasksManager {
         });
   }
 
-  async undelete(userId: string, taskId: string) {
-    const data = await this.findOneByIdAndUserId(taskId, userId);
-    if (!data) {
+  async undelete(user: User, taskId: string) {
+    const task = await this.findOneByIdAndUserId(taskId, user.id);
+    if (!task) {
       throw new Error('Task not found');
+    }
+
+    // We want to make that if if we undelete a task, we don't go over the limit
+    const list = task.listId ? await listsManager.findOneByIdAndUserId(task.listId, user.id) : null;
+    const { tasksCount, tasksMaxPerListCount } = await this._doMaxTasksPerListCheck(
+      user,
+      list,
+      true
+    );
+    // That +1 would be the newly undeleted task
+    if (tasksCount + 1 > tasksMaxPerListCount) {
+      throw new Error(
+        `You would reach the maximum number of tasks per list (${tasksMaxPerListCount}) with this undelete.`
+      );
     }
 
     const updatedData = await this.updateOneById(taskId, {
@@ -446,8 +464,8 @@ export class TasksManager {
   }
 
   async complete(userId: string, taskId: string) {
-    const data = await this.findOneByIdAndUserId(taskId, userId);
-    if (!data) {
+    const task = await this.findOneByIdAndUserId(taskId, userId);
+    if (!task) {
       throw new Error('Task not found');
     }
 
@@ -457,8 +475,8 @@ export class TasksManager {
   }
 
   async uncomplete(userId: string, taskId: string) {
-    const data = await this.findOneByIdAndUserId(taskId, userId);
-    if (!data) {
+    const task = await this.findOneByIdAndUserId(taskId, userId);
+    if (!task) {
       throw new Error('Task not found');
     }
 
@@ -487,8 +505,11 @@ export class TasksManager {
     return result[0].count ?? 0;
   }
 
-  async countByListId(listId: string | null): Promise<number> {
-    const where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+  async countByListId(listId: string | null, userId: string): Promise<number> {
+    let where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+    if (!listId) {
+      where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;
+    }
 
     const result = await getDatabase()
       .select({
@@ -741,7 +762,7 @@ export class TasksManager {
     });
   }
 
-  private async _doMaxTasksPerListCheck(user: User, list: List | null) {
+  private async _doMaxTasksPerListCheck(user: User, list: List | null, skipError?: boolean) {
     let tasksMaxPerListCount = 0;
 
     if (list && list.teamId) {
@@ -753,12 +774,17 @@ export class TasksManager {
       tasksMaxPerListCount = await usersManager.getUserLimit(user, 'tasksMaxPerListCount');
     }
 
-    const tasksCount = await this.countByListId(list?.id ?? null);
-    if (tasksCount >= tasksMaxPerListCount) {
+    const tasksCount = await this.countByListId(list?.id ?? null, user.id);
+    if (!skipError && tasksCount >= tasksMaxPerListCount) {
       throw new Error(
         `You have reached the maximum number of tasks per list (${tasksMaxPerListCount}).`
       );
     }
+
+    return {
+      tasksMaxPerListCount,
+      tasksCount,
+    };
   }
 }
 

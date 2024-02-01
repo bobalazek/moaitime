@@ -112,7 +112,7 @@ export class TasksController {
     @Req() req: Request,
     @Param('taskId') taskId: string
   ): Promise<AbstractResponseDto<Task>> {
-    const data = await tasksManager.undelete(req.user.id, taskId);
+    const data = await tasksManager.undelete(req.user, taskId);
 
     return {
       success: true,

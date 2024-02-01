@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { getTimezones } from '../Helpers';
+import { getTimezones } from '../../Helpers';
 
 export const TimezoneSchema = z
   .string({

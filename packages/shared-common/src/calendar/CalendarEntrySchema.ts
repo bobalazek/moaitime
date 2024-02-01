@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { ColorSchema } from '../core/ColorSchema';
-import { PermissionsSchema } from '../core/PermissionsSchema';
+import { ColorSchema } from '../core/schemas/ColorSchema';
+import { PermissionsSchema } from '../core/schemas/PermissionsSchema';
 import { TaskSchema } from '../tasks/TaskSchema';
 import { CalendarEntryTypeEnum } from './CalendarEntryTypeEnum';
 import { EventSchema } from './EventSchema';

@@ -1,9 +1,9 @@
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { z } from 'zod';
 
-import { ColorSchema } from '../core/ColorSchema';
-import { PermissionsSchema } from '../core/PermissionsSchema';
-import { TimezoneSchema } from '../core/TimezoneSchema';
+import { ColorSchema } from '../core/schemas/ColorSchema';
+import { PermissionsSchema } from '../core/schemas/PermissionsSchema';
+import { TimezoneSchema } from '../core/schemas/TimezoneSchema';
 
 export const EventSchema = z.object({
   id: z.string(),

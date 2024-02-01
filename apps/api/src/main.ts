@@ -1,5 +1,6 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 import { getEnv } from '@moaitime/shared-backend';
 
@@ -22,6 +23,9 @@ export async function bootstrap() {
 
   process.on('SIGINT', async () => app.close());
   process.on('SIGTERM', async () => app.close());
+
+  // WebSocket
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   // Exceptions (order matters - first it will catch and set the response for error, but if it's an HttpException, then that will override it)
   app.useGlobalFilters(new ErrorFilter());

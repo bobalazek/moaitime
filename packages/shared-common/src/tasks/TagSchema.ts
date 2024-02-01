@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ColorSchema } from '../core/ColorSchema';
+import { ColorSchema } from '../core/schemas/ColorSchema';
 
 export const TagSchema = z.object({
   id: z.string(),

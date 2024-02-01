@@ -105,7 +105,7 @@ export class TasksManager {
       orderBy.unshift(asc(tasks.priority));
     }
 
-    const childrenMap: { [key: string]: Task[] } = {};
+    const childrenMap = {} as Record<string, Task[]>;
 
     const rootWhere = and(where, isNull(tasks.parentId)) as SQL<unknown>;
 

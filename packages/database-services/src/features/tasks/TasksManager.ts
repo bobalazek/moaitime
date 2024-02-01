@@ -74,11 +74,14 @@ export class TasksManager {
     let where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
     const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
 
-    // TODO: validate that we are also the owner of this
-
     // The null/unlisted list is an exception, so we always want to get the items as they are only from the user
     if (!listId) {
       where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;
+    } else {
+      const list = await listsManager.findOneByIdAndUserId(listId, userId);
+      if (!list) {
+        throw new Error('List for task not found');
+      }
     }
 
     if (!options?.includeCompleted) {
@@ -230,15 +233,29 @@ export class TasksManager {
   }
 
   async findOneByIdAndUserId(taskId: string, userId: string): Promise<Task | null> {
-    const where = and(eq(tasks.id, taskId), eq(tasks.userId, userId));
-
-    const rows = await getDatabase().select().from(tasks).where(where).execute();
-
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(lists.id, tasks.listId))
+      .where(eq(tasks.id, taskId))
+      .execute();
     if (rows.length === 0) {
       return null;
     }
 
-    return this._fixRowColumns(rows[0]);
+    const row = rows[0];
+    if (row.lists?.teamId) {
+      const teamIds = await usersManager.getTeamIds(userId);
+      if (!teamIds.includes(row.lists.teamId)) {
+        return null;
+      }
+    } else if (row.tasks.userId !== userId) {
+      return null;
+    }
+
+    const task = this._fixRowColumns(row.tasks);
+
+    return task;
   }
 
   async findMaxOrderByListId(listId: string | null): Promise<number> {

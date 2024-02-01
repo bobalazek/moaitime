@@ -31,7 +31,7 @@ export class ListsManager {
 
     const result = await getDatabase().query.lists.findMany({
       where,
-      orderBy: [desc(lists.order), asc(lists.createdAt)],
+      orderBy: [desc(lists.teamId), desc(lists.order), asc(lists.createdAt)],
     });
 
     return result;

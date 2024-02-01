@@ -10,6 +10,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { calendarsManager } from '../calendars/CalendarsManager';
+import { eventsManager } from '../calendars/EventsManager';
 import { focusSessionsManager } from '../focus/FocusSessionsManager';
 import { moodEntriesManager } from '../mood/MoodEntriesManager';
 import { notesManager } from '../notes/NotesManager';
@@ -169,6 +170,7 @@ export class UsersManager {
     const moodEntriesCount = await moodEntriesManager.countByUserId(user.id);
     const calendarsCount = await calendarsManager.countByUserId(user.id);
     const userCalendarsCount = await calendarsManager.countUserCalendarsByUserId(user.id);
+    const eventsCount = await eventsManager.countByUserId(user.id);
     const tagsCount = await tagsManager.countByUserId(user.id);
     const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
 
@@ -179,6 +181,7 @@ export class UsersManager {
       moodEntriesCount,
       calendarsCount,
       userCalendarsCount,
+      eventsCount,
       tagsCount,
       focusSessionsCount,
     };

@@ -171,7 +171,7 @@ export class UserDataExportProcessor {
 
       const listFilePath = `${listsDir}/${list.id}.json`;
 
-      const tasks = await this._tasksManager.findManyByListId(userId);
+      const tasks = await this._tasksManager.findManyByQueryAndUserId('', userId, 999999);
 
       this._logger.debug(`Found ${tasks.length} tasks for user (id: ${userId}).`);
 

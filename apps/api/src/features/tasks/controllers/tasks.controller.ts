@@ -24,7 +24,7 @@ export class TasksController {
     const sortField = req.query.sortField as keyof Task;
     const sortDirection = req.query.sortDirection as SortDirectionEnum;
 
-    const data = await tasksManager.list(req.user.id, listId, {
+    const data = await tasksManager.list(req.user.id, listId ?? null, {
       query,
       includeCompleted,
       includeDeleted,

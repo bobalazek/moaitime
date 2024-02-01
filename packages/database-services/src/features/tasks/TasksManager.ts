@@ -46,6 +46,15 @@ export type TasksManagerFindManyByListIdOptions = {
   includeDeleted?: boolean;
   sortField?: keyof Task;
   sortDirection?: SortDirectionEnum;
+  excludeChildren?: boolean;
+};
+
+export type TaskManagerListOptions = {
+  query?: string;
+  includeCompleted?: boolean;
+  includeDeleted?: boolean;
+  sortField?: keyof Task;
+  sortDirection?: SortDirectionEnum;
 };
 
 export class TasksManager {
@@ -57,12 +66,20 @@ export class TasksManager {
     });
   }
 
-  async findManyByListId(
+  async findManyByListAndUserId(
     listId: string | null,
+    userId: string,
     options?: TasksManagerFindManyByListIdOptions
   ): Promise<Task[]> {
     let where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
     const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
+
+    // TODO: validate that we are also the owner of this
+
+    // The null/unlisted list is an exception, so we always want to get the items as they are only from the user
+    if (!listId) {
+      where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;
+    }
 
     if (!options?.includeCompleted) {
       where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
@@ -83,28 +100,32 @@ export class TasksManager {
       orderBy.unshift(asc(tasks.priority));
     }
 
+    const childrenMap: { [key: string]: Task[] } = {};
+
     const rootWhere = and(where, isNull(tasks.parentId)) as SQL<unknown>;
     const rows = await getDatabase().query.tasks.findMany({
       where: rootWhere,
       orderBy,
     });
 
-    const childrenWhere = and(where, isNotNull(tasks.parentId)) as SQL<unknown>;
-    const children = await getDatabase().query.tasks.findMany({
-      where: childrenWhere,
-      orderBy,
-    });
-    const childrenMap: { [key: string]: Task[] } = {};
-    for (const child of children) {
-      if (!child.parentId) {
-        continue;
-      }
+    if (!options?.excludeChildren) {
+      const childrenWhere = and(where, isNotNull(tasks.parentId)) as SQL<unknown>;
+      const children = await getDatabase().query.tasks.findMany({
+        where: childrenWhere,
+        orderBy,
+      });
 
-      if (!childrenMap[child.parentId]) {
-        childrenMap[child.parentId] = [];
-      }
+      for (const child of children) {
+        if (!child.parentId) {
+          continue;
+        }
 
-      childrenMap[child.parentId].push(child);
+        if (!childrenMap[child.parentId]) {
+          childrenMap[child.parentId] = [];
+        }
+
+        childrenMap[child.parentId].push(child);
+      }
     }
 
     return rows.map((row) => {
@@ -117,6 +138,7 @@ export class TasksManager {
     });
   }
 
+  // TODO: remove this and move the logic into findManyByListAndUserId
   async findManyByQueryAndUserId(
     query: string,
     userId: string,
@@ -197,7 +219,7 @@ export class TasksManager {
 
   async findOneById(id: string): Promise<Task | null> {
     const row = await getDatabase().query.tasks.findFirst({
-      where: eq(lists.id, id),
+      where: eq(tasks.id, id),
     });
 
     if (!row) {
@@ -208,11 +230,9 @@ export class TasksManager {
   }
 
   async findOneByIdAndUserId(taskId: string, userId: string): Promise<Task | null> {
-    const rows = await getDatabase()
-      .select()
-      .from(tasks)
-      .where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)))
-      .execute();
+    const where = and(eq(tasks.id, taskId), eq(tasks.userId, userId));
+
+    const rows = await getDatabase().select().from(tasks).where(where).execute();
 
     if (rows.length === 0) {
       return null;
@@ -291,37 +311,20 @@ export class TasksManager {
   async list(
     userId: string,
     listId: string,
-    {
-      query,
-      includeCompleted,
-      includeDeleted,
-      sortField,
-      sortDirection,
-    }: {
-      query?: string;
-      includeCompleted?: boolean;
-      includeDeleted?: boolean;
-      sortField?: keyof Task;
-      sortDirection?: SortDirectionEnum;
-    }
+    { query, includeCompleted, includeDeleted, sortField, sortDirection }: TaskManagerListOptions
   ) {
     if (query) {
       return this.findManyByQueryAndUserId(query, userId);
     }
 
-    const list = listsManager.findOneByIdAndUserId(listId, userId);
-    if (!list) {
-      throw new Error('List not found');
-    }
-
-    const tags = await this.findManyByListId(listId, {
+    const tasks = await this.findManyByListAndUserId(listId, userId, {
       includeCompleted,
       includeDeleted,
       sortField,
       sortDirection,
     });
 
-    return this._populateTags(tags);
+    return this._populateTags(tasks);
   }
 
   async reorder(
@@ -341,7 +344,7 @@ export class TasksManager {
 
     const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
 
-    await this.reorderList(newListId, sortDirection, originalTaskId, newTaskId);
+    await this.reorderList(newListId, userId, sortDirection, originalTaskId, newTaskId);
   }
 
   async view(userId: string, taskId: string) {
@@ -439,12 +442,7 @@ export class TasksManager {
   }
 
   async duplicate(userId: string, taskId: string) {
-    const data = await this.findOneByIdAndUserId(taskId, userId);
-    if (!data) {
-      throw new Error('Task not found');
-    }
-
-    return this.duplicateTask(taskId);
+    return this.duplicateTask(userId, taskId);
   }
 
   async complete(userId: string, taskId: string) {
@@ -503,8 +501,8 @@ export class TasksManager {
     return result[0].count ?? 0;
   }
 
-  async duplicateTask(id: string): Promise<Task> {
-    const task = await this.findOneById(id);
+  async duplicateTask(userId: string, taskId: string): Promise<Task> {
+    const task = await this.findOneByIdAndUserId(taskId, userId);
     if (!task) {
       throw new Error('Task not found');
     }
@@ -517,22 +515,23 @@ export class TasksManager {
       name: `${task.name} (copy)`,
     });
 
-    await this.reorderList(task.listId, SortDirectionEnum.ASC, task.id, duplicatedTask.id);
+    await this.reorderList(task.listId, userId, SortDirectionEnum.ASC, task.id, duplicatedTask.id);
 
     return this._fixRowColumns(duplicatedTask);
   }
 
   async reorderList(
     listId: string | null,
+    userId: string,
     sortDirection: SortDirectionEnum,
     originalTaskId: string,
     newTaskId: string
   ) {
-    const result = await this.findManyByListId(listId, {
+    const result = await this.findManyByListAndUserId(listId, userId, {
       includeCompleted: true,
       includeDeleted: true,
       sortField: 'order',
-      sortDirection: sortDirection,
+      sortDirection,
     });
 
     const originalIndex = result.findIndex((task) => task.id === originalTaskId);

@@ -41,7 +41,8 @@
       "@moaitime/processes": ["../../packages/processes/src/index.ts"],
       "@moaitime/bullmq": ["../../packages/bullmq/src/index.ts"],
       "@moaitime/redis": ["../../packages/redis/src/index.ts"],
-      "@moaitime/job-runner": ["../../packages/job-runner/src/index.ts"]
+      "@moaitime/job-runner": ["../../packages/job-runner/src/index.ts"],
+      "@moaitime/global-event-notifier": ["../../packages/global-event-notifier/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

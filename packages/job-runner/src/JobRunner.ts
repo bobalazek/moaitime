@@ -1,6 +1,7 @@
 import {
   userDataExportProcessor,
   UserDataExportProcessor,
+  userDeletionProcessor,
   UserDeletionProcessor,
 } from '@moaitime/database-services';
 import { logger, Logger } from '@moaitime/logging';
@@ -8,8 +9,6 @@ import { shutdownManager, ShutdownManager } from '@moaitime/processes';
 import { redis, Redis } from '@moaitime/redis';
 import { SharedQueueWorkerJobEnum, sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
-
-import { userDeletionProcessor } from '../../database-services/src/features/auth/UserDeletionProcessor';
 
 export class JobRunner {
   constructor(

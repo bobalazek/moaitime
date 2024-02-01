@@ -104,7 +104,7 @@ export class ListsManager {
     return this.userCanUpdate(userId, listId);
   }
 
-  // Helpers
+  // API Helpers
   async list(userId: string) {
     return this.findManyByUserId(userId);
   }
@@ -185,6 +185,7 @@ export class ListsManager {
     await this.removeVisibleListIdByUserId(userId, listId);
   }
 
+  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

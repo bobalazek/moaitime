@@ -31,6 +31,7 @@
     "@moaitime/database-core": "workspace:*",
     "@moaitime/database-testing": "workspace:*",
     "@moaitime/emails-mailer": "workspace:*",
+    "@moaitime/global-event-notifier": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",

@@ -85,7 +85,7 @@ export class TagsManager {
     return this.userCanUpdate(userId, noteId);
   }
 
-  // Helpers
+  // API Helpers
   async list(userId: string, includeDeleted?: boolean) {
     return this.findManyByUserId(userId, {
       includeDeleted,
@@ -152,6 +152,7 @@ export class TagsManager {
     });
   }
 
+  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

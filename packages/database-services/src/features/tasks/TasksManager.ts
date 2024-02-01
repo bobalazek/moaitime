@@ -30,8 +30,10 @@ import {
   taskTags,
   User,
 } from '@moaitime/database-core';
+import { globalEventNotifier } from '@moaitime/global-event-notifier';
 import {
   CreateTask,
+  GlobalEventsEnum,
   SortDirectionEnum,
   TasksListSortFieldEnum,
   UpdateTask,
@@ -215,7 +217,10 @@ export class TasksManager {
     return this._fixRowColumns(row);
   }
 
-  async findOneByIdAndUserId(taskId: string, userId: string): Promise<Task | null> {
+  async findOneByIdAndUserId(
+    taskId: string,
+    userId: string
+  ): Promise<(Task & { list: List | null }) | null> {
     const rows = await getDatabase()
       .select()
       .from(tasks)
@@ -238,7 +243,10 @@ export class TasksManager {
 
     const task = this._fixRowColumns(row.tasks);
 
-    return task;
+    return {
+      ...task,
+      list: row.lists,
+    };
   }
 
   async findMaxOrderByListId(listId: string | null): Promise<number> {
@@ -307,7 +315,7 @@ export class TasksManager {
     return this.userCanUpdate(userId, taskId);
   }
 
-  // Helpers
+  // API Helpers
   async list(userId: string, listId: string, options: TaskManagerListOptions) {
     const { query, includeCompleted, includeDeleted, sortField, sortDirection } = options;
 
@@ -345,6 +353,11 @@ export class TasksManager {
     }
 
     await this.reorderList(newListId, userId, sortDirection, originalTaskId, newTaskId);
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
+      userId,
+      listId,
+    });
   }
 
   async view(userId: string, taskId: string) {
@@ -382,6 +395,13 @@ export class TasksManager {
       await this.setTags(data.id, tagIds);
     }
 
+    globalEventNotifier.publish(GlobalEventsEnum.TASK_ADDED, {
+      userId: user.id,
+      taskId: data.id,
+      listId: data.listId,
+      teamId: list?.teamId ?? null,
+    });
+
     return data;
   }
 
@@ -395,8 +415,9 @@ export class TasksManager {
       throw new Error('You can not update a deleted task');
     }
 
+    let list: List | null = null;
     if (data.listId) {
-      const list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
+      list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
       if (!list) {
         throw new Error('List not found');
       }
@@ -416,6 +437,13 @@ export class TasksManager {
       await this.setTags(task.id, tagIds);
     }
 
+    globalEventNotifier.publish(GlobalEventsEnum.TASK_EDITED, {
+      userId: user.id,
+      taskId: task.id,
+      listId: task.listId,
+      teamId: list?.teamId ?? task.list?.teamId ?? null,
+    });
+
     return updatedData;
   }
 
@@ -425,11 +453,21 @@ export class TasksManager {
       throw new Error('Task not found');
     }
 
-    return isHardDelete
+    const data = isHardDelete
       ? await this.deleteOneById(taskId)
       : await this.updateOneById(taskId, {
           deletedAt: new Date(),
         });
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASK_DELETED, {
+      userId,
+      taskId,
+      listId: task.listId,
+      teamId: task.list?.teamId ?? null,
+      isHardDelete: !!isHardDelete,
+    });
+
+    return data;
   }
 
   async undelete(user: User, taskId: string) {
@@ -456,11 +494,26 @@ export class TasksManager {
       deletedAt: null,
     });
 
+    globalEventNotifier.publish(GlobalEventsEnum.TASK_UNDELETED, {
+      taskId,
+      listId: task.listId,
+      teamId: task.list?.teamId ?? null,
+    });
+
     return updatedData;
   }
 
   async duplicate(userId: string, taskId: string) {
-    return this.duplicateTask(userId, taskId);
+    const task = await this.duplicateTask(userId, taskId);
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASK_DUPLICATED, {
+      userId,
+      taskId,
+      listId: task?.listId ?? null,
+      teamId: task?.list?.teamId ?? null,
+    });
+
+    return task;
   }
 
   async complete(userId: string, taskId: string) {
@@ -469,9 +522,18 @@ export class TasksManager {
       throw new Error('Task not found');
     }
 
-    return this.updateOneById(taskId, {
+    const data = await this.updateOneById(taskId, {
       completedAt: new Date(),
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASK_COMPLETED, {
+      userId,
+      taskId,
+      listId: task.listId,
+      teamId: task.list?.teamId ?? null,
+    });
+
+    return data;
   }
 
   async uncomplete(userId: string, taskId: string) {
@@ -480,11 +542,21 @@ export class TasksManager {
       throw new Error('Task not found');
     }
 
-    return this.updateOneById(taskId, {
+    const data = this.updateOneById(taskId, {
       completedAt: null,
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASK_UNCOMPLETED, {
+      userId,
+      taskId,
+      listId: task.listId,
+      teamId: task.list?.teamId ?? null,
+    });
+
+    return data;
   }
 
+  // Helpers
   async updateReorder(map: { [key: string]: number }) {
     return getDatabase().transaction(async (tx) => {
       for (const taskId in map) {
@@ -522,7 +594,7 @@ export class TasksManager {
     return result[0].count ?? 0;
   }
 
-  async duplicateTask(userId: string, taskId: string): Promise<Task> {
+  async duplicateTask(userId: string, taskId: string) {
     const task = await this.findOneByIdAndUserId(taskId, userId);
     if (!task) {
       throw new Error('Task not found');
@@ -538,7 +610,12 @@ export class TasksManager {
 
     await this.reorderList(task.listId, userId, SortDirectionEnum.ASC, task.id, duplicatedTask.id);
 
-    return this._fixRowColumns(duplicatedTask);
+    const newTask = await this.findOneByIdAndUserId(duplicatedTask.id, userId);
+    if (!newTask) {
+      throw new Error('Duplicated task not found');
+    }
+
+    return newTask;
   }
 
   async reorderList(

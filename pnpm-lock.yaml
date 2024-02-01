@@ -418,6 +418,9 @@ importers:
       '@moaitime/emails-mailer':
         specifier: workspace:*
         version: link:../emails-mailer
+      '@moaitime/global-event-notifier':
+        specifier: workspace:*
+        version: link:../global-event-notifier
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging

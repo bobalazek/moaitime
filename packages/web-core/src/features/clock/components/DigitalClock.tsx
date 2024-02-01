@@ -16,7 +16,7 @@ export default function DigitalClock({
 
   return (
     <div
-      className="font-mono text-shadow pointer-events-none text-6xl font-extrabold text-white sm:text-7xl md:text-8xl lg:text-9xl"
+      className="text-shadow pointer-events-none font-mono text-6xl font-extrabold text-white sm:text-7xl md:text-8xl lg:text-9xl"
       data-test="clock--digital-clock"
     >
       {text}

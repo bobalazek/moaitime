@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 import { CreateTask, Task, UpdateTask } from '@moaitime/shared-common';
 
+import { useCalendarStore } from '../../calendar/state/calendarStore';
 import {
   addTask,
   completeTask,
@@ -89,6 +90,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       reloadSelectedListTasks,
       selectedListTasks,
     } = useListsStore.getState();
+    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
 
     const originalTask = selectedListTasks.find((task) => task.id === taskId);
 
@@ -112,6 +114,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     }
 
     await reloadSelectedListTasks();
+
+    if (window.location.pathname.startsWith('/calendar')) {
+      reloadCalendarEntriesDebounced();
+    }
 
     return editedTask;
   },
@@ -141,6 +147,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   deleteTask: async (taskId: string, isHardDelete?: boolean) => {
     const { reloadTasksCountMap, reloadSelectedListTasks } = useListsStore.getState();
+    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
 
     const deletedTask = await deleteTask(taskId, isHardDelete);
 
@@ -151,6 +158,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     await reloadSelectedListTasks();
     await reloadTasksCountMap();
+
+    if (window.location.pathname.startsWith('/calendar')) {
+      reloadCalendarEntriesDebounced();
+    }
 
     return deletedTask;
   },

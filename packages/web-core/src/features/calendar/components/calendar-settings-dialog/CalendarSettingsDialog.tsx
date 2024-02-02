@@ -47,7 +47,7 @@ export default function CalendarSettingsDialog() {
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
           <div>
             <div className="mb-1 flex items-center gap-1">
-              <h3 className="font-bold">My Calendars</h3>
+              <h3 className="font-bold">Calendars</h3>
               <CalendarSettingsDialogMyCalendarsActions />
               <UsageBadge limitKey="calendarsMaxPerUserCount" usageKey="calendarsCount" />
             </div>
@@ -83,7 +83,7 @@ export default function CalendarSettingsDialog() {
           </div>
           <div className="mt-4">
             <div className="mb-1 flex items-center gap-2">
-              <h3 className="font-bold">My Lists</h3>
+              <h3 className="font-bold">Lists</h3>
               <UsageBadge limitKey="listsMaxPerUserCount" usageKey="listsCount" />
             </div>
             {lists.length === 0 && (

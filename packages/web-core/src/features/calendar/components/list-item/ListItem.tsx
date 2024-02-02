@@ -1,4 +1,5 @@
 import { colord } from 'colord';
+import { UsersIcon } from 'lucide-react';
 
 import { List } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
@@ -55,7 +56,13 @@ export default function ListItem({ list, hideCheckbox }: ListItemProps) {
           />
         )}
         <div className="break-words px-6" data-test="calendar--list-item--name">
-          {list.name}
+          <span>{list.name}</span>
+          {list?.teamId && (
+            <span>
+              {' '}
+              <UsersIcon className="inline text-gray-400" size={16} />
+            </span>
+          )}
         </div>
       </div>
     </div>

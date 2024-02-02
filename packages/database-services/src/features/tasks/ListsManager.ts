@@ -90,10 +90,23 @@ export class ListsManager {
   // Permissions
   async userCanView(userId: string, listId: string): Promise<boolean> {
     const row = await getDatabase().query.lists.findFirst({
-      where: and(eq(lists.id, listId), eq(lists.userId, userId)),
+      where: eq(lists.id, listId),
     });
 
-    return !!row;
+    if (!row) {
+      return false;
+    }
+
+    if (row.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (row.teamId && teamIds.includes(row.teamId)) {
+      return true;
+    }
+
+    return false;
   }
 
   async userCanUpdate(userId: string, listId: string): Promise<boolean> {
@@ -278,24 +291,37 @@ export class ListsManager {
   }
 
   async getVisibleListIdsByUserId(userId: string): Promise<string[]> {
-    const userListIds = await this.getUserSettingsListIds(userId);
+    const useSettingsListIds = await this.getUserSettingsListIds(userId);
     const idsSet = new Set<string>();
 
-    // Lists
-    const rows = await this.findMany({
+    // User Lists
+    const userLists = await this.findMany({
       columns: {
         id: true,
       },
       where: eq(lists.userId, userId),
     });
 
-    for (const row of rows) {
+    for (const row of userLists) {
+      idsSet.add(row.id);
+    }
+
+    // Team Lists
+    const teamIds = await usersManager.getTeamIds(userId);
+    const teamLists = await this.findMany({
+      columns: {
+        id: true,
+      },
+      where: inArray(lists.teamId, teamIds),
+    });
+
+    for (const row of teamLists) {
       idsSet.add(row.id);
     }
 
     // Check
-    if (!userListIds.includes('*')) {
-      const finalIds = new Set(userListIds);
+    if (!useSettingsListIds.includes('*')) {
+      const finalIds = new Set(useSettingsListIds);
 
       for (const id of idsSet) {
         if (finalIds.has(id)) {

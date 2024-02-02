@@ -93,7 +93,7 @@ export class TagsManager {
   }
 
   async view(userId: string, tagId: string) {
-    const canView = await this.userCanView(tagId, userId);
+    const canView = await this.userCanView(userId, tagId);
     if (!canView) {
       throw new Error('You cannot view this tag');
     }
@@ -120,7 +120,7 @@ export class TagsManager {
   }
 
   async update(userId: string, tagId: string, data: UpdateTag) {
-    const canUpdate = await this.userCanUpdate(tagId, userId);
+    const canUpdate = await this.userCanUpdate(userId, tagId);
     if (!canUpdate) {
       throw new Error('You cannot update this tag');
     }
@@ -129,7 +129,7 @@ export class TagsManager {
   }
 
   async delete(userId: string, tagId: string, isHardDelete?: boolean) {
-    const canDelete = await tagsManager.userCanDelete(tagId, userId);
+    const canDelete = await tagsManager.userCanDelete(userId, tagId);
     if (!canDelete) {
       throw new Error('You cannot delete this tag');
     }
@@ -142,7 +142,7 @@ export class TagsManager {
   }
 
   async undelete(userId: string, tagId: string) {
-    const canDelete = await tagsManager.userCanUpdate(tagId, userId);
+    const canDelete = await tagsManager.userCanUpdate(userId, tagId);
     if (!canDelete) {
       throw new Error('You cannot undelete this tag');
     }

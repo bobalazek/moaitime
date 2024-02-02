@@ -106,7 +106,7 @@ export class TagsManager {
     return data;
   }
 
-  async create(user: User, data: CreateTag) {
+  async create(user: User, createData: CreateTag) {
     const tagsMaxPerUserCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
 
     const tagsCount = await this.countByUserId(user.id);
@@ -116,13 +116,27 @@ export class TagsManager {
       );
     }
 
-    return this.insertOne({ ...data, userId: user.id });
+    if (createData.teamId) {
+      const teamIds = await usersManager.getTeamIds(user.id);
+      if (!teamIds.includes(createData.teamId)) {
+        throw new Error('You cannot create a tag for this team');
+      }
+    }
+
+    return this.insertOne({ ...createData, userId: user.id });
   }
 
   async update(userId: string, tagId: string, data: UpdateTag) {
     const canUpdate = await this.userCanUpdate(userId, tagId);
     if (!canUpdate) {
       throw new Error('You cannot update this tag');
+    }
+
+    if (data.teamId) {
+      const teamIds = await usersManager.getTeamIds(userId);
+      if (!teamIds.includes(data.teamId)) {
+        throw new Error('You cannot assign a tag from this team');
+      }
     }
 
     return this.updateOneById(tagId, data);

@@ -9,6 +9,8 @@ export const TagSchema = z.object({
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  userId: z.string(),
+  teamId: z.string().nullable(),
 });
 
 export const CreateTagSchema = z.object({
@@ -16,6 +18,7 @@ export const CreateTagSchema = z.object({
     message: 'Tag name must be provided',
   }),
   color: ColorSchema.nullable().optional(),
+  teamId: z.string().nullable().optional(),
 });
 
 export const UpdateTagSchema = CreateTagSchema.partial();

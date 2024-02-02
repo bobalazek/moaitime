@@ -23,7 +23,7 @@ export const subscriptions = pgTable(
   },
   (table) => {
     return {
-      organizationIdIdx: index('lists_user_id_idx').on(table.organizationId),
+      organizationIdIdx: index('subscriptions_user_id_idx').on(table.organizationId),
     };
   }
 );

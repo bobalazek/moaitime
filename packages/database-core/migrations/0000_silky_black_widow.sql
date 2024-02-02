@@ -176,7 +176,8 @@ CREATE TABLE IF NOT EXISTS "tags" (
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	"user_id" uuid NOT NULL
+	"user_id" uuid NOT NULL,
+	"team_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tasks" (
@@ -333,14 +334,16 @@ CREATE INDEX IF NOT EXISTS "notes_user_id_idx" ON "notes" ("user_id");--> statem
 CREATE INDEX IF NOT EXISTS "organizations_user_id_idx" ON "organizations" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_users_organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_users_user_id_idx" ON "organization_users" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "subscriptions" ("organization_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "subscriptions_user_id_idx" ON "subscriptions" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "quotes_user_id_idx" ON "quotes" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tags_user_id_idx" ON "tags" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "tags_team_id_idx" ON "tags" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tasks_user_id_idx" ON "tasks" ("list_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tasks_list_id_idx" ON "tasks" ("list_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tasks_parent_id_idx" ON "tasks" ("parent_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_tags_task_id_idx" ON "task_tags" ("task_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_tags_tag_id_idx" ON "task_tags" ("tag_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "teams_user_id_idx" ON "teams" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "teams_organization_id_idx" ON "teams" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_user_id_idx" ON "team_users" ("user_id");--> statement-breakpoint
@@ -466,6 +469,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "tags" ADD CONSTRAINT "tags_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "tags" ADD CONSTRAINT "tags_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

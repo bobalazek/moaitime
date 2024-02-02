@@ -2,6 +2,7 @@ import { relations } from 'drizzle-orm';
 import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { taskTags } from './taskTags';
+import { teams } from './teams';
 import { users } from './users';
 
 export const tags = pgTable(
@@ -18,10 +19,14 @@ export const tags = pgTable(
       .references(() => users.id, {
         onDelete: 'cascade',
       }),
+    teamId: uuid('team_id').references(() => teams.id, {
+      onDelete: 'set null',
+    }),
   },
   (table) => {
     return {
       userIdIdx: index('tags_user_id_idx').on(table.userId),
+      teamIdIdx: index('tags_team_id_idx').on(table.teamId),
     };
   }
 );

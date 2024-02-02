@@ -21,7 +21,7 @@ export const teams = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('teams_organization_id_idx').on(table.userId),
+      userIdIdx: index('teams_user_id_idx').on(table.userId),
       organizationIdIdx: index('teams_organization_id_idx').on(table.organizationId),
     };
   }

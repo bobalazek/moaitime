@@ -395,7 +395,7 @@ export class TasksManager {
       await this.setTags(data.id, tagIds);
     }
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASK_ADDED, {
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
       userId: user.id,
       taskId: data.id,
       listId: data.listId,
@@ -437,7 +437,7 @@ export class TasksManager {
       await this.setTags(task.id, tagIds);
     }
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASK_EDITED, {
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
       userId: user.id,
       taskId: task.id,
       listId: task.listId,
@@ -459,7 +459,7 @@ export class TasksManager {
           deletedAt: new Date(),
         });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASK_DELETED, {
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_DELETED, {
       userId,
       taskId,
       listId: task.listId,
@@ -494,7 +494,7 @@ export class TasksManager {
       deletedAt: null,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASK_UNDELETED, {
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
       taskId,
       listId: task.listId,
       teamId: task.list?.teamId ?? null,
@@ -506,7 +506,7 @@ export class TasksManager {
   async duplicate(userId: string, taskId: string) {
     const task = await this.duplicateTask(userId, taskId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASK_DUPLICATED, {
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_DUPLICATED, {
       userId,
       taskId,
       listId: task?.listId ?? null,
@@ -526,7 +526,7 @@ export class TasksManager {
       completedAt: new Date(),
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASK_COMPLETED, {
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
       userId,
       taskId,
       listId: task.listId,
@@ -546,7 +546,7 @@ export class TasksManager {
       completedAt: null,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASK_UNCOMPLETED, {
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
       userId,
       taskId,
       listId: task.listId,

@@ -1,5 +1,5 @@
 {
-  "id": "848cbd43-284e-4b62-b436-89b72da7ffd1",
+  "id": "d08a378c-9b0f-48ec-9ed9-9cf6359922a1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1159,8 +1159,8 @@
         }
       },
       "indexes": {
-        "lists_user_id_idx": {
-          "name": "lists_user_id_idx",
+        "subscriptions_user_id_idx": {
+          "name": "subscriptions_user_id_idx",
           "columns": ["organization_id"],
           "isUnique": false
         }
@@ -1304,12 +1304,23 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
         "tags_user_id_idx": {
           "name": "tags_user_id_idx",
           "columns": ["user_id"],
+          "isUnique": false
+        },
+        "tags_team_id_idx": {
+          "name": "tags_team_id_idx",
+          "columns": ["team_id"],
           "isUnique": false
         }
       },
@@ -1321,6 +1332,15 @@
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tags_team_id_teams_id_fk": {
+          "name": "tags_team_id_teams_id_fk",
+          "tableFrom": "tags",
+          "tableTo": "teams",
+          "columnsFrom": ["team_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -1602,6 +1622,11 @@
         }
       },
       "indexes": {
+        "teams_user_id_idx": {
+          "name": "teams_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
         "teams_organization_id_idx": {
           "name": "teams_organization_id_idx",
           "columns": ["organization_id"],
@@ -2360,8 +2385,8 @@
   "enums": {},
   "schemas": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
+    "tables": {}
   }
 }

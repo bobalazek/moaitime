@@ -13,6 +13,7 @@ import {
 import { sonnerToast } from '@moaitime/web-ui';
 
 import { useBackgroundStore } from '../../background/state/backgroundStore';
+import { websocketManager } from '../../core/utils/WebsocketManager';
 import { useGreetingStore } from '../../greeting/state/greetingStore';
 import { useQuoteStore } from '../../quote/state/quoteStore';
 import { useListsStore } from '../../tasks/state/listsStore';
@@ -282,6 +283,9 @@ export const useAuthStore = create<AuthStore>()(
         reloadLists();
         reloadTasksCountMap();
         reloadTags();
+
+        // Websocket
+        websocketManager.connect(auth.userAccessToken.token);
 
         // Backgrounds
         (async () => {

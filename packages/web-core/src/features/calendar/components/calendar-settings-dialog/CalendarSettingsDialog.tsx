@@ -60,7 +60,7 @@ export default function CalendarSettingsDialog() {
           </div>
           <div className="mt-4">
             <div className="mb-1 flex items-center gap-1">
-              <h3 className="font-bold">Shared Calendars</h3>
+              <h3 className="font-bold">External Calendars</h3>
               <CalendarSettingsDialogUserCalendarsActions />
               <UsageBadge
                 limitKey="calendarsMaxUserCalendarsPerUserCount"

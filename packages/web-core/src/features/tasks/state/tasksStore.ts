@@ -70,6 +70,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   },
   addTask: async (task: CreateTask) => {
     const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
+    const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
 
     const addedTask = await addTask(task);
 
@@ -79,6 +80,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     await reloadTasksCountMap();
     await reloadSelectedListTasks();
+
+    if (window.location.pathname.startsWith('/calendar')) {
+      reloadCalendarEntriesDebounced();
+    }
 
     return addedTask;
   },

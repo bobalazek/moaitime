@@ -15,7 +15,7 @@ import { StatisticsModule } from './features/statistics/statistics.module';
 import { TasksModule } from './features/tasks/tasks.module';
 import { TestingModule } from './features/testing/testing.module';
 import { WeatherModule } from './features/weather/weather.module';
-import { WebsocketGateway } from './gateways/websocket.gateway';
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -30,10 +30,11 @@ import { WebsocketGateway } from './gateways/websocket.gateway';
     MoodModule,
     FocusModule,
     StatisticsModule,
+    WebsocketModule,
     TestingModule,
   ],
   controllers: [AppController],
-  providers: [WebsocketGateway],
+  providers: [],
 })
 export class AppModule implements OnApplicationShutdown {
   async onApplicationShutdown() {

@@ -118,7 +118,7 @@ export class AuthManager {
     const userSetings = this._usersManager.getUserSettings(newUser);
 
     await this._calendarsManager.insertOne({
-      name: `${newUser.displayName}'s Calendar`,
+      name: `📅 ${newUser.displayName}'s Calendar`,
       userId: newUser.id,
       timezone: userSetings.generalTimezone,
     });

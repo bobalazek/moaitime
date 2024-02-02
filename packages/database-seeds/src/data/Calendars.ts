@@ -19,7 +19,7 @@ export const getCalendarSeeds = async (): Promise<NewCalendar[]> => {
     }
 
     calendars.push({
-      name: `${user.displayName}'s Calendar`,
+      name: `📅 ${user.displayName}'s Calendar`,
       timezone: user.settings?.generalTimezone ?? 'UTC',
       userId: user.id,
       color: MAIN_COLORS[0].value,

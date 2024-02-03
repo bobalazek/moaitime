@@ -1,5 +1,7 @@
 import { Module, OnModuleDestroy } from '@nestjs/common';
 
+import { getEnv } from '@moaitime/shared-backend';
+
 import { globalNotifierSubscription, WebsocketGateway } from './gateways/websocket.gateway';
 
 @Module({
@@ -9,7 +11,11 @@ import { globalNotifierSubscription, WebsocketGateway } from './gateways/websock
 })
 export class WebsocketModule implements OnModuleDestroy {
   async onModuleDestroy() {
-    if (globalNotifierSubscription) {
+    const { NODE_ENV } = getEnv();
+
+    // The reason we only do that on production is because in development the HML will reload faster that we can close the connection,
+    // so we would often get issues that the server port is already used.
+    if (NODE_ENV === 'production' && globalNotifierSubscription) {
       await globalNotifierSubscription();
     }
   }

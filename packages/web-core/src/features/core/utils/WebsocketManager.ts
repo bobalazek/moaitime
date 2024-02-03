@@ -21,26 +21,42 @@ export class WebsocketManager {
     };
 
     this._socket.onmessage = async (event) => {
-      const data = JSON.parse(event.data) as {
-        type: GlobalEventsEnum;
-        payload: GlobalEvents[GlobalEventsEnum];
-      };
-
-      if (data.type.startsWith('tasks:')) {
-        const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
-
-        await reloadSelectedListTasks();
-        await reloadTasksCountMap();
-      }
+      await this._onMessage(event);
     };
 
     this._socket.onclose = () => {
-      // TODO: possibly reconnect?
+      this.disconnect();
     };
 
     this._socket.onerror = () => {
-      // TODO: handle error and possibly reconnect
+      this.disconnect();
     };
+  }
+
+  disconnect() {
+    if (!this._socket) {
+      return;
+    }
+
+    this._socket.close();
+    this._socket = null;
+
+    // TODO: Possibly try to reconnect?
+  }
+
+  // Private
+  async _onMessage(event: MessageEvent) {
+    const data = JSON.parse(event.data) as {
+      type: GlobalEventsEnum;
+      payload: GlobalEvents[GlobalEventsEnum];
+    };
+
+    if (data.type.startsWith('tasks:')) {
+      const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
+
+      await reloadSelectedListTasks();
+      await reloadTasksCountMap();
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import { Module, OnApplicationShutdown } from '@nestjs/common';
 
 import { destroyDatabase } from '@moaitime/database-core';
+import { logger } from '@moaitime/logging';
 
 import { AppController } from './controllers/app.controller';
 import { AuthModule } from './features/auth/auth.module';
@@ -38,6 +39,10 @@ import { WebsocketModule } from './websocket/websocket.module';
 })
 export class AppModule implements OnApplicationShutdown {
   async onApplicationShutdown() {
+    logger.info('[AppModule] Shutting down the app ...');
+
     await destroyDatabase();
+
+    logger.info('[AppModule] App has been shut down');
   }
 }

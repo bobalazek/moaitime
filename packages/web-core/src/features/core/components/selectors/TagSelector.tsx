@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
+import { CheckIcon, ChevronsUpDownIcon, UsersIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -18,15 +18,24 @@ import { useTagsStore } from '../../../tasks/state/tagsStore';
 export type TagSelectorProps = {
   value?: string[];
   onChangeValue: (value: string[]) => void;
+  teamId?: string | null; // Undefined means all lists, null means no list
 };
 
-export function TagSelector({ value, onChangeValue }: TagSelectorProps) {
+export function TagSelector({ value, onChangeValue, teamId }: TagSelectorProps) {
   const { tags, addTag } = useTagsStore();
   const [open, setOpen] = useState(false);
   const [commandValue, setCommandValue] = useState('');
 
   const selectedTags = tags.filter((tag) => value?.includes(tag.id));
-  const filteredTags = tags.filter((tag) => tag.name.includes(commandValue));
+  const filteredTags = tags.filter((tag) => {
+    const doesInclude = tag.name.includes(commandValue);
+
+    if (typeof teamId !== 'undefined') {
+      return doesInclude && tag.teamId === teamId;
+    }
+
+    return doesInclude;
+  });
 
   const onCreateTag = async () => {
     try {
@@ -71,7 +80,7 @@ export function TagSelector({ value, onChangeValue }: TagSelectorProps) {
             onValueChange={setCommandValue}
           />
           <CommandGroup>
-            {tags.length === 0 && (
+            {filteredTags.length === 0 && (
               <CommandItem disabled className="text-muted-foreground">
                 No tags found
               </CommandItem>
@@ -98,7 +107,13 @@ export function TagSelector({ value, onChangeValue }: TagSelectorProps) {
                     selectedTags.includes(tag) ? 'opacity-100' : 'opacity-0'
                   )}
                 />
-                {tag.name}
+                <span>{tag.name}</span>
+                {tag.teamId && (
+                  <span>
+                    {' '}
+                    <UsersIcon className="inline text-gray-400" size={16} />
+                  </span>
+                )}
               </CommandItem>
             ))}
             {filteredTags.length === 0 && commandValue && (

@@ -42,6 +42,7 @@ import {
 import { teamsManager } from '../auth/TeamsManager';
 import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
+import { tagsManager } from './TagsManager';
 
 export type TaskManagerListOptions = {
   includeCompleted?: boolean;
@@ -389,20 +390,20 @@ export class TasksManager {
     const maxOrderForListId = await this.findMaxOrderByListId(insertData?.listId ?? null);
     const order = maxOrderForListId + 1;
 
-    const data = await this.insertOne({ ...insertData, order, userId: user.id });
+    const task = await this.insertOne({ ...insertData, order, userId: user.id });
 
     if (Array.isArray(tagIds)) {
-      await this.setTags(data.id, tagIds);
+      await this.setTags(task, tagIds);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
       userId: user.id,
-      taskId: data.id,
-      listId: data.listId,
+      taskId: task.id,
+      listId: task.listId,
       teamId: list?.teamId ?? null,
     });
 
-    return data;
+    return task;
   }
 
   async update(user: User, taskId: string, data: UpdateTask) {
@@ -434,7 +435,7 @@ export class TasksManager {
     const updatedData = await this.updateOneById(taskId, updateData);
 
     if (Array.isArray(tagIds)) {
-      await this.setTags(task.id, tagIds);
+      await this.setTags(task, tagIds);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
@@ -709,11 +710,35 @@ export class TasksManager {
     return depth;
   }
 
-  async setTags(taskId: string, tagIds: string[]) {
+  async setTags(task: Task, tagIds: string[]) {
+    const newTags = await tagsManager.findMany({
+      where: inArray(tags.id, tagIds),
+    });
+    const list = task.listId ? await listsManager.findOneById(task.listId) : null;
+
+    // Check that we do not assign tags from different teams
+    let teamId: string | null = null;
+    if (list?.teamId) {
+      const teamIds = await usersManager.getTeamIds(task.userId);
+      if (!teamIds.includes(list.teamId)) {
+        throw new Error('You cannot assign a tag from this team');
+      }
+
+      teamId = list.teamId;
+    }
+
+    for (const tag of newTags) {
+      if (teamId === tag.teamId) {
+        continue;
+      }
+
+      throw new Error(`You cannot assign a tag (${tag.name}) from a user or from different teams`);
+    }
+
     const currentTaskTags = await getDatabase()
       .select()
       .from(taskTags)
-      .where(eq(taskTags.taskId, taskId))
+      .where(eq(taskTags.taskId, task.id))
       .execute();
 
     const currentTagIds = currentTaskTags.map((row) => row.tagId);
@@ -724,7 +749,7 @@ export class TasksManager {
     if (toDelete.length) {
       await getDatabase()
         .delete(taskTags)
-        .where(and(eq(taskTags.taskId, taskId), inArray(taskTags.tagId, toDelete)))
+        .where(and(eq(taskTags.taskId, task.id), inArray(taskTags.tagId, toDelete)))
         .execute();
     }
 
@@ -733,7 +758,7 @@ export class TasksManager {
         .insert(taskTags)
         .values(
           toInsert.map((tagId) => ({
-            taskId,
+            taskId: task.id,
             tagId,
           }))
         )

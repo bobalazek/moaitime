@@ -26,6 +26,7 @@ import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { PrioritySelector } from '../../../core/components/selectors/PrioritySelector';
 import { TagSelector } from '../../../core/components/selectors/TagSelector';
 import { TaskParentSelector } from '../../../core/components/selectors/TaskParentSelector';
+import { useListsStore } from '../../state/listsStore';
 import { useTagsStore } from '../../state/tagsStore';
 import { useTasksStore } from '../../state/tasksStore';
 
@@ -39,6 +40,7 @@ export default function TaskEditDialog() {
     deleteTask,
     undeleteTask,
   } = useTasksStore();
+  const { lists } = useListsStore();
   const { setTagsDialogOpen } = useTagsStore();
   const [data, setData] = useState<UpdateTask>();
 
@@ -64,6 +66,8 @@ export default function TaskEditDialog() {
   if (!selectedTaskDialogOpen || !data) {
     return null;
   }
+
+  const teamId = data?.listId ? lists.find((list) => list.id === data.listId)?.teamId : null;
 
   const onUndeleteButtonClick = async () => {
     if (!selectedTask) {
@@ -231,6 +235,7 @@ export default function TaskEditDialog() {
           <TagSelector
             value={data?.tagIds ?? []}
             onChangeValue={(value) => setData((current) => ({ ...current, tagIds: value }))}
+            teamId={teamId}
           />
         </div>
         <div className="flex flex-col gap-2">

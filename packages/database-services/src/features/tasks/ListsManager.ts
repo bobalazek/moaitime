@@ -141,6 +141,11 @@ export class ListsManager {
     let listsCount = 0;
 
     if (data.teamId) {
+      const teamIds = await usersManager.getTeamIds(user.id);
+      if (!teamIds.includes(data.teamId)) {
+        throw new Error('You cannot create a list for this team');
+      }
+
       const team = await teamsManager.findOneById(data.teamId);
       if (!team) {
         throw new Error('Team not found');

@@ -31,10 +31,10 @@ export class GlobalEventNotifier {
 
     this._redis.subscribe(GLOBAL_EVENTS_CHANNEL, wrappedCallback);
 
-    return () => {
+    return async () => {
       logger.debug(`[GlobalEventNotifier] Unsubscribing from global events ...`);
 
-      this._redis.unsubscribe(GLOBAL_EVENTS_CHANNEL, wrappedCallback);
+      return this._redis.unsubscribe(GLOBAL_EVENTS_CHANNEL, wrappedCallback);
     };
   }
 }

@@ -52,6 +52,8 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     const newFocusSession = await addFocusSession(focusSession);
 
     globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
+      userId: newFocusSession.userId,
+      focusSessionId: newFocusSession.id,
       focusSession: newFocusSession,
     });
 
@@ -65,6 +67,8 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     const editedFocusSession = await editFocusSession(focusSessionId, focusSession);
 
     globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_EDITED, {
+      userId: editedFocusSession.userId,
+      focusSessionId: editedFocusSession.id,
       focusSession: editedFocusSession,
     });
 
@@ -80,8 +84,10 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     const deletedFocusSession = await deleteFocusSession(focusSessionId, isHardDelete);
 
     globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED, {
+      userId: deletedFocusSession.userId,
+      focusSessionId: deletedFocusSession.id,
       focusSession: deletedFocusSession,
-      isHardDelete: !!isHardDelete,
+      isHardDelete,
     });
 
     if (currentFocusSession?.id === focusSessionId) {
@@ -94,6 +100,8 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     const undeletedFocusSession = await undeleteFocusSession(focusSessionId);
 
     globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED, {
+      userId: undeletedFocusSession.userId,
+      focusSessionId: undeletedFocusSession.id,
       focusSession: undeletedFocusSession,
     });
 
@@ -106,6 +114,8 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     const updatedFocusSession = await triggerFocusSessionAction(focusSessionId, action);
 
     globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
+      userId: updatedFocusSession.userId,
+      focusSessionId: updatedFocusSession.id,
       focusSession: updatedFocusSession,
       action,
     });
@@ -119,6 +129,8 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
 
     if (focusSession && currentFocusSession && focusSession.stage !== currentFocusSession.stage) {
       globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_CURRENT_STAGE_CHANGED, {
+        userId: focusSession.userId,
+        focusSessionId: focusSession.id,
         focusSession,
         stage: focusSession.stage,
       });

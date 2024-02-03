@@ -8,6 +8,7 @@ export const MoodEntrySchema = z.object({
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  userId: z.string(),
 });
 
 export const CreateMoodEntrySchema = z.object({

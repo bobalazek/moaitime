@@ -1,3 +1,7 @@
+import { FocusSession } from '../focus/FocusSessionSchema';
+import { FocusSessionStageEnum } from '../focus/FocusSessionStageEnum';
+import { FocusSessionUpdateActionEnum } from '../focus/FocusSessionUpdateActionEnum';
+import { MoodEntry } from '../mood/MoodEntrySchema';
 import { List } from '../tasks/ListSchema';
 import { Task } from '../tasks/TaskSchema';
 
@@ -37,55 +41,56 @@ export type GlobalEvents = {
   [GlobalEventsEnum.TASKS_TASK_ADDED]: {
     userId: string; // Who did the action?
     taskId: string; // What task was added?
-    listId: string | null; // What list was the task added to?
-    teamId: string | null; // For what team was the task added (the teamId from the list)?
+    listId?: string; // What list was the task added to?
+    teamId?: string; // For what team was the task added (the teamId from the list)?
     task?: Task;
   };
   [GlobalEventsEnum.TASKS_TASK_EDITED]: {
     userId: string;
     taskId: string;
-    listId: string | null;
-    teamId: string | null;
+    listId?: string;
+    teamId?: string;
     task?: Task;
   };
   [GlobalEventsEnum.TASKS_TASK_DELETED]: {
     userId: string;
     taskId: string;
-    listId: string | null;
-    teamId: string | null;
-    isHardDelete: boolean;
+    listId?: string;
+    teamId?: string;
+    isHardDelete?: boolean;
     task?: Task;
   };
   [GlobalEventsEnum.TASKS_TASK_UNDELETED]: {
+    userId: string;
     taskId: string;
-    listId: string | null;
-    teamId: string | null;
+    listId?: string;
+    teamId?: string;
     task?: Task;
   };
   [GlobalEventsEnum.TASKS_TASK_COMPLETED]: {
     userId: string;
     taskId: string;
-    listId: string | null;
-    teamId: string | null;
+    listId?: string;
+    teamId?: string;
     task?: Task;
   };
   [GlobalEventsEnum.TASKS_TASK_UNCOMPLETED]: {
     userId: string;
     taskId: string;
-    listId: string | null;
-    teamId: string | null;
+    listId?: string;
+    teamId?: string;
     task?: Task;
   };
   [GlobalEventsEnum.TASKS_TASK_DUPLICATED]: {
     userId: string;
     taskId: string;
-    listId: string | null;
-    teamId: string | null;
+    listId?: string;
+    teamId?: string;
     task?: Task;
   };
   [GlobalEventsEnum.TASKS_REORDERED]: {
     userId: string;
-    listId: string | null;
+    listId?: string;
     task?: Task;
   };
   // Lists
@@ -113,5 +118,66 @@ export type GlobalEvents = {
     userId: string;
     listId: string;
     list?: List;
+  };
+  // Focus
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED]: {
+    userId: string;
+    focusSessionId: string;
+    focusSession?: FocusSession;
+  };
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_EDITED]: {
+    userId: string;
+    focusSessionId: string;
+    focusSession?: FocusSession;
+  };
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED]: {
+    userId: string;
+    focusSessionId: string;
+    isHardDelete?: boolean;
+    focusSession?: FocusSession;
+  };
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED]: {
+    userId: string;
+    focusSessionId: string;
+    focusSession?: FocusSession;
+  };
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED]: {
+    userId: string;
+    focusSessionId: string;
+    focusSession?: FocusSession;
+  };
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED]: {
+    userId: string;
+    focusSessionId: string;
+    action: FocusSessionUpdateActionEnum;
+    focusSession?: FocusSession;
+  };
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_CURRENT_STAGE_CHANGED]: {
+    userId: string;
+    focusSessionId: string;
+    stage: FocusSessionStageEnum;
+    focusSession?: FocusSession;
+  };
+  // Mood
+  [GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED]: {
+    userId: string;
+    moodEntryId: string;
+    moodEntry?: MoodEntry;
+  };
+  [GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED]: {
+    userId: string;
+    moodEntryId: string;
+    moodEntry?: MoodEntry;
+  };
+  [GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED]: {
+    userId: string;
+    moodEntryId: string;
+    isHardDelete?: boolean;
+    moodEntry?: MoodEntry;
+  };
+  [GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED]: {
+    userId: string;
+    moodEntryId: string;
+    moodEntry?: MoodEntry;
   };
 };

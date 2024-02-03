@@ -26,6 +26,7 @@ export const TaskBaseSchema = z.object({
   tags: z.array(TagSchema).optional(),
   tagIds: z.array(z.string()).optional(),
   list: ListSchema.optional(),
+  userId: z.string(),
 });
 
 export const TaskSchema = TaskBaseSchema.extend({

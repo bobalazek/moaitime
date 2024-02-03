@@ -72,6 +72,7 @@ export const FocusSessionSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   taskId: z.string().nullable(),
+  userId: z.string(),
 });
 
 export const CreateFocusSessionSchema = z.object({

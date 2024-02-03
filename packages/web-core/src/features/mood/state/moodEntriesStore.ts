@@ -42,7 +42,11 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   addMoodEntry: async (moodEntry: CreateMoodEntry) => {
     const addedMoodEntry = await addMoodEntry(moodEntry);
 
-    globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, { moodEntry: addedMoodEntry });
+    globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
+      userId: addedMoodEntry.userId,
+      moodEntryId: addedMoodEntry.id,
+      moodEntry: addedMoodEntry,
+    });
 
     return addedMoodEntry;
   },
@@ -50,6 +54,8 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
     const editedMoodEntry = await editMoodEntry(moodEntryId, moodEntry);
 
     globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
+      userId: editedMoodEntry.userId,
+      moodEntryId: editedMoodEntry.id,
       moodEntry: editedMoodEntry,
     });
 
@@ -59,8 +65,10 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
     const deletedMoodEntry = await deleteMoodEntry(moodEntryId, isHardDelete);
 
     globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
+      userId: deletedMoodEntry.userId,
+      moodEntryId: deletedMoodEntry.id,
       moodEntry: deletedMoodEntry,
-      isHardDelete: !!isHardDelete,
+      isHardDelete,
     });
 
     return deletedMoodEntry;
@@ -69,6 +77,8 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
     const undeletedMoodEntry = await undeleteMoodEntry(moodEntryId);
 
     globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
+      userId: undeletedMoodEntry.userId,
+      moodEntryId: undeletedMoodEntry.id,
       moodEntry: undeletedMoodEntry,
     });
 

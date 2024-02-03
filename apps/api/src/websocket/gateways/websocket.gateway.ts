@@ -15,7 +15,7 @@ import { logger } from '@moaitime/logging';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 // TODO: is there a more optimal way to do this?
-export let globalNotifierSubscription: () => void;
+export let globalNotifierSubscription: () => Promise<void>;
 
 @WebSocketGateway({ path: '/ws', cors: true })
 export class WebsocketGateway

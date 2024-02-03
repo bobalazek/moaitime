@@ -357,7 +357,7 @@ export class TasksManager {
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
       userId,
-      listId,
+      listId: listId ?? undefined,
     });
   }
 
@@ -399,8 +399,8 @@ export class TasksManager {
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
       userId: user.id,
       taskId: task.id,
-      listId: task.listId,
-      teamId: list?.teamId ?? null,
+      listId: task.listId ?? undefined,
+      teamId: list?.teamId ?? undefined,
     });
 
     return task;
@@ -441,8 +441,8 @@ export class TasksManager {
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
       userId: user.id,
       taskId: task.id,
-      listId: task.listId,
-      teamId: list?.teamId ?? task.list?.teamId ?? null,
+      listId: task.listId ?? undefined,
+      teamId: list?.teamId ?? task.list?.teamId ?? undefined,
     });
 
     return updatedData;
@@ -463,9 +463,9 @@ export class TasksManager {
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_DELETED, {
       userId,
       taskId,
-      listId: task.listId,
-      teamId: task.list?.teamId ?? null,
-      isHardDelete: !!isHardDelete,
+      listId: task.listId ?? undefined,
+      teamId: task.list?.teamId ?? undefined,
+      isHardDelete: isHardDelete,
     });
 
     return data;
@@ -497,8 +497,8 @@ export class TasksManager {
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
       taskId,
-      listId: task.listId,
-      teamId: task.list?.teamId ?? null,
+      listId: task.listId ?? undefined,
+      teamId: task.list?.teamId ?? undefined,
     });
 
     return updatedData;
@@ -510,8 +510,8 @@ export class TasksManager {
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_DUPLICATED, {
       userId,
       taskId,
-      listId: task?.listId ?? null,
-      teamId: task?.list?.teamId ?? null,
+      listId: task?.listId ?? undefined,
+      teamId: task?.list?.teamId ?? undefined,
     });
 
     return task;
@@ -530,8 +530,8 @@ export class TasksManager {
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
       userId,
       taskId,
-      listId: task.listId,
-      teamId: task.list?.teamId ?? null,
+      listId: task.listId ?? undefined,
+      teamId: task.list?.teamId ?? undefined,
     });
 
     return data;
@@ -550,8 +550,8 @@ export class TasksManager {
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
       userId,
       taskId,
-      listId: task.listId,
-      teamId: task.list?.teamId ?? null,
+      listId: task.listId ?? undefined,
+      teamId: task.list?.teamId ?? undefined,
     });
 
     return data;

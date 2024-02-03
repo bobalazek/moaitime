@@ -9,6 +9,8 @@ import { globalNotifierSubscription, WebsocketGateway } from './gateways/websock
 })
 export class WebsocketModule implements OnModuleDestroy {
   async onModuleDestroy() {
-    globalNotifierSubscription?.();
+    if (globalNotifierSubscription) {
+      await globalNotifierSubscription();
+    }
   }
 }

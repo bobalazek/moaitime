@@ -149,8 +149,8 @@ export class TagsManager {
     }
 
     return isHardDelete
-      ? await this.deleteOneById(tagId)
-      : await this.updateOneById(tagId, {
+      ? this.deleteOneById(tagId)
+      : this.updateOneById(tagId, {
           deletedAt: new Date(),
         });
   }

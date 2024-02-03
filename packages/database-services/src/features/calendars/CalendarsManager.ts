@@ -207,8 +207,8 @@ export class CalendarsManager {
     }
 
     return isHardDelete
-      ? await this.deleteOneById(calendarId)
-      : await this.updateOneById(calendarId, {
+      ? this.deleteOneById(calendarId)
+      : this.updateOneById(calendarId, {
           deletedAt: new Date(),
         });
   }

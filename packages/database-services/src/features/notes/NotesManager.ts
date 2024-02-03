@@ -178,8 +178,8 @@ export class NotesManager {
     }
 
     return isHardDelete
-      ? await this.deleteOneById(noteId)
-      : await this.updateOneById(noteId, {
+      ? this.deleteOneById(noteId)
+      : this.updateOneById(noteId, {
           deletedAt: new Date(),
         });
   }

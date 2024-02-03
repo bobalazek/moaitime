@@ -161,8 +161,8 @@ export class FocusSessionsManager {
     }
 
     return isHardDelete
-      ? await this.deleteOneById(focusSessionId)
-      : await this.updateOneById(focusSessionId, {
+      ? this.deleteOneById(focusSessionId)
+      : this.updateOneById(focusSessionId, {
           deletedAt: new Date(),
         });
   }

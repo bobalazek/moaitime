@@ -270,8 +270,8 @@ export class MoodEntriesManager {
     }
 
     return isHardDelete
-      ? await this.deleteOneById(moodEntryId)
-      : await this.updateOneById(moodEntryId, {
+      ? this.deleteOneById(moodEntryId)
+      : this.updateOneById(moodEntryId, {
           deletedAt: new Date(),
         });
   }

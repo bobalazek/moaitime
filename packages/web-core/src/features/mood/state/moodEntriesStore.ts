@@ -7,6 +7,7 @@ import {
   UpdateMoodEntry,
 } from '@moaitime/shared-common';
 
+import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
   addMoodEntry,
   deleteMoodEntry,
@@ -14,7 +15,6 @@ import {
   getMoodEntry,
   undeleteMoodEntry,
 } from '../utils/MoodHelpers';
-import { moodEntriesEmitter } from './moodEntriesEmitter';
 
 export type MoodEntrieStore = {
   /********** Mood Entries **********/
@@ -42,14 +42,14 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   addMoodEntry: async (moodEntry: CreateMoodEntry) => {
     const addedMoodEntry = await addMoodEntry(moodEntry);
 
-    moodEntriesEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, { moodEntry: addedMoodEntry });
+    globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, { moodEntry: addedMoodEntry });
 
     return addedMoodEntry;
   },
   editMoodEntry: async (moodEntryId: string, moodEntry: UpdateMoodEntry) => {
     const editedMoodEntry = await editMoodEntry(moodEntryId, moodEntry);
 
-    moodEntriesEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
       moodEntry: editedMoodEntry,
     });
 
@@ -58,7 +58,7 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   deleteMoodEntry: async (moodEntryId: string, isHardDelete?: boolean) => {
     const deletedMoodEntry = await deleteMoodEntry(moodEntryId, isHardDelete);
 
-    moodEntriesEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
       moodEntry: deletedMoodEntry,
       isHardDelete: !!isHardDelete,
     });
@@ -68,7 +68,7 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
   undeleteMoodEntry: async (moodEntryId: string) => {
     const undeletedMoodEntry = await undeleteMoodEntry(moodEntryId);
 
-    moodEntriesEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
       moodEntry: undeletedMoodEntry,
     });
 

@@ -5,7 +5,7 @@ import { GlobalEventsEnum } from '@moaitime/shared-common';
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { useEscapeToHome } from '../../../core/hooks/useEscapeToHome';
-import { focusSessionsEmitter } from '../../state/focusSessionsEmitter';
+import { globalEventsEmitter } from '../../../core/state/globalEventsEmitter';
 import { useFocusSessionsStore } from '../../state/focusSessionsStore';
 import {
   playChangeFocusSessionStageSound,
@@ -48,18 +48,18 @@ export default function FocusPage() {
       playChangeFocusSessionStageSound();
     };
 
-    focusSessionsEmitter.on(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, focusSessionAddedCallback);
-    focusSessionsEmitter.on(
+    globalEventsEmitter.on(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, focusSessionAddedCallback);
+    globalEventsEmitter.on(
       GlobalEventsEnum.FOCUS_FOCUS_SESSION_CURRENT_STAGE_CHANGED,
       focusSessionUpdatedCallback
     );
 
     return () => {
-      focusSessionsEmitter.off(
+      globalEventsEmitter.off(
         GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED,
         focusSessionAddedCallback
       );
-      focusSessionsEmitter.off(
+      globalEventsEmitter.off(
         GlobalEventsEnum.FOCUS_FOCUS_SESSION_CURRENT_STAGE_CHANGED,
         focusSessionUpdatedCallback
       );

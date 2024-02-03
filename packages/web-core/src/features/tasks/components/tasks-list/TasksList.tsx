@@ -20,8 +20,8 @@ import ConfettiExplosion from 'react-confetti-explosion';
 
 import { GlobalEventsEnum, TasksListSortFieldEnum } from '@moaitime/shared-common';
 
+import { globalEventsEmitter } from '../../../core/state/globalEventsEmitter';
 import { useListsStore } from '../../state/listsStore';
-import { tasksEmitter } from '../../state/tasksEmitter';
 import { useTasksStore } from '../../state/tasksStore';
 import SortableTaskItem from '../task-item/SortableTaskItem';
 
@@ -84,10 +84,10 @@ export default function TasksList() {
       setShowConfetti(true);
     };
 
-    tasksEmitter.on(GlobalEventsEnum.TASKS_TASK_COMPLETED, taskCompletedCallback);
+    globalEventsEmitter.on(GlobalEventsEnum.TASKS_TASK_COMPLETED, taskCompletedCallback);
 
     return () => {
-      tasksEmitter.off(GlobalEventsEnum.TASKS_TASK_COMPLETED, taskCompletedCallback);
+      globalEventsEmitter.off(GlobalEventsEnum.TASKS_TASK_COMPLETED, taskCompletedCallback);
     };
   }, [selectedListTasksIncludeCompleted]);
 

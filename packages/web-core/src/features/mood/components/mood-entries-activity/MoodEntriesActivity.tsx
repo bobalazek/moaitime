@@ -9,8 +9,8 @@ import { Button } from '@moaitime/web-ui';
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
+import { globalEventsEmitter } from '../../../core/state/globalEventsEmitter';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
-import { moodEntriesEmitter } from '../../state/moodEntriesEmitter';
 import { playAddMoodEntrySound } from '../../utils/MoodHelpers';
 import { MoodEntry } from '../mood-entry/MoodEntry';
 
@@ -55,10 +55,16 @@ function MoodEntriesActivityInner() {
       refetch();
     };
 
-    moodEntriesEmitter.on('*', callback);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, callback);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, callback);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, callback);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, callback);
 
     return () => {
-      moodEntriesEmitter.off('*', callback);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, callback);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, callback);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, callback);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, callback);
     };
   }, [refetch]);
 
@@ -142,10 +148,10 @@ export default function MoodEntriesActivity() {
       playAddMoodEntrySound(moodEntry.happinessScore);
     };
 
-    moodEntriesEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, moodEntryAddedCallback);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, moodEntryAddedCallback);
 
     return () => {
-      moodEntriesEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, moodEntryAddedCallback);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, moodEntryAddedCallback);
     };
   }, [moodSoundsEnabled]);
 

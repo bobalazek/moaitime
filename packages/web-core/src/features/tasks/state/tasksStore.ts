@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { CreateTask, GlobalEventsEnum, Task, UpdateTask } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../calendar/state/calendarStore';
+import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
   addTask,
   completeTask,
@@ -16,7 +17,6 @@ import {
   undeleteTask,
 } from '../utils/TaskHelpers';
 import { useListsStore } from './listsStore';
-import { tasksEmitter } from './tasksEmitter';
 
 export type TasksStore = {
   /********** General **********/
@@ -74,7 +74,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const addedTask = await addTask(task);
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_ADDED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_ADDED, {
       task: addedTask,
     });
 
@@ -103,7 +103,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     // and we also need to set that as the selected list
     const editedTask = await editTask(taskId, task);
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_EDITED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_EDITED, {
       task: editedTask,
     });
 
@@ -134,7 +134,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       listId: newListId,
     });
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_EDITED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_EDITED, {
       task: movedTask,
     });
 
@@ -156,7 +156,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const deletedTask = await deleteTask(taskId, isHardDelete);
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_DELETED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_DELETED, {
       task: deletedTask,
       isHardDelete: !!isHardDelete,
     });
@@ -175,7 +175,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const undeletedTask = await undeleteTask(taskId);
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
       task: undeletedTask,
     });
 
@@ -189,7 +189,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const duplicatedTask = await duplicateTask(taskId);
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
       task: duplicatedTask,
     });
 
@@ -203,7 +203,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const completedTask = await completeTask(taskId);
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
       task: completedTask,
     });
 
@@ -217,7 +217,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     const uncompletedTask = await uncompleteTask(taskId);
 
-    tasksEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
       task: uncompletedTask,
     });
 

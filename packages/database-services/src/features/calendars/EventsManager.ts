@@ -269,20 +269,14 @@ export class EventsManager {
   }
 
   async create(user: User, data: CreateEvent) {
-    const calendarsMaxEventsPerCalendarCount = await usersManager.getUserLimit(
-      user,
-      'calendarsMaxEventsPerCalendarCount'
-    );
-
-    const eventsCount = await eventsManager.countByCalendarId(data.calendarId);
-    if (eventsCount >= calendarsMaxEventsPerCalendarCount) {
-      throw new Error(
-        `You have reached the maximum number of events per calendar (${calendarsMaxEventsPerCalendarCount}).`
-      );
+    const maxCount = await usersManager.getUserLimit(user, 'calendarsMaxEventsPerCalendarCount');
+    const currentCount = await eventsManager.countByCalendarId(data.calendarId);
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of events per calendar (${maxCount}).`);
     }
 
-    const canView = await calendarsManager.userCanView(user.id, data.calendarId);
-    if (!canView) {
+    const canViewCalendar = await calendarsManager.userCanView(user.id, data.calendarId);
+    if (!canViewCalendar) {
       throw new Error('Calendar not found');
     }
 

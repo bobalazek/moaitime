@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
+import { CheckIcon, ChevronsUpDownIcon, UsersIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Calendar } from '@moaitime/shared-common';
@@ -94,7 +94,13 @@ export function CalendarSelector({
                       value === calendar.id ? 'opacity-100' : 'opacity-0'
                     )}
                   />
-                  {calendar.name}
+                  <span>{calendar.name}</span>
+                  {calendar?.teamId && (
+                    <span className="ml-1">
+                      {' '}
+                      <UsersIcon className="inline text-gray-400" size={16} />
+                    </span>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>

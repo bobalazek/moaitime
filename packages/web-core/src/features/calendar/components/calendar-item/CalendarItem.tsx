@@ -1,4 +1,5 @@
 import { colord } from 'colord';
+import { UsersIcon } from 'lucide-react';
 
 import { Calendar, UserCalendar } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
@@ -64,10 +65,16 @@ export default function CalendarItem({
             data-test="calendar--calendar-item--visible-checkbox"
           />
         )}
-        <div className="break-words px-6" data-test="calendar--settings-dialog--calendar--name">
-          <span>{calendar.name}</span>
+        <div className="break-words px-6">
+          <span data-test="calendar--settings-dialog--calendar--name">{calendar.name}</span>
           {showSharedText && userCalendar && (
             <span className="text-muted-foreground text-xs"> (shared)</span>
+          )}
+          {calendar?.teamId && (
+            <span className="ml-1">
+              {' '}
+              <UsersIcon className="inline text-gray-400" size={16} />
+            </span>
           )}
         </div>
         <CalendarItemActions

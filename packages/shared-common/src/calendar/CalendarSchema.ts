@@ -15,6 +15,7 @@ export const CalendarSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   userId: z.string(),
+  teamId: z.string().nullable(),
   permissions: PermissionsSchema,
 });
 
@@ -24,9 +25,12 @@ export const CreateCalendarSchema = z.object({
   color: ColorSchema.optional(),
   timezone: z.string().optional(),
   isPublic: z.boolean().optional(),
+  teamId: z.string().nullable().optional(),
 });
 
-export const UpdateCalendarSchema = CreateCalendarSchema.partial();
+export const UpdateCalendarSchema = CreateCalendarSchema.partial().omit({
+  teamId: true,
+});
 
 // User Calendar
 export const UserCalendarSchema = z.object({

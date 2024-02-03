@@ -23,7 +23,7 @@ export default function TagItem({ tag }: TagItemProps) {
           <div>
             <span data-test="tasks--tag-item--name">{tag.name}</span>
             {tag.teamId && (
-              <span>
+              <span className="ml-1">
                 {' '}
                 <UsersIcon className="inline text-gray-400" size={16} />
               </span>

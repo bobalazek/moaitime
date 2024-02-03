@@ -24,7 +24,7 @@ export default function TasksBodyHeaderListSelector() {
               {selectedList ? selectedList.name : 'Unlisted'}
             </span>
             {selectedList?.teamId && (
-              <span>
+              <span className="mr-1">
                 {' '}
                 <UsersIcon className="inline text-gray-400" size={16} />
               </span>

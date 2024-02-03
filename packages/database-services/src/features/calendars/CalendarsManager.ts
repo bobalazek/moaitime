@@ -1,4 +1,16 @@
-import { and, asc, count, DBQueryConfig, desc, eq, isNotNull, isNull } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  DBQueryConfig,
+  desc,
+  eq,
+  inArray,
+  isNotNull,
+  isNull,
+  or,
+  SQL,
+} from 'drizzle-orm';
 
 import {
   Calendar,
@@ -27,9 +39,21 @@ export class CalendarsManager {
     return getDatabase().query.calendars.findMany(options);
   }
 
-  async findManyByUserId(userId: string): Promise<Calendar[]> {
+  async findManyByUserIdAndTheirTeams(userId: string): Promise<Calendar[]> {
+    let where = isNull(calendars.deletedAt);
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(calendars.userId, userId), inArray(calendars.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
     const data = await getDatabase().query.calendars.findMany({
-      where: and(eq(calendars.userId, userId), isNull(calendars.deletedAt)),
+      where,
       orderBy: asc(calendars.createdAt),
     });
 
@@ -130,7 +154,16 @@ export class CalendarsManager {
       return false;
     }
 
-    return calendar.userId === userId || calendar.isPublic;
+    if (calendar.userId === userId || calendar.isPublic) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (calendar.teamId && teamIds.includes(calendar.teamId)) {
+      return true;
+    }
+
+    return false;
   }
 
   async userCanUpdate(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
@@ -151,7 +184,7 @@ export class CalendarsManager {
 
   // Helpers
   async list(userId: string) {
-    const calendars = await this.findManyByUserId(userId);
+    const calendars = await this.findManyByUserIdAndTheirTeams(userId);
 
     return this.convertToApiResponse(calendars, userId);
   }
@@ -254,6 +287,21 @@ export class CalendarsManager {
 
     for (const row of rows) {
       idsMap.set(row.id, 'user');
+    }
+
+    // Team Calendars
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length > 0) {
+      const teamLists = await this.findMany({
+        columns: {
+          id: true,
+        },
+        where: inArray(calendars.teamId, teamIds),
+      });
+
+      for (const row of teamLists) {
+        idsMap.set(row.id, 'team');
+      }
     }
 
     // User Calendars

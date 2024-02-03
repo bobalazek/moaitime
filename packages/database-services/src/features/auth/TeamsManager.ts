@@ -155,13 +155,10 @@ export class TeamsManager {
   }
 
   async createAndJoin(user: User, teamName: string): Promise<{ team: Team; teamUser: TeamUser }> {
-    const teamsMaxPerUserCount = await usersManager.getUserLimit(user, 'teamsMaxPerUserCount');
-
-    const teamsCount = await this.countByUserId(user.id);
-    if (teamsCount >= teamsMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of teams per user (${teamsMaxPerUserCount}).`
-      );
+    const maxCount = await usersManager.getUserLimit(user, 'teamsMaxPerUserCount');
+    const currentCount = await this.countByUserId(user.id);
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of teams per user (${maxCount}).`);
     }
 
     const team = await this.insertOne({

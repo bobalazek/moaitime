@@ -1,3 +1,4 @@
+import { UsersIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -16,9 +17,11 @@ import {
   Input,
   Label,
   sonnerToast,
+  Switch,
   Textarea,
 } from '@moaitime/web-ui';
 
+import { useTeamsStore } from '../../../auth/state/teamsStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useCalendarStore } from '../../state/calendarStore';
 
@@ -31,6 +34,7 @@ export default function CalendarEditDialog() {
     deleteCalendar,
     setSelectedCalendarDialogOpen,
   } = useCalendarStore();
+  const { joinedTeam } = useTeamsStore();
   const [data, setData] = useState<CreateCalendar | UpdateCalendar>();
 
   useEffect(() => {
@@ -151,6 +155,35 @@ export default function CalendarEditDialog() {
             }}
           />
         </div>
+        {selectedCalendar?.id && selectedCalendar?.teamId && (
+          <div className="text-muted-foreground text-xs">
+            <UsersIcon className="mr-1 inline-block" size={16} />
+            This calendar was created and is owned by your team.
+          </div>
+        )}
+        {!selectedCalendar?.id && joinedTeam && (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center">
+              <Switch
+                id="tasks--edit-dialog--teamId"
+                checked={(data as CreateCalendar)?.teamId === joinedTeam?.team.id}
+                disabled={!joinedTeam}
+                onCheckedChange={() => {
+                  setData((current) => ({
+                    ...current,
+                    teamId: (data as CreateCalendar)?.teamId ? undefined : joinedTeam?.team.id,
+                  }));
+                }}
+              />
+              <Label htmlFor="tasks--edit-dialog--teamId" className="ml-2">
+                Is Team Calendar?
+              </Label>
+            </div>
+            <p className="text-muted-foreground text-xs">
+              With this toggle you will create a calendar and transfer the ownership to your team.
+            </p>
+          </div>
+        )}
         <div className="flex flex-row justify-between gap-2">
           <div>
             {calendarExists && (

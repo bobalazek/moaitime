@@ -55,10 +55,10 @@ export default function ListItem({ list, hideCheckbox }: ListItemProps) {
             data-test="calendar--list-item--visible-checkbox"
           />
         )}
-        <div className="break-words px-6" data-test="calendar--list-item--name">
-          <span>{list.name}</span>
+        <div className="break-words px-6">
+          <span data-test="calendar--list-item--name">{list.name}</span>
           {list?.teamId && (
-            <span>
+            <span className="ml-1">
               {' '}
               <UsersIcon className="inline text-gray-400" size={16} />
             </span>

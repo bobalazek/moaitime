@@ -137,30 +137,7 @@ export class ListsManager {
   }
 
   async create(user: User, data: CreateList) {
-    let listsMaxCount = 0;
-    let listsCount = 0;
-
-    if (data.teamId) {
-      const teamIds = await usersManager.getTeamIds(user.id);
-      if (!teamIds.includes(data.teamId)) {
-        throw new Error('You cannot create a list for this team');
-      }
-
-      const team = await teamsManager.findOneById(data.teamId);
-      if (!team) {
-        throw new Error('Team not found');
-      }
-
-      listsMaxCount = await teamsManager.getTeamLimit(team, 'listsMaxPerTeamCount');
-      listsCount = await this.countByTeamId(team.id);
-    } else {
-      listsMaxCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
-      listsCount = await this.countByUserId(user.id);
-    }
-
-    if (listsCount >= listsMaxCount) {
-      throw new Error(`You have reached the maximum number of lists per user (${listsMaxCount}).`);
-    }
+    await this._checkIfReachedLimit(data, user);
 
     return this.insertOne({ ...data, userId: user.id });
   }
@@ -387,6 +364,34 @@ export class ListsManager {
         calendarVisibleListIds: userListIds,
       },
     });
+  }
+
+  // Private
+  private async _checkIfReachedLimit(data: CreateList, user: User) {
+    let maxCount = 0;
+    let currentCount = 0;
+
+    if (data.teamId) {
+      const teamIds = await usersManager.getTeamIds(user.id);
+      if (!teamIds.includes(data.teamId)) {
+        throw new Error('You cannot create a list for this team');
+      }
+
+      const team = await teamsManager.findOneById(data.teamId);
+      if (!team) {
+        throw new Error('Team not found');
+      }
+
+      maxCount = await teamsManager.getTeamLimit(team, 'listsMaxPerTeamCount');
+      currentCount = await this.countByTeamId(team.id);
+    } else {
+      maxCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
+      currentCount = await this.countByUserId(user.id);
+    }
+
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of lists per user (${maxCount}).`);
+    }
   }
 }
 

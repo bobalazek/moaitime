@@ -114,13 +114,10 @@ export class TagsManager {
   }
 
   async create(user: User, createData: CreateTag) {
-    const tagsMaxPerUserCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
-
-    const tagsCount = await this.countByUserId(user.id);
-    if (tagsCount >= tagsMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of tags per user (${tagsMaxPerUserCount}).`
-      );
+    const maxCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
+    const currentCount = await this.countByUserId(user.id);
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of tags per user (${maxCount}).`);
     }
 
     if (createData.teamId) {

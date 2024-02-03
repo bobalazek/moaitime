@@ -143,7 +143,7 @@ export class UserDataExportProcessor {
   async _saveLists(userId: string, tmpUserDataExportDir: string) {
     this._logger.debug(`Fetching lists for user (id: ${userId}) ...`);
 
-    const lists = await this._listsManager.findManyByUserId(userId);
+    const lists = await this._listsManager.findManyByUserIdAndTheirTeams(userId);
 
     this._logger.debug(`Found ${lists.length} lists for user (id: ${userId}).`);
 

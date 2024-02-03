@@ -19,6 +19,7 @@ import {
 } from 'drizzle-orm';
 
 import {
+  Calendar,
   calendars,
   Event,
   events,
@@ -27,10 +28,12 @@ import {
   User,
   userCalendars,
 } from '@moaitime/database-core';
+import { globalEventNotifier } from '@moaitime/global-event-notifier';
 import {
   CreateEvent,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
+  GlobalEventsEnum,
   Permissions,
   UpdateEvent,
 } from '@moaitime/shared-common';
@@ -258,7 +261,7 @@ export class EventsManager {
     return this.userCanUpdate(userId, calendarId);
   }
 
-  // Helpers
+  // API Helpers
   async list(user: User, from: string, to: string) {
     const timezone = user.settings?.generalTimezone ?? 'UTC';
     const timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
@@ -269,20 +272,23 @@ export class EventsManager {
   }
 
   async create(user: User, data: CreateEvent) {
+    let calendar: Calendar | null = null;
+    if (data.calendarId) {
+      calendar = await calendarsManager.findOneByIdAndUserId(data.calendarId, user.id);
+      if (!calendar) {
+        throw new Error('Calendar not found');
+      }
+    }
+
     const maxCount = await usersManager.getUserLimit(user, 'calendarsMaxEventsPerCalendarCount');
     const currentCount = await eventsManager.countByCalendarId(data.calendarId);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of events per calendar (${maxCount}).`);
     }
 
-    const canViewCalendar = await calendarsManager.userCanView(user.id, data.calendarId);
-    if (!canViewCalendar) {
-      throw new Error('Calendar not found');
-    }
-
     const timezone = data.timezone ?? user?.settings?.generalTimezone ?? 'UTC';
 
-    return this.insertOne({
+    const event = await this.insertOne({
       ...data,
       timezone,
       userId: user.id,
@@ -290,6 +296,15 @@ export class EventsManager {
       endsAt: new Date(data.endsAt),
       repeatEndsAt: data.repeatEndsAt ? new Date(data.repeatEndsAt) : undefined,
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_ADDED, {
+      userId: user.id,
+      eventId: event.id,
+      calendarId: event.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return event;
   }
 
   async update(userId: string, eventId: string, updateData: UpdateEvent) {
@@ -320,12 +335,22 @@ export class EventsManager {
         ? null
         : undefined;
 
-    return this.updateOneById(eventId, {
+    const event = await this.updateOneById(eventId, {
       ...updateData,
       startsAt,
       endsAt,
       repeatEndsAt,
     });
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+
+    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
+      userId: userId,
+      eventId: event.id,
+      calendarId: event.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return event;
   }
 
   async delete(userId: string, eventId: string) {
@@ -334,9 +359,19 @@ export class EventsManager {
       throw new Error('Event not found');
     }
 
-    return this.updateOneById(eventId, {
+    const event = await this.updateOneById(eventId, {
       deletedAt: new Date(),
     });
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+
+    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_DELETED, {
+      userId: userId,
+      eventId: event.id,
+      calendarId: event.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return event;
   }
 
   async undelete(userId: string, eventId: string) {
@@ -345,11 +380,22 @@ export class EventsManager {
       throw new Error('You cannot undelete this event');
     }
 
-    return this.updateOneById(eventId, {
+    const event = await this.updateOneById(eventId, {
       deletedAt: null,
     });
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+
+    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
+      userId: userId,
+      eventId: event.id,
+      calendarId: event.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return event;
   }
 
+  // Helpers
   async getCountsByCalendarIdsAndYear(calendarIds: string[], year: number) {
     const startOfYear = new Date(year, 0, 1);
     const endOfYear = new Date(year + 1, 0, 1);

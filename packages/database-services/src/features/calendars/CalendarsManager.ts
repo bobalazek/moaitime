@@ -60,6 +60,29 @@ export class CalendarsManager {
     return data;
   }
 
+  async findOneByIdAndUserId(calendarId: string | null, userId: string): Promise<Calendar | null> {
+    let where = and(
+      calendarId ? eq(calendars.id, calendarId) : isNull(calendars.id),
+      isNull(calendars.deletedAt)
+    );
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(calendars.userId, userId), inArray(calendars.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
+    const row = await getDatabase().query.calendars.findFirst({
+      where,
+    });
+
+    return row ?? null;
+  }
+
   async findManyDeletedByUserId(userId: string): Promise<Calendar[]> {
     return getDatabase().query.calendars.findMany({
       where: and(eq(calendars.userId, userId), isNotNull(calendars.deletedAt)),

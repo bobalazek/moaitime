@@ -1,7 +1,8 @@
 import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
-import { CreateList, UpdateList } from '@moaitime/shared-common';
+import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { CreateList, GlobalEventsEnum, UpdateList } from '@moaitime/shared-common';
 
 import { teamsManager } from '../auth/TeamsManager';
 import { usersManager } from '../auth/UsersManager';
@@ -139,7 +140,15 @@ export class ListsManager {
   async create(user: User, data: CreateList) {
     await this._checkIfReachedLimit(data, user);
 
-    return this.insertOne({ ...data, userId: user.id });
+    const list = await this.insertOne({ ...data, userId: user.id });
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADDED, {
+      userId: user.id,
+      listId: list.id,
+      teamId: list.teamId ?? undefined,
+    });
+
+    return list;
   }
 
   async update(userId: string, listId: string, data: UpdateList) {
@@ -148,7 +157,15 @@ export class ListsManager {
       throw new Error('You cannot update this list');
     }
 
-    return this.updateOneById(listId, data);
+    const list = await this.updateOneById(listId, data);
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_EDITED, {
+      userId,
+      listId: list.id,
+      teamId: list.teamId ?? undefined,
+    });
+
+    return list;
   }
 
   async delete(userId: string, listId: string) {
@@ -157,9 +174,17 @@ export class ListsManager {
       throw new Error('You cannot delete this list');
     }
 
-    return this.updateOneById(listId, {
+    const list = await this.updateOneById(listId, {
       deletedAt: new Date(),
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_DELETED, {
+      userId,
+      listId: list.id,
+      teamId: list.teamId ?? undefined,
+    });
+
+    return list;
   }
 
   async addVisible(userId: string, listId: string) {
@@ -168,7 +193,13 @@ export class ListsManager {
       throw new Error('You cannot view this list');
     }
 
-    await this.addVisibleListIdByUserId(userId, listId);
+    const list = await this.addVisibleListIdByUserId(userId, listId);
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADD_VISIBLE, {
+      userId,
+      listId,
+      teamId: list?.teamId ?? undefined,
+    });
   }
 
   async removeVisible(userId: string, listId: string) {
@@ -177,7 +208,13 @@ export class ListsManager {
       throw new Error('You cannot view this list');
     }
 
-    await this.removeVisibleListIdByUserId(userId, listId);
+    const list = await this.removeVisibleListIdByUserId(userId, listId);
+
+    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_REMOVE_VISIBLE, {
+      userId,
+      listId,
+      teamId: list?.teamId ?? undefined,
+    });
   }
 
   // Helpers
@@ -322,35 +359,41 @@ export class ListsManager {
   async addVisibleListIdByUserId(userId: string, listId: string) {
     const user = await usersManager.findOneById(userId);
     if (!user) {
-      return;
+      return null;
     }
+
+    const list = this.findOneById(listId);
 
     const userSettings = usersManager.getUserSettings(user);
     const userListIds = await this.getVisibleListIdsByUserId(userId);
     if (userListIds.includes(listId)) {
-      return user;
+      return list;
     }
 
     userListIds.push(listId);
 
-    return usersManager.updateOneById(userId, {
+    await usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleListIds: userListIds,
       },
     });
+
+    return list;
   }
 
   async removeVisibleListIdByUserId(userId: string, listId: string) {
     const user = await usersManager.findOneById(userId);
     if (!user) {
-      return;
+      return null;
     }
+
+    const list = this.findOneById(listId);
 
     const userSettings = usersManager.getUserSettings(user);
     const userListIds = await this.getVisibleListIdsByUserId(userId);
     if (!userListIds.includes(listId)) {
-      return user;
+      return list;
     }
 
     const index = userListIds.indexOf(listId);
@@ -358,12 +401,14 @@ export class ListsManager {
       userListIds.splice(index, 1);
     }
 
-    return usersManager.updateOneById(userId, {
+    await usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleListIds: userListIds,
       },
     });
+
+    return list;
   }
 
   // Private

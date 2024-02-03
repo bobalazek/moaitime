@@ -370,10 +370,10 @@ export class TasksManager {
     return (await this._populateTags([row]))[0];
   }
 
-  async create(user: User, createData: CreateTask) {
+  async create(user: User, data: CreateTask) {
     let list: List | null = null;
-    if (createData.listId) {
-      list = await listsManager.findOneByIdAndUserId(createData.listId, user.id);
+    if (data.listId) {
+      list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
       if (!list) {
         throw new Error('List not found');
       }
@@ -381,11 +381,11 @@ export class TasksManager {
 
     await this._doMaxTasksPerListCheck(user, list);
 
-    if (createData.parentId) {
-      await this.validateParentId(null, createData.parentId);
+    if (data.parentId) {
+      await this.validateParentId(null, data.parentId);
     }
 
-    const { tagIds, ...insertData } = createData;
+    const { tagIds, ...insertData } = data;
 
     const maxOrderForListId = await this.findMaxOrderByListId(insertData?.listId ?? null);
     const order = maxOrderForListId + 1;
@@ -496,6 +496,7 @@ export class TasksManager {
     });
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
+      userId: user.id,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,

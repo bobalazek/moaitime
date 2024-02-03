@@ -1,3 +1,5 @@
+import { Calendar } from '../calendar/CalendarSchema';
+import { Event } from '../calendar/EventSchema';
 import { FocusSession } from '../focus/FocusSessionSchema';
 import { FocusSessionStageEnum } from '../focus/FocusSessionStageEnum';
 import { FocusSessionUpdateActionEnum } from '../focus/FocusSessionUpdateActionEnum';
@@ -15,12 +17,25 @@ export enum GlobalEventsEnum {
   TASKS_TASK_UNCOMPLETED = 'tasks:task:uncompleted',
   TASKS_TASK_DUPLICATED = 'tasks:task:duplicated',
   TASKS_REORDERED = 'tasks:reordered',
-  // Lists
-  LISTS_LIST_ADDED = 'lists:list:added',
-  LISTS_LIST_EDITED = 'lists:list:edited',
-  LISTS_LIST_DELETED = 'lists:list:deleted',
-  LISTS_LIST_ADD_VISIBLE = 'lists:list:add-visible',
-  LISTS_LIST_REMOVE_VISIBLE = 'lists:list:remove-visible',
+  // Tasks - Lists
+  TASKS_LIST_ADDED = 'tasks:list:added',
+  TASKS_LIST_EDITED = 'tasks:list:edited',
+  TASKS_LIST_DELETED = 'tasks:list:deleted',
+  TASKS_LIST_ADD_VISIBLE = 'tasks:list:add-visible',
+  TASKS_LIST_REMOVE_VISIBLE = 'tasks:list:remove-visible',
+  // Calendar
+  CALENDAR_CALENDAR_ADDED = 'calendar:calendar:added',
+  CALENDAR_CALENDAR_EDITED = 'calendar:calendar:edited',
+  CALENDAR_CALENDAR_DELETED = 'calendar:calendar:deleted',
+  CALENDAR_CALENDAR_UNDELETED = 'calendar:calendar:undeleted',
+  CALENDAR_CALENDAR_ADD_VISIBLE = 'calendar:calendar:add-visible',
+  CALENDAR_CALENDAR_REMOVE_VISIBLE = 'calendar:calendar:remove-visible',
+  // Calendar - Events
+  CALENDAR_EVENT_ADDED = 'calendar:event:added',
+  CALENDAR_EVENT_EDITED = 'calendar:event:edited',
+  CALENDAR_EVENT_DELETED = 'calendar:event:deleted',
+  CALENDAR_EVENT_UNDELETED = 'calendar:event:undeleted',
+
   // Focus
   FOCUS_FOCUS_SESSION_ADDED = 'focus:focus-session:added',
   FOCUS_FOCUS_SESSION_EDITED = 'focus:focus-session:edited',
@@ -93,31 +108,103 @@ export type GlobalEvents = {
     listId?: string;
     task?: Task;
   };
-  // Lists
-  [GlobalEventsEnum.LISTS_LIST_ADDED]: {
+  // Tasks - Lists
+  [GlobalEventsEnum.TASKS_LIST_ADDED]: {
     userId: string;
     listId: string;
+    teamId?: string;
     list?: List;
   };
-  [GlobalEventsEnum.LISTS_LIST_EDITED]: {
+  [GlobalEventsEnum.TASKS_LIST_EDITED]: {
     userId: string;
     listId: string;
+    teamId?: string;
     list?: List;
   };
-  [GlobalEventsEnum.LISTS_LIST_DELETED]: {
+  [GlobalEventsEnum.TASKS_LIST_DELETED]: {
     userId: string;
     listId: string;
+    teamId?: string;
     list?: List;
   };
-  [GlobalEventsEnum.LISTS_LIST_ADD_VISIBLE]: {
+  [GlobalEventsEnum.TASKS_LIST_ADD_VISIBLE]: {
     userId: string;
     listId: string;
+    teamId?: string;
     list?: List;
   };
-  [GlobalEventsEnum.LISTS_LIST_REMOVE_VISIBLE]: {
+  [GlobalEventsEnum.TASKS_LIST_REMOVE_VISIBLE]: {
     userId: string;
     listId: string;
+    teamId?: string;
     list?: List;
+  };
+  // Calendars
+  [GlobalEventsEnum.CALENDAR_CALENDAR_ADDED]: {
+    userId: string;
+    calendarId: string;
+    teamId?: string;
+    calendar?: Calendar;
+  };
+  [GlobalEventsEnum.CALENDAR_CALENDAR_EDITED]: {
+    userId: string;
+    calendarId: string;
+    teamId?: string;
+    calendar?: Calendar;
+  };
+  [GlobalEventsEnum.CALENDAR_CALENDAR_DELETED]: {
+    userId: string;
+    calendarId: string;
+    isHardDelete?: boolean;
+    calendar?: Calendar;
+  };
+  [GlobalEventsEnum.CALENDAR_CALENDAR_UNDELETED]: {
+    userId: string;
+    calendarId: string;
+    teamId?: string;
+    calendar?: Calendar;
+  };
+  [GlobalEventsEnum.CALENDAR_CALENDAR_ADD_VISIBLE]: {
+    userId: string;
+    calendarId: string;
+    teamId?: string;
+    calendar?: Calendar;
+  };
+  [GlobalEventsEnum.CALENDAR_CALENDAR_REMOVE_VISIBLE]: {
+    userId: string;
+    calendarId: string;
+    teamId?: string;
+    calendar?: Calendar;
+  };
+  // Events
+  [GlobalEventsEnum.CALENDAR_EVENT_ADDED]: {
+    userId: string;
+    eventId: string;
+    calendarId: string;
+    teamId?: string;
+    event?: Event;
+  };
+  [GlobalEventsEnum.CALENDAR_EVENT_EDITED]: {
+    userId: string;
+    eventId: string;
+    calendarId: string;
+    teamId?: string;
+    event?: Event;
+  };
+  [GlobalEventsEnum.CALENDAR_EVENT_DELETED]: {
+    userId: string;
+    eventId: string;
+    calendarId: string;
+    isHardDelete?: boolean;
+    teamId?: string;
+    event?: Event;
+  };
+  [GlobalEventsEnum.CALENDAR_EVENT_UNDELETED]: {
+    userId: string;
+    eventId: string;
+    calendarId: string;
+    teamId?: string;
+    event?: Event;
   };
   // Focus
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED]: {

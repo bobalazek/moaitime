@@ -51,7 +51,12 @@ export class WebsocketManager {
       payload: GlobalEvents[GlobalEventsEnum];
     };
 
-    if (data.type.startsWith('tasks:')) {
+    if (data.type.startsWith('tasks:list:')) {
+      const { reloadLists, reloadSelectedListTasks } = useListsStore.getState();
+
+      await reloadLists();
+      await reloadSelectedListTasks();
+    } else if (data.type.startsWith('tasks:')) {
       const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();
 
       await reloadSelectedListTasks();

@@ -217,6 +217,7 @@ export class TeamsManager {
     return {
       tasksMaxPerListCount: 10,
       listsMaxPerTeamCount: 3,
+      usersMaxPerTeamCount: 5,
       calendarsMaxPerTeamCount: 3,
       calendarsMaxEventsPerCalendarCount: 100,
     };
@@ -232,10 +233,12 @@ export class TeamsManager {
     // TODO: cache!
 
     const listsCount = await listsManager.countByTeamId(team.id);
+    const usersCount = await usersManager.countByTeamId(team.id);
     const calendarsCount = await calendarsManager.countByTeamId(team.id);
 
     return {
       listsCount,
+      usersCount,
       calendarsCount,
     };
   }

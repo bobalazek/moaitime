@@ -1,5 +1,5 @@
 {
-  "id": "d08a378c-9b0f-48ec-9ed9-9cf6359922a1",
+  "id": "d3a51ad8-e4a1-4038-8d70-64336ff41642",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1698,7 +1698,7 @@
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {
@@ -1729,7 +1729,7 @@
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

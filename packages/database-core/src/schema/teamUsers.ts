@@ -18,9 +18,11 @@ export const teamUsers = pgTable(
       .references(() => teams.id, {
         onDelete: 'cascade',
       }),
-    userId: uuid('user_id').references(() => users.id, {
-      onDelete: 'set null',
-    }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, {
+        onDelete: 'cascade',
+      }),
   },
   (table) => {
     return {

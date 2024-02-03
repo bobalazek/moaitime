@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { and, DBQueryConfig, eq, isNull } from 'drizzle-orm';
+import { and, count, DBQueryConfig, eq, isNull } from 'drizzle-orm';
 
 import { getDatabase, NewUser, teams, teamUsers, User, users } from '@moaitime/database-core';
 import {
@@ -124,6 +124,18 @@ export class UsersManager {
   }
 
   // Helpers
+  async countByTeamId(teamId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(teamUsers.id).mapWith(Number),
+      })
+      .from(teamUsers)
+      .where(eq(teamUsers.teamId, teamId))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
   async getTeamIds(userId: string): Promise<string[]> {
     // TODO: cache this, we must.
 

@@ -313,15 +313,17 @@ export class ListsManager {
 
     // Team Lists
     const teamIds = await usersManager.getTeamIds(userId);
-    const teamLists = await this.findMany({
-      columns: {
-        id: true,
-      },
-      where: inArray(lists.teamId, teamIds),
-    });
+    if (teamIds.length > 0) {
+      const teamLists = await this.findMany({
+        columns: {
+          id: true,
+        },
+        where: inArray(lists.teamId, teamIds),
+      });
 
-    for (const row of teamLists) {
-      idsSet.add(row.id);
+      for (const row of teamLists) {
+        idsSet.add(row.id);
+      }
     }
 
     // Check

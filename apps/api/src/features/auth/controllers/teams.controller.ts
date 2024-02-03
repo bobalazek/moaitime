@@ -100,7 +100,6 @@ export class TeamsController {
   @UseGuards(AuthenticatedGuard)
   @Get(':teamId/invitations')
   async invitations(
-    @Req() req: Request,
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUserInvitation[]>> {
     const data = await teamsManager.getInvitationsByTeamId(teamId);
@@ -117,7 +116,7 @@ export class TeamsController {
     @Req() req: Request,
     @Param('teamId') teamId: string,
     @Body() body: EmailDto
-  ): Promise<AbstractResponseDto<TeamUser>> {
+  ): Promise<AbstractResponseDto<TeamUserInvitation>> {
     const data = await teamsManager.sendInvitation(teamId, req.user.id, body.email);
 
     return {

@@ -1,3 +1,5 @@
+import { UsersIcon } from 'lucide-react';
+
 import { Tag } from '@moaitime/shared-common';
 
 import TagItemActions from './TagItemActions';
@@ -18,7 +20,15 @@ export default function TagItem({ tag }: TagItemProps) {
     >
       <div className="relative flex justify-between break-words px-2">
         <div>
-          <div data-test="tasks--tag-item--name">{tag.name}</div>
+          <div>
+            <span data-test="tasks--tag-item--name">{tag.name}</span>
+            {tag.teamId && (
+              <span>
+                {' '}
+                <UsersIcon className="inline text-gray-400" size={16} />
+              </span>
+            )}
+          </div>
           {tag.deletedAt && (
             <div className="text-xs text-gray-500 dark:text-gray-400">
               Deleted at {new Date(tag.deletedAt).toLocaleString()}

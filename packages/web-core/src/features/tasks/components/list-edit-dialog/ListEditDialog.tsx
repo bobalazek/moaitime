@@ -113,7 +113,7 @@ export default function ListEditDialog() {
           {selectedListDialog && selectedListDialog?.teamId && (
             <div className="text-muted-foreground text-xs">
               <UsersIcon className="mr-1 inline-block" size={16} />
-              This list is a list created and owned by your team.
+              This list was created and is owned by your team.
             </div>
           )}
           {!selectedListDialog && joinedTeam && (

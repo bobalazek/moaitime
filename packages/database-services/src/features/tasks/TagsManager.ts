@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
+import { and, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, NewTag, Tag, tags, User } from '@moaitime/database-core';
 import { CreateTag, UpdateTag } from '@moaitime/shared-common';
@@ -18,7 +18,14 @@ export class TagsManager {
     userId: string,
     options?: TagsManagerFindManyByUserIdOptions
   ): Promise<Tag[]> {
-    let where = eq(tags.userId, userId);
+    let where: SQL<unknown>;
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = eq(tags.userId, userId);
+    } else {
+      where = or(eq(tags.userId, userId), inArray(tags.teamId, teamIds)) as SQL<unknown>;
+    }
 
     if (!options?.includeDeleted) {
       where = and(where, isNull(tags.deletedAt)) as SQL<unknown>;
@@ -26,7 +33,7 @@ export class TagsManager {
 
     return getDatabase().query.tags.findMany({
       where,
-      orderBy: desc(tags.createdAt),
+      orderBy: [desc(tags.teamId), desc(tags.createdAt)],
     });
   }
 
@@ -130,13 +137,6 @@ export class TagsManager {
     const canUpdate = await this.userCanUpdate(userId, tagId);
     if (!canUpdate) {
       throw new Error('You cannot update this tag');
-    }
-
-    if (data.teamId) {
-      const teamIds = await usersManager.getTeamIds(userId);
-      if (!teamIds.includes(data.teamId)) {
-        throw new Error('You cannot assign a tag from this team');
-      }
     }
 
     return this.updateOneById(tagId, data);

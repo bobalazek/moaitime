@@ -1,3 +1,4 @@
+import { UsersIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { CreateTag, UpdateTag, UpdateTagSchema, zodErrorToString } from '@moaitime/shared-common';
@@ -12,15 +13,18 @@ import {
   Input,
   Label,
   sonnerToast,
+  Switch,
 } from '@moaitime/web-ui';
 
+import { useTeamsStore } from '../../../auth/state/teamsStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useTagsStore } from '../../state/tagsStore';
 
 export default function TagEditDialog() {
   const { selectedTagDialogOpen, setSelectedTagDialogOpen, selectedTagDialog, addTag, editTag } =
     useTagsStore();
-  const [data, setData] = useState<UpdateTag>();
+  const { joinedTeam } = useTeamsStore();
+  const [data, setData] = useState<CreateTag | UpdateTag>();
 
   useEffect(() => {
     if (!selectedTagDialog) {
@@ -96,6 +100,35 @@ export default function TagEditDialog() {
               }}
             />
           </div>
+          {selectedTagDialog && selectedTagDialog?.teamId && (
+            <div className="text-muted-foreground text-xs">
+              <UsersIcon className="mr-1 inline-block" size={16} />
+              This tag was created and is owned by your team.
+            </div>
+          )}
+          {!selectedTagDialog && joinedTeam && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center">
+                <Switch
+                  id="tasks--tag-edit-dialog--teamId"
+                  checked={(data as CreateTag)?.teamId === joinedTeam?.team.id}
+                  disabled={!joinedTeam}
+                  onCheckedChange={() => {
+                    setData((current) => ({
+                      ...current,
+                      teamId: (data as CreateTag)?.teamId ? undefined : joinedTeam?.team.id,
+                    }));
+                  }}
+                />
+                <Label htmlFor="tasks--tag-edit-dialog--teamId" className="ml-2">
+                  Is Team Tag?
+                </Label>
+              </div>
+              <p className="text-muted-foreground text-xs">
+                With this toggle you will create a tag and transfer the ownership to your team.
+              </p>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <DialogClose asChild>

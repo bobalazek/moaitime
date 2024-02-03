@@ -17,6 +17,19 @@ export enum GlobalEventsEnum {
   LISTS_LIST_DELETED = 'lists:list:deleted',
   LISTS_LIST_ADD_VISIBLE = 'lists:list:add-visible',
   LISTS_LIST_REMOVE_VISIBLE = 'lists:list:remove-visible',
+  // Focus
+  FOCUS_FOCUS_SESSION_ADDED = 'focus:focus-session:added',
+  FOCUS_FOCUS_SESSION_EDITED = 'focus:focus-session:edited',
+  FOCUS_FOCUS_SESSION_DELETED = 'focus:focus-session:deleted',
+  FOCUS_FOCUS_SESSION_UNDELETED = 'focus:focus-session:undeleted',
+  FOCUS_FOCUS_SESSION_COMPLETED = 'focus:focus-session:completed',
+  FOCUS_FOCUS_SESSION_ACTION_TRIGGERED = 'focus:focus-session:action-triggered',
+  FOCUS_FOCUS_SESSION_CURRENT_STAGE_CHANGED = 'focus:focus-session:current-stage-changed',
+  // Mood
+  MOOD_MOOD_ENTRY_ADDED = 'mood:mood-entry:added',
+  MOOD_MOOD_ENTRY_EDITED = 'mood:mood-entry:edited',
+  MOOD_MOOD_ENTRY_DELETED = 'mood:mood-entry:deleted',
+  MOOD_MOOD_ENTRY_UNDELETED = 'mood:mood-entry:undeleted',
 }
 
 export type GlobalEvents = {

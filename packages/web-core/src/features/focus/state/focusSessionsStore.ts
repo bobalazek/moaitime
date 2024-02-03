@@ -4,6 +4,7 @@ import {
   CreateFocusSession,
   FocusSession,
   FocusSessionUpdateActionEnum,
+  GlobalEventsEnum,
   UpdateFocusSession,
 } from '@moaitime/shared-common';
 
@@ -15,7 +16,7 @@ import {
   triggerFocusSessionAction,
   undeleteFocusSession,
 } from '../utils/FocusSessionHelpers';
-import { focusSessionsEmitter, FocusSessionsEventsEnum } from './focusSessionsEmitter';
+import { focusSessionsEmitter } from './focusSessionsEmitter';
 
 export type FocusSessionsStore = {
   /********** Focus Sessions **********/
@@ -50,7 +51,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
 
     const newFocusSession = await addFocusSession(focusSession);
 
-    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_ADDED, {
+    focusSessionsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
       focusSession: newFocusSession,
     });
 
@@ -63,7 +64,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
 
     const editedFocusSession = await editFocusSession(focusSessionId, focusSession);
 
-    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_EDITED, {
+    focusSessionsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_EDITED, {
       focusSession: editedFocusSession,
     });
 
@@ -78,7 +79,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
 
     const deletedFocusSession = await deleteFocusSession(focusSessionId, isHardDelete);
 
-    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_DELETED, {
+    focusSessionsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED, {
       focusSession: deletedFocusSession,
       isHardDelete: !!isHardDelete,
     });
@@ -92,7 +93,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
   undeleteFocusSession: async (focusSessionId: string) => {
     const undeletedFocusSession = await undeleteFocusSession(focusSessionId);
 
-    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_UNDELETED, {
+    focusSessionsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED, {
       focusSession: undeletedFocusSession,
     });
 
@@ -104,7 +105,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
   ) => {
     const updatedFocusSession = await triggerFocusSessionAction(focusSessionId, action);
 
-    focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_ACTION_TRIGGERED, {
+    focusSessionsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
       focusSession: updatedFocusSession,
       action,
     });
@@ -117,7 +118,7 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
     const { currentFocusSession } = get();
 
     if (focusSession && currentFocusSession && focusSession.stage !== currentFocusSession.stage) {
-      focusSessionsEmitter.emit(FocusSessionsEventsEnum.FOCUS_SESSION_CURRENT_STAGE_CHANGED, {
+      focusSessionsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_CURRENT_STAGE_CHANGED, {
         focusSession,
         stage: focusSession.stage,
       });

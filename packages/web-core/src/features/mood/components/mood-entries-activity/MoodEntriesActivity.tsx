@@ -3,14 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useIntersectionObserver } from 'usehooks-ts';
 
-import { MoodEntry as MoodEntryType } from '@moaitime/shared-common';
+import { GlobalEventsEnum, MoodEntry as MoodEntryType } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useMoodEntriesQuery } from '../../hooks/useMoodEntriesQuery';
-import { moodEntriesEmitter, MoodEntriesEventsEnum } from '../../state/moodEntriesEmitter';
+import { moodEntriesEmitter } from '../../state/moodEntriesEmitter';
 import { playAddMoodEntrySound } from '../../utils/MoodHelpers';
 import { MoodEntry } from '../mood-entry/MoodEntry';
 
@@ -142,10 +142,10 @@ export default function MoodEntriesActivity() {
       playAddMoodEntrySound(moodEntry.happinessScore);
     };
 
-    moodEntriesEmitter.on(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, moodEntryAddedCallback);
+    moodEntriesEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, moodEntryAddedCallback);
 
     return () => {
-      moodEntriesEmitter.off(MoodEntriesEventsEnum.MOOD_ENTRY_ADDED, moodEntryAddedCallback);
+      moodEntriesEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, moodEntryAddedCallback);
     };
   }, [moodSoundsEnabled]);
 

@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 
+import { GlobalEventsEnum } from '@moaitime/shared-common';
 import { Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../auth/state/authStore';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
-import { tasksEmitter, TasksEventsEnum } from '../state/tasksEmitter';
+import { tasksEmitter } from '../state/tasksEmitter';
 import { useTasksStore } from '../state/tasksStore';
 import { playAddTaskSound, playCompleteTaskSound } from '../utils/TaskHelpers';
 import TasksBody from './tasks-body/TasksBody';
@@ -26,12 +27,12 @@ export default function TasksPopover() {
       playCompleteTaskSound();
     };
 
-    tasksEmitter.on(TasksEventsEnum.TASK_ADDED, taskAddedCallback);
-    tasksEmitter.on(TasksEventsEnum.TASK_COMPLETED, taskCompletedCallback);
+    tasksEmitter.on(GlobalEventsEnum.TASKS_TASK_ADDED, taskAddedCallback);
+    tasksEmitter.on(GlobalEventsEnum.TASKS_TASK_COMPLETED, taskCompletedCallback);
 
     return () => {
-      tasksEmitter.off(TasksEventsEnum.TASK_ADDED, taskAddedCallback);
-      tasksEmitter.off(TasksEventsEnum.TASK_COMPLETED, taskCompletedCallback);
+      tasksEmitter.off(GlobalEventsEnum.TASKS_TASK_ADDED, taskAddedCallback);
+      tasksEmitter.off(GlobalEventsEnum.TASKS_TASK_COMPLETED, taskCompletedCallback);
     };
   }, [tasksSoundsEnabled]);
 

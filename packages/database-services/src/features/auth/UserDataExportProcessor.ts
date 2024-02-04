@@ -110,7 +110,7 @@ export class UserDataExportProcessor {
   async _saveCalendars(userId: string, tmpUserDataExportDir: string) {
     this._logger.debug(`Fetching calendars for user (id: ${userId}) ...`);
 
-    const calendars = await this._calendarsManager.findManyByUserIdAndTheirTeams(userId);
+    const calendars = await this._calendarsManager.findManyByUserId(userId);
 
     this._logger.debug(`Found ${calendars.length} calendars for user (id: ${userId}).`);
 
@@ -143,7 +143,7 @@ export class UserDataExportProcessor {
   async _saveLists(userId: string, tmpUserDataExportDir: string) {
     this._logger.debug(`Fetching lists for user (id: ${userId}) ...`);
 
-    const lists = await this._listsManager.findManyByUserIdAndTheirTeams(userId);
+    const lists = await this._listsManager.findManyByUserId(userId);
 
     this._logger.debug(`Found ${lists.length} lists for user (id: ${userId}).`);
 

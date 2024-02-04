@@ -39,7 +39,7 @@ export class CalendarsManager {
     return getDatabase().query.calendars.findMany(options);
   }
 
-  async findManyByUserIdAndTheirTeams(userId: string): Promise<Calendar[]> {
+  async findManyByUserId(userId: string): Promise<Calendar[]> {
     let where = isNull(calendars.deletedAt);
 
     const teamIds = await usersManager.getTeamIds(userId);
@@ -198,6 +198,7 @@ export class CalendarsManager {
       return false;
     }
 
+    // Pretty much the same check as above, except above we always return true if the calendar is public
     if (calendar.userId === userId) {
       return true;
     }
@@ -216,7 +217,7 @@ export class CalendarsManager {
 
   // Helpers
   async list(userId: string) {
-    const calendars = await this.findManyByUserIdAndTheirTeams(userId);
+    const calendars = await this.findManyByUserId(userId);
 
     return this.convertToApiResponse(calendars, userId);
   }

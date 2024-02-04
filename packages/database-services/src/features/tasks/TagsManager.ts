@@ -14,7 +14,7 @@ export class TagsManager {
     return getDatabase().query.tags.findMany(options);
   }
 
-  async findManyByUserIdAndTheirTeams(
+  async findManyByUserId(
     userId: string,
     options?: TagsManagerFindManyByUserIdOptions
   ): Promise<Tag[]> {
@@ -94,7 +94,7 @@ export class TagsManager {
 
   // API Helpers
   async list(userId: string, includeDeleted?: boolean) {
-    return this.findManyByUserIdAndTheirTeams(userId, {
+    return this.findManyByUserId(userId, {
       includeDeleted,
     });
   }

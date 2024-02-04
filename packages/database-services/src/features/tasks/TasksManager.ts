@@ -299,13 +299,19 @@ export class TasksManager {
 
   // Permissions
   async userCanView(userId: string, taskId: string): Promise<boolean> {
-    const rows = await getDatabase()
-      .select()
-      .from(tasks)
-      .where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)))
-      .execute();
+    const task = await this.findOneById(taskId);
+    if (!task) {
+      return false;
+    }
 
-    return rows.length > 0;
+    if (task.userId === userId) {
+      return true;
+    }
+
+    // When we are at this point and there would not be a listId set, then there is probably a bug somewhere,
+    // because the only way the listId is null is for a single user, which should alreadbe be caught few lines above.
+    // So this is more a Typescript sanity check
+    return task.listId ? listsManager.userCanView(userId, task.listId) : false;
   }
 
   async userCanUpdate(userId: string, taskId: string): Promise<boolean> {

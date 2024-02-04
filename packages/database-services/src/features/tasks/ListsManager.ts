@@ -17,7 +17,7 @@ export class ListsManager {
     return getDatabase().query.lists.findMany(options);
   }
 
-  async findManyByUserIdAndTheirTeams(userId: string): Promise<List[]> {
+  async findManyByUserId(userId: string): Promise<List[]> {
     let where = isNull(lists.deletedAt);
 
     const teamIds = await usersManager.getTeamIds(userId);
@@ -120,7 +120,7 @@ export class ListsManager {
 
   // API Helpers
   async list(userId: string) {
-    return this.findManyByUserIdAndTheirTeams(userId);
+    return this.findManyByUserId(userId);
   }
 
   async view(userId: string, listId: string) {
@@ -243,7 +243,7 @@ export class ListsManager {
   }
 
   async getTasksCountMap(userId: string, options?: ListsManagerTaskCountOptions) {
-    const lists = await this.findManyByUserIdAndTheirTeams(userId);
+    const lists = await this.findManyByUserId(userId);
     const listIds = lists.map((list) => list.id);
 
     const tasksCountMap = new Map<string | null, number>();

@@ -403,8 +403,8 @@ describe('AuthManager.ts', () => {
         password,
       });
 
-      const lists = await listsManager.findManyByUserIdAndTheirTeams(user.id);
-      const calendars = await calendarsManager.findManyByUserIdAndTheirTeams(user.id);
+      const lists = await listsManager.findManyByUserId(user.id);
+      const calendars = await calendarsManager.findManyByUserId(user.id);
 
       expect(lists.length).toBe(LISTS_DEFAULT_NAMES.length);
       expect(calendars.length).toBe(1);

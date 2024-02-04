@@ -140,7 +140,7 @@ export class EventsManager {
       .from(events)
       .leftJoin(calendars, eq(events.calendarId, calendars.id))
       .where(where)
-      .orderBy(asc(events.startsAt))
+      .orderBy(asc(events.startsAt), asc(events.endsAt), asc(events.title))
       .execute();
 
     // User calendars map

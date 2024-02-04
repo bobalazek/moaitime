@@ -354,7 +354,7 @@ export class TasksManager {
   ) {
     const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
 
-    const list = listsManager.findOneByIdAndUserId(listId, userId);
+    const list = await listsManager.findOneByIdAndUserId(listId, userId);
     if (!list) {
       throw new Error('List not found');
     }
@@ -364,6 +364,7 @@ export class TasksManager {
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
       userId,
       listId: listId ?? undefined,
+      teamId: list?.teamId ?? undefined,
     });
   }
 

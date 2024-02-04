@@ -106,6 +106,7 @@ export type GlobalEvents = {
   [GlobalEventsEnum.TASKS_REORDERED]: {
     userId: string;
     listId?: string;
+    teamId?: string;
     task?: Task;
   };
   // Tasks - Lists

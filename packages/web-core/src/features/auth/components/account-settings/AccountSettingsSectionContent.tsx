@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
@@ -14,9 +14,12 @@ export default function AccountSettingsSectionContent() {
     resendEmailConfirmation,
     cancelNewEmail,
     setAccountPasswordSettingsDialogOpen,
+    deleteAccountAvatar,
+    uploadAccountAvatar,
   } = useAuthStore();
   const [userDisplayName, setUserDisplayName] = useState(auth?.user?.displayName ?? '');
   const [userEmail, setUserEmail] = useState(auth?.user?.email ?? '');
+  const avatarImageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setUserDisplayName(auth?.user?.displayName ?? '');
@@ -26,6 +29,44 @@ export default function AccountSettingsSectionContent() {
   if (!auth) {
     return null;
   }
+
+  const onAvatarImageUploadButtonClick = async () => {
+    avatarImageInputRef.current?.click();
+  };
+
+  const onAvatarImageRemoveButtonClick = async () => {
+    const result = confirm('Are you sure you want to remove your avatar?');
+    if (!result) {
+      return;
+    }
+
+    try {
+      await deleteAccountAvatar();
+
+      sonnerToast.success(`Avatar removed`, {
+        description: `Your avatar has been successfully removed.`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
+  const onAvatarImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      await uploadAccountAvatar(file);
+
+      sonnerToast.success(`Avatar uploaded`, {
+        description: `Your avatar has been successfully uploaded.`,
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
 
   const onResendVerificationEmailButtonClick = async () => {
     try {
@@ -108,6 +149,35 @@ export default function AccountSettingsSectionContent() {
 
   return (
     <div className="mb-4 flex flex-col gap-4">
+      <div>
+        <h4 className="text-lg font-bold">Photo</h4>
+        <p className="mb-2 text-xs text-gray-400">Pick a photo up to 4MB and you will be golden!</p>
+        <div>
+          <div>
+            {auth.user.avatarImageUrl && (
+              <img src={auth.user.avatarImageUrl} alt="Avatar" className="h-12 w-12 rounded-full" />
+            )}
+          </div>
+          <div className="flex gap-1">
+            <Button size="sm" variant="outline" onClick={onAvatarImageUploadButtonClick}>
+              {auth.user.avatarImageUrl && <>Change Photo</>}
+              {!auth.user.avatarImageUrl && <>Upload Photo</>}
+            </Button>
+            {auth.user.avatarImageUrl && (
+              <Button size="sm" variant="destructive" onClick={onAvatarImageRemoveButtonClick}>
+                Remove Photo
+              </Button>
+            )}
+            <input
+              ref={avatarImageInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={onAvatarImageChange}
+            />
+          </div>
+        </div>
+      </div>
       <div>
         <h4 className="text-lg font-bold">Display Name</h4>
         <p className="mb-2 text-xs text-gray-400">What shall we call you?</p>

@@ -5,6 +5,7 @@ import { UserSettingsSchema } from './UserSettingsSchema';
 export const UserSchema = z.object({
   id: z.string(),
   displayName: z.string(),
+  avatarImageUrl: z.string().nullable(),
   email: z.string().email(),
   newEmail: z.string().email().nullable(),
   roles: z.array(z.string()),

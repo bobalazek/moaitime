@@ -31,6 +31,7 @@ export const users = pgTable(
     birthDate: date('birth_date', {
       mode: 'string',
     }),
+    avatarImageUrl: text('avatar_image_url'),
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),
     passwordResetToken: text('password_reset_token').unique(),

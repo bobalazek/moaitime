@@ -25,6 +25,7 @@ export const convertToUserDto = (
       roles: userWithAccessToken.roles,
       settings: usersManager.getUserSettings(userWithAccessToken),
       birthDate: userWithAccessToken.birthDate,
+      avatarImageUrl: userWithAccessToken.avatarImageUrl,
       emailConfirmedAt: userWithAccessToken.emailConfirmedAt?.toISOString() ?? null,
       createdAt: userWithAccessToken.createdAt?.toISOString() ?? now.toISOString(),
       updatedAt: userWithAccessToken.updatedAt?.toISOString() ?? now.toISOString(),

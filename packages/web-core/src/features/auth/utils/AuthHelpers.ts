@@ -227,6 +227,7 @@ export const updateAccountPassword = async (data: UpdateUserPassword) => {
 
   return response;
 };
+
 export const updateAccountSettings = async (data: UpdateUserSettings) => {
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account/settings`, {
     method: 'PATCH',
@@ -235,6 +236,26 @@ export const updateAccountSettings = async (data: UpdateUserSettings) => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
+  });
+
+  return response;
+};
+
+export const uploadAccountAvatar = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account/avatar`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  return response;
+};
+
+export const deleteAccountAvatar = async () => {
+  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account/avatar`, {
+    method: 'DELETE',
   });
 
   return response;

@@ -562,6 +562,38 @@ export class AuthManager {
     return updatedUser;
   }
 
+  async uploadAvatar(userId: string, file: File): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const avatarImageUrl = null;
+
+    // TODO
+
+    console.log(file);
+
+    const updatedUser = await this._usersManager.updateOneById(userId, {
+      avatarImageUrl,
+    });
+
+    return updatedUser;
+  }
+
+  async deleteAvatar(userId: string): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const updatedUser = await this._usersManager.updateOneById(userId, {
+      avatarImageUrl: null,
+    });
+
+    return updatedUser;
+  }
+
   // Helpers
   async getUserByCredentials(email: string, password: string): Promise<User> {
     const user = await this._usersManager.findOneByEmail(email);

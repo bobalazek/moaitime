@@ -1,14 +1,20 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpStatus,
+  ParseFilePipeBuilder,
   Patch,
   Post,
   Req,
   Res,
   UnauthorizedException,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 
 import { authManager, usersManager } from '@moaitime/database-services';
@@ -66,6 +72,42 @@ export class AccountController {
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
     await authManager.updateSettings(req.user.id, body);
+
+    return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  async avatar(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'jpeg',
+        })
+        .addMaxSizeValidator({
+          maxSize: 1024 * 4096,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        })
+    )
+    file: File,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
+    await authManager.uploadAvatar(req.user.id, file);
+
+    return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete('avatar')
+  async deleteAvatar(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
+    await authManager.deleteAvatar(req.user.id);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
   }

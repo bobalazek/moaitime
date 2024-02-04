@@ -22,6 +22,7 @@ import {
   cancelNewEmail,
   confirmEmail,
   deleteAccount,
+  deleteAccountAvatar,
   getAccount,
   login,
   logout,
@@ -35,6 +36,7 @@ import {
   updateAccount,
   updateAccountPassword,
   updateAccountSettings,
+  uploadAccountAvatar,
 } from '../utils/AuthHelpers';
 import { useTeamsStore } from './teamsStore';
 import { useUserLimitsAndUsageStore } from './userLimitsAndUsageStore';
@@ -69,6 +71,8 @@ export type AuthStore = {
   updateAccount: (data: UpdateUser) => Promise<ResponseInterface>;
   updateAccountPassword: (data: UpdateUserPassword) => Promise<ResponseInterface>;
   updateAccountSettings: (data: UpdateUserSettings) => Promise<ResponseInterface>;
+  uploadAccountAvatar: (file: File) => Promise<ResponseInterface>;
+  deleteAccountAvatar: () => Promise<ResponseInterface>;
   // Account Password Settings Dialog
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
@@ -247,6 +251,38 @@ export const useAuthStore = create<AuthStore>()(
         });
 
         reloadTheme();
+
+        return response;
+      },
+      uploadAccountAvatar: async (file: File) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        const response = await uploadAccountAvatar(file);
+
+        set({ auth: response.data });
+
+        sonnerToast.success('Avatar updated', {
+          description: 'Your avatar have been updated.',
+        });
+
+        return response;
+      },
+      deleteAccountAvatar: async () => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        const response = await deleteAccountAvatar();
+
+        set({ auth: response.data });
+
+        sonnerToast.success('Avatar deleted', {
+          description: 'Your avatar have been deleted.',
+        });
 
         return response;
       },

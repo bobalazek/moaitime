@@ -67,17 +67,17 @@ export class NotesManager {
     });
   }
 
-  async findOneById(id: string): Promise<Note | null> {
+  async findOneById(noteId: string): Promise<Note | null> {
     const row = await getDatabase().query.notes.findFirst({
-      where: eq(notes.id, id),
+      where: eq(notes.id, noteId),
     });
 
     return row ?? null;
   }
 
-  async findOneByIdAndUserId(id: string, userId: string): Promise<Note | null> {
+  async findOneByIdAndUserId(noteId: string, userId: string): Promise<Note | null> {
     const row = await getDatabase().query.notes.findFirst({
-      where: and(eq(notes.id, id), eq(notes.userId, userId)),
+      where: and(eq(notes.id, noteId), eq(notes.userId, userId)),
     });
 
     return row ?? null;
@@ -89,18 +89,18 @@ export class NotesManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewNote>): Promise<Note> {
+  async updateOneById(noteId: string, data: Partial<NewNote>): Promise<Note> {
     const rows = await getDatabase()
       .update(notes)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(notes.id, id))
+      .where(eq(notes.id, noteId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Note> {
-    const rows = await getDatabase().delete(notes).where(eq(notes.id, id)).returning();
+  async deleteOneById(noteId: string): Promise<Note> {
+    const rows = await getDatabase().delete(notes).where(eq(notes.id, noteId)).returning();
 
     return rows[0];
   }
@@ -157,18 +157,18 @@ export class NotesManager {
     });
   }
 
-  async update(userId: string, noteId: string, updateData: UpdateNote) {
+  async update(userId: string, noteId: string, data: UpdateNote) {
     const canView = await this.userCanUpdate(userId, noteId);
     if (!canView) {
       throw new Error('You cannot update this note');
     }
 
-    const data = await this.findOneById(noteId);
-    if (!data) {
+    const note = await this.findOneById(noteId);
+    if (!note) {
       throw new Error('Note not found');
     }
 
-    return this.updateOneById(noteId, updateData);
+    return this.updateOneById(noteId, data);
   }
 
   async delete(userId: string, noteId: string, isHardDelete?: boolean) {

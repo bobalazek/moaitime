@@ -274,22 +274,22 @@ export class TasksManager {
     return this._fixRowColumns(rows[0]);
   }
 
-  async updateOneById(id: string, data: Partial<NewTask>): Promise<Task> {
+  async updateOneById(taskId: string, data: Partial<NewTask>): Promise<Task> {
     const rows = await getDatabase()
       .update(tasks)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(tasks.id, id))
+      .where(eq(tasks.id, taskId))
       .returning();
 
     return this._fixRowColumns(rows[0]);
   }
 
-  async deleteOneById(id: string): Promise<Task> {
-    const rows = await getDatabase().delete(tasks).where(eq(tasks.id, id)).returning();
+  async deleteOneById(taskId: string): Promise<Task> {
+    const rows = await getDatabase().delete(tasks).where(eq(tasks.id, taskId)).returning();
 
     // We may want to optimize this at some point
 
-    const children = await this.findManyByParentId(id);
+    const children = await this.findManyByParentId(taskId);
     for (const child of children) {
       await this.deleteOneById(child.id);
     }
@@ -664,9 +664,9 @@ export class TasksManager {
    * @param id if null, we are creating a new task
    * @param parentId
    */
-  async validateParentId(id: string | null, parentId: string) {
-    const task = id ? await this.findOneById(id) : null;
-    if (id && !task) {
+  async validateParentId(taskId: string | null, parentId: string) {
+    const task = taskId ? await this.findOneById(taskId) : null;
+    if (taskId && !task) {
       throw new Error('Task not found');
     }
 
@@ -675,7 +675,7 @@ export class TasksManager {
       throw new Error('Parent task not found');
     }
 
-    if (id && task) {
+    if (taskId && task) {
       if (parentId === task.id) {
         throw new Error('Task cannot be its own parent');
       }
@@ -689,7 +689,7 @@ export class TasksManager {
         throw new Error('Task cannot be moved any deeper');
       }
 
-      const children = await this.findManyByParentId(id);
+      const children = await this.findManyByParentId(taskId);
       if (children.length > 0) {
         throw new Error('Task with child tasks cannot have a parent');
       }

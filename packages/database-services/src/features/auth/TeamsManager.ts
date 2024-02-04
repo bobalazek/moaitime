@@ -116,18 +116,18 @@ export class TeamsManager {
     return this.findManyByUserId(userId);
   }
 
-  async update(userId: string, teamId: string, updateData: UpdateTeam) {
+  async update(userId: string, teamId: string, data: UpdateTeam) {
     const canView = await this.userCanUpdate(userId, teamId);
     if (!canView) {
       throw new Error('You cannot update this team');
     }
 
-    const data = await this.findOneById(teamId);
-    if (!data) {
+    const team = await this.findOneById(teamId);
+    if (!team) {
       throw new Error('Team not found');
     }
 
-    return this.updateOneById(teamId, updateData);
+    return this.updateOneById(teamId, data);
   }
 
   async delete(userId: string, teamId: string, isHardDelete?: boolean) {

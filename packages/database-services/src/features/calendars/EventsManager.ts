@@ -201,9 +201,9 @@ export class EventsManager {
     return finalRows;
   }
 
-  async findOneById(id: string): Promise<Event | null> {
+  async findOneById(eventId: string): Promise<Event | null> {
     const row = await getDatabase().query.events.findFirst({
-      where: eq(events.id, id),
+      where: eq(events.id, eventId),
     });
 
     return row ?? null;
@@ -215,18 +215,18 @@ export class EventsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewEvent>): Promise<Event> {
+  async updateOneById(eventId: string, data: Partial<NewEvent>): Promise<Event> {
     const rows = await getDatabase()
       .update(events)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(events.id, id))
+      .where(eq(events.id, eventId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Event> {
-    const rows = await getDatabase().delete(events).where(eq(events.id, id)).returning();
+  async deleteOneById(eventId: string): Promise<Event> {
+    const rows = await getDatabase().delete(events).where(eq(events.id, eventId)).returning();
 
     return rows[0];
   }
@@ -304,50 +304,50 @@ export class EventsManager {
     return event;
   }
 
-  async update(userId: string, eventId: string, updateData: UpdateEvent) {
+  async update(userId: string, eventId: string, data: UpdateEvent) {
     const canView = await this.userCanUpdate(userId, eventId);
     if (!canView) {
       throw new Error('You cannot update this event');
     }
 
-    const data = await this.findOneById(eventId);
-    if (!data) {
+    const event = await this.findOneById(eventId);
+    if (!event) {
       throw new Error('Event not found');
     }
 
     const now = new Date();
-    const startsAt = updateData.startsAt ? new Date(updateData.startsAt) : undefined;
-    const endsAt = updateData.endsAt ? new Date(updateData.endsAt) : undefined;
-    const finalStartsAt = startsAt ?? data.startsAt ?? now;
-    const finalEndsAt = endsAt ?? data.endsAt ?? now;
+    const startsAt = data.startsAt ? new Date(data.startsAt) : undefined;
+    const endsAt = data.endsAt ? new Date(data.endsAt) : undefined;
+    const finalStartsAt = startsAt ?? event.startsAt ?? now;
+    const finalEndsAt = endsAt ?? event.endsAt ?? now;
     if (finalStartsAt > finalEndsAt) {
       throw new Error('Start date must be before end date');
     }
 
     // We need to account for the null value, which means to unset the value,
     // where as undefined means to not update the value.
-    const repeatEndsAt = updateData.repeatEndsAt
-      ? new Date(updateData.repeatEndsAt)
-      : updateData.repeatEndsAt === null
+    const repeatEndsAt = data.repeatEndsAt
+      ? new Date(data.repeatEndsAt)
+      : data.repeatEndsAt === null
         ? null
         : undefined;
 
-    const event = await this.updateOneById(eventId, {
-      ...updateData,
+    const newEvent = await this.updateOneById(eventId, {
+      ...data,
       startsAt,
       endsAt,
       repeatEndsAt,
     });
-    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+    const calendar = await calendarsManager.findOneByIdAndUserId(newEvent.calendarId, userId);
 
     globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
       userId: userId,
-      eventId: event.id,
-      calendarId: event.calendarId ?? undefined,
+      eventId: newEvent.id,
+      calendarId: newEvent.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
     });
 
-    return event;
+    return newEvent;
   }
 
   async delete(userId: string, eventId: string) {

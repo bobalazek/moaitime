@@ -37,17 +37,17 @@ export class TagsManager {
     });
   }
 
-  async findOneById(id: string): Promise<Tag | null> {
+  async findOneById(tagId: string): Promise<Tag | null> {
     const row = await getDatabase().query.tags.findFirst({
-      where: eq(tags.id, id),
+      where: eq(tags.id, tagId),
     });
 
     return row ?? null;
   }
 
-  async findOneByIdAndUserId(id: string, userId: string): Promise<Tag | null> {
+  async findOneByIdAndUserId(tagId: string, userId: string): Promise<Tag | null> {
     const row = await getDatabase().query.tags.findFirst({
-      where: and(eq(tags.id, id), eq(tags.userId, userId)),
+      where: and(eq(tags.id, tagId), eq(tags.userId, userId)),
     });
 
     return row ?? null;
@@ -59,37 +59,37 @@ export class TagsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewTag>): Promise<Tag> {
+  async updateOneById(tagId: string, data: Partial<NewTag>): Promise<Tag> {
     const rows = await getDatabase()
       .update(tags)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(tags.id, id))
+      .where(eq(tags.id, tagId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Tag> {
-    const rows = await getDatabase().delete(tags).where(eq(tags.id, id)).returning();
+  async deleteOneById(tagId: string): Promise<Tag> {
+    const rows = await getDatabase().delete(tags).where(eq(tags.id, tagId)).returning();
 
     return rows[0];
   }
 
   // Permissions
-  async userCanView(userId: string, noteId: string): Promise<boolean> {
+  async userCanView(userId: string, tagId: string): Promise<boolean> {
     const row = await getDatabase().query.tags.findFirst({
-      where: and(eq(tags.id, noteId), eq(tags.userId, userId)),
+      where: and(eq(tags.id, tagId), eq(tags.userId, userId)),
     });
 
     return !!row;
   }
 
-  async userCanUpdate(userId: string, noteId: string): Promise<boolean> {
-    return this.userCanView(userId, noteId);
+  async userCanUpdate(userId: string, tagId: string): Promise<boolean> {
+    return this.userCanView(userId, tagId);
   }
 
-  async userCanDelete(userId: string, noteId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, noteId);
+  async userCanDelete(userId: string, tagId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, tagId);
   }
 
   // API Helpers
@@ -113,21 +113,21 @@ export class TagsManager {
     return data;
   }
 
-  async create(user: User, createData: CreateTag) {
+  async create(user: User, data: CreateTag) {
     const maxCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
     const currentCount = await this.countByUserId(user.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of tags per user (${maxCount}).`);
     }
 
-    if (createData.teamId) {
+    if (data.teamId) {
       const teamIds = await usersManager.getTeamIds(user.id);
-      if (!teamIds.includes(createData.teamId)) {
+      if (!teamIds.includes(data.teamId)) {
         throw new Error('You cannot create a tag for this team');
       }
     }
 
-    return this.insertOne({ ...createData, userId: user.id });
+    return this.insertOne({ ...data, userId: user.id });
   }
 
   async update(userId: string, tagId: string, data: UpdateTag) {

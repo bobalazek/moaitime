@@ -191,7 +191,7 @@ export class FocusSessionsManager {
     }
 
     // Variables
-    const updateData: Partial<NewFocusSession> = {};
+    const data: Partial<NewFocusSession> = {};
 
     const now = new Date();
     const nowString = now.toISOString();
@@ -222,7 +222,7 @@ export class FocusSessionsManager {
         throw new Error('Focus session is not active, so it can not be paused');
       }
 
-      updateData.status = FocusSessionStatusEnum.PAUSED;
+      data.status = FocusSessionStatusEnum.PAUSED;
 
       // Events
       currentFocusSessionEvents.push({
@@ -234,7 +234,7 @@ export class FocusSessionsManager {
         throw new Error('Focus session is not paused, so it can not be continued');
       }
 
-      updateData.status = FocusSessionStatusEnum.ACTIVE;
+      data.status = FocusSessionStatusEnum.ACTIVE;
 
       // Events
       currentFocusSessionEvents.push({
@@ -242,8 +242,8 @@ export class FocusSessionsManager {
         createdAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.COMPLETE) {
-      updateData.status = FocusSessionStatusEnum.PAUSED;
-      updateData.completedAt = now;
+      data.status = FocusSessionStatusEnum.PAUSED;
+      data.completedAt = now;
 
       // Events
       currentFocusSessionEvents.push({
@@ -251,17 +251,17 @@ export class FocusSessionsManager {
         createdAt: nowString,
       });
     } else if (action === FocusSessionUpdateActionEnum.SKIP) {
-      updateData.status = FocusSessionStatusEnum.PAUSED;
+      data.status = FocusSessionStatusEnum.PAUSED;
 
       if (currentFocusSessionStage === FocusSessionStageEnum.FOCUS) {
-        updateData.stage = focusSessionHasDoneAllIterations
+        data.stage = focusSessionHasDoneAllIterations
           ? FocusSessionStageEnum.LONG_BREAK
           : FocusSessionStageEnum.SHORT_BREAK;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
-        updateData.stage = FocusSessionStageEnum.FOCUS;
-        updateData.stageIteration = currentFocusSessionStageIteration + 1;
+        data.stage = FocusSessionStageEnum.FOCUS;
+        data.stageIteration = currentFocusSessionStageIteration + 1;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
-        updateData.completedAt = now;
+        data.completedAt = now;
       }
 
       focusSessionStageProgressSeconds = 0;
@@ -274,32 +274,32 @@ export class FocusSessionsManager {
     }
 
     // Stage over and underflow validation
-    updateData.stageProgressSeconds = focusSessionStageProgressSeconds;
-    if (updateData.stageProgressSeconds < 0) {
-      updateData.stageProgressSeconds = 0;
-    } else if (updateData.stageProgressSeconds > focusSessionStageDurationSeconds) {
-      updateData.stageProgressSeconds = 0;
+    data.stageProgressSeconds = focusSessionStageProgressSeconds;
+    if (data.stageProgressSeconds < 0) {
+      data.stageProgressSeconds = 0;
+    } else if (data.stageProgressSeconds > focusSessionStageDurationSeconds) {
+      data.stageProgressSeconds = 0;
 
       if (currentFocusSessionStatus === FocusSessionStatusEnum.ACTIVE) {
-        updateData.status = FocusSessionStatusEnum.PAUSED;
+        data.status = FocusSessionStatusEnum.PAUSED;
       }
 
       if (currentFocusSessionStage === FocusSessionStageEnum.FOCUS) {
-        updateData.stage = focusSessionHasDoneAllIterations
+        data.stage = focusSessionHasDoneAllIterations
           ? FocusSessionStageEnum.LONG_BREAK
           : FocusSessionStageEnum.SHORT_BREAK;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.SHORT_BREAK) {
-        updateData.stage = FocusSessionStageEnum.FOCUS;
-        updateData.stageIteration = currentFocusSessionStageIteration + 1;
+        data.stage = FocusSessionStageEnum.FOCUS;
+        data.stageIteration = currentFocusSessionStageIteration + 1;
       } else if (currentFocusSessionStage === FocusSessionStageEnum.LONG_BREAK) {
-        updateData.completedAt = now;
+        data.completedAt = now;
       }
     }
 
-    updateData.events = currentFocusSessionEvents;
-    updateData.lastPingedAt = now;
+    data.events = currentFocusSessionEvents;
+    data.lastPingedAt = now;
 
-    return this.updateOneById(focusSession.id, updateData);
+    return this.updateOneById(focusSession.id, data);
   }
 
   async countByUserId(userId: string): Promise<number> {

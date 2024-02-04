@@ -234,27 +234,21 @@ export class CalendarsManager {
     return this.convertToApiResponse(calendars, userId);
   }
 
-  async create(user: User, createData: CreateCalendar) {
-    const calendarsMaxPerUserCount = await usersManager.getUserLimit(
-      user,
-      'calendarsMaxPerUserCount'
-    );
-
-    const calendarsCount = await this.countByUserId(user.id);
-    if (calendarsCount >= calendarsMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of calendars per user (${calendarsMaxPerUserCount}).`
-      );
+  async create(user: User, data: CreateCalendar) {
+    const maxCount = await usersManager.getUserLimit(user, 'calendarsMaxPerUserCount');
+    const currentCount = await this.countByUserId(user.id);
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of calendars per user (${maxCount}).`);
     }
 
-    const data = await this.insertOne({
-      ...createData,
+    const calendar = await this.insertOne({
+      ...data,
       userId: user.id,
     });
 
-    await this.addVisibleCalendarIdByUserId(user.id, data.id);
+    await this.addVisibleCalendarIdByUserId(user.id, calendar.id);
 
-    return data;
+    return calendar;
   }
 
   async update(userId: string, calendarId: string, body: UpdateCalendar) {

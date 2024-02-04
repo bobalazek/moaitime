@@ -38,9 +38,9 @@ export class ListsManager {
     return result;
   }
 
-  async findOneById(id: string): Promise<List | null> {
+  async findOneById(listId: string): Promise<List | null> {
     const row = await getDatabase().query.lists.findFirst({
-      where: eq(lists.id, id),
+      where: eq(lists.id, listId),
     });
 
     return row ?? null;
@@ -72,18 +72,18 @@ export class ListsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewList>): Promise<List> {
+  async updateOneById(listId: string, data: Partial<NewList>): Promise<List> {
     const rows = await getDatabase()
       .update(lists)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(lists.id, id))
+      .where(eq(lists.id, listId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<List> {
-    const rows = await getDatabase().delete(lists).where(eq(lists.id, id)).returning();
+  async deleteOneById(listId: string): Promise<List> {
+    const rows = await getDatabase().delete(lists).where(eq(lists.id, listId)).returning();
 
     return rows[0];
   }

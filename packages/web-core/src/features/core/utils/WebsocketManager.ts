@@ -1,5 +1,6 @@
 import { GlobalEvents, GlobalEventsEnum, WS_URL } from '@moaitime/shared-common';
 
+import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useListsStore } from '../../tasks/state/listsStore';
 
 export class WebsocketManager {
@@ -61,6 +62,10 @@ export class WebsocketManager {
 
       await reloadSelectedListTasks();
       await reloadTasksCountMap();
+    } else if (data.type.startsWith('calendar:event:')) {
+      const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
+
+      await reloadCalendarEntriesDebounced();
     }
   }
 }

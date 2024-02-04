@@ -2,7 +2,11 @@ import { Module, OnModuleDestroy } from '@nestjs/common';
 
 import { getEnv } from '@moaitime/shared-backend';
 
-import { globalNotifierSubscription, WebsocketGateway } from './gateways/websocket.gateway';
+import {
+  globalNotifierSubscription,
+  terminateServer,
+  WebsocketGateway,
+} from './gateways/websocket.gateway';
 
 @Module({
   imports: [],
@@ -17,6 +21,7 @@ export class WebsocketModule implements OnModuleDestroy {
     // so we would often get issues that the server port is already used.
     if (NODE_ENV === 'production' && globalNotifierSubscription) {
       await globalNotifierSubscription();
+      await terminateServer();
     }
   }
 }

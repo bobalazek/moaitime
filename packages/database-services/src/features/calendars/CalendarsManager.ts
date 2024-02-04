@@ -198,7 +198,16 @@ export class CalendarsManager {
       return false;
     }
 
-    return calendar.userId === userId;
+    if (calendar.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (calendar.teamId && teamIds.includes(calendar.teamId)) {
+      return true;
+    }
+
+    return false;
   }
 
   async userCanDelete(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {

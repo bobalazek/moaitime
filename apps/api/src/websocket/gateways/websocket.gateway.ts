@@ -16,6 +16,7 @@ import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 // TODO: is there a more optimal way to do this?
 export let globalNotifierSubscription: () => Promise<void>;
+export let terminateServer: () => Promise<void>;
 
 @WebSocketGateway({ path: '/ws', cors: true })
 export class WebsocketGateway
@@ -53,6 +54,12 @@ export class WebsocketGateway
         socket.send(JSON.stringify({ type, payload }));
       }
     });
+
+    terminateServer = async () => {
+      logger.info(`[WebsocketGateway] Terminating the server ...`);
+
+      await this._server.close();
+    };
   }
 
   async handleConnection(client: WebSocket, incomingMessage: IncomingMessage) {

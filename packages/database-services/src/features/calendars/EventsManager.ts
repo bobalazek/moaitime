@@ -242,15 +242,12 @@ export class EventsManager {
 
   // Permissions
   async userCanView(userId: string, eventId: string): Promise<boolean> {
-    const result = await getDatabase()
-      .select()
-      .from(events)
-      .leftJoin(calendars, eq(events.calendarId, calendars.id))
-      .where(and(eq(events.id, eventId), eq(calendars.userId, userId)))
-      .limit(1)
-      .execute();
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      return false;
+    }
 
-    return result.length > 0;
+    return calendarsManager.userCanView(userId, event.calendarId);
   }
 
   async userCanUpdate(userId: string, calendarId: string): Promise<boolean> {

@@ -88,8 +88,9 @@ export default function CalendarMonthlyViewDay({
 
   return (
     <div
-      className="flex-grow cursor-pointer border p-2 lg:w-0"
+      className="flex-grow cursor-pointer select-none border p-2 lg:w-0"
       onClick={onDayContainerClick}
+      data-calendar-day={date}
       data-test="calendar--monthly-view--day"
     >
       <div className="text-center">
@@ -119,7 +120,7 @@ export default function CalendarMonthlyViewDay({
                   exit="exit"
                   variants={animationVariants}
                 >
-                  <CalendarEntry dayDate={date} calendarEntry={calendarEntry} />
+                  <CalendarEntry dayDate={date} calendarEntry={calendarEntry} canResizeAndMove />
                 </motion.div>
               ))}
               {remainingCalendarEntriesCount > 0 && (

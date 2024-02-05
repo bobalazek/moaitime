@@ -11,6 +11,7 @@ import {
   // Needs to be a different name to the component name itself
   CalendarEntry as CalendarEntryType,
   CalendarEntryTypeEnum,
+  CalendarViewEnum,
   Event,
   Task,
 } from '@moaitime/shared-common';
@@ -51,7 +52,7 @@ export default function CalendarEntry({
 }: CalendarEntryProps) {
   const { setSelectedTaskDialogOpen } = useTasksStore();
   const { setSelectedEventDialogOpen, editEvent } = useEventsStore();
-  const { updateCalendarEntry } = useCalendarStore();
+  const { selectedView, updateCalendarEntry } = useCalendarStore();
   const [highlightedCalendarEntry, setHighlightedCalendarEntry] = useAtom(
     highlightedCalendarEntryAtom
   );
@@ -76,9 +77,9 @@ export default function CalendarEntry({
 
   let canResizeEndHandler = canResizeAndMove;
   if (canResizeAndMove) {
-    canResizeAndMove = calendarEntry.permissions?.canUpdate && !calendarEntry.isAllDay;
-    canResizeEndHandler =
-      canResizeAndMove &&
+    canResizeAndMove = calendarEntry.permissions?.canUpdate;
+    canResizeEndHandler = selectedView !== CalendarViewEnum.MONTH;
+    canResizeAndMove &&
       ifIsCalendarEntryEndDateSameAsToday(calendarEntry, generalTimezone, dayDate);
   }
 
@@ -147,18 +148,40 @@ export default function CalendarEntry({
 
       const calendarContainer = document.getElementById('calendar');
       const container = (event.target as HTMLDivElement).parentElement;
-      if (!container || !style) {
+      if (!container) {
         return;
       }
 
-      const calendarWeekdayElement = document.getElementsByClassName('calendar-week-day')[0];
-      const calendarWeekdayWidth = calendarWeekdayElement?.clientWidth ?? 0;
-
       setCalendarEventResizing(calendarEntry);
 
+      // Weekly/Daily
+      // Figure out what the width of a weekday is, so when we move left/right,
+      // we know when we jumped to the next/previous day.
+      // Let's just get the first day, as they all should have the same width.
+      const calendarDays = Array.from(document.querySelectorAll('div[data-calendar-day]'));
+
+      let calendarWeekdayWidth = 0;
+      if (selectedView !== CalendarViewEnum.MONTH) {
+        calendarWeekdayWidth = calendarDays[0].clientWidth ?? 0;
+      }
+
+      // Monthly
+      const calendarDaysOfMonthCoords: { date: string; rect: DOMRect }[] = [];
+      if (selectedView == CalendarViewEnum.MONTH) {
+        for (const day of calendarDays) {
+          calendarDaysOfMonthCoords.push({
+            date: day.getAttribute('data-calendar-day')!,
+            rect: day.getBoundingClientRect(),
+          });
+        }
+      }
+
+      // Touch stuff
       const isTouchEvent = event.type.startsWith('touch');
       const initialCoordinates = getClientCoordinates(event);
+
       let minutesDelta = 0;
+      let currentDayDate = dayDate;
 
       if (isTouchEvent && calendarContainer) {
         document.body.style.overflow = 'hidden';
@@ -166,11 +189,31 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
-        const minutesDeltaRounded = getRoundedMinutes(
-          event,
-          initialCoordinates,
-          calendarWeekdayWidth
-        );
+        let minutesDeltaRounded = 0;
+
+        if (selectedView === CalendarViewEnum.MONTH) {
+          const { clientX, clientY } = getClientCoordinates(event);
+
+          // Find the day we are currently hovering over
+          const hoveredDay = calendarDaysOfMonthCoords.find((day) => {
+            return (
+              clientX >= day.rect.left &&
+              clientX <= day.rect.right &&
+              clientY >= day.rect.top &&
+              clientY <= day.rect.bottom
+            );
+          });
+
+          if (hoveredDay && currentDayDate !== hoveredDay.date) {
+            currentDayDate = hoveredDay.date;
+          }
+
+          const millisecondsDelta =
+            new Date(currentDayDate!).getTime() - new Date(dayDate!).getTime();
+          minutesDeltaRounded = Math.round(millisecondsDelta / 60000);
+        } else {
+          minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates, calendarWeekdayWidth);
+        }
 
         try {
           const { startsAt, startsAtUtc, endsAt, endsAtUtc } = adjustStartAndEndDates(
@@ -237,12 +280,13 @@ export default function CalendarEntry({
     },
     [
       canResizeAndMove,
-      style,
       calendarEntry,
+      selectedView,
+      dayDate,
+      editEvent,
+      setCalendarEventResizing,
       setSelectedEventDialogOpen,
       setSelectedTaskDialogOpen,
-      setCalendarEventResizing,
-      editEvent,
       debouncedUpdateCalendarEntry,
     ]
   );

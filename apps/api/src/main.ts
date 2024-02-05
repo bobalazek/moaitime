@@ -10,13 +10,18 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { ZodValidationPipe } from './utils/validation-helpers';
 
 export async function bootstrap() {
+  // Variables
+  const { API_PORT, NODE_ENV } = getEnv();
+  const port = API_PORT || 3636;
+  const isProduction = NODE_ENV === 'production';
+
+  // App
   const app = await NestFactory.create(AppModule, {
     cors: true,
+    // This relates to the Websocket module,
+    // where it wouldn't want to close the connections while we were developing
+    forceCloseConnections: !isProduction,
   });
-
-  // Variables
-  const { API_PORT } = getEnv();
-  const port = API_PORT || 3636;
 
   // Shutdown
   app.enableShutdownHooks();

@@ -58,7 +58,11 @@ export class WebsocketGateway
     terminateServer = async () => {
       logger.info(`[WebsocketGateway] Terminating the server ...`);
 
-      await this._server.close();
+      this._server.close(() => {
+        logger.info(`[WebsocketGateway] Server terminated.`);
+
+        process.exit(0);
+      });
     };
   }
 

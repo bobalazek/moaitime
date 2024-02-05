@@ -24,7 +24,10 @@ export default defineConfig((options) => {
       watch.push(join(__dirname, `../../packages/${packageName}/dist/**/index.{js,mjs}`));
     }
 
-    onSuccess = `node dist/main.js`;
+    // We needed to add this sleep,
+    // so that the websocket has time to close in HMR mode,
+    // before the server restarts.
+    onSuccess = `node -e "function sleep() { return new Promise(resolve => setTimeout(resolve, 2000)); }; sleep();" && node dist/main.js`;
 
     /*
     // TODO: fix, as it's not working at the moment

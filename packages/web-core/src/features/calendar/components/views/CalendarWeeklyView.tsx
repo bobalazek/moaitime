@@ -164,9 +164,8 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                /* Need to keep the "calendar-week-day" here as we use it to calculate the width of a day in resizing/moving events */
-                className="calendar-week-day flex-1 cursor-pointer p-2"
-                data-date={date}
+                className="flex-1 cursor-pointer select-none p-2"
+                data-calendar-day={date}
                 onClick={onDayContainerClick}
                 data-test="calendar--weekly-view--day"
               >

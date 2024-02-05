@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
+import { ArrowLeftIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Dialog, DialogContent } from '@moaitime/web-ui';
 
@@ -76,7 +77,33 @@ const tabs = [
 export default function SettingsDialog() {
   const { auth } = useAuthStore();
   const { dialogOpen, setDialogOpen } = useSettingsStore();
-  const [activeTab, setActiveTab] = useState(tabs[0].id);
+  const [activeTab, setActiveTab] = useState<string | undefined>();
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const newIsMobileView = window.innerWidth < 768;
+    if (!newIsMobileView && !activeTab) {
+      setActiveTab(tabs[0].id);
+    }
+
+    const onResize = () => {
+      const newIsMobileView = window.innerWidth < 768;
+
+      setIsMobileView(newIsMobileView);
+
+      if (!newIsMobileView) {
+        setActiveTab(tabs[0].id);
+      }
+    };
+
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!auth) {
     return null;
@@ -90,7 +117,14 @@ export default function SettingsDialog() {
 
     return (
       <div>
-        <h4 className="text-lg font-bold">{tab.label}</h4>
+        <div className="flex items-center gap-2">
+          {isMobileView && (
+            <button onClick={() => setActiveTab(undefined)} className="p-1 text-lg font-bold">
+              <ArrowLeftIcon size={24} />
+            </button>
+          )}
+          <h4 className="text-lg font-bold">{tab.label}</h4>
+        </div>
         {tab.content}
       </div>
     );
@@ -100,32 +134,42 @@ export default function SettingsDialog() {
     setActiveTab(tab.id);
   };
 
+  const showSidebar = !isMobileView || !activeTab;
+  const showContent = !isMobileView || (isMobileView && !!activeTab);
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent
         className="max-h-full max-w-screen-lg overflow-auto p-0 shadow-lg md:flex"
         data-test="settings--dialog"
       >
-        <div className="w-full p-4 md:w-1/4" data-test="settings--dialog--sidebar">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              className={clsx(
-                `w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
-                tab.id === activeTab && 'font-extrabold dark:text-white'
-              )}
-              onClick={() => onSidebarButtonClick(tab)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <div className="w-full p-4 md:w-3/4" data-test="settings--dialog--content">
-          <AnimatePresence>
-            <motion.div layout>{renderContent()}</motion.div>
-          </AnimatePresence>
-        </div>
+        {showSidebar && (
+          <div className="w-full p-4 md:w-1/4" data-test="settings--dialog--sidebar">
+            <h3 className="mb-2 font-bold">Settings</h3>
+            <div>
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={clsx(
+                    `w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
+                    tab.id === activeTab && 'bg-gray-200 font-extrabold dark:bg-gray-700'
+                  )}
+                  onClick={() => onSidebarButtonClick(tab)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {showContent && (
+          <div className="w-full p-4 md:w-3/4" data-test="settings--dialog--content">
+            <AnimatePresence>
+              <motion.div layout>{renderContent()}</motion.div>
+            </AnimatePresence>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

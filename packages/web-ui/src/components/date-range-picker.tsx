@@ -105,15 +105,15 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   );
 
   useEffect(() => {
-    const handleResize = (): void => {
+    const onResize = (): void => {
       setIsSmallScreen(window.innerWidth < 960);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', onResize);
 
     // Clean up event listener on unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 

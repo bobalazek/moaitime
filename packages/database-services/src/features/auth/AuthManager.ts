@@ -586,11 +586,12 @@ export class AuthManager {
 
     await writeFile(tmpPath, file.buffer);
 
+    const fileName = `${userId}-${Date.now()}.${file.originalname.split('.').pop()}`;
     const avatarImageUrl = await uploader.uploadToBucket(
       USER_AVATARS_BUCKET_URL,
       tmpPath,
       file.mimetype,
-      `${userId}-${file.originalname}`,
+      fileName,
       undefined,
       true
     );

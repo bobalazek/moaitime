@@ -36,8 +36,8 @@ export default function AppsDock() {
   return (
     <ErrorBoundary>
       <div className="z-50 flex w-full justify-center p-2">
-        <ScrollArea>
-          <div className="flex flex-row gap-3 rounded-2xl border border-gray-300 bg-white/30 p-2 backdrop-blur-3xl">
+        <ScrollArea className="rounded-2xl border border-gray-300 bg-white/30 p-2 backdrop-blur-3xl">
+          <div className="flex w-full flex-row gap-3">
             <AnimatePresence>
               {calendarEnabled && (
                 <motion.div

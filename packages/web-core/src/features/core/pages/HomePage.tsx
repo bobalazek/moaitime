@@ -60,7 +60,7 @@ export default function HomePage() {
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                className="mt-6"
+                className="mt-2 md:mt-6"
               >
                 <Greeting />
               </motion.div>
@@ -73,7 +73,7 @@ export default function HomePage() {
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                className="mt-12"
+                className="mt-4 md:mt-12"
               >
                 <Search />
               </motion.div>
@@ -86,7 +86,7 @@ export default function HomePage() {
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                className="mt-8"
+                className="mt-4 md:mt-8"
               >
                 <Quote />
               </motion.div>

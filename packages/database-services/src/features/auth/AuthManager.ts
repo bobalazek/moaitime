@@ -1,3 +1,7 @@
+import { writeFile } from 'fs/promises';
+import { tmpdir } from 'os';
+import { join } from 'path';
+
 import { addSeconds } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,6 +14,7 @@ import {
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
   compareHash,
   generateHash,
+  getEnv,
   LISTS_DEFAULT_NAMES,
   TASKS_DEFAULT_ENTRIES,
 } from '@moaitime/shared-backend';
@@ -21,6 +26,7 @@ import {
   UserSettingsSchema,
   WEB_URL,
 } from '@moaitime/shared-common';
+import { uploader } from '@moaitime/uploader';
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
@@ -568,11 +574,18 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
-    const avatarImageUrl = null;
+    const { USER_AVATARS_BUCKET_URL } = getEnv();
 
-    // TODO
+    const tmpPath = join(tmpdir(), `${userId}-${file.name}`);
 
-    console.log(file);
+    await writeFile(tmpPath, (file as unknown as { buffer: Buffer }).buffer);
+
+    const avatarImageUrl = await uploader.uploadToBucket(
+      USER_AVATARS_BUCKET_URL,
+      tmpPath,
+      file.type,
+      `${userId}-${file.name}`
+    );
 
     const updatedUser = await this._usersManager.updateOneById(userId, {
       avatarImageUrl,

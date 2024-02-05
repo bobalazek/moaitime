@@ -22,6 +22,7 @@ export const envSchema = z.object({
   // The URL is encoded in env variables, so we need to decode it here
   SMTP_URL: z.string().url().min(1),
   USER_DATA_EXPORTS_BUCKET_URL: z.string().url().min(1),
+  USER_AVATARS_BUCKET_URL: z.string().url().min(1),
   API_PORT: z.coerce.number().default(3636),
 });
 

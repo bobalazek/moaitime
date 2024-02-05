@@ -1,8 +1,5 @@
-import { createReadStream, createWriteStream, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, writeFileSync } from 'fs';
 
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import archiver from 'archiver';
 import { addSeconds } from 'date-fns';
 
@@ -14,6 +11,7 @@ import {
   TMP_USER_DATA_EXPORTS_DIR,
 } from '@moaitime/shared-backend';
 import { ProcessingStatusEnum } from '@moaitime/shared-common';
+import { uploader } from '@moaitime/uploader';
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { EventsManager, eventsManager } from '../calendars/EventsManager';
@@ -261,65 +259,13 @@ export class UserDataExportProcessor {
 
     const { USER_DATA_EXPORTS_BUCKET_URL } = getEnv();
 
-    const [protocol, bucketUrl] = USER_DATA_EXPORTS_BUCKET_URL.split('://');
-
-    const atSplit = bucketUrl.split('@');
-    if (atSplit.length !== 2) {
-      throw new Error(`Invalid bucket URL (${bucketUrl}).`);
-    }
-
-    const colonSplit = atSplit[0].split(':');
-    if (colonSplit.length !== 2) {
-      throw new Error(`Invalid bucket URL (${bucketUrl}).`);
-    }
-
-    const slashSplit = atSplit[1].split('/');
-
-    const region = 'us-east-1';
-    const domain = slashSplit[0];
-    const bucket = slashSplit[1];
-    const accessKeyId = colonSplit[0];
-    const secretAccessKey = colonSplit[1];
-
-    const endpoint = `${protocol}://${domain}`;
-    const forcePathStyle = ['localhost', 'minio', '127.0.0.1'].some((host) =>
-      domain.includes(host)
+    return uploader.uploadToBucket(
+      USER_DATA_EXPORTS_BUCKET_URL,
+      zipFilePath,
+      'application/zip',
+      zipFilePath.split('/').pop()!,
+      AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS
     );
-
-    const filenameSplit = zipFilePath.split('/');
-    const id = filenameSplit[filenameSplit.length - 1];
-
-    const client = new S3Client({
-      region,
-      endpoint,
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
-      forcePathStyle,
-    });
-
-    const upload = new Upload({
-      client,
-      params: {
-        Bucket: bucket,
-        Key: id,
-        Body: createReadStream(zipFilePath),
-        ContentType: 'application/zip',
-      },
-    });
-    await upload.done();
-
-    const getObjectCommand = new GetObjectCommand({
-      Bucket: bucket,
-      Key: id,
-    });
-
-    const url = await getSignedUrl(client, getObjectCommand, {
-      expiresIn: AUTH_DATA_EXPORT_FILE_EXPIRATION_SECONDS,
-    });
-
-    return url;
   }
 }
 

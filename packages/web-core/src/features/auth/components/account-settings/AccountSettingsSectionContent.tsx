@@ -48,6 +48,8 @@ export default function AccountSettingsSectionContent() {
       });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
+    } finally {
+      avatarImageInputRef.current!.value = '';
     }
   };
 
@@ -65,6 +67,8 @@ export default function AccountSettingsSectionContent() {
       });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
+    } finally {
+      avatarImageInputRef.current!.value = '';
     }
   };
 
@@ -152,12 +156,10 @@ export default function AccountSettingsSectionContent() {
       <div>
         <h4 className="text-lg font-bold">Photo</h4>
         <p className="mb-2 text-xs text-gray-400">Pick a photo up to 4MB and you will be golden!</p>
-        <div>
-          <div>
-            {auth.user.avatarImageUrl && (
-              <img src={auth.user.avatarImageUrl} alt="Avatar" className="h-12 w-12 rounded-full" />
-            )}
-          </div>
+        <div className="flex flex-row items-center gap-4">
+          {auth.user.avatarImageUrl && (
+            <img src={auth.user.avatarImageUrl} alt="Avatar" className="h-20 w-20 rounded-full" />
+          )}
           <div className="flex gap-1">
             <Button size="sm" variant="outline" onClick={onAvatarImageUploadButtonClick}>
               {auth.user.avatarImageUrl && <>Change Photo</>}

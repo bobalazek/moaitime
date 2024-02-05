@@ -1,5 +1,5 @@
 {
-  "name": "@moaitime/database-services",
+  "name": "@moaitime/uploader",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -21,27 +21,15 @@
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest run --no-threads",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@moaitime/database-core": "workspace:*",
-    "@moaitime/database-testing": "workspace:*",
-    "@moaitime/emails-mailer": "workspace:*",
-    "@moaitime/global-event-notifier": "workspace:*",
-    "@moaitime/logging": "workspace:*",
-    "@moaitime/shared-backend": "workspace:*",
-    "@moaitime/shared-common": "workspace:*",
-    "@moaitime/uploader": "workspace:*",
-    "archiver": "^6.0.1",
-    "date-fns": "^2.30.0",
-    "date-fns-tz": "^2.0.0",
-    "drizzle-orm": "^0.29.0",
-    "uuid": "^9.0.1"
+    "@aws-sdk/client-s3": "^3.484.0",
+    "@aws-sdk/lib-storage": "^3.484.0",
+    "@aws-sdk/s3-request-presigner": "^3.484.0",
+    "@moaitime/shared-backend": "workspace:*"
   },
   "devDependencies": {
-    "@types/archiver": "^6.0.2",
-    "@types/uuid": "^9.0.7",
     "typescript": "^5.3.2"
   }
 }

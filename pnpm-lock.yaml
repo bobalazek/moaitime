@@ -406,15 +406,6 @@ importers:
 
   packages/database-services:
     dependencies:
-      '@aws-sdk/client-s3':
-        specifier: ^3.484.0
-        version: 3.504.0
-      '@aws-sdk/lib-storage':
-        specifier: ^3.484.0
-        version: 3.504.0(@aws-sdk/client-s3@3.504.0)
-      '@aws-sdk/s3-request-presigner':
-        specifier: ^3.484.0
-        version: 3.504.0
       '@moaitime/database-core':
         specifier: workspace:*
         version: link:../database-core
@@ -436,6 +427,9 @@ importers:
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
+      '@moaitime/uploader':
+        specifier: workspace:*
+        version: link:../uploader
       archiver:
         specifier: ^6.0.1
         version: 6.0.1
@@ -757,6 +751,25 @@ importers:
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.3
+
+  packages/uploader:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.484.0
+        version: 3.504.0
+      '@aws-sdk/lib-storage':
+        specifier: ^3.484.0
+        version: 3.504.0(@aws-sdk/client-s3@3.504.0)
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.484.0
+        version: 3.504.0
+      '@moaitime/shared-backend':
+        specifier: workspace:*
+        version: link:../shared-backend
     devDependencies:
       typescript:
         specifier: ^5.3.2

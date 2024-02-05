@@ -1,7 +1,6 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
-import NotesSettingsSectionHeaderText from './NotesSettingsSectionHeaderText';
 
 export default function NotesSettingsSection() {
   const { auth, updateAccountSettings } = useAuthStore();
@@ -13,9 +12,6 @@ export default function NotesSettingsSection() {
 
   return (
     <div>
-      <h4 className="text-lg font-bold">
-        <NotesSettingsSectionHeaderText />
-      </h4>
       <p className="mb-4 text-sm text-gray-400">
         Just some visual squares to show you what day it is.
       </p>

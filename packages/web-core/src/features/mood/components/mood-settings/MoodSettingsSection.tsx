@@ -6,7 +6,6 @@ import { Button, Input, Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
-import MoodSettingsSectionHeaderText from '../mood-settings/MoodSettingsSectionHeaderText';
 
 export default function MoodSettingsSection() {
   const { updateAccountSettings } = useAuthStore();
@@ -71,9 +70,6 @@ export default function MoodSettingsSection() {
 
   return (
     <div>
-      <h4 className="text-lg font-bold">
-        <MoodSettingsSectionHeaderText />
-      </h4>
       <p className="mb-4 text-sm text-gray-400">
         Just some visual squares to show you what day it is.
       </p>

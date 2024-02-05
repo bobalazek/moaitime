@@ -88,7 +88,16 @@ export default function SettingsDialog() {
       return null;
     }
 
-    return tab.content;
+    return (
+      <div>
+        <h4 className="text-lg font-bold">{tab.label}</h4>
+        {tab.content}
+      </div>
+    );
+  };
+
+  const onSidebarButtonClick = (tab: (typeof tabs)[number]) => {
+    setActiveTab(tab.id);
   };
 
   return (
@@ -106,7 +115,7 @@ export default function SettingsDialog() {
                 `w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
                 tab.id === activeTab && 'font-extrabold dark:text-white'
               )}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => onSidebarButtonClick(tab)}
             >
               {tab.label}
             </button>

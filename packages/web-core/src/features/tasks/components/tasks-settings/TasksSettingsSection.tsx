@@ -2,7 +2,6 @@ import { Button, Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
 import { useTagsStore } from '../../state/tagsStore';
-import TasksSettingsSectionHeaderText from './TasksSettingsSectionHeaderText';
 
 export default function TasksSettingsSection() {
   const { updateAccountSettings } = useAuthStore();
@@ -17,9 +16,6 @@ export default function TasksSettingsSection() {
 
   return (
     <div>
-      <h4 className="flex items-center gap-3 text-lg font-bold">
-        <TasksSettingsSectionHeaderText />
-      </h4>
       <p className="mb-4 text-sm text-gray-400">
         We know that sometimes you brain just needs a break, so we added a list for you!
       </p>

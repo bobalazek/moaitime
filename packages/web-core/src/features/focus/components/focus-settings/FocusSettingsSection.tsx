@@ -5,7 +5,6 @@ import { DEFAULT_USER_SETTINGS } from '@moaitime/shared-common';
 import { Input, Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
-import FocusSettingsSectionHeaderText from './FocusSettingsSectionHeaderText';
 
 export default function FocusSettingsSection() {
   const { updateAccountSettings } = useAuthStore();
@@ -34,9 +33,6 @@ export default function FocusSettingsSection() {
 
   return (
     <div>
-      <h4 className="text-lg font-bold">
-        <FocusSettingsSectionHeaderText />
-      </h4>
       <p className="mb-4 text-sm text-gray-400">
         Just some visual squares to show you what day it is.
       </p>

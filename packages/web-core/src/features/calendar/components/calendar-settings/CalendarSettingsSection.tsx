@@ -1,7 +1,6 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
-import CalendarSettingsSectionHeaderText from './CalendarSettingsSectionHeaderText';
 
 export default function CalendarSettingsSection() {
   const { auth, updateAccountSettings } = useAuthStore();
@@ -13,9 +12,6 @@ export default function CalendarSettingsSection() {
 
   return (
     <div>
-      <h4 className="text-lg font-bold">
-        <CalendarSettingsSectionHeaderText />
-      </h4>
       <p className="mb-4 text-sm text-gray-400">
         Just some visual squares to show you what day it is.
       </p>

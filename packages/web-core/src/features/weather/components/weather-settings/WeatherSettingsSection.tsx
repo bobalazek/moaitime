@@ -1,7 +1,6 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
-import WeatherSettingsSectionHeaderText from './WeatherSettingsSectionHeaderText';
 
 export default function WeatherSettingsSection() {
   const { updateAccountSettings } = useAuthStore();
@@ -11,9 +10,6 @@ export default function WeatherSettingsSection() {
 
   return (
     <div>
-      <h4 className="flex items-center gap-3 text-lg font-bold">
-        <WeatherSettingsSectionHeaderText />
-      </h4>
       <p className="mb-4 text-sm text-gray-400">All the settings related to the weather widget.</p>
       <div className="mb-4">
         <div className="flex items-center">

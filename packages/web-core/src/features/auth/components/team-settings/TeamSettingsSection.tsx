@@ -1,6 +1,5 @@
 import { useAuthStore } from '../../state/authStore';
 import TeamSettingsSectionContent from './TeamSettingsSectionContent';
-import TeamSettingsSectionHeaderText from './TeamSettingsSectionHeaderText';
 
 export default function TeamSettingsSection() {
   const { auth } = useAuthStore();
@@ -9,10 +8,7 @@ export default function TeamSettingsSection() {
   }
 
   return (
-    <div className="mb-4">
-      <h4 className="flex items-center gap-3 text-lg font-bold">
-        <TeamSettingsSectionHeaderText />
-      </h4>
+    <div>
       <p className="mb-4 text-sm text-gray-400">Who will be collborating with?</p>
       <TeamSettingsSectionContent />
     </div>

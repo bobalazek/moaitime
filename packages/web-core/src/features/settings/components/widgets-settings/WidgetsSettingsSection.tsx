@@ -1,7 +1,6 @@
 import { Label, Switch } from '@moaitime/web-ui';
 
 import { useAuthStore, useAuthUserSetting } from '../../../auth/state/authStore';
-import WidgetsSettingsSectionHeaderText from './WidgetsSettingsSectionHeaderText';
 
 export default function WidgetsSettingsSection() {
   const { auth, updateAccountSettings } = useAuthStore();
@@ -21,10 +20,7 @@ export default function WidgetsSettingsSection() {
   }
 
   return (
-    <div className="mb-4">
-      <h4 className="text-lg font-bold">
-        <WidgetsSettingsSectionHeaderText />
-      </h4>
+    <div>
       <p className="mb-4 text-sm text-gray-400">
         All the settings related to our start page widgets.
       </p>

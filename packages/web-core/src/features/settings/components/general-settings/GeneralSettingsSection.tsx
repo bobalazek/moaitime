@@ -2,7 +2,6 @@ import { APP_VERSION } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../../auth/state/authStore';
 import TimezoneSelector from '../../../core/components/selectors/TimezoneSelector';
-import GeneralSettingsSectionHeaderText from './GeneralSettingsSectionHeaderText';
 import GeneralStartDayOfWeekSetting from './GeneralStartDayOfWeekSetting';
 import GeneralThemeSetting from './GeneralThemeSetting';
 
@@ -16,9 +15,6 @@ export default function GeneralSettingsSection() {
 
   return (
     <div>
-      <h4 className="text-lg font-bold">
-        <GeneralSettingsSectionHeaderText />
-      </h4>
       <p className="mb-4 text-sm text-gray-400">Just the general stuff.</p>
       <div className="mb-4">
         <h4 className="mb-2 font-bold">Start day of week</h4>

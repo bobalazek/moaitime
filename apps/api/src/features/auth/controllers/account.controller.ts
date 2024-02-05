@@ -92,7 +92,7 @@ export class AccountController {
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         })
     )
-    file: File,
+    file: { originalname: string; mimetype: string; buffer: Buffer }, // We can not use the Express.Multer.File for some reason
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {

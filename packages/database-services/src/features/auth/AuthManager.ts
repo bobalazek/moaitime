@@ -568,7 +568,10 @@ export class AuthManager {
     return updatedUser;
   }
 
-  async uploadAvatar(userId: string, file: File): Promise<User> {
+  async uploadAvatar(
+    userId: string,
+    file: { originalname: string; mimetype: string; buffer: Buffer }
+  ): Promise<User> {
     const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
@@ -576,15 +579,15 @@ export class AuthManager {
 
     const { USER_AVATARS_BUCKET_URL } = getEnv();
 
-    const tmpPath = join(tmpdir(), `${userId}-${file.name}`);
+    const tmpPath = join(tmpdir(), `${userId}-${file.originalname}`);
 
-    await writeFile(tmpPath, (file as unknown as { buffer: Buffer }).buffer);
-
+    await writeFile(tmpPath, file.buffer);
+    console.log(file);
     const avatarImageUrl = await uploader.uploadToBucket(
       USER_AVATARS_BUCKET_URL,
       tmpPath,
-      file.type,
-      `${userId}-${file.name}`
+      file.mimetype,
+      `${userId}-${file.originalname}`
     );
 
     const updatedUser = await this._usersManager.updateOneById(userId, {

@@ -19,10 +19,12 @@ export default defineConfig((options) => {
 
     const packages = readdirSync(join(__dirname, '../../packages'));
     for (const packageName of packages) {
+      // TODO: we can only watch the packages that have @moaitime/api as dependency
+
       watch.push(join(__dirname, `../../packages/${packageName}/dist/**/index.{js,mjs}`));
     }
 
-    onSuccess = 'node dist/main.js';
+    onSuccess = `node dist/main.js`;
 
     /*
     // TODO: fix, as it's not working at the moment

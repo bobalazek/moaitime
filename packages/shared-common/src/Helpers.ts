@@ -142,6 +142,12 @@ export const getDurationText = (durationSeconds: number) => {
   }`;
 };
 
+// URL
+export const getDomainFromUrl = (url: string) => {
+  const obj = new URL(url);
+  return obj.hostname;
+};
+
 // UUID
 // Could have used the UUID library, but one of our other dependencies requires a lower version,
 // which we are then unable to use

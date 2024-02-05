@@ -19,6 +19,7 @@ import {
   TASKS_DEFAULT_ENTRIES,
 } from '@moaitime/shared-backend';
 import {
+  getDomainFromUrl,
   MAIN_COLORS,
   ProcessingStatusEnum,
   UserPasswordSchema,
@@ -577,22 +578,36 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
+    const existingAvatarImageUrl = user.avatarImageUrl;
+
     const { USER_AVATARS_BUCKET_URL } = getEnv();
 
     const tmpPath = join(tmpdir(), `${userId}-${file.originalname}`);
 
     await writeFile(tmpPath, file.buffer);
-    console.log(file);
+
     const avatarImageUrl = await uploader.uploadToBucket(
       USER_AVATARS_BUCKET_URL,
       tmpPath,
       file.mimetype,
-      `${userId}-${file.originalname}`
+      `${userId}-${file.originalname}`,
+      undefined,
+      true
     );
 
     const updatedUser = await this._usersManager.updateOneById(userId, {
       avatarImageUrl,
     });
+
+    // Remove existing
+    if (existingAvatarImageUrl) {
+      const bucketUrl = getDomainFromUrl(USER_AVATARS_BUCKET_URL);
+      const avatarUrl = getDomainFromUrl(existingAvatarImageUrl);
+      if (existingAvatarImageUrl && bucketUrl === avatarUrl) {
+        const key = existingAvatarImageUrl.split('/').pop() as string;
+        await uploader.removeFileFromBucket(USER_AVATARS_BUCKET_URL, key);
+      }
+    }
 
     return updatedUser;
   }
@@ -603,9 +618,22 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
+    if (!user.avatarImageUrl) {
+      throw new Error('User has no avatar');
+    }
+
     const updatedUser = await this._usersManager.updateOneById(userId, {
       avatarImageUrl: null,
     });
+
+    // Remove existing
+    const { USER_AVATARS_BUCKET_URL } = getEnv();
+    const bucketUrl = getDomainFromUrl(USER_AVATARS_BUCKET_URL);
+    const avatarUrl = getDomainFromUrl(user.avatarImageUrl);
+    if (bucketUrl === avatarUrl) {
+      const key = user.avatarImageUrl.split('/').pop() as string;
+      await uploader.removeFileFromBucket(USER_AVATARS_BUCKET_URL, key);
+    }
 
     return updatedUser;
   }

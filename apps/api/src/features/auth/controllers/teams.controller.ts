@@ -128,8 +128,11 @@ export class TeamsController {
   // Members
   @UseGuards(AuthenticatedGuard)
   @Get(':teamId/members')
-  async members(@Param('teamId') teamId: string): Promise<AbstractResponseDto<TeamUser[]>> {
-    const data = await teamsManager.getMembersByTeamId(teamId);
+  async members(
+    @Req() req: Request,
+    @Param('teamId') teamId: string
+  ): Promise<AbstractResponseDto<TeamUser[]>> {
+    const data = await teamsManager.getMembersByTeamId(req.user.id, teamId);
 
     return {
       success: true,

@@ -208,6 +208,14 @@ CREATE TABLE IF NOT EXISTS "task_tags" (
 	"tag_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "task_users" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"task_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teams" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
@@ -295,6 +303,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"roles" json DEFAULT '["user"]' NOT NULL,
 	"settings" json,
 	"birth_date" date,
+	"avatar_image_url" text,
 	"email_confirmation_token" text,
 	"new_email_confirmation_token" text,
 	"password_reset_token" text,
@@ -343,6 +352,8 @@ CREATE INDEX IF NOT EXISTS "tasks_list_id_idx" ON "tasks" ("list_id");--> statem
 CREATE INDEX IF NOT EXISTS "tasks_parent_id_idx" ON "tasks" ("parent_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_tags_task_id_idx" ON "task_tags" ("task_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_tags_tag_id_idx" ON "task_tags" ("tag_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "task_users_task_id_idx" ON "task_users" ("task_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "task_users_user_id_idx" ON "task_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "teams_user_id_idx" ON "teams" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "teams_organization_id_idx" ON "teams" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
@@ -499,6 +510,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "task_tags" ADD CONSTRAINT "task_tags_tag_id_tags_id_fk" FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "task_users" ADD CONSTRAINT "task_users_task_id_tasks_id_fk" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "task_users" ADD CONSTRAINT "task_users_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

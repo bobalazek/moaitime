@@ -21,7 +21,7 @@ export type TagSelectorProps = {
   teamId?: string | null; // Undefined means all lists, null means no list
 };
 
-export function TagSelector({ value, onChangeValue, teamId }: TagSelectorProps) {
+export function TagsSelector({ value, onChangeValue, teamId }: TagSelectorProps) {
   const { tags, addTag } = useTagsStore();
   const [open, setOpen] = useState(false);
   const [commandValue, setCommandValue] = useState('');
@@ -59,7 +59,7 @@ export function TagSelector({ value, onChangeValue, teamId }: TagSelectorProps) 
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between overflow-hidden"
-          data-test="tag-selector--trigger-button"
+          data-test="tags-selector--trigger-button"
         >
           <div className="w-full truncate text-left">
             {selectedTags.length > 0 && (
@@ -72,7 +72,7 @@ export function TagSelector({ value, onChangeValue, teamId }: TagSelectorProps) 
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" data-test="tag-selector">
+      <PopoverContent className="p-0" data-test="tags-selector">
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search tags ..."

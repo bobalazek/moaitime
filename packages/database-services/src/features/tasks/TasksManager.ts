@@ -28,7 +28,9 @@ import {
   Task,
   tasks,
   taskTags,
+  taskUsers,
   User,
+  users,
 } from '@moaitime/database-core';
 import { globalEventNotifier } from '@moaitime/global-event-notifier';
 import {
@@ -339,7 +341,7 @@ export class TasksManager {
       limit,
     });
 
-    return this._populateTags(tasks);
+    return this._populateTagsAndUsers(tasks);
   }
 
   async reorder(
@@ -374,7 +376,7 @@ export class TasksManager {
       throw new Error('Task not found');
     }
 
-    return (await this._populateTags([row]))[0];
+    return (await this._populateTagsAndUsers([row]))[0];
   }
 
   async create(user: User, data: CreateTask) {
@@ -392,7 +394,7 @@ export class TasksManager {
       await this.validateParentId(null, data.parentId);
     }
 
-    const { tagIds, ...insertData } = data;
+    const { tagIds, userIds, ...insertData } = data;
 
     const maxOrderForListId = await this.findMaxOrderByListId(insertData?.listId ?? null);
     const order = maxOrderForListId + 1;
@@ -401,6 +403,10 @@ export class TasksManager {
 
     if (Array.isArray(tagIds)) {
       await this.setTags(task, tagIds);
+    }
+
+    if (Array.isArray(userIds)) {
+      await this.setUsers(task, userIds);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
@@ -437,12 +443,16 @@ export class TasksManager {
       await this.validateParentId(taskId, data.parentId);
     }
 
-    const { tagIds, ...updateData } = data;
+    const { tagIds, userIds, ...updateData } = data;
 
     const updatedData = await this.updateOneById(taskId, updateData);
 
     if (Array.isArray(tagIds)) {
       await this.setTags(task, tagIds);
+    }
+
+    if (Array.isArray(userIds)) {
+      await this.setUsers(task, userIds);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
@@ -719,9 +729,12 @@ export class TasksManager {
   }
 
   async setTags(task: Task, tagIds: string[]) {
-    const newTags = await tagsManager.findMany({
-      where: inArray(tags.id, tagIds),
-    });
+    const newTags =
+      tagIds.length > 0
+        ? await tagsManager.findMany({
+            where: inArray(tags.id, tagIds),
+          })
+        : [];
     const list = task.listId ? await listsManager.findOneById(task.listId) : null;
 
     // Check that we do not assign tags from different teams
@@ -774,6 +787,38 @@ export class TasksManager {
     }
   }
 
+  async setUsers(task: Task, userIds: string[]) {
+    const currentTaskUsers = await getDatabase()
+      .select()
+      .from(taskUsers)
+      .where(eq(taskUsers.taskId, task.id))
+      .execute();
+
+    const currentUserId = currentTaskUsers.map((row) => row.userId);
+
+    const toDelete = currentUserId.filter((userId) => !userIds.includes(userId));
+    const toInsert = userIds.filter((userId) => !currentUserId.includes(userId));
+
+    if (toDelete.length) {
+      await getDatabase()
+        .delete(taskUsers)
+        .where(and(eq(taskUsers.taskId, task.id), inArray(taskUsers.userId, toDelete)))
+        .execute();
+    }
+
+    if (toInsert.length) {
+      await getDatabase()
+        .insert(taskUsers)
+        .values(
+          toInsert.map((userId) => ({
+            taskId: task.id,
+            userId,
+          }))
+        )
+        .execute();
+    }
+  }
+
   async getTagIdsForTaskIds(taskIds: string[]): Promise<Record<string, Tag[]>> {
     if (taskIds.length === 0) {
       return {};
@@ -798,6 +843,35 @@ export class TasksManager {
       }
 
       map[taskId].push(row.tags);
+    }
+
+    return map;
+  }
+
+  async getUserIdsForTaskIds(taskIds: string[]): Promise<Record<string, User[]>> {
+    if (taskIds.length === 0) {
+      return {};
+    }
+
+    const rows = await getDatabase()
+      .select()
+      .from(taskUsers)
+      .where(inArray(taskUsers.taskId, taskIds))
+      .leftJoin(users, eq(taskUsers.userId, users.id))
+      .execute();
+    console.log(rows);
+    const map: Record<string, User[]> = {};
+    for (const row of rows) {
+      if (!row.users) {
+        continue;
+      }
+
+      const { taskId } = row.task_users;
+      if (!map[taskId]) {
+        map[taskId] = [];
+      }
+
+      map[taskId].push(row.users);
     }
 
     return map;
@@ -856,18 +930,23 @@ export class TasksManager {
     return task;
   }
 
-  private async _populateTags(tasks: Task[]) {
+  private async _populateTagsAndUsers(tasks: Task[]) {
     const taskIds = tasks.map((task) => task.id);
     const tagsMap = await this.getTagIdsForTaskIds(taskIds);
+    const usersMap = await this.getUserIdsForTaskIds(taskIds);
 
     return tasks.map((task) => {
       const tags = tagsMap[task.id] || [];
       const tagIds = tags.map((tag) => tag.id);
+      const users = usersMap[task.id] || [];
+      const userIds = users.map((user) => user.id);
 
       return {
         ...task,
         tags,
         tagIds,
+        users,
+        userIds,
       };
     });
   }

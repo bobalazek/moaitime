@@ -19,13 +19,15 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
+import { useTeamsStore } from '../../../auth/state/teamsStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { DurationSelector } from '../../../core/components/selectors/DurationSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { PrioritySelector } from '../../../core/components/selectors/PrioritySelector';
-import { TagSelector } from '../../../core/components/selectors/TagSelector';
+import { TagsSelector } from '../../../core/components/selectors/TagsSelector';
 import { TaskParentSelector } from '../../../core/components/selectors/TaskParentSelector';
+import { TeamMembersSelector } from '../../../core/components/selectors/TeamMembersSelector';
 import { useListsStore } from '../../state/listsStore';
 import { useTagsStore } from '../../state/tagsStore';
 import { useTasksStore } from '../../state/tasksStore';
@@ -40,6 +42,7 @@ export default function TaskEditDialog() {
     deleteTask,
     undeleteTask,
   } = useTasksStore();
+  const { joinedTeam } = useTeamsStore();
   const { lists } = useListsStore();
   const { setTagsDialogOpen } = useTagsStore();
   const [data, setData] = useState<UpdateTask>();
@@ -221,7 +224,7 @@ export default function TaskEditDialog() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="task-parent" className="flex items-center gap-2">
+          <Label htmlFor="task-tags" className="flex items-center gap-2">
             <span>Tags</span>
             <button
               type="button"
@@ -232,12 +235,23 @@ export default function TaskEditDialog() {
               <PencilIcon size={12} />
             </button>
           </Label>
-          <TagSelector
+          <TagsSelector
             value={data?.tagIds ?? []}
             onChangeValue={(value) => setData((current) => ({ ...current, tagIds: value }))}
             teamId={teamId}
           />
         </div>
+        {joinedTeam && (
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="task-assignees" className="flex items-center gap-2">
+              Assignees
+            </Label>
+            <TeamMembersSelector
+              value={data?.userIds ?? []}
+              onChangeValue={(value) => setData((current) => ({ ...current, userIds: value }))}
+            />
+          </div>
+        )}
         <div className="flex flex-col gap-2">
           <Label htmlFor="task-parent">Parent</Label>
           <TaskParentSelector

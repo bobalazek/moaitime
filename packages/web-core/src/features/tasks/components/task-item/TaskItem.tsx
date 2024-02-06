@@ -16,6 +16,7 @@ import TaskItemDueDate from './TaskItemDueDate';
 import TaskItemDuration from './TaskItemDuration';
 import TaskItemPriority from './TaskItemPriority';
 import TaskItemTags from './TaskItemTags';
+import TaskItemUsers from './TaskItemUsers';
 
 const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) => {
   const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
@@ -27,6 +28,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
   const isCompleted = !!task.completedAt;
   const isDeleted = !!task.deletedAt;
   const taskTags = task.tags ?? [];
+  const taskUsers = task.users ?? [];
 
   const checkboxBackgroundColor = task.color ?? '';
   const checkboxColor = checkboxBackgroundColor
@@ -173,9 +175,11 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
           task.dueDate ||
           task.durationSeconds ||
           task.deletedAt ||
-          taskTags.length > 0) && (
+          taskTags.length > 0 ||
+          taskUsers.length > 0) && (
           <div className="ml-6 mt-1.5 space-y-1">
             <TaskItemPriority task={task} />
+            <TaskItemUsers task={task} />
             <TaskItemTags task={task} />
             <TaskItemDuration task={task} />
             <TaskItemDueDate

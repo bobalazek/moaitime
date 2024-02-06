@@ -1,5 +1,5 @@
 {
-  "id": "d3a51ad8-e4a1-4038-8d70-64336ff41642",
+  "id": "eab1b119-54a6-4f0b-8df8-5dd9adcd029c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1571,6 +1571,79 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "task_users": {
+      "name": "task_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "task_id": {
+          "name": "task_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "task_users_task_id_idx": {
+          "name": "task_users_task_id_idx",
+          "columns": ["task_id"],
+          "isUnique": false
+        },
+        "task_users_user_id_idx": {
+          "name": "task_users_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "task_users_task_id_tasks_id_fk": {
+          "name": "task_users_task_id_tasks_id_fk",
+          "tableFrom": "task_users",
+          "tableTo": "tasks",
+          "columnsFrom": ["task_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "task_users_user_id_users_id_fk": {
+          "name": "task_users_user_id_users_id_fk",
+          "tableFrom": "task_users",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "teams": {
       "name": "teams",
       "schema": "",
@@ -2223,6 +2296,12 @@
         "birth_date": {
           "name": "birth_date",
           "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatar_image_url": {
+          "name": "avatar_image_url",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },

@@ -435,11 +435,11 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task').first().click();
 
-    cy.getBySel('tag-selector--trigger-button').click();
+    cy.getBySel('tags-selector--trigger-button').click();
 
-    cy.getBySel('tag-selector').type('tag1{enter}');
+    cy.getBySel('tags-selector').type('tag1{enter}');
 
-    cy.getBySel('tag-selector').contains('tag1').click();
+    cy.getBySel('tags-selector').contains('tag1').click();
 
     cy.get('button').contains('Save').click();
 
@@ -469,9 +469,9 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task').first().click();
 
-    cy.getBySel('tag-selector--trigger-button').click();
+    cy.getBySel('tags-selector--trigger-button').click();
 
-    cy.getBySel('tag-selector').contains('tag1').click();
+    cy.getBySel('tags-selector').contains('tag1').click();
 
     cy.get('button').contains('Save').click();
 
@@ -512,9 +512,9 @@ describe('tasks-tasks.cy.ts', () => {
 
     cy.getBySel('tasks--task').first().click();
 
-    cy.getBySel('tag-selector--trigger-button').click();
+    cy.getBySel('tags-selector--trigger-button').click();
 
-    cy.getBySel('tag-selector').contains('tag1').click();
+    cy.getBySel('tags-selector').contains('tag1').click();
 
     cy.get('button').contains('Save').click();
 

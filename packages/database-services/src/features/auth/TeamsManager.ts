@@ -81,7 +81,7 @@ export class TeamsManager {
   // Permissions
   async userCanView(userId: string, teamId: string): Promise<boolean> {
     const row = await getDatabase().query.teamUsers.findFirst({
-      where: and(eq(teams.id, teamId), eq(teams.userId, userId)),
+      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
     });
 
     return !!row;
@@ -89,14 +89,14 @@ export class TeamsManager {
 
   async userCanUpdate(userId: string, teamId: string): Promise<boolean> {
     const row = await getDatabase().query.teamUsers.findFirst({
-      where: and(eq(teamUsers.teamId, teamId), eq(teamUsers.userId, userId)),
+      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
     });
 
     if (!row) {
       return false;
     }
 
-    return row.roles.includes(TeamUserRoleEnum.ADMIN);
+    return row.roles.includes(TeamUserRoleEnum.OWNER) || row.roles.includes(TeamUserRoleEnum.ADMIN);
   }
 
   async userCanDelete(userId: string, teamId: string): Promise<boolean> {
@@ -171,7 +171,7 @@ export class TeamsManager {
       .values({
         teamId: team.id,
         userId: user.id,
-        roles: [TeamUserRoleEnum.ADMIN],
+        roles: [TeamUserRoleEnum.OWNER],
       })
       .returning();
 
@@ -272,7 +272,12 @@ export class TeamsManager {
     };
   }
 
-  async getMembersByTeamId(teamId: string): Promise<TeamUser[]> {
+  async getMembersByTeamId(userId: string, teamId: string): Promise<TeamUser[]> {
+    const canView = await this.userCanView(userId, teamId);
+    if (!canView) {
+      return [];
+    }
+
     const where = and(eq(teamUsers.teamId, teamId), isNull(teams.deletedAt));
 
     const rows = await getDatabase()

@@ -407,7 +407,7 @@ export class TasksManager {
 
     if (Array.isArray(userIds) && userIds.length > 0) {
       if (!list?.teamId) {
-        throw new Error('You cannot assign users to non-team lists');
+        throw new Error('You cannot assign users to non-team list');
       }
 
       await this.setUsers(task, userIds);
@@ -457,7 +457,7 @@ export class TasksManager {
 
     if (Array.isArray(userIds) && userIds.length > 0) {
       if (!list?.teamId) {
-        throw new Error('You cannot assign users to non-team lists');
+        throw new Error('You cannot assign users to non-team list');
       }
 
       await this.setUsers(task, userIds);

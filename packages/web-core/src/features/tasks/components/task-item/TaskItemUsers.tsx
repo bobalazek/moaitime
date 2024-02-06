@@ -13,7 +13,7 @@ const TaskItemUsers = ({ task }: { task: Task }) => {
       data-test="tasks--task--users-text"
     >
       <UsersIcon size={12} />
-      <span>
+      <span className="flex gap-2">
         {task.users.map((user) => {
           return (
             <span key={user.id} data-test="tasks--task--user">

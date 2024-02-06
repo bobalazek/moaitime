@@ -406,6 +406,10 @@ export class TasksManager {
     }
 
     if (Array.isArray(userIds)) {
+      if (!list?.teamId) {
+        throw new Error('You cannot assign users to non-team lists');
+      }
+
       await this.setUsers(task, userIds);
     }
 
@@ -452,6 +456,10 @@ export class TasksManager {
     }
 
     if (Array.isArray(userIds)) {
+      if (!list?.teamId) {
+        throw new Error('You cannot assign users to non-team lists');
+      }
+
       await this.setUsers(task, userIds);
     }
 
@@ -859,7 +867,7 @@ export class TasksManager {
       .where(inArray(taskUsers.taskId, taskIds))
       .leftJoin(users, eq(taskUsers.userId, users.id))
       .execute();
-    console.log(rows);
+
     const map: Record<string, User[]> = {};
     for (const row of rows) {
       if (!row.users) {

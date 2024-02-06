@@ -19,7 +19,6 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
-import { useTeamsStore } from '../../../auth/state/teamsStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { DurationSelector } from '../../../core/components/selectors/DurationSelector';
@@ -42,8 +41,7 @@ export default function TaskEditDialog() {
     deleteTask,
     undeleteTask,
   } = useTasksStore();
-  const { joinedTeam } = useTeamsStore();
-  const { lists } = useListsStore();
+  const { lists, selectedList } = useListsStore();
   const { setTagsDialogOpen } = useTagsStore();
   const [data, setData] = useState<UpdateTask>();
 
@@ -241,7 +239,7 @@ export default function TaskEditDialog() {
             teamId={teamId}
           />
         </div>
-        {joinedTeam && (
+        {selectedList?.teamId && (
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-assignees" className="flex items-center gap-2">
               Assignees

@@ -6,6 +6,7 @@ import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotP
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
+import NotificationsPage from './features/auth/components/pages/NotificationsPage';
 import TeamEditDialog from './features/auth/components/team-edit-dialog/TeamEditDialog';
 import { useAuthUserSetting } from './features/auth/state/authStore';
 import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
@@ -67,6 +68,14 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications/*"
+          element={
+            <ProtectedRoute>
+              <NotificationsPage />
             </ProtectedRoute>
           }
         />

@@ -22,4 +22,5 @@ export * from './schema/testingEmails';
 export * from './schema/userAccessTokens';
 export * from './schema/userDataExports';
 export * from './schema/userCalendars';
+export * from './schema/userNotifications';
 export * from './schema/users';

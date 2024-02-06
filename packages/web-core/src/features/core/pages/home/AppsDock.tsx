@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { ScrollArea, ScrollBar } from '@moaitime/web-ui';
 
+import NotificationsAppButton from '../../../auth/components/notifications/NotificationsAppButton';
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import CalendarAppButton from '../../../calendar/components/CalendarAppButton';
 import CommandsAppButton from '../../../commands/components/CommandsAppButton';
@@ -140,6 +141,17 @@ export default function AppsDock() {
                 transition={{ delay: delay++ * delayDuration }}
               >
                 <StatisticsAppButton />
+              </motion.div>
+              <motion.div
+                key="notifications"
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+                transition={{ delay: delay++ * delayDuration }}
+              >
+                <NotificationsAppButton />
               </motion.div>
               <motion.div
                 key="settings"

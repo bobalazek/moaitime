@@ -215,7 +215,7 @@ export class CalendarsManager {
     return this.userCanUpdate(userId, calendarOrCalendarId);
   }
 
-  // Helpers
+  // API Helpers
   async list(userId: string) {
     const calendars = await this.findManyByUserId(userId);
 

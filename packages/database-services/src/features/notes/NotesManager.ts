@@ -122,7 +122,7 @@ export class NotesManager {
     return this.userCanUpdate(userId, noteId);
   }
 
-  // Helpers
+  // API Helpers
   async list(userId: string, options?: NotesManagerFindManyByUserIdWithOptions) {
     return this.findManyByUserIdWithOptions(userId, options);
   }

@@ -111,7 +111,7 @@ export class TeamsManager {
     return this.userCanUpdate(userId, teamId);
   }
 
-  // Helpers
+  // API Helpers
   async list(userId: string) {
     return this.findManyByUserId(userId);
   }

@@ -37,7 +37,7 @@ export class QuotesManager {
     return rows[0];
   }
 
-  // Helpers
+  // API Helpers
   async list() {
     return this.findMany();
   }

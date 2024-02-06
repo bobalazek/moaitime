@@ -20,7 +20,7 @@ import { calendarsManager } from './CalendarsManager';
 import { eventsManager, EventsManagerEvent } from './EventsManager';
 
 export class CalendarEntriesManager {
-  // Helpers
+  // API Helpers
   async list(user: User, from: string, to: string) {
     if (!isValidDate(from)) {
       throw new Error('Invalid from date');

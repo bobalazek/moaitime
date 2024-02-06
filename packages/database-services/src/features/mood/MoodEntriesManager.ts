@@ -224,7 +224,7 @@ export class MoodEntriesManager {
     return this.userCanUpdate(userId, moodEntryId);
   }
 
-  // Helpers
+  // API Helpers
   async list(userId: string, options?: MoodEntriesManagerFindOptions) {
     return this.findManyByUserIdWithDataAndMeta(userId, options);
   }

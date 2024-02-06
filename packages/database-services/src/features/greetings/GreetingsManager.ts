@@ -44,7 +44,7 @@ export class GreetingsManager {
     return rows[0];
   }
 
-  // Helpers
+  // API Helpers
   async list() {
     return this.findManyRandom();
   }

@@ -4,9 +4,9 @@ import { AccountController } from './controllers/account.controller';
 import { AuthController } from './controllers/auth.controller';
 import { JoinedTeamController } from './controllers/joined-team.controller';
 import { MyTeamUserInvitationsController } from './controllers/my-team-user-invitations.controller';
-import { NotificationsController } from './controllers/notifications.controller';
 import { TeamUserInvitationsController } from './controllers/team-user-invitations.controller';
 import { TeamsController } from './controllers/teams.controller';
+import { UserNotificationsController } from './controllers/user-notifications.controller';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 
 @Module({
@@ -14,7 +14,7 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
   controllers: [
     AuthController,
     AccountController,
-    NotificationsController,
+    UserNotificationsController,
     TeamsController,
     TeamUserInvitationsController,
     JoinedTeamController,

@@ -1,4 +1,19 @@
-import { and, asc, DBQueryConfig, desc, eq, gt, gte, lt, lte, ne, or, SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  DBQueryConfig,
+  desc,
+  eq,
+  gt,
+  gte,
+  isNull,
+  lt,
+  lte,
+  ne,
+  or,
+  SQL,
+} from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -22,9 +37,9 @@ export class UserNotificationsManager {
     return getDatabase().query.userNotifications.findMany(options);
   }
 
-  async findOneById(id: string): Promise<UserNotification | null> {
+  async findOneById(userNotificationId: string): Promise<UserNotification | null> {
     const row = await getDatabase().query.userNotifications.findFirst({
-      where: eq(userNotifications.id, id),
+      where: eq(userNotifications.id, userNotificationId),
     });
 
     return row ?? null;
@@ -119,7 +134,9 @@ export class UserNotificationsManager {
       rows.reverse();
     }
 
-    const data = rows;
+    const data = rows.map((row) => {
+      return this._parseRow(row);
+    });
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -185,12 +202,112 @@ export class UserNotificationsManager {
     return rows[0];
   }
 
+  // Permissions
+  async userCanView(userId: string, userNotificationId: string): Promise<boolean> {
+    const row = await getDatabase().query.userNotifications.findFirst({
+      where: and(
+        eq(userNotifications.id, userNotificationId),
+        eq(userNotifications.userId, userId)
+      ),
+    });
+
+    return !!row;
+  }
+
+  async userCanUpdate(userId: string, userNotificationId: string): Promise<boolean> {
+    return this.userCanView(userId, userNotificationId);
+  }
+
+  async userCanDelete(userId: string, userNotificationId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, userNotificationId);
+  }
+
   // API Helpers
   async list(userId: string, options?: UserNotificationsManagerFindOptions) {
     return this.findManyByUserIdWithDataAndMeta(userId, options);
   }
 
+  async markAsRead(userId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
+    if (!canUpdate) {
+      throw new Error('User cannot update this user notification');
+    }
+
+    return this.updateOneById(userNotificationId, {
+      readAt: new Date(),
+    });
+  }
+
+  async markAsUnread(userId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
+    if (!canUpdate) {
+      throw new Error('User cannot update this user notification');
+    }
+
+    return this.updateOneById(userNotificationId, {
+      readAt: null,
+    });
+  }
+
+  async markAsSeen(userId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
+    if (!canUpdate) {
+      throw new Error('User cannot update this user notification');
+    }
+
+    return this.updateOneById(userNotificationId, {
+      seenAt: new Date(),
+    });
+  }
+
+  async markAsUnseen(userId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
+    if (!canUpdate) {
+      throw new Error('User cannot update this user notification');
+    }
+
+    return this.updateOneById(userNotificationId, {
+      seenAt: null,
+    });
+  }
+
+  // Helpers
+  async countUnseenByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(userNotifications.id).mapWith(Number),
+      })
+      .from(userNotifications)
+      .where(and(eq(userNotifications.userId, userId), isNull(userNotifications.seenAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  async countUnreadByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(userNotifications.id).mapWith(Number),
+      })
+      .from(userNotifications)
+      .where(and(eq(userNotifications.userId, userId), isNull(userNotifications.readAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
   // Private
+  private _parseRow(row: UserNotification) {
+    const { content, ...rest } = row;
+
+    // TODO: process content
+
+    return {
+      ...rest,
+      content,
+    };
+  }
+
   private _propertiesToCursor(properties: { id: string; createdAt: string }): string {
     return btoa(JSON.stringify(properties));
   }

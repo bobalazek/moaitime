@@ -15,6 +15,20 @@
       "when": 1707224747111,
       "tag": "0001_parched_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1707238753555,
+      "tag": "0002_zippy_warbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1707239449222,
+      "tag": "0003_careless_firelord",
+      "breakpoints": true
     }
   ]
 }

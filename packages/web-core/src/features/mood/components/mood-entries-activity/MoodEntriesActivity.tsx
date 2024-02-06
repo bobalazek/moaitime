@@ -142,7 +142,11 @@ export default function MoodEntriesActivity() {
       return;
     }
 
-    const moodEntryAddedCallback = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
+    const moodEntryAddedCallback = ({ moodEntry }: { moodEntry?: MoodEntryType }) => {
+      if (!moodEntry) {
+        return;
+      }
+
       setShowConfetti(true);
 
       playAddMoodEntrySound(moodEntry.happinessScore);

@@ -1,0 +1,1 @@
+ALTER TABLE "user_notifications" ALTER COLUMN "content" SET NOT NULL;

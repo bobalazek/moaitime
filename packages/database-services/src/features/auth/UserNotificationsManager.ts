@@ -7,6 +7,7 @@ import {
   eq,
   gt,
   gte,
+  inArray,
   isNull,
   lt,
   lte,
@@ -166,6 +167,16 @@ export class UserNotificationsManager {
       previousCursor = undefined;
     }
 
+    const unseenIds = data.filter((item) => !item.seenAt).map((item) => item.id);
+    if (unseenIds.length > 0) {
+      const now = new Date();
+      await getDatabase()
+        .update(userNotifications)
+        .set({ seenAt: now })
+        .where(inArray(userNotifications.id, unseenIds))
+        .execute();
+    }
+
     return {
       data,
       meta: {
@@ -246,28 +257,6 @@ export class UserNotificationsManager {
 
     return this.updateOneById(userNotificationId, {
       readAt: null,
-    });
-  }
-
-  async markAsSeen(userId: string, userNotificationId: string) {
-    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
-    if (!canUpdate) {
-      throw new Error('User cannot update this user notification');
-    }
-
-    return this.updateOneById(userNotificationId, {
-      seenAt: new Date(),
-    });
-  }
-
-  async markAsUnseen(userId: string, userNotificationId: string) {
-    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
-    if (!canUpdate) {
-      throw new Error('User cannot update this user notification');
-    }
-
-    return this.updateOneById(userNotificationId, {
-      seenAt: null,
     });
   }
 

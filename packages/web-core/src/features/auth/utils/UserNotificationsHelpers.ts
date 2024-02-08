@@ -54,28 +54,6 @@ export const markUserNotificationAsUnread = async (userNotificationId: string) =
   return response.data as UserNotification;
 };
 
-export const markUserNotificationAsSeen = async (userNotificationId: string) => {
-  const response = await fetchJson<ResponseInterface<UserNotification>>(
-    `${API_URL}/api/v1/user-notifications/${userNotificationId}/mark-as-seen`,
-    {
-      method: 'POST',
-    }
-  );
-
-  return response.data as UserNotification;
-};
-
-export const markUserNotificationsAsUnseen = async (userNotificationId: string) => {
-  const response = await fetchJson<ResponseInterface<UserNotification[]>>(
-    `${API_URL}/api/v1/user-notifications/${userNotificationId}/mark-as-unseen`,
-    {
-      method: 'POST',
-    }
-  );
-
-  return response.data as UserNotification[];
-};
-
 export const countUnseenUserNotifications = async () => {
   const response = await fetchJson<ResponseInterface<number>>(
     `${API_URL}/api/v1/user-notifications/unseen-count`,

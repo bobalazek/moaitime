@@ -3,6 +3,7 @@ import { formatDistance } from 'date-fns';
 
 import { UserNotification as UserNotificationType } from '@moaitime/shared-common';
 
+import { useTasksStore } from '../../../tasks/state/tasksStore';
 import { useUserNotificationsStore } from '../../state/userNotificationsStore';
 import { UserNotificationActions } from './UserNotificationActions';
 
@@ -16,9 +17,19 @@ export const UserNotification = ({
   const now = new Date();
   const createdAt = new Date(userNotification.createdAt);
 
-  const onClick = () => {
+  const onClick = async () => {
     if (!userNotification.readAt) {
-      markUserNotificationAsRead(userNotification.id);
+      await markUserNotificationAsRead(userNotification.id);
+    }
+
+    const targetEntitySplit = userNotification.targetEntity?.split(':') || [];
+    const entityType = targetEntitySplit[0] ?? null;
+    const entityId = targetEntitySplit[1] ?? null;
+
+    if (entityType === 'tasks' && entityId) {
+      const { openPopoverForTask } = useTasksStore.getState();
+
+      openPopoverForTask(entityId);
     }
   };
 
@@ -31,7 +42,6 @@ export const UserNotification = ({
     >
       <div>
         <div
-          className="flex flex-grow items-center justify-between"
           dangerouslySetInnerHTML={{
             __html: userNotification.content,
           }}

@@ -78,32 +78,4 @@ export class UserNotificationsController {
       data,
     };
   }
-
-  @UseGuards(AuthenticatedGuard)
-  @Post(':userNotificationId/mark-as-seen')
-  async markAsSeen(
-    @Req() req: Request,
-    @Param('userNotificationId') userNotificationId: string
-  ): Promise<AbstractResponseDto<UserNotification>> {
-    const data = await userNotificationsManager.markAsSeen(req.user.id, userNotificationId);
-
-    return {
-      success: true,
-      data,
-    };
-  }
-
-  @UseGuards(AuthenticatedGuard)
-  @Post(':userNotificationId/mark-as-seen')
-  async markAsUnseen(
-    @Req() req: Request,
-    @Param('userNotificationId') userNotificationId: string
-  ): Promise<AbstractResponseDto<UserNotification>> {
-    const data = await userNotificationsManager.markAsUnseen(req.user.id, userNotificationId);
-
-    return {
-      success: true,
-      data,
-    };
-  }
 }

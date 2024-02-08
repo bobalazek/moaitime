@@ -846,7 +846,7 @@ export class TasksManager {
 
         await userNotificationsManager.addNotification({
           type: UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK,
-          userId: assigningUser.id,
+          userId,
           content: `**{{assigningUser.displayName}}** has assigned you to the "{{task.name}}" task.`,
           data: {
             variables: {

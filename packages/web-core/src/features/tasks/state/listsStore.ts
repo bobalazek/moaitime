@@ -17,6 +17,7 @@ import {
   addVisibleList,
   deleteList,
   editList,
+  getList,
   getLists,
   getTasksCountMap,
   getTasksForList,
@@ -27,6 +28,7 @@ export type ListsStore = {
   /********** Lists **********/
   lists: List[];
   reloadLists: () => Promise<List[]>;
+  getList: (listId: string) => Promise<List | null>;
   addList: (list: CreateList) => Promise<List>;
   editList: (listId: string, list: UpdateList) => Promise<List>;
   deleteList: (listId: string) => Promise<List | null>;
@@ -89,6 +91,11 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     });
 
     return lists;
+  },
+  getList: async (listId: string) => {
+    const list = await getList(listId);
+
+    return list ?? null;
   },
   addList: async (list: CreateList) => {
     const { reloadLists, setSelectedList } = get();

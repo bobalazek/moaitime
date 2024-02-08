@@ -124,7 +124,7 @@ export class ListsManager {
   }
 
   async view(userId: string, listId: string) {
-    const canView = await this.userCanView(listId, userId);
+    const canView = await this.userCanView(userId, listId);
     if (!canView) {
       throw new Error('You cannot view this list');
     }

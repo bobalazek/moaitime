@@ -11,6 +11,7 @@ import {
   deleteTask,
   duplicateTask,
   editTask,
+  getTask,
   getTasks,
   reorderTask,
   uncompleteTask,
@@ -22,11 +23,13 @@ export type TasksStore = {
   /********** General **********/
   popoverOpen: boolean;
   setPopoverOpen: (popoverOpen: boolean) => Promise<void>;
+  openPopoverForTask: (taskId: string) => Promise<void>;
   // Tasks List End Element
   listEndElement: HTMLElement | null;
   setListEndElement: (listEndElement: HTMLElement | null) => void;
   /********** Tasks **********/
   getTasksByQuery: (query: string) => Promise<Task[]>;
+  getTask: (taskId: string) => Promise<Task | null>;
   addTask: (task: CreateTask) => Promise<Task>;
   editTask: (taskId: string, task: UpdateTask) => Promise<Task>;
   moveTask: (taskId: string, newListId?: string) => Promise<Task>;
@@ -57,6 +60,21 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       await reloadSelectedListTasks();
     }
   },
+  openPopoverForTask: async (taskId: string) => {
+    const { setPopoverOpen, getTask } = get();
+    const { getList, setSelectedList } = useListsStore.getState();
+
+    await setPopoverOpen(true);
+
+    const task = await getTask(taskId);
+    if (!task) {
+      return;
+    }
+
+    const list = task.listId ? await getList(task.listId) : null;
+
+    await setSelectedList(list);
+  },
   // Tasks List End Element
   listEndElement: null,
   setListEndElement: (listEndElement: HTMLElement | null) => {
@@ -67,6 +85,11 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   /********** Tasks **********/
   getTasksByQuery: async (query: string) => {
     return getTasks(query);
+  },
+  getTask: async (taskId: string) => {
+    const task = await getTask(taskId);
+
+    return task ?? null;
   },
   addTask: async (task: CreateTask) => {
     const { reloadSelectedListTasks, reloadTasksCountMap } = useListsStore.getState();

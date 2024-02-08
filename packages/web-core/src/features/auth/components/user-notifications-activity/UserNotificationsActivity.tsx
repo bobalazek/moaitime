@@ -2,10 +2,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { useIntersectionObserver } from 'usehooks-ts';
 
+import { GlobalEventsEnum } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
+import { globalEventsEmitter } from '../../../core/state/globalEventsEmitter';
 import { useUserNotificationsQuery } from '../../hooks/useUserNotificationsQuery';
 import { UserNotification } from '../user-notification/UserNotification';
 
@@ -34,8 +36,33 @@ function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
 }
 
 function UserNotificationsActivityInner() {
-  const { data, isLoading, hasNextPage, fetchNextPage, hasPreviousPage, fetchPreviousPage, error } =
-    useUserNotificationsQuery();
+  const {
+    data,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    hasPreviousPage,
+    fetchPreviousPage,
+    refetch,
+    error,
+  } = useUserNotificationsQuery();
+
+  useEffect(() => {
+    const callback = () => {
+      refetch();
+    };
+
+    globalEventsEmitter.on(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ, callback);
+    globalEventsEmitter.on(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD, callback);
+
+    return () => {
+      globalEventsEmitter.off(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ, callback);
+      globalEventsEmitter.off(
+        GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD,
+        callback
+      );
+    };
+  }, [refetch]);
 
   const items = data?.pages.flatMap((page) => page.data!);
   if (!items) {

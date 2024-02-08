@@ -36,7 +36,6 @@ export enum GlobalEventsEnum {
   CALENDAR_EVENT_EDITED = 'calendar:event:edited',
   CALENDAR_EVENT_DELETED = 'calendar:event:deleted',
   CALENDAR_EVENT_UNDELETED = 'calendar:event:undeleted',
-
   // Focus
   FOCUS_FOCUS_SESSION_ADDED = 'focus:focus-session:added',
   FOCUS_FOCUS_SESSION_EDITED = 'focus:focus-session:edited',
@@ -50,6 +49,9 @@ export enum GlobalEventsEnum {
   MOOD_MOOD_ENTRY_EDITED = 'mood:mood-entry:edited',
   MOOD_MOOD_ENTRY_DELETED = 'mood:mood-entry:deleted',
   MOOD_MOOD_ENTRY_UNDELETED = 'mood:mood-entry:undeleted',
+  // Notifications
+  NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ = 'notifications:notification:marked-as-read',
+  NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD = 'notifications:notification:marked-as-unread',
 }
 
 export type GlobalEvents = {
@@ -276,5 +278,14 @@ export type GlobalEvents = {
     userId: string;
     moodEntryId: string;
     moodEntry?: MoodEntry;
+  };
+  // Notifications
+  [GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ]: {
+    userId: string;
+    userNotificationId: string;
+  };
+  [GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD]: {
+    userId: string;
+    userNotificationId: string;
   };
 };

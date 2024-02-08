@@ -300,6 +300,7 @@ export class UserNotificationsManager {
     type: UserNotificationTypeEnum;
     userId: string;
     content: string;
+    targetEntity?: string;
     relatedEntities?: string[];
     data?: Record<string, unknown>;
   }) {
@@ -315,6 +316,16 @@ export class UserNotificationsManager {
         ? rest.data.variables
         : {}
     ) as Record<string, unknown>;
+    const parsedContent = this._parseContent(content, variables);
+
+    return {
+      ...rest,
+      content: parsedContent,
+    };
+  }
+
+  private _parseContent(content: string, variables: Record<string, unknown>) {
+    let parsedContent = content;
     const flatVariables = Object.entries(variables).reduce((acc, [key, value]) => {
       if (typeof value === 'object' && value !== null) {
         return {
@@ -334,16 +345,13 @@ export class UserNotificationsManager {
       };
     }, {});
 
-    let parsedContent = content;
-
     Object.entries(flatVariables).forEach(([key, value]) => {
       parsedContent = parsedContent.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
     });
 
-    return {
-      ...rest,
-      content: parsedContent,
-    };
+    parsedContent = parsedContent.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+    return parsedContent;
   }
 
   private _propertiesToCursor(properties: { id: string; createdAt: string }): string {

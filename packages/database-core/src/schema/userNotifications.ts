@@ -9,6 +9,7 @@ export const userNotifications = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     type: text('type').notNull(),
     content: text('content').notNull(),
+    targetEntity: text('target_entity'),
     relatedEntities: json('related_entities').$type<string[]>(),
     data: json('data'),
     seenAt: timestamp('seen_at'),

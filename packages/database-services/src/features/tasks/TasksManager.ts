@@ -414,7 +414,7 @@ export class TasksManager {
         throw new Error('You cannot assign users to non-team list');
       }
 
-      await this.setUsers(task, userIds, user.id, teamId);
+      await this.setUsers(task, userIds, user, teamId);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
@@ -466,7 +466,7 @@ export class TasksManager {
         throw new Error('You cannot assign users to non-team list');
       }
 
-      await this.setUsers(task, userIds, user.id, teamId);
+      await this.setUsers(task, userIds, user, teamId);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
@@ -801,7 +801,7 @@ export class TasksManager {
     }
   }
 
-  async setUsers(task: Task, userIds: string[], setterUserId: string, teamId?: string) {
+  async setUsers(task: Task, userIds: string[], assigningUser: User, teamId?: string) {
     const currentTaskUsers = await getDatabase()
       .select()
       .from(taskUsers)
@@ -833,30 +833,35 @@ export class TasksManager {
 
       for (const userId of toInsert) {
         globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER, {
-          userId: setterUserId,
+          userId: assigningUser.id,
           taskId: task.id,
           teamId,
           targetUserId: userId,
         });
 
         // Do not send a notification to the setter
-        if (userId == setterUserId) {
+        if (userId == assigningUser.id) {
           continue;
         }
 
         await userNotificationsManager.addNotification({
           type: UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK,
-          userId,
-          content: `You have been assigned to the task "{{task.name}}"`,
+          userId: assigningUser.id,
+          content: `**{{assigningUser.displayName}}** has assigned you to the "{{task.name}}" task.`,
           data: {
             variables: {
+              assigningUser: {
+                id: assigningUser.id,
+                displayName: assigningUser.displayName,
+              },
               task: {
                 id: task.id,
                 name: task.name,
               },
             },
           },
-          relatedEntities: [`tasks:${task.id}`],
+          targetEntity: `tasks:${task.id}`,
+          relatedEntities: [`users:${assigningUser.id}`, `tasks:${task.id}`],
         });
       }
     }

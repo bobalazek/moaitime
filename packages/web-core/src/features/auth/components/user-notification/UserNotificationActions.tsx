@@ -1,5 +1,5 @@
 import { CheckIcon, MoreVerticalIcon } from 'lucide-react';
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 
 import { UserNotification } from '@moaitime/shared-common';
 import {
@@ -20,13 +20,19 @@ export const UserNotificationActions = ({
   const { markUserNotificationAsRead, markUserNotificationAsUnread } = useUserNotificationsStore();
   const [open, setOpen] = useState(false);
 
-  const onMarkAsReadButtonClick = async () => {
+  const onMarkAsReadButtonClick = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     markUserNotificationAsRead(userNotification.id);
 
     setOpen(false);
   };
 
-  const onMarkAsUnreadButtonClick = async () => {
+  const onMarkAsUnreadButtonClick = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     markUserNotificationAsUnread(userNotification.id);
 
     setOpen(false);

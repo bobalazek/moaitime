@@ -54,7 +54,7 @@ export const markUserNotificationAsUnread = async (userNotificationId: string) =
   return response.data as UserNotification;
 };
 
-export const countUnseenUserNotifications = async () => {
+export const getUnseenUserNotificationsCount = async () => {
   const response = await fetchJson<ResponseInterface<number>>(
     `${API_URL}/api/v1/user-notifications/unseen-count`,
     {
@@ -62,10 +62,10 @@ export const countUnseenUserNotifications = async () => {
     }
   );
 
-  return response.data;
+  return response.data as number;
 };
 
-export const countUnreadUserNotifications = async () => {
+export const getUnreadUserNotificationsCount = async () => {
   const response = await fetchJson<ResponseInterface<number>>(
     `${API_URL}/api/v1/user-notifications/unread-count`,
     {
@@ -73,5 +73,5 @@ export const countUnreadUserNotifications = async () => {
     }
   );
 
-  return response.data;
+  return response.data as number;
 };

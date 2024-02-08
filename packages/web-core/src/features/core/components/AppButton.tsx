@@ -5,8 +5,8 @@ import { ButtonHTMLAttributes, useEffect, useState } from 'react';
 import { cn, Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@moaitime/web-ui';
 
 export const AppButton: React.FC<
-  ButtonHTMLAttributes<HTMLButtonElement> & { icon: LucideIcon }
-> = ({ icon, title, ...rest }) => {
+  ButtonHTMLAttributes<HTMLButtonElement> & { icon: LucideIcon; badgeCount?: number }
+> = ({ icon, badgeCount, title, ...rest }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const Icon = icon;
@@ -34,7 +34,7 @@ export const AppButton: React.FC<
     <button
       type="button"
       className={cn(
-        `flex h-16 w-16 select-none items-center justify-center rounded-2xl bg-slate-600 shadow-lg transition-all hover:bg-slate-600/70 focus:bg-slate-600/60`,
+        `relative z-20 flex h-16 w-16 select-none items-center justify-center rounded-2xl bg-slate-600 shadow-lg transition-all hover:bg-slate-600/70 focus:bg-slate-600/60`,
         isPressed && `scale-90`
       )}
       onMouseDown={() => setIsPressed(true)}
@@ -44,6 +44,13 @@ export const AppButton: React.FC<
       {...rest}
     >
       <Icon className="h-8 w-8 text-white" />
+      {badgeCount &&
+      badgeCount >
+        0 /* Is there a better way without causing to render a "0" if this is false? */ ? (
+        <div className="absolute right-[-4px] top-[-4px] flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-lg">
+          {badgeCount > 9 ? '9+' : badgeCount}
+        </div>
+      ) : null}
     </button>
   );
 

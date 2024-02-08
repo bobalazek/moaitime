@@ -40,6 +40,7 @@ import {
 } from '../utils/AuthHelpers';
 import { useTeamsStore } from './teamsStore';
 import { useUserLimitsAndUsageStore } from './userLimitsAndUsageStore';
+import { useUserNotificationsStore } from './userNotificationsStore';
 
 export type AuthStore = {
   auth: Auth | null;
@@ -301,6 +302,7 @@ export const useAuthStore = create<AuthStore>()(
         const { reloadGreetings, setRandomGreeting } = useGreetingStore.getState();
         const { reloadQuotes, setRandomQuote } = useQuoteStore.getState();
         const { reloadJoinedTeam } = useTeamsStore.getState();
+        const { reloadUnreadUserNotificationsCount } = useUserNotificationsStore.getState();
 
         if (!auth?.userAccessToken?.token) {
           return;
@@ -322,6 +324,13 @@ export const useAuthStore = create<AuthStore>()(
 
         // Websocket
         websocketManager.connect(auth.userAccessToken.token);
+
+        // User Notifications
+        (async () => {
+          await reloadUnreadUserNotificationsCount();
+
+          setInterval(reloadUnreadUserNotificationsCount, 1000 * 60 * 2);
+        })();
 
         // Backgrounds
         (async () => {

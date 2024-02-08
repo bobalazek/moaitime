@@ -2,6 +2,7 @@ import { Module, OnApplicationShutdown } from '@nestjs/common';
 
 import { destroyDatabase } from '@moaitime/database-core';
 import { logger } from '@moaitime/logging';
+import { getEnv } from '@moaitime/shared-backend';
 
 import { AppController } from './controllers/app.controller';
 import { AuthModule } from './features/auth/auth.module';
@@ -18,21 +19,27 @@ import { TestingModule } from './features/testing/testing.module';
 import { WeatherModule } from './features/weather/weather.module';
 import { WebsocketModule } from './websocket/websocket.module';
 
+const { NODE_ENV } = getEnv();
+
 @Module({
   imports: [
-    AuthModule,
-    BackgroundsModule,
-    GreetingsModule,
-    NotesModule,
-    QuotesModule,
-    TasksModule,
-    CalendarsModule,
-    WeatherModule,
-    MoodModule,
-    FocusModule,
-    StatisticsModule,
-    WebsocketModule,
-    TestingModule,
+    ...[
+      AuthModule,
+      BackgroundsModule,
+      GreetingsModule,
+      NotesModule,
+      QuotesModule,
+      TasksModule,
+      CalendarsModule,
+      WeatherModule,
+      MoodModule,
+      FocusModule,
+      StatisticsModule,
+      TestingModule,
+    ],
+    // Websockets not working fr testing... great job NestJS
+    // https://github.com/nestjs/docs.nestjs.com/issues/97
+    ...(NODE_ENV === 'test' ? [] : [WebsocketModule]),
   ],
   controllers: [AppController],
   providers: [],

@@ -496,10 +496,12 @@ describe('calendar.cy.ts', () => {
       .contains('Add')
       .click();
 
-    cy.getBySel('calendar--settings-dialog--calendar--name').contains('(shared)');
+    cy.getBySel('calendar--settings-dialog--shared-calendars-wrapper').find(
+      '[data-test="calendar--calendar-item"]'
+    );
   });
 
-  it('should add shared calendar with search otpion', () => {
+  it('should add shared calendar with search option', () => {
     openCalendar();
 
     cy.getBySel('calendar--header--open-settings-button').click();

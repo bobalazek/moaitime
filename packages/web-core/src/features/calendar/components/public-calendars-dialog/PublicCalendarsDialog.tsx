@@ -67,7 +67,6 @@ export default function PublicCalendarsDialog() {
                     calendar={calendar}
                     userCalendar={userCalendar}
                     showUserCalendarActions
-                    showSharedText
                     hideCheckbox
                   />
                 );

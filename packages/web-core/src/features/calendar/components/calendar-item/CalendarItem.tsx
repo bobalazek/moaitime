@@ -12,7 +12,6 @@ export interface CalendarItemProps {
   calendar: Calendar;
   userCalendar?: UserCalendar;
   hideCheckbox?: boolean;
-  showSharedText?: boolean;
   showUserCalendarActions?: boolean;
 }
 
@@ -20,7 +19,6 @@ export default function CalendarItem({
   calendar,
   userCalendar,
   hideCheckbox,
-  showSharedText,
   showUserCalendarActions,
 }: CalendarItemProps) {
   const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
@@ -51,6 +49,7 @@ export default function CalendarItem({
       className="min-h-[2rem] rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
       data-test="calendar--calendar-item"
       data-calendar-id={calendar.id}
+      data-
     >
       <div className="relative h-full w-full">
         {!hideCheckbox && (
@@ -67,9 +66,6 @@ export default function CalendarItem({
         )}
         <div className="break-words px-6">
           <span data-test="calendar--settings-dialog--calendar--name">{calendar.name}</span>
-          {showSharedText && userCalendar && (
-            <span className="text-muted-foreground text-xs"> (shared)</span>
-          )}
           {calendar?.teamId && (
             <span className="ml-1">
               {' '}

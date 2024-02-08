@@ -45,7 +45,7 @@ export default function CalendarSettingsDialog() {
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
-          <div>
+          <div data-test="calendar--settings-dialog--calendars-wrapper">
             <div className="mb-1 flex items-center gap-1">
               <h3 className="font-bold">Calendars</h3>
               <CalendarSettingsDialogMyCalendarsActions />
@@ -58,7 +58,7 @@ export default function CalendarSettingsDialog() {
               <CalendarItem key={calendar.id} calendar={calendar} />
             ))}
           </div>
-          <div className="mt-4">
+          <div className="mt-4" data-test="calendar--settings-dialog--shared-calendars-wrapper">
             <div className="mb-1 flex items-center gap-1">
               <h3 className="font-bold">External Calendars</h3>
               <CalendarSettingsDialogUserCalendarsActions />
@@ -81,7 +81,7 @@ export default function CalendarSettingsDialog() {
               />
             ))}
           </div>
-          <div className="mt-4">
+          <div className="mt-4" data-test="calendar--settings-dialog--lists-wrapper">
             <div className="mb-1 flex items-center gap-2">
               <h3 className="font-bold">Lists</h3>
               <UsageBadge limitKey="listsMaxPerUserCount" usageKey="listsCount" />

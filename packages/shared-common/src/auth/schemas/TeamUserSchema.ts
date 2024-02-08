@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { TeamSchema } from './TeamSchema';
-import { TeamUserRoleEnum } from './TeamUserRoleEnum';
+import { TeamSchema } from '../TeamSchema';
+import { TeamUserRoleEnum } from '../TeamUserRoleEnum';
 import { UserSchema } from './UserSchema';
 
 export const TeamUserSchema = z.object({

@@ -4,24 +4,25 @@ export * from './Helpers';
 export * from './RepeatHelpers';
 
 // Auth
-export * from './auth/AuthSchema';
-export * from './auth/UserSchema';
-export * from './auth/UserSettingsSchema';
-export * from './auth/UserNotificationSchema';
 export * from './auth/UserRoleEnum';
 export * from './auth/UserSettingsDefault';
 export * from './auth/UserLimitsAndUsage';
+export * from './auth/UserNotificationTypeEnum';
 export * from './auth/TeamSchema';
-export * from './auth/TeamUserSchema';
-export * from './auth/TeamUserInvitationSchema';
 export * from './auth/TeamUserRoleEnum';
 export * from './auth/TeamLimitsAndUsage';
 export * from './auth/JoinedTeam';
-export * from './auth/OrganizationSchema';
 export * from './auth/OrganizationUserRoleEnum';
-export * from './auth/SubscriptionSchema';
-export * from './auth/PlanSchema';
 export * from './auth/Plans';
+export * from './auth/schemas/AuthSchema';
+export * from './auth/schemas/UserSchema';
+export * from './auth/schemas/UserSettingsSchema';
+export * from './auth/schemas/UserNotificationSchema';
+export * from './auth/schemas/TeamUserSchema';
+export * from './auth/schemas/TeamUserInvitationSchema';
+export * from './auth/schemas/OrganizationSchema';
+export * from './auth/schemas/SubscriptionSchema';
+export * from './auth/schemas/PlanSchema';
 
 // Background
 export * from './background/Background';

@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { MOOD_SCORES } from '../Constants';
-import { DayOfWeek } from '../core/DayOfWeek';
-import { HexColorSchema } from '../core/schemas/HexColorSchema';
-import { ThemeEnum } from '../core/ThemeEnum';
-import { FocusSessionSettingsSchema } from '../focus/FocusSessionSchema';
-import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
+import { MOOD_SCORES } from '../../Constants';
+import { DayOfWeek } from '../../core/DayOfWeek';
+import { HexColorSchema } from '../../core/schemas/HexColorSchema';
+import { ThemeEnum } from '../../core/ThemeEnum';
+import { FocusSessionSettingsSchema } from '../../focus/FocusSessionSchema';
+import { SearchEnginesEnum } from '../../search/SearchEnginesEnum';
 
 export const UserSettingsSchema = z.object({
   // General

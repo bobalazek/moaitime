@@ -21,7 +21,7 @@ import {
   UserNotification,
   userNotifications,
 } from '@moaitime/database-core';
-import { SortDirectionEnum } from '@moaitime/shared-common';
+import { SortDirectionEnum, UserNotificationTypeEnum } from '@moaitime/shared-common';
 
 export type UserNotificationsManagerFindOptions = {
   from?: string;
@@ -296,15 +296,53 @@ export class UserNotificationsManager {
     return result[0].count ?? 0;
   }
 
+  async addNotification(data: {
+    type: UserNotificationTypeEnum;
+    userId: string;
+    content: string;
+    relatedEntities?: string[];
+    data?: Record<string, unknown>;
+  }) {
+    return this.insertOne(data);
+  }
+
   // Private
   private _parseRow(row: UserNotification) {
     const { content, ...rest } = row;
 
-    // TODO: process content
+    const variables = (
+      rest.data && typeof rest.data === 'object' && 'variables' in rest.data
+        ? rest.data.variables
+        : {}
+    ) as Record<string, unknown>;
+    const flatVariables = Object.entries(variables).reduce((acc, [key, value]) => {
+      if (typeof value === 'object' && value !== null) {
+        return {
+          ...acc,
+          ...Object.entries(value).reduce((acc2, [key2, value2]) => {
+            return {
+              ...acc2,
+              [`${key}.${key2}`]: value2,
+            };
+          }, {}),
+        };
+      }
+
+      return {
+        ...acc,
+        [key]: value,
+      };
+    }, {});
+
+    let parsedContent = content;
+
+    Object.entries(flatVariables).forEach(([key, value]) => {
+      parsedContent = parsedContent.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
+    });
 
     return {
       ...rest,
-      content,
+      content: parsedContent,
     };
   }
 

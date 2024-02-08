@@ -39,9 +39,11 @@ import {
   SortDirectionEnum,
   TasksListSortFieldEnum,
   UpdateTask,
+  UserNotificationTypeEnum,
 } from '@moaitime/shared-common';
 
 import { teamsManager } from '../auth/TeamsManager';
+import { userNotificationsManager } from '../auth/UserNotificationsManager';
 import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
 import { tagsManager } from './TagsManager';
@@ -396,6 +398,8 @@ export class TasksManager {
 
     const { tagIds, userIds, ...insertData } = data;
 
+    const teamId = list?.teamId ?? undefined;
+
     const maxOrderForListId = await this.findMaxOrderByListId(insertData?.listId ?? null);
     const order = maxOrderForListId + 1;
 
@@ -410,14 +414,14 @@ export class TasksManager {
         throw new Error('You cannot assign users to non-team list');
       }
 
-      await this.setUsers(task, userIds);
+      await this.setUsers(task, userIds, user.id, teamId);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
       userId: user.id,
       taskId: task.id,
       listId: task.listId ?? undefined,
-      teamId: list?.teamId ?? undefined,
+      teamId,
     });
 
     return task;
@@ -449,6 +453,8 @@ export class TasksManager {
 
     const { tagIds, userIds, ...updateData } = data;
 
+    const teamId = list?.teamId ?? task.list?.teamId ?? undefined;
+
     const updatedData = await this.updateOneById(taskId, updateData);
 
     if (Array.isArray(tagIds)) {
@@ -460,14 +466,14 @@ export class TasksManager {
         throw new Error('You cannot assign users to non-team list');
       }
 
-      await this.setUsers(task, userIds);
+      await this.setUsers(task, userIds, user.id, teamId);
     }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
       userId: user.id,
       taskId: task.id,
       listId: task.listId ?? undefined,
-      teamId: list?.teamId ?? task.list?.teamId ?? undefined,
+      teamId,
     });
 
     return updatedData;
@@ -795,7 +801,7 @@ export class TasksManager {
     }
   }
 
-  async setUsers(task: Task, userIds: string[]) {
+  async setUsers(task: Task, userIds: string[], setterUserId: string, teamId?: string) {
     const currentTaskUsers = await getDatabase()
       .select()
       .from(taskUsers)
@@ -824,6 +830,35 @@ export class TasksManager {
           }))
         )
         .execute();
+
+      for (const userId of toInsert) {
+        globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER, {
+          userId: setterUserId,
+          taskId: task.id,
+          teamId,
+          targetUserId: userId,
+        });
+
+        // Do not send a notification to the setter
+        if (userId == setterUserId) {
+          continue;
+        }
+
+        await userNotificationsManager.addNotification({
+          type: UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK,
+          userId,
+          content: `You have been assigned to the task "{{task.name}}"`,
+          data: {
+            variables: {
+              task: {
+                id: task.id,
+                name: task.name,
+              },
+            },
+          },
+          relatedEntities: [`tasks:${task.id}`],
+        });
+      }
     }
   }
 

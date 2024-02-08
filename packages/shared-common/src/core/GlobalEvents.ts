@@ -16,6 +16,7 @@ export enum GlobalEventsEnum {
   TASKS_TASK_COMPLETED = 'tasks:task:completed',
   TASKS_TASK_UNCOMPLETED = 'tasks:task:uncompleted',
   TASKS_TASK_DUPLICATED = 'tasks:task:duplicated',
+  TASKS_TASK_ASSIGNED_TO_USER = 'tasks:task:assigned-to-user',
   TASKS_REORDERED = 'tasks:reordered',
   // Tasks - Lists
   TASKS_LIST_ADDED = 'tasks:list:added',
@@ -102,6 +103,14 @@ export type GlobalEvents = {
     listId?: string;
     teamId?: string;
     task?: Task;
+  };
+  [GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER]: {
+    userId: string; // Which user assigned it? Just so  we are consistent with the other events. The userId is the user that triggers the action
+    taskId: string;
+    listId?: string;
+    teamId?: string;
+    task?: Task;
+    targetUserId: string; // To which user was it assigned?
   };
   [GlobalEventsEnum.TASKS_REORDERED]: {
     userId: string;

@@ -40,18 +40,16 @@ export class WebsocketGateway
         payload: GlobalEvents[GlobalEventsEnum];
       };
 
-      if (!('teamId' in payload) || !payload.teamId) {
-        return;
-      }
+      if ('teamId' in payload && payload.teamId) {
+        const userSockets = this._getSocketsForTeam(payload.teamId);
+        for (const socket of userSockets) {
+          const userId = this._getUserId(socket);
+          if ('userId' in payload && userId === payload.userId) {
+            continue;
+          }
 
-      const sockets = this._getSocketsForTeam(payload.teamId);
-      for (const socket of sockets) {
-        const userId = this._getUserId(socket);
-        if ('userId' in payload && userId === payload.userId) {
-          continue;
+          socket.send(JSON.stringify({ type, payload }));
         }
-
-        socket.send(JSON.stringify({ type, payload }));
       }
     });
 

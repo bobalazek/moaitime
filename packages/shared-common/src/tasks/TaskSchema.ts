@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserSchema } from '../auth/UserSchema';
+import { UserSchema } from '../auth/schemas/UserSchema';
 import { ColorSchema } from '../core/schemas/ColorSchema';
 import { TimezoneSchema } from '../core/schemas/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';

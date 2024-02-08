@@ -29,6 +29,13 @@
       "when": 1707239449222,
       "tag": "0003_careless_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1707379827012,
+      "tag": "0004_special_jamie_braddock",
+      "breakpoints": true
     }
   ]
 }

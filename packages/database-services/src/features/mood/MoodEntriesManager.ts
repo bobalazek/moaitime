@@ -252,7 +252,7 @@ export class MoodEntriesManager {
   }
 
   async update(userId: string, moodEntryId: string, data: UpdateMoodEntry) {
-    const canUpdate = await this.userCanUpdate(moodEntryId, userId);
+    const canUpdate = await this.userCanUpdate(userId, moodEntryId);
     if (!canUpdate) {
       throw new Error('You cannot update this mood entry');
     }
@@ -264,7 +264,7 @@ export class MoodEntriesManager {
   }
 
   async delete(userId: string, moodEntryId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(moodEntryId, userId);
+    const canDelete = await this.userCanDelete(userId, moodEntryId);
     if (!canDelete) {
       throw new Error('You cannot delete this mood entry');
     }
@@ -277,7 +277,7 @@ export class MoodEntriesManager {
   }
 
   async undelete(userId: string, moodEntryId: string) {
-    const canDelete = await this.userCanUpdate(moodEntryId, userId);
+    const canDelete = await this.userCanUpdate(userId, moodEntryId);
     if (!canDelete) {
       throw new Error('You cannot undelete this mood entry');
     }

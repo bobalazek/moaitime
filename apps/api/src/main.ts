@@ -26,8 +26,8 @@ export async function bootstrap() {
   // Shutdown
   app.enableShutdownHooks();
 
-  process.on('SIGINT', async () => app.close());
-  process.on('SIGTERM', async () => app.close());
+  process.on('SIGINT', async () => await app.close());
+  process.on('SIGTERM', async () => await app.close());
 
   // WebSocket
   app.useWebSocketAdapter(new WsAdapter(app));

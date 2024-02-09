@@ -1,3 +1,6 @@
+import { PencilIcon, TrashIcon } from 'lucide-react';
+
+import { TeamUser } from '@moaitime/shared-common';
 import {
   Button,
   Table,
@@ -10,10 +13,16 @@ import {
 
 import { useAuthStore } from '../../../state/authStore';
 import { useTeamsStore } from '../../../state/teamsStore';
+import TeamMemberEditDialog from '../../team-member-edit-dialog/TeamMemberEditDialog';
 
 export default function TeamMembersSection() {
   const { auth } = useAuthStore();
-  const { joinedTeamMembers, removeJoinedTeamMember } = useTeamsStore();
+  const { joinedTeamMembers, removeJoinedTeamMember, setSelectedTeamMemberDialogOpen } =
+    useTeamsStore();
+
+  const onEditTeamMemberClick = (teamUser: TeamUser) => {
+    setSelectedTeamMemberDialogOpen(true, teamUser);
+  };
 
   const onRemoveTeamMemberClick = async (userId: string) => {
     try {
@@ -59,14 +68,17 @@ export default function TeamMembersSection() {
                 </TableCell>
                 <TableCell>{joinedTeamMember.roles.join(', ')}</TableCell>
                 <TableCell>{new Date(joinedTeamMember.createdAt).toLocaleString()}</TableCell>
-                <TableCell>
+                <TableCell className="flex gap-2">
+                  <Button size="sm" onClick={() => onEditTeamMemberClick(joinedTeamMember)}>
+                    <PencilIcon size={16} />
+                  </Button>
                   {auth?.user?.id !== joinedTeamMember.userId && (
                     <Button
                       size="sm"
                       variant="destructive"
                       onClick={() => onRemoveTeamMemberClick(joinedTeamMember.userId)}
                     >
-                      Remove
+                      <TrashIcon size={16} />
                     </Button>
                   )}
                 </TableCell>
@@ -75,6 +87,7 @@ export default function TeamMembersSection() {
           </TableBody>
         </Table>
       )}
+      <TeamMemberEditDialog />
     </div>
   );
 }

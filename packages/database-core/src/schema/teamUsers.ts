@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, json, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { TeamUserRoleEnum } from '@moaitime/shared-common';
 
@@ -11,6 +11,7 @@ export const teamUsers = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     roles: json('roles').notNull().default('[]').$type<TeamUserRoleEnum[]>(),
+    displayName: text('display_name'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
     teamId: uuid('team_id')

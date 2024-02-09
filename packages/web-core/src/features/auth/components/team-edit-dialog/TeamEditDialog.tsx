@@ -101,7 +101,7 @@ export default function TeamEditDialog() {
         ? await editTeam(selectedTeam.id, data as UpdateTeam)
         : await addTeam(data as CreateTeam);
 
-      sonnerToast.success(`Team "${editedTeam.name}" save`, {
+      sonnerToast.success(`Team "${editedTeam.name}" saved`, {
         description: 'You have successfully saved the team',
       });
 

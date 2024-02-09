@@ -7,6 +7,7 @@ import { UserSchema } from './UserSchema';
 export const TeamUserSchema = z.object({
   id: z.string(),
   roles: z.array(z.nativeEnum(TeamUserRoleEnum)),
+  displayName: z.string().optional(),
   teamId: z.string(),
   userId: z.string(),
   createdAt: z.string(),
@@ -19,7 +20,12 @@ export const CreateTeamUserSchema = z.object({
   teamId: z.string({ required_error: 'Team is required' }),
 });
 
-export const UpdateTeamUserSchema = CreateTeamUserSchema.partial();
+export const UpdateTeamUserSchema = z.object({
+  displayName: z.string().nullable().optional(),
+  roles: z.array(z.nativeEnum(TeamUserRoleEnum)).refine((roles) => roles.length > 0, {
+    message: 'At least one role is required',
+  }),
+});
 
 // Types
 export type TeamUser = z.infer<typeof TeamUserSchema>;

@@ -7,15 +7,16 @@ import {
   TeamUser,
   TeamUserInvitation,
   UpdateTeam,
+  UpdateTeamUser,
 } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Teams **********/
-export const addTeam = async (team: CreateTeam): Promise<Team> => {
+export const addTeam = async (data: CreateTeam): Promise<Team> => {
   const response = await fetchJson<ResponseInterface<Team>>(`${API_URL}/api/v1/teams`, {
     method: 'POST',
-    body: JSON.stringify(team),
+    body: JSON.stringify(data),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -25,10 +26,10 @@ export const addTeam = async (team: CreateTeam): Promise<Team> => {
   return response.data as Team;
 };
 
-export const editTeam = async (teamId: string, team: UpdateTeam): Promise<Team> => {
+export const editTeam = async (teamId: string, data: UpdateTeam): Promise<Team> => {
   const response = await fetchJson<ResponseInterface<Team>>(`${API_URL}/api/v1/teams/${teamId}`, {
     method: 'PATCH',
-    body: JSON.stringify(team),
+    body: JSON.stringify(data),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -95,6 +96,22 @@ export const removeTeamMember = async (teamId: string, userId: string) => {
     `${API_URL}/api/v1/teams/${teamId}/members/${userId}`,
     {
       method: 'DELETE',
+    }
+  );
+
+  return response.data as TeamUser;
+};
+
+export const editTeamMember = async (teamId: string, userId: string, data: UpdateTeamUser) => {
+  const response = await fetchJson<ResponseInterface<TeamUser>>(
+    `${API_URL}/api/v1/teams/${teamId}/members/${userId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
     }
   );
 

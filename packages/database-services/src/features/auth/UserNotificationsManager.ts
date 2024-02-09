@@ -135,9 +135,7 @@ export class UserNotificationsManager {
       rows.reverse();
     }
 
-    const data = rows.map((row) => {
-      return this._parseRow(row);
-    });
+    const data = await this._parseRows(rows);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -297,26 +295,97 @@ export class UserNotificationsManager {
   }
 
   // Private
-  private _parseRow(row: UserNotification) {
-    const { content, ...rest } = row;
+  private async _parseRows(rows: UserNotification[]) {
+    const parsedRows: UserNotification[] = [];
 
-    const variables = (
-      rest.data && typeof rest.data === 'object' && 'variables' in rest.data
-        ? rest.data.variables
-        : {}
-    ) as Record<string, unknown>;
-    const parsedContent = this._parseContent(content, variables);
+    const relatedEntitiesMap = new Map<string, Set<string>>();
+    for (const row of rows) {
+      if (!row.relatedEntities) {
+        continue;
+      }
 
-    return {
-      ...rest,
-      content: parsedContent,
-    };
+      for (const relatedEntity of row.relatedEntities) {
+        const [entityType, entityId] = relatedEntity.split(':');
+        if (!relatedEntitiesMap.has(entityType)) {
+          relatedEntitiesMap.set(entityType, new Set());
+        }
+
+        relatedEntitiesMap.get(entityType)?.add(entityId);
+      }
+    }
+
+    const objectsMap = new Map<string, Record<string, unknown>>();
+    for (const [entityType, entityIds] of relatedEntitiesMap) {
+      const entityRows: { id: string }[] = [];
+
+      if (entityType === 'users') {
+        entityRows.push(
+          ...(await getDatabase().query.users.findMany({
+            columns: {
+              id: true,
+              displayName: true,
+              email: true,
+            },
+            where: inArray(userNotifications.id, Array.from(entityIds)),
+          }))
+        );
+      } else if (entityType === 'tasks') {
+        entityRows.push(
+          ...(await getDatabase().query.tasks.findMany({
+            columns: {
+              id: true,
+              name: true,
+            },
+            where: inArray(userNotifications.id, Array.from(entityIds)),
+          }))
+        );
+      }
+
+      for (const entityRow of entityRows) {
+        objectsMap.set(`${entityType}:${entityRow.id}`, entityRow);
+      }
+    }
+
+    for (const row of rows) {
+      const { content, ...rest } = row;
+
+      const variables = (
+        rest.data && typeof rest.data === 'object' && 'variables' in rest.data
+          ? rest.data.variables
+          : {}
+      ) as Record<string, unknown>;
+      const parsedContent = this._parseContent(content, variables, objectsMap);
+
+      parsedRows.push({
+        ...rest,
+        content: parsedContent,
+      });
+    }
+
+    return parsedRows;
   }
 
-  private _parseContent(content: string, variables: Record<string, unknown>) {
+  private _parseContent(
+    content: string,
+    variables: Record<string, unknown>,
+    objectsMap: Map<string, Record<string, unknown>>
+  ) {
     let parsedContent = content;
+
     const flatVariables = Object.entries(variables).reduce((acc, [key, value]) => {
       if (typeof value === 'object' && value !== null) {
+        if ('__entityType' in value && 'id' in value) {
+          const entityType = value.__entityType as string;
+          const entityId = value.id as string;
+
+          if (objectsMap.has(`${entityType}:${entityId}`)) {
+            return {
+              ...acc,
+              [key]: objectsMap.get(`${entityType}:${entityId}`),
+            };
+          }
+        }
+
         return {
           ...acc,
           ...Object.entries(value).reduce((acc2, [key2, value2]) => {
@@ -334,9 +403,9 @@ export class UserNotificationsManager {
       };
     }, {});
 
-    Object.entries(flatVariables).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(flatVariables)) {
       parsedContent = parsedContent.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
-    });
+    }
 
     parsedContent = parsedContent.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 

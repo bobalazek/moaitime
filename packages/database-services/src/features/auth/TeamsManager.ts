@@ -19,6 +19,7 @@ import {
   TeamUsage,
   TeamUserRoleEnum,
   UpdateTeam,
+  UpdateTeamUser,
   WEB_URL,
 } from '@moaitime/shared-common';
 
@@ -536,6 +537,59 @@ export class TeamsManager {
     const rows = await getDatabase()
       .delete(teamUsers)
       .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
+      .returning();
+
+    return rows[0] ?? null;
+  }
+
+  async updateMember(adminUserId: string, userId: string, teamId: string, data: UpdateTeamUser) {
+    const team = await this.findOneById(teamId);
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    const adminTeamUser = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.userId, adminUserId), eq(teamUsers.teamId, teamId)),
+    });
+    if (!adminTeamUser) {
+      throw new Error('Admin team user not found');
+    }
+
+    const teamUser = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
+    });
+    if (!teamUser) {
+      throw new Error('Member not found');
+    }
+
+    const canUpdate = await this.userCanUpdate(adminUserId, teamId);
+    if (!canUpdate) {
+      throw new Error('You cannot update this member');
+    }
+
+    if (
+      data.roles &&
+      data.roles.length > 0 &&
+      data.roles.includes(TeamUserRoleEnum.OWNER) &&
+      !adminTeamUser.roles.includes(TeamUserRoleEnum.OWNER)
+    ) {
+      throw new Error('You cannot set a member as owner');
+    }
+
+    if (
+      data.roles &&
+      data.roles.length > 0 &&
+      data.roles.includes(TeamUserRoleEnum.ADMIN) &&
+      !adminTeamUser.roles.includes(TeamUserRoleEnum.OWNER) &&
+      !adminTeamUser.roles.includes(TeamUserRoleEnum.ADMIN)
+    ) {
+      throw new Error('You cannot set a member as admin');
+    }
+
+    const rows = await getDatabase()
+      .update(teamUsers)
+      .set(data)
+      .where(eq(teamUsers.id, teamUser.id))
       .returning();
 
     return rows[0] ?? null;

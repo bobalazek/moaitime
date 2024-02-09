@@ -7,6 +7,7 @@ import {
   TeamUser,
   TeamUserInvitation,
   UpdateTeam,
+  UpdateTeamUser,
 } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../calendar/state/calendarStore';
@@ -17,6 +18,7 @@ import {
   deleteTeam,
   deleteTeamInvitation,
   editTeam,
+  editTeamMember,
   getJoinedTeam,
   getMyTeamInvitations,
   getTeamInvitations,
@@ -34,12 +36,20 @@ export type TeamsStore = {
   selectedTeamDialogOpen: boolean;
   selectedTeam: Team | null;
   setSelectedTeamDialogOpen: (selectedTeamDialogOpen: boolean, selectedTeam?: Team | null) => void;
+  // Selected Team Member
+  selectedTeamMemberDialogOpen: boolean;
+  selectedTeamMember: TeamUser | null;
+  setSelectedTeamMemberDialogOpen: (
+    selectedTeamMemberDialogOpen: boolean,
+    selectedTeamMember?: TeamUser | null
+  ) => void;
   // Joined
   joinedTeam: JoinedTeam | null;
   reloadJoinedTeam: () => Promise<void>;
   joinedTeamMembers: TeamUser[];
-  reloadJoinedTeamMembers: () => Promise<void>;
-  removeJoinedTeamMember: (userId: string) => Promise<void>;
+  reloadJoinedTeamMembers: () => Promise<TeamUser[]>;
+  removeJoinedTeamMember: (userId: string) => Promise<TeamUser | null>;
+  editJoinedTeamMember: (userId: string, data: UpdateTeamUser) => Promise<TeamUser | null>;
   // Joined Team Invitations
   joinedTeamUserInvitations: TeamUserInvitation[]; // Open invitation for that specific team
   reloadJoinedTeamUserInvitations: () => Promise<void>;
@@ -93,6 +103,18 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
       selectedTeam,
     });
   },
+  // Selected Team Member
+  selectedTeamMemberDialogOpen: false,
+  selectedTeamMember: null,
+  setSelectedTeamMemberDialogOpen: (
+    selectedTeamMemberDialogOpen: boolean,
+    selectedTeamMember?: TeamUser | null
+  ) => {
+    set({
+      selectedTeamMemberDialogOpen,
+      selectedTeamMember,
+    });
+  },
   // Joined
   joinedTeam: null,
   reloadJoinedTeam: async () => {
@@ -116,7 +138,7 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
   reloadJoinedTeamMembers: async () => {
     const { joinedTeam } = get();
     if (!joinedTeam || !joinedTeam.team) {
-      return;
+      return [];
     }
 
     const joinedTeamMembers = await getTeamMembers(joinedTeam.team.id);
@@ -124,16 +146,32 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
     set({
       joinedTeamMembers,
     });
+
+    return joinedTeamMembers;
   },
   removeJoinedTeamMember: async (userId: string) => {
     const { joinedTeam, reloadJoinedTeamMembers } = get();
     if (!joinedTeam || !joinedTeam.team) {
-      return;
+      return null;
     }
 
-    await removeTeamMember(joinedTeam.team.id, userId);
+    const teamMember = await removeTeamMember(joinedTeam.team.id, userId);
 
     await reloadJoinedTeamMembers();
+
+    return teamMember;
+  },
+  editJoinedTeamMember: async (userId: string, data: UpdateTeamUser) => {
+    const { joinedTeam, reloadJoinedTeamMembers } = get();
+    if (!joinedTeam || !joinedTeam.team) {
+      return null;
+    }
+
+    const teamMember = await editTeamMember(joinedTeam.team.id, userId, data);
+
+    await reloadJoinedTeamMembers();
+
+    return teamMember;
   },
   // Joined Team Invitations
   joinedTeamUserInvitations: [],

@@ -8,6 +8,7 @@ import { DeleteDto } from '../../../dtos/delete.dto';
 import { EmailDto } from '../../../dtos/email.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { CreateTeamDto } from '../dtos/create-team.dto';
+import { UpdateTeamUserDto } from '../dtos/update-team-user.dto';
 import { UpdateTeamDto } from '../dtos/update-team.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 
@@ -133,6 +134,22 @@ export class TeamsController {
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUser[]>> {
     const data = await teamsManager.getMembersByTeamId(req.user.id, teamId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Patch(':teamId/members/:userId')
+  async updateMember(
+    @Req() req: Request,
+    @Param('teamId') teamId: string,
+    @Param('userId') userId: string,
+    @Body() body: UpdateTeamUserDto
+  ): Promise<AbstractResponseDto<TeamUser>> {
+    const data = await teamsManager.updateMember(req.user.id, userId, teamId, body);
 
     return {
       success: true,

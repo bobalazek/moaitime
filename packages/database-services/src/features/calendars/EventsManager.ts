@@ -337,7 +337,7 @@ export class EventsManager {
         : undefined;
 
     const repeatPattern = data.repeatPattern ?? event.repeatPattern;
-    if (startsAt && repeatPattern) {
+    if (startsAt && repeatPattern && data.repeatPattern !== null) {
       let rule = getRuleFromString(repeatPattern);
       rule = updateRule(rule, { dtstart: startsAt });
       data.repeatPattern = convertRuleToString(rule);

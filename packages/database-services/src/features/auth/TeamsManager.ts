@@ -586,6 +586,23 @@ export class TeamsManager {
       throw new Error('You cannot set a member as admin');
     }
 
+    if (data.roles && data.roles.includes(TeamUserRoleEnum.OWNER)) {
+      let ownerTeamUser: TeamUser | null = null;
+      const allTeamUsers = await getDatabase().query.teamUsers.findMany({
+        where: and(eq(teamUsers.teamId, teamId)),
+      });
+      for (const teamUser of allTeamUsers) {
+        if (teamUser.roles.includes(TeamUserRoleEnum.OWNER)) {
+          ownerTeamUser = teamUser;
+          break;
+        }
+      }
+
+      if (ownerTeamUser && ownerTeamUser.id !== teamUser.id) {
+        throw new Error('There is already an owner in this team');
+      }
+    }
+
     const rows = await getDatabase()
       .update(teamUsers)
       .set(data)

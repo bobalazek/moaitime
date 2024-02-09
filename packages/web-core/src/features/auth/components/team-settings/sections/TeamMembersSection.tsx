@@ -62,7 +62,11 @@ export default function TeamMembersSection() {
                   {!joinedTeamMember.user && <>Unknown Member</>}
                   {joinedTeamMember.user && (
                     <>
-                      {joinedTeamMember.user.displayName} ({joinedTeamMember.user.email})
+                      {joinedTeamMember.user.displayName}{' '}
+                      {joinedTeamMember.displayName && <>"{joinedTeamMember.displayName}"</>}
+                      <small className="text-muted-foreground text-xs">
+                        ({joinedTeamMember.user.email})
+                      </small>
                     </>
                   )}
                 </TableCell>

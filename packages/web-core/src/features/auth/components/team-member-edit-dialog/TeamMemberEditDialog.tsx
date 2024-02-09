@@ -12,6 +12,7 @@ import {
   sonnerToast,
 } from '@moaitime/web-ui';
 
+import { TeamRolesSelector } from '../../../core/components/selectors/TeamRolesSelector';
 import { useTeamsStore } from '../../state/teamsStore';
 
 export default function TeamMemberEditDialog() {
@@ -89,6 +90,19 @@ export default function TeamMemberEditDialog() {
             The name that will be displayed for this team member. It is useful if you have multiple
             team members with the same name. If not set, it will use their display name as fallback.
           </div>
+        </div>
+        <div className="mb-4 flex flex-col gap-2">
+          <Label htmlFor="team-member-roles">Roles</Label>
+          <TeamRolesSelector
+            value={data?.roles ?? []}
+            onChangeValue={(roles) => {
+              setData((current) => ({
+                ...current,
+                displayName: current?.displayName ?? null,
+                roles: roles ?? [],
+              }));
+            }}
+          />
         </div>
         <div className="flex flex-row justify-end gap-2">
           <div className="flex gap-2">

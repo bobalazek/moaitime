@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { UserNotification } from '@moaitime/database-core';
@@ -26,6 +26,20 @@ export class UserNotificationsController {
       success: true,
       data,
       meta,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete(':userNotificationId')
+  async delete(
+    @Req() req: Request,
+    @Param('userNotificationId') userNotificationId: string
+  ): Promise<AbstractResponseDto<UserNotification>> {
+    const data = await userNotificationsManager.delete(req.user.id, userNotificationId);
+
+    return {
+      success: true,
+      data,
     };
   }
 

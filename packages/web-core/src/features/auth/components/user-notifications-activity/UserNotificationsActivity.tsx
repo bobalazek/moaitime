@@ -52,13 +52,24 @@ function UserNotificationsActivityInner() {
       refetch();
     };
 
-    globalEventsEmitter.on(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ, callback);
-    globalEventsEmitter.on(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD, callback);
+    globalEventsEmitter.on(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, callback);
+    globalEventsEmitter.on(
+      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ,
+      callback
+    );
+    globalEventsEmitter.on(
+      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
+      callback
+    );
 
     return () => {
-      globalEventsEmitter.off(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ, callback);
+      globalEventsEmitter.off(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, callback);
       globalEventsEmitter.off(
-        GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD,
+        GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ,
+        callback
+      );
+      globalEventsEmitter.off(
+        GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
         callback
       );
     };
@@ -81,7 +92,9 @@ function UserNotificationsActivityInner() {
     <>
       {items.length === 0 && (
         <div className="text-muted-foreground justify-center text-center">
-          <div className="mb-3 text-3xl">No notifications yet.</div>
+          <div className="mb-3 text-3xl leading-10">
+            No notifications right now. <br /> Lucky you! <br /> 😊
+          </div>
         </div>
       )}
       {items.length > 0 && (

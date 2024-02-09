@@ -24,7 +24,7 @@ export class UserNotificationsSender {
       },
     };
     const relatedEntities = Object.values(variables).map((v) => `${v.__entityType}:${v.id}`);
-    const targetEntity = `${EntityTypeEnum.USERS}:${task.id}`;
+    const targetEntity = `${EntityTypeEnum.TASKS}:${task.id}`;
 
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK,

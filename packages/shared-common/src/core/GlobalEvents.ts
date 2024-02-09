@@ -50,8 +50,9 @@ export enum GlobalEventsEnum {
   MOOD_MOOD_ENTRY_DELETED = 'mood:mood-entry:deleted',
   MOOD_MOOD_ENTRY_UNDELETED = 'mood:mood-entry:undeleted',
   // Notifications
-  NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ = 'notifications:notification:marked-as-read',
-  NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD = 'notifications:notification:marked-as-unread',
+  NOTIFICATIONS_USER_NOTIFICATION_DELETED = 'notifications:user-notification:deleted',
+  NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ = 'notifications:user-notification:marked-as-read',
+  NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD = 'notifications:user-notification:marked-as-unread',
 }
 
 export type GlobalEvents = {
@@ -280,11 +281,15 @@ export type GlobalEvents = {
     moodEntry?: MoodEntry;
   };
   // Notifications
-  [GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ]: {
+  [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED]: {
     userId: string;
     userNotificationId: string;
   };
-  [GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD]: {
+  [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ]: {
+    userId: string;
+    userNotificationId: string;
+  };
+  [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD]: {
     userId: string;
     userNotificationId: string;
   };

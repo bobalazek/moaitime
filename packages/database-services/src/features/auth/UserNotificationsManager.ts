@@ -67,7 +67,7 @@ export class UserNotificationsManager {
     let orderBy = isSortAscending
       ? asc(userNotifications.createdAt)
       : desc(userNotifications.createdAt);
-    let where = eq(userNotifications.userId, userId);
+    let where = and(eq(userNotifications.userId, userId), isNull(userNotifications.deletedAt));
 
     if (options?.from && options?.to) {
       where = and(
@@ -236,6 +236,17 @@ export class UserNotificationsManager {
     return this.findManyByUserIdWithDataAndMeta(userId, options);
   }
 
+  async delete(userId: string, userNotificationId: string) {
+    const canDelete = await this.userCanDelete(userId, userNotificationId);
+    if (!canDelete) {
+      throw new Error('User cannot delete this user notification');
+    }
+
+    return this.updateOneById(userNotificationId, {
+      deletedAt: new Date(),
+    });
+  }
+
   async markAsRead(userId: string, userNotificationId: string) {
     const canUpdate = await this.userCanUpdate(userId, userNotificationId);
     if (!canUpdate) {
@@ -378,17 +389,15 @@ export class UserNotificationsManager {
           const entityType = value.__entityType as string;
           const entityId = value.id as string;
 
-          if (objectsMap.has(`${entityType}:${entityId}`)) {
-            return {
-              ...acc,
-              [key]: objectsMap.get(`${entityType}:${entityId}`),
-            };
-          }
+          value = {
+            ...value,
+            ...objectsMap.get(`${entityType}:${entityId}`),
+          };
         }
 
         return {
           ...acc,
-          ...Object.entries(value).reduce((acc2, [key2, value2]) => {
+          ...Object.entries(value as Record<string, unknown>).reduce((acc2, [key2, value2]) => {
             return {
               ...acc2,
               [`${key}.${key2}`]: value2,

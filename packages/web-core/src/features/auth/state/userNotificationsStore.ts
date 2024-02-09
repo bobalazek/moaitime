@@ -4,6 +4,7 @@ import { GlobalEventsEnum, UserNotification } from '@moaitime/shared-common';
 
 import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
+  deleteUserNotification,
   getUnreadUserNotificationsCount,
   markUserNotificationAsRead,
   markUserNotificationAsUnread,
@@ -14,6 +15,7 @@ export type UserNotificationsStore = {
   reloadUnreadUserNotificationsCount: () => Promise<number>;
   markUserNotificationAsRead: (userNotificationId: string) => Promise<UserNotification>;
   markUserNotificationAsUnread: (userNotificationId: string) => Promise<UserNotification>;
+  deleteUserNotification: (userNotificationId: string) => Promise<UserNotification>;
 };
 
 export const useUserNotificationsStore = create<UserNotificationsStore>()((set) => ({
@@ -34,7 +36,7 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set) 
       unreadUserNotificationsCount: state.unreadUserNotificationsCount - 1,
     }));
 
-    globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_READ, {
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ, {
       userId: userNotification.userId,
       userNotificationId: userNotification.id,
     });
@@ -48,7 +50,21 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set) 
       unreadUserNotificationsCount: state.unreadUserNotificationsCount + 1,
     }));
 
-    globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_NOTIFICATION_MARKED_AS_UNREAD, {
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD, {
+      userId: userNotification.userId,
+      userNotificationId: userNotification.id,
+    });
+
+    return userNotification;
+  },
+  deleteUserNotification: async (userNotificationId) => {
+    const userNotification = await deleteUserNotification(userNotificationId);
+
+    set((state) => ({
+      unreadUserNotificationsCount: state.unreadUserNotificationsCount - 1,
+    }));
+
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, {
       userId: userNotification.userId,
       userNotificationId: userNotification.id,
     });

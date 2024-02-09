@@ -60,7 +60,7 @@ export const UserNotification = ({
         <div className="w-3">
           {!userNotification.readAt && (
             <div
-              className="bg-primary/60 h-2 w-2 rounded-full bg-blue-500 dark:text-blue-400"
+              className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400"
               data-test="notifications--user-notification--unread-dot"
             />
           )}

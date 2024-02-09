@@ -2,7 +2,7 @@ import { API_URL, ResponseInterface, UserNotification } from '@moaitime/shared-c
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-/********** User sNotifications **********/
+/********** User Notifications **********/
 export type NotificationsManagerFindOptions = {
   previousCursor?: string;
   nextCursor?: string;
@@ -30,6 +30,17 @@ export const getUserNotifications = async (): Promise<UserNotification[]> => {
   const response = await getUserNotificationsRawResponse();
 
   return response.data ?? [];
+};
+
+export const deleteUserNotification = async (userNotificationId: string) => {
+  const response = await fetchJson<ResponseInterface<UserNotification>>(
+    `${API_URL}/api/v1/user-notifications/${userNotificationId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  return response.data as UserNotification;
 };
 
 export const markUserNotificationAsRead = async (userNotificationId: string) => {

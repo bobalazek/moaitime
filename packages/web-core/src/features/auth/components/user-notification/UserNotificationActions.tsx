@@ -1,4 +1,4 @@
-import { CheckIcon, MoreVerticalIcon } from 'lucide-react';
+import { CheckIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
 import { MouseEvent, useState } from 'react';
 
 import { UserNotification } from '@moaitime/shared-common';
@@ -17,7 +17,8 @@ export const UserNotificationActions = ({
 }: {
   userNotification: UserNotification;
 }) => {
-  const { markUserNotificationAsRead, markUserNotificationAsUnread } = useUserNotificationsStore();
+  const { deleteUserNotification, markUserNotificationAsRead, markUserNotificationAsUnread } =
+    useUserNotificationsStore();
   const [open, setOpen] = useState(false);
 
   const onMarkAsReadButtonClick = (event: MouseEvent) => {
@@ -34,6 +35,15 @@ export const UserNotificationActions = ({
     event.stopPropagation();
 
     markUserNotificationAsUnread(userNotification.id);
+
+    setOpen(false);
+  };
+
+  const onDeleteButtonClick = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    deleteUserNotification(userNotification.id);
 
     setOpen(false);
   };
@@ -63,6 +73,10 @@ export const UserNotificationActions = ({
             <span>Mark as Unread</span>
           </DropdownMenuItem>
         )}
+        <DropdownMenuItem className="cursor-pointer" onClick={onDeleteButtonClick}>
+          <TrashIcon className="mr-2 h-4 w-4" />
+          <span>Delete</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

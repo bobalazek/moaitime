@@ -83,6 +83,7 @@ export function TeamMembersSelector({ value, onChangeValue }: TeamMembersSelecto
                   />
                   <div className="flex gap-2">
                     <span>{teamMember.user?.displayName ?? 'Unknown user'}</span>
+                    {teamMember.displayName && <span>"{teamMember.displayName}"</span>}
                     {teamMember.user?.email && (
                       <small className="text-muted-foreground">({teamMember.user?.email})</small>
                     )}

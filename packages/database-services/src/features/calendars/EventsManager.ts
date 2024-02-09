@@ -31,12 +31,15 @@ import {
 } from '@moaitime/database-core';
 import { globalEventNotifier } from '@moaitime/global-event-notifier';
 import {
+  convertRuleToString,
   CreateEvent,
+  getRuleFromString,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
   GlobalEventsEnum,
   Permissions,
   UpdateEvent,
+  updateRule,
 } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
@@ -332,6 +335,13 @@ export class EventsManager {
       : data.repeatEndsAt === null
         ? null
         : undefined;
+
+    const repeatPattern = data.repeatPattern ?? event.repeatPattern;
+    if (startsAt && repeatPattern) {
+      let rule = getRuleFromString(repeatPattern);
+      rule = updateRule(rule, { dtstart: startsAt });
+      data.repeatPattern = convertRuleToString(rule);
+    }
 
     const newEvent = await this.updateOneById(eventId, {
       ...data,

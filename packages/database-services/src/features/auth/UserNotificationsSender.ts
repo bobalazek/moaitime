@@ -11,29 +11,30 @@ export class UserNotificationsSender {
     assigningUser: User,
     task: Task
   ): Promise<UserNotification> {
+    const variables = {
+      assigningUser: {
+        id: assigningUser.id,
+        displayName: assigningUser.displayName,
+        __entityType: EntityTypeEnum.USERS,
+      },
+      task: {
+        id: task.id,
+        name: task.name,
+        __entityType: EntityTypeEnum.TASKS,
+      },
+    };
+    const relatedEntities = Object.values(variables).map((v) => `${v.__entityType}:${v.id}`);
+    const targetEntity = `${EntityTypeEnum.USERS}:${task.id}`;
+
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK,
       userId,
       content: `**{{assigningUser.displayName}}** has assigned you to the "{{task.name}}" task.`,
       data: {
-        variables: {
-          assigningUser: {
-            id: assigningUser.id,
-            displayName: assigningUser.displayName,
-            __entityType: EntityTypeEnum.USERS,
-          },
-          task: {
-            id: task.id,
-            name: task.name,
-            __entityType: EntityTypeEnum.TASKS,
-          },
-        },
+        variables: variables,
       },
-      targetEntity: `${EntityTypeEnum.USERS}:${task.id}`,
-      relatedEntities: [
-        `${EntityTypeEnum.USERS}:${assigningUser.id}`,
-        `${EntityTypeEnum.TASKS}:${task.id}`,
-      ],
+      targetEntity,
+      relatedEntities,
     });
   }
 }

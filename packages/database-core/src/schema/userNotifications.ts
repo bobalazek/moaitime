@@ -10,7 +10,7 @@ export const userNotifications = pgTable(
     type: text('type').notNull(),
     content: text('content').notNull(),
     targetEntity: text('target_entity'),
-    relatedEntities: json('related_entities').$type<string[]>(),
+    relatedEntities: json('related_entities').$type<string[]>(), // Those are the entities we will get from the DB before rendering the content
     data: json('data'),
     seenAt: timestamp('seen_at'),
     readAt: timestamp('read_at'),

@@ -39,11 +39,10 @@ import {
   SortDirectionEnum,
   TasksListSortFieldEnum,
   UpdateTask,
-  UserNotificationTypeEnum,
 } from '@moaitime/shared-common';
 
 import { teamsManager } from '../auth/TeamsManager';
-import { userNotificationsManager } from '../auth/UserNotificationsManager';
+import { userNotificationsSender } from '../auth/UserNotificationsSender';
 import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
 import { tagsManager } from './TagsManager';
@@ -844,25 +843,11 @@ export class TasksManager {
           continue;
         }
 
-        await userNotificationsManager.addNotification({
-          type: UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK,
+        await userNotificationsSender.sendAssignedUserToTaskNotification(
           userId,
-          content: `**{{assigningUser.displayName}}** has assigned you to the "{{task.name}}" task.`,
-          data: {
-            variables: {
-              assigningUser: {
-                id: assigningUser.id,
-                displayName: assigningUser.displayName,
-              },
-              task: {
-                id: task.id,
-                name: task.name,
-              },
-            },
-          },
-          targetEntity: `tasks:${task.id}`,
-          relatedEntities: [`users:${assigningUser.id}`, `tasks:${task.id}`],
-        });
+          assigningUser,
+          task
+        );
       }
     }
   }

@@ -58,7 +58,7 @@ export function TeamMembersSelector({ value, onChangeValue }: TeamMembersSelecto
       </PopoverTrigger>
       <PopoverContent className="p-0" data-test="team-members-selector">
         <Command>
-          <CommandInput placeholder="Search asignees ..." />
+          <CommandInput placeholder="Search assignees ..." />
           <CommandEmpty>No asignee found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
@@ -81,7 +81,12 @@ export function TeamMembersSelector({ value, onChangeValue }: TeamMembersSelecto
                       selectedTeamMembers.includes(teamMember) ? 'opacity-100' : 'opacity-0'
                     )}
                   />
-                  {teamMember.user?.displayName ?? teamMember.user?.email ?? 'Unknown user'}
+                  <div className="flex gap-2">
+                    <span>{teamMember.user?.displayName ?? 'Unknown user'}</span>
+                    {teamMember.user?.email && (
+                      <small className="text-muted-foreground">({teamMember.user?.email})</small>
+                    )}
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { formatDistance } from 'date-fns';
 
-import { UserNotification as UserNotificationType } from '@moaitime/shared-common';
+import { EntityTypeEnum, UserNotification as UserNotificationType } from '@moaitime/shared-common';
 
 import { useTasksStore } from '../../../tasks/state/tasksStore';
 import { useUserNotificationsStore } from '../../state/userNotificationsStore';
@@ -26,7 +26,7 @@ export const UserNotification = ({
     const entityType = targetEntitySplit[0] ?? null;
     const entityId = targetEntitySplit[1] ?? null;
 
-    if (entityType === 'tasks' && entityId) {
+    if (entityType === EntityTypeEnum.TASKS && entityId) {
       const { openPopoverForTask } = useTasksStore.getState();
 
       openPopoverForTask(entityId);

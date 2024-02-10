@@ -76,6 +76,7 @@ export * from './search/SearchEnginesEnum';
 export * from './search/SearchEnginesMap';
 
 // Settings
+export * from './settings/ChangelogEntrySchema';
 export * from './settings/FeedbackEntrySchema';
 
 // Tasks

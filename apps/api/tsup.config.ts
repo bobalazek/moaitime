@@ -48,9 +48,10 @@ export default defineConfig((options) => {
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
-    clean: true,
+    clean: false, // MUST be false, otherwise the assets do not work
     shims: true,
     watch,
     onSuccess,
+    publicDir: 'assets',
   };
 });

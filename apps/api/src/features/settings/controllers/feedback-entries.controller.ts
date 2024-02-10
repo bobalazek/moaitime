@@ -12,7 +12,7 @@ import { CreateFeedbackEntryDto } from '../dtos/create-feedback-entry.dto';
 export class FeedbackEntriesController {
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async list(
+  async create(
     @Body() body: CreateFeedbackEntryDto,
     @Req() req: Request
   ): Promise<AbstractResponseDto<FeedbackEntry>> {

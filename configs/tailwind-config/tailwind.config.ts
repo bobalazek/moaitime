@@ -1,6 +1,7 @@
 import { join, resolve } from 'path';
 import type { Config } from 'tailwindcss';
 
+import tailwindcssTypography from '@tailwindcss/typography';
 import tailwindcssAnimate from 'tailwindcss-animate';
 
 const content = [
@@ -81,7 +82,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [tailwindcssAnimate, tailwindcssTypography],
 };
 
 export default config;

@@ -30,6 +30,7 @@ import GeneralSettingsSectionHeaderText from './general-settings/GeneralSettings
 import WidgetsSettingsSection from './widgets-settings/WidgetsSettingsSection';
 import WidgetsSettingsSectionHeaderText from './widgets-settings/WidgetsSettingsSectionHeaderText';
 
+const FIRST_ACTUAL_TAB_INDEX = 1;
 const tabs = [
   {
     id: 'user-settings-heading',
@@ -117,7 +118,7 @@ export default function SettingsDialog() {
   useEffect(() => {
     const newIsMobileView = window.innerWidth < 768;
     if (!newIsMobileView && !activeTab) {
-      setActiveTab(tabs[0].id);
+      setActiveTab(tabs[FIRST_ACTUAL_TAB_INDEX].id);
     }
 
     const onResize = () => {
@@ -126,7 +127,7 @@ export default function SettingsDialog() {
       setIsMobileView(newIsMobileView);
 
       if (!newIsMobileView) {
-        setActiveTab(tabs[0].id);
+        setActiveTab(tabs[FIRST_ACTUAL_TAB_INDEX].id);
       }
     };
 

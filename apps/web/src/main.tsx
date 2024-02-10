@@ -39,8 +39,8 @@ if (import.meta.hot) {
 
   // Kind of the only way to fix the issue where the websocket reconnects too soon,
   // causing the API not terminate properly.
-  import.meta.hot.dispose(() => {
-    window.location.reload();
+  import.meta.hot.on('vite:beforeUpdate', () => {
+    window.dispatchEvent(new CustomEvent('vite:beforeUpdate'));
   });
 }
 

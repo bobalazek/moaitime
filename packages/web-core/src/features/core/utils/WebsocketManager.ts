@@ -32,6 +32,10 @@ export class WebsocketManager {
     this._socket.onerror = () => {
       this.disconnect();
     };
+
+    window.addEventListener('vite:beforeUpdate', () => {
+      this.disconnect();
+    });
   }
 
   disconnect() {

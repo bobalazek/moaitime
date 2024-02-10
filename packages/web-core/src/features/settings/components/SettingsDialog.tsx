@@ -21,6 +21,10 @@ import NotesSettingsSectionHeaderText from '../../notes/components/notes-setting
 import TasksSettingsSection from '../../tasks/components/tasks-settings/TasksSettingsSection';
 import TasksSettingsSectionHeaderText from '../../tasks/components/tasks-settings/TasksSettingsSectionHeaderText';
 import { useSettingsStore } from '../state/settingsStore';
+import ChangelogSettingsSection from './changelog-settings/ChangelogSettingsSection';
+import ChangelogSettingsSectionHeaderText from './changelog-settings/ChangelogSettingsSectionHeaderText';
+import FeedbackSettingsSection from './feedback-settings/FeedbackSettingsSection';
+import FeedbackSettingsSectionHeaderText from './feedback-settings/FeedbackSettingsSectionHeaderText';
 import GeneralSettingsSection from './general-settings/GeneralSettingsSection';
 import GeneralSettingsSectionHeaderText from './general-settings/GeneralSettingsSectionHeaderText';
 import WidgetsSettingsSection from './widgets-settings/WidgetsSettingsSection';
@@ -71,6 +75,16 @@ const tabs = [
     id: 'widgets',
     label: <WidgetsSettingsSectionHeaderText />,
     content: <WidgetsSettingsSection />,
+  },
+  {
+    id: 'changelog',
+    label: <ChangelogSettingsSectionHeaderText />,
+    content: <ChangelogSettingsSection />,
+  },
+  {
+    id: 'feedback',
+    label: <FeedbackSettingsSectionHeaderText />,
+    content: <FeedbackSettingsSection />,
   },
 ];
 

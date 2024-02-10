@@ -1,6 +1,7 @@
 export * from './schema/backgrounds';
 export * from './schema/calendars';
 export * from './schema/events';
+export * from './schema/feedbackEntries';
 export * from './schema/focusSessions';
 export * from './schema/greetings';
 export * from './schema/interests';

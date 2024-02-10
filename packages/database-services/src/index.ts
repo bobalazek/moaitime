@@ -36,6 +36,9 @@ export * from './features/tasks/TagsManager';
 // Mood
 export * from './features/mood/MoodEntriesManager';
 
+// Settings
+export * from './features/settings/FeedbackEntriesManager';
+
 // Statistics
 export * from './features/statistics/StatisticsManager';
 export * from './features/statistics/CalendarStatisticsManager';

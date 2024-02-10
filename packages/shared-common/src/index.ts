@@ -75,6 +75,9 @@ export * from './quotes/Quote';
 export * from './search/SearchEnginesEnum';
 export * from './search/SearchEnginesMap';
 
+// Settings
+export * from './settings/FeedbackEntrySchema';
+
 // Tasks
 export * from './tasks/ListSortOptions';
 export * from './tasks/ListSchema';

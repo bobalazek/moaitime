@@ -50,6 +50,13 @@
       "when": 1707483647853,
       "tag": "0006_fair_eternals",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1707551234009,
+      "tag": "0007_gorgeous_gamma_corps",
+      "breakpoints": true
     }
   ]
 }

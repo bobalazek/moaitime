@@ -32,6 +32,7 @@ import WidgetsSettingsSectionHeaderText from './widgets-settings/WidgetsSettings
 
 const tabs = [
   {
+    id: 'user-settings-heading',
     heading: 'User Settings',
   },
   {
@@ -50,9 +51,11 @@ const tabs = [
     content: <TeamSettingsSection />,
   },
   {
+    id: 'user-settings-hr',
     horizontalRule: true,
   },
   {
+    id: 'features-heading',
     heading: 'Features',
   },
   {
@@ -86,9 +89,11 @@ const tabs = [
     content: <WidgetsSettingsSection />,
   },
   {
+    id: 'features-hr',
     horizontalRule: true,
   },
   {
+    id: 'help-heading',
     heading: 'Help',
   },
   {

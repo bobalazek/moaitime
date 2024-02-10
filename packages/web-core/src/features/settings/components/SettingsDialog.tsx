@@ -32,6 +32,9 @@ import WidgetsSettingsSectionHeaderText from './widgets-settings/WidgetsSettings
 
 const tabs = [
   {
+    heading: 'User Settings',
+  },
+  {
     id: 'general',
     label: <GeneralSettingsSectionHeaderText />,
     content: <GeneralSettingsSection />,
@@ -45,6 +48,12 @@ const tabs = [
     id: 'team',
     label: <TeamSettingsSectionHeaderText />,
     content: <TeamSettingsSection />,
+  },
+  {
+    horizontalRule: true,
+  },
+  {
+    heading: 'Features',
   },
   {
     id: 'calendar',
@@ -75,6 +84,12 @@ const tabs = [
     id: 'widgets',
     label: <WidgetsSettingsSectionHeaderText />,
     content: <WidgetsSettingsSection />,
+  },
+  {
+    horizontalRule: true,
+  },
+  {
+    heading: 'Help',
   },
   {
     id: 'changelog',
@@ -159,22 +174,29 @@ export default function SettingsDialog() {
       >
         {showSidebar && (
           <div className="w-full p-4 md:w-1/4" data-test="settings--dialog--sidebar">
-            <h3 className="mb-2 font-bold">Settings</h3>
-            <div>
-              {tabs.map((tab) => (
+            {tabs.map((tab) => {
+              if (tab.horizontalRule) {
+                return <hr className="my-4 border-gray-200 dark:border-gray-700" />;
+              }
+
+              if (tab.heading) {
+                return <h3 className="mb-2 text-sm font-bold">{tab.heading}</h3>;
+              }
+
+              return (
                 <button
                   key={tab.id}
                   type="button"
                   className={clsx(
-                    `w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
-                    tab.id === activeTab && 'bg-gray-200 font-extrabold dark:bg-gray-700'
+                    `text-muted-foreground w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
+                    tab.id === activeTab && 'bg-gray-200 text-white dark:bg-gray-700'
                   )}
                   onClick={() => onSidebarButtonClick(tab)}
                 >
                   {tab.label}
                 </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
         )}
         {showContent && (

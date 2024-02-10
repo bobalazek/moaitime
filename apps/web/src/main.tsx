@@ -36,6 +36,12 @@ if (import.meta.hot) {
   };
 
   checkIfApiIsAvailable();
+
+  // Kind of the only way to fix the issue where the websocket reconnects too soon,
+  // causing the API not terminate properly.
+  import.meta.hot.dispose(() => {
+    window.location.reload();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -43,6 +43,9 @@ export type TasksStore = {
   selectedTaskDialogOpen: boolean;
   selectedTask: Task | null;
   setSelectedTaskDialogOpen: (selectedTaskDialogOpen: boolean, selectedTask?: Task | null) => void;
+  // Highlighted Task
+  highlightedTaskId: string | null;
+  setHighlightedTaskId: (highlightedTaskId: string | null) => void;
 };
 
 export const useTasksStore = create<TasksStore>()((set, get) => ({
@@ -61,7 +64,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     }
   },
   openPopoverForTask: async (taskId: string) => {
-    const { setPopoverOpen, getTask } = get();
+    const { setPopoverOpen, setHighlightedTaskId, getTask } = get();
     const { getList, setSelectedList } = useListsStore.getState();
 
     await setPopoverOpen(true);
@@ -74,6 +77,22 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const list = task.listId ? await getList(task.listId) : null;
 
     await setSelectedList(list);
+
+    setHighlightedTaskId(taskId);
+
+    setTimeout(() => {
+      const taskElement = document.getElementById(`task-${taskId}`);
+      if (taskElement) {
+        taskElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+    }, 100);
+
+    setTimeout(() => {
+      setHighlightedTaskId(null);
+    }, 2000);
   },
   // Tasks List End Element
   listEndElement: null,
@@ -298,6 +317,13 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     set({
       selectedTaskDialogOpen,
       selectedTask,
+    });
+  },
+  // Highlighted Task
+  highlightedTaskId: null,
+  setHighlightedTaskId: (highlightedTaskId: string | null) => {
+    set({
+      highlightedTaskId,
     });
   },
 }));

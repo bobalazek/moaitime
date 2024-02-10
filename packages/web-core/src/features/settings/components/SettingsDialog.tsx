@@ -181,11 +181,15 @@ export default function SettingsDialog() {
           <div className="w-full p-4 md:w-1/4" data-test="settings--dialog--sidebar">
             {tabs.map((tab) => {
               if (tab.horizontalRule) {
-                return <hr className="my-4 border-gray-200 dark:border-gray-700" />;
+                return <hr key={tab.id} className="my-4 border-gray-200 dark:border-gray-700" />;
               }
 
               if (tab.heading) {
-                return <h3 className="mb-2 text-sm font-bold">{tab.heading}</h3>;
+                return (
+                  <h3 key={tab.id} className="mb-2 text-sm font-bold">
+                    {tab.heading}
+                  </h3>
+                );
               }
 
               return (
@@ -193,8 +197,9 @@ export default function SettingsDialog() {
                   key={tab.id}
                   type="button"
                   className={clsx(
-                    `text-muted-foreground w-full rounded-lg px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800`,
-                    tab.id === activeTab && 'bg-gray-200 text-white dark:bg-gray-700'
+                    `text-muted-foreground w-full rounded-lg px-4 py-2 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-800`,
+                    tab.id === activeTab &&
+                      'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white'
                   )}
                   onClick={() => onSidebarButtonClick(tab)}
                 >

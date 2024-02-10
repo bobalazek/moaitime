@@ -19,7 +19,8 @@ import TaskItemTags from './TaskItemTags';
 import TaskItemUsers from './TaskItemUsers';
 
 const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) => {
-  const { setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } = useTasksStore();
+  const { highlightedTaskId, setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } =
+    useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const textElementRef = useRef<HTMLDivElement | null>(null);
 
@@ -109,13 +110,17 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
 
   return (
     <div
+      id={`task-${task.id}`}
       data-test="tasks--task--wrapper"
       style={{
         marginLeft: depth * 16,
       }}
     >
       <div
-        className="flex flex-col rounded-lg p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
+        className={clsx(
+          'flex flex-col rounded-lg p-1 outline-none transition-colors hover:bg-gray-50 dark:hover:bg-gray-800',
+          highlightedTaskId === task.id && 'bg-yellow-100 dark:bg-yellow-900'
+        )}
         onClick={onSingleAndDoubleClick}
         data-test="tasks--task"
         data-task-id={task.id}

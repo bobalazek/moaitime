@@ -199,6 +199,8 @@ CREATE TABLE IF NOT EXISTS "tasks" (
 	"due_date" date,
 	"due_date_time" time,
 	"due_date_time_zone" text,
+	"due_date_repeat_pattern" text,
+	"due_date_repeat_ends_at" timestamp,
 	"completed_at" timestamp,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),

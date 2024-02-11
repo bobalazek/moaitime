@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { ColorSchema } from '../core/schemas/ColorSchema';
 import { PermissionsSchema } from '../core/schemas/PermissionsSchema';
+import { RepeatPatternSchema } from '../core/schemas/RepeatPatternSchema';
 import { TimezoneSchema } from '../core/schemas/TimezoneSchema';
 
 export const EventSchema = z.object({
@@ -32,7 +33,7 @@ export const CreateEventBaseSchema = z.object({
   timezone: TimezoneSchema.nullable().optional(),
   endTimezone: TimezoneSchema.nullable().optional(),
   isAllDay: z.boolean().optional(),
-  repeatPattern: z.string().nullable().optional(),
+  repeatPattern: RepeatPatternSchema.nullable().optional(),
   repeatEndsAt: z.string().nullable().optional(),
   startsAt: z.string({
     required_error: 'Start date is required',

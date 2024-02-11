@@ -401,8 +401,16 @@ export class TasksManager {
 
     const maxOrderForListId = await this.findMaxOrderByListId(insertData?.listId ?? null);
     const order = maxOrderForListId + 1;
+    const dueDateRepeatEndsAt = insertData.dueDateRepeatEndsAt
+      ? new Date(insertData.dueDateRepeatEndsAt)
+      : null;
 
-    const task = await this.insertOne({ ...insertData, order, userId: user.id });
+    const task = await this.insertOne({
+      ...insertData,
+      order,
+      dueDateRepeatEndsAt,
+      userId: user.id,
+    });
 
     if (Array.isArray(tagIds)) {
       await this.setTags(task, tagIds);
@@ -454,7 +462,14 @@ export class TasksManager {
 
     const teamId = list?.teamId ?? task.list?.teamId ?? undefined;
 
-    const updatedData = await this.updateOneById(taskId, updateData);
+    let dueDateRepeatEndsAt = undefined;
+    if (updateData.dueDateRepeatEndsAt === null) {
+      dueDateRepeatEndsAt = null;
+    } else if (typeof updateData.dueDateRepeatEndsAt === 'string') {
+      dueDateRepeatEndsAt = new Date(updateData.dueDateRepeatEndsAt);
+    }
+
+    const updatedData = await this.updateOneById(taskId, { ...updateData, dueDateRepeatEndsAt });
 
     if (Array.isArray(tagIds)) {
       await this.setTags(task, tagIds);

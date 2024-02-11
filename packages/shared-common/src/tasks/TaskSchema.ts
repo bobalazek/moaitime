@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { UserSchema } from '../auth/schemas/UserSchema';
 import { ColorSchema } from '../core/schemas/ColorSchema';
+import { RepeatPatternSchema } from '../core/schemas/RepeatPatternSchema';
 import { TimezoneSchema } from '../core/schemas/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';
 import { TagSchema } from '../tasks/TagSchema';
@@ -17,6 +18,8 @@ export const TaskBaseSchema = z.object({
   dueDate: z.string().nullable(),
   dueDateTime: z.string().nullable(),
   dueDateTimeZone: z.string().nullable(),
+  dueDateRepeatPattern: z.string().nullable(),
+  dueDateRepeatEndsAt: z.string().nullable(),
   durationSeconds: z.number().nullable(),
   completedAt: z.string().nullable(),
   deletedAt: z.string().nullable(),
@@ -76,6 +79,8 @@ export const CreateTaskSchema = z.object({
     .nullable()
     .optional(),
   dueDateTimeZone: TimezoneSchema.nullable().optional(),
+  dueDateRepeatPattern: RepeatPatternSchema.nullable().optional(),
+  dueDateRepeatEndsAt: z.string().nullable().optional(),
   durationSeconds: z.number().nullable().optional(),
   listId: z.string().nullable().optional(),
   parentId: z.string().nullable().optional(),

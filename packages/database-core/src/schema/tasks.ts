@@ -20,6 +20,8 @@ export const tasks = pgTable(
     }),
     dueDateTime: time('due_date_time'),
     dueDateTimeZone: text('due_date_time_zone'),
+    dueDateRepeatPattern: text('due_date_repeat_pattern'), // the resulting pattern from rrule
+    dueDateRepeatEndsAt: timestamp('due_date_repeat_ends_at'),
     completedAt: timestamp('completed_at'),
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),

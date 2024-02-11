@@ -1,5 +1,5 @@
 {
-  "id": "c94a2d59-1645-4392-a501-73ec49e21363",
+  "id": "8af2184c-c7de-4d89-b546-7f0905c8c109",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1469,6 +1469,18 @@
         "due_date_time_zone": {
           "name": "due_date_time_zone",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_date_repeat_pattern": {
+          "name": "due_date_repeat_pattern",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_date_repeat_ends_at": {
+          "name": "due_date_repeat_ends_at",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },

@@ -47,6 +47,7 @@ export * from './core/SortDirectionEnum';
 export * from './core/ProcessingStatusEnum';
 export * from './core/SharedQueueWorkerJobEnum';
 export * from './core/EntityTypeEnum';
+export * from './core/schemas/RepeatPatternSchema';
 export * from './core/schemas/TimezoneSchema';
 export * from './core/schemas/HexColorSchema';
 export * from './core/schemas/ColorSchema';

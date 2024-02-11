@@ -1,4 +1,4 @@
-import { GlobalEvents, GlobalEventsEnum, WS_URL } from '@moaitime/shared-common';
+import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useListsStore } from '../../tasks/state/listsStore';
@@ -6,16 +6,13 @@ import { useListsStore } from '../../tasks/state/listsStore';
 export class WebsocketManager {
   private _socket: WebSocket | null = null;
 
-  connect(userAccessToken: string) {
+  connect(websocketUrl: string) {
     if (this._socket) {
       this._socket.close();
       this._socket = null;
     }
 
-    const url = new URL(WS_URL);
-    url.searchParams.append('userAccessToken', userAccessToken);
-
-    this._socket = new WebSocket(url.toString());
+    this._socket = new WebSocket(websocketUrl);
 
     this._socket.onopen = () => {
       // We are now connected

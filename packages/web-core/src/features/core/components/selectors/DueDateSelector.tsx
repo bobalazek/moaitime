@@ -104,16 +104,20 @@ export default function DueDateSelector({
       return;
     }
 
-    const newStartDate = new Date(
-      dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)
-    );
+    try {
+      const newStartDate = new Date(
+        dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)
+      );
 
-    let rule = getRuleFromString(repeatPatternValue);
-    rule = updateRule(rule, {
-      dtstart: zonedTimeToUtc(newStartDate, 'UTC'),
-    });
+      let rule = getRuleFromString(repeatPatternValue);
+      rule = updateRule(rule, {
+        dtstart: zonedTimeToUtc(newStartDate, 'UTC'),
+      });
 
-    setRepeatPatternValue(convertRuleToString(rule));
+      setRepeatPatternValue(convertRuleToString(rule));
+    } catch (error) {
+      // ignore, as it's most likely an invalid date
+    }
   }, [dateValue, dateTimeValue, repeatPatternValue]);
 
   const onSelectDate = (value?: Date) => {
@@ -239,9 +243,9 @@ export default function DueDateSelector({
           <RepeatSelector
             value={repeatPatternValue ?? undefined}
             startsAt={
-              new Date(
-                dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)
-              )
+              dateTimeValue
+                ? zonedTimeToUtc(new Date(`${dateValue}T${dateTimeValue}`), 'UTC')
+                : addDays(new Date(`${dateValue}T00:00:00.000`), 1)
             }
             onChangeValue={onRepeatSelectorChange}
           />

@@ -1,5 +1,4 @@
 import { addDays, format, startOfDay } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
 import { CalendarIcon, RepeatIcon, XIcon } from 'lucide-react';
 import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 
@@ -216,12 +215,11 @@ export default function DueDateSelector({
         {includeRepeat && dateValue && (
           <RepeatSelector
             value={repeatPatternValue ?? undefined}
-            startsAt={utcToZonedTime(
+            startsAt={
               new Date(
                 dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)
-              ),
-              'UTC'
-            )}
+              )
+            }
             onChangeValue={onRepeatSelectorChange}
           />
         )}

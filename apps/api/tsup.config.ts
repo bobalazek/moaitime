@@ -21,6 +21,10 @@ export default defineConfig((options) => {
     for (const packageName of packages) {
       // TODO: we can only watch the packages that have @moaitime/api as dependency
 
+      if (packageName.startsWith('web-')) {
+        continue;
+      }
+
       watch.push(join(__dirname, `../../packages/${packageName}/dist/**/index.{js,mjs}`));
     }
 

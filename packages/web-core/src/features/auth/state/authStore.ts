@@ -4,7 +4,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import {
   Auth,
   ResponseInterface,
-  ThemeEnum,
   UpdateUser,
   UpdateUserPassword,
   UpdateUserSettings,
@@ -12,12 +11,7 @@ import {
 } from '@moaitime/shared-common';
 import { sonnerToast } from '@moaitime/web-ui';
 
-import { useBackgroundStore } from '../../background/state/backgroundStore';
-import { websocketManager } from '../../core/utils/WebsocketManager';
-import { useGreetingStore } from '../../greeting/state/greetingStore';
-import { useQuoteStore } from '../../quote/state/quoteStore';
-import { useListsStore } from '../../tasks/state/listsStore';
-import { useTagsStore } from '../../tasks/state/tagsStore';
+import { useAppStore } from '../../core/state/appStore';
 import {
   cancelNewEmail,
   confirmEmail,
@@ -38,9 +32,6 @@ import {
   updateAccountSettings,
   uploadAccountAvatar,
 } from '../utils/AuthHelpers';
-import { useTeamsStore } from './teamsStore';
-import { useUserLimitsAndUsageStore } from './userLimitsAndUsageStore';
-import { useUserNotificationsStore } from './userNotificationsStore';
 
 export type AuthStore = {
   auth: Auth | null;
@@ -77,9 +68,6 @@ export type AuthStore = {
   // Account Password Settings Dialog
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
-  // App Data
-  reloadAppData: () => Promise<void>;
-  reloadTheme: () => void;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -91,7 +79,7 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Login
       login: async (email: string, password: string) => {
-        const { reloadAppData } = get();
+        const { reloadAppData } = useAppStore.getState();
 
         const response = await login(email, password);
 
@@ -238,7 +226,8 @@ export const useAuthStore = create<AuthStore>()(
         return response;
       },
       updateAccountSettings: async (data: UpdateUserSettings) => {
-        const { auth, reloadTheme } = get();
+        const { auth } = get();
+        const { reloadTheme } = useAppStore.getState();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
@@ -293,83 +282,6 @@ export const useAuthStore = create<AuthStore>()(
         set({ accountPasswordSettingsDialogOpen });
       },
       // App Data
-      reloadAppData: async () => {
-        const { auth, reloadTheme } = get();
-        const { reloadUserLimitsAndUsage } = useUserLimitsAndUsageStore.getState();
-        const { reloadLists, reloadTasksCountMap } = useListsStore.getState();
-        const { reloadTags } = useTagsStore.getState();
-        const { reloadBackgrounds, setRandomBackground } = useBackgroundStore.getState();
-        const { reloadGreetings, setRandomGreeting } = useGreetingStore.getState();
-        const { reloadQuotes, setRandomQuote } = useQuoteStore.getState();
-        const { reloadJoinedTeam } = useTeamsStore.getState();
-        const { reloadUnreadUserNotificationsCount } = useUserNotificationsStore.getState();
-
-        if (!auth?.userAccessToken?.token) {
-          return;
-        }
-
-        // User Limits and Usage
-        reloadUserLimitsAndUsage();
-
-        // Theme
-        reloadTheme();
-
-        // Team
-        reloadJoinedTeam();
-
-        // Tasks
-        reloadLists();
-        reloadTasksCountMap();
-        reloadTags();
-
-        // Websocket
-        websocketManager.connect(auth.userAccessToken.token);
-
-        // User Notifications
-        (async () => {
-          await reloadUnreadUserNotificationsCount();
-
-          setInterval(reloadUnreadUserNotificationsCount, 1000 * 60 * 2);
-        })();
-
-        // Backgrounds
-        (async () => {
-          await reloadBackgrounds();
-
-          setRandomBackground();
-          setInterval(setRandomBackground, 1000 * 60 * 2);
-        })();
-
-        // Greetings
-        (async () => {
-          await reloadGreetings();
-
-          setRandomGreeting();
-          setInterval(setRandomGreeting, 1000 * 60 * 2);
-        })();
-
-        // Quotes
-        (async () => {
-          await reloadQuotes();
-
-          setRandomQuote();
-          setTimeout(setRandomQuote, 1000 * 60 * 2);
-        })();
-      },
-      reloadTheme: () => {
-        const { auth } = get();
-
-        const isSystemDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (
-          auth?.user?.settings?.generalTheme === ThemeEnum.DARK ||
-          (auth?.user?.settings?.generalTheme === ThemeEnum.SYSTEM && isSystemDarkTheme)
-        ) {
-          document.body.classList.add('dark');
-        } else {
-          document.body.classList.remove('dark');
-        }
-      },
     }),
     {
       name: 'auth-store',
@@ -385,6 +297,8 @@ export const useAuthStore = create<AuthStore>()(
             return;
           }
 
+          const { reloadAppData } = useAppStore.getState();
+
           if (state?.auth?.userAccessToken?.expiresAt) {
             const now = new Date().getTime();
             const expiresAt = new Date(state.auth.userAccessToken.expiresAt).getTime();
@@ -397,7 +311,7 @@ export const useAuthStore = create<AuthStore>()(
           setTimeout(async () => {
             try {
               await state.reloadAccount();
-              await state.reloadAppData();
+              await reloadAppData();
             } catch (error) {
               // Nothing to do
             }

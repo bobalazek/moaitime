@@ -5,6 +5,7 @@ import { logger } from '@moaitime/logging';
 import { getEnv } from '@moaitime/shared-backend';
 
 import { AppController } from './controllers/app.controller';
+import { ConfigController } from './controllers/config.controller';
 import { AuthModule } from './features/auth/auth.module';
 import { BackgroundsModule } from './features/backgrounds/backgrounds.module';
 import { CalendarsModule } from './features/calendar/calendar.module';
@@ -43,7 +44,7 @@ const { NODE_ENV } = getEnv();
     ...(NODE_ENV !== 'test' ? [WebsocketModule] : []),
     ...(NODE_ENV === 'test' ? [TestingModule] : []),
   ],
-  controllers: [AppController],
+  controllers: [AppController, ConfigController],
   providers: [],
 })
 export class AppModule implements OnApplicationShutdown {

@@ -51,6 +51,18 @@ export class UsersManager {
     return this._fixRowColumns(row);
   }
 
+  async findOneByUsername(username: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.username, username),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return this._fixRowColumns(row);
+  }
+
   async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.emailConfirmationToken, emailConfirmationToken),

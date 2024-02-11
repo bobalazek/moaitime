@@ -20,6 +20,7 @@ export const convertToUserDto = (
     user: {
       id: userWithAccessToken.id,
       displayName: userWithAccessToken.displayName,
+      username: userWithAccessToken.username,
       email: userWithAccessToken.email,
       newEmail: userWithAccessToken.newEmail ?? null,
       roles: userWithAccessToken.roles,

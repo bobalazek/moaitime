@@ -36,9 +36,15 @@ export const logout = async () => {
   return response;
 };
 
-export const register = async (displayName: string, email: string, password: string) => {
+export const register = async (
+  displayName: string,
+  username: string,
+  email: string,
+  password: string
+) => {
   const data = {
     displayName,
+    username,
     email,
     password,
     settings: {

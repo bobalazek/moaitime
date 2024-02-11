@@ -18,6 +18,7 @@ export default function AccountSettingsSectionContent() {
     uploadAccountAvatar,
   } = useAuthStore();
   const [userDisplayName, setUserDisplayName] = useState(auth?.user?.displayName ?? '');
+  const [userUsername, setUserUsername] = useState(auth?.user?.username ?? '');
   const [userEmail, setUserEmail] = useState(auth?.user?.email ?? '');
   const avatarImageInputRef = useRef<HTMLInputElement>(null);
 
@@ -112,6 +113,7 @@ export default function AccountSettingsSectionContent() {
     try {
       await updateAccount({
         displayName: userDisplayName,
+        username: userUsername,
         email: userEmail,
       });
 
@@ -187,6 +189,16 @@ export default function AccountSettingsSectionContent() {
           value={userDisplayName}
           onChange={(event) => {
             setUserDisplayName(event.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <h4 className="text-lg font-bold">Username</h4>
+        <p className="mb-2 text-xs text-gray-400">What about your username?</p>
+        <Input
+          value={userUsername}
+          onChange={(event) => {
+            setUserUsername(event.target.value);
           }}
         />
       </div>

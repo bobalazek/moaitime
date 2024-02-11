@@ -1,11 +1,11 @@
 {
   "name": "@moaitime/tailwind-config",
   "version": "0.0.0",
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.10"
+  },
   "devDependencies": {
     "tailwindcss": "^3.3.5",
     "tailwindcss-animate": "^1.0.7"
-  },
-  "dependencies": {
-    "@tailwindcss/typography": "^0.5.10"
   }
 }

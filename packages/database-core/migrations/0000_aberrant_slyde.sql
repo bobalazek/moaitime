@@ -44,6 +44,14 @@ CREATE TABLE IF NOT EXISTS "events" (
 	"calendar_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "feedback_entries" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"message" text NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "focus_sessions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"status" text DEFAULT 'active' NOT NULL,
@@ -229,6 +237,7 @@ CREATE TABLE IF NOT EXISTS "teams" (
 CREATE TABLE IF NOT EXISTS "team_users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"roles" json DEFAULT '[]' NOT NULL,
+	"display_name" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"team_id" uuid NOT NULL,
@@ -293,9 +302,34 @@ CREATE TABLE IF NOT EXISTS "user_calendars" (
 	"calendar_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_notifications" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"type" text NOT NULL,
+	"content" text NOT NULL,
+	"target_entity" text,
+	"related_entities" json,
+	"data" json,
+	"seen_at" timestamp,
+	"read_at" timestamp,
+	"deleted_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_followers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"color" text,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL,
+	"follower_user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"display_name" text NOT NULL,
+	"username" text NOT NULL,
 	"email" text NOT NULL,
 	"new_email" text,
 	"before_deletion_email" text,
@@ -319,6 +353,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "users_username_unique" UNIQUE("username"),
 	CONSTRAINT "users_email_unique" UNIQUE("email"),
 	CONSTRAINT "users_new_email_unique" UNIQUE("new_email"),
 	CONSTRAINT "users_email_confirmation_token_unique" UNIQUE("email_confirmation_token"),
@@ -332,6 +367,7 @@ CREATE INDEX IF NOT EXISTS "calendars_user_id_idx" ON "calendars" ("user_id");--
 CREATE INDEX IF NOT EXISTS "calendars_team_id_idx" ON "calendars" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "events_user_id_idx" ON "events" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "events_calendar_id_idx" ON "events" ("calendar_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "feedback_entries_user_id_idx" ON "feedback_entries" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "focus_sessions_user_id_idx" ON "focus_sessions" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "greetings_user_id_idx" ON "greetings" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "interests_user_id_idx" ON "interests" ("user_id");--> statement-breakpoint
@@ -365,6 +401,10 @@ CREATE INDEX IF NOT EXISTS "user_access_tokens_user_id_idx" ON "user_access_toke
 CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_notifications_user_id_idx" ON "user_notifications" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_followers_user_id_idx" ON "user_followers" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_followers_follower_user_id_idx" ON "user_followers" ("follower_user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "users_username_idx" ON "users" ("username");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_email_idx" ON "users" ("email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_new_email_idx" ON "users" ("new_email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_email_confirmation_token_idx" ON "users" ("email_confirmation_token");--> statement-breakpoint
@@ -396,6 +436,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "events" ADD CONSTRAINT "events_calendar_id_calendars_id_fk" FOREIGN KEY ("calendar_id") REFERENCES "calendars"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "feedback_entries" ADD CONSTRAINT "feedback_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -588,6 +634,24 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_calendars" ADD CONSTRAINT "user_calendars_calendar_id_calendars_id_fk" FOREIGN KEY ("calendar_id") REFERENCES "calendars"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_notifications" ADD CONSTRAINT "user_notifications_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_followers" ADD CONSTRAINT "user_followers_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_followers" ADD CONSTRAINT "user_followers_follower_user_id_users_id_fk" FOREIGN KEY ("follower_user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

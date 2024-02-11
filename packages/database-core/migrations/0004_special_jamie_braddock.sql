@@ -1,1 +1,0 @@
-ALTER TABLE "user_notifications" ADD COLUMN "related_entities" json;

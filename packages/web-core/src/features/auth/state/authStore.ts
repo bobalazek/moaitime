@@ -41,7 +41,12 @@ export type AuthStore = {
   // Logout
   logout: () => Promise<ResponseInterface>;
   // Register
-  register: (displayName: string, email: string, password: string) => Promise<ResponseInterface>;
+  register: (
+    displayName: string,
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<ResponseInterface>;
   // Reset Password
   requestPasswordReset: (email: string) => Promise<ResponseInterface>;
   resetPassword: (token: string, password: string) => Promise<ResponseInterface>;
@@ -98,8 +103,8 @@ export const useAuthStore = create<AuthStore>()(
         return response;
       },
       // Register
-      register: async (displayName: string, email: string, password: string) => {
-        const response = await register(displayName, email, password);
+      register: async (displayName: string, username: string, email: string, password: string) => {
+        const response = await register(displayName, username, email, password);
 
         set({ auth: response.data });
 

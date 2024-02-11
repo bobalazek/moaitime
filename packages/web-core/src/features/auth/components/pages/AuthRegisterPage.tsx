@@ -20,6 +20,7 @@ export default function AuthRegisterPage() {
   const { register } = useAuthStore();
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -29,7 +30,7 @@ export default function AuthRegisterPage() {
 
   const onRegisterButtonClick = async () => {
     try {
-      const response = await register(displayName, email, password);
+      const response = await register(displayName, username, email, password);
 
       sonnerToast.success('Success!', {
         description: response.message ?? 'You have successfully registered!',
@@ -54,9 +55,22 @@ export default function AuthRegisterPage() {
                 <Input
                   id="register-displayName"
                   autoFocus
+                  placeholder="Johnny"
                   value={displayName}
                   onChange={(event) => {
                     setDisplayName(event.target.value);
+                  }}
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="register-username">Username</Label>
+                <Input
+                  id="register-username"
+                  autoFocus
+                  placeholder="johndoe"
+                  value={username}
+                  onChange={(event) => {
+                    setUsername(event.target.value);
                   }}
                 />
               </div>
@@ -66,6 +80,7 @@ export default function AuthRegisterPage() {
                   type="email"
                   id="register-email"
                   autoFocus
+                  placeholder="johnny.doe@gmail.com"
                   value={email}
                   onChange={(event) => {
                     setEmail(event.target.value);

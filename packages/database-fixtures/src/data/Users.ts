@@ -7,6 +7,7 @@ import { UserRoleEnum } from '../../../shared-common/src';
 export const getUserFixtures = async (): Promise<NewUser[]> => {
   return [
     {
+      username: 'tester',
       email: 'tester@corcosoft.com',
       password: await generateHash('password'),
       displayName: 'Tester',
@@ -18,6 +19,7 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
       } as UserSettings,
     },
     {
+      username: 'nonverifiedtester',
       email: 'tester+nonverified@corcosoft.com',
       password: await generateHash('password'),
       roles: [UserRoleEnum.USER],

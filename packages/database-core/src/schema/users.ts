@@ -19,6 +19,7 @@ export const users = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     displayName: text('display_name').notNull(),
+    username: text('username').notNull().unique(),
     email: text('email').notNull().unique(),
     newEmail: text('new_email').unique(),
     beforeDeletionEmail: text('before_deletion_email'), // What was the email before the user requested deletion, in case of recovery
@@ -50,6 +51,7 @@ export const users = pgTable(
   },
   (table) => {
     return {
+      usernameIdx: index('users_username_idx').on(table.username),
       emailIdx: index('users_email_idx').on(table.email),
       newEmailIdx: index('users_new_email_idx').on(table.newEmail),
       emailConfirmationTokenIdx: index('users_email_confirmation_token_idx').on(

@@ -5,9 +5,10 @@ import { UserSettingsSchema } from './UserSettingsSchema';
 export const UserSchema = z.object({
   id: z.string(),
   displayName: z.string(),
-  avatarImageUrl: z.string().nullable(),
+  username: z.string(),
   email: z.string().email(),
   newEmail: z.string().email().nullable(),
+  avatarImageUrl: z.string().nullable(),
   roles: z.array(z.string()),
   settings: UserSettingsSchema,
   birthDate: z.string().nullable(),
@@ -28,6 +29,18 @@ export const UserEmailSchema = z.string().email({
   message: 'You must provide a valid email address',
 });
 
+export const UserUsernameSchema = z
+  .string()
+  .min(3, {
+    message: 'Username must be at least 3 character long',
+  })
+  .max(32, {
+    message: 'Username must be at most 32 characters long',
+  })
+  .regex(/^[a-z0-9-]*$/, {
+    message: 'Username must be lowercase alphanumeric characters and may include dashes',
+  });
+
 export const UserPasswordSchema = z
   .string()
   .min(8, {
@@ -44,6 +57,7 @@ export const UserBirthDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/i, {
 // Update User
 export const UpdateUserSchema = z.object({
   displayName: UserDisplayNameSchema.optional(),
+  username: UserUsernameSchema.optional(),
   email: UserEmailSchema.optional(),
   birthDate: UserBirthDateSchema.optional().nullable(),
 });
@@ -57,6 +71,7 @@ export const UpdateUserPasswordSchema = z.object({
 // Register User
 export const RegisterUserSchema = z.object({
   displayName: UserDisplayNameSchema,
+  username: UserUsernameSchema,
   email: UserEmailSchema,
   password: UserPasswordSchema,
   settings: UserSettingsSchema.pick({

@@ -87,9 +87,14 @@ export class AuthManager {
 
     UserPasswordSchema.parse(password);
 
-    const existingUser = await this._usersManager.findOneByEmail(data.email);
-    if (existingUser) {
-      throw new Error('User already exists');
+    const existingUserEmail = await this._usersManager.findOneByEmail(data.email);
+    if (existingUserEmail) {
+      throw new Error('User with this email already exists');
+    }
+
+    const existingUserUsername = await this._usersManager.findOneByUsername(data.username);
+    if (existingUserUsername) {
+      throw new Error('User with this username already exists');
     }
 
     const hashedPassword = await this.validateAndHashPassword(password);
@@ -464,6 +469,15 @@ export class AuthManager {
 
     if (typeof data.displayName !== 'undefined' && data.displayName !== user.displayName) {
       updateData.displayName = data.displayName;
+    }
+
+    if (typeof data.username !== 'undefined' && data.username !== user.username) {
+      const existingUser = await this._usersManager.findOneByUsername(data.username);
+      if (existingUser && existingUser.id !== userId) {
+        throw new Error('User with this username already exists');
+      }
+
+      updateData.username = data.username;
     }
 
     if (

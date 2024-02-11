@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1707215285112,
-      "tag": "0000_flowery_sersi",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1707224747111,
-      "tag": "0001_parched_spyke",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1707238753555,
-      "tag": "0002_zippy_warbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1707239449222,
-      "tag": "0003_careless_firelord",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1707379827012,
-      "tag": "0004_special_jamie_braddock",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1707386234593,
-      "tag": "0005_cool_christian_walker",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1707483647853,
-      "tag": "0006_fair_eternals",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1707551234009,
-      "tag": "0007_gorgeous_gamma_corps",
+      "when": 1707639151228,
+      "tag": "0000_aberrant_slyde",
       "breakpoints": true
     }
   ]

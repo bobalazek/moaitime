@@ -7,6 +7,7 @@ import { UserRoleEnum } from '../../../shared-common/src';
 export const getUserSeeds = async (): Promise<NewUser[]> => {
   return [
     {
+      username: 'bobalazek',
       email: 'bobalazek124@gmail.com',
       password: await generateHash('password'),
       displayName: 'Borut',
@@ -18,6 +19,7 @@ export const getUserSeeds = async (): Promise<NewUser[]> => {
       } as UserSettings,
     },
     {
+      username: 'anak',
       email: 'anakociper124@gmail.com',
       password: await generateHash('password'),
       displayName: 'Ana',

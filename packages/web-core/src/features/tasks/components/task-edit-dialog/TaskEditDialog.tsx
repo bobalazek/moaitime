@@ -20,7 +20,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
-import DateSelector from '../../../core/components/selectors/DateSelector';
+import DueDateSelector from '../../../core/components/selectors/DueDateSelector';
 import { DurationSelector } from '../../../core/components/selectors/DurationSelector';
 import { ListSelector } from '../../../core/components/selectors/ListSelector';
 import { PrioritySelector } from '../../../core/components/selectors/PrioritySelector';
@@ -193,7 +193,7 @@ export default function TaskEditDialog() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="task-list">Duration</Label>
+          <Label htmlFor="task-duration">Duration</Label>
           <DurationSelector
             value={data?.durationSeconds ?? undefined}
             onChangeValue={(value) =>
@@ -202,14 +202,17 @@ export default function TaskEditDialog() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="task-list">Due Date</Label>
-          <DateSelector
+          <Label htmlFor="task-due-date">Due Date</Label>
+          <DueDateSelector
             includeTime
+            includeRepeat
             disablePast
             data={{
               date: data.dueDate ?? null,
               dateTime: data.dueDateTime ?? null,
               dateTimeZone: data.dueDateTimeZone ?? null,
+              repeatPattern: data.dueDateRepeatPattern ?? null,
+              repeatEndsAt: data.dueDateRepeatEndsAt ?? null,
             }}
             onSaveData={(saveData) => {
               setData({
@@ -217,6 +220,8 @@ export default function TaskEditDialog() {
                 dueDate: saveData.date,
                 dueDateTime: saveData.dateTime,
                 dueDateTimeZone: saveData.dateTimeZone,
+                dueDateRepeatPattern: saveData.repeatPattern,
+                dueDateRepeatEndsAt: saveData.repeatEndsAt,
               });
             }}
           />

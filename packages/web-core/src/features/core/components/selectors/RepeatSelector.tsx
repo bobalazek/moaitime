@@ -120,7 +120,7 @@ export function RepeatSelector({
           {!value && <span className="text-muted-foreground italic">Does not repeat</span>}
           {value && (
             <>
-              <span className="flex text-left">{getRuleFromString(value).toText()}</span>
+              <span className="flex text-left">Repeats {getRuleFromString(value).toText()}</span>
               <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
                 <XIcon />
               </span>

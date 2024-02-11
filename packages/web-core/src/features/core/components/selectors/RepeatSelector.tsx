@@ -285,7 +285,7 @@ export function RepeatSelector({
                   });
                 }}
                 disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
-                includeTime={false}
+                includeTime={!disableTime}
                 disableTimeZone={true}
                 disableClear={true}
               />

@@ -202,7 +202,7 @@ export default function DueDateSelector({
       </PopoverTrigger>
       <PopoverContent
         side="top"
-        className="w-auto flex-col space-y-4 p-2"
+        className="w-auto max-w-[300px] flex-col space-y-4 p-2"
         data-test="date-selector"
       >
         <Calendar

@@ -319,13 +319,22 @@ CREATE TABLE IF NOT EXISTS "user_notifications" (
 	"user_id" uuid NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "user_followers" (
+CREATE TABLE IF NOT EXISTS "user_followed_users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"color" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL,
-	"follower_user_id" uuid NOT NULL
+	"followed_user_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_blocked_users" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"color" text,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL,
+	"blocked_user_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
@@ -404,8 +413,10 @@ CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports
 CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_notifications_user_id_idx" ON "user_notifications" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_followers_user_id_idx" ON "user_followers" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_followers_follower_user_id_idx" ON "user_followers" ("follower_user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_followed_users_user_id_idx" ON "user_followed_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_followed_users_followed_user_id_idx" ON "user_followed_users" ("followed_user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_blocked_users_user_id_idx" ON "user_blocked_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_block_users_blocked_user_id_idx" ON "user_blocked_users" ("blocked_user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_username_idx" ON "users" ("username");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_email_idx" ON "users" ("email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_new_email_idx" ON "users" ("new_email");--> statement-breakpoint
@@ -647,13 +658,25 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "user_followers" ADD CONSTRAINT "user_followers_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "user_followed_users" ADD CONSTRAINT "user_followed_users_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "user_followers" ADD CONSTRAINT "user_followers_follower_user_id_users_id_fk" FOREIGN KEY ("follower_user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "user_followed_users" ADD CONSTRAINT "user_followed_users_followed_user_id_users_id_fk" FOREIGN KEY ("followed_user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_blocked_users" ADD CONSTRAINT "user_blocked_users_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_blocked_users" ADD CONSTRAINT "user_blocked_users_blocked_user_id_users_id_fk" FOREIGN KEY ("blocked_user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

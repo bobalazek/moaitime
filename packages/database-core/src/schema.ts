@@ -24,5 +24,6 @@ export * from './schema/userAccessTokens';
 export * from './schema/userDataExports';
 export * from './schema/userCalendars';
 export * from './schema/userNotifications';
-export * from './schema/userFollowers';
+export * from './schema/userFollowedUsers';
+export * from './schema/userBlockedUsers';
 export * from './schema/users';

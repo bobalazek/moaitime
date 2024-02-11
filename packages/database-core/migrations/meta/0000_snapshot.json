@@ -1,5 +1,5 @@
 {
-  "id": "8af2184c-c7de-4d89-b546-7f0905c8c109",
+  "id": "b77e9e3e-c757-4919-9d6e-fff05ddf87d3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -2417,8 +2417,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "user_followers": {
-      "name": "user_followers",
+    "user_followed_users": {
+      "name": "user_followed_users",
       "schema": "",
       "columns": {
         "id": {
@@ -2454,40 +2454,119 @@
           "primaryKey": false,
           "notNull": true
         },
-        "follower_user_id": {
-          "name": "follower_user_id",
+        "followed_user_id": {
+          "name": "followed_user_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {
-        "user_followers_user_id_idx": {
-          "name": "user_followers_user_id_idx",
+        "user_followed_users_user_id_idx": {
+          "name": "user_followed_users_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
         },
-        "user_followers_follower_user_id_idx": {
-          "name": "user_followers_follower_user_id_idx",
-          "columns": ["follower_user_id"],
+        "user_followed_users_followed_user_id_idx": {
+          "name": "user_followed_users_followed_user_id_idx",
+          "columns": ["followed_user_id"],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "user_followers_user_id_users_id_fk": {
-          "name": "user_followers_user_id_users_id_fk",
-          "tableFrom": "user_followers",
+        "user_followed_users_user_id_users_id_fk": {
+          "name": "user_followed_users_user_id_users_id_fk",
+          "tableFrom": "user_followed_users",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "user_followers_follower_user_id_users_id_fk": {
-          "name": "user_followers_follower_user_id_users_id_fk",
-          "tableFrom": "user_followers",
+        "user_followed_users_followed_user_id_users_id_fk": {
+          "name": "user_followed_users_followed_user_id_users_id_fk",
+          "tableFrom": "user_followed_users",
           "tableTo": "users",
-          "columnsFrom": ["follower_user_id"],
+          "columnsFrom": ["followed_user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "user_blocked_users": {
+      "name": "user_blocked_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "blocked_user_id": {
+          "name": "blocked_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "user_blocked_users_user_id_idx": {
+          "name": "user_blocked_users_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
+        "user_block_users_blocked_user_id_idx": {
+          "name": "user_block_users_blocked_user_id_idx",
+          "columns": ["blocked_user_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "user_blocked_users_user_id_users_id_fk": {
+          "name": "user_blocked_users_user_id_users_id_fk",
+          "tableFrom": "user_blocked_users",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_blocked_users_blocked_user_id_users_id_fk": {
+          "name": "user_blocked_users_blocked_user_id_users_id_fk",
+          "tableFrom": "user_blocked_users",
+          "tableTo": "users",
+          "columnsFrom": ["blocked_user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"

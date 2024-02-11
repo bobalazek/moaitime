@@ -3,8 +3,8 @@ import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { users } from './users';
 
-export const userFollowers = pgTable(
-  'user_followers',
+export const userFollowedUsers = pgTable(
+  'user_followed_users',
   {
     id: uuid('id').defaultRandom().primaryKey(),
     color: text('color'),
@@ -15,7 +15,7 @@ export const userFollowers = pgTable(
       .references(() => users.id, {
         onDelete: 'cascade',
       }),
-    followerUserId: uuid('follower_user_id')
+    followedUserId: uuid('followed_user_id')
       .notNull()
       .references(() => users.id, {
         onDelete: 'cascade',
@@ -23,23 +23,23 @@ export const userFollowers = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('user_followers_user_id_idx').on(table.userId),
-      followerUserIdIdx: index('user_followers_follower_user_id_idx').on(table.followerUserId),
+      userIdIdx: index('user_followed_users_user_id_idx').on(table.userId),
+      followedUserIdIdx: index('user_followed_users_followed_user_id_idx').on(table.followedUserId),
     };
   }
 );
 
-export const userFollowersRelations = relations(userFollowers, ({ one }) => ({
+export const userFollowedUsersRelations = relations(userFollowedUsers, ({ one }) => ({
   user: one(users, {
-    fields: [userFollowers.userId],
+    fields: [userFollowedUsers.userId],
     references: [users.id],
   }),
-  followerUser: one(users, {
-    fields: [userFollowers.followerUserId],
+  followedUser: one(users, {
+    fields: [userFollowedUsers.followedUserId],
     references: [users.id],
   }),
 }));
 
-export type UserFollower = typeof userFollowers.$inferSelect;
+export type UserFollowedUser = typeof userFollowedUsers.$inferSelect;
 
-export type NewUserFollower = typeof userFollowers.$inferInsert;
+export type NewUserFollowedUser = typeof userFollowedUsers.$inferInsert;

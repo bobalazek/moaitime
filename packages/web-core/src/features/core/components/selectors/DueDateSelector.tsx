@@ -1,8 +1,14 @@
 import { addDays, format, startOfDay } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { CalendarIcon, RepeatIcon, XIcon } from 'lucide-react';
 import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 
-import { isValidTime } from '@moaitime/shared-common';
+import {
+  convertRuleToString,
+  getRuleFromString,
+  isValidTime,
+  updateRule,
+} from '@moaitime/shared-common';
 import {
   Button,
   Calendar,
@@ -92,6 +98,23 @@ export default function DueDateSelector({
     setRepeatPatternValue(data.repeatPattern ?? null);
     setRepeatEndsAtValue(data.repeatEndsAt ?? null);
   }, [data.date, data.dateTime, data.dateTimeZone, data.repeatPattern, data.repeatEndsAt]);
+
+  useEffect(() => {
+    if (!repeatPatternValue || !dateValue) {
+      return;
+    }
+
+    const newStartDate = new Date(
+      dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)
+    );
+
+    let rule = getRuleFromString(repeatPatternValue);
+    rule = updateRule(rule, {
+      dtstart: zonedTimeToUtc(newStartDate, 'UTC'),
+    });
+
+    setRepeatPatternValue(convertRuleToString(rule));
+  }, [dateValue, dateTimeValue, repeatPatternValue]);
 
   const onSelectDate = (value?: Date) => {
     setDateValue(value ? format(value, 'yyyy-MM-dd') : null);

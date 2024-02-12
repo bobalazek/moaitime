@@ -67,7 +67,7 @@ export class GlobalEventNotifier {
 
       await this._channel.assertExchange(GLOBAL_EVENTS_EXCHANGE, 'fanout', { durable: true });
 
-      await this._channel.assertQueue(GlobalEventNotifierQueueEnum.WEBSOCKET, { durable: true });
+      await this._channel.assertQueue(GlobalEventNotifierQueueEnum.WEBSOCKET, { durable: false });
       await this._channel.assertQueue(GlobalEventNotifierQueueEnum.JOB_RUNNER, { durable: true });
 
       await this._channel.bindQueue(

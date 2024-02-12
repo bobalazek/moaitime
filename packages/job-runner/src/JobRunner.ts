@@ -4,7 +4,11 @@ import {
   userDeletionProcessor,
   UserDeletionProcessor,
 } from '@moaitime/database-services';
-import { GlobalEventNotifier, globalEventNotifier } from '@moaitime/global-event-notifier';
+import {
+  GlobalEventNotifier,
+  globalEventNotifier,
+  GlobalEventNotifierQueueEnum,
+} from '@moaitime/global-event-notifier';
 import { logger, Logger } from '@moaitime/logging';
 import { shutdownManager, ShutdownManager } from '@moaitime/processes';
 import { redis, Redis } from '@moaitime/redis';
@@ -103,6 +107,7 @@ export class JobRunner {
     this._logger.debug(`[JobRunner] Registering global event notifications ...`);
 
     this._globalEventNotifierSubscription = await this._globalEventNotifier.subscribe(
+      GlobalEventNotifierQueueEnum.JOB_RUNNER,
       '*',
       async (message) => {
         this._logger.debug(

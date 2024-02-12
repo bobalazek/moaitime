@@ -10,7 +10,7 @@ import {
 import { WebSocket, WebSocketServer as WsWebSocketServer } from 'ws';
 
 import { authManager, usersManager } from '@moaitime/database-services';
-import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { globalEventNotifier, GlobalEventNotifierQueueEnum } from '@moaitime/global-event-notifier';
 import { logger } from '@moaitime/logging';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
@@ -35,24 +35,28 @@ export class WebsocketGateway
     (async () => {
       logger.info(`[WebsocketGateway] Subscribing to events ...`);
 
-      globalNotifierSubscription = await globalEventNotifier.subscribe('*', async (message) => {
-        const { type, payload } = message as {
-          type: GlobalEventsEnum;
-          payload: GlobalEvents[GlobalEventsEnum];
-        };
+      globalNotifierSubscription = await globalEventNotifier.subscribe(
+        GlobalEventNotifierQueueEnum.WEBSOCKET,
+        '*',
+        async (message) => {
+          const { type, payload } = message as {
+            type: GlobalEventsEnum;
+            payload: GlobalEvents[GlobalEventsEnum];
+          };
 
-        if ('teamId' in payload && payload.teamId) {
-          const userSockets = this._getSocketsForTeam(payload.teamId);
-          for (const socket of userSockets) {
-            const userId = this._getUserId(socket);
-            if ('userId' in payload && userId === payload.userId) {
-              continue;
+          if ('teamId' in payload && payload.teamId) {
+            const userSockets = this._getSocketsForTeam(payload.teamId);
+            for (const socket of userSockets) {
+              const userId = this._getUserId(socket);
+              if ('userId' in payload && userId === payload.userId) {
+                continue;
+              }
+
+              socket.send(JSON.stringify({ type, payload }));
             }
-
-            socket.send(JSON.stringify({ type, payload }));
           }
         }
-      });
+      );
     })();
 
     terminateServer = async () => {

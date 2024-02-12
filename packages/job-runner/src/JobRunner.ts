@@ -4,6 +4,7 @@ import {
   userDeletionProcessor,
   UserDeletionProcessor,
 } from '@moaitime/database-services';
+import { GlobalEventNotifier, globalEventNotifier } from '@moaitime/global-event-notifier';
 import { logger, Logger } from '@moaitime/logging';
 import { shutdownManager, ShutdownManager } from '@moaitime/processes';
 import { redis, Redis } from '@moaitime/redis';
@@ -11,11 +12,14 @@ import { SharedQueueWorkerJobEnum, sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
 
 export class JobRunner {
+  private _globalEventNotifierSubscription?: () => Promise<void>;
+
   constructor(
     private _logger: Logger,
     private _shutdownManager: ShutdownManager,
     private _redis: Redis,
     private _sharedQueueWorker: SharedQueueWorker,
+    private _globalEventNotifier: GlobalEventNotifier,
     private _userDeletionManager: UserDeletionProcessor,
     private _userDataExportsManager: UserDataExportProcessor
   ) {}
@@ -26,6 +30,7 @@ export class JobRunner {
     this._shutdownManager.registerTask('JobRunner:Shutdown', this.terminate.bind(this));
 
     await this._registerSharedQueueJobs();
+    await this._registerGlobalEventNoifications();
 
     return new Promise(() => {
       // Together forever and never apart ...
@@ -37,6 +42,7 @@ export class JobRunner {
 
     await this._sharedQueueWorker.terminate();
     await this._redis.terminate();
+    await this._globalEventNotifierSubscription?.();
 
     await sleep(5000); // Just in case
   }
@@ -92,6 +98,23 @@ export class JobRunner {
 
     await this._sharedQueueWorker.initializeAndRunWorker();
   }
+
+  private async _registerGlobalEventNoifications() {
+    this._logger.debug(`[JobRunner] Registering global event notifications ...`);
+
+    this._globalEventNotifierSubscription = await this._globalEventNotifier.subscribe(
+      '*',
+      async (message) => {
+        this._logger.debug(
+          `[JobRunner] Received global event "${message.type}" with payload: ${JSON.stringify(
+            message.payload
+          )} ...`
+        );
+
+        // TODO: actually process the event
+      }
+    );
+  }
 }
 
 export const jobRunner = new JobRunner(
@@ -99,6 +122,7 @@ export const jobRunner = new JobRunner(
   shutdownManager,
   redis,
   sharedQueueWorker,
+  globalEventNotifier,
   userDeletionProcessor,
   userDataExportProcessor
 );

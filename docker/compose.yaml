@@ -37,6 +37,9 @@ services:
     container_name: moaitime_rabbitmq
     image: rabbitmq:3.12.12-management
     restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq/
     ports:

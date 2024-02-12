@@ -635,6 +635,9 @@ importers:
       '@moaitime/database-services':
         specifier: workspace:*
         version: link:../database-services
+      '@moaitime/global-event-notifier':
+        specifier: workspace:*
+        version: link:../global-event-notifier
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging

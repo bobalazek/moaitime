@@ -2,7 +2,7 @@ import { logger } from '@moaitime/logging';
 import { RabbitMQ, rabbitMQ } from '@moaitime/rabbitmq';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
-const GLOBAL_EVENTS_CHANNEL = 'global-events';
+export const GLOBAL_EVENTS_CHANNEL = 'global-events';
 
 export class GlobalEventNotifier {
   constructor(private _rabbitMQ: RabbitMQ) {}
@@ -21,11 +21,11 @@ export class GlobalEventNotifier {
 
     // TODO: that at the moment is not compatible if we have multiple subscribers,
     // as when we unsubscribe we remove all the subscribers
-    const wrappedCallback = (message: unknown) => {
-      const parsedMessage = message as { type: T; payload: GlobalEvents[T] };
+    const wrappedCallback = (message: { type: T; payload: GlobalEvents[T] }) => {
+      logger.debug(`[GlobalEventNotifier] Received global event "${message.type}" ...`);
 
-      if (type === '*' || parsedMessage.type === type) {
-        callback(parsedMessage);
+      if (type === '*' || message.type === type) {
+        callback(message);
       }
     };
 

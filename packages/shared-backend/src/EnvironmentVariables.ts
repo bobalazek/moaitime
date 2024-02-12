@@ -19,7 +19,7 @@ export const envSchema = z.object({
     .default('false'),
   POSTGRESQL_URL: z.string().url().min(1),
   REDIS_URL: z.string().url().min(1),
-  // The URL is encoded in env variables, so we need to decode it here
+  RABBITMQ_URL: z.string().url().min(1),
   SMTP_URL: z.string().url().min(1),
   USER_DATA_EXPORTS_BUCKET_URL: z.string().url().min(1),
   USER_AVATARS_BUCKET_URL: z.string().url().min(1),

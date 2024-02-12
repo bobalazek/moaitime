@@ -33,6 +33,18 @@ services:
     networks:
       - moaitime-network
 
+  rabbitmq:
+    container_name: moaitime_rabbitmq
+    image: rabbitmq:3.12.12-management
+    restart: unless-stopped
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq/
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - moaitime-network
+
   minio:
     container_name: moaitime_minio
     image: docker.io/bitnami/minio:2023.12.23
@@ -57,4 +69,5 @@ networks:
 volumes:
   postgres-data:
   redis-data:
+  rabbitmq-data:
   minio-data:

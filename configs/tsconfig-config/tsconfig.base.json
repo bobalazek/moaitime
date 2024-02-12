@@ -39,6 +39,7 @@
       "@moaitime/web-ui-editor": ["../../packages/web-ui-editor/src/index.ts"],
       "@moaitime/logging": ["../../packages/logging/src/index.ts"],
       "@moaitime/processes": ["../../packages/processes/src/index.ts"],
+      "@moaitime/rabbitmq": ["../../packages/rabbitmq/src/index.ts"],
       "@moaitime/bullmq": ["../../packages/bullmq/src/index.ts"],
       "@moaitime/redis": ["../../packages/redis/src/index.ts"],
       "@moaitime/job-runner": ["../../packages/job-runner/src/index.ts"],

@@ -17,7 +17,9 @@ export default function UsersViewPage() {
   const { isLoading, error, data } = useUsersViewQuery(params.userUsername!);
 
   useEffect(() => {
-    document.title = `${data?.displayName ?? 'Unknown'} | Users | MoaiTime`;
+    document.title = data?.displayName
+      ? `${data.displayName} | Users | MoaiTime`
+      : `Users | MoaiTime`;
   }, [data]);
 
   if (!data || !params.userUsername) {

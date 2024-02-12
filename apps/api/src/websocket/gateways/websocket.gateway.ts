@@ -32,26 +32,28 @@ export class WebsocketGateway
   private _teamUserIdsMap: Map<string, string[]> = new Map();
 
   afterInit() {
-    logger.info(`[WebsocketGateway] Subscribing to events ...`);
+    (async () => {
+      logger.info(`[WebsocketGateway] Subscribing to events ...`);
 
-    globalNotifierSubscription = globalEventNotifier.subscribe('*', async (message) => {
-      const { type, payload } = message as {
-        type: GlobalEventsEnum;
-        payload: GlobalEvents[GlobalEventsEnum];
-      };
+      globalNotifierSubscription = await globalEventNotifier.subscribe('*', async (message) => {
+        const { type, payload } = message as {
+          type: GlobalEventsEnum;
+          payload: GlobalEvents[GlobalEventsEnum];
+        };
 
-      if ('teamId' in payload && payload.teamId) {
-        const userSockets = this._getSocketsForTeam(payload.teamId);
-        for (const socket of userSockets) {
-          const userId = this._getUserId(socket);
-          if ('userId' in payload && userId === payload.userId) {
-            continue;
+        if ('teamId' in payload && payload.teamId) {
+          const userSockets = this._getSocketsForTeam(payload.teamId);
+          for (const socket of userSockets) {
+            const userId = this._getUserId(socket);
+            if ('userId' in payload && userId === payload.userId) {
+              continue;
+            }
+
+            socket.send(JSON.stringify({ type, payload }));
           }
-
-          socket.send(JSON.stringify({ type, payload }));
         }
-      }
-    });
+      });
+    })();
 
     terminateServer = async () => {
       logger.info(`[WebsocketGateway] Terminating the server ...`);
@@ -75,7 +77,7 @@ export class WebsocketGateway
         `[WebsocketGateway] A client tried to connect with an invalid access token (${accessToken}). Closing the connection ...`
       );
 
-      client.close();
+      client.close(4001, JSON.stringify({ message: 'Invalid access token.' }));
 
       return;
     }

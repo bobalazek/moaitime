@@ -1,19 +1,19 @@
 import { logger } from '@moaitime/logging';
-import { redis, Redis } from '@moaitime/redis';
+import { RabbitMQ, rabbitMQ } from '@moaitime/rabbitmq';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 const GLOBAL_EVENTS_CHANNEL = 'global-events';
 
 export class GlobalEventNotifier {
-  constructor(private _redis: Redis) {}
+  constructor(private _rabbitMQ: RabbitMQ) {}
 
   async publish<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     logger.debug(`[GlobalEventNotifier] Publishing global event (${type}) ...`);
 
-    return this._redis.publish(GLOBAL_EVENTS_CHANNEL, JSON.stringify({ type, payload }));
+    return this._rabbitMQ.send(GLOBAL_EVENTS_CHANNEL, { type, payload });
   }
 
-  subscribe<T extends GlobalEventsEnum>(
+  async subscribe<T extends GlobalEventsEnum>(
     type: T | '*',
     callback: (message: { type: T; payload: GlobalEvents[T] }) => void
   ) {
@@ -21,22 +21,22 @@ export class GlobalEventNotifier {
 
     // TODO: that at the moment is not compatible if we have multiple subscribers,
     // as when we unsubscribe we remove all the subscribers
-    const wrappedCallback = (message: string) => {
-      const parsedMessage = JSON.parse(message) as { type: T; payload: GlobalEvents[T] };
+    const wrappedCallback = (message: unknown) => {
+      const parsedMessage = message as { type: T; payload: GlobalEvents[T] };
 
       if (type === '*' || parsedMessage.type === type) {
         callback(parsedMessage);
       }
     };
 
-    this._redis.subscribe(GLOBAL_EVENTS_CHANNEL, wrappedCallback);
+    const unsubscribe = await this._rabbitMQ.consume(GLOBAL_EVENTS_CHANNEL, wrappedCallback);
 
     return async () => {
       logger.debug(`[GlobalEventNotifier] Unsubscribing from global events ...`);
 
-      return this._redis.unsubscribe(GLOBAL_EVENTS_CHANNEL, wrappedCallback);
+      unsubscribe();
     };
   }
 }
 
-export const globalEventNotifier = new GlobalEventNotifier(redis);
+export const globalEventNotifier = new GlobalEventNotifier(rabbitMQ);

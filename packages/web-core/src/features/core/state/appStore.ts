@@ -11,7 +11,6 @@ import { useGreetingStore } from '../../greeting/state/greetingStore';
 import { useQuoteStore } from '../../quote/state/quoteStore';
 import { useListsStore } from '../../tasks/state/listsStore';
 import { useTagsStore } from '../../tasks/state/tagsStore';
-import { getConfig } from '../utils/ConfigHelpers';
 import { websocketManager } from '../utils/WebsocketManager';
 
 export type AppStore = {
@@ -36,8 +35,6 @@ export const useAppStore = create<AppStore>()((_, get) => ({
       return;
     }
 
-    const config = await getConfig();
-
     // User Limits and Usage
     reloadUserLimitsAndUsage();
 
@@ -53,9 +50,7 @@ export const useAppStore = create<AppStore>()((_, get) => ({
     reloadTags();
 
     // Websocket
-    if (config?.websocketUrl) {
-      websocketManager.connect(config.websocketUrl);
-    }
+    websocketManager.init();
 
     // User Notifications
     (async () => {

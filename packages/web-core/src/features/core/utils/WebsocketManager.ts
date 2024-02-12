@@ -1,10 +1,50 @@
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
+import { useAuthStore } from '../../auth/state/authStore';
+import { useTeamsStore } from '../../auth/state/teamsStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useListsStore } from '../../tasks/state/listsStore';
+import { getConfig } from './ConfigHelpers';
 
 export class WebsocketManager {
   private _socket: WebSocket | null = null;
+  private _isInitialized = false;
+
+  async init() {
+    if (this._isInitialized) {
+      return;
+    }
+
+    const { auth } = useAuthStore.getState();
+    if (auth) {
+      const config = await getConfig();
+      if (config?.websocketUrl) {
+        this.connect(config.websocketUrl);
+      }
+    }
+
+    useAuthStore.subscribe(async (state, prevState) => {
+      if (state.auth?.user.id !== prevState.auth?.user.id) {
+        this.disconnect();
+
+        if (state.auth?.user.id) {
+          const config = await getConfig();
+
+          if (config?.websocketUrl) {
+            this.connect(config.websocketUrl);
+          }
+        }
+      }
+    });
+
+    useTeamsStore.subscribe(async (state, prevState) => {
+      if (state.joinedTeam?.team.id !== prevState.joinedTeam?.team.id) {
+        this.disconnect();
+      }
+    });
+
+    this._isInitialized = true;
+  }
 
   connect(websocketUrl: string) {
     if (this._socket) {
@@ -30,6 +70,7 @@ export class WebsocketManager {
       this.disconnect();
     };
 
+    // Debug
     window.addEventListener('vite:beforeUpdate', () => {
       this.disconnect();
     });

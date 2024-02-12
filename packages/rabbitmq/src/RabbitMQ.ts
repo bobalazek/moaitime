@@ -42,7 +42,7 @@ export class RabbitMQ {
   ) {
     const channel = await this.getChannel(channelName);
 
-    return channel.consume(channelName, (msg) => {
+    const consumer = await channel.consume(channelName, (msg) => {
       if (msg === null) {
         return;
       }
@@ -51,6 +51,10 @@ export class RabbitMQ {
 
       channel.ack(msg);
     });
+
+    return () => {
+      channel.cancel(consumer.consumerTag);
+    };
   }
 
   async send(channelName: string, value: Record<string, unknown> | string) {

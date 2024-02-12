@@ -12,7 +12,7 @@ export class ConfigController {
     const websocketUrl = url.toString();
 
     return {
-      config: {
+      data: {
         version: APP_VERSION,
         websocketUrl,
       },

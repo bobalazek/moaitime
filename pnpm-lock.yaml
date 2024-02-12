@@ -622,9 +622,9 @@ importers:
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging
-      '@moaitime/redis':
+      '@moaitime/rabbitmq':
         specifier: workspace:*
-        version: link:../redis
+        version: link:../rabbitmq
     devDependencies:
       typescript:
         specifier: ^5.3.2

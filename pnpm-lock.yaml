@@ -89,9 +89,9 @@ importers:
       '@moaitime/database-testing':
         specifier: workspace:*
         version: link:../../packages/database-testing
-      '@moaitime/global-event-notifier':
+      '@moaitime/global-events-notifier':
         specifier: workspace:*
-        version: link:../../packages/global-event-notifier
+        version: link:../../packages/global-events-notifier
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../../packages/logging
@@ -422,9 +422,9 @@ importers:
       '@moaitime/emails-mailer':
         specifier: workspace:*
         version: link:../emails-mailer
-      '@moaitime/global-event-notifier':
+      '@moaitime/global-events-notifier':
         specifier: workspace:*
-        version: link:../global-event-notifier
+        version: link:../global-events-notifier
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging
@@ -617,7 +617,7 @@ importers:
         specifier: 18.2.33
         version: 18.2.33
 
-  packages/global-event-notifier:
+  packages/global-events-notifier:
     dependencies:
       '@moaitime/logging':
         specifier: workspace:*
@@ -635,9 +635,9 @@ importers:
       '@moaitime/database-services':
         specifier: workspace:*
         version: link:../database-services
-      '@moaitime/global-event-notifier':
+      '@moaitime/global-events-notifier':
         specifier: workspace:*
-        version: link:../global-event-notifier
+        version: link:../global-events-notifier
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging

@@ -32,7 +32,7 @@ import {
   User,
   users,
 } from '@moaitime/database-core';
-import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
 import {
   CreateTask,
@@ -367,7 +367,7 @@ export class TasksManager {
 
     await this.reorderList(newListId, userId, sortDirection, originalTaskId, newTaskId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
       userId,
       listId: listId ?? undefined,
       teamId: list?.teamId ?? undefined,
@@ -427,7 +427,7 @@ export class TasksManager {
       await this.setUsers(task, userIds, user, teamId);
     }
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
       userId: user.id,
       taskId: task.id,
       listId: task.listId ?? undefined,
@@ -503,7 +503,7 @@ export class TasksManager {
       await this.setUsers(task, userIds, user, teamId);
     }
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
       userId: user.id,
       taskId: task.id,
       listId: task.listId ?? undefined,
@@ -525,7 +525,7 @@ export class TasksManager {
           deletedAt: new Date(),
         });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_DELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_DELETED, {
       userId,
       taskId,
       listId: task.listId ?? undefined,
@@ -560,7 +560,7 @@ export class TasksManager {
       deletedAt: null,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
       userId: user.id,
       taskId,
       listId: task.listId ?? undefined,
@@ -573,7 +573,7 @@ export class TasksManager {
   async duplicate(userId: string, taskId: string) {
     const task = await this.duplicateTask(userId, taskId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_DUPLICATED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_DUPLICATED, {
       userId,
       taskId,
       listId: task?.listId ?? undefined,
@@ -639,7 +639,7 @@ export class TasksManager {
       });
     }
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
       userId,
       taskId,
       listId: task.listId ?? undefined,
@@ -659,7 +659,7 @@ export class TasksManager {
       completedAt: null,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
       userId,
       taskId,
       listId: task.listId ?? undefined,
@@ -912,7 +912,7 @@ export class TasksManager {
         .execute();
 
       for (const userId of toInsert) {
-        globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER, {
+        globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER, {
           userId: assigningUser.id,
           taskId: task.id,
           teamId,

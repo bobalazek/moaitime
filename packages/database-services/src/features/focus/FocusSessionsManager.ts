@@ -1,7 +1,7 @@
 import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
 
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
-import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateFocusSession,
   FocusSessionEventTypeEnum,
@@ -129,7 +129,7 @@ export class FocusSessionsManager {
       userId,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
       userId,
       focusSessionId: focusSession.id,
     });
@@ -160,7 +160,7 @@ export class FocusSessionsManager {
       throw new Error('Focus session not found');
     }
 
-    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
       userId,
       focusSessionId: focusSession.id,
       action,
@@ -181,7 +181,7 @@ export class FocusSessionsManager {
           deletedAt: new Date(),
         });
 
-    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED, {
       userId,
       focusSessionId: focusSession.id,
       isHardDelete,
@@ -200,7 +200,7 @@ export class FocusSessionsManager {
       deletedAt: null,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED, {
       userId,
       focusSessionId: focusSession.id,
     });
@@ -332,7 +332,7 @@ export class FocusSessionsManager {
 
     const updatedFocusSession = await this.updateOneById(focusSession.id, data);
 
-    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
       userId,
       focusSessionId: updatedFocusSession.id,
       action,

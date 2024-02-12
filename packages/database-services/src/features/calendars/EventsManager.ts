@@ -29,7 +29,7 @@ import {
   User,
   userCalendars,
 } from '@moaitime/database-core';
-import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   convertRuleToString,
   CreateEvent,
@@ -298,7 +298,7 @@ export class EventsManager {
       repeatEndsAt: data.repeatEndsAt ? new Date(data.repeatEndsAt) : undefined,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_ADDED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_ADDED, {
       userId: user.id,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
@@ -351,7 +351,7 @@ export class EventsManager {
     });
     const calendar = await calendarsManager.findOneByIdAndUserId(newEvent.calendarId, userId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
       userId: userId,
       eventId: newEvent.id,
       calendarId: newEvent.calendarId ?? undefined,
@@ -372,7 +372,7 @@ export class EventsManager {
     });
     const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_DELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_DELETED, {
       userId: userId,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
@@ -393,7 +393,7 @@ export class EventsManager {
     });
     const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
       userId: userId,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,

@@ -5,10 +5,10 @@ import {
   UserDeletionProcessor,
 } from '@moaitime/database-services';
 import {
-  GlobalEventNotifier,
-  globalEventNotifier,
-  GlobalEventNotifierQueueEnum,
-} from '@moaitime/global-event-notifier';
+  GlobalEventsNotifier,
+  globalEventsNotifier,
+  GlobalEventsNotifierQueueEnum,
+} from '@moaitime/global-events-notifier';
 import { logger, Logger } from '@moaitime/logging';
 import { shutdownManager, ShutdownManager } from '@moaitime/processes';
 import { redis, Redis } from '@moaitime/redis';
@@ -16,14 +16,14 @@ import { SharedQueueWorkerJobEnum, sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
 
 export class JobRunner {
-  private _globalEventNotifierSubscription?: () => Promise<void>;
+  private _globalEventsNotifierSubscription?: () => Promise<void>;
 
   constructor(
     private _logger: Logger,
     private _shutdownManager: ShutdownManager,
     private _redis: Redis,
     private _sharedQueueWorker: SharedQueueWorker,
-    private _globalEventNotifier: GlobalEventNotifier,
+    private _globalEventsNotifier: GlobalEventsNotifier,
     private _userDeletionManager: UserDeletionProcessor,
     private _userDataExportsManager: UserDataExportProcessor
   ) {}
@@ -46,7 +46,7 @@ export class JobRunner {
 
     await this._sharedQueueWorker.terminate();
     await this._redis.terminate();
-    await this._globalEventNotifierSubscription?.();
+    await this._globalEventsNotifierSubscription?.();
 
     await sleep(5000); // Just in case
   }
@@ -106,8 +106,8 @@ export class JobRunner {
   private async _registerGlobalEventNoifications() {
     this._logger.debug(`[JobRunner] Registering global event notifications ...`);
 
-    this._globalEventNotifierSubscription = await this._globalEventNotifier.subscribe(
-      GlobalEventNotifierQueueEnum.JOB_RUNNER,
+    this._globalEventsNotifierSubscription = await this._globalEventsNotifier.subscribe(
+      GlobalEventsNotifierQueueEnum.JOB_RUNNER,
       '*',
       async (message) => {
         this._logger.debug(
@@ -127,7 +127,7 @@ export const jobRunner = new JobRunner(
   shutdownManager,
   redis,
   sharedQueueWorker,
-  globalEventNotifier,
+  globalEventsNotifier,
   userDeletionProcessor,
   userDataExportProcessor
 );

@@ -1,7 +1,7 @@
 import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
-import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { CreateList, GlobalEventsEnum, UpdateList } from '@moaitime/shared-common';
 
 import { teamsManager } from '../auth/TeamsManager';
@@ -142,7 +142,7 @@ export class ListsManager {
 
     const list = await this.insertOne({ ...data, userId: user.id });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADDED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADDED, {
       userId: user.id,
       listId: list.id,
       teamId: list.teamId ?? undefined,
@@ -159,7 +159,7 @@ export class ListsManager {
 
     const list = await this.updateOneById(listId, data);
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_EDITED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_EDITED, {
       userId,
       listId: list.id,
       teamId: list.teamId ?? undefined,
@@ -178,7 +178,7 @@ export class ListsManager {
       deletedAt: new Date(),
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_DELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_DELETED, {
       userId,
       listId: list.id,
       teamId: list.teamId ?? undefined,
@@ -195,7 +195,7 @@ export class ListsManager {
 
     const list = await this.addVisibleListIdByUserId(userId, listId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADD_VISIBLE, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADD_VISIBLE, {
       userId,
       listId,
       teamId: list?.teamId ?? undefined,
@@ -210,7 +210,7 @@ export class ListsManager {
 
     const list = await this.removeVisibleListIdByUserId(userId, listId);
 
-    globalEventNotifier.publish(GlobalEventsEnum.TASKS_LIST_REMOVE_VISIBLE, {
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_REMOVE_VISIBLE, {
       userId,
       listId,
       teamId: list?.teamId ?? undefined,

@@ -10,7 +10,10 @@ import {
 import { WebSocket, WebSocketServer as WsWebSocketServer } from 'ws';
 
 import { authManager, usersManager } from '@moaitime/database-services';
-import { globalEventNotifier, GlobalEventNotifierQueueEnum } from '@moaitime/global-event-notifier';
+import {
+  globalEventsNotifier,
+  GlobalEventsNotifierQueueEnum,
+} from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
@@ -35,8 +38,8 @@ export class WebsocketGateway
     (async () => {
       logger.info(`[WebsocketGateway] Subscribing to events ...`);
 
-      globalNotifierSubscription = await globalEventNotifier.subscribe(
-        GlobalEventNotifierQueueEnum.WEBSOCKET,
+      globalNotifierSubscription = await globalEventsNotifier.subscribe(
+        GlobalEventsNotifierQueueEnum.WEBSOCKET,
         '*',
         async (message) => {
           const { type, payload } = message as {

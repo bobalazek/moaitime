@@ -16,7 +16,7 @@ import {
 } from 'drizzle-orm';
 
 import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/database-core';
-import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateMoodEntry,
   GlobalEventsEnum,
@@ -256,7 +256,7 @@ export class MoodEntriesManager {
       userId,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
       userId,
       moodEntryId: moodEntry.id,
     });
@@ -275,7 +275,7 @@ export class MoodEntriesManager {
       loggedAt: data.loggedAt ? new Date(data.loggedAt).toISOString() : undefined,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
       userId,
       moodEntryId: moodEntry.id,
     });
@@ -295,7 +295,7 @@ export class MoodEntriesManager {
           deletedAt: new Date(),
         });
 
-    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
       userId,
       moodEntryId: data.id,
       isHardDelete,
@@ -314,7 +314,7 @@ export class MoodEntriesManager {
       deletedAt: null,
     });
 
-    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
       userId,
       moodEntryId: moodEntry.id,
     });

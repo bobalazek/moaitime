@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { addDays, addMilliseconds, format } from 'date-fns';
 import {
   and,
   asc,
@@ -35,13 +35,12 @@ import {
 import { globalEventNotifier } from '@moaitime/global-event-notifier';
 import { logger } from '@moaitime/logging';
 import {
-  convertRuleToString,
   CreateTask,
   getRuleFromString,
+  getRuleIterationAfter,
   GlobalEventsEnum,
   SortDirectionEnum,
   TasksListSortFieldEnum,
-  updateRule,
   UpdateTask,
 } from '@moaitime/shared-common';
 
@@ -473,7 +472,24 @@ export class TasksManager {
       dueDateRepeatEndsAt = new Date(updateData.dueDateRepeatEndsAt);
     }
 
-    const updatedData = await this.updateOneById(taskId, { ...updateData, dueDateRepeatEndsAt });
+    let completedAt: Date | null | undefined = undefined;
+    if (
+      typeof updateData.dueDate !== 'undefined' &&
+      typeof updateData.dueDateTime !== 'undefined' &&
+      typeof updateData.dueDateTimeZone !== 'undefined' &&
+      (task.dueDate !== updateData.dueDate ||
+        task.dueDateTime !== updateData.dueDateTime ||
+        task.dueDateTimeZone !== updateData.dueDateTimeZone) &&
+      task.completedAt
+    ) {
+      completedAt = null;
+    }
+
+    const updatedData = await this.updateOneById(taskId, {
+      ...updateData,
+      dueDateRepeatEndsAt,
+      completedAt,
+    });
 
     if (Array.isArray(tagIds)) {
       await this.setTags(task, tagIds);
@@ -577,23 +593,27 @@ export class TasksManager {
 
     if (task.dueDateRepeatPattern) {
       try {
-        let rule = getRuleFromString(task.dueDateRepeatPattern);
+        if (!task.dueDate) {
+          throw new Error(`[TasksManager] Due date was not set with date repeat pattern`);
+        }
 
-        // First first result is the current date, so we want to have the next one
-        const nextExecutionDate = rule.all((_, index) => index < 2)?.[1] ?? null;
+        const currentDueDate = new Date(
+          task.dueDateTime
+            ? `${task.dueDate}T${task.dueDateTime}`
+            : addDays(new Date(task.dueDate), 1)
+        );
+        const rule = getRuleFromString(task.dueDateRepeatPattern);
+
+        const nextExecutionDate = getRuleIterationAfter(rule, addMilliseconds(currentDueDate, 1));
         if (nextExecutionDate) {
           const dueDate = nextExecutionDate.toISOString().slice(0, 10);
           const dueDateTime = task.dueDateTime
             ? nextExecutionDate.toISOString().split('T')?.[1].slice(0, 8)
             : undefined;
-          rule = updateRule(rule, {
-            dtstart: nextExecutionDate,
-          });
 
           data = await this.updateOneById(taskId, {
             dueDate,
             dueDateTime,
-            dueDateRepeatPattern: convertRuleToString(rule),
           });
         } else {
           // No more executions left, so we just set it to completed

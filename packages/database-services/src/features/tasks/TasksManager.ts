@@ -33,11 +33,15 @@ import {
   users,
 } from '@moaitime/database-core';
 import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import { logger } from '@moaitime/logging';
 import {
+  convertRuleToString,
   CreateTask,
+  getRuleFromString,
   GlobalEventsEnum,
   SortDirectionEnum,
   TasksListSortFieldEnum,
+  updateRule,
   UpdateTask,
 } from '@moaitime/shared-common';
 
@@ -569,9 +573,51 @@ export class TasksManager {
       throw new Error('Task not found');
     }
 
-    const data = await this.updateOneById(taskId, {
-      completedAt: new Date(),
-    });
+    let data = task as Task;
+
+    if (task.dueDateRepeatPattern) {
+      try {
+        let rule = getRuleFromString(task.dueDateRepeatPattern);
+
+        // First first result is the current date, so we want to have the next one
+        const nextExecutionDate = rule.all((_, index) => index < 2)?.[1] ?? null;
+        if (nextExecutionDate) {
+          const dueDate = nextExecutionDate.toISOString().slice(0, 10);
+          const dueDateTime = task.dueDateTime
+            ? nextExecutionDate.toISOString().split('T')?.[1].slice(0, 8)
+            : undefined;
+          rule = updateRule(rule, {
+            dtstart: nextExecutionDate,
+          });
+
+          data = await this.updateOneById(taskId, {
+            dueDate,
+            dueDateTime,
+            dueDateRepeatPattern: convertRuleToString(rule),
+          });
+        } else {
+          // No more executions left, so we just set it to completed
+          data = await this.updateOneById(taskId, {
+            completedAt: new Date(),
+          });
+        }
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+
+        logger.warn(
+          `[TasksManager] There was an error trying to update the new due date pattern: ${errorMessage}`
+        );
+
+        // In case something goes wrong here, just set the task to unchecked by default
+        data = await this.updateOneById(taskId, {
+          completedAt: new Date(),
+        });
+      }
+    } else {
+      data = await this.updateOneById(taskId, {
+        completedAt: new Date(),
+      });
+    }
 
     globalEventNotifier.publish(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
       userId,

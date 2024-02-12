@@ -130,7 +130,7 @@ export function RepeatSelector({
       </PopoverTrigger>
       <PopoverContent
         side="top"
-        className="flex w-[380px] flex-col gap-2 p-2"
+        className="flex w-[380px] flex-col gap-2 px-4 py-2"
         data-test="repeat-selector"
       >
         <h3 className="text-xl font-bold">Repeat</h3>

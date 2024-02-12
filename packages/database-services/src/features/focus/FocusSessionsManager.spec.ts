@@ -21,6 +21,7 @@ describe('FocusSessionManager.ts', () => {
 
     const user = await usersManager.insertOne({
       displayName: 'test',
+      username: 'focussessiontest',
       email: 'focussessiontest@test.com',
       password: 'test',
     });
@@ -59,6 +60,7 @@ describe('FocusSessionManager.ts', () => {
 
       const result = () =>
         focusSessionsManager.updateFocusSession(
+          initialFocusSession.userId,
           initialFocusSession,
           FocusSessionUpdateActionEnum.PAUSE
         );
@@ -69,6 +71,7 @@ describe('FocusSessionManager.ts', () => {
     it('should not continue if it is already active', async () => {
       const result = () =>
         focusSessionsManager.updateFocusSession(
+          initialFocusSession.userId,
           initialFocusSession,
           FocusSessionUpdateActionEnum.CONTINUE
         );
@@ -85,6 +88,7 @@ describe('FocusSessionManager.ts', () => {
 
       const result = () =>
         focusSessionsManager.updateFocusSession(
+          initialFocusSession.userId,
           initialFocusSession,
           FocusSessionUpdateActionEnum.PING
         );
@@ -96,6 +100,7 @@ describe('FocusSessionManager.ts', () => {
       vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
 
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSession,
         FocusSessionUpdateActionEnum.PAUSE
       );
@@ -117,6 +122,7 @@ describe('FocusSessionManager.ts', () => {
       // First we set those 30 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:00:30.000Z'));
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSession,
         FocusSessionUpdateActionEnum.PAUSE
       );
@@ -124,6 +130,7 @@ describe('FocusSessionManager.ts', () => {
       // We pause for 10 seconds and then continue
       vitest.setSystemTime(new Date('2020-01-01T00:00:40.000Z'));
       const newFocusSession2 = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         newFocusSession,
         FocusSessionUpdateActionEnum.CONTINUE
       );
@@ -140,6 +147,7 @@ describe('FocusSessionManager.ts', () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSession,
         FocusSessionUpdateActionEnum.PING
       );
@@ -155,6 +163,7 @@ describe('FocusSessionManager.ts', () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSession,
         FocusSessionUpdateActionEnum.PING
       );
@@ -170,6 +179,7 @@ describe('FocusSessionManager.ts', () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSession,
         FocusSessionUpdateActionEnum.PING
       );
@@ -185,6 +195,7 @@ describe('FocusSessionManager.ts', () => {
       // First we set those 90 seconds
       vitest.setSystemTime(new Date('2020-01-01T00:01:30.000Z'));
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSessionOneIteration,
         FocusSessionUpdateActionEnum.PING
       );
@@ -201,6 +212,7 @@ describe('FocusSessionManager.ts', () => {
 
       // First skip
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -212,6 +224,7 @@ describe('FocusSessionManager.ts', () => {
 
       // Second skip
       const new2FocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         newFocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -223,6 +236,7 @@ describe('FocusSessionManager.ts', () => {
 
       // Third skip
       const new3FocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         new2FocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -234,6 +248,7 @@ describe('FocusSessionManager.ts', () => {
 
       // Fourth skip
       const new4FocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         new3FocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -250,6 +265,7 @@ describe('FocusSessionManager.ts', () => {
 
       // First skip
       const newFocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         initialFocusSessionOneIteration,
         FocusSessionUpdateActionEnum.SKIP
       );
@@ -261,6 +277,7 @@ describe('FocusSessionManager.ts', () => {
 
       // Second skip
       const new2FocusSession = await focusSessionsManager.updateFocusSession(
+        initialFocusSession.userId,
         newFocusSession,
         FocusSessionUpdateActionEnum.SKIP
       );

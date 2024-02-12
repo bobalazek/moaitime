@@ -16,7 +16,13 @@ import {
 } from 'drizzle-orm';
 
 import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/database-core';
-import { CreateMoodEntry, SortDirectionEnum, UpdateMoodEntry } from '@moaitime/shared-common';
+import { globalEventNotifier } from '@moaitime/global-event-notifier';
+import {
+  CreateMoodEntry,
+  GlobalEventsEnum,
+  SortDirectionEnum,
+  UpdateMoodEntry,
+} from '@moaitime/shared-common';
 
 export type MoodEntriesManagerFindOptions = {
   includeDeleted?: boolean;
@@ -244,11 +250,18 @@ export class MoodEntriesManager {
   }
 
   async create(userId: string, data: CreateMoodEntry) {
-    return this.insertOne({
+    const moodEntry = await this.insertOne({
       ...data,
       loggedAt: data.loggedAt ?? new Date().toISOString(),
       userId,
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
+      userId,
+      moodEntryId: moodEntry.id,
+    });
+
+    return moodEntry;
   }
 
   async update(userId: string, moodEntryId: string, data: UpdateMoodEntry) {
@@ -257,10 +270,17 @@ export class MoodEntriesManager {
       throw new Error('You cannot update this mood entry');
     }
 
-    return this.updateOneById(moodEntryId, {
+    const moodEntry = await this.updateOneById(moodEntryId, {
       ...data,
       loggedAt: data.loggedAt ? new Date(data.loggedAt).toISOString() : undefined,
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
+      userId,
+      moodEntryId: moodEntry.id,
+    });
+
+    return moodEntry;
   }
 
   async delete(userId: string, moodEntryId: string, isHardDelete?: boolean) {
@@ -269,11 +289,19 @@ export class MoodEntriesManager {
       throw new Error('You cannot delete this mood entry');
     }
 
-    return isHardDelete
-      ? this.deleteOneById(moodEntryId)
-      : this.updateOneById(moodEntryId, {
+    const data = isHardDelete
+      ? await this.deleteOneById(moodEntryId)
+      : await this.updateOneById(moodEntryId, {
           deletedAt: new Date(),
         });
+
+    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
+      userId,
+      moodEntryId: data.id,
+      isHardDelete,
+    });
+
+    return data;
   }
 
   async undelete(userId: string, moodEntryId: string) {
@@ -282,11 +310,19 @@ export class MoodEntriesManager {
       throw new Error('You cannot undelete this mood entry');
     }
 
-    return await this.updateOneById(moodEntryId, {
+    const moodEntry = await this.updateOneById(moodEntryId, {
       deletedAt: null,
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
+      userId,
+      moodEntryId: moodEntry.id,
+    });
+
+    return moodEntry;
   }
 
+  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

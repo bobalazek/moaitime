@@ -530,7 +530,7 @@ export class TasksManager {
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
-      isHardDelete: isHardDelete,
+      isHardDelete,
     });
 
     return data;

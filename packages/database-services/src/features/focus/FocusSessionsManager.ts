@@ -1,6 +1,7 @@
 import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
 
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
+import { globalEventNotifier } from '@moaitime/global-event-notifier';
 import {
   CreateFocusSession,
   FocusSessionEventTypeEnum,
@@ -9,6 +10,7 @@ import {
   FocusSessionUpdateActionEnum,
   getFocusSessionDurationForCurrentStage,
   getTimeDifferenceInSeconds,
+  GlobalEventsEnum,
 } from '@moaitime/shared-common';
 
 import { tasksManager } from '../tasks/TasksManager';
@@ -122,10 +124,17 @@ export class FocusSessionsManager {
       }
     }
 
-    return this.insertOne({
+    const focusSession = await this.insertOne({
       ...data,
       userId,
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
+      userId,
+      focusSessionId: focusSession.id,
+    });
+
+    return focusSession;
   }
 
   async view(userId: string, focusSessionId: string, updatePing?: boolean) {
@@ -135,7 +144,7 @@ export class FocusSessionsManager {
         : await this.findOneByIdAndUserId(focusSessionId, userId);
 
     if (updatePing && data) {
-      data = await this.updateFocusSession(data, FocusSessionUpdateActionEnum.PING);
+      data = await this.updateFocusSession(userId, data, FocusSessionUpdateActionEnum.PING);
     }
 
     return data;
@@ -151,7 +160,13 @@ export class FocusSessionsManager {
       throw new Error('Focus session not found');
     }
 
-    return this.updateFocusSession(focusSession, action);
+    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
+      userId,
+      focusSessionId: focusSession.id,
+      action,
+    });
+
+    return this.updateFocusSession(userId, focusSession, action);
   }
 
   async delete(userId: string, focusSessionId: string, isHardDelete?: boolean) {
@@ -160,11 +175,19 @@ export class FocusSessionsManager {
       throw new Error('Focus session not found');
     }
 
-    return isHardDelete
-      ? this.deleteOneById(focusSessionId)
-      : this.updateOneById(focusSessionId, {
+    const focusSession = isHardDelete
+      ? await this.deleteOneById(focusSessionId)
+      : await this.updateOneById(focusSessionId, {
           deletedAt: new Date(),
         });
+
+    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED, {
+      userId,
+      focusSessionId: focusSession.id,
+      isHardDelete,
+    });
+
+    return focusSession;
   }
 
   async undelete(userId: string, focusSessionId: string) {
@@ -173,12 +196,20 @@ export class FocusSessionsManager {
       throw new Error('You cannot undelete this focus session');
     }
 
-    return this.updateOneById(focusSessionId, {
+    const focusSession = await this.updateOneById(focusSessionId, {
       deletedAt: null,
     });
+
+    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED, {
+      userId,
+      focusSessionId: focusSession.id,
+    });
+
+    return focusSession;
   }
 
   async updateFocusSession(
+    userId: string,
     focusSession: FocusSession,
     action: FocusSessionUpdateActionEnum
   ): Promise<FocusSession> {
@@ -299,9 +330,18 @@ export class FocusSessionsManager {
     data.events = currentFocusSessionEvents;
     data.lastPingedAt = now;
 
-    return this.updateOneById(focusSession.id, data);
+    const updatedFocusSession = await this.updateOneById(focusSession.id, data);
+
+    globalEventNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
+      userId,
+      focusSessionId: updatedFocusSession.id,
+      action,
+    });
+
+    return updatedFocusSession;
   }
 
+  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

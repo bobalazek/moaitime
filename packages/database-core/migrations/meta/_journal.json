@@ -8,6 +8,13 @@
       "when": 1707655029928,
       "tag": "0000_new_mandrill",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1707744671614,
+      "tag": "0001_tricky_war_machine",
+      "breakpoints": true
     }
   ]
 }

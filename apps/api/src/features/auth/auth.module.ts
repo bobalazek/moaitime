@@ -7,6 +7,7 @@ import { MyTeamUserInvitationsController } from './controllers/my-team-user-invi
 import { TeamUserInvitationsController } from './controllers/team-user-invitations.controller';
 import { TeamsController } from './controllers/teams.controller';
 import { UserNotificationsController } from './controllers/user-notifications.controller';
+import { UsersController } from './controllers/users.controller';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 
 @Module({
@@ -15,6 +16,7 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
     AuthController,
     AccountController,
     UserNotificationsController,
+    UsersController,
     TeamsController,
     TeamUserInvitationsController,
     JoinedTeamController,

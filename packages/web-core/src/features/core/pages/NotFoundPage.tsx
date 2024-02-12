@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, Card, CardDescription, CardHeader, CardTitle } from '@moaitime/web-ui';
@@ -6,6 +7,10 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = '404 Not Found | MoaiTime';
+  }, []);
 
   return (
     <ErrorBoundary>

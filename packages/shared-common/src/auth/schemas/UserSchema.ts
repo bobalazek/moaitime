@@ -2,19 +2,24 @@ import { z } from 'zod';
 
 import { UserSettingsSchema } from './UserSettingsSchema';
 
-export const UserSchema = z.object({
+// Public User
+export const PublicUserSchema = z.object({
   id: z.string(),
   displayName: z.string(),
   username: z.string(),
   email: z.string().email(),
-  newEmail: z.string().email().nullable(),
   avatarImageUrl: z.string().nullable(),
+  createdAt: z.coerce.string(), // Need that coerce, so we don't need to manually do that every time in the UsersManager
+  updatedAt: z.coerce.string(),
+});
+
+// User
+export const UserSchema = PublicUserSchema.extend({
+  newEmail: z.string().email().nullable(),
   roles: z.array(z.string()),
   settings: UserSettingsSchema,
   birthDate: z.string().nullable(),
   emailConfirmedAt: z.string().nullable(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
 });
 
 // User Partials
@@ -88,6 +93,8 @@ export const UserAccessTokenLiteSchema = z.object({
 });
 
 // Types
+export type PublicUser = z.infer<typeof PublicUserSchema>;
+
 export type User = z.infer<typeof UserSchema>;
 
 export type UpdateUser = z.infer<typeof UpdateUserSchema>;

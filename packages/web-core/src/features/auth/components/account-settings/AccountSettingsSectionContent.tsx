@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
+import { useSettingsStore } from '../../../settings/state/settingsStore';
 import { useAuthStore } from '../../state/authStore';
 
 export default function AccountSettingsSectionContent() {
+  const navigate = useNavigate();
   const {
     auth,
     logout,
@@ -17,6 +20,7 @@ export default function AccountSettingsSectionContent() {
     deleteAccountAvatar,
     uploadAccountAvatar,
   } = useAuthStore();
+  const { setDialogOpen } = useSettingsStore();
   const [userDisplayName, setUserDisplayName] = useState(auth?.user?.displayName ?? '');
   const [userUsername, setUserUsername] = useState(auth?.user?.username ?? '');
   const [userEmail, setUserEmail] = useState(auth?.user?.email ?? '');
@@ -135,6 +139,12 @@ export default function AccountSettingsSectionContent() {
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
+  };
+
+  const onViewPublicProfileButtonClick = async () => {
+    navigate(`/users/${auth.user.username}`);
+
+    setDialogOpen(false);
   };
 
   const onLogoutButtonClick = async () => {
@@ -270,10 +280,20 @@ export default function AccountSettingsSectionContent() {
       </div>
       <hr />
       <div>
-        <h4 className="text-lg font-bold">Data export</h4>
+        <h4 className="text-lg font-bold">Public Profile</h4>
+        <p className="mb-2 text-xs text-gray-400">
+          Want to see how your profile looks to other fellas?
+        </p>
+        <Button size="sm" variant="default" onClick={onViewPublicProfileButtonClick}>
+          View Public Profile
+        </Button>
+      </div>
+      <hr />
+      <div>
+        <h4 className="text-lg font-bold">Data Export</h4>
         <p className="mb-2 text-xs text-gray-400">Get your data!</p>
         <Button size="sm" variant="default" onClick={onRequestDataExportButtonClick}>
-          Request data export
+          Request Data Export
         </Button>
       </div>
       <hr />

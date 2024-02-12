@@ -7,6 +7,7 @@ import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
 import NotificationsPage from './features/auth/components/pages/NotificationsPage';
+import UsersViewPage from './features/auth/components/pages/UsersViewPage';
 import TeamEditDialog from './features/auth/components/team-edit-dialog/TeamEditDialog';
 import { useAuthUserSetting } from './features/auth/state/authStore';
 import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
@@ -116,6 +117,14 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <StatisticsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/:userUsername"
+          element={
+            <ProtectedRoute>
+              <UsersViewPage />
             </ProtectedRoute>
           }
         />

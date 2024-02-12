@@ -4,6 +4,7 @@ import { and, count, DBQueryConfig, eq, isNull } from 'drizzle-orm';
 import { getDatabase, NewUser, teams, teamUsers, User, users } from '@moaitime/database-core';
 import {
   DEFAULT_USER_SETTINGS,
+  PublicUserSchema,
   UserLimits,
   UserSettings,
   UserUsage,
@@ -133,6 +134,16 @@ export class UsersManager {
     const rows = await getDatabase().delete(users).where(eq(users.id, id)).returning();
 
     return this._fixRowColumns(rows[0]);
+  }
+
+  // API Helpers
+  async view(userId: string, userUsername: string) {
+    const user = await this.findOneByUsername(userUsername);
+    if (!user) {
+      throw new Error(`User with username "${userUsername}" was not found.`);
+    }
+
+    return PublicUserSchema.parse(user);
   }
 
   // Helpers

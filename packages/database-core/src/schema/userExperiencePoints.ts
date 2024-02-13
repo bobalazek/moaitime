@@ -7,6 +7,7 @@ export const userExperiencePoints = pgTable(
   'user_experience_points',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    type: integer('type').notNull(),
     amount: integer('amount').notNull(),
     relatedEntities: json('related_entities').$type<string[]>(), // Those are the entities we will get from the DB before rendering the content
     data: json('data'),

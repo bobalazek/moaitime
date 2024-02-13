@@ -15,6 +15,13 @@
       "when": 1707744671614,
       "tag": "0001_tricky_war_machine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1707804919183,
+      "tag": "0002_flawless_gambit",
+      "breakpoints": true
     }
   ]
 }

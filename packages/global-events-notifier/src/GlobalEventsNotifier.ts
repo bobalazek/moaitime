@@ -23,13 +23,13 @@ export class GlobalEventsNotifier {
   async subscribe<T extends GlobalEventsEnum>(
     queue: GlobalEventsNotifierQueueEnum,
     type: T | '*',
-    callback: (message: { type: T; payload: GlobalEvents[T] }) => void
+    callback: (message: { type: T; payload: GlobalEvents[T] }) => Promise<void>
   ) {
     logger.debug(`[GlobalEventsNotifier] Subscribing to global event (${type}) ...`);
 
     const channel = await this._getChannel();
 
-    channel?.consume(queue, (message: RabbitMQConsumeMessage | null) => {
+    channel?.consume(queue, async (message: RabbitMQConsumeMessage | null) => {
       if (!message) {
         return;
       }
@@ -41,7 +41,7 @@ export class GlobalEventsNotifier {
       logger.debug(`[GlobalEventsNotifier] Received global event "${parsedMessage.type}" ...`);
 
       if (type === '*' || parsedMessage.type === type) {
-        callback(parsedMessage);
+        await callback(parsedMessage);
       }
 
       channel.ack(message);

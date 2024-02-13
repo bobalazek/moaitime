@@ -1,0 +1,1 @@
+ALTER TABLE "user_experience_points" ADD COLUMN "type" integer NOT NULL;

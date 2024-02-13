@@ -629,12 +629,18 @@ importers:
 
   packages/global-events-processor:
     dependencies:
+      '@moaitime/database-services':
+        specifier: workspace:*
+        version: link:../database-services
       '@moaitime/global-events-notifier':
         specifier: workspace:*
         version: link:../global-events-notifier
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging
+      '@moaitime/shared-common':
+        specifier: workspace:*
+        version: link:../shared-common
     devDependencies:
       typescript:
         specifier: ^5.3.2

@@ -338,6 +338,13 @@ export class FocusSessionsManager {
       action,
     });
 
+    if (data.completedAt) {
+      globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED, {
+        userId,
+        focusSessionId: updatedFocusSession.id,
+      });
+    }
+
     return updatedFocusSession;
   }
 

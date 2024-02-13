@@ -65,7 +65,7 @@ export class GlobalEventsNotifier {
       const connection = await this._rabbitMQ.getConnection();
 
       connection.on('error', (error) => {
-        this._logger.error(`[GlobalEventsNotifier] Connection error: ${error.message}`);
+        this._logger.error(error, `[GlobalEventsNotifier] Connection error: ${error.message}`);
       });
 
       connection.on('close', () => {

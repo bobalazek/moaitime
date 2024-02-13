@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, integer, jsonb, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { users } from './users';
 
@@ -7,10 +7,11 @@ export const userExperiencePoints = pgTable(
   'user_experience_points',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    type: integer('type').notNull(),
+    type: text('type').notNull(),
     amount: integer('amount').notNull(),
     relatedEntities: jsonb('related_entities').$type<string[]>(), // Those are the entities we will get from the DB before rendering the content
     data: jsonb('data'),
+    invalidatedReason: text('invalidated_reason'), // In case the user just faked the actions to get the points
     invalidatedAt: timestamp('invalidated_at'), // In case the user just faked the actions to get the points
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

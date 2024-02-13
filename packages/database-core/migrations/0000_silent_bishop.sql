@@ -321,10 +321,11 @@ CREATE TABLE IF NOT EXISTS "user_notifications" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_experience_points" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"type" integer NOT NULL,
+	"type" text NOT NULL,
 	"amount" integer NOT NULL,
 	"related_entities" jsonb,
 	"data" jsonb,
+	"invalidated_reason" text,
 	"invalidated_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),

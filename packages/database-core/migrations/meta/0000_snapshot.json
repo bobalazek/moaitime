@@ -1,5 +1,5 @@
 {
-  "id": "b157a817-4f51-4ccd-8efe-93fe5aa701c5",
+  "id": "cd0ea4e1-a562-4765-a2a5-e96cdcc1b7c5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -2430,7 +2430,7 @@
         },
         "type": {
           "name": "type",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -2449,6 +2449,12 @@
         "data": {
           "name": "data",
           "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invalidated_reason": {
+          "name": "invalidated_reason",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },

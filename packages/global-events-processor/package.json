@@ -24,8 +24,10 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
+    "@moaitime/database-services": "workspace:*",
     "@moaitime/global-events-notifier": "workspace:*",
-    "@moaitime/logging": "workspace:*"
+    "@moaitime/logging": "workspace:*",
+    "@moaitime/shared-common": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

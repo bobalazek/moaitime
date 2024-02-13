@@ -203,7 +203,7 @@ export class TeamsManager {
 
     if (isOwner && allTeamUsers.length > 1) {
       throw new Error(
-        'For a team member to leave the team, you will first you need to remove all existing team members.'
+        'You will first you need to remove all the existing team members from the team before you can leave.'
       );
     }
 

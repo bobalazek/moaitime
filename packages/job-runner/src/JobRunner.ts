@@ -4,16 +4,17 @@ import {
   userDeletionProcessor,
   UserDeletionProcessor,
 } from '@moaitime/database-services';
-import {
-  GlobalEventsNotifier,
-  globalEventsNotifier,
-  GlobalEventsNotifierQueueEnum,
-} from '@moaitime/global-events-notifier';
 import { logger, Logger } from '@moaitime/logging';
 import { shutdownManager, ShutdownManager } from '@moaitime/processes';
 import { redis, Redis } from '@moaitime/redis';
 import { SharedQueueWorkerJobEnum, sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
+
+import {
+  GlobalEventsNotifier,
+  globalEventsNotifier,
+  GlobalEventsNotifierQueueEnum,
+} from '../../global-events/src';
 
 export class JobRunner {
   private _globalEventsNotifierSubscription?: () => Promise<void>;

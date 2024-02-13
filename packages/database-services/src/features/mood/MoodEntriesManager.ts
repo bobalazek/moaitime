@@ -16,13 +16,14 @@ import {
 } from 'drizzle-orm';
 
 import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/database-core';
-import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateMoodEntry,
   GlobalEventsEnum,
   SortDirectionEnum,
   UpdateMoodEntry,
 } from '@moaitime/shared-common';
+
+import { globalEventsNotifier } from '../../../../global-events/src';
 
 export type MoodEntriesManagerFindOptions = {
   includeDeleted?: boolean;

@@ -32,7 +32,7 @@
     "@moaitime/database-services": "workspace:*",
     "@moaitime/database-services-testing": "workspace:*",
     "@moaitime/database-testing": "workspace:*",
-    "@moaitime/global-events-notifier": "workspace:*",
+    "@moaitime/global-events": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",

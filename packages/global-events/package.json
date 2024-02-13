@@ -1,5 +1,5 @@
 {
-  "name": "@moaitime/global-events-notifier",
+  "name": "@moaitime/global-events",
   "version": "0.0.0",
   "exports": {
     ".": {

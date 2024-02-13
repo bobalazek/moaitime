@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@moaitime/database-services": "workspace:*",
-    "@moaitime/global-events-notifier": "workspace:*",
+    "@moaitime/global-events": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "@moaitime/processes": "workspace:*",
     "@moaitime/redis": "workspace:*",

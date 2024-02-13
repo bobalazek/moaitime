@@ -50,21 +50,35 @@ describe('AuthManager.ts', () => {
   });
 
   describe('register()', () => {
-    it('should prevent creating duplicate users', async () => {
+    it('should prevent creating duplicate users by email', async () => {
       const result = () =>
         authManager.register({
           displayName: 'Tester',
+          username: 'tester',
           email: 'tester@corcosoft.com',
           password: 'password12345',
         });
 
-      await expect(result).rejects.toThrow('User already exists');
+      await expect(result).rejects.toThrow('User with this email already exists');
+    });
+
+    it('should prevent creating duplicate users by username', async () => {
+      const result = () =>
+        authManager.register({
+          displayName: 'Tester',
+          username: 'tester',
+          email: 'tester+custom-email@corcosoft.com',
+          password: 'password12345',
+        });
+
+      await expect(result).rejects.toThrow('User with this username already exists');
     });
 
     it('should prevent creating a user without password', async () => {
       const result = () =>
         authManager.register({
           displayName: 'Tester0',
+          username: 'tester0',
           email: 'tester+0@corcosoft.com',
         });
 
@@ -74,6 +88,7 @@ describe('AuthManager.ts', () => {
     it('should create a user successfully', async () => {
       const user = await authManager.register({
         displayName: 'Tester0',
+        username: 'tester0',
         email: 'tester+0@corcosoft.com',
         password: 'password',
       });
@@ -101,7 +116,8 @@ describe('AuthManager.ts', () => {
 
     it('should correctly confirm a newly registered users email', async () => {
       const user = await authManager.register({
-        displayName: 'Tester',
+        displayName: 'Tester1',
+        username: 'tester1',
         email: 'tester+1@corcosoft.com',
         password: 'password',
       });
@@ -114,6 +130,7 @@ describe('AuthManager.ts', () => {
     it('should not re-confirm the email if it was already confirmed', async () => {
       const user = await authManager.register({
         displayName: 'Tester2',
+        username: 'tester2',
         email: 'tester+2@corcosoft.com',
         password: 'password',
       });
@@ -130,6 +147,7 @@ describe('AuthManager.ts', () => {
     it('should currectly verify new email', async () => {
       const user = await authManager.register({
         displayName: 'Tester3',
+        username: 'tester3',
         email: 'tester+3@corcosoft.com',
         password: 'password',
       });
@@ -152,6 +170,7 @@ describe('AuthManager.ts', () => {
     it('should make sure to confirm only if a new email it set', async () => {
       const user = await authManager.register({
         displayName: 'Tester4',
+        username: 'tester4',
         email: 'tester+4@corcosoft.com',
         password: 'password',
       });
@@ -170,7 +189,8 @@ describe('AuthManager.ts', () => {
 
     it('should throw an error if token has expired', async () => {
       const user = await authManager.register({
-        displayName: 'Tester4',
+        displayName: 'Tester5',
+        username: 'tester5',
         email: 'tester+5@corcosoft.com',
         password: 'password',
       });
@@ -194,6 +214,7 @@ describe('AuthManager.ts', () => {
     it('should throw an error if the user has no new email set', async () => {
       const user = await authManager.register({
         displayName: 'Tester6',
+        username: 'tester6',
         email: 'tester+6@corcosoft.com',
         password: 'password',
       });
@@ -206,6 +227,7 @@ describe('AuthManager.ts', () => {
     it('should work correctly', async () => {
       const user = await authManager.register({
         displayName: 'Tester7',
+        username: 'tester7',
         email: 'tester+7@corcosoft.com',
         password: 'password',
       });
@@ -231,6 +253,7 @@ describe('AuthManager.ts', () => {
     it('should work correctly', async () => {
       const user = await authManager.register({
         displayName: 'Tester8',
+        username: 'tester8',
         email: 'tester+8@corcosoft.com',
         password: 'password',
       });
@@ -244,6 +267,7 @@ describe('AuthManager.ts', () => {
     it('should not allow requesting a new password reset if one is currently pending', async () => {
       const user = await authManager.register({
         displayName: 'Tester9',
+        username: 'tester9',
         email: 'tester+9@corcosoft.com',
         password: 'password',
       });
@@ -272,6 +296,7 @@ describe('AuthManager.ts', () => {
     it('should work correctly', async () => {
       const user = await authManager.register({
         displayName: 'Tester10',
+        username: 'tester10',
         email: 'tester+10@corcosoft.com',
         password: 'password',
       });
@@ -292,6 +317,7 @@ describe('AuthManager.ts', () => {
     it('should not allow changing the password if token has expired', async () => {
       const user = await authManager.register({
         displayName: 'Tester11',
+        username: 'tester11',
         email: 'tester+11@corcosoft.com',
         password: 'password',
       });
@@ -316,6 +342,7 @@ describe('AuthManager.ts', () => {
       const password = 'password';
       await authManager.register({
         displayName: 'Tester12',
+        username: 'tester12',
         email,
         password,
       });
@@ -336,6 +363,7 @@ describe('AuthManager.ts', () => {
       const password = 'password';
       await authManager.register({
         displayName: 'Tester13',
+        username: 'tester13',
         email,
         password,
       });
@@ -357,6 +385,7 @@ describe('AuthManager.ts', () => {
       const password = 'password';
       await authManager.register({
         displayName: 'Tester14',
+        username: 'tester14',
         email,
         password,
       });
@@ -378,6 +407,7 @@ describe('AuthManager.ts', () => {
       const password = 'password';
       await authManager.register({
         displayName: 'Tester15',
+        username: 'tester15',
         email,
         password,
       });
@@ -399,6 +429,7 @@ describe('AuthManager.ts', () => {
       const password = 'password';
       const user = await authManager.register({
         displayName: 'Tester16',
+        username: 'tester16',
         email,
         password,
       });
@@ -415,6 +446,7 @@ describe('AuthManager.ts', () => {
     it('should work correctly', async () => {
       const user = await authManager.register({
         displayName: 'Tester17',
+        username: 'tester17',
         email: 'tester+17@corcosoft.com',
         password: 'password',
       });
@@ -438,6 +470,7 @@ describe('AuthManager.ts', () => {
     it('should work correctly', async () => {
       const user = await authManager.register({
         displayName: 'Tester18',
+        username: 'tester18',
         email: 'tester+18@corcosoft.com',
         password: 'password',
       });
@@ -450,6 +483,7 @@ describe('AuthManager.ts', () => {
     it('should throw error if password is not provided', async () => {
       const user = await authManager.register({
         displayName: 'Tester19',
+        username: 'tester19',
         email: 'tester+19@corcosoft.com',
         password: 'password',
       });
@@ -478,6 +512,7 @@ describe('AuthManager.ts', () => {
     it('should throw error if password is too short', async () => {
       const user = await authManager.register({
         displayName: 'Tester20',
+        username: 'tester20',
         email: 'tester+20@corcosoft.com',
         password: 'password',
       });

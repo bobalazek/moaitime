@@ -2,6 +2,8 @@ import {
   API_URL,
   CreateFocusSession,
   FocusSession,
+  FocusSessionStageEnum,
+  FocusSessionStatusEnum,
   FocusSessionUpdateActionEnum,
   ResponseInterface,
   UpdateFocusSession,
@@ -119,4 +121,23 @@ export const playChangeFocusSessionStageSound = () => {
   const audio = new Audio();
   audio.src = '/assets/focus/change_focus_session_stage.mp3';
   audio.play();
+};
+
+export const getTitleText = (remainingSecondsTimer: string, focusSession?: FocusSession) => {
+  if (!focusSession || focusSession.completedAt) {
+    return `Focus | MoaiTime`;
+  }
+
+  const stageText =
+    focusSession.stage === FocusSessionStageEnum.FOCUS
+      ? 'Focus'
+      : focusSession.stage === FocusSessionStageEnum.LONG_BREAK
+        ? 'Long Break'
+        : 'Short Break';
+
+  if (focusSession.status === FocusSessionStatusEnum.PAUSED) {
+    return `Paused | ${stageText} | MoaiTime`;
+  }
+
+  return `${remainingSecondsTimer} | ${stageText} | MoaiTime`;
 };

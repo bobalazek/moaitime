@@ -35,7 +35,7 @@ import DateSelector from './DateSelector';
 const DEFAULT_OCCURENCES = 5;
 const MAX_DATES_TO_SHOW = 5;
 
-export enum RepeatSelectorEndsEnum {
+enum RepeatSelectorEndsEnum {
   NEVER = 'never',
   UNTIL_DATE = 'until_date',
   COUNT = 'count',

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import {
-  FocusSession,
   FocusSessionStageEnum,
   FocusSessionStatusEnum,
   FocusSessionUpdateActionEnum,
@@ -11,25 +10,7 @@ import {
 import { Button } from '@moaitime/web-ui';
 
 import { useFocusSessionsStore } from '../../state/focusSessionsStore';
-
-export const getTitleText = (remainingSecondsTimer: string, focusSession?: FocusSession) => {
-  if (!focusSession || focusSession.completedAt) {
-    return `Focus | MoaiTime`;
-  }
-
-  const stageText =
-    focusSession.stage === FocusSessionStageEnum.FOCUS
-      ? 'Focus'
-      : focusSession.stage === FocusSessionStageEnum.LONG_BREAK
-        ? 'Long Break'
-        : 'Short Break';
-
-  if (focusSession.status === FocusSessionStatusEnum.PAUSED) {
-    return `Paused | ${stageText} | MoaiTime`;
-  }
-
-  return `${remainingSecondsTimer} | ${stageText} | MoaiTime`;
-};
+import { getTitleText } from '../../utils/FocusSessionHelpers';
 
 export const FocusSessionStage = ({ stage }: { stage: FocusSessionStageEnum }) => {
   if (stage === FocusSessionStageEnum.SHORT_BREAK) {

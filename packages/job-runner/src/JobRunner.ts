@@ -11,6 +11,7 @@ import {
 } from '@moaitime/global-events-notifier';
 import { logger, Logger } from '@moaitime/logging';
 import { shutdownManager, ShutdownManager } from '@moaitime/processes';
+import { rabbitMQ, RabbitMQ } from '@moaitime/rabbitmq';
 import { redis, Redis } from '@moaitime/redis';
 import { SharedQueueWorkerJobEnum, sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
@@ -22,6 +23,7 @@ export class JobRunner {
     private _logger: Logger,
     private _shutdownManager: ShutdownManager,
     private _redis: Redis,
+    private _rabbitMQ: RabbitMQ,
     private _sharedQueueWorker: SharedQueueWorker,
     private _globalEventsNotifier: GlobalEventsNotifier,
     private _userDeletionManager: UserDeletionProcessor,
@@ -47,6 +49,7 @@ export class JobRunner {
     await this._sharedQueueWorker.terminate();
     await this._redis.terminate();
     await this._globalEventsNotifierSubscription?.();
+    await this._rabbitMQ.terminate();
 
     await sleep(5000); // Just in case
   }
@@ -126,6 +129,7 @@ export const jobRunner = new JobRunner(
   logger,
   shutdownManager,
   redis,
+  rabbitMQ,
   sharedQueueWorker,
   globalEventsNotifier,
   userDeletionProcessor,

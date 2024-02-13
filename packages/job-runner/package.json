@@ -28,6 +28,7 @@
     "@moaitime/global-events-notifier": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "@moaitime/processes": "workspace:*",
+    "@moaitime/rabbitmq": "workspace:*",
     "@moaitime/redis": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
     "@moaitime/shared-queue-worker": "workspace:*"

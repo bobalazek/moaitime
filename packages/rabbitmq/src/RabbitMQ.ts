@@ -35,7 +35,7 @@ export class RabbitMQ {
     return this.connect();
   }
 
-  async close() {
+  async terminate() {
     await this._connection?.close();
   }
 

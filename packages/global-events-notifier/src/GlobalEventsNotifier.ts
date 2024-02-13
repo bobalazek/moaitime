@@ -9,6 +9,16 @@ export enum GlobalEventsNotifierQueueEnum {
   JOB_RUNNER = 'global-events-job-runner-queue',
 }
 
+// TODO: don't think that will work with websocket stuff,
+// because once we have multiple instances of the websocket server,
+// we will have multiple instances of the global events notifier,
+// which will basically just load balance the events between the instances,
+// and the issue will be, that a user may not nescessarily be connected to the same instance,
+// that it received the event.
+// We will probably instead just need 2 separate mechanisms
+// 1) Redis PubSub for websocket server
+// 2) RabbitMQ for job runner
+
 export class GlobalEventsNotifier {
   private _channel?: RabbitMQChannel;
 

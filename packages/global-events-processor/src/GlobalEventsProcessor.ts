@@ -10,6 +10,45 @@ import {
 import { Logger, logger } from '@moaitime/logging';
 import { EntityTypeEnum, GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
+export const userExpereincePointsMap = {
+  [GlobalEventsEnum.TASKS_TASK_ADDED]: {
+    amount: 5,
+    relatedEntities: (payload: GlobalEvents[GlobalEventsEnum.TASKS_TASK_ADDED]) => {
+      return [`${EntityTypeEnum.TASKS}:${payload.taskId}`];
+    },
+  },
+  [GlobalEventsEnum.TASKS_TASK_COMPLETED]: {
+    amount: 10,
+    relatedEntities: (payload: GlobalEvents[GlobalEventsEnum.TASKS_TASK_COMPLETED]) => {
+      return [`${EntityTypeEnum.TASKS}:${payload.taskId}`];
+    },
+  },
+  [GlobalEventsEnum.CALENDAR_EVENT_ADDED]: {
+    amount: 5,
+    relatedEntities: (payload: GlobalEvents[GlobalEventsEnum.CALENDAR_EVENT_ADDED]) => {
+      return [`${EntityTypeEnum.EVENTS}:${payload.eventId}`];
+    },
+  },
+  [GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED]: {
+    amount: 5,
+    relatedEntities: (payload: GlobalEvents[GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED]) => {
+      return [`${EntityTypeEnum.MOOD_ENTRIES}:${payload.moodEntryId}`];
+    },
+  },
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED]: {
+    amount: 5,
+    relatedEntities: (payload: GlobalEvents[GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED]) => {
+      return [`${EntityTypeEnum.FOCUS_SESSIONS}:${payload.focusSessionId}`];
+    },
+  },
+  [GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED]: {
+    amount: 10,
+    relatedEntities: (payload: GlobalEvents[GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED]) => {
+      return [`${EntityTypeEnum.FOCUS_SESSIONS}:${payload.focusSessionId}`];
+    },
+  },
+};
+
 export class GlobalEventsProcessor {
   constructor(
     private _logger: Logger,
@@ -44,66 +83,20 @@ export class GlobalEventsProcessor {
 
   private async _processEvent<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     /********** User Experience Points **********/
-    // Tasks
-    if (type === GlobalEventsEnum.TASKS_TASK_ADDED) {
-      const data = payload as GlobalEvents[GlobalEventsEnum.TASKS_TASK_ADDED];
+    const finalType = type as keyof typeof userExpereincePointsMap;
+    if (userExpereincePointsMap[finalType]) {
+      const data = payload as GlobalEvents[T];
+      const amount = userExpereincePointsMap[finalType].amount;
+
+      // Really not in the mood dealing with TypeScript right now
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const relatedEntities = userExpereincePointsMap[finalType].relatedEntities(data as any);
 
       await this._userExperiencePointsManager.addExperiencePointsToUser(
         data.userId,
         `global-event:${type}`,
-        5,
-        [`${EntityTypeEnum.TASKS}:${data.taskId}`]
-      );
-    } else if (type === GlobalEventsEnum.TASKS_TASK_COMPLETED) {
-      const data = payload as GlobalEvents[GlobalEventsEnum.TASKS_TASK_COMPLETED];
-
-      await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.userId,
-        `global-event:${type}`,
-        20,
-        [`${EntityTypeEnum.TASKS}:${data.taskId}`]
-      );
-
-      // Events
-    } else if (type === GlobalEventsEnum.CALENDAR_EVENT_ADDED) {
-      const data = payload as GlobalEvents[GlobalEventsEnum.CALENDAR_EVENT_ADDED];
-
-      await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.userId,
-        `global-event:${type}`,
-        5,
-        [`${EntityTypeEnum.EVENTS}:${data.eventId}`]
-      );
-
-      // Mood
-    } else if (type === GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED) {
-      const data = payload as GlobalEvents[GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED];
-
-      await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.userId,
-        `global-event:${type}`,
-        5,
-        [`${EntityTypeEnum.MOOD_ENTRIES}:${data.moodEntryId}`]
-      );
-
-      // Focus sessions
-    } else if (type === GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED) {
-      const data = payload as GlobalEvents[GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED];
-
-      await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.userId,
-        `global-event:${type}`,
-        5,
-        [`${EntityTypeEnum.FOCUS_SESSIONS}:${data.focusSessionId}`]
-      );
-    } else if (type === GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED) {
-      const data = payload as GlobalEvents[GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED];
-
-      await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.userId,
-        `global-event:${type}`,
-        20,
-        [`${EntityTypeEnum.FOCUS_SESSIONS}:${data.focusSessionId}`]
+        amount,
+        relatedEntities
       );
     }
 

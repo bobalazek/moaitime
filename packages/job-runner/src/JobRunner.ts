@@ -4,34 +4,26 @@ import {
   userDeletionProcessor,
   UserDeletionProcessor,
 } from '@moaitime/database-services';
-import {
-  GlobalEventsNotifier,
-  globalEventsNotifier,
-  GlobalEventsNotifierQueueEnum,
-} from '@moaitime/global-events-notifier';
+import { GlobalEventsProcessor, globalEventsProcessor } from '@moaitime/global-events-processor';
 import { logger, Logger } from '@moaitime/logging';
 import { shutdownManager, ShutdownManager } from '@moaitime/processes';
-import { rabbitMQ, RabbitMQ } from '@moaitime/rabbitmq';
-import { redis, Redis } from '@moaitime/redis';
 import { SharedQueueWorkerJobEnum, sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
 
 export class JobRunner {
-  private _globalEventsNotifierSubscription?: () => Promise<void>;
+  private _globalEventsProcessorSubscription?: () => Promise<void>;
 
   constructor(
     private _logger: Logger,
     private _shutdownManager: ShutdownManager,
-    private _redis: Redis,
-    private _rabbitMQ: RabbitMQ,
     private _sharedQueueWorker: SharedQueueWorker,
-    private _globalEventsNotifier: GlobalEventsNotifier,
+    private _globalEventsProcessor: GlobalEventsProcessor,
     private _userDeletionManager: UserDeletionProcessor,
     private _userDataExportsManager: UserDataExportProcessor
   ) {}
 
   async start() {
-    this._logger.info('Starting job runner ...');
+    this._logger.info('[JobRunner] Starting job runner ...');
 
     this._shutdownManager.registerTask('JobRunner:Shutdown', this.terminate.bind(this));
 
@@ -47,11 +39,9 @@ export class JobRunner {
     this._logger.info(`[JobRunner] Terminating ...`);
 
     await this._sharedQueueWorker.terminate();
-    await this._redis.terminate();
-    await this._globalEventsNotifierSubscription?.();
-    await this._rabbitMQ.terminate();
+    await this._globalEventsProcessorSubscription?.();
 
-    await sleep(5000); // Just in case
+    await sleep(2000); // Just in case
   }
 
   private async _registerSharedQueueJobs() {
@@ -109,29 +99,15 @@ export class JobRunner {
   private async _registerGlobalEventNoifications() {
     this._logger.debug(`[JobRunner] Registering global event notifications ...`);
 
-    this._globalEventsNotifierSubscription = await this._globalEventsNotifier.subscribe(
-      GlobalEventsNotifierQueueEnum.JOB_RUNNER,
-      '*',
-      async (message) => {
-        this._logger.debug(
-          `[JobRunner] Received global event "${message.type}" with payload: ${JSON.stringify(
-            message.payload
-          )} ...`
-        );
-
-        // TODO: actually process the event
-      }
-    );
+    this._globalEventsProcessorSubscription = await this._globalEventsProcessor.start();
   }
 }
 
 export const jobRunner = new JobRunner(
   logger,
   shutdownManager,
-  redis,
-  rabbitMQ,
   sharedQueueWorker,
-  globalEventsNotifier,
+  globalEventsProcessor,
   userDeletionProcessor,
   userDataExportProcessor
 );

@@ -1,5 +1,5 @@
 {
-  "name": "@moaitime/rabbitmq",
+  "name": "@moaitime/global-events-processor",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -24,14 +24,10 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@moaitime/processes": "workspace:*",
-    "@moaitime/redis": "workspace:*",
-    "@moaitime/shared-backend": "workspace:*",
-    "amqplib": "^0.10.3",
-    "superjson": "^1.13.1"
+    "@moaitime/global-events-notifier": "workspace:*",
+    "@moaitime/logging": "workspace:*"
   },
   "devDependencies": {
-    "@types/amqplib": "^0.10.1",
     "typescript": "^5.3.2"
   }
 }

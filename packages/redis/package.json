@@ -24,6 +24,7 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
+    "@moaitime/processes": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "ioredis": "^5.1.0",
     "superjson": "^1.13.1"

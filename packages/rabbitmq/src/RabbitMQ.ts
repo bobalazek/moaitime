@@ -8,6 +8,7 @@ import {
 } from 'amqplib';
 import { parse, stringify } from 'superjson';
 
+import { shutdownManager, ShutdownManager } from '@moaitime/processes';
 import { getEnv } from '@moaitime/shared-backend';
 
 export {
@@ -19,6 +20,16 @@ export {
 
 export class RabbitMQ {
   private _connection?: Connection;
+
+  constructor(private _shutdownManager: ShutdownManager) {
+    this._shutdownManager.registerTask(
+      'RabbitMQ:Terminate',
+      this.terminate.bind(this),
+      // This needs to have lower priority, so it will be terminated last,
+      // as it could be, that some other services may still use it
+      -16
+    );
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async connect(socketOptions?: any) {
@@ -49,4 +60,4 @@ export class RabbitMQ {
   }
 }
 
-export const rabbitMQ = new RabbitMQ();
+export const rabbitMQ = new RabbitMQ(shutdownManager);

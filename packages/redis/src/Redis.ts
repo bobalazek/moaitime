@@ -1,6 +1,7 @@
 import IORedis, { RedisOptions } from 'ioredis';
 import { parse, stringify } from 'superjson';
 
+import { ShutdownManager, shutdownManager } from '@moaitime/processes';
 import { getEnv } from '@moaitime/shared-backend';
 
 export { IORedis as RedisIORedis };
@@ -13,6 +14,16 @@ export class Redis {
   private _subClient?: IORedis;
 
   private _subscribersMap: Map<string, EventNotifierCallback[]> = new Map();
+
+  constructor(private _shutdownManager: ShutdownManager) {
+    this._shutdownManager.registerTask(
+      'Redis:Terminate',
+      this.terminate.bind(this),
+      // This needs to have lower priority, so it will be terminated last,
+      // as it could be, that some other services may still use it
+      -16
+    );
+  }
 
   getClient() {
     if (!this._client) {
@@ -157,4 +168,4 @@ export class Redis {
   }
 }
 
-export const redis = new Redis();
+export const redis = new Redis(shutdownManager);

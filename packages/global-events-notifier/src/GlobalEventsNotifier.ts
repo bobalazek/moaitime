@@ -1,4 +1,4 @@
-import { logger } from '@moaitime/logging';
+import { Logger, logger } from '@moaitime/logging';
 import { RabbitMQ, rabbitMQ, RabbitMQChannel, RabbitMQConsumeMessage } from '@moaitime/rabbitmq';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
@@ -12,10 +12,13 @@ export enum GlobalEventsNotifierQueueEnum {
 export class GlobalEventsNotifier {
   private _channel?: RabbitMQChannel;
 
-  constructor(private _rabbitMQ: RabbitMQ) {}
+  constructor(
+    private _logger: Logger,
+    private _rabbitMQ: RabbitMQ
+  ) {}
 
   async publish<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
-    logger.debug(`[GlobalEventsNotifier] Publishing global event (${type}) ...`);
+    this._logger.debug(`[GlobalEventsNotifier] Publishing global event (${type}) ...`);
 
     return this._publishToExchange(type, payload);
   }
@@ -25,7 +28,7 @@ export class GlobalEventsNotifier {
     type: T | '*',
     callback: (message: { type: T; payload: GlobalEvents[T] }) => Promise<void>
   ) {
-    logger.debug(`[GlobalEventsNotifier] Subscribing to global event (${type}) ...`);
+    this._logger.debug(`[GlobalEventsNotifier] Subscribing to global event (${type}) ...`);
 
     const channel = await this._getChannel();
 
@@ -38,7 +41,9 @@ export class GlobalEventsNotifier {
         message.content.toString()
       );
 
-      logger.debug(`[GlobalEventsNotifier] Received global event "${parsedMessage.type}" ...`);
+      this._logger.debug(
+        `[GlobalEventsNotifier] Received global event "${parsedMessage.type}" ...`
+      );
 
       if (type === '*' || parsedMessage.type === type) {
         await callback(parsedMessage);
@@ -48,7 +53,7 @@ export class GlobalEventsNotifier {
     });
 
     return async () => {
-      logger.debug(`[GlobalEventsNotifier] Unsubscribing from global events ...`);
+      this._logger.debug(`[GlobalEventsNotifier] Unsubscribing from global events ...`);
 
       await channel?.close();
     };
@@ -60,7 +65,11 @@ export class GlobalEventsNotifier {
       const connection = await this._rabbitMQ.getConnection();
 
       connection.on('error', (error) => {
-        logger.error(`[GlobalEventsNotifier] Connection error: ${error.message}`);
+        this._logger.error(`[GlobalEventsNotifier] Connection error: ${error.message}`);
+      });
+
+      connection.on('close', () => {
+        this._logger.error(`[GlobalEventsNotifier] Connection closed`);
       });
 
       this._channel = await connection.createChannel();
@@ -96,4 +105,4 @@ export class GlobalEventsNotifier {
   }
 }
 
-export const globalEventsNotifier = new GlobalEventsNotifier(rabbitMQ);
+export const globalEventsNotifier = new GlobalEventsNotifier(logger, rabbitMQ);

@@ -1,6 +1,6 @@
 import { Logger, logger } from '@moaitime/logging';
 
-type ShutdownTask = { name: string; task: () => Promise<void> };
+type ShutdownTask = { name: string; task: () => Promise<void>; priority?: number };
 
 export class ShutdownManager {
   private _hasShutdownStarted = false;
@@ -8,10 +8,10 @@ export class ShutdownManager {
 
   constructor(private _logger: Logger) {}
 
-  registerTask(name: string, task: ShutdownTask['task']) {
+  registerTask(name: string, task: ShutdownTask['task'], priority?: number) {
     this._logger.debug(`[ShutdownManager] Registering shutdown task "${name}" ...`);
 
-    this._tasks.push({ name, task });
+    this._tasks.push({ name, task, priority });
   }
 
   unregisterTask(name: string) {
@@ -61,7 +61,8 @@ export class ShutdownManager {
 
     this._hasShutdownStarted = true;
 
-    for (const task of this._tasks) {
+    const sortedTasks = this._tasks.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+    for (const task of sortedTasks) {
       this._logger.debug(`[ShutdownManager] Executing shutdown task: "${task.name}" ...`);
 
       try {

@@ -1,9 +1,9 @@
 import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { CreateList, GlobalEventsEnum, UpdateList } from '@moaitime/shared-common';
 
-import { globalEventsNotifier } from '../../../../global-events/src';
 import { teamsManager } from '../auth/TeamsManager';
 import { usersManager } from '../auth/UsersManager';
 

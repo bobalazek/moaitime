@@ -44,7 +44,7 @@
       "@moaitime/redis": ["../../packages/redis/src/index.ts"],
       "@moaitime/job-runner": ["../../packages/job-runner/src/index.ts"],
       "@moaitime/uploader": ["../../packages/uploader/src/index.ts"],
-      "@moaitime/global-events": ["../../packages/global-events/src/index.ts"]
+      "@moaitime/global-events-notifier": ["../../packages/global-events-notifier/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

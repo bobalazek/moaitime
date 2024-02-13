@@ -32,6 +32,7 @@ import {
   User,
   users,
 } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
 import {
   CreateTask,
@@ -43,7 +44,6 @@ import {
   UpdateTask,
 } from '@moaitime/shared-common';
 
-import { globalEventsNotifier } from '../../../../global-events/src';
 import { teamsManager } from '../auth/TeamsManager';
 import { userNotificationsSender } from '../auth/UserNotificationsSender';
 import { usersManager } from '../auth/UsersManager';

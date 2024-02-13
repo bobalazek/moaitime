@@ -29,6 +29,7 @@ import {
   User,
   userCalendars,
 } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   convertRuleToString,
   CreateEvent,
@@ -41,7 +42,6 @@ import {
   updateRule,
 } from '@moaitime/shared-common';
 
-import { globalEventsNotifier } from '../../../../global-events/src';
 import { usersManager } from '../auth/UsersManager';
 import { calendarsManager, CalendarsManagerVisibleCalendarsMap } from './CalendarsManager';
 

@@ -1,6 +1,7 @@
 import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
 
 import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateFocusSession,
   FocusSessionEventTypeEnum,
@@ -12,7 +13,6 @@ import {
   GlobalEventsEnum,
 } from '@moaitime/shared-common';
 
-import { globalEventsNotifier } from '../../../../global-events/src';
 import { tasksManager } from '../tasks/TasksManager';
 
 export class FocusSessionsManager {

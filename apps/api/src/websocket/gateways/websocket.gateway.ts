@@ -10,7 +10,10 @@ import {
 import { WebSocket, WebSocketServer as WsWebSocketServer } from 'ws';
 
 import { authManager, usersManager } from '@moaitime/database-services';
-import { globalEventsNotifier, GlobalEventsNotifierQueueEnum } from '@moaitime/global-events';
+import {
+  globalEventsNotifier,
+  GlobalEventsNotifierQueueEnum,
+} from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 

@@ -51,6 +51,21 @@ export const deleteTeam = async (teamId: string): Promise<Team> => {
   return response.data as Team;
 };
 
+export const leaveTeam = async (teamId: string): Promise<Team> => {
+  const response = await fetchJson<ResponseInterface<Team>>(
+    `${API_URL}/api/v1/teams/${teamId}/leave`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Team;
+};
+
 /********** Team Invitations **********/
 export const getTeamInvitations = async (teamId: string) => {
   const response = await fetchJson<ResponseInterface<TeamUserInvitation[]>>(

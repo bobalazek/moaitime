@@ -23,6 +23,7 @@ import {
   getMyTeamInvitations,
   getTeamInvitations,
   getTeamMembers,
+  leaveTeam,
   rejectTeamInvitation,
   removeTeamMember,
   sendTeamInvitation,
@@ -32,6 +33,7 @@ export type TeamsStore = {
   addTeam: (team: CreateTeam) => Promise<Team>;
   editTeam: (teamId: string, team: UpdateTeam) => Promise<Team>;
   deleteTeam: (teamId: string) => Promise<Team>;
+  leaveTeam: (teamId: string) => Promise<Team>;
   // Selected
   selectedTeamDialogOpen: boolean;
   selectedTeam: Team | null;
@@ -93,6 +95,15 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
     await reloadJoinedTeam();
 
     return deletedTask;
+  },
+  leaveTeam: async (teamId: string) => {
+    const { reloadJoinedTeam } = get();
+
+    const leftTeam = await leaveTeam(teamId);
+
+    await reloadJoinedTeam();
+
+    return leftTeam;
   },
   // Selected
   selectedTeamDialogOpen: false,

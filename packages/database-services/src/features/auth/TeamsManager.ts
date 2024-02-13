@@ -188,10 +188,33 @@ export class TeamsManager {
       throw new Error('Team not found');
     }
 
+    const teamUser = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
+    });
+    if (!teamUser) {
+      throw new Error('You are not a member of this team');
+    }
+
+    const isOwner = teamUser.roles.includes(TeamUserRoleEnum.OWNER);
+
+    const allTeamUsers = await getDatabase().query.teamUsers.findMany({
+      where: and(eq(teamUsers.teamId, teamId)),
+    });
+
+    if (isOwner && allTeamUsers.length > 1) {
+      throw new Error(
+        'For a team member to leave the team, you will first you need to remove all existing team members.'
+      );
+    }
+
     const rows = await getDatabase()
       .delete(teamUsers)
       .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
       .returning();
+
+    if (isOwner) {
+      await this.delete(userId, teamId);
+    }
 
     return rows[0] ?? null;
   }

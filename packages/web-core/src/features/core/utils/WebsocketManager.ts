@@ -29,7 +29,6 @@ export class WebsocketManager {
 
         if (state.auth?.user.id) {
           const config = await getConfig();
-
           if (config?.websocketUrl) {
             this.connect(config.websocketUrl);
           }
@@ -40,6 +39,13 @@ export class WebsocketManager {
     useTeamsStore.subscribe(async (state, prevState) => {
       if (state.joinedTeam?.team.id !== prevState.joinedTeam?.team.id) {
         this.disconnect();
+
+        if (state.joinedTeam?.team.id) {
+          const config = await getConfig();
+          if (config?.websocketUrl) {
+            this.connect(config.websocketUrl);
+          }
+        }
       }
     });
 

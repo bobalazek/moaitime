@@ -15,6 +15,8 @@ export default defineConfig({
   },
   plugins: [react()],
   resolve: {
+    // Can we instead use vite-tsconfig-paths?
+    // https://www.npmjs.com/package/vite-tsconfig-paths
     alias: {
       // We need to do that it we want to have HMR working with the monorepo.
       // Make sure the order is correct! We first need to match the files and then the global namespace!

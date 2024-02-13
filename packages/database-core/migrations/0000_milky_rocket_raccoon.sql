@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS "focus_sessions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"status" text DEFAULT 'active' NOT NULL,
 	"task_text" text NOT NULL,
-	"settings" json NOT NULL,
-	"events" json,
+	"settings" jsonb NOT NULL,
+	"events" jsonb,
 	"stage" text DEFAULT 'focus' NOT NULL,
 	"stage_iteration" integer DEFAULT 1 NOT NULL,
 	"stage_progress_seconds" integer DEFAULT 0 NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS "notes" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" text DEFAULT 'note' NOT NULL,
 	"title" text NOT NULL,
-	"content" json NOT NULL,
+	"content" jsonb NOT NULL,
 	"color" text,
 	"directory" text,
 	"journal_date" date,
@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS "organizations" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "organization_users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"roles" json DEFAULT '[]' NOT NULL,
+	"roles" jsonb DEFAULT '[]' NOT NULL,
 	"invite_email" text,
 	"invited_at" timestamp DEFAULT now(),
 	"invite_expires_at" timestamp,
@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS "organization_users" (
 CREATE TABLE IF NOT EXISTS "subscriptions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"plan_key" text NOT NULL,
-	"plan_metadata" json,
+	"plan_metadata" jsonb,
 	"cancel_reason" text,
 	"canceled_at" timestamp,
 	"started_at" timestamp DEFAULT now(),
@@ -238,7 +238,7 @@ CREATE TABLE IF NOT EXISTS "teams" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "team_users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"roles" json DEFAULT '[]' NOT NULL,
+	"roles" jsonb DEFAULT '[]' NOT NULL,
 	"display_name" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS "team_users" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "team_user_invitations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"roles" json DEFAULT '[]' NOT NULL,
+	"roles" jsonb DEFAULT '[]' NOT NULL,
 	"email" text,
 	"expires_at" timestamp,
 	"accepted_at" timestamp,
@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS "team_user_invitations" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "testing_emails" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"data" json,
+	"data" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS "user_access_tokens" (
 CREATE TABLE IF NOT EXISTS "user_data_exports" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"processing_status" text DEFAULT 'pending' NOT NULL,
-	"failed_error" json,
+	"failed_error" jsonb,
 	"export_url" text,
 	"started_at" timestamp,
 	"completed_at" timestamp,
@@ -309,11 +309,23 @@ CREATE TABLE IF NOT EXISTS "user_notifications" (
 	"type" text NOT NULL,
 	"content" text NOT NULL,
 	"target_entity" text,
-	"related_entities" json,
-	"data" json,
+	"related_entities" jsonb,
+	"data" jsonb,
 	"seen_at" timestamp,
 	"read_at" timestamp,
 	"deleted_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_experience_points" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"type" integer NOT NULL,
+	"amount" integer NOT NULL,
+	"related_entities" jsonb,
+	"data" jsonb,
+	"invalidated_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL
@@ -345,8 +357,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"new_email" text,
 	"before_deletion_email" text,
 	"password" text,
-	"roles" json DEFAULT '["user"]' NOT NULL,
-	"settings" json,
+	"roles" jsonb DEFAULT '["user"]' NOT NULL,
+	"settings" jsonb,
 	"birth_date" date,
 	"avatar_image_url" text,
 	"email_confirmation_token" text,
@@ -413,6 +425,7 @@ CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports
 CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_notifications_user_id_idx" ON "user_notifications" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_experience_points_user_id_idx" ON "user_experience_points" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_followed_users_user_id_idx" ON "user_followed_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_followed_users_followed_user_id_idx" ON "user_followed_users" ("followed_user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_blocked_users_user_id_idx" ON "user_blocked_users" ("user_id");--> statement-breakpoint
@@ -653,6 +666,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_notifications" ADD CONSTRAINT "user_notifications_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_experience_points" ADD CONSTRAINT "user_experience_points_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

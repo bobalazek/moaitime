@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { OrganizationUserRoleEnum } from '@moaitime/shared-common';
 
@@ -10,7 +10,7 @@ export const organizationUsers = pgTable(
   'organization_users',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    roles: json('roles').notNull().default('[]').$type<OrganizationUserRoleEnum[]>(),
+    roles: jsonb('roles').notNull().default('[]').$type<OrganizationUserRoleEnum[]>(),
     inviteEmail: text('invite_email'),
     invitedAt: timestamp('invited_at').defaultNow(),
     inviteExpiresAt: timestamp('invite_expires_at'),

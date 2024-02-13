@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { date, index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { date, index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { UserRoleEnum, UserSettings } from '@moaitime/shared-common';
 
@@ -24,11 +24,11 @@ export const users = pgTable(
     newEmail: text('new_email').unique(),
     beforeDeletionEmail: text('before_deletion_email'), // What was the email before the user requested deletion, in case of recovery
     password: text('password'),
-    roles: json('roles')
+    roles: jsonb('roles')
       .notNull()
       .default(JSON.stringify([UserRoleEnum.USER]))
       .$type<UserRoleEnum[]>(),
-    settings: json('settings').$type<UserSettings>(),
+    settings: jsonb('settings').$type<UserSettings>(),
     birthDate: date('birth_date', {
       mode: 'string',
     }),

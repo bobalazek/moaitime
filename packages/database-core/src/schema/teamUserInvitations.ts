@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { TeamUserRoleEnum } from '@moaitime/shared-common';
 
@@ -10,7 +10,7 @@ export const teamUserInvitations = pgTable(
   'team_user_invitations',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    roles: json('roles').notNull().default('[]').$type<TeamUserRoleEnum[]>(), // what roles do we want to assign that invited user
+    roles: jsonb('roles').notNull().default('[]').$type<TeamUserRoleEnum[]>(), // what roles do we want to assign that invited user
     email: text('email'), // Who are we inviting?
     expiresAt: timestamp('expires_at'),
     acceptedAt: timestamp('accepted_at'),

@@ -17,7 +17,6 @@
 
 - `pnpm database:check` - checks if the database is running
 - `pnpm database:generate-migration` - generates a new migration file
-- `pnpm database:update-metadata` - runs all the migrations
 
 ## CLI
 

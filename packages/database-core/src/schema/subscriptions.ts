@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { organizations } from './organizations';
 
@@ -8,7 +8,7 @@ export const subscriptions = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     planKey: text('plan_key').notNull(),
-    planMetadata: json('plan_metadata'), // In case we have some custom arrangement with a customer regarding their plan like custom limits or something
+    planMetadata: jsonb('plan_metadata'), // In case we have some custom arrangement with a customer regarding their plan like custom limits or something
     cancelReason: text('cancel_reason'),
     canceledAt: timestamp('canceled_at'),
     startedAt: timestamp('started_at').defaultNow(),

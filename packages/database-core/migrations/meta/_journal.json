@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1707655029928,
-      "tag": "0000_new_mandrill",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1707744671614,
-      "tag": "0001_tricky_war_machine",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1707804919183,
-      "tag": "0002_flawless_gambit",
+      "when": 1707814512942,
+      "tag": "0000_milky_rocket_raccoon",
       "breakpoints": true
     }
   ]

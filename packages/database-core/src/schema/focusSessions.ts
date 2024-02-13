@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, integer, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import {
   FocusSessionEvent,
@@ -20,8 +20,8 @@ export const focusSessions = pgTable(
       .default(FocusSessionStatusEnum.ACTIVE)
       .$type<FocusSessionStatusEnum>(),
     taskText: text('task_text').notNull(), // You can set a custom task here, instead of choosing from the list
-    settings: json('settings').$type<FocusSessionSettings>().notNull(),
-    events: json('events').$type<FocusSessionEvent[]>(),
+    settings: jsonb('settings').$type<FocusSessionSettings>().notNull(),
+    events: jsonb('events').$type<FocusSessionEvent[]>(),
     stage: text('stage')
       .$type<FocusSessionStageEnum>()
       .notNull()

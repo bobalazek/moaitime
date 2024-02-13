@@ -23,7 +23,6 @@
     "lint": "eslint .",
     "scripts:check": "drizzle-kit check:pg --config=./src/drizzle.config.ts",
     "scripts:generate-migration": "drizzle-kit generate:pg --config=./src/drizzle.config.ts",
-    "scripts:update-metadata": "drizzle-kit up:pg --config=./src/drizzle.config.ts",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {

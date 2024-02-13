@@ -1,5 +1,5 @@
 {
-  "id": "b77e9e3e-c757-4919-9d6e-fff05ddf87d3",
+  "id": "b157a817-4f51-4ccd-8efe-93fe5aa701c5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -430,13 +430,13 @@
         },
         "settings": {
           "name": "settings",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
         "events": {
           "name": "events",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -902,7 +902,7 @@
         },
         "content": {
           "name": "content",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
@@ -1050,7 +1050,7 @@
         },
         "roles": {
           "name": "roles",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true,
           "default": "'[]'"
@@ -1167,7 +1167,7 @@
         },
         "plan_metadata": {
           "name": "plan_metadata",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -1813,7 +1813,7 @@
         },
         "roles": {
           "name": "roles",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true,
           "default": "'[]'"
@@ -1899,7 +1899,7 @@
         },
         "roles": {
           "name": "roles",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true,
           "default": "'[]'"
@@ -2023,7 +2023,7 @@
         },
         "data": {
           "name": "data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -2161,7 +2161,7 @@
         },
         "failed_error": {
           "name": "failed_error",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -2347,13 +2347,13 @@
         },
         "related_entities": {
           "name": "related_entities",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
         "data": {
           "name": "data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -2407,6 +2407,89 @@
         "user_notifications_user_id_users_id_fk": {
           "name": "user_notifications_user_id_users_id_fk",
           "tableFrom": "user_notifications",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "user_experience_points": {
+      "name": "user_experience_points",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "related_entities": {
+          "name": "related_entities",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invalidated_at": {
+          "name": "invalidated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "user_experience_points_user_id_idx": {
+          "name": "user_experience_points_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "user_experience_points_user_id_users_id_fk": {
+          "name": "user_experience_points_user_id_users_id_fk",
+          "tableFrom": "user_experience_points",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
@@ -2624,14 +2707,14 @@
         },
         "roles": {
           "name": "roles",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true,
           "default": "'[\"user\"]'"
         },
         "settings": {
           "name": "settings",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },

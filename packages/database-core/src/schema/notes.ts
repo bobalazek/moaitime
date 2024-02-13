@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { date, index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { date, index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { NoteTypeEnum } from '@moaitime/shared-common';
 
@@ -11,7 +11,7 @@ export const notes = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     type: text('type').notNull().default(NoteTypeEnum.NOTE).$type<NoteTypeEnum>(),
     title: text('title').notNull(),
-    content: json('content').notNull(),
+    content: jsonb('content').notNull(),
     color: text('color'),
     directory: text('directory'),
     journalDate: date('journal_date'),

@@ -1,4 +1,4 @@
-import { json, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { jsonb, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export type TestingEmailData = {
   from: string;
@@ -10,7 +10,7 @@ export type TestingEmailData = {
 
 export const testingEmails = pgTable('testing_emails', {
   id: uuid('id').defaultRandom().primaryKey(),
-  data: json('data').$type<TestingEmailData>(),
+  data: jsonb('data').$type<TestingEmailData>(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

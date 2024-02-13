@@ -51,7 +51,7 @@ export class RabbitMQ {
   }
 
   // Helpers
-  stringify(value: Record<string, unknown>) {
+  stringify(value: unknown) {
     return stringify(value);
   }
 

@@ -1,48 +1,35 @@
 import { Logger, logger } from '@moaitime/logging';
 import { RabbitMQ, rabbitMQ, RabbitMQChannel, RabbitMQConsumeMessage } from '@moaitime/rabbitmq';
+import { Redis, redis } from '@moaitime/redis';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
-export const GLOBAL_EVENTS_EXCHANGE = 'global-events-exchange';
-
-export enum GlobalEventsNotifierQueueEnum {
-  WEBSOCKET = 'global-events-websocket-queue',
-  JOB_RUNNER = 'global-events-job-runner-queue',
-}
-
-// TODO: don't think that will work with websocket stuff,
-// because once we have multiple instances of the websocket server,
-// we will have multiple instances of the global events notifier,
-// which will basically just load balance the events between the instances,
-// and the issue will be, that a user may not nescessarily be connected to the same instance,
-// that it received the event.
-// We will probably instead just need 2 separate mechanisms
-// 1) Redis PubSub for websocket server
-// 2) RabbitMQ for job runner
+export const GLOBAL_EVENTS_QUEUE = 'global-events-queue';
 
 export class GlobalEventsNotifier {
-  private _channel?: RabbitMQChannel;
+  private _rabbitMQChannel?: RabbitMQChannel;
 
   constructor(
     private _logger: Logger,
-    private _rabbitMQ: RabbitMQ
+    private _rabbitMQ: RabbitMQ,
+    private _redis: Redis
   ) {}
 
   async publish<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     this._logger.debug(`[GlobalEventsNotifier] Publishing global event (${type}) ...`);
 
-    return this._publishToExchange(type, payload);
+    await this._publishToQueue(type, payload);
+    await this._publishToPubSub(type, payload);
   }
 
-  async subscribe<T extends GlobalEventsEnum>(
-    queue: GlobalEventsNotifierQueueEnum,
+  async subscribeToQueue<T extends GlobalEventsEnum>(
     type: T | '*',
     callback: (message: { type: T; payload: GlobalEvents[T] }) => Promise<void>
   ) {
-    this._logger.debug(`[GlobalEventsNotifier] Subscribing to global event (${type}) ...`);
+    this._logger.debug(`[GlobalEventsNotifier] Subscribing to global event (${type}) queue ...`);
 
     const channel = await this._getChannel();
 
-    channel?.consume(queue, async (message: RabbitMQConsumeMessage | null) => {
+    channel?.consume(GLOBAL_EVENTS_QUEUE, async (message: RabbitMQConsumeMessage | null) => {
       if (!message) {
         return;
       }
@@ -52,7 +39,7 @@ export class GlobalEventsNotifier {
       );
 
       this._logger.debug(
-        `[GlobalEventsNotifier] Received global event "${parsedMessage.type}" ...`
+        `[GlobalEventsNotifier] Received global event "${parsedMessage.type}" on queue ...`
       );
 
       if (type === '*' || parsedMessage.type === type) {
@@ -63,15 +50,41 @@ export class GlobalEventsNotifier {
     });
 
     return async () => {
-      this._logger.debug(`[GlobalEventsNotifier] Unsubscribing from global events ...`);
+      this._logger.debug(`[GlobalEventsNotifier] Unsubscribing from global events queue ...`);
 
       await channel?.close();
     };
   }
 
+  async subscribeToPubSub<T extends GlobalEventsEnum>(
+    type: T | '*',
+    callback: (message: { type: T; payload: GlobalEvents[T] }) => Promise<void>
+  ) {
+    this._logger.debug(`[GlobalEventsNotifier] Subscribing to global event (${type}) pub sub ...`);
+
+    const wrapperCallback = async (message: { type: T; payload: GlobalEvents[T] }) => {
+      this._logger.debug(
+        `[GlobalEventsNotifier] Received global event "${message.type}" on pub sub ...`
+      );
+
+      if (type === '*' || message.type === type) {
+        await callback(message);
+      }
+    };
+
+    this._redis.subscribe(GLOBAL_EVENTS_QUEUE, wrapperCallback);
+
+    return async () => {
+      this._logger.debug(`[GlobalEventsNotifier] Unsubscribing from global events pub sub ...`);
+
+      await this._redis.unsubscribe(GLOBAL_EVENTS_QUEUE, wrapperCallback);
+    };
+  }
+
   // Private
+  // RabbitMQ
   async _getChannel() {
-    if (!this._channel) {
+    if (!this._rabbitMQChannel) {
       const connection = await this._rabbitMQ.getConnection();
 
       connection.on('error', (error) => {
@@ -82,37 +95,29 @@ export class GlobalEventsNotifier {
         this._logger.error(`[GlobalEventsNotifier] Connection closed`);
       });
 
-      this._channel = await connection.createChannel();
+      this._rabbitMQChannel = await connection.createChannel();
 
-      await this._channel.assertExchange(GLOBAL_EVENTS_EXCHANGE, 'fanout', { durable: true });
-
-      await this._channel.assertQueue(GlobalEventsNotifierQueueEnum.WEBSOCKET, { durable: false });
-      await this._channel.assertQueue(GlobalEventsNotifierQueueEnum.JOB_RUNNER, { durable: true });
-
-      await this._channel.bindQueue(
-        GlobalEventsNotifierQueueEnum.WEBSOCKET,
-        GLOBAL_EVENTS_EXCHANGE,
-        ''
-      );
-      await this._channel.bindQueue(
-        GlobalEventsNotifierQueueEnum.JOB_RUNNER,
-        GLOBAL_EVENTS_EXCHANGE,
-        ''
-      );
+      await this._rabbitMQChannel.assertQueue(GLOBAL_EVENTS_QUEUE, { durable: true });
     }
 
-    return this._channel;
+    return this._rabbitMQChannel;
   }
 
-  async _publishToExchange<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
+  async _publishToQueue<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     const channel = await this._getChannel();
-
-    return channel.publish(
-      GLOBAL_EVENTS_EXCHANGE,
-      '',
+    return channel.sendToQueue(
+      GLOBAL_EVENTS_QUEUE,
       Buffer.from(this._rabbitMQ.stringify({ type, payload }))
     );
   }
+
+  // Redis
+  async _publishToPubSub<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
+    return this._redis.publish(GLOBAL_EVENTS_QUEUE, {
+      type,
+      payload,
+    });
+  }
 }
 
-export const globalEventsNotifier = new GlobalEventsNotifier(logger, rabbitMQ);
+export const globalEventsNotifier = new GlobalEventsNotifier(logger, rabbitMQ, redis);

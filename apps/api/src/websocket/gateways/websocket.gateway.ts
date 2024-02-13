@@ -10,12 +10,8 @@ import {
 import { WebSocket, WebSocketServer as WsWebSocketServer } from 'ws';
 
 import { authManager, usersManager } from '@moaitime/database-services';
-import {
-  globalEventsNotifier,
-  GlobalEventsNotifierQueueEnum,
-} from '@moaitime/global-events-notifier';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
-import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 // TODO: is there a more optimal way to do this?
 export let globalNotifierSubscription: () => Promise<void>;
@@ -38,14 +34,10 @@ export class WebsocketGateway
     (async () => {
       logger.info(`[WebsocketGateway] Subscribing to events ...`);
 
-      globalNotifierSubscription = await globalEventsNotifier.subscribe(
-        GlobalEventsNotifierQueueEnum.WEBSOCKET,
+      globalNotifierSubscription = await globalEventsNotifier.subscribeToPubSub(
         '*',
         async (message) => {
-          const { type, payload } = message as {
-            type: GlobalEventsEnum;
-            payload: GlobalEvents[GlobalEventsEnum];
-          };
+          const { type, payload } = message;
 
           if ('teamId' in payload && payload.teamId) {
             const userSockets = this._getSocketsForTeam(payload.teamId);

@@ -180,13 +180,13 @@ export class UsersManager {
 
     return {
       teamsMaxPerUserCount: 1,
-      tasksMaxPerListCount: 10,
+      tasksMaxPerListCount: 25,
       listsMaxPerUserCount: 10,
       tagsMaxPerUserCount: 10,
-      calendarsMaxPerUserCount: 10,
-      calendarsMaxEventsPerCalendarCount: 100,
-      calendarsMaxUserCalendarsPerUserCount: 5,
-      notesMaxPerUserCount: 10,
+      calendarsMaxPerUserCount: 5,
+      calendarsMaxEventsPerCalendarCount: 1000,
+      calendarsMaxUserCalendarsPerUserCount: 3,
+      notesMaxPerUserCount: 25,
     };
   }
 

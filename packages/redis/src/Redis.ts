@@ -6,7 +6,7 @@ import { getEnv } from '@moaitime/shared-backend';
 
 export { IORedis as RedisIORedis };
 
-export type EventNotifierCallback<T = unknown> = (message: T) => void;
+export type EventNotifierCallback<T = unknown> = (message: T) => void | Promise<void>;
 
 export class Redis {
   private _client?: IORedis;
@@ -64,7 +64,7 @@ export class Redis {
   /********** PubSub **********/
   publish<T>(channel: string, message: T) {
     const pubClient = this.getPubClient();
-    const serializedMessage = stringify(message);
+    const serializedMessage = this.stringify(message);
 
     pubClient.publish(channel, serializedMessage);
   }
@@ -79,10 +79,10 @@ export class Redis {
           return;
         }
 
-        const message = parse(serializedMessage) as T;
+        const message = this.parse(serializedMessage) as T;
         this._subscribersMap
           .get(channel)
-          ?.forEach((cb) => (cb as EventNotifierCallback<T>)(message));
+          ?.forEach(async (cb) => (cb as EventNotifierCallback<T>)(message));
       });
 
       this._subscribersMap.set(channel, []);
@@ -165,6 +165,15 @@ export class Redis {
 
     const dedupeSetName = `${queueName}:dedupeSet`;
     await client.del(dedupeSetName);
+  }
+
+  // Helpers
+  stringify(value: unknown) {
+    return stringify(value);
+  }
+
+  parse<T>(value: string) {
+    return parse<T>(value);
   }
 }
 

@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "@moaitime/logging": "workspace:*",
-    "@moaitime/rabbitmq": "workspace:*"
+    "@moaitime/rabbitmq": "workspace:*",
+    "@moaitime/redis": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.3.2"

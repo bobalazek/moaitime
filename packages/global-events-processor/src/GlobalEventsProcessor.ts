@@ -2,11 +2,7 @@ import {
   UserExperiencePointsManager,
   userExperiencePointsManager,
 } from '@moaitime/database-services';
-import {
-  GlobalEventsNotifier,
-  globalEventsNotifier,
-  GlobalEventsNotifierQueueEnum,
-} from '@moaitime/global-events-notifier';
+import { GlobalEventsNotifier, globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { Logger, logger } from '@moaitime/logging';
 import { EntityTypeEnum, GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
@@ -57,28 +53,24 @@ export class GlobalEventsProcessor {
   ) {}
 
   async start() {
-    return this._globalEventsNotifier.subscribe(
-      GlobalEventsNotifierQueueEnum.JOB_RUNNER,
-      '*',
-      async (message) => {
-        this._logger.debug(
-          `[GlobalEventsProcessor] Received global event "${message.type}" with payload: ${JSON.stringify(
+    return this._globalEventsNotifier.subscribeToQueue('*', async (message) => {
+      this._logger.debug(
+        `[GlobalEventsProcessor] Received global event "${message.type}" with payload: ${JSON.stringify(
+          message.payload
+        )} ...`
+      );
+
+      try {
+        await this._processEvent(message.type, message.payload);
+      } catch (error) {
+        this._logger.error(
+          error,
+          `[GlobalEventsProcessor] Error processing global event "${message.type}" with payload: ${JSON.stringify(
             message.payload
           )} ...`
         );
-
-        try {
-          await this._processEvent(message.type, message.payload);
-        } catch (error) {
-          this._logger.error(
-            error,
-            `[GlobalEventsProcessor] Error processing global event "${message.type}" with payload: ${JSON.stringify(
-              message.payload
-            )} ...`
-          );
-        }
       }
-    );
+    });
   }
 
   private async _processEvent<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {

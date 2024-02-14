@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { UserSchema } from '../auth/schemas/UserSchema';
-import { ColorSchema } from '../core/schemas/ColorSchema';
-import { RepeatPatternSchema } from '../core/schemas/RepeatPatternSchema';
-import { TimezoneSchema } from '../core/schemas/TimezoneSchema';
+import { UserSchema } from '../auth/users/UserSchema';
+import { ColorSchema } from '../core/colors/ColorSchema';
+import { RepeatPatternSchema } from '../core/dates/RepeatPatternSchema';
+import { TimezoneSchema } from '../core/dates/TimezoneSchema';
 import { isValidDate, isValidTime } from '../Helpers';
 import { TagSchema } from '../tasks/TagSchema';
 import { ListSchema } from './ListSchema';

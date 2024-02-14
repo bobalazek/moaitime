@@ -1,6 +1,6 @@
-import { ThemeEnum } from '../core/ThemeEnum';
-import { SearchEnginesEnum } from '../search/SearchEnginesEnum';
-import { UserSettings } from './schemas/UserSettingsSchema';
+import { ThemeEnum } from '../../core/ThemeEnum';
+import { SearchEnginesEnum } from '../../search/SearchEnginesEnum';
+import { UserSettings } from './UserSettingsSchema';
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   // General

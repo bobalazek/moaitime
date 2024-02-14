@@ -7,7 +7,8 @@ import {
 import { GlobalEventsProcessor, globalEventsProcessor } from '@moaitime/global-events-processor';
 import { logger, Logger } from '@moaitime/logging';
 import { shutdownManager, ShutdownManager } from '@moaitime/processes';
-import { SharedQueueWorkerJobEnum, sleep } from '@moaitime/shared-common';
+import { SharedQueueWorkerJobEnum } from '@moaitime/shared-backend';
+import { sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
 
 export class JobRunner {

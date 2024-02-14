@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 import { MOOD_SCORES } from '../../Constants';
-import { DayOfWeek } from '../../core/DayOfWeek';
-import { HexColorSchema } from '../../core/schemas/HexColorSchema';
+import { HexColorSchema } from '../../core/colors/HexColorSchema';
+import { DayOfWeek } from '../../core/dates/DayOfWeek';
 import { ThemeEnum } from '../../core/ThemeEnum';
 import { FocusSessionSettingsSchema } from '../../focus/FocusSessionSchema';
 import { SearchEnginesEnum } from '../../search/SearchEnginesEnum';

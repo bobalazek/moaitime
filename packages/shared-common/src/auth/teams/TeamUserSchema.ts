@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { TeamSchema } from '../TeamSchema';
-import { TeamUserRoleEnum } from '../TeamUserRoleEnum';
-import { UserSchema } from './UserSchema';
+import { UserSchema } from '../users/UserSchema';
+import { TeamSchema } from './TeamSchema';
+import { TeamUserRoleEnum } from './TeamUserRoleEnum';
 
 export const TeamUserSchema = z.object({
   id: z.string(),

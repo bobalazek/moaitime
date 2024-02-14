@@ -1,5 +1,5 @@
-import { TeamUser } from './schemas/TeamUserSchema';
 import { Team } from './TeamSchema';
+import { TeamUser } from './TeamUserSchema';
 
 export type JoinedTeam = {
   team: Team;

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { EditorNodeSchema } from '../core/schemas/EditorValueSchema';
+import { EditorNodeSchema } from '../core/EditorValueSchema';
 import { isValidDate } from '../Helpers';
 import { NoteTypeEnum } from './NoteTypeEnum';
 

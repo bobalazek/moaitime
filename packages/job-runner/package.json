@@ -28,6 +28,7 @@
     "@moaitime/global-events-processor": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "@moaitime/processes": "workspace:*",
+    "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
     "@moaitime/shared-queue-worker": "workspace:*"
   },

@@ -676,6 +676,9 @@ importers:
       '@moaitime/processes':
         specifier: workspace:*
         version: link:../processes
+      '@moaitime/shared-backend':
+        specifier: workspace:*
+        version: link:../shared-backend
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common

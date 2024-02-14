@@ -1,10 +1,10 @@
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { z } from 'zod';
 
-import { ColorSchema } from '../core/schemas/ColorSchema';
-import { PermissionsSchema } from '../core/schemas/PermissionsSchema';
-import { RepeatPatternSchema } from '../core/schemas/RepeatPatternSchema';
-import { TimezoneSchema } from '../core/schemas/TimezoneSchema';
+import { ColorSchema } from '../core/colors/ColorSchema';
+import { RepeatPatternSchema } from '../core/dates/RepeatPatternSchema';
+import { TimezoneSchema } from '../core/dates/TimezoneSchema';
+import { PermissionsSchema } from '../core/PermissionsSchema';
 
 export const EventSchema = z.object({
   id: z.string(),

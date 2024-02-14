@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserAccessTokenLiteSchema, UserSchema } from './UserSchema';
+import { UserAccessTokenLiteSchema, UserSchema } from './users/UserSchema';
 
 export const AuthSchema = z.object({
   user: UserSchema,

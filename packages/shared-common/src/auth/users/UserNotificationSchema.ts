@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserNotificationTypeEnum } from '../UserNotificationTypeEnum';
+import { UserNotificationTypeEnum } from './UserNotificationTypeEnum';
 
 export const UserNotificationSchema = z.object({
   id: z.string(),

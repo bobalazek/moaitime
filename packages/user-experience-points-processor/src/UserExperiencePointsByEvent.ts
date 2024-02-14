@@ -1,5 +1,5 @@
-import { EntityTypeEnum } from '../core/EntityTypeEnum';
-import { GlobalEvents, GlobalEventsEnum } from '../core/GlobalEvents';
+import { EntityTypeEnum } from '../../shared-common/src/core/EntityTypeEnum';
+import { GlobalEvents, GlobalEventsEnum } from '../../shared-common/src/core/GlobalEvents';
 
 export const userExperiencePointsByEvent = {
   [GlobalEventsEnum.TASKS_TASK_ADDED]: {

@@ -1,13 +1,15 @@
 import { relations } from 'drizzle-orm';
 import { index, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
+import { AchievementEnum } from '@moaitime/shared-common';
+
 import { users } from './users';
 
 export const userAchievements = pgTable(
   'user_achievements',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    achievementKey: text('achievement_key').notNull(),
+    achievementKey: text('achievement_key').notNull().$type<AchievementEnum>(),
     points: integer('points').notNull(),
     history: jsonb('history'),
     createdAt: timestamp('created_at').defaultNow(),

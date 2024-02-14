@@ -307,7 +307,7 @@ export default function AccountSettingsSectionContent() {
       <div>
         <h4 className="text-lg font-bold">Delete Account</h4>
         <p className="mb-2 text-xs text-gray-400">
-          Ayou you really sure you want to leave us? After pressing the button below, we will send
+          Are you really sure you want to leave us? After pressing the button below, we will send
           you the last email to confirm your choice. Your account will then be premanetely deleted.
         </p>
         <Button size="sm" variant="destructive" onClick={onRequestAccountDeletionButtonClick}>

@@ -1,15 +1,10 @@
-import {
-  UserExperiencePointsManager,
-  userExperiencePointsManager,
-} from '@moaitime/database-services';
-import {
-  GlobalEvents,
-  GlobalEventsEnum,
-  userExperiencePointsByEvent,
-} from '@moaitime/shared-common';
+import { UserAchievementsManager, userAchievementsManager } from '@moaitime/database-services';
+import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
+
+import { userExperiencePointsByEvent } from './UserExperiencePointsByEvent';
 
 export class UserExperiencePointsProcessor {
-  constructor(private _userExperiencePointsManager: UserExperiencePointsManager) {}
+  constructor(private _userExperiencePointsManager: UserAchievementsManager) {}
 
   async process<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     const finalType = type as keyof typeof userExperiencePointsByEvent;
@@ -32,5 +27,5 @@ export class UserExperiencePointsProcessor {
 }
 
 export const userExpereincePointsProcessor = new UserExperiencePointsProcessor(
-  userExperiencePointsManager
+  userAchievementsManager
 );

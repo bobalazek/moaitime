@@ -103,4 +103,3 @@ export * from './statistics/StatisticsFocusBasicData';
 // Achievements
 export * from './achievements/Achievements';
 export * from './achievements/AchievementType';
-export * from './achievements/UserExperiencePointsByEvent';

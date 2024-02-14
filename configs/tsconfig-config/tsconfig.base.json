@@ -49,6 +49,9 @@
       "@moaitime/global-events-processor": ["../../packages/global-events-processor/src/index.ts"],
       "@moaitime/user-experience-points-processor": [
         "../../packages/user-experience-points-processor/src/index.ts"
+      ],
+      "@moaitime/user-achievements-processor": [
+        "../../packages/user-achievements-processor/src/index.ts"
       ]
     }
   },

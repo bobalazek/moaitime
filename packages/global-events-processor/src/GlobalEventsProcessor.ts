@@ -1,6 +1,7 @@
 import { GlobalEventsNotifier, globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { Logger, logger } from '@moaitime/logging';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
+import { userAchievementsProcessor } from '@moaitime/user-achievements-processor';
 import { userExpereincePointsProcessor } from '@moaitime/user-experience-points-processor';
 
 export class GlobalEventsProcessor {
@@ -31,11 +32,23 @@ export class GlobalEventsProcessor {
   }
 
   private async _processEvent<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
-    /********** User Experience Points **********/
-    userExpereincePointsProcessor.process(type, payload);
+    try {
+      userExpereincePointsProcessor.process(type, payload);
+    } catch (error) {
+      this._logger.error(
+        error,
+        `[GlobalEventsProcessor] Error processing global event "${type}" with user experience points processor ...`
+      );
+    }
 
-    /********** User Achievements **********/
-    // TODO
+    try {
+      userAchievementsProcessor.process(type, payload);
+    } catch (error) {
+      this._logger.error(
+        error,
+        `[GlobalEventsProcessor] Error processing global event "${type}" with user achievements processor ...`
+      );
+    }
   }
 }
 

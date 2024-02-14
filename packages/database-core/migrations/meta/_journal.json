@@ -8,6 +8,27 @@
       "when": 1707826218420,
       "tag": "0000_silent_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1707898676895,
+      "tag": "0001_futuristic_rocket_raccoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1707898717159,
+      "tag": "0002_sloppy_centennial",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1707899788765,
+      "tag": "0003_fluffy_exodus",
+      "breakpoints": true
     }
   ]
 }

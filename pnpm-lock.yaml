@@ -333,6 +333,19 @@ importers:
         specifier: ^5.3.2
         version: 5.3.3
 
+  packages/database-cache:
+    dependencies:
+      '@moaitime/logging':
+        specifier: workspace:*
+        version: link:../logging
+      '@moaitime/redis':
+        specifier: workspace:*
+        version: link:../redis
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.3
+
   packages/database-core:
     dependencies:
       '@moaitime/logging':

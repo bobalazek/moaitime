@@ -1,0 +1,1 @@
+ALTER TABLE "user_access_tokens" ADD COLUMN "revoked_reason" text;

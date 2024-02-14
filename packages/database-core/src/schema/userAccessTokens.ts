@@ -8,10 +8,11 @@ export const userAccessTokens = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     token: text('token').notNull().unique(),
+    revokedReason: text('revoked_reason'),
     refreshToken: text('refresh_token').notNull().unique(),
     refreshTokenClaimedAt: timestamp('refresh_token_claimed_at'),
-    expiresAt: timestamp('expires_at'),
     revokedAt: timestamp('revoked_at'),
+    expiresAt: timestamp('expires_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
     userId: uuid('user_id')

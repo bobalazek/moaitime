@@ -427,7 +427,11 @@ export class AuthManager {
     const now = new Date();
 
     if (userAccessToken.revokedAt && userAccessToken.revokedAt.getTime() < now.getTime()) {
-      throw new Error('Token was revoked');
+      throw new Error(
+        userAccessToken.revokedReason
+          ? `Token was revoked because: "${userAccessToken.revokedReason}"`
+          : 'Token was revoked'
+      );
     }
 
     if (userAccessToken.expiresAt && userAccessToken.expiresAt.getTime() < now.getTime()) {

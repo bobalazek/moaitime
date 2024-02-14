@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { users } from './users';
 
@@ -7,7 +7,6 @@ export const userFollowedUsers = pgTable(
   'user_followed_users',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    color: text('color'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
     userId: uuid('user_id')

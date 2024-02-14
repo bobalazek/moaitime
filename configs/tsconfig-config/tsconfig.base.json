@@ -22,6 +22,7 @@
     "baseUrl": ".",
     "paths": {
       "@moaitime/database-core": ["../../packages/database-core/src/index.ts"],
+      "@moaitime/database-cache": ["../../packages/database-cache/src/index.ts"],
       "@moaitime/database-fixtures": ["../../packages/database-fixtures/src/index.ts"],
       "@moaitime/database-seeds": ["../../packages/database-seeds/src/index.ts"],
       "@moaitime/database-services": ["../../packages/database-services/src/index.ts"],

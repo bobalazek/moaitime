@@ -27,4 +27,5 @@ export * from './schema/userNotifications';
 export * from './schema/userExperiencePoints';
 export * from './schema/userFollowedUsers';
 export * from './schema/userBlockedUsers';
+export * from './schema/userActivityEntries';
 export * from './schema/users';

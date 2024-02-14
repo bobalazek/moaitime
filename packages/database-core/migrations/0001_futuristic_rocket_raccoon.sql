@@ -1,0 +1,1 @@
+ALTER TABLE "user_followed_users" DROP COLUMN IF EXISTS "color";

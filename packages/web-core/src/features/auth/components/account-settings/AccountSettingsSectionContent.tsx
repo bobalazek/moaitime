@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 
+import { UserAvatar } from '../../../core/components/UserAvatar';
 import { useSettingsStore } from '../../../settings/state/settingsStore';
 import { useAuthStore } from '../../state/authStore';
 
@@ -169,9 +170,7 @@ export default function AccountSettingsSectionContent() {
         <h4 className="text-lg font-bold">Photo</h4>
         <p className="mb-2 text-xs text-gray-400">Pick a photo up to 4MB and you will be golden!</p>
         <div className="flex flex-row items-center gap-4">
-          {auth.user.avatarImageUrl && (
-            <img src={auth.user.avatarImageUrl} alt="Avatar" className="h-20 w-20 rounded-full" />
-          )}
+          <UserAvatar user={auth.user} />
           <div className="flex gap-1">
             <Button size="sm" variant="outline" onClick={onAvatarImageUploadButtonClick}>
               {auth.user.avatarImageUrl && <>Change Photo</>}

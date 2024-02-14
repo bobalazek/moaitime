@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
-import { usersManager } from '@moaitime/database-services';
+import { userActivityEntriesManager, usersManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { PublicUserDto } from '../dtos/public-user.dto';
@@ -20,6 +20,27 @@ export class UsersController {
     return {
       success: true,
       data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get(':userUsername/last-active')
+  async lastActive(
+    @Req() req: Request,
+    @Param('userUsername') userUsername: string
+  ): Promise<AbstractResponseDto<{ lastActiveAt: string | null }>> {
+    const user = await usersManager.findOneByUsername(userUsername);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const data = await userActivityEntriesManager.getLastActiveAtByUserId(user.id);
+
+    return {
+      success: true,
+      data: {
+        lastActiveAt: data?.toISOString() ?? null,
+      },
     };
   }
 }

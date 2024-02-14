@@ -55,6 +55,12 @@ export class UserActivityEntriesManager {
   }
 
   // Helpers
+  async getLastActiveAtByUserId(userId: string): Promise<Date | null> {
+    const latestEntry = await this.findOneLatestByUserId(userId);
+
+    return latestEntry?.lastActiveAt ?? null;
+  }
+
   async updateUserLastActiveAtById(
     userId: string,
     toleranceSeconds: number = 120

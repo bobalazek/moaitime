@@ -8,6 +8,8 @@ import { List } from '../tasks/ListSchema';
 import { Task } from '../tasks/TaskSchema';
 
 export enum GlobalEventsEnum {
+  // Auth
+  AUTH_USER_UPDATED = 'auth:user:updated',
   // Tasks
   TASKS_TASK_ADDED = 'tasks:task:added',
   TASKS_TASK_EDITED = 'tasks:task:edited',
@@ -56,6 +58,10 @@ export enum GlobalEventsEnum {
 }
 
 export type GlobalEvents = {
+  // Auth
+  [GlobalEventsEnum.AUTH_USER_UPDATED]: {
+    userId: string;
+  };
   // Tasks
   [GlobalEventsEnum.TASKS_TASK_ADDED]: {
     userId: string; // Who did the action?

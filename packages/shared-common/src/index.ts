@@ -99,3 +99,8 @@ export * from './statistics/StatisticsTasksBasicData';
 export * from './statistics/StatisticsNotesBasicData';
 export * from './statistics/StatisticsMoodBasicData';
 export * from './statistics/StatisticsFocusBasicData';
+
+// Achievements
+export * from './achievements/Achievements';
+export * from './achievements/AchievementType';
+export * from './achievements/UserExperiencePointsByEvent';

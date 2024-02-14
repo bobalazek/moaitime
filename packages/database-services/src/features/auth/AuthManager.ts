@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   AUTH_DATA_EXPORT_REQUEST_EXPIRATION_SECONDS,
   AUTH_DELETION_REQUEST_EXPIRATION_SECONDS,
@@ -20,6 +21,7 @@ import {
 } from '@moaitime/shared-backend';
 import {
   getDomainFromUrl,
+  GlobalEventsEnum,
   MAIN_COLORS,
   ProcessingStatusEnum,
   UserPasswordSchema,
@@ -519,6 +521,10 @@ export class AuthManager {
       });
     }
 
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      userId,
+    });
+
     return updatedUser;
   }
 
@@ -562,6 +568,10 @@ export class AuthManager {
       userDisplayName: updatedUser.displayName,
     });
 
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      userId,
+    });
+
     return updatedUser;
   }
 
@@ -582,6 +592,10 @@ export class AuthManager {
 
     const updatedUser = await this._usersManager.updateOneById(userId, {
       settings,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      userId,
     });
 
     return updatedUser;
@@ -628,6 +642,10 @@ export class AuthManager {
       }
     }
 
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      userId,
+    });
+
     return updatedUser;
   }
 
@@ -653,6 +671,10 @@ export class AuthManager {
       const key = user.avatarImageUrl.split('/').pop() as string;
       await uploader.removeFileFromBucket(USER_AVATARS_BUCKET_URL, key);
     }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      userId,
+    });
 
     return updatedUser;
   }

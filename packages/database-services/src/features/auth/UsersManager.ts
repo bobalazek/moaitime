@@ -1,9 +1,19 @@
 import { format } from 'date-fns';
 import { and, count, DBQueryConfig, eq, isNull } from 'drizzle-orm';
 
-import { getDatabase, NewUser, teams, teamUsers, User, users } from '@moaitime/database-core';
+import {
+  getDatabase,
+  NewUser,
+  teams,
+  teamUsers,
+  User,
+  userBlockedUsers,
+  userFollowedUsers,
+  users,
+} from '@moaitime/database-core';
 import {
   DEFAULT_USER_SETTINGS,
+  isValidUuid,
   PublicUserSchema,
   UserLimits,
   UserSettings,
@@ -18,6 +28,7 @@ import { notesManager } from '../notes/NotesManager';
 import { listsManager } from '../tasks/ListsManager';
 import { tagsManager } from '../tasks/TagsManager';
 import { tasksManager } from '../tasks/TasksManager';
+import { userActivityEntriesManager } from './UserActivityEntriesManager';
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
@@ -38,6 +49,14 @@ export class UsersManager {
     }
 
     return this._fixRowColumns(row);
+  }
+
+  async findOneByIdOrUsername(idOrUsername: string): Promise<User | null> {
+    if (isValidUuid(idOrUsername)) {
+      return this.findOneById(idOrUsername);
+    }
+
+    return this.findOneByUsername(idOrUsername);
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
@@ -137,16 +156,158 @@ export class UsersManager {
   }
 
   // API Helpers
-  async view(userId: string, userUsername: string) {
-    const user = await this.findOneByUsername(userUsername);
+  async view(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
-      throw new Error(`User with username "${userUsername}" was not found.`);
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
+    if (isBeingBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
     return PublicUserSchema.parse(user);
   }
 
+  async follow(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
+    if (isBeingBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    if (userId === user.id) {
+      throw new Error('You cannot follow yourself.');
+    }
+
+    const isAlreadyFollowing = await getDatabase().query.userFollowedUsers.findFirst({
+      where: and(
+        eq(userFollowedUsers.userId, userId),
+        eq(userFollowedUsers.followedUserId, user.id)
+      ),
+    });
+    if (isAlreadyFollowing) {
+      throw new Error('You are already following this user.');
+    }
+
+    const rows = await getDatabase().insert(userFollowedUsers).values({
+      userId,
+      followedUserId: user.id,
+    });
+
+    return rows[0];
+  }
+
+  async unfollow(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
+    if (isBeingBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    if (userId === user.id) {
+      throw new Error('You cannot unfollow yourself.');
+    }
+
+    const isAlreadyFollowing = await getDatabase().query.userFollowedUsers.findFirst({
+      where: and(
+        eq(userFollowedUsers.userId, userId),
+        eq(userFollowedUsers.followedUserId, user.id)
+      ),
+    });
+    if (!isAlreadyFollowing) {
+      throw new Error('You are not following this user.');
+    }
+
+    const rows = await getDatabase()
+      .delete(userFollowedUsers)
+      .where(
+        and(eq(userFollowedUsers.userId, userId), eq(userFollowedUsers.followedUserId, user.id))
+      );
+
+    return rows[0];
+  }
+
+  async block(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isAlreadyBlocked = await getDatabase().query.userBlockedUsers.findFirst({
+      where: and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)),
+    });
+    if (isAlreadyBlocked) {
+      throw new Error('You are already blocking this user.');
+    }
+
+    const rows = await getDatabase().insert(userBlockedUsers).values({
+      userId,
+      blockedUserId: user.id,
+    });
+
+    return rows[0];
+  }
+
+  async unblock(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isAlreadyBlocked = await getDatabase().query.userBlockedUsers.findFirst({
+      where: and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)),
+    });
+    if (!isAlreadyBlocked) {
+      throw new Error('You are not blocking this user.');
+    }
+
+    const rows = await getDatabase()
+      .delete(userBlockedUsers)
+      .where(and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)));
+
+    return rows[0];
+  }
+
+  async lastActive(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
+    if (isBeingBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const data = await userActivityEntriesManager.getLastActiveAtByUserId(user.id);
+
+    return {
+      lastActiveAt: data ?? null,
+    };
+  }
+
   // Helpers
+  async isBeingBlocked(userId: string, blockedUserId: string) {
+    const isBeingBlocked = await getDatabase().query.userBlockedUsers.findFirst({
+      where: and(
+        eq(userBlockedUsers.blockedUserId, userId),
+        eq(userBlockedUsers.userId, blockedUserId)
+      ),
+    });
+
+    return !!isBeingBlocked;
+  }
+
   async countByTeamId(teamId: string): Promise<number> {
     const result = await getDatabase()
       .select({

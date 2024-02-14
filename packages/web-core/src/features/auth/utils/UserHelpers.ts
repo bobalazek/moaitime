@@ -27,3 +27,35 @@ export const getUserLastActive = async (userUsername: string) => {
 
   return response.data?.lastActiveAt ? new Date(response.data.lastActiveAt) : null;
 };
+
+export const followUser = async (userUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/follow`, {
+    method: 'POST',
+  });
+
+  return true;
+};
+
+export const unfollowUser = async (userUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/unfollow`, {
+    method: 'POST',
+  });
+
+  return true;
+};
+
+export const blockUser = async (userUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/block`, {
+    method: 'POST',
+  });
+
+  return true;
+};
+
+export const unblockUser = async (userUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/unblock`, {
+    method: 'POST',
+  });
+
+  return true;
+};

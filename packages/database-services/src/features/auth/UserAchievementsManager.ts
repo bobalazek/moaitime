@@ -73,7 +73,16 @@ export class UserAchievementsManager {
     });
   }
 
-  async removeAchievementFromUser(id: string): Promise<UserAchievement> {
+  async updateAchievement(id: string, points: number): Promise<UserAchievement> {
+    const achievement = await this.findOneById(id);
+    if (!achievement) {
+      throw new Error(`Achievement with ID "${id}" not found`);
+    }
+
+    return this.updateOneById(achievement.id, { points });
+  }
+
+  async removeAchievement(id: string): Promise<UserAchievement> {
     return this.deleteOneById(id);
   }
 }

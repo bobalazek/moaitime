@@ -2,7 +2,7 @@ import { GlobalEventsNotifier, globalEventsNotifier } from '@moaitime/global-eve
 import { Logger, logger } from '@moaitime/logging';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 import { userAchievementsProcessor } from '@moaitime/user-achievements-processor';
-import { userExpereincePointsProcessor } from '@moaitime/user-experience-points-processor';
+import { userExperiencePointsProcessor } from '@moaitime/user-experience-points-processor';
 
 export class GlobalEventsProcessor {
   constructor(
@@ -33,7 +33,7 @@ export class GlobalEventsProcessor {
 
   private async _processEvent<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     try {
-      userExpereincePointsProcessor.process(type, payload);
+      userExperiencePointsProcessor.process(type, payload);
     } catch (error) {
       this._logger.error(
         error,

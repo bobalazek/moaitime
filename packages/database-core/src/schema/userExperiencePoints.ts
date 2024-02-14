@@ -23,6 +23,7 @@ export const userExperiencePoints = pgTable(
   },
   (table) => {
     return {
+      typeIdx: index('user_experience_points_type_idx').on(table.type),
       userIdIdx: index('user_experience_points_user_id_idx').on(table.userId),
     };
   }

@@ -645,9 +645,6 @@ importers:
 
   packages/global-events-processor:
     dependencies:
-      '@moaitime/database-services':
-        specifier: workspace:*
-        version: link:../database-services
       '@moaitime/global-events-notifier':
         specifier: workspace:*
         version: link:../global-events-notifier
@@ -657,6 +654,9 @@ importers:
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
+      '@moaitime/user-experience-points-processor':
+        specifier: workspace:*
+        version: link:../user-experience-points-processor
     devDependencies:
       typescript:
         specifier: ^5.3.2
@@ -840,6 +840,22 @@ importers:
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.3
+
+  packages/user-experience-points-processor:
+    dependencies:
+      '@moaitime/database-services':
+        specifier: workspace:*
+        version: link:../database-services
+      '@moaitime/logging':
+        specifier: workspace:*
+        version: link:../logging
+      '@moaitime/shared-common':
+        specifier: workspace:*
+        version: link:../shared-common
     devDependencies:
       typescript:
         specifier: ^5.3.2

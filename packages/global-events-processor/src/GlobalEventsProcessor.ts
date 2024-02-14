@@ -1,20 +1,12 @@
-import {
-  UserExperiencePointsManager,
-  userExperiencePointsManager,
-} from '@moaitime/database-services';
 import { GlobalEventsNotifier, globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { Logger, logger } from '@moaitime/logging';
-import {
-  GlobalEvents,
-  GlobalEventsEnum,
-  userExperiencePointsByEvent,
-} from '@moaitime/shared-common';
+import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
+import { userExpereincePointsProcessor } from '@moaitime/user-experience-points-processor';
 
 export class GlobalEventsProcessor {
   constructor(
     private _logger: Logger,
-    private _globalEventsNotifier: GlobalEventsNotifier,
-    private _userExperiencePointsManager: UserExperiencePointsManager
+    private _globalEventsNotifier: GlobalEventsNotifier
   ) {}
 
   async start() {
@@ -40,30 +32,11 @@ export class GlobalEventsProcessor {
 
   private async _processEvent<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     /********** User Experience Points **********/
-    const finalType = type as keyof typeof userExperiencePointsByEvent;
-    if (userExperiencePointsByEvent[finalType]) {
-      const data = payload as GlobalEvents[T];
-      const amount = userExperiencePointsByEvent[finalType].amount;
-
-      // Really not in the mood dealing with TypeScript right now
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const relatedEntities = userExperiencePointsByEvent[finalType].relatedEntities(data as any);
-
-      await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.userId,
-        `global-event:${type}`,
-        amount,
-        relatedEntities
-      );
-    }
+    userExpereincePointsProcessor.process(type, payload);
 
     /********** User Achievements **********/
     // TODO
   }
 }
 
-export const globalEventsProcessor = new GlobalEventsProcessor(
-  logger,
-  globalEventsNotifier,
-  userExperiencePointsManager
-);
+export const globalEventsProcessor = new GlobalEventsProcessor(logger, globalEventsNotifier);

@@ -17,6 +17,7 @@ import {
   confirmEmail,
   deleteAccount,
   deleteAccountAvatar,
+  doPing,
   getAccount,
   login,
   logout,
@@ -73,6 +74,8 @@ export type AuthStore = {
   // Account Password Settings Dialog
   accountPasswordSettingsDialogOpen: boolean;
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
+  // Ping
+  doPing: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -286,8 +289,12 @@ export const useAuthStore = create<AuthStore>()(
       setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => {
         set({ accountPasswordSettingsDialogOpen });
       },
-      // App Data
+      // Ping
+      doPing: async () => {
+        await doPing();
+      },
     }),
+    // App Data
     {
       name: 'auth-store',
       storage: createJSONStorage(() => localStorage),

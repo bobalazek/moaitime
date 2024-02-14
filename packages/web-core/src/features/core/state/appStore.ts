@@ -21,7 +21,7 @@ export type AppStore = {
 export const useAppStore = create<AppStore>()((_, get) => ({
   reloadAppData: async () => {
     const { reloadTheme } = get();
-    const { auth } = useAuthStore.getState();
+    const { auth, doPing } = useAuthStore.getState();
     const { reloadUserLimitsAndUsage } = useUserLimitsAndUsageStore.getState();
     const { reloadLists, reloadTasksCountMap } = useListsStore.getState();
     const { reloadTags } = useTagsStore.getState();
@@ -51,6 +51,13 @@ export const useAppStore = create<AppStore>()((_, get) => ({
 
     // Websocket
     websocketManager.init();
+
+    // Ping
+    (async () => {
+      await doPing();
+
+      setInterval(doPing, 1000 * 60);
+    })();
 
     // User Notifications
     (async () => {

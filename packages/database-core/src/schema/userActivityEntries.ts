@@ -30,6 +30,6 @@ export const userActivityEntriesRelations = relations(userActivityEntries, ({ on
   }),
 }));
 
-export type UserActivityEntries = typeof userActivityEntries.$inferSelect;
+export type UserActivityEntry = typeof userActivityEntries.$inferSelect;
 
-export type NewUserActivityEntries = typeof userActivityEntries.$inferInsert;
+export type NewUserActivityEntry = typeof userActivityEntries.$inferInsert;

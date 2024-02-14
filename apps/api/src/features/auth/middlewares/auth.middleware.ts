@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
-import { authManager, usersManager } from '@moaitime/database-services';
+import { authManager, userActivityEntriesManager, usersManager } from '@moaitime/database-services';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -36,6 +36,15 @@ export class AuthMiddleware implements NestMiddleware {
           _plan: null,
           _subscription: null,
         };
+      }
+    } catch (error) {
+      // Nothing to do
+    }
+
+    try {
+      if (req.user) {
+        // No async, because we want to continue the request even if this fails and as soon as possible!
+        userActivityEntriesManager.updateUserLastActiveAtById(req.user.id);
       }
     } catch (error) {
       // Nothing to do

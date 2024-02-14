@@ -289,3 +289,12 @@ export const getUserUsage = async () => {
 
   return response.data as UserUsage;
 };
+
+// Ping
+export const doPing = async () => {
+  const response = await fetchJson<ResponseInterface<{ pong: boolean }>>(`${API_URL}/api/v1/ping`, {
+    method: 'POST',
+  });
+
+  return response.data;
+};

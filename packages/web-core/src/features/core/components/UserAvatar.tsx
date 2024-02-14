@@ -1,8 +1,4 @@
-import { useEffect, useState } from 'react';
-
 import { PublicUser } from '@moaitime/shared-common';
-
-import { getUserLastActive } from '../../auth/utils/UserHelpers';
 
 export const UserAvatarInner = ({ user, sizePx = 64 }: { user: PublicUser; sizePx?: number }) => {
   if (!user.avatarImageUrl) {
@@ -34,17 +30,17 @@ export const UserAvatarInner = ({ user, sizePx = 64 }: { user: PublicUser; sizeP
   );
 };
 
-export const UserAvatar = ({ user, sizePx = 64 }: { user: PublicUser; sizePx?: number }) => {
-  const [lastActiveAt, setLastActiveAt] = useState<Date | null>(null);
-
+export const UserAvatar = ({
+  user,
+  lastActiveAt,
+  sizePx = 64,
+}: {
+  user: PublicUser;
+  lastActiveAt?: Date;
+  sizePx?: number;
+}) => {
   const now = new Date();
   const isOnline = lastActiveAt && now.getTime() - lastActiveAt.getTime() < 5 * 60 * 1000;
-
-  useEffect(() => {
-    (async () => {
-      setLastActiveAt(await getUserLastActive(user.username));
-    })();
-  }, [user.username]);
 
   return (
     <div className="relative">

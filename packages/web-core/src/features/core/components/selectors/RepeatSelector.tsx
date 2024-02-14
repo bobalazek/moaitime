@@ -26,6 +26,7 @@ import {
   ToggleGroupItem,
 } from '@moaitime/web-ui';
 
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import {
   convertIsoStringToObject,
   convertObjectToIsoString,
@@ -54,11 +55,13 @@ export function RepeatSelector({
   onChangeValue,
   disableTime,
 }: RepeatSelectorProps) {
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const [open, setOpen] = useState(false);
   const [rule, setRule] = useState(
     createRule({
       freq: RuleFrequency.DAILY,
       interval: 1,
+      wkst: generalStartDayOfWeek,
     })
   );
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
@@ -141,15 +144,15 @@ export function RepeatSelector({
               type="number"
               value={rule.options.interval}
               onChange={(event) => {
-                setRule((current) => {
-                  return updateRule(
-                    current,
+                setRule(
+                  updateRule(
+                    rule,
                     {
                       interval: parseInt(event.target.value),
                     },
                     disableTime
-                  );
-                });
+                  )
+                );
               }}
               className="w-20"
               min={1}
@@ -158,15 +161,14 @@ export function RepeatSelector({
             <select
               value={rule.options.freq}
               onChange={(event) => {
-                setRule((current) => {
-                  return updateRule(
-                    current,
-                    {
-                      freq: parseInt(event.target.value),
-                    },
-                    disableTime
-                  );
-                });
+                const updateData: Record<string, number | number[]> = {
+                  freq: parseInt(event.target.value),
+                };
+                if (rule.options.freq === RuleFrequency.WEEKLY) {
+                  updateData.byweekday = rule.options.byweekday;
+                }
+
+                setRule(updateRule(rule, updateData, disableTime));
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
             >
@@ -184,15 +186,15 @@ export function RepeatSelector({
               type="multiple"
               value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
-                setRule((current) => {
-                  return updateRule(
-                    current,
+                setRule(
+                  updateRule(
+                    rule,
                     {
                       byweekday: value?.map((day) => parseInt(day)) ?? null,
                     },
                     disableTime
-                  );
-                });
+                  )
+                );
               }}
             >
               {/* For some strange reason it's 0 for Monday, where as usually that's Sunday */}
@@ -238,9 +240,7 @@ export function RepeatSelector({
                     : null,
               };
 
-              setRule((current) => {
-                return updateRule(current, options, disableTime);
-              });
+              setRule(updateRule(rule, options, disableTime));
             }}
             className="flex flex-col gap-2"
           >
@@ -268,21 +268,20 @@ export function RepeatSelector({
                 )}
                 onSaveData={(saveData) => {
                   const result = convertObjectToIsoString(saveData);
+                  const until = addDateTimezoneToItself(
+                    result?.iso ? new Date(result?.iso) : new Date()
+                  );
 
-                  setRule((current) => {
-                    const dateEnd = addDateTimezoneToItself(
-                      result?.iso ? new Date(result?.iso) : new Date()
-                    );
-
-                    return updateRule(
-                      current,
+                  setRule(
+                    updateRule(
+                      rule,
                       {
-                        until: dateEnd,
+                        until,
                         count: null,
                       },
                       disableTime
-                    );
-                  });
+                    )
+                  );
                 }}
                 disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
                 includeTime={!disableTime}
@@ -303,16 +302,16 @@ export function RepeatSelector({
                   type="number"
                   value={rule.options.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
-                    setRule((current) => {
-                      return updateRule(
-                        current,
+                    setRule(
+                      updateRule(
+                        rule,
                         {
                           count: parseInt(event.target.value),
                           until: null,
                         },
                         disableTime
-                      );
-                    });
+                      )
+                    );
                   }}
                   disabled={endsType !== RepeatSelectorEndsEnum.COUNT}
                   className="w-20"

@@ -3,7 +3,7 @@ import type { Options } from 'rrule';
 import { Frequency, RRule } from 'rrule';
 
 export const createRule = (options?: Partial<Options>) => {
-  return new RRule({ ...options, bysecond: [0] });
+  return new RRule({ ...options, bysecond: [0] }, true);
 };
 
 export const updateRule = (
@@ -16,7 +16,7 @@ export const updateRule = (
   newOptions.byminute = !disableTime ? [newOptions.dtstart!.getUTCMinutes()] : null;
   newOptions.byhour = !disableTime ? [newOptions.dtstart!.getUTCHours()] : null;
 
-  return new RRule(newOptions);
+  return new RRule(newOptions, true);
 };
 
 export const getRuleFromString = (ruleString: string) => {

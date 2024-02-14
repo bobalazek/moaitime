@@ -11,7 +11,7 @@ const UsersViewPageContent = ({ user }: { user: PublicUser }) => {
   const [lastActiveAt, setLastActiveAt] = useState<Date | null>(null);
 
   const now = new Date();
-  const joinedAtString = new Date(user.createdAt).toLocaleDateString('default', {
+  const joinedString = new Date(user.createdAt).toLocaleDateString('default', {
     month: 'long',
     year: 'numeric',
   });
@@ -30,7 +30,7 @@ const UsersViewPageContent = ({ user }: { user: PublicUser }) => {
           <h2 className="text-5xl font-bold">{user.displayName}</h2>
           <h3 className="text-muted-foreground text-2xl">{user.username}</h3>
           <div className="flex items-center gap-2">
-            <CalendarIcon size={16} /> <span>Joined {joinedAtString}</span>
+            <CalendarIcon size={16} /> <span>Joined {joinedString}</span>
           </div>
           {lastActiveAt && (
             <div className="flex items-center gap-2">

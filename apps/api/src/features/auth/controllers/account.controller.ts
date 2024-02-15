@@ -22,17 +22,18 @@ import { ResponseInterface, UserLimits, UserUsage } from '@moaitime/shared-commo
 
 import { LoginResponseDto } from '../dtos/responses/login-response.dto';
 import { UpdateUserPasswordDto } from '../dtos/update-user-password.dto';
+import { UpdateUserPrivacyDto } from '../dtos/update-user-privacy.dto';
 import { UpdateUserSettingsDto } from '../dtos/update-user-settings.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
-import { convertToUserDto } from '../utils/auth.utils';
+import { convertToUserResponseDto } from '../utils/auth.utils';
 
 @Controller('/api/v1/account')
 export class AccountController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async index(@Req() req: Request): Promise<LoginResponseDto> {
-    const data = convertToUserDto(req.user);
+    const data = convertToUserResponseDto(req.user);
 
     return {
       success: true,
@@ -60,6 +61,18 @@ export class AccountController {
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
     await authManager.updatePassword(req.user.id, body.newPassword, body.currentPassword);
+
+    return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('privacy')
+  async privacy(
+    @Body() body: UpdateUserPrivacyDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
+    await authManager.updatePrivacy(req.user.id, !!body.isPrivate);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
   }
@@ -148,7 +161,7 @@ export class AccountController {
 
     return {
       success: true,
-      data: convertToUserDto({
+      data: convertToUserResponseDto({
         ...userWithAccessToken.user,
         _accessToken: userWithAccessToken.userAccessToken,
       }),

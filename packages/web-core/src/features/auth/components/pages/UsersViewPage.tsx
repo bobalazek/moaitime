@@ -14,7 +14,7 @@ export default function UsersViewPage() {
   useEscapeToHome();
   const params = useParams<{ userUsername: string }>();
 
-  const { isLoading, error, data } = useUsersViewQuery(params.userUsername!);
+  const { isLoading, error, data, refetch } = useUsersViewQuery(params.userUsername!);
 
   useEffect(() => {
     document.title = data?.displayName
@@ -38,7 +38,7 @@ export default function UsersViewPage() {
     <ErrorBoundary>
       <div className="flex h-screen flex-col" data-test="users-view">
         <UsersViewPageHeader />
-        <UsersViewPageContent user={data} />
+        <UsersViewPageContent user={data} refetch={refetch} />
       </div>
     </ErrorBoundary>
   );

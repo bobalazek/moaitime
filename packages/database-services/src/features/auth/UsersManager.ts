@@ -14,6 +14,7 @@ import {
 import {
   DEFAULT_USER_SETTINGS,
   isValidUuid,
+  PublicUser,
   PublicUserSchema,
   UserLimits,
   UserSettings,
@@ -156,18 +157,29 @@ export class UsersManager {
   }
 
   // API Helpers
-  async view(userId: string, userIdOrUsername: string) {
+  async view(userId: string, userIdOrUsername: string): Promise<PublicUser> {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
-    if (isBeingBlocked) {
+    const isBlocked = await this.isBlocking(user.id, userId);
+    if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    return PublicUserSchema.parse(user);
+    const parsedUser = PublicUserSchema.parse(user);
+
+    const isMyself = userId === user.id;
+    const myselfIsFollowingThisUser = await this.isFollowing(userId, user.id);
+    const myselfIsFollowedByThisUser = await this.isFollowing(user.id, userId);
+
+    return {
+      ...parsedUser,
+      isMyself,
+      myselfIsFollowingThisUser,
+      myselfIsFollowedByThisUser,
+    };
   }
 
   async follow(userId: string, userIdOrUsername: string) {
@@ -176,8 +188,8 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
-    if (isBeingBlocked) {
+    const isBlocked = await this.isBlocking(user.id, userId);
+    if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
@@ -185,20 +197,27 @@ export class UsersManager {
       throw new Error('You cannot follow yourself.');
     }
 
-    const isAlreadyFollowing = await getDatabase().query.userFollowedUsers.findFirst({
+    const follow = await getDatabase().query.userFollowedUsers.findFirst({
       where: and(
         eq(userFollowedUsers.userId, userId),
         eq(userFollowedUsers.followedUserId, user.id)
       ),
     });
-    if (isAlreadyFollowing) {
-      throw new Error('You are already following this user.');
+    if (follow) {
+      throw new Error(
+        follow.approvedAt
+          ? 'You are already following this user.'
+          : 'You are already waiting for this user to approve your request.'
+      );
     }
 
-    const rows = await getDatabase().insert(userFollowedUsers).values({
-      userId,
-      followedUserId: user.id,
-    });
+    const rows = await getDatabase()
+      .insert(userFollowedUsers)
+      .values({
+        userId,
+        followedUserId: user.id,
+        approvedAt: user.isPrivate ? null : new Date(),
+      });
 
     return rows[0];
   }
@@ -209,8 +228,8 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
-    if (isBeingBlocked) {
+    const isBlocked = await this.isBlocking(user.id, userId);
+    if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
@@ -218,13 +237,8 @@ export class UsersManager {
       throw new Error('You cannot unfollow yourself.');
     }
 
-    const isAlreadyFollowing = await getDatabase().query.userFollowedUsers.findFirst({
-      where: and(
-        eq(userFollowedUsers.userId, userId),
-        eq(userFollowedUsers.followedUserId, user.id)
-      ),
-    });
-    if (!isAlreadyFollowing) {
+    const isFollowing = await this.isFollowing(userId, user.id);
+    if (!isFollowing) {
       throw new Error('You are not following this user.');
     }
 
@@ -243,10 +257,8 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isAlreadyBlocked = await getDatabase().query.userBlockedUsers.findFirst({
-      where: and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)),
-    });
-    if (isAlreadyBlocked) {
+    const isBlocked = await this.isBlocking(user.id, userId);
+    if (isBlocked) {
       throw new Error('You are already blocking this user.');
     }
 
@@ -264,10 +276,8 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isAlreadyBlocked = await getDatabase().query.userBlockedUsers.findFirst({
-      where: and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)),
-    });
-    if (!isAlreadyBlocked) {
+    const isBlocked = await this.isBlocking(user.id, userId);
+    if (!isBlocked) {
       throw new Error('You are not blocking this user.');
     }
 
@@ -284,8 +294,8 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBeingBlocked = await this.isBeingBlocked(userId, user.id);
-    if (isBeingBlocked) {
+    const isBlocked = await this.isBlocking(user.id, userId);
+    if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
@@ -297,7 +307,7 @@ export class UsersManager {
   }
 
   // Helpers
-  async isBeingBlocked(userId: string, blockedUserId: string) {
+  async isBlocking(userId: string, blockedUserId: string) {
     const isBeingBlocked = await getDatabase().query.userBlockedUsers.findFirst({
       where: and(
         eq(userBlockedUsers.blockedUserId, userId),
@@ -306,6 +316,20 @@ export class UsersManager {
     });
 
     return !!isBeingBlocked;
+  }
+
+  async isFollowing(userId: string, followedUserId: string) {
+    const follow = await getDatabase().query.userFollowedUsers.findFirst({
+      where: and(
+        eq(userFollowedUsers.userId, userId),
+        eq(userFollowedUsers.followedUserId, followedUserId)
+      ),
+    });
+    if (!follow) {
+      return false;
+    }
+
+    return follow?.approvedAt ? true : 'pending';
   }
 
   async countByTeamId(teamId: string): Promise<number> {

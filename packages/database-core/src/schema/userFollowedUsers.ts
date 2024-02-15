@@ -7,6 +7,7 @@ export const userFollowedUsers = pgTable(
   'user_followed_users',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    approvedAt: timestamp('approved_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
     userId: uuid('user_id')

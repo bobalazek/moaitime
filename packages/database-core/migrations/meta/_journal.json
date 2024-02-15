@@ -43,6 +43,13 @@
       "when": 1707921205230,
       "tag": "0005_cloudy_sabra",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1707982298417,
+      "tag": "0006_futuristic_zuras",
+      "breakpoints": true
     }
   ]
 }

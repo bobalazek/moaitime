@@ -3,14 +3,23 @@ import { z } from 'zod';
 import { UserSettingsSchema } from './UserSettingsSchema';
 
 // Public User
+// Need that transform, so we don't need to manually do that every time in the UsersManager
+const dateToSting = (data: Date) => {
+  return new Date(data).toISOString();
+};
+
 export const PublicUserSchema = z.object({
   id: z.string(),
   displayName: z.string(),
   username: z.string(),
   email: z.string().email(),
   avatarImageUrl: z.string().nullable(),
-  createdAt: z.coerce.string(), // Need that coerce, so we don't need to manually do that every time in the UsersManager
-  updatedAt: z.coerce.string(),
+  isPrivate: z.boolean(),
+  createdAt: z.date().transform(dateToSting),
+  updatedAt: z.date().transform(dateToSting),
+  isMyself: z.boolean().optional(),
+  myselfIsFollowingThisUser: z.union([z.boolean(), z.literal('pending')]).optional(),
+  myselfIsFollowedByThisUser: z.union([z.boolean(), z.literal('pending')]).optional(),
 });
 
 // User

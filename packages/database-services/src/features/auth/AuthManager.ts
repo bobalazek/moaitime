@@ -601,6 +601,23 @@ export class AuthManager {
     return updatedUser;
   }
 
+  async updatePrivacy(userId: string, isPrivate: boolean): Promise<User> {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const updatedUser = await this._usersManager.updateOneById(userId, {
+      isPrivate,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      userId,
+    });
+
+    return updatedUser;
+  }
+
   async uploadAvatar(
     userId: string,
     file: { originalname: string; mimetype: string; buffer: Buffer }

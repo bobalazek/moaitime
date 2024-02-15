@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { date, index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, date, index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { UserRoleEnum, UserSettings } from '@moaitime/shared-common';
 
@@ -32,6 +32,7 @@ export const users = pgTable(
     birthDate: date('birth_date', {
       mode: 'string',
     }),
+    isPrivate: boolean('is_private').default(false),
     avatarImageUrl: text('avatar_image_url'),
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),

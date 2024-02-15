@@ -6,7 +6,7 @@ import { UserAccessTokenLiteDto } from '../dtos/user-access-token-lite.dto';
 import { UserDto } from '../dtos/user.dto';
 import { UserWithAccessToken } from '../types/user-with-access-token.type';
 
-export const convertToUserDto = (
+export const convertToUserResponseDto = (
   userWithAccessToken: UserWithAccessToken
 ): {
   user: UserDto;
@@ -26,6 +26,7 @@ export const convertToUserDto = (
       roles: userWithAccessToken.roles,
       settings: usersManager.getUserSettings(userWithAccessToken),
       birthDate: userWithAccessToken.birthDate,
+      isPrivate: !!userWithAccessToken.isPrivate,
       avatarImageUrl: userWithAccessToken.avatarImageUrl,
       emailConfirmedAt: userWithAccessToken.emailConfirmedAt?.toISOString() ?? null,
       createdAt: userWithAccessToken.createdAt?.toISOString() ?? now.toISOString(),

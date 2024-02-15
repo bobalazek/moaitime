@@ -30,9 +30,11 @@ import {
   resetPassword,
   updateAccount,
   updateAccountPassword,
+  updateAccountPrivacy,
   updateAccountSettings,
   uploadAccountAvatar,
 } from '../utils/AuthHelpers';
+import { blockUser, followUser, unblockUser, unfollowUser } from '../utils/UserHelpers';
 
 export type AuthStore = {
   auth: Auth | null;
@@ -68,6 +70,7 @@ export type AuthStore = {
   reloadAccount: () => Promise<ResponseInterface>;
   updateAccount: (data: UpdateUser) => Promise<ResponseInterface>;
   updateAccountPassword: (data: UpdateUserPassword) => Promise<ResponseInterface>;
+  updateAccountPrivacy: (isPrivate: boolean) => Promise<ResponseInterface>;
   updateAccountSettings: (data: UpdateUserSettings) => Promise<ResponseInterface>;
   uploadAccountAvatar: (file: File) => Promise<ResponseInterface>;
   deleteAccountAvatar: () => Promise<ResponseInterface>;
@@ -76,6 +79,11 @@ export type AuthStore = {
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
   // Ping
   doPing: () => Promise<void>;
+  // User
+  followUser: (userIdOrUsername: string) => Promise<void>;
+  unfollowUser: (userIdOrUsername: string) => Promise<void>;
+  blockUser: (userIdOrUsername: string) => Promise<void>;
+  unblockUser: (userIdOrUsername: string) => Promise<void>;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -233,6 +241,18 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
+      updateAccountPrivacy: async (isPrivate: boolean) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        const response = await updateAccountPrivacy(isPrivate);
+
+        set({ auth: response.data });
+
+        return response;
+      },
       updateAccountSettings: async (data: UpdateUserSettings) => {
         const { auth } = get();
         const { reloadTheme } = useAppStore.getState();
@@ -292,6 +312,39 @@ export const useAuthStore = create<AuthStore>()(
       // Ping
       doPing: async () => {
         await doPing();
+      },
+      // User
+      followUser: async (userIdOrUsername: string) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        await followUser(userIdOrUsername);
+      },
+      unfollowUser: async (userIdOrUsername: string) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        await unfollowUser(userIdOrUsername);
+      },
+      blockUser: async (userIdOrUsername: string) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        await blockUser(userIdOrUsername);
+      },
+      unblockUser: async (userIdOrUsername: string) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        await unblockUser(userIdOrUsername);
       },
     }),
     // App Data

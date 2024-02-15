@@ -7,6 +7,8 @@ import { Dialog, DialogContent } from '@moaitime/web-ui';
 
 import AccountSettingsSection from '../../auth/components/account-settings/AccountSettingsSection';
 import AccountSettingsSectionHeaderText from '../../auth/components/account-settings/AccountSettingsSectionHeaderText';
+import PrivacySettingsSection from '../../auth/components/privacy-settings/PrivacySettingsSection';
+import PrivacySettingsSectionHeaderText from '../../auth/components/privacy-settings/PrivacySettingsSectionHeaderText';
 import TeamSettingsSection from '../../auth/components/team-settings/TeamSettingsSection';
 import TeamSettingsSectionHeaderText from '../../auth/components/team-settings/TeamSettingsSectionHeaderText';
 import { useAuthStore } from '../../auth/state/authStore';
@@ -50,6 +52,11 @@ const tabs = [
     id: 'team',
     label: <TeamSettingsSectionHeaderText />,
     content: <TeamSettingsSection />,
+  },
+  {
+    id: 'privacy',
+    label: <PrivacySettingsSectionHeaderText />,
+    content: <PrivacySettingsSection />,
   },
   {
     id: 'user-settings-hr',

@@ -12,6 +12,7 @@ import { WebSocket, WebSocketServer as WsWebSocketServer } from 'ws';
 import { authManager, usersManager } from '@moaitime/database-services';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
+import { WebsocketCloseCodeEnum } from '@moaitime/shared-common';
 
 // TODO: is there a more optimal way to do this?
 export let globalNotifierSubscription: () => Promise<void>;
@@ -76,7 +77,7 @@ export class WebsocketGateway
         `[WebsocketGateway] A client tried to connect with an invalid access token (${accessToken}). Closing the connection ...`
       );
 
-      client.close(4001, JSON.stringify({ message: 'Invalid access token.' }));
+      client.close(WebsocketCloseCodeEnum.INVALID_ACCESS_TOKEN, 'Invalid access token.');
 
       return;
     }

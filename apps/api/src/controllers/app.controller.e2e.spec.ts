@@ -4,9 +4,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 
-import { APP_VERSION } from '@moaitime/shared-common';
+import { APP_VERSION, APP_VERSION_HEADER } from '@moaitime/shared-common';
 
-import { APP_VERSION_HEADER } from '../app.constants';
 import { AppModule } from '../app.module';
 
 describe('AppController (e2e)', () => {

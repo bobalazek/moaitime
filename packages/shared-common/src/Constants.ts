@@ -1,5 +1,6 @@
 // General
 export const APP_VERSION = '0.1.0';
+export const APP_VERSION_HEADER = 'X-App-Version';
 
 // Calendar
 export const CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX = 48;

@@ -43,6 +43,7 @@ export * from './core/AsyncReturnType';
 export * from './core/SortDirectionEnum';
 export * from './core/ProcessingStatusEnum';
 export * from './core/EntityTypeEnum';
+export * from './core/WebsocketCloseCodeEnum';
 export * from './core/dates/RepeatPatternSchema';
 export * from './core/dates/TimezoneSchema';
 export * from './core/colors/HexColorSchema';

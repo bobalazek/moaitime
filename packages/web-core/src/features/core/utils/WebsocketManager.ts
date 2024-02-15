@@ -1,5 +1,6 @@
-import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
+import { GlobalEvents, GlobalEventsEnum, WebsocketCloseCodeEnum } from '@moaitime/shared-common';
 
+import { sonnerToast } from '../../../../../web-ui/src/components/sonner-toast';
 import { useAuthStore } from '../../auth/state/authStore';
 import { useTeamsStore } from '../../auth/state/teamsStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
@@ -68,7 +69,13 @@ export class WebsocketManager {
       await this._onMessage(event);
     };
 
-    this._socket.onclose = () => {
+    this._socket.onclose = (event) => {
+      if (event.code === WebsocketCloseCodeEnum.INVALID_ACCESS_TOKEN) {
+        sonnerToast.error('Websocket Error', {
+          description: event.reason ?? 'Invalid access token. Please refresh the page.',
+        });
+      }
+
       this.disconnect();
     };
 

@@ -1,4 +1,5 @@
-import { APP_VERSION_HEADER } from './app.constants';
+import { APP_VERSION_HEADER } from '@moaitime/shared-common';
+
 import { UserWithAccessToken } from './features/auth/types/user-with-access-token.type';
 
 export {};

@@ -163,7 +163,7 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlocking(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, userId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
@@ -171,14 +171,16 @@ export class UsersManager {
     const parsedUser = PublicUserSchema.parse(user);
 
     const isMyself = userId === user.id;
-    const myselfIsFollowingThisUser = await this.isFollowing(userId, user.id);
-    const myselfIsFollowedByThisUser = await this.isFollowing(user.id, userId);
+    const myselfIsFollowingThisUser = await this.isFollowingUser(userId, user.id);
+    const myselfIsFollowedByThisUser = await this.isFollowingUser(user.id, userId);
+    const myselfIsBlockingThisUser = await this.isBlockingUser(userId, user.id);
 
     return {
       ...parsedUser,
       isMyself,
       myselfIsFollowingThisUser,
       myselfIsFollowedByThisUser,
+      myselfIsBlockingThisUser,
     };
   }
 
@@ -188,7 +190,7 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlocking(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, userId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
@@ -228,7 +230,7 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlocking(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, userId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
@@ -237,7 +239,7 @@ export class UsersManager {
       throw new Error('You cannot unfollow yourself.');
     }
 
-    const isFollowing = await this.isFollowing(userId, user.id);
+    const isFollowing = await this.isFollowingUser(userId, user.id);
     if (!isFollowing) {
       throw new Error('You are not following this user.');
     }
@@ -257,7 +259,7 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlocking(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, userId);
     if (isBlocked) {
       throw new Error('You are already blocking this user.');
     }
@@ -276,8 +278,8 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlocking(user.id, userId);
-    if (!isBlocked) {
+    const isBlocking = await this.isBlockingUser(userId, user.id);
+    if (!isBlocking) {
       throw new Error('You are not blocking this user.');
     }
 
@@ -294,7 +296,7 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlocking(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, userId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
@@ -307,18 +309,18 @@ export class UsersManager {
   }
 
   // Helpers
-  async isBlocking(userId: string, blockedUserId: string) {
+  async isBlockingUser(userId: string, blockedUserId: string) {
     const isBeingBlocked = await getDatabase().query.userBlockedUsers.findFirst({
       where: and(
-        eq(userBlockedUsers.blockedUserId, userId),
-        eq(userBlockedUsers.userId, blockedUserId)
+        eq(userBlockedUsers.userId, userId),
+        eq(userBlockedUsers.blockedUserId, blockedUserId)
       ),
     });
 
     return !!isBeingBlocked;
   }
 
-  async isFollowing(userId: string, followedUserId: string) {
+  async isFollowingUser(userId: string, followedUserId: string) {
     const follow = await getDatabase().query.userFollowedUsers.findFirst({
       where: and(
         eq(userFollowedUsers.userId, userId),

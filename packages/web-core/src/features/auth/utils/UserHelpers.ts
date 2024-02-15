@@ -3,9 +3,9 @@ import { API_URL, PublicUser, ResponseInterface } from '@moaitime/shared-common'
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Users **********/
-export const getUser = async (userUsername: string) => {
+export const getUser = async (userIdOrUsername: string) => {
   const response = await fetchJson<ResponseInterface<PublicUser>>(
-    `${API_URL}/api/v1/users/${userUsername}`,
+    `${API_URL}/api/v1/users/${userIdOrUsername}`,
     {
       method: 'GET',
     },
@@ -17,9 +17,9 @@ export const getUser = async (userUsername: string) => {
   return response.data as PublicUser;
 };
 
-export const getUserLastActive = async (userUsername: string) => {
+export const getUserLastActive = async (userIdOrUsername: string) => {
   const response = await fetchJson<ResponseInterface<{ lastActiveAt: string | null }>>(
-    `${API_URL}/api/v1/users/${userUsername}/last-active`,
+    `${API_URL}/api/v1/users/${userIdOrUsername}/last-active`,
     {
       method: 'GET',
     }
@@ -28,32 +28,32 @@ export const getUserLastActive = async (userUsername: string) => {
   return response.data?.lastActiveAt ? new Date(response.data.lastActiveAt) : null;
 };
 
-export const followUser = async (userUsername: string) => {
-  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/follow`, {
+export const followUser = async (userIdOrUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/follow`, {
     method: 'POST',
   });
 
   return true;
 };
 
-export const unfollowUser = async (userUsername: string) => {
-  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/unfollow`, {
+export const unfollowUser = async (userIdOrUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/unfollow`, {
     method: 'POST',
   });
 
   return true;
 };
 
-export const blockUser = async (userUsername: string) => {
-  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/block`, {
+export const blockUser = async (userIdOrUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/block`, {
     method: 'POST',
   });
 
   return true;
 };
 
-export const unblockUser = async (userUsername: string) => {
-  await fetchJson(`${API_URL}/api/v1/users/${userUsername}/unblock`, {
+export const unblockUser = async (userIdOrUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/unblock`, {
     method: 'POST',
   });
 

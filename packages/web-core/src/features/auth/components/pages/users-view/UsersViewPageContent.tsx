@@ -10,7 +10,7 @@ import { useAuthStore } from '../../../state/authStore';
 import { getUserLastActive } from '../../../utils/UserHelpers';
 
 const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: () => void }) => {
-  const { followUser, unfollowUser } = useAuthStore();
+  const { followUser, unfollowUser, blockUser, unblockUser } = useAuthStore();
   const [lastActiveAt, setLastActiveAt] = useState<Date | null>(null);
 
   const now = new Date();
@@ -27,6 +27,8 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
   }, [user.username]);
 
   const showFollowButton = !user.isMyself;
+  const showBlockButton = !user.isMyself;
+
   const followButtonText =
     user.myselfIsFollowingThisUser === 'pending'
       ? 'Pending'
@@ -36,11 +38,23 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
           ? 'Follow Back'
           : 'Follow';
 
+  const blockButtonText = user.myselfIsBlockingThisUser ? 'Unblock' : 'Block';
+
   const onFollowButtonClick = async () => {
     if (user.myselfIsFollowingThisUser) {
       await unfollowUser(user.id);
     } else {
       await followUser(user.id);
+    }
+
+    refetch();
+  };
+
+  const onBlockButtonClick = async () => {
+    if (user.myselfIsBlockingThisUser) {
+      await unblockUser(user.id);
+    } else {
+      await blockUser(user.id);
     }
 
     refetch();
@@ -54,6 +68,11 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
           <h2 className="flex items-center gap-4">
             <span className="text-5xl font-bold">{user.displayName}</span>
             {showFollowButton && <Button onClick={onFollowButtonClick}>{followButtonText}</Button>}
+            {showBlockButton && (
+              <Button onClick={onBlockButtonClick} variant="destructive">
+                {blockButtonText}
+              </Button>
+            )}
           </h2>
           <h3 className="text-muted-foreground text-2xl">{user.username}</h3>
           <div className="flex items-center gap-2">

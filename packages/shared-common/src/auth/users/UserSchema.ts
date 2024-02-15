@@ -20,6 +20,7 @@ export const PublicUserSchema = z.object({
   isMyself: z.boolean().optional(),
   myselfIsFollowingThisUser: z.union([z.boolean(), z.literal('pending')]).optional(),
   myselfIsFollowedByThisUser: z.union([z.boolean(), z.literal('pending')]).optional(),
+  myselfIsBlockingThisUser: z.boolean().optional(),
 });
 
 // User

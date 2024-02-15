@@ -30,17 +30,10 @@ export const UserAvatarInner = ({ user, sizePx = 64 }: { user: PublicUser; sizeP
   );
 };
 
-export const UserAvatar = ({
-  user,
-  lastActiveAt,
-  sizePx = 64,
-}: {
-  user: PublicUser;
-  lastActiveAt?: Date;
-  sizePx?: number;
-}) => {
+export const UserAvatar = ({ user, sizePx = 64 }: { user: PublicUser; sizePx?: number }) => {
   const now = new Date();
-  const isOnline = lastActiveAt && now.getTime() - lastActiveAt.getTime() < 5 * 60 * 1000;
+  const isOnline =
+    user.lastActiveAt && now.getTime() - new Date(user.lastActiveAt).getTime() < 5 * 60 * 1000;
 
   return (
     <div className="relative">

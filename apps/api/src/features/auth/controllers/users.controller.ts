@@ -74,20 +74,4 @@ export class UsersController {
       success: true,
     };
   }
-
-  @UseGuards(AuthenticatedGuard)
-  @Get(':userIdOrUsername/last-active')
-  async lastActive(
-    @Req() req: Request,
-    @Param('userIdOrUsername') userIdOrUsername: string
-  ): Promise<AbstractResponseDto<{ lastActiveAt: string | null }>> {
-    const data = await usersManager.lastActive(req.user.id, userIdOrUsername);
-
-    return {
-      success: true,
-      data: {
-        lastActiveAt: data?.lastActiveAt?.toISOString() ?? null,
-      },
-    };
-  }
 }

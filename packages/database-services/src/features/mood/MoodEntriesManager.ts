@@ -131,7 +131,7 @@ export class MoodEntriesManager {
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
     if (data.length > 0) {
-      const isLessThanLimit = data.length < (options?.limit ?? 0);
+      const isLessThanLimit = data.length < limit;
       const firstItem = data[0];
       const lastItem = data[data.length - 1];
 

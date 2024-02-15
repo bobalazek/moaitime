@@ -17,15 +17,26 @@ export const getUser = async (userIdOrUsername: string) => {
   return response.data as PublicUser;
 };
 
-export const getUserLastActive = async (userIdOrUsername: string) => {
-  const response = await fetchJson<ResponseInterface<{ lastActiveAt: string | null }>>(
-    `${API_URL}/api/v1/users/${userIdOrUsername}/last-active`,
+export const getUserFollowers = async (userIdOrUsername: string) => {
+  const response = await fetchJson<ResponseInterface<PublicUser[]>>(
+    `${API_URL}/api/v1/users/${userIdOrUsername}/followers`,
     {
       method: 'GET',
     }
   );
 
-  return response.data?.lastActiveAt ? new Date(response.data.lastActiveAt) : null;
+  return response.data ?? [];
+};
+
+export const getUserFollowing = async (userIdOrUsername: string) => {
+  const response = await fetchJson<ResponseInterface<PublicUser[]>>(
+    `${API_URL}/api/v1/users/${userIdOrUsername}/following`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data ?? [];
 };
 
 export const followUser = async (userIdOrUsername: string) => {

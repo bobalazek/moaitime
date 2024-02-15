@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { and, count, DBQueryConfig, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, DBQueryConfig, desc, eq, gt, isNull, lt, ne, or, SQL } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -16,6 +16,7 @@ import {
   isValidUuid,
   PublicUser,
   PublicUserSchema,
+  SortDirectionEnum,
   UserLimits,
   UserSettings,
   UserUsage,
@@ -30,6 +31,13 @@ import { listsManager } from '../tasks/ListsManager';
 import { tagsManager } from '../tasks/TagsManager';
 import { tasksManager } from '../tasks/TasksManager';
 import { userActivityEntriesManager } from './UserActivityEntriesManager';
+
+export type UsersManagerFollowerOptions = {
+  limit: number;
+  sortDirection?: SortDirectionEnum;
+  previousCursor?: string;
+  nextCursor?: string;
+};
 
 export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
@@ -170,6 +178,10 @@ export class UsersManager {
 
     const parsedUser = PublicUserSchema.parse(user);
 
+    const followersCount = await this.countFollowers(user.id);
+    const followingCount = await this.countFollowing(user.id);
+    const lastActiveAt = await userActivityEntriesManager.getLastActiveAtByUserId(user.id);
+
     const isMyself = userId === user.id;
     const myselfIsFollowingThisUser = await this.isFollowingUser(userId, user.id);
     const myselfIsFollowedByThisUser = await this.isFollowingUser(user.id, userId);
@@ -177,6 +189,9 @@ export class UsersManager {
 
     return {
       ...parsedUser,
+      followersCount,
+      followingCount,
+      lastActiveAt: lastActiveAt ? lastActiveAt.toISOString() : null,
       isMyself,
       myselfIsFollowingThisUser,
       myselfIsFollowedByThisUser,
@@ -290,22 +305,12 @@ export class UsersManager {
     return rows[0];
   }
 
-  async lastActive(userId: string, userIdOrUsername: string) {
-    const user = await this.findOneByIdOrUsername(userIdOrUsername);
-    if (!user) {
-      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
-    }
+  async followers(userId: string, userIdOrUsername: string, options: UsersManagerFollowerOptions) {
+    return this._followersOrFollowing('followers', userId, userIdOrUsername, options);
+  }
 
-    const isBlocked = await this.isBlockingUser(user.id, userId);
-    if (isBlocked) {
-      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
-    }
-
-    const data = await userActivityEntriesManager.getLastActiveAtByUserId(user.id);
-
-    return {
-      lastActiveAt: data ?? null,
-    };
+  async following(userId: string, userIdOrUsername: string, options: UsersManagerFollowerOptions) {
+    return this._followersOrFollowing('following', userId, userIdOrUsername, options);
   }
 
   // Helpers
@@ -332,6 +337,30 @@ export class UsersManager {
     }
 
     return follow?.approvedAt ? true : 'pending';
+  }
+
+  async countFollowers(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(userFollowedUsers.id).mapWith(Number),
+      })
+      .from(userFollowedUsers)
+      .where(eq(userFollowedUsers.followedUserId, userId))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  async countFollowing(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(userFollowedUsers.id).mapWith(Number),
+      })
+      .from(userFollowedUsers)
+      .where(eq(userFollowedUsers.userId, userId))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 
   async countByTeamId(teamId: string): Promise<number> {
@@ -417,6 +446,134 @@ export class UsersManager {
   }
 
   // Private
+  private async _followersOrFollowing(
+    type: 'followers' | 'following',
+    userId: string,
+    userIdOrUsername: string,
+    options: UsersManagerFollowerOptions
+  ) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBlocked = await this.isBlockingUser(user.id, userId);
+    if (isBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const limit = options?.limit ?? 20;
+    const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
+
+    const isSortAscending = sortDirection === SortDirectionEnum.ASC;
+
+    let orderWasReversed = false;
+    let orderBy = isSortAscending
+      ? asc(userFollowedUsers.createdAt)
+      : desc(userFollowedUsers.createdAt);
+    let where =
+      type === 'followers'
+        ? and(eq(userFollowedUsers.followedUserId, user.id))
+        : and(eq(userFollowedUsers.userId, user.id));
+
+    if (options?.previousCursor) {
+      const { id: previousId, createdAt: previousCreatedAt } = this._cursorToProperties(
+        options.previousCursor
+      );
+      const previousCreatedAtDate = new Date(previousCreatedAt);
+
+      where = and(
+        where,
+        or(
+          isSortAscending
+            ? lt(userFollowedUsers.createdAt, previousCreatedAtDate)
+            : gt(userFollowedUsers.createdAt, previousCreatedAtDate),
+          and(
+            eq(userFollowedUsers.createdAt, previousCreatedAtDate),
+            ne(userFollowedUsers.id, previousId)
+          )
+        )
+      ) as SQL<unknown>;
+
+      // If we are going backwards, we need to reverse the order so we do not miss any entries in the middle
+      orderBy = isSortAscending
+        ? desc(userFollowedUsers.createdAt)
+        : asc(userFollowedUsers.createdAt);
+      orderWasReversed = true;
+    }
+
+    if (options?.nextCursor) {
+      const { id: nextId, createdAt: nextCreatedAt } = this._cursorToProperties(options.nextCursor);
+      const nextCreatedAtDate = new Date(nextCreatedAt);
+
+      where = and(
+        where,
+        or(
+          isSortAscending
+            ? gt(userFollowedUsers.createdAt, nextCreatedAtDate)
+            : lt(userFollowedUsers.createdAt, nextCreatedAtDate),
+          and(eq(userFollowedUsers.createdAt, nextCreatedAtDate), ne(userFollowedUsers.id, nextId))
+        )
+      ) as SQL<unknown>;
+    }
+
+    const rows = await getDatabase().query.userFollowedUsers.findMany({
+      where,
+      orderBy,
+      limit,
+      with: {
+        user: true,
+      },
+    });
+
+    // Here we reverse the order back to what it was originally
+    if (orderWasReversed) {
+      rows.reverse();
+    }
+
+    const data = rows.map((row) => {
+      return PublicUserSchema.parse(row.user);
+    });
+
+    let previousCursor: string | undefined;
+    let nextCursor: string | undefined;
+    if (data.length > 0) {
+      const isLessThanLimit = data.length < limit;
+      const firstItem = data[0];
+      const lastItem = data[data.length - 1];
+
+      previousCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: firstItem.id,
+            createdAt: firstItem.createdAt,
+          })
+        : undefined;
+      nextCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: lastItem.id,
+            createdAt: lastItem.createdAt,
+          })
+        : undefined;
+    }
+
+    if (!options?.previousCursor) {
+      // Since no previousCursor was provided by the request,
+      // we assume that this is the very first page, and because of that,
+      // we certainly have no previous entries.
+      previousCursor = undefined;
+    }
+
+    return {
+      data,
+      meta: {
+        previousCursor,
+        nextCursor,
+        sortDirection,
+        limit,
+      },
+    };
+  }
+
   private _fixRowColumns(user: User) {
     // TODO
     // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
@@ -426,6 +583,14 @@ export class UsersManager {
     }
 
     return user;
+  }
+
+  private _propertiesToCursor(properties: { id: string; createdAt: string }): string {
+    return btoa(JSON.stringify(properties));
+  }
+
+  private _cursorToProperties(cursor: string): { id: string; createdAt: string } {
+    return JSON.parse(atob(cursor));
   }
 }
 

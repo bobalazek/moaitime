@@ -63,6 +63,9 @@ export class UserAchievementsProcessor {
       throw new Error(`Task with id "${data.taskId}" not found`);
     }
 
+    // TODO: perhaps we should only awatd an achievement once per day, even if the repeat is daily,
+    // to avoid spamming the user with achievements.
+
     const achievement = await userAchievementsManager.findOneByUserIdAndAchievementKey(
       data.userId,
       achievementKey

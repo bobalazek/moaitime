@@ -1,4 +1,9 @@
-import { API_URL, PublicUser, ResponseInterface } from '@moaitime/shared-common';
+import {
+  API_URL,
+  PaginationCursorsType,
+  PublicUser,
+  ResponseInterface,
+} from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
@@ -17,26 +22,46 @@ export const getUser = async (userIdOrUsername: string) => {
   return response.data as PublicUser;
 };
 
-export const getUserFollowers = async (userIdOrUsername: string) => {
-  const response = await fetchJson<ResponseInterface<PublicUser[]>>(
-    `${API_URL}/api/v1/users/${userIdOrUsername}/followers`,
-    {
-      method: 'GET',
-    }
-  );
+export const getUserFollowers = async (
+  userIdOrUsername: string,
+  options?: PaginationCursorsType
+) => {
+  const url = new URL(`${API_URL}/api/v1/users/${userIdOrUsername}/followers`);
 
-  return response.data ?? [];
+  if (options?.previousCursor) {
+    url.searchParams.append('previousCursor', options.previousCursor);
+  }
+
+  if (options?.nextCursor) {
+    url.searchParams.append('nextCursor', options.nextCursor);
+  }
+
+  const response = await fetchJson<ResponseInterface<PublicUser[]>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response;
 };
 
-export const getUserFollowing = async (userIdOrUsername: string) => {
-  const response = await fetchJson<ResponseInterface<PublicUser[]>>(
-    `${API_URL}/api/v1/users/${userIdOrUsername}/following`,
-    {
-      method: 'GET',
-    }
-  );
+export const getUserFollowing = async (
+  userIdOrUsername: string,
+  options?: PaginationCursorsType
+) => {
+  const url = new URL(`${API_URL}/api/v1/users/${userIdOrUsername}/following`);
 
-  return response.data ?? [];
+  if (options?.previousCursor) {
+    url.searchParams.append('previousCursor', options.previousCursor);
+  }
+
+  if (options?.nextCursor) {
+    url.searchParams.append('nextCursor', options.nextCursor);
+  }
+
+  const response = await fetchJson<ResponseInterface<PublicUser[]>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response;
 };
 
 export const followUser = async (userIdOrUsername: string) => {

@@ -2,6 +2,7 @@ import {
   API_URL,
   CreateMoodEntry,
   MoodEntry,
+  PaginationCursorsType,
   ResponseInterface,
   UpdateMoodEntry,
 } from '@moaitime/shared-common';
@@ -9,12 +10,7 @@ import {
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
 /********** Mood Entries **********/
-export type MoodEntriesManagerFindOptions = {
-  previousCursor?: string;
-  nextCursor?: string;
-};
-
-export const getMoodEntriesRawResponse = async (options?: MoodEntriesManagerFindOptions) => {
+export const getMoodEntries = async (options?: PaginationCursorsType) => {
   const url = new URL(`${API_URL}/api/v1/mood-entries`);
 
   if (options?.previousCursor) {
@@ -28,12 +24,6 @@ export const getMoodEntriesRawResponse = async (options?: MoodEntriesManagerFind
   return fetchJson<ResponseInterface<MoodEntry[]>>(url.toString(), {
     method: 'GET',
   });
-};
-
-export const getMoodEntries = async (): Promise<MoodEntry[]> => {
-  const response = await getMoodEntriesRawResponse();
-
-  return response.data ?? [];
 };
 
 export const getMoodEntry = async (moodEntryId: string): Promise<MoodEntry> => {

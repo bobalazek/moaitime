@@ -7,15 +7,15 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { AsyncReturnType, PaginationCursorsType } from '@moaitime/shared-common';
 
-import { getMoodEntries } from '../utils/MoodHelpers';
+import { getUserFollowing } from '../utils/UserHelpers';
 
-export const MOOD_ENTRIES_QUERY_KEY = 'mood-entries';
+export const USER_FOLLOWING_QUERY_KEY = 'user-following';
 
-export const useMoodEntriesQuery = () => {
-  return useInfiniteQuery<AsyncReturnType<typeof getMoodEntries>>({
+export const useUserFollowersQuery = (userIdOrUsername: string) => {
+  return useInfiniteQuery<AsyncReturnType<typeof getUserFollowing>>({
     initialPageParam: undefined,
     maxPages: 5,
-    queryKey: [MOOD_ENTRIES_QUERY_KEY],
+    queryKey: [USER_FOLLOWING_QUERY_KEY, userIdOrUsername],
     queryFn: ({ pageParam, direction }) => {
       let params: PaginationCursorsType | undefined = undefined;
       if (pageParam && typeof pageParam === 'string') {
@@ -36,7 +36,7 @@ export const useMoodEntriesQuery = () => {
         }
       }
 
-      return getMoodEntries(params);
+      return getUserFollowing(userIdOrUsername, params);
     },
     getPreviousPageParam: (firstPage) => {
       const previousCursor =

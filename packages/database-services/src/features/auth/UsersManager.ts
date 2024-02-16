@@ -22,9 +22,7 @@ import {
   teams,
   teamUsers,
   User,
-  UserBlockedUser,
   userBlockedUsers,
-  UserFollowedUser,
   userFollowedUsers,
   users,
 } from '@moaitime/database-core';
@@ -265,8 +263,9 @@ export class UsersManager {
         userId,
         followedUserId: user.id,
         approvedAt: user.isPrivate ? null : new Date(),
-      });
-    const row = rows[0] as UserFollowedUser;
+      })
+      .returning();
+    const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_FOLLOWED_USER, {
       userId,
@@ -301,8 +300,9 @@ export class UsersManager {
       .delete(userFollowedUsers)
       .where(
         and(eq(userFollowedUsers.userId, userId), eq(userFollowedUsers.followedUserId, user.id))
-      );
-    const row = rows[0] as UserFollowedUser;
+      )
+      .returning();
+    const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNFOLLOWED_USER, {
       userId,
@@ -336,7 +336,7 @@ export class UsersManager {
         and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
       )
       .returning();
-    const row = rows[0] as UserFollowedUser;
+    const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER, {
       userId,
@@ -362,8 +362,9 @@ export class UsersManager {
       .delete(userFollowedUsers)
       .where(
         and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
-      );
-    const row = rows[0] as UserFollowedUser;
+      )
+      .returning();
+    const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REMOVE_FOLLOWED_USER, {
       userId,
@@ -385,11 +386,14 @@ export class UsersManager {
       throw new Error('You are already blocking this user.');
     }
 
-    const rows = await getDatabase().insert(userBlockedUsers).values({
-      userId,
-      blockedUserId: user.id,
-    });
-    const row = rows[0] as UserBlockedUser;
+    const rows = await getDatabase()
+      .insert(userBlockedUsers)
+      .values({
+        userId,
+        blockedUserId: user.id,
+      })
+      .returning();
+    const row = rows[0];
 
     // Remove our follow to that user if present
     await getDatabase()
@@ -420,8 +424,9 @@ export class UsersManager {
 
     const rows = await getDatabase()
       .delete(userBlockedUsers)
-      .where(and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)));
-    const row = rows[0] as UserBlockedUser;
+      .where(and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)))
+      .returning();
+    const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNBLOCKED_USER, {
       userId,

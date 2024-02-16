@@ -14,6 +14,7 @@ export const PublicUserSchema = z.object({
   username: z.string(),
   email: z.string().email(),
   avatarImageUrl: z.string().nullable(),
+  biography: z.string().nullable(),
   isPrivate: z.boolean(),
   createdAt: z.date().transform(dateToSting),
   updatedAt: z.date().transform(dateToSting),
@@ -41,7 +42,9 @@ export const UserDisplayNameSchema = z
   .min(1, {
     message: 'Display name must be at least 1 character long',
   })
-  .max(255);
+  .max(32, {
+    message: 'Display name must be at most 32 characters long',
+  });
 
 export const UserEmailSchema = z.string().email({
   message: 'You must provide a valid email address',
@@ -72,12 +75,17 @@ export const UserBirthDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/i, {
   message: 'You must provide a valid date of birth',
 });
 
+export const UserBiographySchema = z.string().max(255, {
+  message: 'Biography must be at most 255 characters long',
+});
+
 // Update User
 export const UpdateUserSchema = z.object({
   displayName: UserDisplayNameSchema.optional(),
   username: UserUsernameSchema.optional(),
   email: UserEmailSchema.optional(),
   birthDate: UserBirthDateSchema.optional().nullable(),
+  biography: UserBiographySchema.optional(),
   isPrivate: z.boolean().optional(),
 });
 

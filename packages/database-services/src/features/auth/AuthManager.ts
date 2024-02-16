@@ -137,6 +137,16 @@ export class AuthManager {
       timezone: userSetings.generalTimezone,
     });
 
+    // Look at me, I'm the new Tom from Myspace now!
+    const userBorut = await this._usersManager.findOneByUsername('bobalazek');
+    if (userBorut) {
+      await this._usersManager.follow(newUser.id, userBorut.id);
+    }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REGISTERED, {
+      userId: newUser.id,
+    });
+
     await mailer.sendAuthWelcomeEmail({
       userEmail: newUser.email,
       userDisplayName: newUser.displayName,
@@ -501,6 +511,10 @@ export class AuthManager {
       updateData.newEmailConfirmationLastSentAt = new Date();
 
       isEmailChanged = true;
+    }
+
+    if (typeof data.biography !== 'undefined' && data.biography !== user.biography) {
+      updateData.biography = data.biography;
     }
 
     if (typeof data.birthDate !== 'undefined' && data.birthDate !== user.birthDate) {

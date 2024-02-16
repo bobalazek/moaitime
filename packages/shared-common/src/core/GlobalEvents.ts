@@ -9,6 +9,7 @@ import { Task } from '../tasks/TaskSchema';
 
 export enum GlobalEventsEnum {
   // Auth
+  AUTH_USER_REGISTERED = 'auth:user:registered',
   AUTH_USER_UPDATED = 'auth:user:updated',
   // Tasks
   TASKS_TASK_ADDED = 'tasks:task:added',
@@ -59,6 +60,9 @@ export enum GlobalEventsEnum {
 
 export type GlobalEvents = {
   // Auth
+  [GlobalEventsEnum.AUTH_USER_REGISTERED]: {
+    userId: string;
+  };
   [GlobalEventsEnum.AUTH_USER_UPDATED]: {
     userId: string;
   };

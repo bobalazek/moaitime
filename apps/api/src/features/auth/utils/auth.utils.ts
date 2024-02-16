@@ -25,6 +25,7 @@ export const convertToUserResponseDto = (
       newEmail: userWithAccessToken.newEmail ?? null,
       roles: userWithAccessToken.roles,
       settings: usersManager.getUserSettings(userWithAccessToken),
+      biography: userWithAccessToken.biography,
       birthDate: userWithAccessToken.birthDate,
       isPrivate: !!userWithAccessToken.isPrivate,
       avatarImageUrl: userWithAccessToken.avatarImageUrl,

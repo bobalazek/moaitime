@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Input, sonnerToast } from '@moaitime/web-ui';
+import { Button, Input, sonnerToast, Textarea } from '@moaitime/web-ui';
 
 import { UserAvatar } from '../../../core/components/UserAvatar';
 import { useSettingsStore } from '../../../settings/state/settingsStore';
@@ -25,11 +25,14 @@ export default function AccountSettingsSectionContent() {
   const [userDisplayName, setUserDisplayName] = useState(auth?.user?.displayName ?? '');
   const [userUsername, setUserUsername] = useState(auth?.user?.username ?? '');
   const [userEmail, setUserEmail] = useState(auth?.user?.email ?? '');
+  const [userBiography, setUserBiography] = useState(auth?.user?.biography ?? '');
   const avatarImageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setUserDisplayName(auth?.user?.displayName ?? '');
     setUserEmail(auth?.user?.email ?? '');
+    setUserUsername(auth?.user?.username ?? '');
+    setUserBiography(auth?.user?.biography ?? '');
   }, [auth?.user]);
 
   if (!auth) {
@@ -120,6 +123,7 @@ export default function AccountSettingsSectionContent() {
         displayName: userDisplayName,
         username: userUsername,
         email: userEmail,
+        biography: userBiography,
       });
 
       sonnerToast.success(`Account saved`, {
@@ -272,19 +276,24 @@ export default function AccountSettingsSectionContent() {
           Change Password
         </Button>
       </div>
-      <div className="text-right">
+      <div>
+        <h4 className="text-lg font-bold">Bio</h4>
+        <p className="mb-2 text-xs text-gray-400">
+          Anything interesting you want to tell us about yourself?
+        </p>
+        <Textarea
+          value={userBiography}
+          onChange={(event) => {
+            setUserBiography(event.target.value);
+          }}
+        />
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button size="sm" variant="secondary" onClick={onViewPublicProfileButtonClick}>
+          View Public Profile
+        </Button>
         <Button size="sm" variant="default" onClick={onSaveButtonClick}>
           Save
-        </Button>
-      </div>
-      <hr />
-      <div>
-        <h4 className="text-lg font-bold">Public Profile</h4>
-        <p className="mb-2 text-xs text-gray-400">
-          Want to see how your profile looks to other fellas?
-        </p>
-        <Button size="sm" variant="default" onClick={onViewPublicProfileButtonClick}>
-          View Public Profile
         </Button>
       </div>
       <hr />

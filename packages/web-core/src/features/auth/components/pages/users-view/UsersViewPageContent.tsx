@@ -22,8 +22,14 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
     <div className="container py-4" data-test="users-view--content">
       <div className="grid gap-2 md:grid-cols-12">
         <div className="md:col-span-6 lg:col-span-8">
-          <div className="flex items-center gap-6">
-            <UserAvatar user={user} sizePx={80} />
+          <div className="flex gap-6">
+            <div>
+              {/*
+                Needs to be in an empty div, otherwise the UserAvatar's height is expanded
+                100% of the space and the lastActive dot is positioned incorrectly
+              */}
+              <UserAvatar user={user} sizePx={96} />
+            </div>
             <div className="flex flex-col gap-2">
               <div>
                 <h2 className="flex items-center gap-4">
@@ -42,6 +48,7 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
                   <b>{user.followingCount}</b> following
                 </span>
               </div>
+              {user.biography && <div className="text-lg">{user.biography}</div>}
               <div>
                 <div className="flex items-center gap-2">
                   <CalendarIcon size={16} />

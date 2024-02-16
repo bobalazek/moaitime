@@ -15,6 +15,8 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
     month: 'long',
     year: 'numeric',
   });
+  const canViewFollowersAndFollowing =
+    user.isMyself || !user.isPrivate || (user.isPrivate && user.myselfIsFollowingThisUser === true);
 
   return (
     <div className="container py-4" data-test="users-view--content">
@@ -55,24 +57,37 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
             </div>
           </div>
         </div>
-        <div className="md:col-span-6 lg:col-span-4">
-          <Tabs className="rounded border" defaultValue="followers">
-            <TabsList className="w-full">
-              <TabsTrigger className="w-full" value="followers">
-                Followers
-              </TabsTrigger>
-              <TabsTrigger className="w-full" value="following">
-                Following
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="followers" className="p-4">
-              <UserFollowersFollowingList type="followers" userIdOrUsername={user.username} />
-            </TabsContent>
-            <TabsContent value="following" className="p-4">
-              <UserFollowersFollowingList type="following" userIdOrUsername={user.username} />
-            </TabsContent>
-          </Tabs>
-        </div>
+        {canViewFollowersAndFollowing && (
+          <div className="md:col-span-6 lg:col-span-4">
+            <Tabs className="rounded border" defaultValue="followers">
+              <TabsList className="w-full">
+                <TabsTrigger className="w-full" value="followers">
+                  Followers
+                </TabsTrigger>
+                <TabsTrigger className="w-full" value="following">
+                  Following
+                </TabsTrigger>
+                {user.isMyself && (
+                  <TabsTrigger className="w-full" value="follow-requests">
+                    Follow Requests
+                  </TabsTrigger>
+                )}
+              </TabsList>
+              <TabsContent value="followers" className="p-4">
+                <UserFollowersFollowingList type="followers" userIdOrUsername={user.username} />
+              </TabsContent>
+              <TabsContent value="following" className="p-4">
+                <UserFollowersFollowingList type="following" userIdOrUsername={user.username} />
+              </TabsContent>
+              <TabsContent value="follow-requests" className="p-4">
+                <UserFollowersFollowingList
+                  type="follow-requests"
+                  userIdOrUsername={user.username}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );

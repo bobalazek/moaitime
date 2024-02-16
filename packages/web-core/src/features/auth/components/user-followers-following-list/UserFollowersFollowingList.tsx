@@ -8,6 +8,7 @@ import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useUserFollowersQuery } from '../../hooks/useUserFollowersQuery';
 import { useUserFollowingQuery } from '../../hooks/useUserFollowingQuery';
+import { useUserFollowRequestsQuery } from '../../hooks/useUserFollowRequests';
 import UserFollowEntry from '../user-follow-entry/UserFollowEntry';
 
 const animationVariants = {
@@ -38,10 +39,15 @@ export default function UserFollowersFollowingList({
   type,
   userIdOrUsername,
 }: {
-  type: 'followers' | 'following';
+  type: 'followers' | 'following' | 'follow-requests';
   userIdOrUsername: string;
 }) {
-  const query = type === 'followers' ? useUserFollowersQuery : useUserFollowingQuery;
+  const query =
+    type === 'followers'
+      ? useUserFollowersQuery
+      : type === 'following'
+        ? useUserFollowingQuery
+        : useUserFollowRequestsQuery;
   const {
     data,
     refetch,
@@ -70,7 +76,11 @@ export default function UserFollowersFollowingList({
     <div className="w-full" data-test={`users--view--user-${type}-list`}>
       {items.length === 0 && (
         <div className="text-muted-foreground justify-center text-center">
-          {type === 'followers' ? 'No followers yet.' : 'Not following anyone yet.'}
+          {type === 'followers'
+            ? 'No followers yet.'
+            : type === 'following'
+              ? 'Not following anyone yet.'
+              : 'No follow requests yet.'}
         </div>
       )}
       {items.length > 0 && (
@@ -98,6 +108,7 @@ export default function UserFollowersFollowingList({
                       user={user}
                       onAfterClick={() => refetch()}
                       showRemoveFollowerButton={type === 'followers'}
+                      type={type}
                     />
                   </motion.div>
                 );

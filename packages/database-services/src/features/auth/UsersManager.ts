@@ -8,6 +8,7 @@ import {
   eq,
   gt,
   inArray,
+  isNotNull,
   isNull,
   lt,
   ne,
@@ -282,6 +283,33 @@ export class UsersManager {
     return rows[0];
   }
 
+  async approveFollower(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBlocked = await this.isBlockingUser(user.id, userId);
+    if (isBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isFollowing = await this.isFollowingUser(user.id, userId);
+    if (!isFollowing) {
+      throw new Error('This user is not following you.');
+    }
+
+    const rows = await getDatabase()
+      .update(userFollowedUsers)
+      .set({ approvedAt: new Date() })
+      .where(
+        and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
+      )
+      .returning();
+
+    return rows[0];
+  }
+
   async removeFollower(userId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
@@ -352,6 +380,14 @@ export class UsersManager {
     return this._followersOrFollowing('following', userId, userIdOrUsername, options);
   }
 
+  async followRequests(
+    userId: string,
+    userIdOrUsername: string,
+    options: UsersManagerFollowerOptions
+  ) {
+    return this._followersOrFollowing('follow-requests', userId, userIdOrUsername, options);
+  }
+
   // Helpers
   async isBlockingUser(userId: string, blockedUserId: string) {
     const isBeingBlocked = await getDatabase().query.userBlockedUsers.findFirst({
@@ -384,7 +420,9 @@ export class UsersManager {
         count: count(userFollowedUsers.id).mapWith(Number),
       })
       .from(userFollowedUsers)
-      .where(eq(userFollowedUsers.followedUserId, userId))
+      .where(
+        and(eq(userFollowedUsers.followedUserId, userId), isNotNull(userFollowedUsers.approvedAt))
+      )
       .execute();
 
     return result[0].count ?? 0;
@@ -396,7 +434,7 @@ export class UsersManager {
         count: count(userFollowedUsers.id).mapWith(Number),
       })
       .from(userFollowedUsers)
-      .where(eq(userFollowedUsers.userId, userId))
+      .where(and(eq(userFollowedUsers.userId, userId), isNotNull(userFollowedUsers.approvedAt)))
       .execute();
 
     return result[0].count ?? 0;
@@ -486,7 +524,7 @@ export class UsersManager {
 
   // Private
   private async _followersOrFollowing(
-    type: 'followers' | 'following',
+    type: 'followers' | 'following' | 'follow-requests',
     userId: string,
     userIdOrUsername: string,
     options: UsersManagerFollowerOptions
@@ -494,6 +532,11 @@ export class UsersManager {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isMyself = userId === user.id;
+    if (type === 'follow-requests' && !isMyself) {
+      throw new Error('You cannot see follow requests of other users.');
     }
 
     const isBlocked = await this.isBlockingUser(user.id, userId);
@@ -504,6 +547,11 @@ export class UsersManager {
     const limit = options?.limit ?? 20;
     const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
 
+    const isFollowing = await this.isFollowingUser(userId, user.id);
+    if (!isMyself && user.isPrivate && isFollowing !== true) {
+      throw new Error('This user is private.');
+    }
+
     const isSortAscending = sortDirection === SortDirectionEnum.ASC;
 
     let orderWasReversed = false;
@@ -511,9 +559,14 @@ export class UsersManager {
       ? asc(userFollowedUsers.createdAt)
       : desc(userFollowedUsers.createdAt);
     let where =
-      type === 'followers'
-        ? and(eq(userFollowedUsers.followedUserId, user.id))
-        : and(eq(userFollowedUsers.userId, user.id));
+      type === 'following'
+        ? and(eq(userFollowedUsers.userId, user.id), isNotNull(userFollowedUsers.approvedAt))
+        : type === 'followers'
+          ? and(
+              eq(userFollowedUsers.followedUserId, user.id),
+              isNotNull(userFollowedUsers.approvedAt)
+            )
+          : and(eq(userFollowedUsers.followedUserId, userId), isNull(userFollowedUsers.approvedAt));
 
     if (options?.previousCursor) {
       const { id: previousId, createdAt: previousCreatedAt } = this._cursorToProperties(

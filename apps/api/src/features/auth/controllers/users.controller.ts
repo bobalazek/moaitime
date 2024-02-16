@@ -70,6 +70,29 @@ export class UsersController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Get(':userIdOrUsername/follow-requests')
+  async followRequests(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string
+  ): Promise<AbstractResponseDto> {
+    const limit = 10;
+    const previousCursor = req.query.previousCursor as string | undefined;
+    const nextCursor = req.query.nextCursor as string | undefined;
+
+    const { data, meta } = await usersManager.followRequests(req.user.id, userIdOrUsername, {
+      limit,
+      previousCursor,
+      nextCursor,
+    });
+
+    return {
+      success: true,
+      data,
+      meta,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Post(':userIdOrUsername/follow')
   async follow(
     @Req() req: Request,
@@ -89,6 +112,19 @@ export class UsersController {
     @Param('userIdOrUsername') userIdOrUsername: string
   ): Promise<AbstractResponseDto> {
     await usersManager.unfollow(req.user.id, userIdOrUsername);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':userIdOrUsername/approve-follower')
+  async approveFollower(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string
+  ): Promise<AbstractResponseDto> {
+    await usersManager.approveFollower(req.user.id, userIdOrUsername);
 
     return {
       success: true,

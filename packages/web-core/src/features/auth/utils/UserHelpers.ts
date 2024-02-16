@@ -64,6 +64,27 @@ export const getUserFollowing = async (
   return response;
 };
 
+export const getUserFollowRequests = async (
+  userIdOrUsername: string,
+  options?: PaginationCursorsType
+) => {
+  const url = new URL(`${API_URL}/api/v1/users/${userIdOrUsername}/follow-requests`);
+
+  if (options?.previousCursor) {
+    url.searchParams.append('previousCursor', options.previousCursor);
+  }
+
+  if (options?.nextCursor) {
+    url.searchParams.append('nextCursor', options.nextCursor);
+  }
+
+  const response = await fetchJson<ResponseInterface<PublicUser[]>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response;
+};
+
 export const followUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/follow`, {
     method: 'POST',
@@ -74,6 +95,14 @@ export const followUser = async (userIdOrUsername: string) => {
 
 export const unfollowUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/unfollow`, {
+    method: 'POST',
+  });
+
+  return true;
+};
+
+export const approveFollowerUser = async (userIdOrUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/approve-follower`, {
     method: 'POST',
   });
 

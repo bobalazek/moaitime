@@ -34,6 +34,7 @@ import {
   uploadAccountAvatar,
 } from '../utils/AuthHelpers';
 import {
+  approveFollowerUser,
   blockUser,
   followUser,
   removeFollowerUser,
@@ -86,6 +87,7 @@ export type AuthStore = {
   // User
   followUser: (userIdOrUsername: string) => Promise<void>;
   unfollowUser: (userIdOrUsername: string) => Promise<void>;
+  approveFollowerUser: (userIdOrUsername: string) => Promise<void>;
   removeFollowerUser: (userIdOrUsername: string) => Promise<void>;
   blockUser: (userIdOrUsername: string) => Promise<void>;
   unblockUser: (userIdOrUsername: string) => Promise<void>;
@@ -322,6 +324,14 @@ export const useAuthStore = create<AuthStore>()(
         }
 
         await unfollowUser(userIdOrUsername);
+      },
+      approveFollowerUser: async (userIdOrUsername: string) => {
+        const { auth } = get();
+        if (!auth?.userAccessToken?.token) {
+          throw new Error('No token found');
+        }
+
+        await approveFollowerUser(userIdOrUsername);
       },
       removeFollowerUser: async (userIdOrUsername: string) => {
         const { auth } = get();

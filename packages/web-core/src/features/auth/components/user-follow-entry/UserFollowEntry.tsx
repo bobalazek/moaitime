@@ -4,16 +4,19 @@ import { PublicUser } from '@moaitime/shared-common';
 
 import { UserAvatar } from '../../../core/components/UserAvatar';
 import { useAuthStore } from '../../state/authStore';
+import UserApproveAndDeleteFollowButtons from '../user-buttons/UserApproveAndDeleteFollowButtons';
 import UserFollowButton from '../user-buttons/UserFollowButton';
 
 export default function UserFollowEntry({
   user,
   onAfterClick,
   showRemoveFollowerButton,
+  type,
 }: {
   user: PublicUser;
   onAfterClick?: () => void;
   showRemoveFollowerButton?: boolean;
+  type?: 'followers' | 'following' | 'follow-requests';
 }) {
   const { removeFollowerUser } = useAuthStore();
 
@@ -45,7 +48,12 @@ export default function UserFollowEntry({
         </div>
       </div>
       <div>
-        <UserFollowButton user={user} onAfterClick={onAfterClick} size="sm" />
+        {type === 'follow-requests' && (
+          <UserApproveAndDeleteFollowButtons user={user} onAfterClick={onAfterClick} size="sm" />
+        )}
+        {type !== 'follow-requests' && (
+          <UserFollowButton user={user} onAfterClick={onAfterClick} size="sm" />
+        )}
       </div>
     </div>
   );

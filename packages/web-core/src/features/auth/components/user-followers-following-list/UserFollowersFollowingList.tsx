@@ -42,8 +42,16 @@ export default function UserFollowersFollowingList({
   userIdOrUsername: string;
 }) {
   const query = type === 'followers' ? useUserFollowersQuery : useUserFollowingQuery;
-  const { data, isLoading, hasNextPage, fetchNextPage, hasPreviousPage, fetchPreviousPage, error } =
-    query(userIdOrUsername);
+  const {
+    data,
+    refetch,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    hasPreviousPage,
+    fetchPreviousPage,
+    error,
+  } = query(userIdOrUsername);
 
   const items = data?.pages.flatMap((page) => page.data!);
   if (!items) {
@@ -86,7 +94,7 @@ export default function UserFollowersFollowingList({
                     exit="exit"
                     variants={animationVariants}
                   >
-                    <UserFollowEntry user={user} />
+                    <UserFollowEntry user={user} onAfterClick={() => refetch()} />
                   </motion.div>
                 );
               })}

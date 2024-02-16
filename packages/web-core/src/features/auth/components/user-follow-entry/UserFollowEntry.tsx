@@ -1,8 +1,15 @@
 import { PublicUser } from '@moaitime/shared-common';
 
 import { UserAvatar } from '../../../core/components/UserAvatar';
+import UserFollowButton from '../user-buttons/UserFollowButton';
 
-export default function UserFollowEntry({ user }: { user: PublicUser }) {
+export default function UserFollowEntry({
+  user,
+  onAfterClick,
+}: {
+  user: PublicUser;
+  onAfterClick?: () => void;
+}) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -12,7 +19,9 @@ export default function UserFollowEntry({ user }: { user: PublicUser }) {
           <div className="text-muted-foreground text-sm">{user.displayName}</div>
         </div>
       </div>
-      <div>TODO</div>
+      <div>
+        <UserFollowButton user={user} onAfterClick={onAfterClick} size="sm" />
+      </div>
     </div>
   );
 }

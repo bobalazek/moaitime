@@ -78,6 +78,7 @@ export const UpdateUserSchema = z.object({
   username: UserUsernameSchema.optional(),
   email: UserEmailSchema.optional(),
   birthDate: UserBirthDateSchema.optional().nullable(),
+  isPrivate: z.boolean().optional(),
 });
 
 // User Password

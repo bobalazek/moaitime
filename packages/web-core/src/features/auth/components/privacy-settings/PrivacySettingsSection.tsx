@@ -4,7 +4,7 @@ import { Switch } from '../../../../../../web-ui/src/components/switch';
 import { useAuthStore } from '../../state/authStore';
 
 export default function PrivacySettingsSection() {
-  const { auth, updateAccountPrivacy } = useAuthStore();
+  const { auth, updateAccount } = useAuthStore();
   if (!auth) {
     return null;
   }
@@ -13,7 +13,9 @@ export default function PrivacySettingsSection() {
 
   const onPrivacyChange = async () => {
     try {
-      await updateAccountPrivacy(!isPrivate);
+      await updateAccount({
+        isPrivate: !isPrivate,
+      });
 
       sonnerToast.success('Privacy settings updated', {
         description: 'Your privacy settings have been updated successfully!',

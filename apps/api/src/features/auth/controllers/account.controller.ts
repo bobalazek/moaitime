@@ -22,7 +22,6 @@ import { ResponseInterface, UserLimits, UserUsage } from '@moaitime/shared-commo
 
 import { LoginResponseDto } from '../dtos/responses/login-response.dto';
 import { UpdateUserPasswordDto } from '../dtos/update-user-password.dto';
-import { UpdateUserPrivacyDto } from '../dtos/update-user-privacy.dto';
 import { UpdateUserSettingsDto } from '../dtos/update-user-settings.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
@@ -61,18 +60,6 @@ export class AccountController {
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
     await authManager.updatePassword(req.user.id, body.newPassword, body.currentPassword);
-
-    return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
-  }
-
-  @UseGuards(AuthenticatedGuard)
-  @Post('privacy')
-  async privacy(
-    @Body() body: UpdateUserPrivacyDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
-  ): Promise<LoginResponseDto> {
-    await authManager.updatePrivacy(req.user.id, !!body.isPrivate);
 
     return this._getUpdatedUserAndAccessTokenResponse(req.user._accessToken.token, res);
   }

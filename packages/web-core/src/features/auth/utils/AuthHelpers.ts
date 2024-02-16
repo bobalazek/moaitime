@@ -234,19 +234,6 @@ export const updateAccountPassword = async (data: UpdateUserPassword) => {
   return response;
 };
 
-export const updateAccountPrivacy = async (isPrivate: boolean) => {
-  const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account/privacy`, {
-    method: 'POST',
-    body: JSON.stringify({ isPrivate }),
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  });
-
-  return response;
-};
-
 export const updateAccountSettings = async (data: UpdateUserSettings) => {
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/account/settings`, {
     method: 'PATCH',

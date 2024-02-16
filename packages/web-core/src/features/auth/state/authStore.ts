@@ -30,7 +30,6 @@ import {
   resetPassword,
   updateAccount,
   updateAccountPassword,
-  updateAccountPrivacy,
   updateAccountSettings,
   uploadAccountAvatar,
 } from '../utils/AuthHelpers';
@@ -70,7 +69,6 @@ export type AuthStore = {
   reloadAccount: () => Promise<ResponseInterface>;
   updateAccount: (data: UpdateUser) => Promise<ResponseInterface>;
   updateAccountPassword: (data: UpdateUserPassword) => Promise<ResponseInterface>;
-  updateAccountPrivacy: (isPrivate: boolean) => Promise<ResponseInterface>;
   updateAccountSettings: (data: UpdateUserSettings) => Promise<ResponseInterface>;
   uploadAccountAvatar: (file: File) => Promise<ResponseInterface>;
   deleteAccountAvatar: () => Promise<ResponseInterface>;
@@ -236,18 +234,6 @@ export const useAuthStore = create<AuthStore>()(
         }
 
         const response = await updateAccountPassword(data);
-
-        set({ auth: response.data });
-
-        return response;
-      },
-      updateAccountPrivacy: async (isPrivate: boolean) => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
-
-        const response = await updateAccountPrivacy(isPrivate);
 
         set({ auth: response.data });
 

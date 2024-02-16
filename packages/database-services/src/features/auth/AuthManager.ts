@@ -507,6 +507,10 @@ export class AuthManager {
       updateData.birthDate = data.birthDate;
     }
 
+    if (typeof data.isPrivate !== 'undefined' && data.isPrivate !== user.isPrivate) {
+      updateData.isPrivate = data.isPrivate;
+    }
+
     if (Object.keys(updateData).length === 0) {
       return user;
     }
@@ -592,23 +596,6 @@ export class AuthManager {
 
     const updatedUser = await this._usersManager.updateOneById(userId, {
       settings,
-    });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
-      userId,
-    });
-
-    return updatedUser;
-  }
-
-  async updatePrivacy(userId: string, isPrivate: boolean): Promise<User> {
-    const user = await this._usersManager.findOneById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const updatedUser = await this._usersManager.updateOneById(userId, {
-      isPrivate,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {

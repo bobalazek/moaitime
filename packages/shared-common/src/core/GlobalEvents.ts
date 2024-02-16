@@ -10,6 +10,8 @@ import { Task } from '../tasks/TaskSchema';
 export enum GlobalEventsEnum {
   // Auth
   AUTH_USER_REGISTERED = 'auth:user:registered',
+  AUTH_USER_LOGGED_IN = 'auth:user:logged-in',
+  AUTH_USER_LOGGED_OUT = 'auth:user:logged-out',
   AUTH_USER_UPDATED = 'auth:user:updated',
   // Tasks
   TASKS_TASK_ADDED = 'tasks:task:added',
@@ -61,6 +63,12 @@ export enum GlobalEventsEnum {
 export type GlobalEvents = {
   // Auth
   [GlobalEventsEnum.AUTH_USER_REGISTERED]: {
+    userId: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_LOGGED_IN]: {
+    userId: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_LOGGED_OUT]: {
     userId: string;
   };
   [GlobalEventsEnum.AUTH_USER_UPDATED]: {

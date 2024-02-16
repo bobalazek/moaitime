@@ -58,6 +58,10 @@ export class AuthManager {
     const user = await this.getUserByCredentials(email, password);
     const userAccessToken = await this.createNewUserAccessToken(user.id);
 
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
+      userId: user.id,
+    });
+
     return {
       user,
       userAccessToken,
@@ -75,6 +79,10 @@ export class AuthManager {
     await this._userAccessTokensManager.updateOneById(userAccessToken.id, {
       revokedAt: now,
       expiresAt: now,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_OUT, {
+      userId: userAccessToken.userId,
     });
 
     return true;
@@ -137,10 +145,20 @@ export class AuthManager {
       timezone: userSetings.generalTimezone,
     });
 
-    // Look at me, I'm the new Tom from Myspace now!
+    // Only the MySpace generation will get this reference.
     const userBorut = await this._usersManager.findOneByUsername('bobalazek');
     if (userBorut) {
-      await this._usersManager.follow(newUser.id, userBorut.id);
+      try {
+        await this._usersManager.follow(userBorut.id, newUser.id);
+      } catch (error) {
+        // Well then, keep your secrets
+      }
+
+      try {
+        await this._usersManager.follow(newUser.id, userBorut.id);
+      } catch (error) {
+        // Well then, keep your secrets
+      }
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REGISTERED, {

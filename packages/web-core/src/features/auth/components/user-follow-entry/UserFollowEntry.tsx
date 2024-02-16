@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import { PublicUser } from '@moaitime/shared-common';
 
 import { UserAvatar } from '../../../core/components/UserAvatar';
@@ -15,7 +17,9 @@ export default function UserFollowEntry({
       <div className="flex items-center gap-2">
         <UserAvatar user={user} sizePx={48} />
         <div>
-          <div className="font-bold">{user.username}</div>
+          <Link to={`/users/${user.username}`} className="font-bold">
+            {user.username}
+          </Link>
           <div className="text-muted-foreground text-sm">{user.displayName}</div>
         </div>
       </div>

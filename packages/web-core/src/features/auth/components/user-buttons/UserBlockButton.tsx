@@ -12,7 +12,11 @@ export default function UserBlockButton({
   onAfterClick: () => void;
   size?: 'sm' | 'default' | 'lg';
 }) {
-  const { blockUser, unblockUser } = useAuthStore();
+  const { auth, blockUser, unblockUser } = useAuthStore();
+
+  if (user.id === auth?.user.id) {
+    return null;
+  }
 
   const blockButtonText = user.myselfIsBlockingThisUser ? 'Unblock' : 'Block';
 

@@ -12,7 +12,11 @@ export default function UserFollowButton({
   onAfterClick?: () => void;
   size?: 'sm' | 'default' | 'lg';
 }) {
-  const { followUser, unfollowUser } = useAuthStore();
+  const { auth, followUser, unfollowUser } = useAuthStore();
+
+  if (user.id === auth?.user.id) {
+    return null;
+  }
 
   const followButtonText =
     user.myselfIsFollowingThisUser === 'pending'

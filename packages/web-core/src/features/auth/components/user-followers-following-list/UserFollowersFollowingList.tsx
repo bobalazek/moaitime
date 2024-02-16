@@ -11,9 +11,9 @@ import { useUserFollowingQuery } from '../../hooks/useUserFollowingQuery';
 import UserFollowEntry from '../user-follow-entry/UserFollowEntry';
 
 const animationVariants = {
-  initial: { opacity: 0, y: -100 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 100 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
@@ -67,10 +67,10 @@ export default function UserFollowersFollowingList({
   }
 
   return (
-    <div data-test="users--view--user-following-list">
+    <div data-test={`users--view--user-${type}-list`}>
       {items.length === 0 && (
         <div className="text-muted-foreground justify-center text-center">
-          <div className="mb-3 text-xl">This user does not follow anyone yet.</div>
+          {type === 'followers' ? 'No followers yet.' : 'Not following anyone yet.'}
         </div>
       )}
       {items.length > 0 && (

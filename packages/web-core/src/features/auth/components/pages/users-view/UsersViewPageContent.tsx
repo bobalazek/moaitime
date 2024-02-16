@@ -2,6 +2,7 @@ import { formatRelative } from 'date-fns';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
 
 import { PublicUser } from '@moaitime/shared-common';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@moaitime/web-ui';
 
 import { UserAvatar } from '../../../../core/components/UserAvatar';
 import UserBlockButton from '../../user-buttons/UserBlockButton';
@@ -15,9 +16,6 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
     year: 'numeric',
   });
 
-  const showFollowButton = !user.isMyself;
-  const showBlockButton = !user.isMyself;
-
   return (
     <div className="container py-4" data-test="users-view--content">
       <div className="grid grid-cols-10 gap-2">
@@ -28,8 +26,8 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
               <div>
                 <h2 className="flex items-center gap-4">
                   <span className="text-5xl font-bold">{user.displayName}</span>
-                  {showFollowButton && <UserFollowButton user={user} onAfterClick={refetch} />}
-                  {showBlockButton && <UserBlockButton user={user} onAfterClick={refetch} />}
+                  <UserFollowButton user={user} onAfterClick={refetch} />
+                  <UserBlockButton user={user} onAfterClick={refetch} />
                 </h2>
                 <h3 className="text-muted-foreground text-2xl">{user.username}</h3>
               </div>
@@ -58,16 +56,22 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
           </div>
         </div>
         <div className="col-span-3">
-          <div className="flex flex-col gap-6">
-            <div>
-              <h3 className="mb-2 font-bold">Following</h3>
-              <UserFollowersFollowingList type="following" userIdOrUsername={user.username} />
-            </div>
-            <div>
-              <h3 className="mb-2 font-bold">Followers</h3>
+          <Tabs className="rounded border" defaultValue="followers">
+            <TabsList className="w-full">
+              <TabsTrigger className="w-full" value="followers">
+                Followers
+              </TabsTrigger>
+              <TabsTrigger className="w-full" value="following">
+                Following
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="followers" className="p-4">
               <UserFollowersFollowingList type="followers" userIdOrUsername={user.username} />
-            </div>
-          </div>
+            </TabsContent>
+            <TabsContent value="following" className="p-4">
+              <UserFollowersFollowingList type="following" userIdOrUsername={user.username} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

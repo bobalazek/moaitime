@@ -22,12 +22,12 @@ export default function UsersViewPage() {
       : `Users | MoaiTime`;
   }, [data]);
 
-  if (!data || !params.userUsername) {
-    return <NotFoundPage />;
-  }
-
   if (isLoading) {
     return <Loader />;
+  }
+
+  if (!data || !params.userUsername) {
+    return <NotFoundPage />;
   }
 
   if (error || !data) {

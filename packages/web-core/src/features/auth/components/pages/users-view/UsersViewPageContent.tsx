@@ -18,8 +18,8 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
 
   return (
     <div className="container py-4" data-test="users-view--content">
-      <div className="grid grid-cols-10 gap-2">
-        <div className="col-span-7">
+      <div className="grid gap-2 md:grid-cols-12">
+        <div className="md:col-span-6 lg:col-span-8">
           <div className="flex items-center gap-6">
             <UserAvatar user={user} sizePx={80} />
             <div className="flex flex-col gap-2">
@@ -55,7 +55,7 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
             </div>
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="md:col-span-6 lg:col-span-4">
           <Tabs className="rounded border" defaultValue="followers">
             <TabsList className="w-full">
               <TabsTrigger className="w-full" value="followers">

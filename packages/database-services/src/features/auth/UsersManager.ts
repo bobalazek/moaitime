@@ -282,6 +282,31 @@ export class UsersManager {
     return rows[0];
   }
 
+  async removeFollower(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBlocked = await this.isBlockingUser(user.id, userId);
+    if (isBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isFollowing = await this.isFollowingUser(user.id, userId);
+    if (!isFollowing) {
+      throw new Error('This user is not following you.');
+    }
+
+    const rows = await getDatabase()
+      .delete(userFollowedUsers)
+      .where(
+        and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
+      );
+
+    return rows[0];
+  }
+
   async block(userId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
@@ -614,27 +639,27 @@ export class UsersManager {
       return row.id;
     });
 
-    const userFollowingRows = await getDatabase().query.userFollowedUsers.findMany({
+    const myselfFollowingUsersFromBatch = await getDatabase().query.userFollowedUsers.findMany({
       where: and(
         eq(userFollowedUsers.userId, userId),
         inArray(userFollowedUsers.followedUserId, userIds)
       ),
     });
-    const userFollowingsMap = new Map(
-      userFollowingRows.map((userFollower) => {
+    const myselfFollowingUsersFromBatchMap = new Map(
+      myselfFollowingUsersFromBatch.map((userFollower) => {
         return [userFollower.followedUserId, userFollower];
       })
     );
 
-    const userFollowedRows = await getDatabase().query.userFollowedUsers.findMany({
+    const myselfFollowedUsersFromBatchRows = await getDatabase().query.userFollowedUsers.findMany({
       where: and(
         eq(userFollowedUsers.followedUserId, userId),
         inArray(userFollowedUsers.userId, userIds)
       ),
     });
-    const userFollowedRowsMap = new Map(
-      userFollowedRows.map((userFollower) => {
-        return [userFollower.userId, userFollower];
+    const myselfFollowedUsersFromBatchMap = new Map(
+      myselfFollowedUsersFromBatchRows.map((userFollower) => {
+        return [userFollower.followedUserId, userFollower];
       })
     );
 
@@ -652,13 +677,13 @@ export class UsersManager {
 
     return rows.map((user) => {
       const isMyself = userId === user.id;
-      const myselfIsFollowingThisUser = userFollowingsMap.has(user.id)
-        ? userFollowingsMap.get(user.id)?.approvedAt
+      const myselfIsFollowingThisUser = myselfFollowingUsersFromBatchMap.has(user.id)
+        ? myselfFollowingUsersFromBatchMap.get(user.id)?.approvedAt
           ? true
           : 'pending'
         : false;
-      const myselfIsFollowedByThisUser = userFollowedRowsMap.has(userId)
-        ? userFollowedRowsMap.get(userId)?.approvedAt
+      const myselfIsFollowedByThisUser = myselfFollowedUsersFromBatchMap.has(userId)
+        ? myselfFollowedUsersFromBatchMap.get(userId)?.approvedAt
           ? true
           : 'pending'
         : false;

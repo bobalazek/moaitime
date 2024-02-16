@@ -96,6 +96,19 @@ export class UsersController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Post(':userIdOrUsername/remove-follower')
+  async removeFollower(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string
+  ): Promise<AbstractResponseDto> {
+    await usersManager.removeFollower(req.user.id, userIdOrUsername);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Post(':userIdOrUsername/block')
   async block(
     @Req() req: Request,

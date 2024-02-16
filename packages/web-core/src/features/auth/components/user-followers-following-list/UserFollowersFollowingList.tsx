@@ -67,7 +67,7 @@ export default function UserFollowersFollowingList({
   }
 
   return (
-    <div data-test={`users--view--user-${type}-list`}>
+    <div className="w-full" data-test={`users--view--user-${type}-list`}>
       {items.length === 0 && (
         <div className="text-muted-foreground justify-center text-center">
           {type === 'followers' ? 'No followers yet.' : 'Not following anyone yet.'}
@@ -94,7 +94,11 @@ export default function UserFollowersFollowingList({
                     exit="exit"
                     variants={animationVariants}
                   >
-                    <UserFollowEntry user={user} onAfterClick={() => refetch()} />
+                    <UserFollowEntry
+                      user={user}
+                      onAfterClick={() => refetch()}
+                      showRemoveFollowerButton={type === 'followers'}
+                    />
                   </motion.div>
                 );
               })}

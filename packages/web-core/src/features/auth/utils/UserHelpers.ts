@@ -80,6 +80,14 @@ export const unfollowUser = async (userIdOrUsername: string) => {
   return true;
 };
 
+export const removeFollowerUser = async (userIdOrUsername: string) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/remove-follower`, {
+    method: 'POST',
+  });
+
+  return true;
+};
+
 export const blockUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/block`, {
     method: 'POST',

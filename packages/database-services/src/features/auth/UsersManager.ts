@@ -22,12 +22,16 @@ import {
   teams,
   teamUsers,
   User,
+  UserBlockedUser,
   userBlockedUsers,
+  UserFollowedUser,
   userFollowedUsers,
   users,
 } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   DEFAULT_USER_SETTINGS,
+  GlobalEventsEnum,
   isValidUuid,
   PublicUser,
   PublicUserSchema,
@@ -197,9 +201,12 @@ export class UsersManager {
 
     const parsedUser = PublicUserSchema.parse(user);
 
-    const followersCount = await this.countFollowers(user.id);
-    const followingCount = await this.countFollowing(user.id);
-    const lastActiveAt = await userActivityEntriesManager.getLastActiveAtByUserId(user.id);
+    const canViewUserIfPrivate = await this.canViewUserIfPrivate(userId, user);
+    const followersCount = canViewUserIfPrivate ? await this.countFollowers(user.id) : 0;
+    const followingCount = canViewUserIfPrivate ? await this.countFollowing(user.id) : 0;
+    const lastActiveAt = canViewUserIfPrivate
+      ? await userActivityEntriesManager.getLastActiveAtByUserId(user.id)
+      : null;
 
     const isMyself = userId === user.id;
     const myselfIsFollowingThisUser = await this.isFollowingUser(userId, user.id);
@@ -224,13 +231,18 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
+    if (userId === user.id) {
+      throw new Error('You cannot follow yourself.');
+    }
+
     const isBlocked = await this.isBlockingUser(user.id, userId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    if (userId === user.id) {
-      throw new Error('You cannot follow yourself.');
+    const isBlocking = await this.isBlockingUser(userId, user.id);
+    if (isBlocking) {
+      throw new Error(`You can not follow a user that you are blocking`);
     }
 
     const follow = await getDatabase().query.userFollowedUsers.findFirst({
@@ -254,8 +266,15 @@ export class UsersManager {
         followedUserId: user.id,
         approvedAt: user.isPrivate ? null : new Date(),
       });
+    const row = rows[0] as UserFollowedUser;
 
-    return rows[0];
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_FOLLOWED_USER, {
+      userId,
+      userFollowedUserId: row.id,
+      targetUserId: user.id,
+    });
+
+    return row;
   }
 
   async unfollow(userId: string, userIdOrUsername: string) {
@@ -283,8 +302,15 @@ export class UsersManager {
       .where(
         and(eq(userFollowedUsers.userId, userId), eq(userFollowedUsers.followedUserId, user.id))
       );
+    const row = rows[0] as UserFollowedUser;
 
-    return rows[0];
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNFOLLOWED_USER, {
+      userId,
+      userFollowedUserId: row.id,
+      targetUserId: user.id,
+    });
+
+    return row;
   }
 
   async approveFollower(userId: string, userIdOrUsername: string) {
@@ -310,18 +336,20 @@ export class UsersManager {
         and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
       )
       .returning();
+    const row = rows[0] as UserFollowedUser;
 
-    return rows[0];
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER, {
+      userId,
+      userFollowedUserId: row.id,
+      targetUserId: user.id,
+    });
+
+    return row;
   }
 
   async removeFollower(userId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
-      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
-    }
-
-    const isBlocked = await this.isBlockingUser(user.id, userId);
-    if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
@@ -335,8 +363,15 @@ export class UsersManager {
       .where(
         and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
       );
+    const row = rows[0] as UserFollowedUser;
 
-    return rows[0];
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REMOVE_FOLLOWED_USER, {
+      userId,
+      userFollowedUserId: row.id,
+      targetUserId: user.id,
+    });
+
+    return row;
   }
 
   async block(userId: string, userIdOrUsername: string) {
@@ -354,8 +389,22 @@ export class UsersManager {
       userId,
       blockedUserId: user.id,
     });
+    const row = rows[0] as UserBlockedUser;
 
-    return rows[0];
+    // Remove our follow to that user if present
+    await getDatabase()
+      .delete(userFollowedUsers)
+      .where(
+        and(eq(userFollowedUsers.userId, userId), eq(userFollowedUsers.followedUserId, user.id))
+      );
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_BLOCKED_USER, {
+      userId,
+      userBlockedUserId: row.id,
+      targetUserId: user.id,
+    });
+
+    return row;
   }
 
   async unblock(userId: string, userIdOrUsername: string) {
@@ -372,8 +421,15 @@ export class UsersManager {
     const rows = await getDatabase()
       .delete(userBlockedUsers)
       .where(and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)));
+    const row = rows[0] as UserBlockedUser;
 
-    return rows[0];
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNBLOCKED_USER, {
+      userId,
+      userBlockedUserId: row.id,
+      targetUserId: user.id,
+    });
+
+    return row;
   }
 
   async search(userId: string, options: UsersManagerSearchOptions) {

@@ -13,6 +13,12 @@ export enum GlobalEventsEnum {
   AUTH_USER_LOGGED_IN = 'auth:user:logged-in',
   AUTH_USER_LOGGED_OUT = 'auth:user:logged-out',
   AUTH_USER_UPDATED = 'auth:user:updated',
+  AUTH_USER_FOLLOWED_USER = 'auth:user:followed-user',
+  AUTH_USER_APPROVE_FOLLOWED_USER = 'auth:user:approve-followed-user',
+  AUTH_USER_REMOVE_FOLLOWED_USER = 'auth:user:remove-followed-user',
+  AUTH_USER_UNFOLLOWED_USER = 'auth:user:unfollowed-user',
+  AUTH_USER_BLOCKED_USER = 'auth:user:blocked-user',
+  AUTH_USER_UNBLOCKED_USER = 'auth:user:unblocked-user',
   // Tasks
   TASKS_TASK_ADDED = 'tasks:task:added',
   TASKS_TASK_EDITED = 'tasks:task:edited',
@@ -73,6 +79,36 @@ export type GlobalEvents = {
   };
   [GlobalEventsEnum.AUTH_USER_UPDATED]: {
     userId: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_FOLLOWED_USER]: {
+    userId: string;
+    userFollowedUserId: string; // This is the relationship
+    targetUserId: string; // This is the actual user that was unfollowed
+  };
+  [GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER]: {
+    userId: string;
+    userFollowedUserId: string;
+    targetUserId: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_REMOVE_FOLLOWED_USER]: {
+    userId: string;
+    userFollowedUserId: string;
+    targetUserId: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_UNFOLLOWED_USER]: {
+    userId: string;
+    userFollowedUserId: string;
+    targetUserId: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_BLOCKED_USER]: {
+    userId: string;
+    userBlockedUserId: string;
+    targetUserId: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_UNBLOCKED_USER]: {
+    userId: string;
+    userBlockedUserId: string;
+    targetUserId: string;
   };
   // Tasks
   [GlobalEventsEnum.TASKS_TASK_ADDED]: {

@@ -10,6 +10,28 @@ import { AuthenticatedGuard } from '../guards/authenticated.guard';
 @Controller('/api/v1/users')
 export class UsersController {
   @UseGuards(AuthenticatedGuard)
+  @Get()
+  async search(@Req() req: Request): Promise<AbstractResponseDto> {
+    const limit = 10;
+    const previousCursor = req.query.previousCursor as string | undefined;
+    const nextCursor = req.query.nextCursor as string | undefined;
+    const query = req.query.query as string | undefined;
+
+    const { data, meta } = await usersManager.search(req.user.id, {
+      limit,
+      previousCursor,
+      nextCursor,
+      query,
+    });
+
+    return {
+      success: true,
+      data,
+      meta,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Get(':userIdOrUsername')
   async view(
     @Req() req: Request,

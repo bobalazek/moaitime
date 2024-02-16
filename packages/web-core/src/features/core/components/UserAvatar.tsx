@@ -2,7 +2,7 @@ import { PublicUser } from '@moaitime/shared-common';
 
 export const UserAvatarInner = ({ user, sizePx = 64 }: { user: PublicUser; sizePx?: number }) => {
   if (!user.avatarImageUrl) {
-    const character = user.displayName.slice(0, 1).toUpperCase();
+    const character = user.displayName?.slice(0, 1).toUpperCase() ?? '?';
 
     return (
       <div

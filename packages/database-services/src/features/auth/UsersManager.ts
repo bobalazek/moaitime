@@ -47,11 +47,15 @@ import { tagsManager } from '../tasks/TagsManager';
 import { tasksManager } from '../tasks/TasksManager';
 import { userActivityEntriesManager } from './UserActivityEntriesManager';
 
-export type UsersManagerFollowerOptions = {
+export type UsersManagerFollowOptions = {
   limit: number;
   sortDirection?: SortDirectionEnum;
   previousCursor?: string;
   nextCursor?: string;
+};
+
+export type UsersManagerSearchOptions = UsersManagerFollowOptions & {
+  query?: string;
 };
 
 export class UsersManager {
@@ -372,20 +376,34 @@ export class UsersManager {
     return rows[0];
   }
 
-  async followers(userId: string, userIdOrUsername: string, options: UsersManagerFollowerOptions) {
-    return this._followersOrFollowing('followers', userId, userIdOrUsername, options);
+  async search(userId: string, options: UsersManagerSearchOptions) {
+    // TODO
+
+    return {
+      data: [],
+      meta: {
+        previousCursor: undefined,
+        nextCursor: undefined,
+        sortDirection: options.sortDirection ?? SortDirectionEnum.DESC,
+        limit: options.limit,
+      },
+    };
   }
 
-  async following(userId: string, userIdOrUsername: string, options: UsersManagerFollowerOptions) {
-    return this._followersOrFollowing('following', userId, userIdOrUsername, options);
+  async followers(userId: string, userIdOrUsername: string, options: UsersManagerFollowOptions) {
+    return this._getFollowUsers('followers', userId, userIdOrUsername, options);
+  }
+
+  async following(userId: string, userIdOrUsername: string, options: UsersManagerFollowOptions) {
+    return this._getFollowUsers('following', userId, userIdOrUsername, options);
   }
 
   async followRequests(
     userId: string,
     userIdOrUsername: string,
-    options: UsersManagerFollowerOptions
+    options: UsersManagerFollowOptions
   ) {
-    return this._followersOrFollowing('follow-requests', userId, userIdOrUsername, options);
+    return this._getFollowUsers('follow-requests', userId, userIdOrUsername, options);
   }
 
   // Helpers
@@ -412,6 +430,16 @@ export class UsersManager {
     }
 
     return follow?.approvedAt ? true : 'pending';
+  }
+
+  async canViewUserIfPrivate(userId: string, user: User) {
+    const isMyself = userId === user.id;
+    const isFollowing = await this.isFollowingUser(userId, user.id);
+    if (!isMyself && user.isPrivate && isFollowing !== true) {
+      return false;
+    }
+
+    return true;
   }
 
   async countFollowers(userId: string): Promise<number> {
@@ -523,11 +551,11 @@ export class UsersManager {
   }
 
   // Private
-  private async _followersOrFollowing(
+  private async _getFollowUsers(
     type: 'followers' | 'following' | 'follow-requests',
     userId: string,
     userIdOrUsername: string,
-    options: UsersManagerFollowerOptions
+    options: UsersManagerFollowOptions
   ) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
@@ -547,8 +575,8 @@ export class UsersManager {
     const limit = options?.limit ?? 20;
     const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
 
-    const isFollowing = await this.isFollowingUser(userId, user.id);
-    if (!isMyself && user.isPrivate && isFollowing !== true) {
+    const canViewUserIfPrivate = await this.canViewUserIfPrivate(userId, user);
+    if (!canViewUserIfPrivate) {
       throw new Error('This user is private.');
     }
 
@@ -558,15 +586,25 @@ export class UsersManager {
     let orderBy = isSortAscending
       ? asc(userFollowedUsers.createdAt)
       : desc(userFollowedUsers.createdAt);
-    let where =
-      type === 'following'
-        ? and(eq(userFollowedUsers.userId, user.id), isNotNull(userFollowedUsers.approvedAt))
-        : type === 'followers'
-          ? and(
-              eq(userFollowedUsers.followedUserId, user.id),
-              isNotNull(userFollowedUsers.approvedAt)
-            )
-          : and(eq(userFollowedUsers.followedUserId, userId), isNull(userFollowedUsers.approvedAt));
+    let where: SQL<unknown> | undefined;
+
+    if (type === 'following') {
+      where = and(eq(userFollowedUsers.userId, user.id), isNotNull(userFollowedUsers.approvedAt));
+    } else if (type === 'followers') {
+      where = and(
+        eq(userFollowedUsers.followedUserId, user.id),
+        isNotNull(userFollowedUsers.approvedAt)
+      );
+    } else if (type === 'follow-requests') {
+      where = and(
+        eq(userFollowedUsers.followedUserId, user.id),
+        isNull(userFollowedUsers.approvedAt)
+      );
+    }
+
+    if (!where) {
+      throw new Error('Invalid type.');
+    }
 
     if (options?.previousCursor) {
       const { id: previousId, createdAt: previousCreatedAt } = this._cursorToProperties(
@@ -609,18 +647,23 @@ export class UsersManager {
       ) as SQL<unknown>;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let withObj: any;
+    if (type === 'following') {
+      withObj = {
+        followedUser: true,
+      };
+    } else if (type === 'followers' || type === 'follow-requests') {
+      withObj = {
+        user: true,
+      };
+    }
+
     const rows = await getDatabase().query.userFollowedUsers.findMany({
       where,
       orderBy,
       limit,
-      with:
-        type === 'following'
-          ? {
-              followedUser: true,
-            }
-          : {
-              user: true,
-            },
+      with: withObj,
     });
 
     // Here we reverse the order back to what it was originally

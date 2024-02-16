@@ -16,13 +16,13 @@ export class MoodEntriesController {
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<MoodEntry[]>> {
     const limit = 10;
-    const previousCursorParameter = req.query.previousCursor as string | undefined;
-    const nextCursorParameter = req.query.nextCursor as string | undefined;
+    const previousCursor = req.query.previousCursor as string | undefined;
+    const nextCursor = req.query.nextCursor as string | undefined;
 
     const { data, meta } = await moodEntriesManager.list(req.user.id, {
       limit,
-      previousCursor: previousCursorParameter,
-      nextCursor: nextCursorParameter,
+      previousCursor,
+      nextCursor,
     });
 
     return {

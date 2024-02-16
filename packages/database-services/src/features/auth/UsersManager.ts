@@ -1,5 +1,19 @@
 import { format } from 'date-fns';
-import { and, asc, count, DBQueryConfig, desc, eq, gt, isNull, lt, ne, or, SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  DBQueryConfig,
+  desc,
+  eq,
+  gt,
+  inArray,
+  isNull,
+  lt,
+  ne,
+  or,
+  SQL,
+} from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -521,9 +535,14 @@ export class UsersManager {
       where,
       orderBy,
       limit,
-      with: {
-        user: true,
-      },
+      with:
+        type === 'following'
+          ? {
+              followedUser: true,
+            }
+          : {
+              user: true,
+            },
     });
 
     // Here we reverse the order back to what it was originally
@@ -531,9 +550,21 @@ export class UsersManager {
       rows.reverse();
     }
 
-    const data = rows.map((row) => {
-      return PublicUserSchema.parse(row.user);
-    });
+    const parsedRows = rows
+      .map((row) => {
+        if ('followedUser' in row) {
+          return PublicUserSchema.parse(row.followedUser);
+        } else if ('user' in row) {
+          return PublicUserSchema.parse(row.user);
+        }
+
+        return null;
+      })
+      .filter((user) => {
+        return !!user;
+      }) as PublicUser[];
+
+    const data = await this._populatePublicUsers(parsedRows, userId);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -572,6 +603,75 @@ export class UsersManager {
         limit,
       },
     };
+  }
+
+  private async _populatePublicUsers(rows: PublicUser[], userId: string) {
+    if (rows.length === 0) {
+      return [];
+    }
+
+    const userIds = rows.map((row) => {
+      return row.id;
+    });
+
+    const userFollowingRows = await getDatabase().query.userFollowedUsers.findMany({
+      where: and(
+        eq(userFollowedUsers.userId, userId),
+        inArray(userFollowedUsers.followedUserId, userIds)
+      ),
+    });
+    const userFollowingsMap = new Map(
+      userFollowingRows.map((userFollower) => {
+        return [userFollower.followedUserId, userFollower];
+      })
+    );
+
+    const userFollowedRows = await getDatabase().query.userFollowedUsers.findMany({
+      where: and(
+        eq(userFollowedUsers.followedUserId, userId),
+        inArray(userFollowedUsers.userId, userIds)
+      ),
+    });
+    const userFollowedRowsMap = new Map(
+      userFollowedRows.map((userFollower) => {
+        return [userFollower.userId, userFollower];
+      })
+    );
+
+    const userBlockedUsersRows = await getDatabase().query.userBlockedUsers.findMany({
+      where: and(
+        eq(userBlockedUsers.userId, userId),
+        inArray(userBlockedUsers.blockedUserId, userIds)
+      ),
+    });
+    const userBlockedUsersMap = new Map(
+      userBlockedUsersRows.map((userBlocked) => {
+        return [userBlocked.blockedUserId, userBlocked];
+      })
+    );
+
+    return rows.map((user) => {
+      const isMyself = userId === user.id;
+      const myselfIsFollowingThisUser = userFollowingsMap.has(user.id)
+        ? userFollowingsMap.get(user.id)?.approvedAt
+          ? true
+          : 'pending'
+        : false;
+      const myselfIsFollowedByThisUser = userFollowedRowsMap.has(userId)
+        ? userFollowedRowsMap.get(userId)?.approvedAt
+          ? true
+          : 'pending'
+        : false;
+      const myselfIsBlockingThisUser = userBlockedUsersMap.has(user.id);
+
+      return {
+        ...user,
+        isMyself,
+        myselfIsFollowingThisUser,
+        myselfIsFollowedByThisUser,
+        myselfIsBlockingThisUser,
+      };
+    });
   }
 
   private _fixRowColumns(user: User) {

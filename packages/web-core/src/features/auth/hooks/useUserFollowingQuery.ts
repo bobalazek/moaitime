@@ -11,7 +11,7 @@ import { getUserFollowing } from '../utils/UserHelpers';
 
 export const USER_FOLLOWING_QUERY_KEY = 'user-following';
 
-export const useUserFollowersQuery = (userIdOrUsername: string) => {
+export const useUserFollowingQuery = (userIdOrUsername: string) => {
   return useInfiniteQuery<AsyncReturnType<typeof getUserFollowing>>({
     initialPageParam: undefined,
     maxPages: 5,

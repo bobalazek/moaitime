@@ -24,6 +24,52 @@ export class UsersController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Get(':userIdOrUsername/following')
+  async following(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string
+  ): Promise<AbstractResponseDto> {
+    const limit = 10;
+    const previousCursor = req.query.previousCursor as string | undefined;
+    const nextCursor = req.query.nextCursor as string | undefined;
+
+    const { data, meta } = await usersManager.following(req.user.id, userIdOrUsername, {
+      limit,
+      previousCursor,
+      nextCursor,
+    });
+
+    return {
+      success: true,
+      data,
+      meta,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get(':userIdOrUsername/followers')
+  async followers(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string
+  ): Promise<AbstractResponseDto> {
+    const limit = 10;
+    const previousCursor = req.query.previousCursor as string | undefined;
+    const nextCursor = req.query.nextCursor as string | undefined;
+
+    const { data, meta } = await usersManager.followers(req.user.id, userIdOrUsername, {
+      limit,
+      previousCursor,
+      nextCursor,
+    });
+
+    return {
+      success: true,
+      data,
+      meta,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Post(':userIdOrUsername/follow')
   async follow(
     @Req() req: Request,

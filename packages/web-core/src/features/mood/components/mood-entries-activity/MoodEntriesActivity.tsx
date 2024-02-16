@@ -33,7 +33,7 @@ function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
 
   return (
     <Button ref={ref} className="btn btn-primary" onClick={() => fetchNextPage()}>
-      Load older
+      Load More
     </Button>
   );
 }

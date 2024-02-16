@@ -2,14 +2,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { useIntersectionObserver } from 'usehooks-ts';
 
-import { GlobalEventsEnum } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { globalEventsEmitter } from '../../../core/state/globalEventsEmitter';
-import { useUserNotificationsQuery } from '../../hooks/useUserNotificationsQuery';
-import { UserNotification } from '../user-notification/UserNotification';
+import { useUserFollowersQuery } from '../../hooks/useUserFollowersQuery';
+import { useUserFollowingQuery } from '../../hooks/useUserFollowingQuery';
+import UserFollowEntry from '../user-follow-entry/UserFollowEntry';
 
 const animationVariants = {
   initial: { opacity: 0, y: -100 },
@@ -35,45 +34,16 @@ function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
   );
 }
 
-function UserNotificationsActivityInner() {
-  const {
-    data,
-    isLoading,
-    hasNextPage,
-    fetchNextPage,
-    hasPreviousPage,
-    fetchPreviousPage,
-    refetch,
-    error,
-  } = useUserNotificationsQuery();
-
-  useEffect(() => {
-    const callback = () => {
-      refetch();
-    };
-
-    globalEventsEmitter.on(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, callback);
-    globalEventsEmitter.on(
-      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ,
-      callback
-    );
-    globalEventsEmitter.on(
-      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
-      callback
-    );
-
-    return () => {
-      globalEventsEmitter.off(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, callback);
-      globalEventsEmitter.off(
-        GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ,
-        callback
-      );
-      globalEventsEmitter.off(
-        GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
-        callback
-      );
-    };
-  }, [refetch]);
+export default function UserFollowersFollowingList({
+  type,
+  userIdOrUsername,
+}: {
+  type: 'followers' | 'following';
+  userIdOrUsername: string;
+}) {
+  const query = type === 'followers' ? useUserFollowersQuery : useUserFollowingQuery;
+  const { data, isLoading, hasNextPage, fetchNextPage, hasPreviousPage, fetchPreviousPage, error } =
+    query(userIdOrUsername);
 
   const items = data?.pages.flatMap((page) => page.data!);
   if (!items) {
@@ -89,12 +59,10 @@ function UserNotificationsActivityInner() {
   }
 
   return (
-    <>
+    <div data-test="users--view--user-following-list">
       {items.length === 0 && (
         <div className="text-muted-foreground justify-center text-center">
-          <div className="mb-3 text-3xl leading-10">
-            No notifications right now. <br /> Lucky you! <br /> 😊
-          </div>
+          <div className="mb-3 text-xl">This user does not follow anyone yet.</div>
         </div>
       )}
       {items.length > 0 && (
@@ -108,17 +76,17 @@ function UserNotificationsActivityInner() {
           )}
           <div className="flex flex-col gap-4">
             <AnimatePresence>
-              {items.map((userNotification) => {
+              {items.map((user) => {
                 return (
                   <motion.div
-                    key={userNotification.id}
+                    key={user.id}
                     layout
                     initial="initial"
                     animate="animate"
                     exit="exit"
                     variants={animationVariants}
                   >
-                    <UserNotification userNotification={userNotification} />
+                    <UserFollowEntry user={user} />
                   </motion.div>
                 );
               })}
@@ -131,14 +99,6 @@ function UserNotificationsActivityInner() {
           )}
         </div>
       )}
-    </>
-  );
-}
-
-export default function UserNotificationsActivity() {
-  return (
-    <div data-test="notifications--user-notifications-activity">
-      <UserNotificationsActivityInner />
     </div>
   );
 }

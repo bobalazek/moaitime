@@ -19,9 +19,12 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() body: LoginDto,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request
   ): Promise<LoginResponseDto> {
-    const { user, userAccessToken } = await authManager.login(body.email, body.password);
+    const userAgent = req.query.userAgent ?? (req.headers['user-agent'] as string);
+
+    const { user, userAccessToken } = await authManager.login(body.email, body.password, userAgent);
 
     res.status(200);
 

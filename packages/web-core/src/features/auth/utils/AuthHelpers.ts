@@ -11,10 +11,10 @@ import {
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, password: string, userAgent?: string) => {
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/login`, {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, userAgent }),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',

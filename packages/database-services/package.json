@@ -37,10 +37,12 @@
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "drizzle-orm": "^0.29.0",
+    "ua-parser-js": "^1.0.37",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.2",
+    "@types/ua-parser-js": "^0.7.39",
     "@types/uuid": "^9.0.7",
     "typescript": "^5.3.2"
   }

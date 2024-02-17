@@ -270,10 +270,13 @@ CREATE TABLE IF NOT EXISTS "testing_emails" (
 CREATE TABLE IF NOT EXISTS "user_access_tokens" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"token" text NOT NULL,
+	"user_agent" text,
+	"user_agent_parsed" jsonb,
+	"revoked_reason" text,
 	"refresh_token" text NOT NULL,
 	"refresh_token_claimed_at" timestamp,
-	"expires_at" timestamp,
 	"revoked_at" timestamp,
+	"expires_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL,
@@ -319,6 +322,16 @@ CREATE TABLE IF NOT EXISTS "user_notifications" (
 	"user_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_achievements" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"achievement_key" text NOT NULL,
+	"points" integer NOT NULL,
+	"history" jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_experience_points" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" text NOT NULL,
@@ -334,7 +347,7 @@ CREATE TABLE IF NOT EXISTS "user_experience_points" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_followed_users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"color" text,
+	"approved_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL,
@@ -350,6 +363,14 @@ CREATE TABLE IF NOT EXISTS "user_blocked_users" (
 	"blocked_user_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_activity_entries" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"last_active_at" timestamp DEFAULT now(),
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"display_name" text NOT NULL,
@@ -361,6 +382,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"roles" jsonb DEFAULT '["user"]' NOT NULL,
 	"settings" jsonb,
 	"birth_date" date,
+	"biography" text,
+	"is_private" boolean DEFAULT false,
 	"avatar_image_url" text,
 	"email_confirmation_token" text,
 	"new_email_confirmation_token" text,
@@ -426,11 +449,15 @@ CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports
 CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_notifications_user_id_idx" ON "user_notifications" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_achievements_achievement_key_idx" ON "user_achievements" ("achievement_key");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_achievements_points_user_id_idx" ON "user_achievements" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_experience_points_type_idx" ON "user_experience_points" ("type");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_experience_points_user_id_idx" ON "user_experience_points" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_followed_users_user_id_idx" ON "user_followed_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_followed_users_followed_user_id_idx" ON "user_followed_users" ("followed_user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_blocked_users_user_id_idx" ON "user_blocked_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_block_users_blocked_user_id_idx" ON "user_blocked_users" ("blocked_user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_activity_entries_user_id_idx" ON "user_activity_entries" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_username_idx" ON "users" ("username");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_email_idx" ON "users" ("email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_new_email_idx" ON "users" ("new_email");--> statement-breakpoint
@@ -672,6 +699,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "user_achievements" ADD CONSTRAINT "user_achievements_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "user_experience_points" ADD CONSTRAINT "user_experience_points_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -697,6 +730,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_blocked_users" ADD CONSTRAINT "user_blocked_users_blocked_user_id_users_id_fk" FOREIGN KEY ("blocked_user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_activity_entries" ADD CONSTRAINT "user_activity_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

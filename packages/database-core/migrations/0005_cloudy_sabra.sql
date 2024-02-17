@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS "user_experience_points_type_idx" ON "user_experience_points" ("type");

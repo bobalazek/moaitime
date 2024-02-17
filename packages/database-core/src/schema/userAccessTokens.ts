@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { users } from './users';
 
@@ -8,6 +8,8 @@ export const userAccessTokens = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     token: text('token').notNull().unique(),
+    userAgent: text('user_agent'),
+    userAgentParsed: jsonb('user_agent_parsed'),
     revokedReason: text('revoked_reason'),
     refreshToken: text('refresh_token').notNull().unique(),
     refreshTokenClaimedAt: timestamp('refresh_token_claimed_at'),

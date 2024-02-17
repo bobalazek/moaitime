@@ -3,6 +3,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { addSeconds } from 'date-fns';
+import { UAParser } from 'ua-parser-js';
 import { v4 as uuidv4 } from 'uuid';
 
 import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
@@ -54,9 +55,9 @@ export class AuthManager {
   ) {}
 
   // Login
-  async login(email: string, password: string): Promise<AuthLoginResult> {
+  async login(email: string, password: string, userAgent?: string): Promise<AuthLoginResult> {
     const user = await this.getUserByCredentials(email, password);
-    const userAccessToken = await this.createNewUserAccessToken(user.id);
+    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
       userId: user.id,
@@ -750,11 +751,21 @@ export class AuthManager {
     return { user, userAccessToken };
   }
 
-  async createNewUserAccessToken(userId: string): Promise<UserAccessToken> {
+  async createNewUserAccessToken(userId: string, userAgent?: string): Promise<UserAccessToken> {
+    const token = uuidv4();
+    const refreshToken = uuidv4();
+    let userAgentParsed = null;
+    if (userAgent) {
+      const parser = new UAParser(userAgent);
+      userAgentParsed = parser.getResult();
+    }
+
     const userAccessToken = await this._userAccessTokensManager.insertOne({
       userId,
-      token: uuidv4(),
-      refreshToken: uuidv4(),
+      token,
+      refreshToken,
+      userAgent,
+      userAgentParsed,
     });
 
     return userAccessToken;

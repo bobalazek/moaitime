@@ -1,5 +1,5 @@
 {
-  "id": "cd0ea4e1-a562-4765-a2a5-e96cdcc1b7c5",
+  "id": "fd4e4413-f22d-42be-b477-ac855a2aef59",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -2064,6 +2064,24 @@
           "primaryKey": false,
           "notNull": true
         },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent_parsed": {
+          "name": "user_agent_parsed",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revoked_reason": {
+          "name": "revoked_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "refresh_token": {
           "name": "refresh_token",
           "type": "text",
@@ -2076,14 +2094,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "expires_at": {
-          "name": "expires_at",
+        "revoked_at": {
+          "name": "revoked_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "revoked_at": {
-          "name": "revoked_at",
+        "expires_at": {
+          "name": "expires_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -2417,6 +2435,82 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "user_achievements": {
+      "name": "user_achievements",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "achievement_key": {
+          "name": "achievement_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "history": {
+          "name": "history",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "user_achievements_achievement_key_idx": {
+          "name": "user_achievements_achievement_key_idx",
+          "columns": ["achievement_key"],
+          "isUnique": false
+        },
+        "user_achievements_points_user_id_idx": {
+          "name": "user_achievements_points_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "user_achievements_user_id_users_id_fk": {
+          "name": "user_achievements_user_id_users_id_fk",
+          "tableFrom": "user_achievements",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "user_experience_points": {
       "name": "user_experience_points",
       "schema": "",
@@ -2486,6 +2580,11 @@
         }
       },
       "indexes": {
+        "user_experience_points_type_idx": {
+          "name": "user_experience_points_type_idx",
+          "columns": ["type"],
+          "isUnique": false
+        },
         "user_experience_points_user_id_idx": {
           "name": "user_experience_points_user_id_idx",
           "columns": ["user_id"],
@@ -2517,9 +2616,9 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "color": {
-          "name": "color",
-          "type": "text",
+        "approved_at": {
+          "name": "approved_at",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -2664,6 +2763,66 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "user_activity_entries": {
+      "name": "user_activity_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "last_active_at": {
+          "name": "last_active_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "user_activity_entries_user_id_idx": {
+          "name": "user_activity_entries_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "user_activity_entries_user_id_users_id_fk": {
+          "name": "user_activity_entries_user_id_users_id_fk",
+          "tableFrom": "user_activity_entries",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "users": {
       "name": "users",
       "schema": "",
@@ -2729,6 +2888,19 @@
           "type": "date",
           "primaryKey": false,
           "notNull": false
+        },
+        "biography": {
+          "name": "biography",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_private": {
+          "name": "is_private",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "avatar_image_url": {
           "name": "avatar_image_url",

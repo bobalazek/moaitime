@@ -79,6 +79,9 @@ Cypress.Commands.add('login', (email, password) => {
   email = email || defaultUser.email;
   password = password || defaultUser.password;
 
+  Cypress.LocalStorage.clear();
+  Cypress.session.clearAllSavedSessions();
+
   cy.visit('/login');
 
   cy.get('#login-email').type(email as string);

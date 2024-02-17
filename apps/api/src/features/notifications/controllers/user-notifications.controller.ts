@@ -5,7 +5,7 @@ import { UserNotification } from '@moaitime/database-core';
 import { userNotificationsManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
+import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 
 @Controller('/api/v1/user-notifications')
 export class UserNotificationsController {

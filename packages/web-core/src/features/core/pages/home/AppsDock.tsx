@@ -2,13 +2,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { ScrollArea, ScrollBar } from '@moaitime/web-ui';
 
-import NotificationsAppButton from '../../../auth/components/notifications/NotificationsAppButton';
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import CalendarAppButton from '../../../calendar/components/CalendarAppButton';
 import CommandsAppButton from '../../../commands/components/CommandsAppButton';
 import FocusAppButton from '../../../focus/components/FocusAppButton';
 import MoodAppButton from '../../../mood/components/MoodAppButton';
 import NotesAppButton from '../../../notes/components/NotesAppButton';
+import NotificationsAppButton from '../../../notifications/components/NotificationsAppButton';
 import SettingsAppButton from '../../../settings/components/SettingsAppButton';
 import StatisticsAppButton from '../../../statistics/components/StatisticsAppButton';
 import TasksAppButton from '../../../tasks/components/TasksAppButton';

@@ -6,7 +6,6 @@ import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotP
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
-import NotificationsPage from './features/auth/components/pages/NotificationsPage';
 import TeamEditDialog from './features/auth/components/team-edit-dialog/TeamEditDialog';
 import { useAuthUserSetting } from './features/auth/state/authStore';
 import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
@@ -25,6 +24,7 @@ import FocusPage from './features/focus/components/pages/FocusPage';
 import MoodEntryEditDialog from './features/mood/components/mood-entry-edit-dialog/MoodEntryEditDialog';
 import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
+import NotificationsPage from './features/notifications/components/pages/NotificationsPage';
 import SettingsDialog from './features/settings/components/SettingsDialog';
 import UsersViewPage from './features/social/components/pages/UsersViewPage';
 import StatisticsPage from './features/statistics/components/pages/StatisticsPage';

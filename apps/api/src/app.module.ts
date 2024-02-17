@@ -13,6 +13,7 @@ import { FocusModule } from './features/focus/focus.module';
 import { GreetingsModule } from './features/greetings/greetings.module';
 import { MoodModule } from './features/mood/mood.module';
 import { NotesModule } from './features/notes/notes.module';
+import { NotificationsModule } from './features/notifications/notifications.module';
 import { QuotesModule } from './features/quotes/quotes.module';
 import { SettingsModule } from './features/settings/settings.module';
 import { SocialModule } from './features/social/social.module';
@@ -39,6 +40,7 @@ const { NODE_ENV } = getEnv();
       FocusModule,
       SocialModule,
       StatisticsModule,
+      NotificationsModule,
       SettingsModule,
     ],
     // Websockets not working fr testing... great job NestJS

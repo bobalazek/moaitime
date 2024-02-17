@@ -7,10 +7,10 @@ import { Loader } from '../../../core/components/Loader';
 import { useEscapeToHome } from '../../../core/hooks/useEscapeToHome';
 import NotFoundPage from '../../../core/pages/NotFoundPage';
 import { useUsersViewQuery } from '../../hooks/useUsersViewQuery';
-import UsersViewPageContent from './users-view/UsersViewPageContent';
-import UsersViewPageHeader from './users-view/UsersViewPageHeader';
+import SocialUsersViewPageContent from './social-users-view/SocialUsersViewPageContent';
+import SocialUsersViewPageHeader from './social-users-view/SocialUsersViewPageHeader';
 
-export default function UsersViewPage() {
+export default function SocialUsersViewPage() {
   useEscapeToHome();
   const params = useParams<{ userUsername: string }>();
 
@@ -18,8 +18,8 @@ export default function UsersViewPage() {
 
   useEffect(() => {
     document.title = data?.displayName
-      ? `${data.displayName} | Users | MoaiTime`
-      : `Users | MoaiTime`;
+      ? `${data.displayName} | Users | Social | MoaiTime`
+      : `Users | Social | MoaiTime`;
   }, [data]);
 
   if (isLoading) {
@@ -36,9 +36,9 @@ export default function UsersViewPage() {
 
   return (
     <ErrorBoundary>
-      <div className="flex h-screen flex-col" data-test="users-view">
-        <UsersViewPageHeader />
-        <UsersViewPageContent user={data} refetch={refetch} />
+      <div className="flex h-screen flex-col" data-test="social--users-view">
+        <SocialUsersViewPageHeader />
+        <SocialUsersViewPageContent user={data} refetch={refetch} />
       </div>
     </ErrorBoundary>
   );

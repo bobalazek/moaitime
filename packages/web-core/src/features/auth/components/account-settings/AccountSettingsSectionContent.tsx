@@ -147,7 +147,7 @@ export default function AccountSettingsSectionContent() {
   };
 
   const onViewPublicProfileButtonClick = async () => {
-    navigate(`/users/${auth.user.username}`);
+    navigate(`/social/users/${auth.user.username}`);
 
     setDialogOpen(false);
   };

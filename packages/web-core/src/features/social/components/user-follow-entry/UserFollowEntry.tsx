@@ -27,7 +27,7 @@ export default function UserFollowEntry({
           <UserAvatar user={user} sizePx={48} />
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <Link to={`/users/${user.username}`} className="font-bold">
+              <Link to={`/social/users/${user.username}`} className="font-bold">
                 {user.username}
               </Link>
               {showRemoveFollowerButton && user.myselfIsFollowedByThisUser && (

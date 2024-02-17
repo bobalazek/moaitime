@@ -9,7 +9,13 @@ import UserBlockButton from '../../user-buttons/UserBlockButton';
 import UserFollowButton from '../../user-buttons/UserFollowButton';
 import UserFollowersFollowingList from '../../user-followers-following-list/UserFollowersFollowingList';
 
-const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: () => void }) => {
+const SocialUsersViewPageContent = ({
+  user,
+  refetch,
+}: {
+  user: PublicUser;
+  refetch: () => void;
+}) => {
   const now = new Date();
   const joinedString = new Date(user.createdAt).toLocaleDateString('default', {
     month: 'long',
@@ -100,4 +106,4 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
   );
 };
 
-export default UsersViewPageContent;
+export default SocialUsersViewPageContent;

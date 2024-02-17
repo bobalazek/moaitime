@@ -10,6 +10,7 @@ import MoodAppButton from '../../../mood/components/MoodAppButton';
 import NotesAppButton from '../../../notes/components/NotesAppButton';
 import NotificationsAppButton from '../../../notifications/components/NotificationsAppButton';
 import SettingsAppButton from '../../../settings/components/SettingsAppButton';
+import SocialAppButton from '../../../social/components/SocialAppButton';
 import StatisticsAppButton from '../../../statistics/components/StatisticsAppButton';
 import TasksAppButton from '../../../tasks/components/TasksAppButton';
 import WeatherAppButton from '../../../weather/components/WeatherAppButton';
@@ -131,6 +132,17 @@ export default function AppsDock() {
                   <CommandsAppButton />
                 </motion.div>
               )}
+              <motion.div
+                key="social"
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+                transition={{ delay: delay++ * delayDuration }}
+              >
+                <SocialAppButton />
+              </motion.div>
               <motion.div
                 key="statistics"
                 layout

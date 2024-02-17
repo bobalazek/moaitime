@@ -15,6 +15,7 @@ import { MoodModule } from './features/mood/mood.module';
 import { NotesModule } from './features/notes/notes.module';
 import { QuotesModule } from './features/quotes/quotes.module';
 import { SettingsModule } from './features/settings/settings.module';
+import { SocialModule } from './features/social/social.module';
 import { StatisticsModule } from './features/statistics/statistics.module';
 import { TasksModule } from './features/tasks/tasks.module';
 import { TestingModule } from './features/testing/testing.module';
@@ -36,6 +37,7 @@ const { NODE_ENV } = getEnv();
       WeatherModule,
       MoodModule,
       FocusModule,
+      SocialModule,
       StatisticsModule,
       SettingsModule,
     ],

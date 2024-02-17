@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { PublicUser } from '@moaitime/shared-common';
 
 import { UserAvatar } from '../../../core/components/UserAvatar';
-import { useAuthStore } from '../../state/authStore';
+import { useSocialStore } from '../../state/socialStore';
 import UserApproveAndDeleteFollowButtons from '../user-buttons/UserApproveAndDeleteFollowButtons';
 import UserFollowButton from '../user-buttons/UserFollowButton';
 
@@ -18,7 +18,7 @@ export default function UserFollowEntry({
   showRemoveFollowerButton?: boolean;
   type?: 'followers' | 'following' | 'follow-requests';
 }) {
-  const { removeFollowerUser } = useAuthStore();
+  const { removeFollowerUser } = useSocialStore();
 
   return (
     <div className="flex w-full items-center justify-between overflow-hidden">

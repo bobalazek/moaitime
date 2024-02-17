@@ -19,7 +19,7 @@ const UsersViewPageContent = ({ user, refetch }: { user: PublicUser; refetch: ()
     user.isMyself || !user.isPrivate || (user.isPrivate && user.myselfIsFollowingThisUser === true);
 
   return (
-    <div className="container py-4" data-test="users-view--content">
+    <div className="container py-4" data-test="social--users-view--content">
       <div className="grid gap-2 md:grid-cols-12">
         <div className="md:col-span-6 lg:col-span-8">
           <div className="flex gap-6">

@@ -33,14 +33,6 @@ import {
   updateAccountSettings,
   uploadAccountAvatar,
 } from '../utils/AuthHelpers';
-import {
-  approveFollowerUser,
-  blockUser,
-  followUser,
-  removeFollowerUser,
-  unblockUser,
-  unfollowUser,
-} from '../utils/UserHelpers';
 
 export type AuthStore = {
   auth: Auth | null;
@@ -84,13 +76,6 @@ export type AuthStore = {
   setAccountPasswordSettingsDialogOpen: (accountPasswordSettingsDialogOpen: boolean) => void;
   // Ping
   doPing: () => Promise<void>;
-  // User
-  followUser: (userIdOrUsername: string) => Promise<void>;
-  unfollowUser: (userIdOrUsername: string) => Promise<void>;
-  approveFollowerUser: (userIdOrUsername: string) => Promise<void>;
-  removeFollowerUser: (userIdOrUsername: string) => Promise<void>;
-  blockUser: (userIdOrUsername: string) => Promise<void>;
-  unblockUser: (userIdOrUsername: string) => Promise<void>;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -307,55 +292,6 @@ export const useAuthStore = create<AuthStore>()(
       // Ping
       doPing: async () => {
         await doPing();
-      },
-      // User
-      followUser: async (userIdOrUsername: string) => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
-
-        await followUser(userIdOrUsername);
-      },
-      unfollowUser: async (userIdOrUsername: string) => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
-
-        await unfollowUser(userIdOrUsername);
-      },
-      approveFollowerUser: async (userIdOrUsername: string) => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
-
-        await approveFollowerUser(userIdOrUsername);
-      },
-      removeFollowerUser: async (userIdOrUsername: string) => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
-
-        await removeFollowerUser(userIdOrUsername);
-      },
-      blockUser: async (userIdOrUsername: string) => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
-
-        await blockUser(userIdOrUsername);
-      },
-      unblockUser: async (userIdOrUsername: string) => {
-        const { auth } = get();
-        if (!auth?.userAccessToken?.token) {
-          throw new Error('No token found');
-        }
-
-        await unblockUser(userIdOrUsername);
       },
     }),
     // App Data

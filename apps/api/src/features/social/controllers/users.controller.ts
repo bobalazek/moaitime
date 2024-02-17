@@ -4,8 +4,8 @@ import { Request } from 'express';
 import { usersManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
-import { PublicUserDto } from '../dtos/public-user.dto';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
+import { PublicUserDto } from '../../auth/dtos/public-user.dto';
+import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 
 @Controller('/api/v1/users')
 export class UsersController {

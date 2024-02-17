@@ -7,7 +7,6 @@ import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
 import NotificationsPage from './features/auth/components/pages/NotificationsPage';
-import UsersViewPage from './features/auth/components/pages/UsersViewPage';
 import TeamEditDialog from './features/auth/components/team-edit-dialog/TeamEditDialog';
 import { useAuthUserSetting } from './features/auth/state/authStore';
 import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
@@ -27,6 +26,7 @@ import MoodEntryEditDialog from './features/mood/components/mood-entry-edit-dial
 import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
 import SettingsDialog from './features/settings/components/SettingsDialog';
+import UsersViewPage from './features/social/components/pages/UsersViewPage';
 import StatisticsPage from './features/statistics/components/pages/StatisticsPage';
 import ListDeleteAlertDialog from './features/tasks/components/list-delete-alert-dialog/ListDeleteAlertDialog';
 import ListEditDialog from './features/tasks/components/list-edit-dialog/ListEditDialog';

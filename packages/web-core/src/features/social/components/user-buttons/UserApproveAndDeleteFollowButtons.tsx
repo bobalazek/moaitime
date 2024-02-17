@@ -1,7 +1,8 @@
 import { PublicUser } from '@moaitime/shared-common';
 import { Button } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../state/authStore';
+import { useAuthStore } from '../../../auth/state/authStore';
+import { useSocialStore } from '../../state/socialStore';
 
 export default function UserApproveAndDeleteFollowButtons({
   user,
@@ -12,7 +13,8 @@ export default function UserApproveAndDeleteFollowButtons({
   onAfterClick?: () => void;
   size?: 'sm' | 'default' | 'lg';
 }) {
-  const { auth, approveFollowerUser, removeFollowerUser } = useAuthStore();
+  const { auth } = useAuthStore();
+  const { approveFollowerUser, removeFollowerUser } = useSocialStore();
 
   if (user.id === auth?.user.id) {
     return null;

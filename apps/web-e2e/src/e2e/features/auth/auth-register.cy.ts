@@ -9,6 +9,7 @@ describe('auth-register.cy.ts', () => {
     cy.visit('/register');
 
     cy.get('#register-displayName').type('NewTester');
+    cy.get('#register-username').type('newtester');
     cy.get('#register-email').type('newtester@corcosoft.com');
     cy.get('#register-password').type('password');
 

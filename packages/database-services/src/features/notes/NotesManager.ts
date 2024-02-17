@@ -128,7 +128,7 @@ export class NotesManager {
   }
 
   async view(userId: string, noteId: string) {
-    const canView = await this.userCanView(noteId, userId);
+    const canView = await this.userCanView(userId, noteId);
     if (!canView) {
       throw new Error('You cannot view this note');
     }

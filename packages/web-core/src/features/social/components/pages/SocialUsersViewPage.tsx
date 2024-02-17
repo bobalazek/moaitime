@@ -7,8 +7,8 @@ import { Loader } from '../../../core/components/Loader';
 import { useEscapeToHome } from '../../../core/hooks/useEscapeToHome';
 import NotFoundPage from '../../../core/pages/NotFoundPage';
 import { useUsersViewQuery } from '../../hooks/useUsersViewQuery';
+import SocialPageHeader from './layout/SocialPageHeader';
 import SocialUsersViewPageContent from './social-users-view/SocialUsersViewPageContent';
-import SocialUsersViewPageHeader from './social-users-view/SocialUsersViewPageHeader';
 
 export default function SocialUsersViewPage() {
   useEscapeToHome();
@@ -37,7 +37,7 @@ export default function SocialUsersViewPage() {
   return (
     <ErrorBoundary>
       <div className="flex h-screen flex-col" data-test="social--users-view">
-        <SocialUsersViewPageHeader />
+        <SocialPageHeader />
         <SocialUsersViewPageContent user={data} refetch={refetch} />
       </div>
     </ErrorBoundary>

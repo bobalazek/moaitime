@@ -26,6 +26,7 @@ import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
 import NotificationsPage from './features/notifications/components/pages/NotificationsPage';
 import SettingsDialog from './features/settings/components/SettingsDialog';
+import SocialPage from './features/social/components/pages/SocialPage';
 import SocialUsersViewPage from './features/social/components/pages/SocialUsersViewPage';
 import StatisticsPage from './features/statistics/components/pages/StatisticsPage';
 import ListDeleteAlertDialog from './features/tasks/components/list-delete-alert-dialog/ListDeleteAlertDialog';
@@ -117,6 +118,14 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <StatisticsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/social"
+          element={
+            <ProtectedRoute>
+              <SocialPage />
             </ProtectedRoute>
           }
         />

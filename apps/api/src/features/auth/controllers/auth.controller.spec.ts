@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import { User, UserAccessToken } from '@moaitime/database-core';
 import { authManager, usersManager } from '@moaitime/database-services';
@@ -12,6 +12,7 @@ import { AuthController } from './auth.controller';
 
 describe('AuthController', () => {
   let response: Response;
+  let request: Request;
   let app: TestingModule;
   let authController: AuthController;
   let testUser: User;
@@ -21,6 +22,10 @@ describe('AuthController', () => {
     response = {
       status: vi.fn().mockReturnThis(),
     } as unknown as Response;
+    request = {
+      query: {},
+      headers: {},
+    } as Request;
 
     app = await Test.createTestingModule({
       controllers: [AuthController],
@@ -43,7 +48,8 @@ describe('AuthController', () => {
             email: 'test@test.com',
             password: 'test',
           },
-          response
+          response,
+          request
         );
 
       await expect(result).rejects.toThrow('Invalid credentials');
@@ -58,7 +64,8 @@ describe('AuthController', () => {
             email: 'test@email.com',
             password: 'wrong-password',
           },
-          response
+          response,
+          request
         );
 
       await expect(result).rejects.toThrow('Invalid credentials');
@@ -73,17 +80,22 @@ describe('AuthController', () => {
           email: 'test@email.com',
           password: 'test',
         },
-        response
+        response,
+        request
       );
 
       expect(success).toBe(true);
       expect(data?.user).toEqual({
         id: testUser.id,
         displayName: testUser.displayName,
+        username: testUser.username,
         email: testUser.email,
         newEmail: testUser.newEmail,
         roles: testUser.roles,
         settings: DEFAULT_USER_SETTINGS,
+        avatarImageUrl: null,
+        biography: null,
+        isPrivate: false,
         birthDate: '1990-01-01',
         emailConfirmedAt: testUser.emailConfirmedAt?.toISOString() ?? null,
         createdAt: testUser.createdAt?.toISOString() ?? null,

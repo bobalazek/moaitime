@@ -15,7 +15,9 @@ export default function SocialPage() {
     <ErrorBoundary>
       <div className="flex h-screen flex-col" data-test="social--index">
         <SocialPageHeader />
-        TODO
+        <div className="container m-auto flex-grow py-4">
+          Here we will have the feeds - global, friends, friends of friends and team (if applicable)
+        </div>
       </div>
     </ErrorBoundary>
   );

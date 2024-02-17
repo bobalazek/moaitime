@@ -15,11 +15,11 @@ import FocusPageHeader from './focus/FocusPageHeader';
 import FocusPageMain from './focus/FocusPageMain';
 
 export default function FocusPage() {
+  useEscapeToHome();
+
   const { reloadCurrentFocusSession } = useFocusSessionsStore();
   const focusSoundsEnabled = useAuthUserSetting('focusSoundsEnabled', false);
   const isInitialized = useRef(false);
-
-  useEscapeToHome();
 
   useEffect(() => {
     document.title = 'Focus | MoaiTime';

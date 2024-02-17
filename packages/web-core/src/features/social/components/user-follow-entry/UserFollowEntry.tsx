@@ -24,7 +24,9 @@ export default function UserFollowEntry({
     <div className="flex w-full items-center justify-between overflow-hidden">
       <div className="flex flex-shrink-0 flex-grow">
         <div className="flex flex-shrink items-center gap-2">
-          <UserAvatar user={user} sizePx={48} />
+          <Link to={`/social/users/${user.username}`}>
+            <UserAvatar user={user} sizePx={48} />
+          </Link>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <Link to={`/social/users/${user.username}`} className="font-bold">

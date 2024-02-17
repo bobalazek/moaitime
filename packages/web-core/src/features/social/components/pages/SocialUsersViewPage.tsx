@@ -12,6 +12,7 @@ import SocialUsersViewPageContent from './social-users-view/SocialUsersViewPageC
 
 export default function SocialUsersViewPage() {
   useEscapeToHome();
+
   const params = useParams<{ userUsername: string }>();
 
   const { isLoading, error, data, refetch } = useUsersViewQuery(params.userUsername!);

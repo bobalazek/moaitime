@@ -8,7 +8,7 @@ import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useUserFollowersQuery } from '../../hooks/useUserFollowersQuery';
 import { useUserFollowingQuery } from '../../hooks/useUserFollowingQuery';
-import { useUserFollowRequestsQuery } from '../../hooks/useUserFollowRequests';
+import { useUserFollowRequestsQuery } from '../../hooks/useUserFollowRequestsQuery';
 import UserFollowEntry from '../user-follow-entry/UserFollowEntry';
 
 const animationVariants = {

@@ -7,6 +7,7 @@ import {
   desc,
   eq,
   gt,
+  ilike,
   inArray,
   isNotNull,
   isNull,
@@ -438,15 +439,104 @@ export class UsersManager {
   }
 
   async search(userId: string, options: UsersManagerSearchOptions) {
-    // TODO
+    const query = options.query!;
+    const limit = options.limit ?? 10;
+    const sortDirection = options.sortDirection ?? SortDirectionEnum.DESC;
+
+    const isSortAscending = sortDirection === SortDirectionEnum.ASC;
+
+    let orderWasReversed = false;
+    let orderBy = isSortAscending ? asc(users.createdAt) : desc(users.createdAt);
+    let where = or(ilike(users.username, `%${query}%`), ilike(users.displayName, `%${query}%`));
+
+    if (options?.previousCursor) {
+      const { id: previousId, createdAt: previousCreatedAt } = this._cursorToProperties(
+        options.previousCursor
+      );
+      const previousCreatedAtDate = new Date(previousCreatedAt);
+
+      where = and(
+        where,
+        or(
+          isSortAscending
+            ? lt(users.createdAt, previousCreatedAtDate)
+            : gt(users.createdAt, previousCreatedAtDate),
+          and(eq(users.createdAt, previousCreatedAtDate), ne(users.id, previousId))
+        )
+      ) as SQL<unknown>;
+
+      // If we are going backwards, we need to reverse the order so we do not miss any entries in the middle
+      orderBy = isSortAscending ? desc(users.createdAt) : asc(users.createdAt);
+      orderWasReversed = true;
+    }
+
+    if (options?.nextCursor) {
+      const { id: nextId, createdAt: nextCreatedAt } = this._cursorToProperties(options.nextCursor);
+      const nextCreatedAtDate = new Date(nextCreatedAt);
+
+      where = and(
+        where,
+        or(
+          isSortAscending
+            ? gt(users.createdAt, nextCreatedAtDate)
+            : lt(users.createdAt, nextCreatedAtDate),
+          and(eq(users.createdAt, nextCreatedAtDate), ne(users.id, nextId))
+        )
+      ) as SQL<unknown>;
+    }
+
+    const rows = await getDatabase().query.users.findMany({
+      where,
+      orderBy,
+      limit,
+    });
+
+    // Here we reverse the order back to what it was originally
+    if (orderWasReversed) {
+      rows.reverse();
+    }
+
+    const parsedRows = rows.map((row) => {
+      return PublicUserSchema.parse(row);
+    });
+
+    const data = await this._populatePublicUsers(parsedRows, userId);
+
+    let previousCursor: string | undefined;
+    let nextCursor: string | undefined;
+    if (data.length > 0) {
+      const isLessThanLimit = data.length < limit;
+      const firstItem = data[0];
+      const lastItem = data[data.length - 1];
+
+      previousCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: firstItem.id,
+            createdAt: firstItem.createdAt,
+          })
+        : undefined;
+      nextCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: lastItem.id,
+            createdAt: lastItem.createdAt,
+          })
+        : undefined;
+    }
+
+    if (!options?.previousCursor) {
+      // Since no previousCursor was provided by the request,
+      // we assume that this is the very first page, and because of that,
+      // we certainly have no previous entries.
+      previousCursor = undefined;
+    }
 
     return {
-      data: [],
+      data,
       meta: {
-        previousCursor: undefined,
-        nextCursor: undefined,
-        sortDirection: options.sortDirection ?? SortDirectionEnum.DESC,
-        limit: options.limit,
+        previousCursor,
+        nextCursor,
+        sortDirection,
+        limit,
       },
     };
   }

@@ -85,6 +85,28 @@ export const getUserFollowRequests = async (
   return response;
 };
 
+export const getUserSearch = async (query?: string, options?: PaginationCursorsType) => {
+  const url = new URL(`${API_URL}/api/v1/users`);
+
+  if (query) {
+    url.searchParams.append('query', query);
+  }
+
+  if (options?.previousCursor) {
+    url.searchParams.append('previousCursor', options.previousCursor);
+  }
+
+  if (options?.nextCursor) {
+    url.searchParams.append('nextCursor', options.nextCursor);
+  }
+
+  const response = await fetchJson<ResponseInterface<PublicUser[]>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response;
+};
+
 export const followUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/follow`, {
     method: 'POST',

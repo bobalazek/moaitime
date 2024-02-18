@@ -103,6 +103,8 @@ export const useAuthStore = create<AuthStore>()(
 
         set({ auth: null });
 
+        localStorage.removeItem('device-uid');
+
         return response;
       },
       // Register

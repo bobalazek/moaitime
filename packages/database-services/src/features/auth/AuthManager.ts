@@ -55,9 +55,14 @@ export class AuthManager {
   ) {}
 
   // Login
-  async login(email: string, password: string, userAgent?: string): Promise<AuthLoginResult> {
+  async login(
+    email: string,
+    password: string,
+    userAgent?: string,
+    deviceUid?: string
+  ): Promise<AuthLoginResult> {
     const user = await this.getUserByCredentials(email, password);
-    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent);
+    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
       userId: user.id,
@@ -69,7 +74,7 @@ export class AuthManager {
     };
   }
 
-  async logout(token: string): Promise<boolean> {
+  async logout(token: string, revokedReason?: string): Promise<boolean> {
     const userAccessToken = await this._userAccessTokensManager.findOneByToken(token);
     if (!userAccessToken) {
       return false;
@@ -80,6 +85,7 @@ export class AuthManager {
     await this._userAccessTokensManager.updateOneById(userAccessToken.id, {
       revokedAt: now,
       expiresAt: now,
+      revokedReason,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_OUT, {
@@ -751,7 +757,11 @@ export class AuthManager {
     return { user, userAccessToken };
   }
 
-  async createNewUserAccessToken(userId: string, userAgent?: string): Promise<UserAccessToken> {
+  async createNewUserAccessToken(
+    userId: string,
+    userAgent?: string,
+    deviceUid?: string
+  ): Promise<UserAccessToken> {
     const token = uuidv4();
     const refreshToken = uuidv4();
     let userAgentParsed = null;
@@ -766,6 +776,7 @@ export class AuthManager {
       refreshToken,
       userAgent,
       userAgentParsed,
+      deviceUid,
     });
 
     return userAccessToken;

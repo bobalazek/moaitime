@@ -15,15 +15,25 @@ export const fetchJson = async <T>(
   options?: { preventToast?: boolean }
 ): Promise<T> => {
   const { auth, logout } = useAuthStore.getState();
+
+  if (!init) {
+    init = {};
+  }
+
+  if (!init?.headers) {
+    init.headers = {};
+  }
+
+  const userAgent = navigator.userAgent;
+  const deviceUid = getDeviceUid();
+
+  init.headers = {
+    ...init.headers,
+    'user-agent': userAgent,
+    'device-uid': deviceUid,
+  };
+
   if (auth?.userAccessToken?.token) {
-    if (!init) {
-      init = {};
-    }
-
-    if (!init.headers) {
-      init.headers = {};
-    }
-
     init.headers = {
       ...init.headers,
       Authorization: `Bearer ${auth.userAccessToken.token}`,
@@ -65,4 +75,14 @@ export const fetchJson = async <T>(
   }
 
   return data;
+};
+
+export const getDeviceUid = (): string => {
+  let deviceUid = localStorage.getItem('device-uid');
+  if (!deviceUid) {
+    deviceUid = `${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}`;
+    localStorage.setItem('device-uid', deviceUid);
+  }
+
+  return deviceUid;
 };

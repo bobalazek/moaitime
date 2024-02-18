@@ -10,6 +10,7 @@ export const userAccessTokens = pgTable(
     token: text('token').notNull().unique(),
     userAgent: text('user_agent'),
     userAgentParsed: jsonb('user_agent_parsed'),
+    deviceUid: text('device_uid'), // did not use "_id" because that would imply an entity of a table
     revokedReason: text('revoked_reason'),
     refreshToken: text('refresh_token').notNull().unique(),
     refreshTokenClaimedAt: timestamp('refresh_token_claimed_at'),

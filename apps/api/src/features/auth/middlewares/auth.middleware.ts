@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
 import { authManager, userActivityEntriesManager, usersManager } from '@moaitime/database-services';
@@ -22,23 +22,34 @@ export class AuthMiddleware implements NestMiddleware {
       }
     }
 
-    try {
-      const userWithAccessToken = accessToken
-        ? await authManager.getUserByAccessToken(accessToken)
-        : null;
-      if (userWithAccessToken) {
-        const { user, userAccessToken } = userWithAccessToken;
+    const deviceUid = req.get('device-uid');
 
-        req.user = {
-          ...user,
-          settings: usersManager.getUserSettings(user),
-          _accessToken: userAccessToken,
-          _plan: null,
-          _subscription: null,
-        };
+    const userWithAccessToken = accessToken
+      ? await authManager.getUserByAccessToken(accessToken)
+      : null;
+    if (userWithAccessToken) {
+      const { user, userAccessToken } = userWithAccessToken;
+
+      // We absolutely need to make sure to NOT prevent the user from logging out there,
+      // otherwise we will get a infinite loop!
+      // Must be .baseUrl or .originalUrl, because .url for some reason is always "/"
+      if (
+        userAccessToken.deviceUid &&
+        userAccessToken.deviceUid !== deviceUid &&
+        !req.baseUrl.includes('/logout')
+      ) {
+        await authManager.logout(userAccessToken.token, 'Invalid device UID');
+
+        throw new UnauthorizedException('Invalid device UID. Please log in again.');
       }
-    } catch (error) {
-      // Nothing to do
+
+      req.user = {
+        ...user,
+        settings: usersManager.getUserSettings(user),
+        _accessToken: userAccessToken,
+        _plan: null,
+        _subscription: null,
+      };
     }
 
     try {

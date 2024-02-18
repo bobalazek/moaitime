@@ -22,9 +22,15 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Req() req: Request
   ): Promise<LoginResponseDto> {
-    const userAgent = req.query.userAgent ?? (req.headers['user-agent'] as string);
+    const userAgent = req.get('user-agent');
+    const deviceUid = req.get('device-uid');
 
-    const { user, userAccessToken } = await authManager.login(body.email, body.password, userAgent);
+    const { user, userAccessToken } = await authManager.login(
+      body.email,
+      body.password,
+      userAgent,
+      deviceUid
+    );
 
     res.status(200);
 

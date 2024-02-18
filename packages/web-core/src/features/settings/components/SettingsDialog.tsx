@@ -218,9 +218,19 @@ export default function SettingsDialog() {
           </div>
         )}
         {showContent && (
-          <div className="w-full p-4 md:w-3/4" data-test="settings--dialog--content">
+          <div className="h-full w-full p-4 md:w-3/4" data-test="settings--dialog--content">
             <AnimatePresence>
-              <motion.div layout>{renderContent()}</motion.div>
+              <motion.div
+                layout="position"
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  y: -100,
+                }}
+                animate={{ y: 0 }}
+              >
+                {renderContent()}
+              </motion.div>
             </AnimatePresence>
           </div>
         )}

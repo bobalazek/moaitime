@@ -16,6 +16,7 @@ export * from './schema/tags';
 export * from './schema/tasks';
 export * from './schema/taskTags';
 export * from './schema/taskUsers';
+export * from './schema/posts';
 export * from './schema/teams';
 export * from './schema/teamUsers';
 export * from './schema/teamUserInvitations';

@@ -33,7 +33,7 @@ export class GlobalEventsProcessor {
 
   private async _processEvent<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     try {
-      userExperiencePointsProcessor.process(type, payload);
+      await userExperiencePointsProcessor.process(type, payload);
     } catch (error) {
       this._logger.error(
         error,
@@ -42,7 +42,7 @@ export class GlobalEventsProcessor {
     }
 
     try {
-      userAchievementsProcessor.process(type, payload);
+      await userAchievementsProcessor.process(type, payload);
     } catch (error) {
       this._logger.error(
         error,

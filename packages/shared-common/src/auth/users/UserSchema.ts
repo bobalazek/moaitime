@@ -21,6 +21,7 @@ export const PublicUserSchema = z.object({
   lastActiveAt: z.date().transform(dateToSting).nullable().optional(),
   followersCount: z.number().optional(),
   followingCount: z.number().optional(),
+  experiencePoints: z.number().optional(),
   isMyself: z.boolean().optional(),
   myselfIsFollowingThisUser: z.union([z.boolean(), z.literal('pending')]).optional(),
   myselfIsFollowedByThisUser: z.union([z.boolean(), z.literal('pending')]).optional(),

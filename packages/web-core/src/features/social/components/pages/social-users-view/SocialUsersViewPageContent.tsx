@@ -53,6 +53,14 @@ const SocialUsersViewPageContent = ({
                 <span>
                   <b>{user.followingCount}</b> following
                 </span>
+                {user.experiencePoints && (
+                  <>
+                    <span> • </span>
+                    <span>
+                      <b>{user.experiencePoints}</b> XP
+                    </span>
+                  </>
+                )}
               </div>
               {user.biography && <div className="text-lg">{user.biography}</div>}
               <div>

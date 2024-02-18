@@ -58,10 +58,10 @@ export class UserOnlineActivityEntriesManager {
   }
 
   // Helpers
-  async getLastActiveAtByUserId(userId: string): Promise<Date | null> {
+  async getLastActiveAtByUserId(userId: string): Promise<string | null> {
     const latestEntry = await this.findOneLatestByUserId(userId);
 
-    return latestEntry?.lastActiveAt ?? null;
+    return latestEntry?.lastActiveAt?.toISOString() ?? null;
   }
 
   async updateUserLastActiveAtById(

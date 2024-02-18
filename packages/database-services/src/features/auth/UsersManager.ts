@@ -15,6 +15,7 @@ import {
   ne,
   or,
   SQL,
+  sum,
 } from 'drizzle-orm';
 
 import {
@@ -24,6 +25,7 @@ import {
   teamUsers,
   User,
   userBlockedUsers,
+  userExperiencePoints,
   userFollowedUsers,
   users,
 } from '@moaitime/database-core';
@@ -186,6 +188,17 @@ export class UsersManager {
     return this._fixRowColumns(rows[0]);
   }
 
+  // Permissions
+  async canViewUserIfPrivate(userId: string, user: User) {
+    const isMyself = userId === user.id;
+    const isFollowing = await this.isFollowingUser(userId, user.id);
+    if (!isMyself && user.isPrivate && isFollowing !== true) {
+      return false;
+    }
+
+    return true;
+  }
+
   // API Helpers
   async view(userId: string, userIdOrUsername: string): Promise<PublicUser> {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
@@ -206,6 +219,9 @@ export class UsersManager {
     const lastActiveAt = canViewUserIfPrivate
       ? await userOnlineActivityEntriesManager.getLastActiveAtByUserId(user.id)
       : null;
+    const experiencePoints = canViewUserIfPrivate
+      ? await this.getExperincePointsByUserId(user.id)
+      : 0;
 
     const isMyself = userId === user.id;
     const myselfIsFollowingThisUser = await this.isFollowingUser(userId, user.id);
@@ -216,7 +232,8 @@ export class UsersManager {
       ...parsedUser,
       followersCount,
       followingCount,
-      lastActiveAt: lastActiveAt ? lastActiveAt.toISOString() : null,
+      lastActiveAt,
+      experiencePoints,
       isMyself,
       myselfIsFollowingThisUser,
       myselfIsFollowedByThisUser,
@@ -583,16 +600,6 @@ export class UsersManager {
     return follow?.approvedAt ? true : 'pending';
   }
 
-  async canViewUserIfPrivate(userId: string, user: User) {
-    const isMyself = userId === user.id;
-    const isFollowing = await this.isFollowingUser(userId, user.id);
-    if (!isMyself && user.isPrivate && isFollowing !== true) {
-      return false;
-    }
-
-    return true;
-  }
-
   async countFollowers(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({
@@ -629,6 +636,20 @@ export class UsersManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  async getExperincePointsByUserId(userId: string): Promise<number> {
+    // TODO: absolutely cache this
+
+    const result = await getDatabase()
+      .select({
+        experiencePoints: sum(userExperiencePoints.amount).mapWith(Number),
+      })
+      .from(userExperiencePoints)
+      .where(eq(userExperiencePoints.userId, userId))
+      .execute();
+
+    return result[0].experiencePoints ?? 0;
   }
 
   async getTeamIds(userId: string): Promise<string[]> {

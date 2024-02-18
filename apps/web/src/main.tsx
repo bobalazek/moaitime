@@ -1,11 +1,8 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { App } from '@moaitime/web-core';
-
-import '@moaitime/web-core/globals.css';
-
 import { API_URL } from '@moaitime/shared-common';
+import { App } from '@moaitime/web-core';
 
 if (import.meta.hot) {
   // Sometimes the API is not available while it's being rebuild on a change.

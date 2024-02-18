@@ -28,8 +28,6 @@
     "@moaitime/shared-common": "workspace:*",
     "@moaitime/tsconfig-config": "workspace:*",
     "@moaitime/web-core": "workspace:*",
-    "autoprefixer": "^10.4.16",
-    "postcss": "8.4.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "serve": "^14.2.1",
@@ -39,6 +37,9 @@
   "devDependencies": {
     "@moaitime/tailwind-config": "workspace:*",
     "@types/react": "18.2.33",
-    "@types/react-dom": "18.2.14"
+    "@types/react-dom": "18.2.14",
+    "autoprefixer": "^10.4.16",
+    "postcss": "8.4.21",
+    "vite-tsconfig-paths": "^4.3.1"
   }
 }

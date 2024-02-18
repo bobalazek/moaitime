@@ -70,10 +70,6 @@ export default function AccountSettingsSectionContent() {
 
     try {
       await uploadAccountAvatar(file);
-
-      sonnerToast.success(`Avatar uploaded`, {
-        description: `Your avatar has been successfully uploaded.`,
-      });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     } finally {

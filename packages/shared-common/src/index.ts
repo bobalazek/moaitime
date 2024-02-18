@@ -38,7 +38,6 @@ export * from './core/ThemeEnum';
 export * from './core/AsyncReturnType';
 export * from './core/SortDirectionEnum';
 export * from './core/ProcessingStatusEnum';
-export * from './core/EntityTypeEnum';
 export * from './core/PermissionsSchema';
 export * from './core/PaginationCursorsType';
 export * from './core/responses/ErrorResponse';
@@ -53,6 +52,8 @@ export * from './core/colors/MainColors';
 export * from './core/subscriptions/PlanEnum';
 export * from './core/subscriptions/SubscriptionSchema';
 export * from './core/subscriptions/PlanSchema';
+export * from './core/entities/EntitySchema';
+export * from './core/entities/EntityTypeEnum';
 
 // Focus
 export * from './focus/FocusSessionHelpers';
@@ -105,3 +106,6 @@ export * from './statistics/StatisticsFocusBasicData';
 // Achievements
 export * from './achievements/Achievements';
 export * from './achievements/AchievementType';
+
+// Social
+export * from './social/PostTypeEnum';

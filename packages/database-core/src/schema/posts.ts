@@ -1,13 +1,15 @@
 import { relations } from 'drizzle-orm';
 import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
+import { PostTypeEnum } from '@moaitime/shared-common';
+
 import { users } from './users';
 
 export const posts = pgTable(
   'posts',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    type: text('type').notNull(),
+    type: text('type').notNull().$type<PostTypeEnum>(),
     content: text('content').notNull(),
     deletedAt: timestamp('deleted_at'),
     publishedAt: timestamp('created_at').defaultNow(),

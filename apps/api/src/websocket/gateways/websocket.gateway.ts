@@ -28,8 +28,8 @@ export class WebsocketGateway
   @WebSocketServer()
   private _server!: WsWebSocketServer;
 
-  private _userSocketsMap: Map<string, WebSocket> = new Map();
-  private _teamUserIdsMap: Map<string, string[]> = new Map();
+  private _userIdSocketsMap: Map<string, WebSocket> = new Map(); // userId => webSocket
+  private _teamUserIdsMap: Map<string, string[]> = new Map(); // teamId => userId[]
 
   afterInit() {
     (async () => {
@@ -103,7 +103,7 @@ export class WebsocketGateway
     const sockets: WebSocket[] = [];
 
     for (const userId of userIds) {
-      const socket = this._userSocketsMap.get(userId);
+      const socket = this._userIdSocketsMap.get(userId);
       if (socket) {
         sockets.push(socket);
       }
@@ -113,7 +113,7 @@ export class WebsocketGateway
   }
 
   private async _setMapValues(client: WebSocket, userId: string) {
-    this._userSocketsMap.set(userId, client);
+    this._userIdSocketsMap.set(userId, client);
 
     const userTeams = await usersManager.getTeamIds(userId);
     for (const teamId of userTeams) {
@@ -125,7 +125,7 @@ export class WebsocketGateway
   }
 
   private _getUserId(client: WebSocket) {
-    for (const [key, value] of this._userSocketsMap) {
+    for (const [key, value] of this._userIdSocketsMap) {
       if (value === client) {
         return key;
       }
@@ -140,7 +140,7 @@ export class WebsocketGateway
       return;
     }
 
-    this._userSocketsMap.delete(userId);
+    this._userIdSocketsMap.delete(userId);
 
     const userTeams = await usersManager.getTeamIds(userId);
     for (const teamId of userTeams) {

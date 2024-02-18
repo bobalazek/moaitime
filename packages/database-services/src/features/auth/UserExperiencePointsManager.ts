@@ -6,6 +6,7 @@ import {
   UserExperiencePoint,
   userExperiencePoints,
 } from '@moaitime/database-core';
+import { Entity } from '@moaitime/shared-common';
 
 export class UserExperiencePointsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<UserExperiencePoint[]> {
@@ -53,7 +54,7 @@ export class UserExperiencePointsManager {
     userId: string,
     type: string,
     amount: number,
-    relatedEntities?: string[],
+    relatedEntities?: Entity[],
     data?: Record<string, unknown>
   ): Promise<UserExperiencePoint> {
     return this.insertOne({

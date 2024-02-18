@@ -226,6 +226,16 @@ CREATE TABLE IF NOT EXISTS "task_users" (
 	"user_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "posts" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"type" text NOT NULL,
+	"content" text NOT NULL,
+	"deleted_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teams" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
@@ -312,7 +322,7 @@ CREATE TABLE IF NOT EXISTS "user_notifications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" text NOT NULL,
 	"content" text NOT NULL,
-	"target_entity" text,
+	"target_entity" jsonb,
 	"related_entities" jsonb,
 	"data" jsonb,
 	"seen_at" timestamp,
@@ -438,6 +448,7 @@ CREATE INDEX IF NOT EXISTS "task_tags_task_id_idx" ON "task_tags" ("task_id");--
 CREATE INDEX IF NOT EXISTS "task_tags_tag_id_idx" ON "task_tags" ("tag_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_users_task_id_idx" ON "task_users" ("task_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_users_user_id_idx" ON "task_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "posts_user_id_idx" ON "posts" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "teams_user_id_idx" ON "teams" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "teams_organization_id_idx" ON "teams" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
@@ -623,6 +634,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "task_users" ADD CONSTRAINT "task_users_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "posts" ADD CONSTRAINT "posts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

@@ -22,9 +22,12 @@ export const UserNotification = ({
       await markUserNotificationAsRead(userNotification.id);
     }
 
-    const targetEntitySplit = userNotification.targetEntity?.split(':') || [];
-    const entityType = targetEntitySplit[0] ?? null;
-    const entityId = targetEntitySplit[1] ?? null;
+    if (!userNotification.targetEntity) {
+      return;
+    }
+
+    const entityType = userNotification.targetEntity.type ?? null;
+    const entityId = userNotification.targetEntity.id ?? null;
 
     if (entityType === EntityTypeEnum.TASKS && entityId) {
       const { openPopoverForTask } = useTasksStore.getState();

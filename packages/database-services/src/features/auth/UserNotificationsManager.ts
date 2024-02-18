@@ -22,7 +22,7 @@ import {
   UserNotification,
   userNotifications,
 } from '@moaitime/database-core';
-import { SortDirectionEnum, UserNotificationTypeEnum } from '@moaitime/shared-common';
+import { Entity, SortDirectionEnum, UserNotificationTypeEnum } from '@moaitime/shared-common';
 
 export type UserNotificationsManagerFindOptions = {
   from?: string;
@@ -298,8 +298,8 @@ export class UserNotificationsManager {
     type: UserNotificationTypeEnum;
     userId: string;
     content: string;
-    targetEntity?: string;
-    relatedEntities?: string[];
+    targetEntity?: Entity;
+    relatedEntities?: Entity[];
     data?: Record<string, unknown>;
   }) {
     return this.insertOne(data);
@@ -309,24 +309,32 @@ export class UserNotificationsManager {
   private async _parseRows(rows: UserNotification[]) {
     const parsedRows: UserNotification[] = [];
 
-    const relatedEntitiesMap = new Map<string, Set<string>>();
+    const relatedEntitiesMap = new Map<string, Entity[]>();
     for (const row of rows) {
       if (!row.relatedEntities) {
         continue;
       }
 
       for (const relatedEntity of row.relatedEntities) {
-        const [entityType, entityId] = relatedEntity.split(':');
-        if (!relatedEntitiesMap.has(entityType)) {
-          relatedEntitiesMap.set(entityType, new Set());
+        const { id, type } = relatedEntity;
+        if (!relatedEntitiesMap.has(type)) {
+          relatedEntitiesMap.set(type, []);
         }
 
-        relatedEntitiesMap.get(entityType)?.add(entityId);
+        const entities = relatedEntitiesMap.get(type) ?? [];
+
+        entities.push({
+          id,
+          type,
+        });
+
+        relatedEntitiesMap.set(type, entities);
       }
     }
 
     const objectsMap = new Map<string, Record<string, unknown>>();
-    for (const [entityType, entityIds] of relatedEntitiesMap) {
+    for (const [entityType, entityObjects] of relatedEntitiesMap) {
+      const entityIds = entityObjects.map((entity) => entity.id);
       const entityRows: { id: string }[] = [];
 
       if (entityType === 'users') {
@@ -337,7 +345,7 @@ export class UserNotificationsManager {
               displayName: true,
               email: true,
             },
-            where: inArray(userNotifications.id, Array.from(entityIds)),
+            where: inArray(userNotifications.id, entityIds),
           }))
         );
       } else if (entityType === 'tasks') {
@@ -347,7 +355,7 @@ export class UserNotificationsManager {
               id: true,
               name: true,
             },
-            where: inArray(userNotifications.id, Array.from(entityIds)),
+            where: inArray(userNotifications.id, entityIds),
           }))
         );
       }

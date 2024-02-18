@@ -272,6 +272,7 @@ CREATE TABLE IF NOT EXISTS "user_access_tokens" (
 	"token" text NOT NULL,
 	"user_agent" text,
 	"user_agent_parsed" jsonb,
+	"device_uid" text,
 	"revoked_reason" text,
 	"refresh_token" text NOT NULL,
 	"refresh_token_claimed_at" timestamp,
@@ -363,7 +364,7 @@ CREATE TABLE IF NOT EXISTS "user_blocked_users" (
 	"blocked_user_id" uuid NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "user_activity_entries" (
+CREATE TABLE IF NOT EXISTS "user_online_activity_entries" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"last_active_at" timestamp DEFAULT now(),
 	"created_at" timestamp DEFAULT now(),
@@ -457,7 +458,7 @@ CREATE INDEX IF NOT EXISTS "user_followed_users_user_id_idx" ON "user_followed_u
 CREATE INDEX IF NOT EXISTS "user_followed_users_followed_user_id_idx" ON "user_followed_users" ("followed_user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_blocked_users_user_id_idx" ON "user_blocked_users" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_block_users_blocked_user_id_idx" ON "user_blocked_users" ("blocked_user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_activity_entries_user_id_idx" ON "user_activity_entries" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_online_activity_entries_user_id_idx" ON "user_online_activity_entries" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_username_idx" ON "users" ("username");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_email_idx" ON "users" ("email");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_new_email_idx" ON "users" ("new_email");--> statement-breakpoint
@@ -735,7 +736,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "user_activity_entries" ADD CONSTRAINT "user_activity_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "user_online_activity_entries" ADD CONSTRAINT "user_online_activity_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

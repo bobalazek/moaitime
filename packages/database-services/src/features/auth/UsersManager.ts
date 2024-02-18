@@ -48,7 +48,7 @@ import { notesManager } from '../notes/NotesManager';
 import { listsManager } from '../tasks/ListsManager';
 import { tagsManager } from '../tasks/TagsManager';
 import { tasksManager } from '../tasks/TasksManager';
-import { userActivityEntriesManager } from './UserActivityEntriesManager';
+import { userOnlineActivityEntriesManager } from './UserOnlineActivityEntriesManager';
 
 export type UsersManagerFollowOptions = {
   limit: number;
@@ -204,7 +204,7 @@ export class UsersManager {
     const followersCount = canViewUserIfPrivate ? await this.countFollowers(user.id) : 0;
     const followingCount = canViewUserIfPrivate ? await this.countFollowing(user.id) : 0;
     const lastActiveAt = canViewUserIfPrivate
-      ? await userActivityEntriesManager.getLastActiveAtByUserId(user.id)
+      ? await userOnlineActivityEntriesManager.getLastActiveAtByUserId(user.id)
       : null;
 
     const isMyself = userId === user.id;

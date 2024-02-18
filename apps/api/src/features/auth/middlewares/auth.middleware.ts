@@ -1,7 +1,11 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
-import { authManager, userActivityEntriesManager, usersManager } from '@moaitime/database-services';
+import {
+  authManager,
+  userOnlineActivityEntriesManager,
+  usersManager,
+} from '@moaitime/database-services';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -55,7 +59,7 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       if (req.user) {
         // No async, because we want to continue the request even if this fails and as soon as possible!
-        userActivityEntriesManager.updateUserLastActiveAtById(req.user.id);
+        userOnlineActivityEntriesManager.updateUserLastActiveAtById(req.user.id);
       }
     } catch (error) {
       // Nothing to do

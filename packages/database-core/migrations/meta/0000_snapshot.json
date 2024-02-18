@@ -1,5 +1,5 @@
 {
-  "id": "fd4e4413-f22d-42be-b477-ac855a2aef59",
+  "id": "cdd376c6-38f7-4884-b887-97f8caf301b8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -2076,6 +2076,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "device_uid": {
+          "name": "device_uid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "revoked_reason": {
           "name": "revoked_reason",
           "type": "text",
@@ -2763,8 +2769,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "user_activity_entries": {
-      "name": "user_activity_entries",
+    "user_online_activity_entries": {
+      "name": "user_online_activity_entries",
       "schema": "",
       "columns": {
         "id": {
@@ -2803,16 +2809,16 @@
         }
       },
       "indexes": {
-        "user_activity_entries_user_id_idx": {
-          "name": "user_activity_entries_user_id_idx",
+        "user_online_activity_entries_user_id_idx": {
+          "name": "user_online_activity_entries_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "user_activity_entries_user_id_users_id_fk": {
-          "name": "user_activity_entries_user_id_users_id_fk",
-          "tableFrom": "user_activity_entries",
+        "user_online_activity_entries_user_id_users_id_fk": {
+          "name": "user_online_activity_entries_user_id_users_id_fk",
+          "tableFrom": "user_online_activity_entries",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],

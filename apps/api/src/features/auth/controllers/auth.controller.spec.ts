@@ -25,6 +25,7 @@ describe('AuthController', () => {
     request = {
       query: {},
       headers: {},
+      get: vi.fn(),
     } as Request;
 
     app = await Test.createTestingModule({

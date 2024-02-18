@@ -44,7 +44,7 @@ export const fetchJson = async <T>(
   const data = await response.json();
 
   if (!response.ok) {
-    if (data.statusCode === 401) {
+    if (data.statusCode === 401 && !input.toString().includes('/logout')) {
       await logout();
     }
 

@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
 import {
@@ -28,32 +28,30 @@ export class AuthMiddleware implements NestMiddleware {
 
     const deviceUid = req.get('device-uid');
 
-    const userWithAccessToken = accessToken
-      ? await authManager.getUserByAccessToken(accessToken)
-      : null;
-    if (userWithAccessToken) {
-      const { user, userAccessToken } = userWithAccessToken;
+    try {
+      const userWithAccessToken = accessToken
+        ? await authManager.getUserByAccessToken(accessToken)
+        : null;
+      if (userWithAccessToken) {
+        const { user, userAccessToken } = userWithAccessToken;
 
-      // We absolutely need to make sure to NOT prevent the user from logging out there,
-      // otherwise we will get a infinite loop!
-      // Must be .baseUrl or .originalUrl, because .url for some reason is always "/"
-      if (
-        userAccessToken.deviceUid &&
-        userAccessToken.deviceUid !== deviceUid &&
-        !req.baseUrl.includes('/logout')
-      ) {
-        await authManager.logout(userAccessToken.token, 'Invalid device UID');
+        if (userAccessToken.deviceUid && userAccessToken.deviceUid !== deviceUid) {
+          await authManager.logout(userAccessToken.token, 'Invalid device UID');
 
-        throw new UnauthorizedException('Invalid device UID. Please log in again.');
+          // Do not have add "return;" here, as then we would never proceed to the next middleware,
+          // and the request would just get stuck forever.
+        } else {
+          req.user = {
+            ...user,
+            settings: usersManager.getUserSettings(user),
+            _accessToken: userAccessToken,
+            _plan: null,
+            _subscription: null,
+          };
+        }
       }
-
-      req.user = {
-        ...user,
-        settings: usersManager.getUserSettings(user),
-        _accessToken: userAccessToken,
-        _plan: null,
-        _subscription: null,
-      };
+    } catch (error) {
+      // Nothing to do
     }
 
     try {

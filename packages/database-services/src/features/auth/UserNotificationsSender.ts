@@ -40,6 +40,40 @@ export class UserNotificationsSender {
     });
   }
 
+  async sendUserFollowRequestApprovedNotification(
+    userId: string,
+    approvingUser: User
+  ): Promise<UserNotification> {
+    const variables = {
+      approvingUser: {
+        id: approvingUser.id,
+        displayName: approvingUser.displayName,
+        __entityType: EntityTypeEnum.USERS,
+      },
+    };
+    const relatedEntities = Object.values(variables).map((v) => {
+      return {
+        id: v.id,
+        type: v.__entityType,
+      };
+    });
+    const targetEntity = {
+      id: approvingUser.id,
+      type: EntityTypeEnum.USERS,
+    };
+
+    return this._userNotificationsManager.addNotification({
+      type: UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED,
+      userId,
+      content: `**{{approvingUser.displayName}}** has approved your request.`,
+      data: {
+        variables: variables,
+      },
+      targetEntity,
+      relatedEntities,
+    });
+  }
+
   async sendAssignedUserToTaskNotification(
     userId: string,
     assigningUser: User,

@@ -7,6 +7,10 @@ export class UserNotificationsProcessor {
       await this._processAuthUserFollowedUserEvent(
         payload as GlobalEvents[GlobalEventsEnum.AUTH_USER_FOLLOWED_USER]
       );
+    } else if (type === GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER) {
+      await this._processAuthUserApproveFollowedUserEvent(
+        payload as GlobalEvents[GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER]
+      );
     } else if (type === GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER) {
       await this._processTasksTaskAssignedToUserEvent(
         payload as GlobalEvents[GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER]
@@ -22,8 +26,8 @@ export class UserNotificationsProcessor {
       return;
     }
 
-    const user = await usersManager.findOneById(data.actorUserId);
-    if (!user) {
+    const actorUser = await usersManager.findOneById(data.actorUserId);
+    if (!actorUser) {
       throw new Error(`User with id "${data.actorUserId}" not found`);
     }
 
@@ -34,20 +38,39 @@ export class UserNotificationsProcessor {
 
     await userNotificationsSender.sendUserFollowRequestNotification(
       userFollowedUser.followedUserId,
-      user
+      actorUser
+    );
+  }
+
+  private async _processAuthUserApproveFollowedUserEvent(
+    data: GlobalEvents[GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER]
+  ) {
+    const actorUser = await usersManager.findOneById(data.actorUserId);
+    if (!actorUser) {
+      throw new Error(`User with id "${data.actorUserId}" not found`);
+    }
+
+    const userFollowedUser = await usersManager.getUserFollowedUserById(data.userFollowedUserId);
+    if (!userFollowedUser) {
+      throw new Error(`User followed user with id "${data.userFollowedUserId}" not found`);
+    }
+
+    await userNotificationsSender.sendUserFollowRequestApprovedNotification(
+      userFollowedUser.userId,
+      actorUser
     );
   }
 
   private async _processTasksTaskAssignedToUserEvent(
     data: GlobalEvents[GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER]
   ) {
-    const user = await usersManager.findOneById(data.actorUserId);
-    if (!user) {
+    const actorUser = await usersManager.findOneById(data.actorUserId);
+    if (!actorUser) {
       throw new Error(`User with id "${data.actorUserId}" not found`);
     }
 
     // Do not send a notification to the setter
-    if (data.targetUserId == user.id) {
+    if (data.targetUserId == actorUser.id) {
       return;
     }
 
@@ -56,7 +79,11 @@ export class UserNotificationsProcessor {
       throw new Error(`Task with id "${data.taskId}" not found`);
     }
 
-    await userNotificationsSender.sendAssignedUserToTaskNotification(data.targetUserId, user, task);
+    await userNotificationsSender.sendAssignedUserToTaskNotification(
+      data.targetUserId,
+      actorUser,
+      task
+    );
   }
 }
 

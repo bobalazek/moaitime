@@ -366,6 +366,7 @@ export class UserNotificationsManager {
               id: true,
               displayName: true,
               email: true,
+              username: true,
             },
             where: inArray(userNotifications.id, entityIds),
           }))
@@ -400,6 +401,13 @@ export class UserNotificationsManager {
       let link = null;
       if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST) {
         link = `/social/users/${user.username}/follow-requests`;
+      } else if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED) {
+        const targetUser = rest.targetEntity
+          ? objectsMap.get(`${rest.targetEntity.type}:${rest.targetEntity.id}`)
+          : null;
+        if (targetUser) {
+          link = `/social/users/${targetUser.username}`;
+        }
       }
 
       const parsedRow = UserNotificationSchema.parse({

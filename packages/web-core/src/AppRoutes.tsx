@@ -138,7 +138,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/social/users/:userUsername"
+          path="/social/users/:userUsername/*"
           element={
             <ProtectedRoute>
               <SocialUsersViewPage />

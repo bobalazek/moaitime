@@ -1,13 +1,28 @@
 import { formatRelative } from 'date-fns';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { PublicUser } from '@moaitime/shared-common';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@moaitime/web-ui';
 
 import { UserAvatar } from '../../../../core/components/UserAvatar';
+import { useStateAndUrlSync } from '../../../../core/hooks/useStateAndUrlSync';
 import UserBlockButton from '../../user-buttons/UserBlockButton';
 import UserFollowButton from '../../user-buttons/UserFollowButton';
 import UserFollowersFollowingList from '../../user-followers-following-list/UserFollowersFollowingList';
+
+type Views = '' | 'following' | 'follow-requests'; /* 'followers' is the default view */
+
+const getViewFromUrl = (url: string, userUsername: string): Views => {
+  const view = url.replace(`/social/users/${userUsername}`, '').replace('/', '');
+  if (view === 'following' || view === 'follow-requests') {
+    return view as Views;
+  }
+
+  return '';
+};
 
 const SocialUsersViewPageContent = ({
   user,
@@ -16,6 +31,25 @@ const SocialUsersViewPageContent = ({
   user: PublicUser;
   refetch: () => void;
 }) => {
+  const location = useLocation();
+  const [targetUri, setTargetUri] = useState(location.pathname);
+  const [view, setView] = useState<Views>(getViewFromUrl(location.pathname, user.username));
+
+  const updateStateByUrl = useDebouncedCallback(() => {
+    const newView = getViewFromUrl(location.pathname, user.username);
+    if (newView !== view) {
+      setView(newView as Views);
+    }
+  }, 10);
+
+  useEffect(() => {
+    const newTargetUri = `/social/users/${user.username}${view ? `/${view}` : ''}`;
+
+    setTargetUri(newTargetUri);
+  }, [setTargetUri, user.username, view]);
+
+  useStateAndUrlSync(updateStateByUrl, targetUri);
+
   const now = new Date();
   const joinedString = new Date(user.createdAt).toLocaleDateString('default', {
     month: 'long',
@@ -80,9 +114,15 @@ const SocialUsersViewPageContent = ({
         </div>
         {canViewFollowersAndFollowing && (
           <div className="md:col-span-6 lg:col-span-4">
-            <Tabs className="rounded border" defaultValue="followers">
+            <Tabs
+              className="rounded border"
+              value={view}
+              onValueChange={(value) => {
+                setView(value as Views);
+              }}
+            >
               <TabsList className="w-full">
-                <TabsTrigger className="w-full" value="followers">
+                <TabsTrigger className="w-full" value="">
                   Followers
                 </TabsTrigger>
                 <TabsTrigger className="w-full" value="following">
@@ -94,7 +134,7 @@ const SocialUsersViewPageContent = ({
                   </TabsTrigger>
                 )}
               </TabsList>
-              <TabsContent value="followers" className="p-4">
+              <TabsContent value="" className="p-4">
                 <UserFollowersFollowingList type="followers" userIdOrUsername={user.username} />
               </TabsContent>
               <TabsContent value="following" className="p-4">

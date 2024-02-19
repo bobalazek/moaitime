@@ -23,6 +23,10 @@ export class UserNotificationsSender {
         type: v.__entityType,
       };
     });
+    const targetEntity = {
+      id: followingUser.id,
+      type: EntityTypeEnum.USERS,
+    };
 
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_FOLLOW_REQUEST,
@@ -31,6 +35,7 @@ export class UserNotificationsSender {
       data: {
         variables: variables,
       },
+      targetEntity,
       relatedEntities,
     });
   }

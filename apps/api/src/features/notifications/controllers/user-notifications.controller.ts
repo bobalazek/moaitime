@@ -3,6 +3,9 @@ import { Request } from 'express';
 
 import { UserNotification } from '@moaitime/database-core';
 import { userNotificationsManager } from '@moaitime/database-services';
+import {
+  UserNotification as UserNotificationStripped, // We strip out things like `data` and `relatedEntities` from the UserNotification type
+} from '@moaitime/shared-common';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
@@ -11,7 +14,7 @@ import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 export class UserNotificationsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async index(@Req() req: Request): Promise<AbstractResponseDto<UserNotification[]>> {
+  async index(@Req() req: Request): Promise<AbstractResponseDto<UserNotificationStripped[]>> {
     const limit = 10;
     const previousCursorParameter = req.query.previousCursor as string | undefined;
     const nextCursorParameter = req.query.nextCursor as string | undefined;

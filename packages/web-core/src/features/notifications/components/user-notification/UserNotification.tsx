@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { formatDistance } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 import { EntityTypeEnum, UserNotification as UserNotificationType } from '@moaitime/shared-common';
 
@@ -12,6 +13,7 @@ export const UserNotification = ({
 }: {
   userNotification: UserNotificationType;
 }) => {
+  const navigate = useNavigate();
   const { markUserNotificationAsRead } = useUserNotificationsStore();
 
   const now = new Date();
@@ -33,6 +35,8 @@ export const UserNotification = ({
       const { openPopoverForTask } = useTasksStore.getState();
 
       openPopoverForTask(entityId);
+    } else if (userNotification.link) {
+      navigate(userNotification.link);
     }
   };
 

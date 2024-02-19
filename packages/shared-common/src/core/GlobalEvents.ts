@@ -88,6 +88,7 @@ export type GlobalEvents = {
     actorUserId: string;
     userId: string; // This is the actual user that was unfollowed?
     userFollowedUserId: string; // This is the relationship entity - user_followed table row
+    needsApproval: boolean;
   };
   [GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER]: {
     actorUserId: string;

@@ -280,7 +280,7 @@ export class UsersManager {
       .values({
         userId,
         followedUserId: user.id,
-        approvedAt: user.isPrivate ? null : new Date(),
+        approvedAt: !user.isPrivate ? new Date() : null,
       })
       .returning();
     const row = rows[0];
@@ -289,6 +289,7 @@ export class UsersManager {
       actorUserId: userId,
       userId: user.id,
       userFollowedUserId: row.id,
+      needsApproval: !row.approvedAt,
     });
 
     return row;
@@ -636,6 +637,14 @@ export class UsersManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  async getUserFollowedUserById(userFollowedUserId: string) {
+    const row = await getDatabase().query.userFollowedUsers.findFirst({
+      where: eq(userFollowedUsers.id, userFollowedUserId),
+    });
+
+    return row ?? null;
   }
 
   async getExperincePointsByUserId(userId: string): Promise<number> {

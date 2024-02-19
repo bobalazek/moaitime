@@ -19,6 +19,7 @@ import {
 import {
   getDatabase,
   NewUserNotification,
+  User,
   UserNotification,
   userNotifications,
 } from '@moaitime/database-core';
@@ -29,6 +30,8 @@ import {
   UserNotification as UserNotificationStripped, // We strip out things like `data` and `relatedEntities` from the UserNotification type
   UserNotificationTypeEnum,
 } from '@moaitime/shared-common';
+
+import { usersManager } from './UsersManager';
 
 export type UserNotificationsManagerFindOptions = {
   from?: string;
@@ -141,7 +144,8 @@ export class UserNotificationsManager {
       rows.reverse();
     }
 
-    const data = await this._parseRows(rows);
+    const user = await usersManager.findOneById(userId);
+    const data = await this._parseRows(user!, rows);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -282,7 +286,13 @@ export class UserNotificationsManager {
         count: count(userNotifications.id).mapWith(Number),
       })
       .from(userNotifications)
-      .where(and(eq(userNotifications.userId, userId), isNull(userNotifications.seenAt)))
+      .where(
+        and(
+          eq(userNotifications.userId, userId),
+          isNull(userNotifications.seenAt),
+          isNull(userNotifications.deletedAt)
+        )
+      )
       .execute();
 
     return result[0].count ?? 0;
@@ -294,7 +304,13 @@ export class UserNotificationsManager {
         count: count(userNotifications.id).mapWith(Number),
       })
       .from(userNotifications)
-      .where(and(eq(userNotifications.userId, userId), isNull(userNotifications.readAt)))
+      .where(
+        and(
+          eq(userNotifications.userId, userId),
+          isNull(userNotifications.readAt),
+          isNull(userNotifications.deletedAt)
+        )
+      )
       .execute();
 
     return result[0].count ?? 0;
@@ -312,7 +328,7 @@ export class UserNotificationsManager {
   }
 
   // Private
-  private async _parseRows(rows: UserNotification[]) {
+  private async _parseRows(user: User, rows: UserNotification[]) {
     const parsedRows: UserNotificationStripped[] = [];
 
     const relatedEntitiesMap = new Map<string, Entity[]>();
@@ -381,9 +397,15 @@ export class UserNotificationsManager {
       ) as Record<string, unknown>;
       const parsedContent = this._parseContent(content, variables, objectsMap);
 
+      let link = null;
+      if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST) {
+        link = `/social/users/${user.username}/follow-requests`;
+      }
+
       const parsedRow = UserNotificationSchema.parse({
         ...rest,
         content: parsedContent,
+        link,
       });
 
       parsedRows.push(parsedRow);

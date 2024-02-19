@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { Dialog, DialogContent } from '@moaitime/web-ui';
 
@@ -114,6 +115,21 @@ const tabs = [
     label: <FeedbackSettingsSectionHeaderText />,
     content: <FeedbackSettingsSection />,
   },
+  {
+    id: 'footer',
+    text: (
+      <div className="text-muted-foreground mt-2 px-4 text-xs">
+        MoaiTime Inc. © 2024 ·{' '}
+        <Link to="/terms" target="_blank">
+          Terms
+        </Link>{' '}
+        ·{' '}
+        <Link to="/privacy" target="_blank">
+          Privacy
+        </Link>
+      </div>
+    ),
+  },
 ];
 
 export default function SettingsDialog() {
@@ -190,14 +206,14 @@ export default function SettingsDialog() {
             {tabs.map((tab) => {
               if (tab.horizontalRule) {
                 return <hr key={tab.id} className="my-4 border-gray-200 dark:border-gray-700" />;
-              }
-
-              if (tab.heading) {
+              } else if (tab.heading) {
                 return (
                   <h3 key={tab.id} className="mb-2 text-sm font-bold">
                     {tab.heading}
                   </h3>
                 );
+              } else if (tab.text) {
+                return <div key={tab.id}>{tab.text}</div>;
               }
 
               return (

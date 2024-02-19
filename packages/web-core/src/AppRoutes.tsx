@@ -19,6 +19,8 @@ import ProtectedRoute from './features/core/components/ProtectedRoute';
 import PublicOnlyRoute from './features/core/components/PublicOnlyRoute';
 import HomePage from './features/core/pages/HomePage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
+import PrivacyPage from './features/core/pages/PrivacyPage';
+import TermsPage from './features/core/pages/TermsPage';
 import FocusPage from './features/focus/components/pages/FocusPage';
 import MoodEntryEditDialog from './features/mood/components/mood-entry-edit-dialog/MoodEntryEditDialog';
 import MoodPage from './features/mood/components/pages/MoodPage';
@@ -177,6 +179,8 @@ export function AppRoutes() {
         />
         <Route path="/confirm-email" element={<AuthConfirmEmailPage />} />
         <Route path="/delete-account" element={<AuthDeleteAccountPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <GlobalDialogs />

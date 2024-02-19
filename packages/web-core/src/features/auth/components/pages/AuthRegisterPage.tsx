@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
   Button,
@@ -8,6 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Checkbox,
   Input,
   Label,
   sonnerToast,
@@ -23,12 +24,20 @@ export default function AuthRegisterPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [terms, setTerms] = useState(false);
 
   const onLoginButtonClick = () => {
     navigate('/login');
   };
 
   const onRegisterButtonClick = async () => {
+    if (!terms) {
+      sonnerToast.error('Error!', {
+        description: 'You need to agree to the terms and conditions to register!',
+      });
+      return;
+    }
+
     try {
       const response = await register(displayName, username, email, password);
 
@@ -97,6 +106,26 @@ export default function AuthRegisterPage() {
                     setPassword(event.target.value);
                   }}
                 />
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <Checkbox
+                  id="register-terms"
+                  checked={terms}
+                  onClick={() => {
+                    setTerms(!terms);
+                  }}
+                />
+                <Label htmlFor="register-terms" className="text-sm">
+                  By signing up, you agree to our{' '}
+                  <Link to="/terms" target="_blank" className="font-bold">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link to="/privacy" target="_blank" className="font-bold">
+                    Privacy Policy
+                  </Link>
+                  .
+                </Label>
               </div>
               <Button
                 id="register-button"

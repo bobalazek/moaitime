@@ -30,7 +30,7 @@ export default function UserFollowEntry({
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <Link to={`/social/users/${user.username}`} className="font-bold">
-                {user.username}
+                {user.displayName}
               </Link>
               {showRemoveFollowerButton && user.myselfIsFollowedByThisUser && (
                 <button
@@ -45,7 +45,7 @@ export default function UserFollowEntry({
                 </button>
               )}
             </div>
-            <div className="text-muted-foreground flex-grow text-sm">{user.displayName}</div>
+            <div className="text-muted-foreground flex-grow text-sm">{user.username}</div>
           </div>
         </div>
       </div>

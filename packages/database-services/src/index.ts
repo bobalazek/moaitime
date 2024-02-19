@@ -10,6 +10,7 @@ export * from './features/auth/UserDeletionProcessor';
 export * from './features/auth/UserDataExportProcessor';
 export * from './features/auth/UserExperiencePointsManager';
 export * from './features/auth/UserAchievementsManager';
+export * from './features/auth/UserNotificationsSender';
 export * from './features/auth/UserOnlineActivityEntriesManager';
 
 // Backgrounds

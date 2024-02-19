@@ -22,7 +22,13 @@ import {
   UserNotification,
   userNotifications,
 } from '@moaitime/database-core';
-import { Entity, SortDirectionEnum, UserNotificationTypeEnum } from '@moaitime/shared-common';
+import {
+  Entity,
+  SortDirectionEnum,
+  UserNotificationSchema,
+  UserNotification as UserNotificationStripped, // We strip out things like `data` and `relatedEntities` from the UserNotification type
+  UserNotificationTypeEnum,
+} from '@moaitime/shared-common';
 
 export type UserNotificationsManagerFindOptions = {
   from?: string;
@@ -50,7 +56,7 @@ export class UserNotificationsManager {
     userId: string,
     options?: UserNotificationsManagerFindOptions
   ): Promise<{
-    data: UserNotification[];
+    data: UserNotificationStripped[];
     meta: {
       previousCursor?: string;
       nextCursor?: string;
@@ -147,13 +153,13 @@ export class UserNotificationsManager {
       previousCursor = !isLessThanLimit
         ? this._propertiesToCursor({
             id: firstItem.id,
-            createdAt: firstItem.createdAt!.toISOString(),
+            createdAt: firstItem.createdAt,
           })
         : undefined;
       nextCursor = !isLessThanLimit
         ? this._propertiesToCursor({
             id: lastItem.id,
-            createdAt: lastItem.createdAt!.toISOString(),
+            createdAt: lastItem.createdAt,
           })
         : undefined;
     }
@@ -307,7 +313,7 @@ export class UserNotificationsManager {
 
   // Private
   private async _parseRows(rows: UserNotification[]) {
-    const parsedRows: UserNotification[] = [];
+    const parsedRows: UserNotificationStripped[] = [];
 
     const relatedEntitiesMap = new Map<string, Entity[]>();
     for (const row of rows) {
@@ -375,10 +381,12 @@ export class UserNotificationsManager {
       ) as Record<string, unknown>;
       const parsedContent = this._parseContent(content, variables, objectsMap);
 
-      parsedRows.push({
+      const parsedRow = UserNotificationSchema.parse({
         ...rest,
         content: parsedContent,
       });
+
+      parsedRows.push(parsedRow);
     }
 
     return parsedRows;

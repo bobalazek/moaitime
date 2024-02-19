@@ -6,6 +6,35 @@ import { UserNotificationsManager, userNotificationsManager } from './UserNotifi
 export class UserNotificationsSender {
   constructor(private _userNotificationsManager: UserNotificationsManager) {}
 
+  async sendUserFollowRequestNotification(
+    userId: string,
+    followingUser: User
+  ): Promise<UserNotification> {
+    const variables = {
+      followingUser: {
+        id: followingUser.id,
+        displayName: followingUser.displayName,
+        __entityType: EntityTypeEnum.USERS,
+      },
+    };
+    const relatedEntities = Object.values(variables).map((v) => {
+      return {
+        id: v.id,
+        type: v.__entityType,
+      };
+    });
+
+    return this._userNotificationsManager.addNotification({
+      type: UserNotificationTypeEnum.USER_FOLLOW_REQUEST,
+      userId,
+      content: `**{{followingUser.displayName}}** has requested to follow you.`,
+      data: {
+        variables: variables,
+      },
+      relatedEntities,
+    });
+  }
+
   async sendAssignedUserToTaskNotification(
     userId: string,
     assigningUser: User,

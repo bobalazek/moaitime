@@ -52,6 +52,9 @@
       ],
       "@moaitime/user-achievements-processor": [
         "../../packages/user-achievements-processor/src/index.ts"
+      ],
+      "@moaitime/user-notifications-processor": [
+        "../../packages/user-notifications-processor/src/index.ts"
       ]
     }
   },

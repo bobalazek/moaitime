@@ -45,7 +45,6 @@ import {
 } from '@moaitime/shared-common';
 
 import { teamsManager } from '../auth/TeamsManager';
-import { userNotificationsSender } from '../auth/UserNotificationsSender';
 import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
 import { tagsManager } from './TagsManager';
@@ -918,17 +917,6 @@ export class TasksManager {
           teamId,
           targetUserId: userId,
         });
-
-        // Do not send a notification to the setter
-        if (userId == assigningUser.id) {
-          continue;
-        }
-
-        await userNotificationsSender.sendAssignedUserToTaskNotification(
-          userId,
-          assigningUser,
-          task
-        );
       }
     }
   }

@@ -29,5 +29,17 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
         generalStartDayOfWeek: 1,
       } as UserSettings,
     },
+    {
+      username: 'privatetester',
+      email: 'tester+private@corcosoft.com',
+      password: await generateHash('password'),
+      roles: [UserRoleEnum.USER],
+      displayName: 'PrivateTester',
+      isPrivate: true,
+      settings: {
+        generalTimezone: 'Europe/Ljubljana',
+        generalStartDayOfWeek: 1,
+      } as UserSettings,
+    },
   ];
 };

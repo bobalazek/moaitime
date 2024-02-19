@@ -108,4 +108,6 @@ export * from './achievements/Achievements';
 export * from './achievements/AchievementType';
 
 // Social
+export * from './social/PostSchema';
 export * from './social/PostTypeEnum';
+export * from './social/PostVisibilityEnum';

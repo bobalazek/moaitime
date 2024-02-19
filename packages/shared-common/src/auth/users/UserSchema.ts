@@ -5,7 +5,7 @@ import { UserSettingsSchema } from './UserSettingsSchema';
 // Public User
 // Need that transform, so we don't need to manually do that every time in the UsersManager
 const dateToSting = (data: Date) => {
-  return new Date(data).toISOString();
+  return data.toISOString();
 };
 
 export const PublicUserSchema = z.object({

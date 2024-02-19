@@ -53,7 +53,7 @@ const SocialUsersViewPageContent = ({
                 <span>
                   <b>{user.followingCount}</b> following
                 </span>
-                {user.experiencePoints && (
+                {typeof user.experiencePoints === 'number' && (
                   <>
                     <span> • </span>
                     <span>

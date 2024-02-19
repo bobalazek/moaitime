@@ -286,9 +286,9 @@ export class UsersManager {
     const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_FOLLOWED_USER, {
-      userId,
+      actorUserId: userId,
+      userId: user.id,
       userFollowedUserId: row.id,
-      targetUserId: user.id,
     });
 
     return row;
@@ -323,9 +323,9 @@ export class UsersManager {
     const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNFOLLOWED_USER, {
-      userId,
+      actorUserId: userId,
+      userId: user.id,
       userFollowedUserId: row.id,
-      targetUserId: user.id,
     });
 
     return row;
@@ -357,9 +357,9 @@ export class UsersManager {
     const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER, {
-      userId,
+      actorUserId: userId,
+      userId: user.id,
       userFollowedUserId: row.id,
-      targetUserId: user.id,
     });
 
     return row;
@@ -385,9 +385,9 @@ export class UsersManager {
     const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REMOVE_FOLLOWED_USER, {
-      userId,
+      actorUserId: userId,
+      userId: user.id,
       userFollowedUserId: row.id,
-      targetUserId: user.id,
     });
 
     return row;
@@ -421,9 +421,9 @@ export class UsersManager {
       );
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_BLOCKED_USER, {
-      userId,
+      actorUserId: userId,
+      userId: user.id,
       userBlockedUserId: row.id,
-      targetUserId: user.id,
     });
 
     return row;
@@ -447,9 +447,9 @@ export class UsersManager {
     const row = rows[0];
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNBLOCKED_USER, {
-      userId,
+      actorUserId: userId,
+      userId: user.id,
       userBlockedUserId: row.id,
-      targetUserId: user.id,
     });
 
     return row;

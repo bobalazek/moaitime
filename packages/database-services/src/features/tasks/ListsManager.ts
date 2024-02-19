@@ -143,7 +143,7 @@ export class ListsManager {
     const list = await this.insertOne({ ...data, userId: user.id });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADDED, {
-      userId: user.id,
+      actorUserId: user.id,
       listId: list.id,
       teamId: list.teamId ?? undefined,
     });
@@ -160,7 +160,7 @@ export class ListsManager {
     const list = await this.updateOneById(listId, data);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_EDITED, {
-      userId,
+      actorUserId: userId,
       listId: list.id,
       teamId: list.teamId ?? undefined,
     });
@@ -179,7 +179,7 @@ export class ListsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_DELETED, {
-      userId,
+      actorUserId: userId,
       listId: list.id,
       teamId: list.teamId ?? undefined,
     });
@@ -196,7 +196,7 @@ export class ListsManager {
     const list = await this.addVisibleListIdByUserId(userId, listId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADD_VISIBLE, {
-      userId,
+      actorUserId: userId,
       listId,
       teamId: list?.teamId ?? undefined,
     });
@@ -211,7 +211,7 @@ export class ListsManager {
     const list = await this.removeVisibleListIdByUserId(userId, listId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_REMOVE_VISIBLE, {
-      userId,
+      actorUserId: userId,
       listId,
       teamId: list?.teamId ?? undefined,
     });

@@ -37,7 +37,7 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set) 
     }));
 
     globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ, {
-      userId: userNotification.userId,
+      actorUserId: userNotification.userId,
       userNotificationId: userNotification.id,
     });
 
@@ -51,7 +51,7 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set) 
     }));
 
     globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD, {
-      userId: userNotification.userId,
+      actorUserId: userNotification.userId,
       userNotificationId: userNotification.id,
     });
 
@@ -65,7 +65,7 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set) 
     }));
 
     globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, {
-      userId: userNotification.userId,
+      actorUserId: userNotification.userId,
       userNotificationId: userNotification.id,
     });
 

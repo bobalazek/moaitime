@@ -130,7 +130,7 @@ export class FocusSessionsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
-      userId,
+      actorUserId: userId,
       focusSessionId: focusSession.id,
     });
 
@@ -161,7 +161,7 @@ export class FocusSessionsManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
-      userId,
+      actorUserId: userId,
       focusSessionId: focusSession.id,
       action,
     });
@@ -182,7 +182,7 @@ export class FocusSessionsManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED, {
-      userId,
+      actorUserId: userId,
       focusSessionId: focusSession.id,
       isHardDelete,
     });
@@ -201,7 +201,7 @@ export class FocusSessionsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED, {
-      userId,
+      actorUserId: userId,
       focusSessionId: focusSession.id,
     });
 
@@ -333,14 +333,14 @@ export class FocusSessionsManager {
     const updatedFocusSession = await this.updateOneById(focusSession.id, data);
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
-      userId,
+      actorUserId: userId,
       focusSessionId: updatedFocusSession.id,
       action,
     });
 
     if (data.completedAt) {
       globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED, {
-        userId,
+        actorUserId: userId,
         focusSessionId: updatedFocusSession.id,
       });
     }

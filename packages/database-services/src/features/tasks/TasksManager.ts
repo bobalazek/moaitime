@@ -367,7 +367,7 @@ export class TasksManager {
     await this.reorderList(newListId, userId, sortDirection, originalTaskId, newTaskId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
-      userId,
+      actorUserId: userId,
       listId: listId ?? undefined,
       teamId: list?.teamId ?? undefined,
     });
@@ -427,7 +427,7 @@ export class TasksManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
-      userId: user.id,
+      actorUserId: user.id,
       taskId: task.id,
       listId: task.listId ?? undefined,
       teamId,
@@ -503,7 +503,7 @@ export class TasksManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
-      userId: user.id,
+      actorUserId: user.id,
       taskId: task.id,
       listId: task.listId ?? undefined,
       teamId,
@@ -525,7 +525,7 @@ export class TasksManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_DELETED, {
-      userId,
+      actorUserId: userId,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -560,7 +560,7 @@ export class TasksManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
-      userId: user.id,
+      actorUserId: user.id,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -573,7 +573,7 @@ export class TasksManager {
     const task = await this.duplicateTask(userId, taskId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_DUPLICATED, {
-      userId,
+      actorUserId: userId,
       taskId,
       listId: task?.listId ?? undefined,
       teamId: task?.list?.teamId ?? undefined,
@@ -639,7 +639,7 @@ export class TasksManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
-      userId,
+      actorUserId: userId,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -659,7 +659,7 @@ export class TasksManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
-      userId,
+      actorUserId: userId,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -912,7 +912,7 @@ export class TasksManager {
 
       for (const userId of toInsert) {
         globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER, {
-          userId: assigningUser.id,
+          actorUserId: assigningUser.id,
           taskId: task.id,
           teamId,
           targetUserId: userId,

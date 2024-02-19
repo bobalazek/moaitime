@@ -257,7 +257,7 @@ export class MoodEntriesManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
-      userId,
+      actorUserId: userId,
       moodEntryId: moodEntry.id,
     });
 
@@ -276,7 +276,7 @@ export class MoodEntriesManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
-      userId,
+      actorUserId: userId,
       moodEntryId: moodEntry.id,
     });
 
@@ -296,7 +296,7 @@ export class MoodEntriesManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
-      userId,
+      actorUserId: userId,
       moodEntryId: data.id,
       isHardDelete,
     });
@@ -315,7 +315,7 @@ export class MoodEntriesManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
-      userId,
+      actorUserId: userId,
       moodEntryId: moodEntry.id,
     });
 

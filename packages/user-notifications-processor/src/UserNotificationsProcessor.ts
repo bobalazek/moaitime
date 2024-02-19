@@ -14,9 +14,9 @@ export class UserNotificationsProcessor {
   private async _processTasksTaskAssignedToUserEvent(
     data: GlobalEvents[GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER]
   ) {
-    const user = await usersManager.findOneById(data.userId);
+    const user = await usersManager.findOneById(data.actorUserId);
     if (!user) {
-      throw new Error(`User with id "${data.userId}" not found`);
+      throw new Error(`User with id "${data.actorUserId}" not found`);
     }
 
     // Do not send a notification to the setter

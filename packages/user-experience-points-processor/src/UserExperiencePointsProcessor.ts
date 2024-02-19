@@ -20,7 +20,7 @@ export class UserExperiencePointsProcessor {
       const relatedEntities = userExperiencePointsByEvent[finalType].relatedEntities(data as any);
 
       await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.userId,
+        data.actorUserId,
         `global-event:${type}`,
         amount,
         relatedEntities

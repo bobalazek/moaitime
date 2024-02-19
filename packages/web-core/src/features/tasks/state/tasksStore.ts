@@ -117,7 +117,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const addedTask = await addTask(task);
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_ADDED, {
-      userId: addedTask.userId,
+      actorUserId: addedTask.userId,
       taskId: addedTask.id,
       task: addedTask,
     });
@@ -148,7 +148,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const editedTask = await editTask(taskId, task);
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_EDITED, {
-      userId: editedTask.userId,
+      actorUserId: editedTask.userId,
       taskId: editedTask.id,
       task: editedTask,
     });
@@ -181,7 +181,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     });
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_EDITED, {
-      userId: movedTask.userId,
+      actorUserId: movedTask.userId,
       taskId: movedTask.id,
       task: movedTask,
     });
@@ -205,7 +205,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const deletedTask = await deleteTask(taskId, isHardDelete);
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_DELETED, {
-      userId: deletedTask.userId,
+      actorUserId: deletedTask.userId,
       taskId: deletedTask.id,
       task: deletedTask,
       isHardDelete,
@@ -226,7 +226,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const undeletedTask = await undeleteTask(taskId);
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
-      userId: undeletedTask.userId,
+      actorUserId: undeletedTask.userId,
       taskId: undeletedTask.id,
       task: undeletedTask,
     });
@@ -242,7 +242,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const duplicatedTask = await duplicateTask(taskId);
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
-      userId: duplicatedTask.userId,
+      actorUserId: duplicatedTask.userId,
       taskId: duplicatedTask.id,
       task: duplicatedTask,
     });
@@ -258,7 +258,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const completedTask = await completeTask(taskId);
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
-      userId: completedTask.userId,
+      actorUserId: completedTask.userId,
       taskId: completedTask.id,
       task: completedTask,
     });
@@ -274,7 +274,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     const uncompletedTask = await uncompleteTask(taskId);
 
     globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
-      userId: uncompletedTask.userId,
+      actorUserId: uncompletedTask.userId,
       taskId: uncompletedTask.id,
       task: uncompletedTask,
     });

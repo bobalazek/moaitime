@@ -65,6 +65,7 @@ export class AuthManager {
     const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
+      actorUserId: user.id,
       userId: user.id,
     });
 
@@ -89,6 +90,7 @@ export class AuthManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_OUT, {
+      actorUserId: userAccessToken.userId,
       userId: userAccessToken.userId,
     });
 
@@ -169,6 +171,7 @@ export class AuthManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REGISTERED, {
+      actorUserId: newUser.id,
       userId: newUser.id,
     });
 
@@ -565,6 +568,7 @@ export class AuthManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      actorUserId: userId,
       userId,
     });
 
@@ -612,6 +616,7 @@ export class AuthManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      actorUserId: userId,
       userId,
     });
 
@@ -638,6 +643,7 @@ export class AuthManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      actorUserId: userId,
       userId,
     });
 
@@ -686,6 +692,7 @@ export class AuthManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      actorUserId: userId,
       userId,
     });
 
@@ -716,6 +723,7 @@ export class AuthManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UPDATED, {
+      actorUserId: userId,
       userId,
     });
 

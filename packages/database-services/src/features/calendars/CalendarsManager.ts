@@ -22,10 +22,12 @@ import {
   UserCalendar,
   userCalendars,
 } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   Calendar as ApiCalendar,
   UserCalendar as ApiUserCalendar,
   CreateCalendar,
+  GlobalEventsEnum,
   UpdateCalendar,
   UpdateUserCalendar,
 } from '@moaitime/shared-common';
@@ -248,6 +250,12 @@ export class CalendarsManager {
 
     await this.addVisibleCalendarIdByUserId(user.id, calendar.id);
 
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_ADDED, {
+      actorUserId: user.id,
+      calendarId: calendar.id,
+      teamId: calendar.teamId ?? undefined,
+    });
+
     return calendar;
   }
 
@@ -257,7 +265,15 @@ export class CalendarsManager {
       throw new Error('You cannot update this calendar');
     }
 
-    return this.updateOneById(calendarId, body);
+    const calendar = await this.updateOneById(calendarId, body);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_EDITED, {
+      actorUserId: userId,
+      calendarId: calendar.id,
+      teamId: calendar.teamId ?? undefined,
+    });
+
+    return calendar;
   }
 
   async delete(userId: string, calendarId: string, isHardDelete?: boolean) {
@@ -266,11 +282,20 @@ export class CalendarsManager {
       throw new Error('You cannot delete this calendar');
     }
 
-    return isHardDelete
-      ? this.deleteOneById(calendarId)
-      : this.updateOneById(calendarId, {
+    const calendar = isHardDelete
+      ? await this.deleteOneById(calendarId)
+      : await this.updateOneById(calendarId, {
           deletedAt: new Date(),
         });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_DELETED, {
+      actorUserId: userId,
+      calendarId: calendar.id,
+      teamId: calendar.teamId ?? undefined,
+      isHardDelete,
+    });
+
+    return calendar;
   }
 
   async undelete(userId: string, calendarId: string) {
@@ -279,9 +304,17 @@ export class CalendarsManager {
       throw new Error('You cannot undelete this calendar');
     }
 
-    return this.updateOneById(calendarId, {
+    const calendar = await this.updateOneById(calendarId, {
       deletedAt: null,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_UNDELETED, {
+      actorUserId: userId,
+      calendarId: calendar.id,
+      teamId: calendar.teamId ?? undefined,
+    });
+
+    return calendar;
   }
 
   async addVisible(userId: string, calendarId: string) {
@@ -290,11 +323,29 @@ export class CalendarsManager {
       throw new Error('You cannot view this calendar');
     }
 
-    return this.addVisibleCalendarIdByUserId(userId, calendarId);
+    const calendar = await this.addVisibleCalendarIdByUserId(userId, calendarId);
+    if (calendar) {
+      globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_ADD_VISIBLE, {
+        actorUserId: userId,
+        calendarId: calendar.id,
+        teamId: calendar.teamId ?? undefined,
+      });
+    }
+
+    return calendar;
   }
 
   async removeVisible(userId: string, calendarId: string) {
-    return this.removeVisibleCalendarIdByUserId(userId, calendarId);
+    const calendar = await this.removeVisibleCalendarIdByUserId(userId, calendarId);
+    if (calendar) {
+      globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_REMOVE_VISIBLE, {
+        actorUserId: userId,
+        calendarId: calendar.id,
+        teamId: calendar.teamId ?? undefined,
+      });
+    }
+
+    return calendar;
   }
 
   // Visible
@@ -360,39 +411,45 @@ export class CalendarsManager {
   }
 
   async addVisibleCalendarIdByUserId(userId: string, calendarId: string) {
+    const calendar = await this.findOneById(calendarId);
+
     const user = await usersManager.findOneById(userId);
     if (!user) {
-      return;
+      return calendar;
     }
 
     const userSettings = usersManager.getUserSettings(user);
     const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
     const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (userCalendarIds.includes(calendarId)) {
-      return user;
+      return calendar;
     }
 
     userCalendarIds.push(calendarId);
 
-    return usersManager.updateOneById(userId, {
+    await usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleCalendarIds: userCalendarIds,
       },
     });
+
+    return calendar;
   }
 
   async removeVisibleCalendarIdByUserId(userId: string, calendarId: string) {
+    const calendar = await this.findOneById(calendarId);
+
     const user = await usersManager.findOneById(userId);
     if (!user) {
-      return;
+      return calendar;
     }
 
     const userSettings = usersManager.getUserSettings(user);
     const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
     const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (!userCalendarIds.includes(calendarId)) {
-      return user;
+      return calendar;
     }
 
     const index = userCalendarIds.indexOf(calendarId);
@@ -400,12 +457,14 @@ export class CalendarsManager {
       userCalendarIds.splice(index, 1);
     }
 
-    return usersManager.updateOneById(userId, {
+    await usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleCalendarIds: userCalendarIds,
       },
     });
+
+    return calendar;
   }
 
   // User Calendars

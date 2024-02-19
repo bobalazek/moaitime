@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
-import { List, User } from '@moaitime/database-core';
+import { List } from '@moaitime/database-core';
 import { listsManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -107,7 +107,7 @@ export class ListsController {
   async addVisible(
     @Req() req: Request,
     @Param('listId') listId: string
-  ): Promise<AbstractResponseDto<User>> {
+  ): Promise<AbstractResponseDto> {
     await listsManager.addVisible(req.user.id, listId);
 
     return {
@@ -120,7 +120,7 @@ export class ListsController {
   async removeVisible(
     @Req() req: Request,
     @Param('listId') listId: string
-  ): Promise<AbstractResponseDto<User>> {
+  ): Promise<AbstractResponseDto> {
     await listsManager.removeVisible(req.user.id, listId);
 
     return {

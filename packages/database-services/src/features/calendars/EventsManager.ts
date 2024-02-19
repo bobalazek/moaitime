@@ -299,7 +299,7 @@ export class EventsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_ADDED, {
-      userId: user.id,
+      actorUserId: user.id,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
@@ -352,7 +352,7 @@ export class EventsManager {
     const calendar = await calendarsManager.findOneByIdAndUserId(newEvent.calendarId, userId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
-      userId: userId,
+      actorUserId: userId,
       eventId: newEvent.id,
       calendarId: newEvent.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
@@ -373,7 +373,7 @@ export class EventsManager {
     const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_DELETED, {
-      userId: userId,
+      actorUserId: userId,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
@@ -394,7 +394,7 @@ export class EventsManager {
     const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
-      userId: userId,
+      actorUserId: userId,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,

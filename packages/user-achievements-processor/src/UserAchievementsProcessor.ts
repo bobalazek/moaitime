@@ -53,9 +53,9 @@ export class UserAchievementsProcessor {
     data: GlobalEvents[GlobalEventsEnum.TASKS_TASK_ADDED],
     achievementKey: AchievementEnum.USER_TASKS_ADDED | AchievementEnum.USER_TASKS_COMPLETED
   ) {
-    const user = await usersManager.findOneById(data.userId);
+    const user = await usersManager.findOneById(data.actorUserId);
     if (!user) {
-      throw new Error(`User with id "${data.userId}" not found`);
+      throw new Error(`User with id "${data.actorUserId}" not found`);
     }
 
     const task = await tasksManager.findOneById(data.taskId);
@@ -67,12 +67,12 @@ export class UserAchievementsProcessor {
     // to avoid spamming the user with achievements.
 
     const achievement = await userAchievementsManager.findOneByUserIdAndAchievementKey(
-      data.userId,
+      data.actorUserId,
       achievementKey
     );
 
     if (!achievement) {
-      await userAchievementsManager.addAchievementToUser(data.userId, achievementKey, 1);
+      await userAchievementsManager.addAchievementToUser(data.actorUserId, achievementKey, 1);
     } else {
       const currentPoints = achievement.points;
 

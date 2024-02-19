@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 import { Calendar } from '@moaitime/database-core';
 import { calendarsManager } from '@moaitime/database-services';
-import { Calendar as ApiCalendar, User } from '@moaitime/shared-common';
+import { Calendar as ApiCalendar } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -110,7 +110,7 @@ export class CalendarsController {
   async addVisible(
     @Req() req: Request,
     @Param('calendarId') calendarId: string
-  ): Promise<AbstractResponseDto<User>> {
+  ): Promise<AbstractResponseDto> {
     await calendarsManager.addVisible(req.user.id, calendarId);
 
     return {
@@ -123,7 +123,7 @@ export class CalendarsController {
   async removeVisible(
     @Req() req: Request,
     @Param('calendarId') calendarId: string
-  ): Promise<AbstractResponseDto<User>> {
+  ): Promise<AbstractResponseDto> {
     await calendarsManager.removeVisible(req.user.id, calendarId);
 
     return {

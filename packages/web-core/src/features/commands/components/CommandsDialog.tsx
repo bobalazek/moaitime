@@ -9,6 +9,7 @@ import {
   DialogContent,
 } from '@moaitime/web-ui';
 
+import { useAuthUserSetting } from '../../auth/state/authStore';
 import CalendarCommandsList from '../../calendar/components/CalendarCommandsList';
 import { ErrorBoundary } from '../../core/components/ErrorBoundary';
 import FocusCommandsList from '../../focus/components/FocusCommandsList';
@@ -20,11 +21,16 @@ import TasksCommandsList from '../../tasks/components/TasksCommandsList';
 import { useCommandsStore } from '../state/commandsStore';
 
 export default function CommandsDialog() {
+  const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
   const { commandsDialogOpen, setCommandsDialogOpen, search, setSearch } = useCommandsStore();
 
   const shortcutText = navigator.userAgent.includes('Mac OS X') ? '⌘ K' : 'Ctrl K';
 
   useEffect(() => {
+    if (!commandsEnabled) {
+      return;
+    }
+
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
@@ -38,7 +44,11 @@ export default function CommandsDialog() {
     return () => document.removeEventListener('keydown', onKeydown);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [commandsEnabled]);
+
+  if (!commandsEnabled) {
+    return null;
+  }
 
   return (
     <ErrorBoundary>

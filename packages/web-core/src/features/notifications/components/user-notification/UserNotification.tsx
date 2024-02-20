@@ -48,7 +48,7 @@ export const UserNotification = ({
 
   return (
     <div
-      className="bg-muted hover:bg-muted/60 flex cursor-pointer justify-between rounded-xl px-6 py-4 transition-all"
+      className="bg-muted hover:bg-muted/60 flex cursor-pointer select-none justify-between rounded-xl px-6 py-4 transition-all"
       onClick={onClick}
       data-user-notification-id={userNotification.id}
       data-test="notifications--user-notification"

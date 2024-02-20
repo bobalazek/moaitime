@@ -2,7 +2,10 @@ import { clsx } from 'clsx';
 import { formatDistance } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
-import { EntityTypeEnum, UserNotification as UserNotificationType } from '@moaitime/shared-common';
+import {
+  UserNotification as UserNotificationType,
+  UserNotificationTypeEnum,
+} from '@moaitime/shared-common';
 
 import { useTasksStore } from '../../../tasks/state/tasksStore';
 import { useUserNotificationsStore } from '../../state/userNotificationsStore';
@@ -24,17 +27,20 @@ export const UserNotification = ({
       await markUserNotificationAsRead(userNotification.id);
     }
 
-    if (!userNotification.targetEntity) {
+    if (!userNotification.link) {
       return;
     }
 
-    const entityType = userNotification.targetEntity.type ?? null;
-    const entityId = userNotification.targetEntity.id ?? null;
-
-    if (entityType === EntityTypeEnum.TASKS && entityId) {
+    if (userNotification.type === UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK) {
       const { openPopoverForTask } = useTasksStore.getState();
 
-      openPopoverForTask(entityId);
+      const url = new URL(
+        userNotification.link.startsWith('/')
+          ? `${window.location.origin}${userNotification.link}`
+          : userNotification.link
+      );
+
+      openPopoverForTask(url.searchParams.get('taskId')!);
     } else if (userNotification.link) {
       navigate(userNotification.link);
     }

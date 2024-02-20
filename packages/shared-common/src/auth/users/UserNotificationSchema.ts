@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { EntitySchema } from '../../core/entities/EntitySchema';
 import { UserNotificationTypeEnum } from './UserNotificationTypeEnum';
 
 const dateToSting = (data: Date) => {
@@ -11,7 +10,6 @@ export const UserNotificationSchema = z.object({
   id: z.string(),
   type: z.nativeEnum(UserNotificationTypeEnum),
   content: z.string(),
-  targetEntity: EntitySchema.nullable(),
   link: z.string().nullable(),
   seenAt: z.date().transform(dateToSting).nullable(),
   readAt: z.date().transform(dateToSting).nullable(),

@@ -29,6 +29,13 @@ export default function ListsSelectedListDropdownMenuContent({
   const showHeader = !isSubContent;
   const showListActions = !isSubContent;
 
+  const filteredLists = isSubContent
+    ? lists.filter((list) => {
+        return list?.teamId === selectedList?.teamId;
+      })
+    : lists;
+  const showUnlistedList = isSubContent ? !selectedList?.teamId : true;
+
   /* Yes, that is not a type - we annotate the unlisted as empty string */
   const unlistedCount = tasksCountMap[''] ?? 0;
 
@@ -57,11 +64,12 @@ export default function ListsSelectedListDropdownMenuContent({
           <DropdownMenuSeparator />
         </>
       )}
-      {lists.length === 0 && (
+      {filteredLists.length === 0 && (
         <DropdownMenuItem className="flex cursor-pointer items-center justify-center text-gray-400">
           No lists found.
         </DropdownMenuItem>
       )}
+
       <DropdownMenuRadioGroup
         value={selectedList?.id ?? ''}
         onValueChange={async (value) => {
@@ -70,24 +78,26 @@ export default function ListsSelectedListDropdownMenuContent({
           await setSelectedList(newSelectedList);
         }}
       >
-        <DropdownMenuRadioItem
-          value=""
-          className="relative flex cursor-pointer justify-between border-l-4 border-l-transparent"
-          onClick={(event) => {
-            if (onListSelect) {
-              event.preventDefault();
-              event.stopPropagation();
+        {showUnlistedList && (
+          <DropdownMenuRadioItem
+            value=""
+            className="relative flex cursor-pointer justify-between border-l-4 border-l-transparent"
+            onClick={(event) => {
+              if (onListSelect) {
+                event.preventDefault();
+                event.stopPropagation();
 
-              onListSelect(undefined);
-            }
-          }}
-        >
-          <span className="w-full break-words pr-6">
-            <span>Unlisted</span>
-            {unlistedCount > 0 && <span className="text-gray-400"> ({unlistedCount})</span>}
-          </span>
-        </DropdownMenuRadioItem>
-        {lists.map((list) => (
+                onListSelect(undefined);
+              }
+            }}
+          >
+            <span className="w-full break-words pr-6">
+              <span>Unlisted</span>
+              {unlistedCount > 0 && <span className="text-gray-400"> ({unlistedCount})</span>}
+            </span>
+          </DropdownMenuRadioItem>
+        )}
+        {filteredLists.map((list) => (
           <DropdownMenuRadioItem
             key={list.id}
             value={list.id}

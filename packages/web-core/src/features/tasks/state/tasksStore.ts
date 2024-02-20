@@ -32,7 +32,7 @@ export type TasksStore = {
   getTask: (taskId: string) => Promise<Task | null>;
   addTask: (task: CreateTask) => Promise<Task>;
   editTask: (taskId: string, task: UpdateTask) => Promise<Task>;
-  moveTask: (taskId: string, newListId?: string) => Promise<Task>;
+  moveTask: (taskId: string, newListId: string | null) => Promise<Task>;
   deleteTask: (taskId: string, isHardDelete?: boolean) => Promise<Task>;
   undeleteTask: (taskId: string) => Promise<Task>;
   duplicateTask: (taskId: string) => Promise<Task>;
@@ -172,7 +172,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     return editedTask;
   },
-  moveTask: async (taskId: string, newListId?: string) => {
+  moveTask: async (taskId: string, newListId: string | null) => {
     const { lists, setSelectedList, reloadSelectedListTasks, reloadTasksCountMap } =
       useListsStore.getState();
 

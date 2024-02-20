@@ -447,13 +447,21 @@ export class TasksManager {
     }
 
     let list: List | null = null;
-    if (data.listId) {
+    if (typeof data.listId !== 'undefined') {
       list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
-      if (!list) {
-        throw new Error('List not found');
-      }
 
       await this._doMaxTasksPerListCheck(user, list);
+
+      const currentList = task.listId
+        ? await listsManager.findOneByIdAndUserId(task.listId, user.id)
+        : null;
+      if (currentList?.teamId && !list) {
+        throw new Error('You cannot change the list to a non-team list');
+      }
+
+      if (list && currentList && list.teamId !== currentList.teamId) {
+        throw new Error('You cannot change the list to a list from a different team');
+      }
     }
 
     if (data.parentId) {
@@ -484,7 +492,7 @@ export class TasksManager {
       completedAt = null;
     }
 
-    const updatedData = await this.updateOneById(taskId, {
+    const updatedTask = await this.updateOneById(taskId, {
       ...updateData,
       dueDateRepeatEndsAt,
       completedAt,
@@ -504,12 +512,12 @@ export class TasksManager {
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
       actorUserId: user.id,
-      taskId: task.id,
-      listId: task.listId ?? undefined,
+      taskId: updatedTask.id,
+      listId: updatedTask.listId ?? undefined,
       teamId,
     });
 
-    return updatedData;
+    return updatedTask;
   }
 
   async delete(userId: string, taskId: string, isHardDelete?: boolean) {

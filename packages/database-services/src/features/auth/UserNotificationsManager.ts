@@ -377,6 +377,7 @@ export class UserNotificationsManager {
             columns: {
               id: true,
               name: true,
+              listId: true,
             },
             where: inArray(userNotifications.id, entityIds),
           }))
@@ -407,6 +408,13 @@ export class UserNotificationsManager {
           : null;
         if (targetUser) {
           link = `/social/users/${targetUser.username}`;
+        }
+      } else if (rest.type === UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK) {
+        const targetTask = rest.targetEntity
+          ? objectsMap.get(`${rest.targetEntity.type}:${rest.targetEntity.id}`)
+          : null;
+        if (targetTask) {
+          link = `/?taskId=${targetTask.id}${targetTask.listId ? `&listId=${targetTask.listId}` : ''}`;
         }
       }
 

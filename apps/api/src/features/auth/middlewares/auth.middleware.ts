@@ -6,6 +6,7 @@ import {
   userOnlineActivityEntriesManager,
   usersManager,
 } from '@moaitime/database-services';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -24,6 +25,13 @@ export class AuthMiddleware implements NestMiddleware {
       if (accessToken) {
         accessToken = accessToken.toLowerCase().replace('bearer ', '');
       }
+    }
+
+    const websocketToken = req.get('websocket-token');
+    if (websocketToken) {
+      globalEventsNotifier.setAdditionalPayload({
+        actorWebsocketToken: websocketToken,
+      });
     }
 
     const deviceUid = req.get('device-uid');

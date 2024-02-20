@@ -7,6 +7,7 @@ export const GLOBAL_EVENTS_QUEUE = 'global-events-queue';
 
 export class GlobalEventsNotifier {
   private _rabbitMQChannel?: RabbitMQChannel;
+  private _additionalPayload?: Record<string, unknown>;
 
   constructor(
     private _logger: Logger,
@@ -17,8 +18,13 @@ export class GlobalEventsNotifier {
   async publish<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     this._logger.debug(`[GlobalEventsNotifier] Publishing global event (${type}) ...`);
 
-    await this._publishToQueue(type, payload);
-    await this._publishToPubSub(type, payload);
+    const finalPayload = {
+      ...payload,
+      ...this._additionalPayload,
+    };
+
+    await this._publishToQueue(type, finalPayload);
+    await this._publishToPubSub(type, finalPayload);
   }
 
   async subscribeToQueue<T extends GlobalEventsEnum>(
@@ -77,8 +83,12 @@ export class GlobalEventsNotifier {
     return async () => {
       this._logger.debug(`[GlobalEventsNotifier] Unsubscribing from global events pub sub ...`);
 
-      await this._redis.unsubscribe(GLOBAL_EVENTS_QUEUE, wrapperCallback);
+      this._redis.unsubscribe(GLOBAL_EVENTS_QUEUE, wrapperCallback);
     };
+  }
+
+  setAdditionalPayload(payload: Record<string, unknown>) {
+    this._additionalPayload = payload;
   }
 
   // Private

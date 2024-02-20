@@ -70,7 +70,7 @@ export class UserNotificationsProcessor {
     }
 
     // Do not send a notification to the setter
-    if (data.targetUserId == actorUser.id) {
+    if (data.userId == actorUser.id) {
       return;
     }
 
@@ -79,11 +79,7 @@ export class UserNotificationsProcessor {
       throw new Error(`Task with id "${data.taskId}" not found`);
     }
 
-    await userNotificationsSender.sendAssignedUserToTaskNotification(
-      data.targetUserId,
-      actorUser,
-      task
-    );
+    await userNotificationsSender.sendAssignedUserToTaskNotification(data.userId, actorUser, task);
   }
 }
 

@@ -1,11 +1,12 @@
-import { GlobalEvents, GlobalEventsEnum, WebsocketCloseCodeEnum } from '@moaitime/shared-common';
+import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 import { sonnerToast } from '../../../../../web-ui/src/components/sonner-toast';
 import { useAuthStore } from '../../auth/state/authStore';
 import { useTeamsStore } from '../../auth/state/teamsStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useListsStore } from '../../tasks/state/listsStore';
-import { getConfig } from './ConfigHelpers';
+import { setWebsocketToken } from './FetchHelpers';
+import { getWebsocketUrl } from './WebsocketHelpers';
 
 export class WebsocketManager {
   private _socket: WebSocket | null = null;
@@ -18,9 +19,9 @@ export class WebsocketManager {
 
     const { auth } = useAuthStore.getState();
     if (auth) {
-      const config = await getConfig();
-      if (config?.websocketUrl) {
-        this.connect(config.websocketUrl);
+      const websocketUrl = await getWebsocketUrl();
+      if (websocketUrl) {
+        this.connect(websocketUrl);
       }
     }
 
@@ -29,9 +30,9 @@ export class WebsocketManager {
         this.disconnect();
 
         if (state.auth?.user.id) {
-          const config = await getConfig();
-          if (config?.websocketUrl) {
-            this.connect(config.websocketUrl);
+          const websocketUrl = await getWebsocketUrl();
+          if (websocketUrl) {
+            this.connect(websocketUrl);
           }
         }
       }
@@ -42,9 +43,9 @@ export class WebsocketManager {
         this.disconnect();
 
         if (state.joinedTeam?.team.id) {
-          const config = await getConfig();
-          if (config?.websocketUrl) {
-            this.connect(config.websocketUrl);
+          const websocketUrl = await getWebsocketUrl();
+          if (websocketUrl) {
+            this.connect(websocketUrl);
           }
         }
       }
@@ -61,8 +62,15 @@ export class WebsocketManager {
 
     this._socket = new WebSocket(websocketUrl);
 
+    const url = new URL(websocketUrl);
+
+    const websocketToken = url.searchParams.get('websocketToken');
+    if (websocketToken) {
+      setWebsocketToken(websocketToken);
+    }
+
     this._socket.onopen = () => {
-      // We are now connected
+      // Connection opened
     };
 
     this._socket.onmessage = async (event) => {
@@ -70,7 +78,7 @@ export class WebsocketManager {
     };
 
     this._socket.onclose = (event) => {
-      if (event.code === WebsocketCloseCodeEnum.INVALID_ACCESS_TOKEN) {
+      if (event.code > 4000 && event.code < 5000) {
         sonnerToast.error('Websocket Error', {
           description: event.reason ?? 'Invalid access token. Please refresh the page.',
         });

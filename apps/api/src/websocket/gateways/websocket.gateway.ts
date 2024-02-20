@@ -28,8 +28,10 @@ export class WebsocketGateway
   @WebSocketServer()
   private _server!: WsWebSocketServer;
 
-  private _userIdSocketsMap: Map<string, WebSocket> = new Map(); // userId => webSocket
-  private _teamUserIdsMap: Map<string, string[]> = new Map(); // teamId => userId[]
+  private _websocketToUserIdMap: Map<WebSocket, string> = new Map(); // websocketToken => userId
+  private _websocketTokenToWebsocketMap: Map<string, WebSocket> = new Map(); // websocketToken => websocket
+  private _userIdToWebsocketTokensMap: Map<string, string[]> = new Map(); // userId => websocketToken[]
+  private _teamToUserIdsMap: Map<string, string[]> = new Map(); // teamId => userId[]
 
   afterInit() {
     (async () => {
@@ -40,35 +42,56 @@ export class WebsocketGateway
         async (message) => {
           const { type, payload } = message;
 
-          if ('teamId' in payload && payload.teamId) {
-            const userSockets = this._getSocketsForTeam(payload.teamId);
-            for (const socket of userSockets) {
-              const userId = this._getUserId(socket);
-              if ('userId' in payload && userId === payload.userId) {
-                continue;
-              }
+          const teamId = 'teamId' in payload ? payload.teamId : undefined;
+          const actorUserId = 'actorUserId' in payload ? payload.actorUserId : undefined;
+          const actorWebsocketToken =
+            'actorWebsocketToken' in payload ? payload.actorWebsocketToken : undefined;
 
-              socket.send(JSON.stringify({ type, payload }));
+          const userWebsockets = this._getWebsockets(teamId, actorUserId);
+
+          // We do not want to push the websocket token of the actor that triggered it for security reasons
+          const finalPayload = { ...payload, actorWebsocketToken: undefined };
+
+          for (const websocket of userWebsockets) {
+            const websocketToken = this._getWebsocketToken(websocket);
+            if (actorWebsocketToken && actorWebsocketToken === websocketToken) {
+              continue;
             }
+
+            websocket.send(JSON.stringify({ type, payload: finalPayload }));
           }
         }
       );
     })();
 
     terminateServer = async () => {
-      logger.info(`[WebsocketGateway] Terminating the server ...`);
+      logger.debug(`[WebsocketGateway] Terminating the server ...`);
+
+      for (const websocket of this._server.clients) {
+        websocket.close(WebsocketCloseCodeEnum.SERVER_TERMINATED, 'Server terminated.');
+      }
 
       this._server.close(() => {
-        logger.info(`[WebsocketGateway] Server terminated.`);
-
-        process.exit(0);
+        logger.debug(`[WebsocketGateway] Server closed.`);
       });
     };
   }
 
   async handleConnection(client: WebSocket, incomingMessage: IncomingMessage) {
-    const accessToken = incomingMessage.url?.replace('/ws?userAccessToken=', '');
+    const url = new URL(`${incomingMessage.headers.origin ?? 'localhost'}${incomingMessage.url}`);
 
+    const websocketToken = url.searchParams.get('websocketToken') ?? null;
+    if (!websocketToken) {
+      logger.debug(
+        `[WebsocketGateway] A client tried to connect without a websocket token. Closing the connection ...`
+      );
+
+      client.close(WebsocketCloseCodeEnum.INVALID_WEBSOCKET_TOKEN, 'Invalid websocket token.');
+
+      return;
+    }
+
+    const accessToken = url.searchParams.get('userAccessToken') ?? null;
     const userWithAccessToken = accessToken
       ? await authManager.getUserByAccessToken(accessToken)
       : null;
@@ -86,7 +109,14 @@ export class WebsocketGateway
       `[WebsocketGateway] New client (${userWithAccessToken.user.email}) connected. There are now ${this._server.clients.size} clients connected.`
     );
 
-    this._setMapValues(client, userWithAccessToken.user.id);
+    this._setMapValues(client, websocketToken, userWithAccessToken.user.id);
+
+    client.send(
+      JSON.stringify({
+        type: 'connected',
+        payload: { userId: userWithAccessToken.user.id },
+      })
+    );
   }
 
   async handleDisconnect(client: WebSocket) {
@@ -98,34 +128,81 @@ export class WebsocketGateway
   }
 
   // Private
-  private _getSocketsForTeam(teamId: string) {
-    const userIds = this._teamUserIdsMap.get(teamId) || [];
-    const sockets: WebSocket[] = [];
+  private _getWebsockets(teamId?: string, userId?: string) {
+    const websocketsSet = new Set<WebSocket>();
 
-    for (const userId of userIds) {
-      const socket = this._userIdSocketsMap.get(userId);
-      if (socket) {
-        sockets.push(socket);
+    if (teamId) {
+      const teamUserIds = this._teamToUserIdsMap.get(teamId) || [];
+      for (const teamUserId of teamUserIds) {
+        const userWebsocketTokens = this._userIdToWebsocketTokensMap.get(teamUserId) ?? [];
+        for (const websocketToken of userWebsocketTokens) {
+          const websocket = this._websocketTokenToWebsocketMap.get(websocketToken);
+          if (websocket) {
+            websocketsSet.add(websocket);
+          }
+        }
       }
     }
 
-    return sockets;
+    if (userId) {
+      const userWebsocketTokens = this._userIdToWebsocketTokensMap.get(userId) || [];
+      for (const websocketToken of userWebsocketTokens) {
+        const websocket = this._websocketTokenToWebsocketMap.get(websocketToken);
+        if (websocket) {
+          websocketsSet.add(websocket);
+        }
+      }
+    }
+
+    return Array.from(websocketsSet);
   }
 
-  private async _setMapValues(client: WebSocket, userId: string) {
-    this._userIdSocketsMap.set(userId, client);
+  private async _setMapValues(client: WebSocket, websocketToken: string, userId: string) {
+    this._websocketToUserIdMap.set(client, userId);
+    this._websocketTokenToWebsocketMap.set(websocketToken, client);
+
+    const userWebsocketTokens = this._userIdToWebsocketTokensMap.get(userId) || [];
+    userWebsocketTokens.push(websocketToken);
+    this._userIdToWebsocketTokensMap.set(userId, userWebsocketTokens);
 
     const userTeams = await usersManager.getTeamIds(userId);
     for (const teamId of userTeams) {
-      const teamUserIds = this._teamUserIdsMap.get(teamId) || [];
+      const teamUserIds = this._teamToUserIdsMap.get(teamId) || [];
       teamUserIds.push(userId);
 
-      this._teamUserIdsMap.set(teamId, teamUserIds);
+      this._teamToUserIdsMap.set(teamId, teamUserIds);
     }
   }
 
-  private _getUserId(client: WebSocket) {
-    for (const [key, value] of this._userIdSocketsMap) {
+  private async _removeMapValues(client: WebSocket) {
+    this._websocketToUserIdMap.delete(client);
+
+    // We need to do this first, before we actually delete the incomming message
+    const websocketToken = this._getWebsocketToken(client);
+    if (websocketToken) {
+      this._websocketTokenToWebsocketMap.delete(websocketToken);
+    }
+
+    const userId = this._getUserId(client);
+    if (userId) {
+      this._userIdToWebsocketTokensMap.delete(userId);
+
+      const userTeams = await usersManager.getTeamIds(userId);
+      for (const teamId of userTeams) {
+        const teamUserIds = this._teamToUserIdsMap.get(teamId) || [];
+        const index = teamUserIds.indexOf(userId);
+        if (index !== -1) {
+          teamUserIds.splice(index, 1);
+        }
+
+        this._teamToUserIdsMap.set(teamId, teamUserIds);
+      }
+    }
+  }
+
+  private _getWebsocketToken(client: WebSocket) {
+    // TODO: will need to get significalntly more performant!
+    for (const [key, value] of this._websocketTokenToWebsocketMap) {
       if (value === client) {
         return key;
       }
@@ -134,23 +211,7 @@ export class WebsocketGateway
     return null;
   }
 
-  private async _removeMapValues(client: WebSocket) {
-    const userId = this._getUserId(client);
-    if (!userId) {
-      return;
-    }
-
-    this._userIdSocketsMap.delete(userId);
-
-    const userTeams = await usersManager.getTeamIds(userId);
-    for (const teamId of userTeams) {
-      const teamUserIds = this._teamUserIdsMap.get(teamId) || [];
-      const index = teamUserIds.indexOf(userId);
-      if (index !== -1) {
-        teamUserIds.splice(index, 1);
-      }
-
-      this._teamUserIdsMap.set(teamId, teamUserIds);
-    }
+  private _getUserId(client: WebSocket) {
+    return this._websocketToUserIdMap.get(client) ?? null;
   }
 }

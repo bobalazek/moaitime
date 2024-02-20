@@ -921,9 +921,9 @@ export class TasksManager {
       for (const userId of toInsert) {
         globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER, {
           actorUserId: assigningUser.id,
+          userId,
           taskId: task.id,
           teamId,
-          targetUserId: userId,
         });
       }
     }

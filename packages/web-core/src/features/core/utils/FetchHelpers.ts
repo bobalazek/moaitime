@@ -8,6 +8,7 @@ import { ErrorResponse } from '../errors/ErrorResponse';
 
 export const queryClient = new QueryClient();
 
+let _websocketToken: string | undefined;
 let _appVersion: string | null = null;
 export const fetchJson = async <T>(
   input: RequestInfo | URL,
@@ -32,6 +33,13 @@ export const fetchJson = async <T>(
     'user-agent': userAgent,
     'device-uid': deviceUid,
   };
+
+  if (_websocketToken) {
+    init.headers = {
+      ...init.headers,
+      'websocket-token': _websocketToken,
+    };
+  }
 
   if (auth?.userAccessToken?.token) {
     init.headers = {
@@ -80,9 +88,14 @@ export const fetchJson = async <T>(
 export const getDeviceUid = (): string => {
   let deviceUid = localStorage.getItem('device-uid');
   if (!deviceUid) {
-    deviceUid = `${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}`;
+    const rand = () => Math.random().toString(36).substring(2);
+    deviceUid = `${rand()}${rand()}${rand()}${rand()}`;
     localStorage.setItem('device-uid', deviceUid);
   }
 
   return deviceUid;
+};
+
+export const setWebsocketToken = (websocketToken: string) => {
+  _websocketToken = websocketToken;
 };

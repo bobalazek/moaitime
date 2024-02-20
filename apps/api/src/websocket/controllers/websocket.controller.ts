@@ -1,19 +1,24 @@
+import crypto from 'crypto';
+
 import { Controller, Get, Req } from '@nestjs/common';
 import { Request } from 'express';
 
-import { APP_VERSION, WS_URL } from '@moaitime/shared-common';
+import { WS_URL } from '@moaitime/shared-common';
 
-@Controller('/api/v1/config')
-export class ConfigController {
+@Controller('/api/v1/websocket')
+export class WebsocketController {
   @Get()
   async index(@Req() req: Request) {
+    const websocketToken = crypto.randomBytes(32).toString('hex');
+
     const url = new URL(WS_URL);
     url.searchParams.append('userAccessToken', req.user?._accessToken.token);
+    url.searchParams.append('websocketToken', websocketToken);
+
     const websocketUrl = url.toString();
 
     return {
       data: {
-        version: APP_VERSION,
         websocketUrl,
       },
     };

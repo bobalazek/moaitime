@@ -1,3 +1,5 @@
 export enum WebsocketCloseCodeEnum {
+  SERVER_TERMINATED = 4000,
   INVALID_ACCESS_TOKEN = 4001,
+  INVALID_WEBSOCKET_TOKEN = 4002,
 }

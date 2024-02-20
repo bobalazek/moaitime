@@ -71,49 +71,59 @@ export type GlobalEvents = {
   [GlobalEventsEnum.AUTH_USER_REGISTERED]: {
     actorUserId: string; // Who was the user that triggered this action?
     userId: string;
+    actorWebsocketToken?: string; // Which tab/websocket connection was the user using when they registered and triggered the action? Used to keep in sync multiple tabs
   };
   [GlobalEventsEnum.AUTH_USER_LOGGED_IN]: {
     actorUserId: string;
     userId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_LOGGED_OUT]: {
     actorUserId: string;
     userId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_UPDATED]: {
     actorUserId: string;
     userId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_FOLLOWED_USER]: {
     actorUserId: string;
     userId: string; // This is the actual user that was unfollowed?
     userFollowedUserId: string; // This is the relationship entity - user_followed table row
     needsApproval: boolean;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER]: {
     actorUserId: string;
     userId: string;
     userFollowedUserId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_REMOVE_FOLLOWED_USER]: {
     actorUserId: string;
     userId: string;
     userFollowedUserId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_UNFOLLOWED_USER]: {
     actorUserId: string;
     userId: string;
     userFollowedUserId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_BLOCKED_USER]: {
     actorUserId: string;
     userId: string;
     userBlockedUserId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_UNBLOCKED_USER]: {
     actorUserId: string;
     userId: string;
     userBlockedUserId: string;
+    actorWebsocketToken?: string;
   };
   // Tasks
   [GlobalEventsEnum.TASKS_TASK_ADDED]: {
@@ -122,6 +132,7 @@ export type GlobalEvents = {
     listId?: string; // What list was the task added to?
     teamId?: string; // For what team was the task added (the teamId from the list)?
     task?: Task;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_TASK_EDITED]: {
     actorUserId: string;
@@ -129,6 +140,7 @@ export type GlobalEvents = {
     listId?: string;
     teamId?: string;
     task?: Task;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_TASK_DELETED]: {
     actorUserId: string;
@@ -137,6 +149,7 @@ export type GlobalEvents = {
     teamId?: string;
     isHardDelete?: boolean;
     task?: Task;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_TASK_UNDELETED]: {
     actorUserId: string;
@@ -144,6 +157,7 @@ export type GlobalEvents = {
     listId?: string;
     teamId?: string;
     task?: Task;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_TASK_COMPLETED]: {
     actorUserId: string;
@@ -151,6 +165,7 @@ export type GlobalEvents = {
     listId?: string;
     teamId?: string;
     task?: Task;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_TASK_UNCOMPLETED]: {
     actorUserId: string;
@@ -158,6 +173,7 @@ export type GlobalEvents = {
     listId?: string;
     teamId?: string;
     task?: Task;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_TASK_DUPLICATED]: {
     actorUserId: string;
@@ -165,20 +181,23 @@ export type GlobalEvents = {
     listId?: string;
     teamId?: string;
     task?: Task;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_TASK_ASSIGNED_TO_USER]: {
     actorUserId: string; // Which user assigned it? Just so  we are consistent with the other events. The userId is the user that triggers the action
+    userId: string; // To which user was it assigned?
     taskId: string;
     listId?: string;
     teamId?: string;
     task?: Task;
-    targetUserId: string; // To which user was it assigned?
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_REORDERED]: {
     actorUserId: string;
     listId?: string;
     teamId?: string;
     task?: Task;
+    actorWebsocketToken?: string;
   };
   // Tasks - Lists
   [GlobalEventsEnum.TASKS_LIST_ADDED]: {
@@ -186,30 +205,35 @@ export type GlobalEvents = {
     listId: string;
     teamId?: string;
     list?: List;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_LIST_EDITED]: {
     actorUserId: string;
     listId: string;
     teamId?: string;
     list?: List;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_LIST_DELETED]: {
     actorUserId: string;
     listId: string;
     teamId?: string;
     list?: List;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_LIST_ADD_VISIBLE]: {
     actorUserId: string;
     listId: string;
     teamId?: string;
     list?: List;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_LIST_REMOVE_VISIBLE]: {
     actorUserId: string;
     listId: string;
     teamId?: string;
     list?: List;
+    actorWebsocketToken?: string;
   };
   // Calendars
   [GlobalEventsEnum.CALENDAR_CALENDAR_ADDED]: {
@@ -217,12 +241,14 @@ export type GlobalEvents = {
     calendarId: string;
     teamId?: string;
     calendar?: Calendar;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_CALENDAR_EDITED]: {
     actorUserId: string;
     calendarId: string;
     teamId?: string;
     calendar?: Calendar;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_CALENDAR_DELETED]: {
     actorUserId: string;
@@ -230,24 +256,28 @@ export type GlobalEvents = {
     teamId?: string;
     isHardDelete?: boolean;
     calendar?: Calendar;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_CALENDAR_UNDELETED]: {
     actorUserId: string;
     calendarId: string;
     teamId?: string;
     calendar?: Calendar;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_CALENDAR_ADD_VISIBLE]: {
     actorUserId: string;
     calendarId: string;
     teamId?: string;
     calendar?: Calendar;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_CALENDAR_REMOVE_VISIBLE]: {
     actorUserId: string;
     calendarId: string;
     teamId?: string;
     calendar?: Calendar;
+    actorWebsocketToken?: string;
   };
   // Events
   [GlobalEventsEnum.CALENDAR_EVENT_ADDED]: {
@@ -256,6 +286,7 @@ export type GlobalEvents = {
     calendarId: string;
     teamId?: string;
     event?: Event;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_EVENT_EDITED]: {
     actorUserId: string;
@@ -263,6 +294,7 @@ export type GlobalEvents = {
     calendarId: string;
     teamId?: string;
     event?: Event;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_EVENT_DELETED]: {
     actorUserId: string;
@@ -271,6 +303,7 @@ export type GlobalEvents = {
     isHardDelete?: boolean;
     teamId?: string;
     event?: Event;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.CALENDAR_EVENT_UNDELETED]: {
     actorUserId: string;
@@ -278,79 +311,94 @@ export type GlobalEvents = {
     calendarId: string;
     teamId?: string;
     event?: Event;
+    actorWebsocketToken?: string;
   };
   // Focus
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED]: {
     actorUserId: string;
     focusSessionId: string;
     focusSession?: FocusSession;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_EDITED]: {
     actorUserId: string;
     focusSessionId: string;
     focusSession?: FocusSession;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED]: {
     actorUserId: string;
     focusSessionId: string;
     isHardDelete?: boolean;
     focusSession?: FocusSession;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED]: {
     actorUserId: string;
     focusSessionId: string;
     focusSession?: FocusSession;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_COMPLETED]: {
     actorUserId: string;
     focusSessionId: string;
     focusSession?: FocusSession;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED]: {
     actorUserId: string;
     focusSessionId: string;
     action: FocusSessionUpdateActionEnum;
     focusSession?: FocusSession;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.FOCUS_FOCUS_SESSION_CURRENT_STAGE_CHANGED]: {
     actorUserId: string;
     focusSessionId: string;
     stage: FocusSessionStageEnum;
     focusSession?: FocusSession;
+    actorWebsocketToken?: string;
   };
   // Mood
   [GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED]: {
     actorUserId: string;
     moodEntryId: string;
     moodEntry?: MoodEntry;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED]: {
     actorUserId: string;
     moodEntryId: string;
     moodEntry?: MoodEntry;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED]: {
     actorUserId: string;
     moodEntryId: string;
     isHardDelete?: boolean;
     moodEntry?: MoodEntry;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED]: {
     actorUserId: string;
     moodEntryId: string;
     moodEntry?: MoodEntry;
+    actorWebsocketToken?: string;
   };
   // Notifications
   [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED]: {
     actorUserId: string;
     userNotificationId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ]: {
     actorUserId: string;
     userNotificationId: string;
+    actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD]: {
     actorUserId: string;
     userNotificationId: string;
+    actorWebsocketToken?: string;
   };
 };

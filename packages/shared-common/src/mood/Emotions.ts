@@ -111,12 +111,12 @@ export const EmotionsByCategory = {
 };
 
 export const EmotionCategoryColors = {
-  [EmotionCategoryEnum.JOY]: '#FFD54F',
-  [EmotionCategoryEnum.SADNESS]: '#64B5F6',
-  [EmotionCategoryEnum.FEAR]: '#BA68C8',
-  [EmotionCategoryEnum.ANGER]: '#e57373',
-  [EmotionCategoryEnum.SURPRISE]: '#FFB74D',
-  [EmotionCategoryEnum.DISGUST]: '#81C784',
+  [EmotionCategoryEnum.JOY]: '#FFC107',
+  [EmotionCategoryEnum.SADNESS]: '#2A9DF4',
+  [EmotionCategoryEnum.FEAR]: '#9E8FB2',
+  [EmotionCategoryEnum.ANGER]: '#D32F2F',
+  [EmotionCategoryEnum.SURPRISE]: '#FFCA28',
+  [EmotionCategoryEnum.DISGUST]: '#66BB6A',
 };
 
 export const EmotionToEmotionCategoryMap = new Map(

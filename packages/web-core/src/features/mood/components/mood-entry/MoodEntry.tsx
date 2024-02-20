@@ -1,6 +1,7 @@
 import {
   capitalize,
   EmotionCategoryColors,
+  EmotionCategoryEnum,
   EmotionToEmotionCategoryMap,
   MoodEntry as MoodEntryType,
 } from '@moaitime/shared-common';
@@ -50,7 +51,7 @@ export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
               {moodEntry.emotions.map((emotion) => {
                 const emotionCategory = EmotionToEmotionCategoryMap.get(
                   emotion
-                ) as keyof typeof EmotionCategoryColors;
+                ) as EmotionCategoryEnum;
                 const backgroundColor = EmotionCategoryColors[emotionCategory]
                   ? EmotionCategoryColors[emotionCategory]
                   : undefined;

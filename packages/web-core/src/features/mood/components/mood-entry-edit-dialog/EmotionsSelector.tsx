@@ -3,6 +3,7 @@ import { useState } from 'react';
 import {
   capitalize,
   EmotionCategoryColors,
+  EmotionCategoryEnum,
   EmotionsByCategory,
   EmotionToEmotionCategoryMap,
 } from '@moaitime/shared-common';
@@ -10,35 +11,33 @@ import { Toggle } from '@moaitime/web-ui';
 
 import { getTextColor } from '../../../core/utils/ColorHelpers';
 
+const emotionCategories = Object.keys(EmotionsByCategory);
+
 export type EmotionsProps = {
   value?: string[];
   onChangeValue: (value: string[]) => void;
 };
 
-const emotionCategories = Object.keys(EmotionsByCategory);
-
 export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
   const [selectedEmotionCategories, setSelectedEmotionCategories] = useState<string[]>([]);
 
   const selectedEmotions = value ?? [];
-  const availableEmotionsSet = new Set([
-    ...(value ?? []),
-    ...selectedEmotionCategories.flatMap(
-      (category) => EmotionsByCategory[category as keyof typeof EmotionCategoryColors]
-    ),
-  ]);
-
-  const availableEmotions = Array.from(availableEmotionsSet);
+  const availableEmotions = Array.from(
+    new Set([
+      ...(value ?? []),
+      ...selectedEmotionCategories.flatMap(
+        (category) => EmotionsByCategory[category as EmotionCategoryEnum]
+      ),
+    ])
+  );
 
   return (
     <div>
       <div className="flex gap-2">
         {emotionCategories.map((emotionCategory) => {
           const isCategoryPressed = selectedEmotionCategories.includes(emotionCategory);
-          const backgroundColor = EmotionCategoryColors[
-            emotionCategory as keyof typeof EmotionCategoryColors
-          ]
-            ? EmotionCategoryColors[emotionCategory as keyof typeof EmotionCategoryColors]
+          const backgroundColor = EmotionCategoryColors[emotionCategory as EmotionCategoryEnum]
+            ? EmotionCategoryColors[emotionCategory as EmotionCategoryEnum]
             : undefined;
           const color = getTextColor(backgroundColor);
 
@@ -69,9 +68,7 @@ export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
       {availableEmotions.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
           {availableEmotions.map((emotion) => {
-            const emotionCategory = EmotionToEmotionCategoryMap.get(
-              emotion
-            ) as keyof typeof EmotionCategoryColors;
+            const emotionCategory = EmotionToEmotionCategoryMap.get(emotion) as EmotionCategoryEnum;
             const isPressed = selectedEmotions.includes(emotion);
             const backgroundColor = EmotionCategoryColors[emotionCategory]
               ? EmotionCategoryColors[emotionCategory]

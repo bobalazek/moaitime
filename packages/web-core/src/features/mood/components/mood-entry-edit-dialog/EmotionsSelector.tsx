@@ -21,9 +21,14 @@ export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
   const [selectedEmotionCategories, setSelectedEmotionCategories] = useState<string[]>([]);
 
   const selectedEmotions = value ?? [];
-  const availableEmotions = selectedEmotionCategories.flatMap(
-    (category) => EmotionsByCategory[category as keyof typeof EmotionCategoryColors]
-  );
+  const availableEmotionsSet = new Set([
+    ...(value ?? []),
+    ...selectedEmotionCategories.flatMap(
+      (category) => EmotionsByCategory[category as keyof typeof EmotionCategoryColors]
+    ),
+  ]);
+
+  const availableEmotions = Array.from(availableEmotionsSet);
 
   return (
     <div>

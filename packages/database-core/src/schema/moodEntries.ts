@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { users } from './users';
 
@@ -9,6 +9,7 @@ export const moodEntries = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     happinessScore: integer('happiness_score'),
     note: text('note'),
+    emotions: jsonb('emotions').default('[]').$type<string[]>(),
     loggedAt: timestamp('logged_at', {
       mode: 'string',
     }).notNull(),

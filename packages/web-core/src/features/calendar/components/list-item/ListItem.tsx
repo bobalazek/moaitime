@@ -1,10 +1,10 @@
-import { colord } from 'colord';
 import { UsersIcon } from 'lucide-react';
 
 import { List } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
+import { getTextColor } from '../../../core/utils/ColorHelpers';
 import { useListsStore } from '../../../tasks/state/listsStore';
 
 export interface ListItemProps {
@@ -29,12 +29,8 @@ export default function ListItem({ list, hideCheckbox }: ListItemProps) {
     await addVisibleList(list.id);
   };
 
-  const checkboxBackgroundColor = list.color ?? '';
-  const checkboxColor = checkboxBackgroundColor
-    ? colord(checkboxBackgroundColor).isDark()
-      ? 'white'
-      : 'black'
-    : '';
+  const backgroundColor = list.color ?? '';
+  const color = getTextColor(backgroundColor);
 
   return (
     <div
@@ -49,8 +45,8 @@ export default function ListItem({ list, hideCheckbox }: ListItemProps) {
             checked={isChecked}
             onCheckedChange={onCheckedChange}
             style={{
-              backgroundColor: checkboxBackgroundColor,
-              color: checkboxColor,
+              backgroundColor,
+              color: color,
             }}
             data-test="calendar--list-item--visible-checkbox"
           />

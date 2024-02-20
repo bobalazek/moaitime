@@ -17,6 +17,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
+import { getTextColor } from '../../../core/utils/ColorHelpers';
 import { useTasksStore } from '../../../tasks/state/tasksStore';
 import { calendarEventResizingAtom, highlightedCalendarEntryAtom } from '../../state/calendarAtoms';
 import { useCalendarStore } from '../../state/calendarStore';
@@ -66,7 +67,7 @@ export default function CalendarEntry({
     highlightedCalendarEntry?.id === calendarEntry.id
       ? colord(defaultBackgroundColor).darken(0.1).toHex()
       : defaultBackgroundColor;
-  const color = colord(backgroundColor).isDark() ? '#ffffff' : '#000000';
+  const color = getTextColor(backgroundColor)!;
   const colorLighter = colord(color).lighten(0.3).toHex();
   const borderColor = colord(backgroundColor).darken(0.1).toHex();
   const innerStyle = {

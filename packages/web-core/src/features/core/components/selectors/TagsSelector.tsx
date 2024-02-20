@@ -15,13 +15,13 @@ import {
 
 import { useTagsStore } from '../../../tasks/state/tagsStore';
 
-export type TagSelectorProps = {
+export type TagsSelectorProps = {
   value?: string[];
   onChangeValue: (value: string[]) => void;
   teamId?: string | null; // Undefined means all lists, null means no list
 };
 
-export function TagsSelector({ value, onChangeValue, teamId }: TagSelectorProps) {
+export function TagsSelector({ value, onChangeValue, teamId }: TagsSelectorProps) {
   const { tags, addTag } = useTagsStore();
   const [open, setOpen] = useState(false);
   const [commandValue, setCommandValue] = useState('');

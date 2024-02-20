@@ -1,8 +1,8 @@
-import { colord } from 'colord';
 import { TagIcon } from 'lucide-react';
 
 import { Task as TaskType } from '@moaitime/shared-common';
 
+import { getTextColor } from '../../../core/utils/ColorHelpers';
 import { useTagsStore } from '../../state/tagsStore';
 
 const TaskItemTags = ({ task }: { task: TaskType }) => {
@@ -27,11 +27,7 @@ const TaskItemTags = ({ task }: { task: TaskType }) => {
           }
 
           const backgroundColor = tag.color ?? '#666666';
-          const textColor = backgroundColor
-            ? colord(backgroundColor).isDark()
-              ? 'white'
-              : 'black'
-            : '';
+          const color = getTextColor(backgroundColor);
 
           return (
             <span
@@ -40,7 +36,7 @@ const TaskItemTags = ({ task }: { task: TaskType }) => {
               data-test="tasks--task--tags--tag"
               data-tag-color={backgroundColor}
               style={{
-                color: textColor,
+                color,
                 backgroundColor,
               }}
             >

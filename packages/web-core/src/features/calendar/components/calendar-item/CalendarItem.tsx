@@ -1,10 +1,10 @@
-import { colord } from 'colord';
 import { UsersIcon } from 'lucide-react';
 
 import { Calendar, UserCalendar } from '@moaitime/shared-common';
 import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
+import { getTextColor } from '../../../core/utils/ColorHelpers';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItemActions from './CalendarItemActions';
 
@@ -37,12 +37,8 @@ export default function CalendarItem({
     await addVisibleCalendar(calendar.id);
   };
 
-  const checkboxBackgroundColor = userCalendar?.color ?? calendar.color ?? '';
-  const checkboxColor = checkboxBackgroundColor
-    ? colord(checkboxBackgroundColor).isDark()
-      ? 'white'
-      : 'black'
-    : '';
+  const backgroundColor = userCalendar?.color ?? calendar.color ?? '';
+  const color = getTextColor(backgroundColor);
 
   return (
     <div
@@ -58,8 +54,8 @@ export default function CalendarItem({
             checked={isChecked}
             onCheckedChange={onCheckedChange}
             style={{
-              backgroundColor: checkboxBackgroundColor,
-              color: checkboxColor,
+              backgroundColor,
+              color,
             }}
             data-test="calendar--calendar-item--visible-checkbox"
           />

@@ -11,6 +11,11 @@ export const sleep = (milliseconds: number): Promise<unknown> => {
   });
 };
 
+// Text
+export const capitalize = (text: string) => {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 // Date & Time
 export const getGmtOffset = (timezone: string) => {
   const now = new Date();

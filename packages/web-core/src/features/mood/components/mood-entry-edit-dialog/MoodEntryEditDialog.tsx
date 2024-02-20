@@ -27,6 +27,7 @@ import {
 import DateSelector from '../../../core/components/selectors/DateSelector';
 import { useMoodEntriesStore } from '../../state/moodEntriesStore';
 import { HappinessScore } from '../mood-entry/HappinesScore';
+import { EmotionsSelector } from './EmotionsSelector';
 
 export default function MoodEntryEditDialog() {
   const {
@@ -115,6 +116,13 @@ export default function MoodEntryEditDialog() {
               </div>
             );
           })}
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="moodEntry-emotions">Emotions</Label>
+          <EmotionsSelector
+            value={data?.emotions}
+            onChangeValue={(value) => setData((current) => ({ ...current, emotions: value }))}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="moodEntry-note">Note</Label>

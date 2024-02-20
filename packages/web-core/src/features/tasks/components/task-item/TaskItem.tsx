@@ -1,5 +1,4 @@
 import { clsx } from 'clsx';
-import { colord } from 'colord';
 import { memo, useCallback, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 
@@ -8,6 +7,7 @@ import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { useSingleAndDoubleClick } from '../../../core/hooks/useSingleAndDoubleClick';
+import { getTextColor } from '../../../core/utils/ColorHelpers';
 import { useTasksStore } from '../../state/tasksStore';
 import { setCursorToEnd } from '../../utils/TaskHelpers';
 import TaskItemActions from './TaskItemActions';
@@ -31,12 +31,8 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
   const taskTags = task.tags ?? [];
   const taskUsers = task.users ?? [];
 
-  const checkboxBackgroundColor = task.color ?? '';
-  const checkboxColor = checkboxBackgroundColor
-    ? colord(checkboxBackgroundColor).isDark()
-      ? 'white'
-      : 'black'
-    : '';
+  const backgroundColor = task.color ?? '';
+  const color = getTextColor(backgroundColor);
 
   const onClick = useCallback(() => {
     setSelectedTaskDialogOpen(true, task);
@@ -144,8 +140,8 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
             onCheckedChange={onCompleteCheckboxToggle}
             onClick={(event) => event.stopPropagation()}
             style={{
-              backgroundColor: checkboxBackgroundColor,
-              color: checkboxColor,
+              backgroundColor,
+              color,
             }}
             data-test="tasks--task--completed-checkbox"
           />

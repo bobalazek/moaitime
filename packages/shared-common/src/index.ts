@@ -90,6 +90,7 @@ export * from './tasks/TagSchema';
 
 // Mood
 export * from './mood/MoodEntrySchema';
+export * from './mood/Emotions';
 
 // Weather
 export * from './weather/Weather';

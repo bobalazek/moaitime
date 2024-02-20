@@ -1,5 +1,11 @@
-import { MoodEntry as MoodEntryType } from '@moaitime/shared-common';
+import {
+  capitalize,
+  EmotionCategoryColors,
+  EmotionToEmotionCategoryMap,
+  MoodEntry as MoodEntryType,
+} from '@moaitime/shared-common';
 
+import { getTextColor } from '../../../core/utils/ColorHelpers';
 import { convertTextToHtml } from '../../../core/utils/TextHelpers';
 import { HappinessScoreIcon } from './HappinesScore';
 import { MoodEntryActions } from './MoodEntryActions';
@@ -35,6 +41,35 @@ export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
                 __html: convertTextToHtml(moodEntry.note),
               }}
             />
+          )}
+          {moodEntry.emotions && moodEntry.emotions.length > 0 && (
+            <div
+              className="text-muted-foreground mt-2 flex flex-wrap gap-2 text-xs"
+              data-test="mood--mood-entry--emotions"
+            >
+              {moodEntry.emotions.map((emotion) => {
+                const emotionCategory = EmotionToEmotionCategoryMap.get(
+                  emotion
+                ) as keyof typeof EmotionCategoryColors;
+                const backgroundColor = EmotionCategoryColors[emotionCategory]
+                  ? EmotionCategoryColors[emotionCategory]
+                  : undefined;
+                const color = getTextColor(backgroundColor);
+
+                return (
+                  <div
+                    key={emotion}
+                    className="rounded-full px-2 py-[2px] text-xs text-white"
+                    style={{
+                      backgroundColor,
+                      color,
+                    }}
+                  >
+                    {capitalize(emotion)}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
         <div>

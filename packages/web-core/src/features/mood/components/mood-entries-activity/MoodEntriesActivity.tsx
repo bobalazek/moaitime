@@ -87,7 +87,7 @@ function MoodEntriesActivityInner() {
         <div className="text-muted-foreground justify-center text-center">
           <div className="mb-3 text-3xl">No mood entries just yet.</div>
           <div>Why not add one? It is free, you know that, right?</div>
-          <div className="absolute right-4 top-12 text-center text-5xl">
+          <div className="absolute right-4 top-12 select-none text-center text-5xl">
             <div>☝️</div>
             <div className="mt-2 text-[0.65rem] leading-tight">
               Press here. <br /> Gently please.

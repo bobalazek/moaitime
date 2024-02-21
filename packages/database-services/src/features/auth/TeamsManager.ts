@@ -356,10 +356,7 @@ export class TeamsManager {
     const now = new Date();
     const where = and(
       userEmail
-        ? or(
-            eq(teamUserInvitations.userId, userId),
-            and(eq(teamUserInvitations.email, userEmail), isNull(users.emailConfirmedAt))
-          )
+        ? or(eq(teamUserInvitations.userId, userId), eq(teamUserInvitations.email, userEmail))
         : eq(teamUserInvitations.userId, userId),
       isNull(teamUserInvitations.acceptedAt),
       isNull(teamUserInvitations.rejectedAt),
@@ -377,24 +374,54 @@ export class TeamsManager {
       .where(where)
       .execute();
 
-    return rows.map((row) => {
-      // Again, really be mindful that we only want to expose the minimum required fields here!
-      const invitedByUser = row.invitedByUsers
-        ? {
-            id: row.invitedByUsers.id,
-            displayName: row.invitedByUsers.displayName,
-            birthDate: row.invitedByUsers.birthDate,
-            email: row.invitedByUsers.email,
-            createdAt: row.invitedByUsers.createdAt,
-          }
-        : undefined;
+    const emailsSet = new Set<string>();
+    for (const row of rows) {
+      if (row.team_user_invitations.email) {
+        emailsSet.add(row.team_user_invitations.email);
+      }
+    }
 
-      return {
-        ...row.team_user_invitations,
-        team: row.teams,
-        invitedByUser,
-      };
-    });
+    const usersByEmail = await usersManager.findManyByEmails([...emailsSet.values()]);
+    const usersByEmailMap = new Map<string, User>();
+    for (const user of usersByEmail) {
+      usersByEmailMap.set(user.email, user);
+    }
+
+    return rows
+      .filter((row) => {
+        if (!row.team_user_invitations.email) {
+          return true;
+        }
+
+        if (!usersByEmailMap.has(row.team_user_invitations.email)) {
+          return true;
+        }
+
+        const user = usersByEmailMap.get(row.team_user_invitations.email);
+        if (!user) {
+          return true;
+        }
+
+        return !!user.emailConfirmedAt;
+      })
+      .map((row) => {
+        // Again, really be mindful that we only want to expose the minimum required fields here!
+        const invitedByUser = row.invitedByUsers
+          ? {
+              id: row.invitedByUsers.id,
+              displayName: row.invitedByUsers.displayName,
+              birthDate: row.invitedByUsers.birthDate,
+              email: row.invitedByUsers.email,
+              createdAt: row.invitedByUsers.createdAt,
+            }
+          : undefined;
+
+        return {
+          ...row.team_user_invitations,
+          team: row.teams,
+          invitedByUser,
+        };
+      });
   }
 
   async acceptInvitationByIdAndUserId(

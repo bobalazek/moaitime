@@ -75,6 +75,16 @@ export class UsersManager {
     });
   }
 
+  async findManyByEmails(emails: string[]): Promise<User[]> {
+    const rows = await getDatabase().query.users.findMany({
+      where: inArray(users.email, emails),
+    });
+
+    return rows.map((row) => {
+      return this._fixRowColumns(row);
+    });
+  }
+
   async findOneById(id: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.id, id),

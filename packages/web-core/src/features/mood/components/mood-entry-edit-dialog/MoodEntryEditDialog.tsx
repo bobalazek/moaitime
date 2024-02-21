@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   Label,
+  ScrollArea,
   sonnerToast,
   Textarea,
 } from '@moaitime/web-ui';
@@ -94,65 +95,69 @@ export default function MoodEntryEditDialog() {
             {selectedMoodEntryDialog ? `Edit Mood entry` : 'New Mood Entry'}
           </DialogTitle>
         </DialogHeader>
-        <div
-          className="flex w-full flex-row justify-between gap-2 py-4"
-          data-test="mood--mood-entry-edit-dialog--scores"
-        >
-          {MOOD_SCORES.map((moodScore) => {
-            const isSelected = moodScore === data?.happinessScore;
-            return (
-              <div
-                key={moodScore}
-                className="cursor-pointer transition-all hover:scale-[1.1]"
-                onClick={() => {
-                  setData((current) => ({ ...current, happinessScore: moodScore }));
+        <ScrollArea className="max-h-[calc(100vh-12rem)]">
+          <div className="flex flex-col gap-4">
+            <div
+              className="flex w-full flex-row justify-between gap-2 py-4"
+              data-test="mood--mood-entry-edit-dialog--scores"
+            >
+              {MOOD_SCORES.map((moodScore) => {
+                const isSelected = moodScore === data?.happinessScore;
+                return (
+                  <div
+                    key={moodScore}
+                    className="cursor-pointer transition-all hover:scale-[1.1]"
+                    onClick={() => {
+                      setData((current) => ({ ...current, happinessScore: moodScore }));
+                    }}
+                    style={{
+                      scale: isSelected ? '1.2' : '1',
+                      opacity: isSelected ? '1' : '0.8',
+                    }}
+                  >
+                    <HappinessScore score={moodScore} isSelected={isSelected} />
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="moodEntry-emotions">Emotions</Label>
+              <EmotionsSelector
+                value={data?.emotions}
+                onChangeValue={(value) => setData((current) => ({ ...current, emotions: value }))}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="moodEntry-note">Note</Label>
+              <Textarea
+                id="moodEntry-note"
+                rows={5}
+                value={data?.note ?? ''}
+                onChange={(event) => {
+                  setData((current) => ({ ...current, note: event.target.value }));
                 }}
-                style={{
-                  scale: isSelected ? '1.2' : '1',
-                  opacity: isSelected ? '1' : '0.8',
-                }}
-              >
-                <HappinessScore score={moodScore} isSelected={isSelected} />
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="moodEntry-emotions">Emotions</Label>
-          <EmotionsSelector
-            value={data?.emotions}
-            onChangeValue={(value) => setData((current) => ({ ...current, emotions: value }))}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="moodEntry-note">Note</Label>
-          <Textarea
-            id="moodEntry-note"
-            rows={5}
-            value={data?.note ?? ''}
-            onChange={(event) => {
-              setData((current) => ({ ...current, note: event.target.value }));
-            }}
-          />
-        </div>
-        <DateSelector
-          includeTime={true}
-          data={convertIsoStringToObject(data?.loggedAt, true, undefined)}
-          onSaveData={(saveData) => {
-            const result = convertObjectToIsoString(saveData);
-            if (!result) {
-              return;
-            }
+              />
+            </div>
+            <DateSelector
+              includeTime={true}
+              data={convertIsoStringToObject(data?.loggedAt, true, undefined)}
+              onSaveData={(saveData) => {
+                const result = convertObjectToIsoString(saveData);
+                if (!result) {
+                  return;
+                }
 
-            setData((current) => ({
-              ...current,
-              loggedAt: result.iso,
-            }));
-          }}
-          disableClear={true}
-          disableFuture={true}
-          disableTimeZone={true}
-        />
+                setData((current) => ({
+                  ...current,
+                  loggedAt: result.iso,
+                }));
+              }}
+              disableClear={true}
+              disableFuture={true}
+              disableTimeZone={true}
+            />
+          </div>
+        </ScrollArea>
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="secondary">

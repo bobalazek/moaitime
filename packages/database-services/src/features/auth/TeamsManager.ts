@@ -381,7 +381,8 @@ export class TeamsManager {
       }
     }
 
-    const usersByEmail = await usersManager.findManyByEmails([...emailsSet.values()]);
+    const usersByEmail =
+      emailsSet.size > 0 ? await usersManager.findManyByEmails([...emailsSet.values()]) : [];
     const usersByEmailMap = new Map<string, User>();
     for (const user of usersByEmail) {
       usersByEmailMap.set(user.email, user);

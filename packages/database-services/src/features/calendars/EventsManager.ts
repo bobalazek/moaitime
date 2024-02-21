@@ -328,6 +328,11 @@ export class EventsManager {
       throw new Error('Start date must be before end date');
     }
 
+    const durationSeconds = (finalEndsAt.getTime() - finalStartsAt.getTime()) / 1000;
+    if (durationSeconds < 60) {
+      throw new Error('Event must be at least 1 minute long');
+    }
+
     // We need to account for the null value, which means to unset the value,
     // where as undefined means to not update the value.
     const repeatEndsAt = data.repeatEndsAt

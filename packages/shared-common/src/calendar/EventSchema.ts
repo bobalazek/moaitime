@@ -59,10 +59,19 @@ export const CreateEventSchema = CreateEventBaseSchema.refine(
       return true;
     }
 
-    return startTime <= endTime;
+    if (startTime >= endTime) {
+      return false;
+    }
+
+    const durationSeconds = (endTime - startTime) / 1000;
+    if (durationSeconds < 60) {
+      return false;
+    }
+
+    return true;
   },
   {
-    message: 'Start date must be before end date',
+    message: 'Start date must be before end date and at least 1 minutes long',
     path: ['startsAt', 'endsAt'],
   }
 ).refine(

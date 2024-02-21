@@ -377,17 +377,6 @@ export class TeamsManager {
       .where(where)
       .execute();
 
-    console.log(
-      await getDatabase()
-        .select()
-        .from(teamUserInvitations)
-        .leftJoin(teams, eq(teams.id, teamUserInvitations.teamId))
-        .leftJoin(users, eq(users.id, teamUserInvitations.invitedByUserId))
-        .leftJoin(invitedByUsers, eq(invitedByUsers.id, teamUserInvitations.invitedByUserId))
-        .where(where)
-        .toSQL()
-    );
-
     return rows.map((row) => {
       // Again, really be mindful that we only want to expose the minimum required fields here!
       const invitedByUser = row.invitedByUsers

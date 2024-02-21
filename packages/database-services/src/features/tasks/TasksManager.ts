@@ -145,7 +145,7 @@ export class TasksManager {
           childrenMap[child.parentId] = [];
         }
 
-        childrenMap[child.parentId].push(child);
+        childrenMap[child.parentId].push(this._fixRowColumns(child));
       }
     }
 

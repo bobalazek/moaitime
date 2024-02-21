@@ -1,1 +1,0 @@
-ALTER TABLE "mood_entries" ADD COLUMN "emotions" jsonb DEFAULT '[]';

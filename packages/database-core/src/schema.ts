@@ -32,3 +32,4 @@ export * from './schema/userFollowedUsers';
 export * from './schema/userBlockedUsers';
 export * from './schema/userOnlineActivityEntries';
 export * from './schema/users';
+export * from './schema/invitations';

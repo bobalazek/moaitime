@@ -1,1 +1,0 @@
-ALTER TABLE "reports" ALTER COLUMN "target_entity" SET NOT NULL;

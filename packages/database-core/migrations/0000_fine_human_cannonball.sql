@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS "mood_entries" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"happiness_score" integer,
 	"note" text,
+	"emotions" jsonb DEFAULT '[]',
 	"logged_at" timestamp NOT NULL,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
@@ -229,8 +230,10 @@ CREATE TABLE IF NOT EXISTS "task_users" (
 CREATE TABLE IF NOT EXISTS "posts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" text NOT NULL,
+	"visibility" text NOT NULL,
 	"content" text NOT NULL,
 	"deleted_at" timestamp,
+	"published_at" timestamp DEFAULT now(),
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL
@@ -275,6 +278,18 @@ CREATE TABLE IF NOT EXISTS "testing_emails" (
 	"data" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "reports" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"content" text NOT NULL,
+	"target_entity" jsonb NOT NULL,
+	"data" jsonb,
+	"tags" jsonb DEFAULT '[]',
+	"acknowledged_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_access_tokens" (
@@ -420,6 +435,19 @@ CREATE TABLE IF NOT EXISTS "users" (
 	CONSTRAINT "users_deletion_token_unique" UNIQUE("deletion_token")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "invitations" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"email" text,
+	"token" text NOT NULL,
+	"expires_at" timestamp,
+	"claimed_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid,
+	"claimed_user_id" uuid,
+	CONSTRAINT "invitations_token_unique" UNIQUE("token")
+);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "backgrounds_user_id_idx" ON "backgrounds" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "calendars_user_id_idx" ON "calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "calendars_team_id_idx" ON "calendars" ("team_id");--> statement-breakpoint
@@ -456,6 +484,7 @@ CREATE INDEX IF NOT EXISTS "team_users_user_id_idx" ON "team_users" ("user_id");
 CREATE INDEX IF NOT EXISTS "team_user_invitations_team_id_idx" ON "team_user_invitations" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_user_invitations_user_id_idx" ON "team_user_invitations" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_user_invitations_invite_by_user_id_idx" ON "team_user_invitations" ("invited_by_user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "reports_user_id_idx" ON "reports" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_access_tokens_user_id_idx" ON "user_access_tokens" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
@@ -476,6 +505,10 @@ CREATE INDEX IF NOT EXISTS "users_new_email_idx" ON "users" ("new_email");--> st
 CREATE INDEX IF NOT EXISTS "users_email_confirmation_token_idx" ON "users" ("email_confirmation_token");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_new_email_confirmation_token_idx" ON "users" ("new_email_confirmation_token");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "users_password_reset_token_idx" ON "users" ("password_reset_token");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "invitations_email_idx" ON "invitations" ("email");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "invitations_token_idx" ON "invitations" ("token");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "invitations_user_id_idx" ON "invitations" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "invitations_claimed_user_id_idx" ON "invitations" ("claimed_user_id");--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "backgrounds" ADD CONSTRAINT "backgrounds_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
@@ -687,6 +720,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "reports" ADD CONSTRAINT "reports_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "user_access_tokens" ADD CONSTRAINT "user_access_tokens_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -754,6 +793,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_online_activity_entries" ADD CONSTRAINT "user_online_activity_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "invitations" ADD CONSTRAINT "invitations_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE set null ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "invitations" ADD CONSTRAINT "invitations_claimed_user_id_users_id_fk" FOREIGN KEY ("claimed_user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

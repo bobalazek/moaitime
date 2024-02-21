@@ -1,1 +1,0 @@
-ALTER TABLE "posts" ADD COLUMN "published_at" timestamp DEFAULT now();

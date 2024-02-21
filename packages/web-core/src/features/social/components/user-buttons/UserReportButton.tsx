@@ -7,11 +7,9 @@ import { useSocialStore } from '../../state/socialStore';
 export default function UserReportButton({
   user,
   onAfterClick,
-  size,
 }: {
   user: PublicUser;
   onAfterClick?: () => void;
-  size?: 'sm' | 'default' | 'lg';
 }) {
   const { auth } = useAuthStore();
   const { setUserReportDialogOpen } = useSocialStore();
@@ -29,7 +27,7 @@ export default function UserReportButton({
   };
 
   return (
-    <Button onClick={onReportButtonClick} size={size} variant="destructive">
+    <Button onClick={onReportButtonClick} className="h-8 p-2" variant="destructive">
       {reportButtonText}
     </Button>
   );

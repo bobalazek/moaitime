@@ -40,7 +40,7 @@ export default function UserFollowButton({
   };
 
   return (
-    <Button onClick={onFollowButtonClick} size={size}>
+    <Button onClick={onFollowButtonClick} size={size} className="h-8 p-2">
       {followButtonText}
     </Button>
   );

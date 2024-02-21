@@ -7,11 +7,9 @@ import { useSocialStore } from '../../state/socialStore';
 export default function UserBlockButton({
   user,
   onAfterClick,
-  size,
 }: {
   user: PublicUser;
   onAfterClick: () => void;
-  size?: 'sm' | 'default' | 'lg';
 }) {
   const { auth } = useAuthStore();
   const { blockUser, unblockUser } = useSocialStore();
@@ -33,7 +31,7 @@ export default function UserBlockButton({
   };
 
   return (
-    <Button onClick={onBlockButtonClick} size={size}>
+    <Button onClick={onBlockButtonClick} className="h-8 p-2">
       {blockButtonText}
     </Button>
   );

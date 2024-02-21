@@ -7,11 +7,9 @@ import { useSocialStore } from '../../state/socialStore';
 export default function UserApproveAndDeleteFollowButtons({
   user,
   onAfterClick,
-  size,
 }: {
   user: PublicUser;
   onAfterClick?: () => void;
-  size?: 'sm' | 'default' | 'lg';
 }) {
   const { auth } = useAuthStore();
   const { approveFollowerUser, removeFollowerUser } = useSocialStore();
@@ -34,10 +32,10 @@ export default function UserApproveAndDeleteFollowButtons({
 
   return (
     <div className="flex gap-1">
-      <Button onClick={onApproveButtonClick} size={size}>
+      <Button onClick={onApproveButtonClick} className="h-8 p-2">
         Approve
       </Button>
-      <Button onClick={onDeleteButtonClick} size={size} variant="outline">
+      <Button onClick={onDeleteButtonClick} className="h-8 p-2" variant="outline">
         Delete
       </Button>
     </div>

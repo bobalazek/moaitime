@@ -61,9 +61,9 @@ const SocialUsersViewPageContent = ({
 
   return (
     <div className="container py-4" data-test="social--users-view--content">
-      <div className="grid gap-2 md:grid-cols-12">
-        <div className="md:col-span-6 lg:col-span-8">
-          <div className="flex gap-6">
+      <div className="grid gap-4 lg:grid-cols-12">
+        <div className="col-span-12 lg:col-span-6 xl:col-span-8">
+          <div className="flex flex-row gap-4 overflow-auto">
             <div>
               {/*
                 Needs to be in an empty div, otherwise the UserAvatar's height is expanded
@@ -71,10 +71,12 @@ const SocialUsersViewPageContent = ({
               */}
               <UserAvatar user={user} sizePx={96} />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 truncate">
               <div>
-                <h2 className="flex items-center gap-4">
-                  <span className="text-5xl font-bold">{user.displayName}</span>
+                <h2 className="flex flex-wrap items-center gap-4">
+                  <span className="truncate text-2xl font-bold md:text-3xl lg:text-5xl">
+                    {user.displayName}
+                  </span>
                   <UserFollowButton user={user} onAfterClick={refetch} />
                   <UserBlockButton user={user} onAfterClick={refetch} />
                   <UserReportButton user={user} />
@@ -115,9 +117,9 @@ const SocialUsersViewPageContent = ({
           </div>
         </div>
         {canViewFollowersAndFollowing && (
-          <div className="md:col-span-6 lg:col-span-4">
+          <div className="col-span-12 lg:col-span-6 xl:col-span-4">
             <Tabs
-              className="rounded border"
+              className="w-full rounded border"
               value={view}
               onValueChange={(value) => {
                 setView(value as Views);

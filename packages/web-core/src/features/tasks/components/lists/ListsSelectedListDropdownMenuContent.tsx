@@ -31,7 +31,11 @@ export default function ListsSelectedListDropdownMenuContent({
 
   const filteredLists = isSubContent
     ? lists.filter((list) => {
-        return list?.teamId === selectedList?.teamId;
+        if (!selectedList) {
+          return !list.teamId;
+        }
+
+        return selectedList?.teamId === list.teamId;
       })
     : lists;
   const showUnlistedList = isSubContent ? !selectedList?.teamId : true;
@@ -69,7 +73,6 @@ export default function ListsSelectedListDropdownMenuContent({
           No lists found.
         </DropdownMenuItem>
       )}
-
       <DropdownMenuRadioGroup
         value={selectedList?.id ?? ''}
         onValueChange={async (value) => {

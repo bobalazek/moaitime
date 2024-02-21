@@ -252,7 +252,12 @@ export default function CalendarEntry({
             setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
           }
 
-          setCalendarEventResizing(null);
+          // Not really sure why this is needed, but it is.
+          // Too tired to determine where the problem is,
+          // but it seems something related with event propagation somewhere.
+          setTimeout(() => {
+            setCalendarEventResizing(null);
+          }, 200);
 
           return;
         }

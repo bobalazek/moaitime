@@ -16,7 +16,7 @@ export class MyTeamUserInvitationsController {
 
     return {
       success: true,
-      data,
+      data: data as unknown as TeamUser[],
     };
   }
 }

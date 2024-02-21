@@ -11,9 +11,11 @@ import {
   TableRow,
 } from '@moaitime/web-ui';
 
+import { useAuthStore } from '../../../state/authStore';
 import { useTeamsStore } from '../../../state/teamsStore';
 
 export default function MyTeamInvitationsSection() {
+  const { auth } = useAuthStore();
   const {
     myTeamUserInvitations,
     reloadMyTeamUserInvitations,
@@ -104,6 +106,12 @@ export default function MyTeamInvitationsSection() {
             ))}
           </TableBody>
         </Table>
+      )}
+      {auth?.user.emailConfirmedAt === null && (
+        <div className="text-warn mt-2 text-sm">
+          Keep in mind that you will need to confirm your email address before you can accept
+          invitations to join a team!
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { addDays } from 'date-fns';
 import { and, count, DBQueryConfig, desc, eq, gt, isNull, or } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 
 import {
   getDatabase,
@@ -355,7 +356,10 @@ export class TeamsManager {
     const now = new Date();
     const where = and(
       userEmail
-        ? or(eq(teamUserInvitations.userId, userId), eq(teamUserInvitations.email, userEmail))
+        ? or(
+            eq(teamUserInvitations.userId, userId),
+            and(eq(teamUserInvitations.email, userEmail), isNull(users.emailConfirmedAt))
+          )
         : eq(teamUserInvitations.userId, userId),
       isNull(teamUserInvitations.acceptedAt),
       isNull(teamUserInvitations.rejectedAt),
@@ -363,30 +367,43 @@ export class TeamsManager {
       isNull(teams.deletedAt)
     );
 
+    const invitedByUsers = alias(users, 'invitedByUsers');
     const rows = await getDatabase()
       .select()
       .from(teamUserInvitations)
       .leftJoin(teams, eq(teams.id, teamUserInvitations.teamId))
-      .leftJoin(users, eq(users.id, teamUserInvitations.invitedByUserId))
+      .leftJoin(users, eq(users.id, teamUserInvitations.userId))
+      .leftJoin(invitedByUsers, eq(invitedByUsers.id, teamUserInvitations.invitedByUserId))
       .where(where)
       .execute();
 
+    console.log(
+      await getDatabase()
+        .select()
+        .from(teamUserInvitations)
+        .leftJoin(teams, eq(teams.id, teamUserInvitations.teamId))
+        .leftJoin(users, eq(users.id, teamUserInvitations.invitedByUserId))
+        .leftJoin(invitedByUsers, eq(invitedByUsers.id, teamUserInvitations.invitedByUserId))
+        .where(where)
+        .toSQL()
+    );
+
     return rows.map((row) => {
       // Again, really be mindful that we only want to expose the minimum required fields here!
-      const user = row.users
+      const invitedByUser = row.invitedByUsers
         ? {
-            id: row.users.id,
-            displayName: row.users.displayName,
-            birthDate: row.users.birthDate,
-            email: row.users.email,
-            createdAt: row.users.createdAt,
+            id: row.invitedByUsers.id,
+            displayName: row.invitedByUsers.displayName,
+            birthDate: row.invitedByUsers.birthDate,
+            email: row.invitedByUsers.email,
+            createdAt: row.invitedByUsers.createdAt,
           }
         : undefined;
 
       return {
         ...row.team_user_invitations,
         team: row.teams,
-        invitedByUser: user,
+        invitedByUser,
       };
     });
   }

@@ -252,6 +252,8 @@ export default function CalendarEntry({
             setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
           }
 
+          setCalendarEventResizing(null);
+
           return;
         }
 

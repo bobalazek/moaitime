@@ -106,6 +106,8 @@ export class AuthManager {
 
     UserPasswordSchema.parse(password);
 
+    this._usernameValidCheck(user.username);
+
     const existingUserEmail = await this._usersManager.findOneByEmail(data.email);
     if (existingUserEmail) {
       throw new Error('User with this email already exists');
@@ -155,16 +157,16 @@ export class AuthManager {
     });
 
     // Only the MySpace generation will get this reference.
-    const userBorut = await this._usersManager.findOneByUsername('bobalazek');
-    if (userBorut) {
+    const userMoai = await this._usersManager.findOneByUsername('moai');
+    if (userMoai) {
       try {
-        await this._usersManager.follow(userBorut.id, newUser.id);
+        await this._usersManager.follow(userMoai.id, newUser.id);
       } catch (error) {
         // Well then, keep your secrets
       }
 
       try {
-        await this._usersManager.follow(newUser.id, userBorut.id);
+        await this._usersManager.follow(newUser.id, userMoai.id);
       } catch (error) {
         // Well then, keep your secrets
       }
@@ -521,6 +523,8 @@ export class AuthManager {
         throw new Error('User with this username already exists');
       }
 
+      this._usernameValidCheck(data.username);
+
       updateData.username = data.username;
     }
 
@@ -800,6 +804,29 @@ export class AuthManager {
 
   async comparePassword(rawPassword: string, hashedPassword: string): Promise<boolean> {
     return compareHash(rawPassword, hashedPassword);
+  }
+
+  // Private
+  private _usernameValidCheck(username: string) {
+    const isValid = [
+      // Reserved
+      'moai',
+      // General
+      'admin',
+      'administrator',
+      'mod',
+      'moderator',
+      'root',
+      'superuser',
+      'su',
+      'user',
+      'users',
+      'team',
+      'teams',
+    ].includes(username);
+    if (isValid) {
+      throw new Error('Username is not available');
+    }
   }
 }
 

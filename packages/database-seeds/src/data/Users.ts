@@ -30,5 +30,17 @@ export const getUserSeeds = async (): Promise<NewUser[]> => {
         generalStartDayOfWeek: 1,
       } as UserSettings,
     },
+    {
+      username: 'moai',
+      email: 'moai@moaitime.com',
+      password: await generateHash('password'),
+      displayName: 'Moai',
+      roles: [UserRoleEnum.ADMIN],
+      emailConfirmedAt: new Date(),
+      settings: {
+        generalTimezone: 'Europe/Ljubljana',
+        generalStartDayOfWeek: 1,
+      } as UserSettings,
+    },
   ];
 };

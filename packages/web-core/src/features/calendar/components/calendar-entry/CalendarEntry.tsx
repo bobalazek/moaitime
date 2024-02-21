@@ -76,6 +76,11 @@ export default function CalendarEntry({
     color,
   };
 
+  // For now, we are only allowing to resize and move events, not tasks
+  if (calendarEntry.type !== CalendarEntryTypeEnum.EVENT) {
+    canResizeAndMove = false;
+  }
+
   let canResizeEndHandler = canResizeAndMove;
   if (canResizeAndMove) {
     canResizeAndMove = calendarEntry.permissions?.canUpdate;

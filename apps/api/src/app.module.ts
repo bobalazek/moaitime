@@ -43,10 +43,8 @@ const { NODE_ENV } = getEnv();
       StatisticsModule,
       NotificationsModule,
       SettingsModule,
+      WebsocketModule,
     ],
-    // Websockets not working fr testing... great job NestJS
-    // https://github.com/nestjs/docs.nestjs.com/issues/97
-    ...(NODE_ENV !== 'test' ? [WebsocketModule] : []),
     ...(NODE_ENV === 'test' ? [TestingModule] : []),
   ],
   controllers: [AppController],

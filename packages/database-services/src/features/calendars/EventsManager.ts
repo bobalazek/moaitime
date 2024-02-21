@@ -329,7 +329,7 @@ export class EventsManager {
     }
 
     const durationSeconds = (finalEndsAt.getTime() - finalStartsAt.getTime()) / 1000;
-    if (durationSeconds < 60) {
+    if (!event.isAllDay && durationSeconds < 60) {
       throw new Error('Event must be at least 1 minute long');
     }
 

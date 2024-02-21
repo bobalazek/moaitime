@@ -5,7 +5,7 @@ import { teamsManager } from '@moaitime/database-services';
 import { JoinedTeam } from '@moaitime/shared-common';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
+import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 
 @Controller('/api/v1/joined-team')
 export class JoinedTeamController {

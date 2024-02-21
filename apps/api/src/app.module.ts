@@ -18,6 +18,7 @@ import { SettingsModule } from './features/settings/settings.module';
 import { SocialModule } from './features/social/social.module';
 import { StatisticsModule } from './features/statistics/statistics.module';
 import { TasksModule } from './features/tasks/tasks.module';
+import { TeamsModule } from './features/teams/teams.module';
 import { TestingModule } from './features/testing/testing.module';
 import { WeatherModule } from './features/weather/weather.module';
 import { WebsocketModule } from './websocket/websocket.module';
@@ -28,6 +29,7 @@ const { NODE_ENV } = getEnv();
   imports: [
     ...[
       AuthModule,
+      TeamsModule,
       BackgroundsModule,
       GreetingsModule,
       NotesModule,

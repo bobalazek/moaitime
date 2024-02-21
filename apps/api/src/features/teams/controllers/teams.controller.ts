@@ -7,10 +7,10 @@ import { teamsManager } from '@moaitime/database-services';
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { EmailDto } from '../../../dtos/email.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
+import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { CreateTeamDto } from '../dtos/create-team.dto';
 import { UpdateTeamUserDto } from '../dtos/update-team-user.dto';
 import { UpdateTeamDto } from '../dtos/update-team.dto';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
 
 @Controller('/api/v1/teams')
 export class TeamsController {

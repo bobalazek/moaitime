@@ -5,7 +5,7 @@ import { TeamUser } from '@moaitime/database-core';
 import { teamsManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
-import { AuthenticatedGuard } from '../guards/authenticated.guard';
+import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 
 @Controller('/api/v1/my-team-user-invitations')
 export class MyTeamUserInvitationsController {

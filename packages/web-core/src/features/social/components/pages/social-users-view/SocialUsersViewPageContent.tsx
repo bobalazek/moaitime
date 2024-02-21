@@ -11,6 +11,7 @@ import { UserAvatar } from '../../../../core/components/UserAvatar';
 import { useStateAndUrlSync } from '../../../../core/hooks/useStateAndUrlSync';
 import UserBlockButton from '../../user-buttons/UserBlockButton';
 import UserFollowButton from '../../user-buttons/UserFollowButton';
+import UserReportButton from '../../user-buttons/UserReportButton';
 import UserFollowersFollowingList from '../../user-followers-following-list/UserFollowersFollowingList';
 
 type Views = '' | 'following' | 'follow-requests'; /* 'followers' is the default view */
@@ -76,6 +77,7 @@ const SocialUsersViewPageContent = ({
                   <span className="text-5xl font-bold">{user.displayName}</span>
                   <UserFollowButton user={user} onAfterClick={refetch} />
                   <UserBlockButton user={user} onAfterClick={refetch} />
+                  <UserReportButton user={user} />
                 </h2>
                 <h3 className="text-muted-foreground text-2xl">{user.username}</h3>
               </div>

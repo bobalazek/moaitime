@@ -21,6 +21,7 @@ export * from './schema/teams';
 export * from './schema/teamUsers';
 export * from './schema/teamUserInvitations';
 export * from './schema/testingEmails';
+export * from './schema/reports';
 export * from './schema/userAccessTokens';
 export * from './schema/userDataExports';
 export * from './schema/userCalendars';

@@ -19,6 +19,7 @@ export enum GlobalEventsEnum {
   AUTH_USER_UNFOLLOWED_USER = 'auth:user:unfollowed-user',
   AUTH_USER_BLOCKED_USER = 'auth:user:blocked-user',
   AUTH_USER_UNBLOCKED_USER = 'auth:user:unblocked-user',
+  AUTH_USER_REPORTED_USER = 'auth:user:reported-user',
   // Tasks
   TASKS_TASK_ADDED = 'tasks:task:added',
   TASKS_TASK_EDITED = 'tasks:task:edited',
@@ -123,6 +124,12 @@ export type GlobalEvents = {
     actorUserId: string;
     userId: string;
     userBlockedUserId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_REPORTED_USER]: {
+    actorUserId: string;
+    userId: string;
+    reportId: string;
     actorWebsocketToken?: string;
   };
   // Tasks

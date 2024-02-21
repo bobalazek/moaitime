@@ -40,9 +40,9 @@ export * from './core/SortDirectionEnum';
 export * from './core/ProcessingStatusEnum';
 export * from './core/PermissionsSchema';
 export * from './core/PaginationCursorsType';
+export * from './core/WebsocketCloseCodeEnum';
 export * from './core/responses/ErrorResponse';
 export * from './core/responses/Response';
-export * from './core/WebsocketCloseCodeEnum';
 export * from './core/dates/DayOfWeek';
 export * from './core/dates/RepeatPatternSchema';
 export * from './core/dates/TimezoneSchema';
@@ -54,6 +54,7 @@ export * from './core/subscriptions/SubscriptionSchema';
 export * from './core/subscriptions/PlanSchema';
 export * from './core/entities/EntitySchema';
 export * from './core/entities/EntityTypeEnum';
+export * from './core/reports/ReportSchema';
 
 // Focus
 export * from './focus/FocusSessionHelpers';

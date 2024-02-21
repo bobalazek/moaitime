@@ -31,7 +31,9 @@ import {
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
+  CreateReport,
   DEFAULT_USER_SETTINGS,
+  EntityTypeEnum,
   GlobalEventsEnum,
   isValidUuid,
   PublicUser,
@@ -47,6 +49,7 @@ import { eventsManager } from '../calendars/EventsManager';
 import { focusSessionsManager } from '../focus/FocusSessionsManager';
 import { moodEntriesManager } from '../mood/MoodEntriesManager';
 import { notesManager } from '../notes/NotesManager';
+import { reportsManager } from '../reports/ReportsManager';
 import { listsManager } from '../tasks/ListsManager';
 import { tagsManager } from '../tasks/TagsManager';
 import { tasksManager } from '../tasks/TasksManager';
@@ -454,6 +457,30 @@ export class UsersManager {
     });
 
     return row;
+  }
+
+  async report(userId: string, userIdOrUsername: string, data: CreateReport) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const report = await reportsManager.insertOne({
+      userId,
+      targetEntity: {
+        id: user.id,
+        type: EntityTypeEnum.USERS,
+      },
+      ...data,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REPORTED_USER, {
+      actorUserId: userId,
+      userId: user.id,
+      reportId: report.id,
+    });
+
+    return report;
   }
 
   async search(userId: string, options: UsersManagerSearchOptions) {

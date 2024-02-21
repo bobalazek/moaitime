@@ -1,5 +1,6 @@
 import {
   API_URL,
+  CreateReport,
   PaginationCursorsType,
   PublicUser,
   ResponseInterface,
@@ -118,6 +119,10 @@ export const followUser = async (userIdOrUsername: string) => {
 export const unfollowUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/unfollow`, {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return true;
@@ -126,6 +131,10 @@ export const unfollowUser = async (userIdOrUsername: string) => {
 export const approveFollowerUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/approve-follower`, {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return true;
@@ -134,6 +143,10 @@ export const approveFollowerUser = async (userIdOrUsername: string) => {
 export const removeFollowerUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/remove-follower`, {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return true;
@@ -142,6 +155,10 @@ export const removeFollowerUser = async (userIdOrUsername: string) => {
 export const blockUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/block`, {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return true;
@@ -150,6 +167,23 @@ export const blockUser = async (userIdOrUsername: string) => {
 export const unblockUser = async (userIdOrUsername: string) => {
   await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/unblock`, {
     method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return true;
+};
+
+export const reportUser = async (userIdOrUsername: string, data: CreateReport) => {
+  await fetchJson(`${API_URL}/api/v1/users/${userIdOrUsername}/report`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 
   return true;

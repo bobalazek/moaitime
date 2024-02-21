@@ -7,6 +7,7 @@ import { Loader } from '../../../core/components/Loader';
 import { useEscapeToHome } from '../../../core/hooks/useEscapeToHome';
 import NotFoundPage from '../../../core/pages/NotFoundPage';
 import { useUsersViewQuery } from '../../hooks/useUsersViewQuery';
+import UserReportDialog from '../user-report-dialog/UserReportDialog';
 import SocialPageHeader from './layout/SocialPageHeader';
 import SocialUsersViewPageContent from './social-users-view/SocialUsersViewPageContent';
 
@@ -41,6 +42,7 @@ export default function SocialUsersViewPage() {
         <SocialPageHeader />
         <SocialUsersViewPageContent user={data} refetch={refetch} />
       </div>
+      <UserReportDialog />
     </ErrorBoundary>
   );
 }

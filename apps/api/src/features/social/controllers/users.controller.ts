@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { usersManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
+import { CreateUserReportDto } from '../../auth/dtos/create-user-report.dto';
 import { PublicUserDto } from '../../auth/dtos/public-user.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 
@@ -186,6 +187,20 @@ export class UsersController {
     @Param('userIdOrUsername') userIdOrUsername: string
   ): Promise<AbstractResponseDto> {
     await usersManager.unblock(req.user.id, userIdOrUsername);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':userIdOrUsername/report')
+  async report(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string,
+    @Body() body: CreateUserReportDto
+  ): Promise<AbstractResponseDto> {
+    await usersManager.report(req.user.id, userIdOrUsername, body);
 
     return {
       success: true,

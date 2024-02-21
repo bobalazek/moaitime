@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useIntersectionObserver } from 'usehooks-ts';
 
 import { Button } from '@moaitime/web-ui';
@@ -35,13 +35,19 @@ function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
   );
 }
 
-export default function UserFollowersFollowingList({
-  type,
-  userIdOrUsername,
-}: {
+export type UserFollowersFollowingListProps = {
   type: 'followers' | 'following' | 'follow-requests';
   userIdOrUsername: string;
-}) {
+};
+
+export interface UserFollowersFollowingListRef {
+  refetch: () => Promise<void>;
+}
+
+const UserFollowersFollowingList = forwardRef<
+  UserFollowersFollowingListRef,
+  UserFollowersFollowingListProps
+>(({ type, userIdOrUsername }, ref) => {
   const query =
     type === 'followers'
       ? useUserFollowersQuery
@@ -58,6 +64,12 @@ export default function UserFollowersFollowingList({
     fetchPreviousPage,
     error,
   } = query(userIdOrUsername);
+
+  useImperativeHandle(ref, () => ({
+    refetch: async () => {
+      await refetch();
+    },
+  }));
 
   const items = data?.pages.flatMap((page) => page.data!);
   if (!items) {
@@ -124,4 +136,6 @@ export default function UserFollowersFollowingList({
       )}
     </div>
   );
-}
+});
+
+export default UserFollowersFollowingList;

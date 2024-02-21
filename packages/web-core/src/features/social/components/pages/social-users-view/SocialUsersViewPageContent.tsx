@@ -1,6 +1,6 @@
 import { formatRelative } from 'date-fns';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -12,7 +12,9 @@ import { useStateAndUrlSync } from '../../../../core/hooks/useStateAndUrlSync';
 import UserBlockButton from '../../user-buttons/UserBlockButton';
 import UserFollowButton from '../../user-buttons/UserFollowButton';
 import UserReportButton from '../../user-buttons/UserReportButton';
-import UserFollowersFollowingList from '../../user-followers-following-list/UserFollowersFollowingList';
+import UserFollowersFollowingList, {
+  UserFollowersFollowingListRef,
+} from '../../user-followers-following-list/UserFollowersFollowingList';
 
 type Views = '' | 'following' | 'follow-requests'; /* 'followers' is the default view */
 
@@ -35,6 +37,7 @@ const SocialUsersViewPageContent = ({
   const location = useLocation();
   const [targetUri, setTargetUri] = useState(location.pathname);
   const [view, setView] = useState<Views>(getViewFromUrl(location.pathname, user.username));
+  const userFollowersListRef = useRef<UserFollowersFollowingListRef>(null);
 
   const updateStateByUrl = useDebouncedCallback(() => {
     const newView = getViewFromUrl(location.pathname, user.username);
@@ -59,6 +62,15 @@ const SocialUsersViewPageContent = ({
   const canViewFollowersAndFollowing =
     user.isMyself || !user.isPrivate || (user.isPrivate && user.myselfIsFollowingThisUser === true);
 
+  const onAfterFollowButtonClick = () => {
+    refetch();
+    userFollowersListRef.current?.refetch();
+  };
+
+  const onAfterBlockButtonClick = () => {
+    refetch();
+  };
+
   return (
     <div className="container py-4" data-test="social--users-view--content">
       <div className="grid gap-4 lg:grid-cols-12">
@@ -77,8 +89,8 @@ const SocialUsersViewPageContent = ({
                   <span className="truncate text-2xl font-bold md:text-3xl lg:text-5xl">
                     {user.displayName}
                   </span>
-                  <UserFollowButton user={user} onAfterClick={refetch} />
-                  <UserBlockButton user={user} onAfterClick={refetch} />
+                  <UserFollowButton user={user} onAfterClick={onAfterFollowButtonClick} />
+                  <UserBlockButton user={user} onAfterClick={onAfterBlockButtonClick} />
                   <UserReportButton user={user} />
                 </h2>
                 <h3 className="text-muted-foreground text-2xl">{user.username}</h3>
@@ -139,7 +151,11 @@ const SocialUsersViewPageContent = ({
                 )}
               </TabsList>
               <TabsContent value="" className="p-4">
-                <UserFollowersFollowingList type="followers" userIdOrUsername={user.username} />
+                <UserFollowersFollowingList
+                  type="followers"
+                  userIdOrUsername={user.username}
+                  ref={userFollowersListRef}
+                />
               </TabsContent>
               <TabsContent value="following" className="p-4">
                 <UserFollowersFollowingList type="following" userIdOrUsername={user.username} />

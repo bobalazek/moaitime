@@ -13,16 +13,12 @@
 - `pnpm format:check` - checks if there are any issues with the Prettier
 - `pnpm clean` - removes the `node_modules`, `dist` and `.turbo` folders in the root and all of it's apps and packages
 
-## Database
-
-- `pnpm database:check` - checks if the database is running
-- `pnpm database:generate-migration` - generates a new migration file
-
 ## CLI
 
 ### CLI - Database
 
 - `pnpm cli database:reload` - it will run the following commands specified below in that order (drop-schemas, run-migrations, insert-seed-data and insert-fixture-data)
+- `pnpm cli database:generate-migration` - generates a new migration file
 - `pnpm cli database:run-migrations` - runs all the migrations
 - `pnpm cli database:drop-schema` - drops the database schema
 - `pnpm cli database:insert-seed-data` - inserts the seed data

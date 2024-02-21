@@ -4,6 +4,7 @@ import { destroyDatabase } from '@moaitime/database-core';
 import { logger } from '@moaitime/logging';
 
 import { addDatabaseDropSchemasCommand } from './database/DatabaseDropSchemasCommand';
+import { addDatabaseGenerateMigrationCommand } from './database/DatabaseGenerateMigrationCommand';
 import { addDatabaseInsertFixtureDataCommand } from './database/DatabaseInsertFixtureDataCommand';
 import { addDatabaseInsertSeedDataCommand } from './database/DatabaseInsertSeedDataCommand';
 import { addDatabaseReloadCommand } from './database/DatabaseReloadCommand';
@@ -16,6 +17,7 @@ const program = new Command();
 addDatabaseInsertSeedDataCommand(program);
 addDatabaseInsertFixtureDataCommand(program);
 addDatabaseDropSchemasCommand(program);
+addDatabaseGenerateMigrationCommand(program);
 addDatabaseRunMigrationsCommand(program);
 addDatabaseReloadCommand(program);
 

@@ -18,6 +18,7 @@ import {
   sum,
 } from 'drizzle-orm';
 
+import { databaseCacheManager } from '@moaitime/database-cache';
 import {
   getDatabase,
   NewUser,
@@ -297,6 +298,14 @@ export class UsersManager {
       })
       .returning();
     const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to follow this user.');
+    }
+
+    // Cache
+    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_FOLLOWED_USER, {
       actorUserId: userId,
@@ -335,6 +344,14 @@ export class UsersManager {
       )
       .returning();
     const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to unfollow the user.');
+    }
+
+    // Cache
+    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNFOLLOWED_USER, {
       actorUserId: userId,
@@ -369,6 +386,14 @@ export class UsersManager {
       )
       .returning();
     const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to approve the follower.');
+    }
+
+    // Cache
+    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER, {
       actorUserId: userId,
@@ -397,6 +422,14 @@ export class UsersManager {
       )
       .returning();
     const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to remove the follower.');
+    }
+
+    // Cache
+    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REMOVE_FOLLOWED_USER, {
       actorUserId: userId,
@@ -426,6 +459,9 @@ export class UsersManager {
       })
       .returning();
     const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to block this user.');
+    }
 
     // Remove our follow to that user if present
     await getDatabase()
@@ -433,6 +469,12 @@ export class UsersManager {
       .where(
         and(eq(userFollowedUsers.userId, userId), eq(userFollowedUsers.followedUserId, user.id))
       );
+
+    // Cache
+    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
+    await databaseCacheManager.delete(`users:${userId}:isBlockingUser:${user.id}`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_BLOCKED_USER, {
       actorUserId: userId,
@@ -459,6 +501,13 @@ export class UsersManager {
       .where(and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)))
       .returning();
     const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to unblock this user.');
+    }
+
+    // Cache
+    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${userId}:isBlockingUser:${user.id}`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNBLOCKED_USER, {
       actorUserId: userId,
@@ -614,32 +663,57 @@ export class UsersManager {
 
   // Helpers
   async isBlockingUser(userId: string, blockedUserId: string) {
-    const isBeingBlocked = await getDatabase().query.userBlockedUsers.findFirst({
+    const cacheKey = `users:${userId}:isBlockingUser:${blockedUserId}`;
+    const cachedValue = await databaseCacheManager.get<boolean>(cacheKey);
+    if (typeof cachedValue !== 'undefined') {
+      return cachedValue;
+    }
+
+    const block = await getDatabase().query.userBlockedUsers.findFirst({
       where: and(
         eq(userBlockedUsers.userId, userId),
         eq(userBlockedUsers.blockedUserId, blockedUserId)
       ),
     });
+    const result = !!block;
 
-    return !!isBeingBlocked;
+    await databaseCacheManager.set(cacheKey, result, 3600);
+
+    return result;
   }
 
   async isFollowingUser(userId: string, followedUserId: string) {
+    const cacheKey = `users:${userId}:isFollowingUser:${followedUserId}`;
+    const cachedValue = await databaseCacheManager.get<boolean>(cacheKey);
+    if (typeof cachedValue !== 'undefined') {
+      return cachedValue;
+    }
+
     const follow = await getDatabase().query.userFollowedUsers.findFirst({
       where: and(
         eq(userFollowedUsers.userId, userId),
         eq(userFollowedUsers.followedUserId, followedUserId)
       ),
     });
-    if (!follow) {
-      return false;
+
+    let result: boolean | 'pending' = false;
+    if (follow) {
+      result = follow.approvedAt ? true : 'pending';
     }
 
-    return follow?.approvedAt ? true : 'pending';
+    await databaseCacheManager.set(cacheKey, result, 3600);
+
+    return result;
   }
 
   async countFollowers(userId: string): Promise<number> {
-    const result = await getDatabase()
+    const cacheKey = `users:${userId}:countFollowers`;
+    const cachedValue = await databaseCacheManager.get<number>(cacheKey);
+    if (typeof cachedValue !== 'undefined') {
+      return cachedValue;
+    }
+
+    const rows = await getDatabase()
       .select({
         count: count(userFollowedUsers.id).mapWith(Number),
       })
@@ -648,24 +722,36 @@ export class UsersManager {
         and(eq(userFollowedUsers.followedUserId, userId), isNotNull(userFollowedUsers.approvedAt))
       )
       .execute();
+    const result = rows[0].count ?? 0;
 
-    return result[0].count ?? 0;
+    await databaseCacheManager.set(cacheKey, result, 3600);
+
+    return result;
   }
 
   async countFollowing(userId: string): Promise<number> {
-    const result = await getDatabase()
+    const cacheKey = `users:${userId}:countFollowing`;
+    const cachedValue = await databaseCacheManager.get<number>(cacheKey);
+    if (typeof cachedValue !== 'undefined') {
+      return cachedValue;
+    }
+
+    const rows = await getDatabase()
       .select({
         count: count(userFollowedUsers.id).mapWith(Number),
       })
       .from(userFollowedUsers)
       .where(and(eq(userFollowedUsers.userId, userId), isNotNull(userFollowedUsers.approvedAt)))
       .execute();
+    const result = rows[0].count ?? 0;
 
-    return result[0].count ?? 0;
+    await databaseCacheManager.set(cacheKey, result, 3600);
+
+    return result;
   }
 
   async countByTeamId(teamId: string): Promise<number> {
-    const result = await getDatabase()
+    const rows = await getDatabase()
       .select({
         count: count(teamUsers.id).mapWith(Number),
       })
@@ -673,7 +759,7 @@ export class UsersManager {
       .where(eq(teamUsers.teamId, teamId))
       .execute();
 
-    return result[0].count ?? 0;
+    return rows[0].count ?? 0;
   }
 
   async getUserFollowedUserById(userFollowedUserId: string) {

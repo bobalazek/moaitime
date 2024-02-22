@@ -429,6 +429,9 @@ importers:
 
   packages/database-services:
     dependencies:
+      '@moaitime/database-cache':
+        specifier: workspace:*
+        version: link:../database-cache
       '@moaitime/database-core':
         specifier: workspace:*
         version: link:../database-core

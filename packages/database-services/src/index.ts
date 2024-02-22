@@ -13,6 +13,9 @@ export * from './features/auth/UserAchievementsManager';
 export * from './features/auth/UserNotificationsSender';
 export * from './features/auth/UserOnlineActivityEntriesManager';
 
+// Invitations
+export * from './features/invitations/InvitationsManager';
+
 // Backgrounds
 export * from './features/backgrounds/BackgroundsManager';
 

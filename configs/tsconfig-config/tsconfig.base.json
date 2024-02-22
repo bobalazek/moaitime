@@ -14,6 +14,7 @@
     "strictNullChecks": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "importHelpers": true,
     "moduleResolution": "bundler",
     "target": "ESNext",
     "module": "ESNext",

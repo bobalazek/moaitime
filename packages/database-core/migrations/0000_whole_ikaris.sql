@@ -263,6 +263,7 @@ CREATE TABLE IF NOT EXISTS "team_user_invitations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"roles" jsonb DEFAULT '[]' NOT NULL,
 	"email" text,
+	"token" text NOT NULL,
 	"expires_at" timestamp,
 	"accepted_at" timestamp,
 	"rejected_at" timestamp,
@@ -270,7 +271,8 @@ CREATE TABLE IF NOT EXISTS "team_user_invitations" (
 	"updated_at" timestamp DEFAULT now(),
 	"team_id" uuid NOT NULL,
 	"user_id" uuid,
-	"invited_by_user_id" uuid
+	"invited_by_user_id" uuid,
+	CONSTRAINT "team_user_invitations_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "testing_emails" (
@@ -298,6 +300,7 @@ CREATE TABLE IF NOT EXISTS "user_access_tokens" (
 	"user_agent" text,
 	"user_agent_parsed" jsonb,
 	"device_uid" text,
+	"ip" text,
 	"revoked_reason" text,
 	"refresh_token" text NOT NULL,
 	"refresh_token_claimed_at" timestamp,
@@ -481,6 +484,8 @@ CREATE INDEX IF NOT EXISTS "teams_user_id_idx" ON "teams" ("user_id");--> statem
 CREATE INDEX IF NOT EXISTS "teams_organization_id_idx" ON "teams" ("organization_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_team_id_idx" ON "team_users" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_users_user_id_idx" ON "team_users" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "team_user_invitations_email_idx" ON "team_user_invitations" ("email");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "team_user_invitations_token_idx" ON "team_user_invitations" ("token");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_user_invitations_team_id_idx" ON "team_user_invitations" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_user_invitations_user_id_idx" ON "team_user_invitations" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "team_user_invitations_invite_by_user_id_idx" ON "team_user_invitations" ("invited_by_user_id");--> statement-breakpoint

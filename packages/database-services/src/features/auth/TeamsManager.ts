@@ -1,6 +1,7 @@
 import { addDays } from 'date-fns';
 import { and, count, DBQueryConfig, desc, eq, gt, isNull, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   getDatabase,
@@ -445,7 +446,6 @@ export class TeamsManager {
       .returning();
 
     const row = rows[0] ?? null;
-
     if (row) {
       await getDatabase().insert(teamUsers).values({
         teamId: row.teamId,
@@ -476,7 +476,9 @@ export class TeamsManager {
       .where(where)
       .returning();
 
-    return rows[0] ?? null;
+    const row = rows[0] ?? null;
+
+    return row;
   }
 
   async deleteInvitationByIdAndUserId(
@@ -502,7 +504,12 @@ export class TeamsManager {
       .where(eq(teamUserInvitations.id, teamUserInvitation.id))
       .returning();
 
-    return rows[0] ?? null;
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to delete invitation');
+    }
+
+    return row;
   }
 
   async sendInvitation(
@@ -551,12 +558,14 @@ export class TeamsManager {
     }
 
     const expiresAt = addDays(new Date(), 7);
+    const token = uuidv4();
 
     const teamUserInvitationRows = await getDatabase()
       .insert(teamUserInvitations)
       .values({
         roles: [TeamUserRoleEnum.MEMBER],
         email,
+        token,
         expiresAt,
         teamId,
         userId,
@@ -565,12 +574,15 @@ export class TeamsManager {
       .returning();
 
     const teamUserInvitation = teamUserInvitationRows[0];
+    if (!teamUserInvitation) {
+      throw new Error('Failed to create team user invitation. Please try again.');
+    }
 
     await mailer.sendAuthTeamInviteMemberEmail({
       userEmail: email,
       teamName: team.name,
       invitedByUserDisplayName: invitedByUser?.displayName ?? 'Unknown',
-      registerUrl: `${WEB_URL}/register?teamUserInvitationId=${teamUserInvitation.id}`,
+      registerUrl: `${WEB_URL}/register?teamUserInvitationToken=${token}`,
     });
 
     return teamUserInvitation;
@@ -591,12 +603,28 @@ export class TeamsManager {
       throw new Error('You cannot remove this members from the team');
     }
 
+    const teamUser = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
+    });
+    if (!teamUser) {
+      throw new Error('Member not found');
+    }
+
+    if (teamUser.roles.includes(TeamUserRoleEnum.OWNER)) {
+      throw new Error('You cannot remove an owner from the team');
+    }
+
     const rows = await getDatabase()
       .delete(teamUsers)
       .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
       .returning();
 
-    return rows[0] ?? null;
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to remove member from the team');
+    }
+
+    return row;
   }
 
   async updateMember(adminUserId: string, userId: string, teamId: string, data: UpdateTeamUser) {
@@ -666,7 +694,12 @@ export class TeamsManager {
       .where(eq(teamUsers.id, teamUser.id))
       .returning();
 
-    return rows[0] ?? null;
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to update member');
+    }
+
+    return row;
   }
 }
 

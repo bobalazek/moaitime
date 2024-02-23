@@ -12,6 +12,7 @@ export const teamUserInvitations = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     roles: jsonb('roles').notNull().default('[]').$type<TeamUserRoleEnum[]>(), // what roles do we want to assign that invited user
     email: text('email'), // Who are we inviting?
+    token: text('token').unique().notNull(),
     expiresAt: timestamp('expires_at'),
     acceptedAt: timestamp('accepted_at'),
     rejectedAt: timestamp('rejected_at'),
@@ -29,6 +30,8 @@ export const teamUserInvitations = pgTable(
   },
   (table) => {
     return {
+      emailIdx: index('team_user_invitations_email_idx').on(table.email),
+      tokenIdx: index('team_user_invitations_token_idx').on(table.token),
       teamIdIdx: index('team_user_invitations_team_id_idx').on(table.teamId),
       userIdIdx: index('team_user_invitations_user_id_idx').on(table.userId),
       invitedByUserIdIdx: index('team_user_invitations_invite_by_user_id_idx').on(

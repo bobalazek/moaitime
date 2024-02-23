@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1708519886348,
-      "tag": "0000_fine_human_cannonball",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1708674133773,
-      "tag": "0001_material_stick",
+      "when": 1708674992220,
+      "tag": "0000_whole_ikaris",
       "breakpoints": true
     }
   ]

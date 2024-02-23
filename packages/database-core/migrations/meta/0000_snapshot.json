@@ -1,5 +1,5 @@
 {
-  "id": "f0746c97-a92f-4f44-88d5-c26ff46a3791",
+  "id": "71726b5b-6a70-4f83-90e4-d465c3038242",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -2001,6 +2001,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "expires_at": {
           "name": "expires_at",
           "type": "timestamp",
@@ -2053,6 +2059,16 @@
         }
       },
       "indexes": {
+        "team_user_invitations_email_idx": {
+          "name": "team_user_invitations_email_idx",
+          "columns": ["email"],
+          "isUnique": false
+        },
+        "team_user_invitations_token_idx": {
+          "name": "team_user_invitations_token_idx",
+          "columns": ["token"],
+          "isUnique": false
+        },
         "team_user_invitations_team_id_idx": {
           "name": "team_user_invitations_team_id_idx",
           "columns": ["team_id"],
@@ -2099,7 +2115,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "team_user_invitations_token_unique": {
+          "name": "team_user_invitations_token_unique",
+          "nullsNotDistinct": false,
+          "columns": ["token"]
+        }
+      }
     },
     "testing_emails": {
       "name": "testing_emails",
@@ -2253,6 +2275,12 @@
         },
         "device_uid": {
           "name": "device_uid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip": {
+          "name": "ip",
           "type": "text",
           "primaryKey": false,
           "notNull": false

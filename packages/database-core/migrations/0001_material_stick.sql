@@ -1,1 +1,0 @@
-ALTER TABLE "user_access_tokens" ADD COLUMN "ip" text;

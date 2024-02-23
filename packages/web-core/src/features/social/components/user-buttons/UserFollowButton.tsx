@@ -20,6 +20,10 @@ export default function UserFollowButton({
     return null;
   }
 
+  if (user.myselfIsBlockingThisUser) {
+    return null;
+  }
+
   const followButtonText =
     user.myselfIsFollowingThisUser === 'pending'
       ? 'Pending'

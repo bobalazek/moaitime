@@ -59,10 +59,11 @@ export class AuthManager {
     email: string,
     password: string,
     userAgent?: string,
-    deviceUid?: string
+    deviceUid?: string,
+    ip?: string
   ): Promise<AuthLoginResult> {
     const user = await this.getUserByCredentials(email, password);
-    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid);
+    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid, ip);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
       actorUserId: user.id,
@@ -772,7 +773,8 @@ export class AuthManager {
   async createNewUserAccessToken(
     userId: string,
     userAgent?: string,
-    deviceUid?: string
+    deviceUid?: string,
+    ip?: string
   ): Promise<UserAccessToken> {
     const token = uuidv4();
     const refreshToken = uuidv4();
@@ -789,6 +791,7 @@ export class AuthManager {
       userAgent,
       userAgentParsed,
       deviceUid,
+      ip,
     });
 
     return userAccessToken;

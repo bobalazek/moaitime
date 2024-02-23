@@ -24,12 +24,14 @@ export class AuthController {
   ): Promise<LoginResponseDto> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
+    const ip = req.ip;
 
     const { user, userAccessToken } = await authManager.login(
       body.email,
       body.password,
       userAgent,
-      deviceUid
+      deviceUid,
+      ip
     );
 
     res.status(200);

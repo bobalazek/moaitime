@@ -446,11 +446,14 @@ export class TasksManager {
       throw new Error('You can not update a deleted task');
     }
 
+    let children: Task[] = [];
+    let childrenUpdateData: Partial<NewTask> = {};
+
     let list: List | null = null;
     if (typeof data.listId !== 'undefined') {
       list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
 
-      await this._doMaxTasksPerListCheck(user, list);
+      const { tasksMaxPerListCount, tasksCount } = await this._doMaxTasksPerListCheck(user, list);
 
       const currentList = task.listId
         ? await listsManager.findOneByIdAndUserId(task.listId, user.id)
@@ -462,6 +465,22 @@ export class TasksManager {
       if (list && currentList && list.teamId !== currentList.teamId) {
         throw new Error('You cannot change the list to a list from a different team');
       }
+
+      if (task.parentId) {
+        throw new Error('You cannot change the list of a task that is assigned to a parent task');
+      }
+
+      children = await this.findManyByParentId(taskId);
+      const childrenCount = children.length;
+      if (tasksCount + childrenCount >= tasksMaxPerListCount) {
+        throw new Error(
+          `This task has ${childrenCount} child tasks and you would reach the maximum number of tasks per list (${tasksMaxPerListCount}) with this update.`
+        );
+      }
+
+      childrenUpdateData = {
+        listId: data.listId,
+      };
     }
 
     if (data.parentId) {
@@ -497,6 +516,12 @@ export class TasksManager {
       dueDateRepeatEndsAt,
       completedAt,
     });
+
+    if (children.length > 0) {
+      for (const child of children) {
+        await this.updateOneById(child.id, childrenUpdateData);
+      }
+    }
 
     if (Array.isArray(tagIds)) {
       await this.setTags(task, tagIds);

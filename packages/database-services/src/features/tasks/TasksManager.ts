@@ -517,7 +517,11 @@ export class TasksManager {
       completedAt,
     });
 
-    if (children.length > 0) {
+    if (
+      children.length > 0 &&
+      typeof childrenUpdateData === 'object' &&
+      Object.keys(childrenUpdateData).length > 0
+    ) {
       for (const child of children) {
         await this.updateOneById(child.id, childrenUpdateData);
       }

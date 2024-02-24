@@ -25,9 +25,15 @@ export type TaskParentSelectorProps = {
   value?: string;
   onChangeValue: (value?: string, task?: Task) => void;
   isReadonly?: boolean;
+  currentTask?: Task | null;
 };
 
-export function TaskParentSelector({ value, onChangeValue, isReadonly }: TaskParentSelectorProps) {
+export function TaskParentSelector({
+  value,
+  onChangeValue,
+  isReadonly,
+  currentTask,
+}: TaskParentSelectorProps) {
   const { selectedTask } = useTasksStore();
   const { selectedListTasks } = useListsStore();
   const [open, setOpen] = useState(false);
@@ -47,6 +53,8 @@ export function TaskParentSelector({ value, onChangeValue, isReadonly }: TaskPar
   const tasks = selectedListTasks.filter((task) => {
     return task.name.toLowerCase().includes(commandValue.toLowerCase());
   });
+
+  const disabledTaskIds = currentTask?.id ? [currentTask.id] : [];
 
   return (
     <Popover
@@ -108,6 +116,7 @@ export function TaskParentSelector({ value, onChangeValue, isReadonly }: TaskPar
                     onChangeValue(currentValue, task);
                     setOpen(false);
                   }}
+                  disabled={disabledTaskIds.includes(task.id)}
                   className="w-full cursor-pointer"
                 >
                   <CheckIcon

@@ -262,6 +262,7 @@ export default function TaskEditDialog() {
             onChangeValue={(value) =>
               setData((current) => ({ ...current, parentId: value ?? null }))
             }
+            currentTask={selectedTask}
           />
         </div>
         <div className="flex flex-row justify-between gap-2">

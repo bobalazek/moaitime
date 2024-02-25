@@ -12,7 +12,7 @@ export class MyTeamUserInvitationsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async myInvitations(@Req() req: Request): Promise<AbstractResponseDto<TeamUser[]>> {
-    const data = await teamsManager.getInvitationsByUser(req.user.id, req.user.email);
+    const data = await teamsManager.getUserInvitations(req.user.id, req.user.email);
 
     return {
       success: true,

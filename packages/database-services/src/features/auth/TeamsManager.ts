@@ -221,51 +221,6 @@ export class TeamsManager {
     return rows[0] ?? null;
   }
 
-  async countByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(teams.id).mapWith(Number),
-      })
-      .from(teams)
-      .where(and(eq(teams.userId, userId), isNull(teams.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getTeamLimits(team: Team): Promise<TeamLimits> {
-    // TODO: once we have plans, we need to adjust the limits depending on that
-
-    return {
-      tasksMaxPerListCount: 10,
-      listsMaxPerTeamCount: 3,
-      usersMaxPerTeamCount: 5,
-      calendarsMaxPerTeamCount: 3,
-      calendarsMaxEventsPerCalendarCount: 100,
-    };
-  }
-
-  async getTeamLimit(team: Team, key: keyof TeamLimits): Promise<number> {
-    const limits = await this.getTeamLimits(team);
-
-    return limits[key];
-  }
-
-  async getTeamUsage(team: Team): Promise<TeamUsage> {
-    // TODO: cache!
-
-    const listsCount = await listsManager.countByTeamId(team.id);
-    const usersCount = await usersManager.countByTeamId(team.id);
-    const calendarsCount = await calendarsManager.countByTeamId(team.id);
-
-    return {
-      listsCount,
-      usersCount,
-      calendarsCount,
-    };
-  }
-
   async getInvitationById(teamUserInvitationId: string): Promise<TeamUserInvitation | null> {
     const row = await getDatabase().query.teamUserInvitations.findFirst({
       where: eq(teamUserInvitations.id, teamUserInvitationId),
@@ -298,7 +253,7 @@ export class TeamsManager {
     };
   }
 
-  async getMembersByTeamId(userId: string, teamId: string): Promise<TeamUser[]> {
+  async getMembers(userId: string, teamId: string): Promise<TeamUser[]> {
     const canView = await this.userCanView(userId, teamId);
     if (!canView) {
       return [];
@@ -333,7 +288,7 @@ export class TeamsManager {
     });
   }
 
-  async getInvitationsByTeamId(teamId: string): Promise<TeamUserInvitation[]> {
+  async getTeamInvitations(teamId: string): Promise<TeamUserInvitation[]> {
     const where = and(
       eq(teamUserInvitations.teamId, teamId),
       isNull(teamUserInvitations.acceptedAt),
@@ -353,7 +308,7 @@ export class TeamsManager {
     });
   }
 
-  async getInvitationsByUser(userId: string, userEmail?: string): Promise<TeamUserInvitation[]> {
+  async getUserInvitations(userId: string, userEmail?: string): Promise<TeamUserInvitation[]> {
     const now = new Date();
     const where = and(
       userEmail
@@ -426,9 +381,9 @@ export class TeamsManager {
       });
   }
 
-  async acceptInvitationByIdAndUserId(
-    teamUserInvitationId: string,
-    userId: string
+  async acceptInvitation(
+    userId: string,
+    teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
     const now = new Date();
     const where = and(
@@ -457,9 +412,9 @@ export class TeamsManager {
     return row;
   }
 
-  async rejectInvitationByIdAndUserId(
-    teamUserInvitationId: string,
-    userId: string
+  async rejectInvitation(
+    userId: string,
+    teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
     const now = new Date();
     const where = and(
@@ -481,9 +436,9 @@ export class TeamsManager {
     return row;
   }
 
-  async deleteInvitationByIdAndUserId(
-    teamUserInvitationId: string,
-    userId: string
+  async deleteInvitation(
+    userId: string,
+    teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
     const teamUserInvitation = await this.getInvitationById(teamUserInvitationId);
     if (!teamUserInvitation) {
@@ -589,7 +544,7 @@ export class TeamsManager {
     return teamUserInvitation;
   }
 
-  async removeMemberFromTeam(adminUserId: string, userId: string, teamId: string) {
+  async deleteMember(adminUserId: string, userId: string, teamId: string) {
     if (adminUserId === userId) {
       throw new Error('You cannot remove yourself from the team');
     }
@@ -701,6 +656,52 @@ export class TeamsManager {
     }
 
     return row;
+  }
+
+  // Helpers
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(teams.id).mapWith(Number),
+      })
+      .from(teams)
+      .where(and(eq(teams.userId, userId), isNull(teams.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getTeamLimits(team: Team): Promise<TeamLimits> {
+    // TODO: once we have plans, we need to adjust the limits depending on that
+
+    return {
+      tasksMaxPerListCount: 10,
+      listsMaxPerTeamCount: 3,
+      usersMaxPerTeamCount: 5,
+      calendarsMaxPerTeamCount: 3,
+      calendarsMaxEventsPerCalendarCount: 100,
+    };
+  }
+
+  async getTeamLimit(team: Team, key: keyof TeamLimits): Promise<number> {
+    const limits = await this.getTeamLimits(team);
+
+    return limits[key];
+  }
+
+  async getTeamUsage(team: Team): Promise<TeamUsage> {
+    // TODO: cache!
+
+    const listsCount = await listsManager.countByTeamId(team.id);
+    const usersCount = await usersManager.countByTeamId(team.id);
+    const calendarsCount = await calendarsManager.countByTeamId(team.id);
+
+    return {
+      listsCount,
+      usersCount,
+      calendarsCount,
+    };
   }
 }
 

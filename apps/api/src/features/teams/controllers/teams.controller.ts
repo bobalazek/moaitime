@@ -103,7 +103,7 @@ export class TeamsController {
   async invitations(
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUserInvitation[]>> {
-    const data = await teamsManager.getInvitationsByTeamId(teamId);
+    const data = await teamsManager.getTeamInvitations(teamId);
 
     return {
       success: true,
@@ -133,7 +133,7 @@ export class TeamsController {
     @Req() req: Request,
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUser[]>> {
-    const data = await teamsManager.getMembersByTeamId(req.user.id, teamId);
+    const data = await teamsManager.getMembers(req.user.id, teamId);
 
     return {
       success: true,
@@ -164,7 +164,7 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Param('userId') userId: string
   ): Promise<AbstractResponseDto<TeamUser>> {
-    const data = await teamsManager.removeMemberFromTeam(req.user.id, userId, teamId);
+    const data = await teamsManager.deleteMember(req.user.id, userId, teamId);
 
     return {
       success: true,

@@ -4,4 +4,7 @@ export * from './emails/AuthConfirmNewEmailEmail';
 export * from './emails/AuthAccountDeletionEmail';
 export * from './emails/AuthResetPasswordEmail';
 export * from './emails/AuthPasswordChangedEmail';
-export * from './emails/AuthTeamInviteMemberEmail';
+
+export * from './emails/TeamsUserInvitationEmail';
+
+export * from './emails/SocialUserInvitationEmail';

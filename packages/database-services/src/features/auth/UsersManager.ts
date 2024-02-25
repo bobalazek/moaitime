@@ -51,6 +51,7 @@ import { focusSessionsManager } from '../focus/FocusSessionsManager';
 import { moodEntriesManager } from '../mood/MoodEntriesManager';
 import { notesManager } from '../notes/NotesManager';
 import { reportsManager } from '../reports/ReportsManager';
+import { invitationsManager } from '../social/InvitationsManager';
 import { listsManager } from '../tasks/ListsManager';
 import { tagsManager } from '../tasks/TagsManager';
 import { tasksManager } from '../tasks/TasksManager';
@@ -812,6 +813,7 @@ export class UsersManager {
       calendarsMaxEventsPerCalendarCount: 1000,
       calendarsMaxUserCalendarsPerUserCount: 3,
       notesMaxPerUserCount: 25,
+      userInvitationsMaxPerUserCount: 10,
     };
   }
 
@@ -833,6 +835,7 @@ export class UsersManager {
     const eventsCount = await eventsManager.countByUserId(user.id);
     const tagsCount = await tagsManager.countByUserId(user.id);
     const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
+    const userInvitationsCount = await invitationsManager.countByUserId(user.id);
 
     return {
       listsCount,
@@ -844,6 +847,7 @@ export class UsersManager {
       eventsCount,
       tagsCount,
       focusSessionsCount,
+      userInvitationsCount,
     };
   }
 

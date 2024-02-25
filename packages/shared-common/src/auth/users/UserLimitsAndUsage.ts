@@ -7,6 +7,7 @@ export type UserLimits = {
   calendarsMaxEventsPerCalendarCount: number;
   calendarsMaxUserCalendarsPerUserCount: number;
   notesMaxPerUserCount: number;
+  userInvitationsMaxPerUserCount: number;
 };
 
 export type UserUsage = {
@@ -19,4 +20,5 @@ export type UserUsage = {
   eventsCount: number;
   tagsCount: number;
   focusSessionsCount: number;
+  userInvitationsCount: number;
 };

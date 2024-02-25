@@ -10,8 +10,9 @@ import {
   AuthConfirmNewEmailEmail,
   AuthPasswordChangedEmail,
   AuthResetPasswordEmail,
-  AuthTeamInviteMemberEmail,
   AuthWelcomeEmail,
+  SocialUserInvitationEmail,
+  TeamsUserInvitationEmail,
 } from '@moaitime/emails-core';
 import { logger, Logger } from '@moaitime/logging';
 import { getEnv, MAILER_FROM } from '@moaitime/shared-backend';
@@ -46,10 +47,16 @@ export type MailerSendAuthAccountDeletionEmailOptions = {
   deleteAccountUrl: string;
 };
 
-export type MailerSendAuthInviteMemberEmailOptions = {
+export type MailerSendTeamsUserInvitationEmailOptions = {
   userEmail: string;
   invitedByUserDisplayName: string;
   teamName: string;
+  registerUrl: string;
+};
+
+export type MailerSendSocialUserInvitationEmailOptions = {
+  userEmail: string;
+  invitedByUserDisplayName: string;
   registerUrl: string;
 };
 
@@ -121,10 +128,19 @@ export class Mailer {
     });
   }
 
-  async sendAuthTeamInviteMemberEmail(options: MailerSendAuthInviteMemberEmailOptions) {
+  async sendTeamsUserInvitationEmail(options: MailerSendTeamsUserInvitationEmailOptions) {
     const { userEmail, ...rest } = options;
 
-    return this.send(AuthTeamInviteMemberEmail(rest), {
+    return this.send(TeamsUserInvitationEmail(rest), {
+      to: userEmail,
+      subject: '📨 MoaiTime Team Invitation',
+    });
+  }
+
+  async sendSocialUserInvitationEmail(options: MailerSendSocialUserInvitationEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(SocialUserInvitationEmail(rest), {
       to: userEmail,
       subject: '📨 MoaiTime Invitation',
     });

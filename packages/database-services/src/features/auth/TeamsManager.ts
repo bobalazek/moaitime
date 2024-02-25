@@ -512,25 +512,23 @@ export class TeamsManager {
     return row;
   }
 
-  async sendInvitation(
-    teamId: string,
-    invitedByUserId: string,
-    email: string
-  ): Promise<TeamUserInvitation> {
-    const canInvite = await this.userCanInviteMember(invitedByUserId, teamId);
+  async invite(userId: string, teamId: string, email: string): Promise<TeamUserInvitation> {
+    const canInvite = await this.userCanInviteMember(userId, teamId);
     if (!canInvite) {
       throw new Error('You cannot send invites for this team');
     }
 
-    const existingUser = await getDatabase().query.users.findFirst({
+    const invitedUser = await getDatabase().query.users.findFirst({
       where: eq(users.email, email),
     });
-    const userId = existingUser?.id ?? null;
+    const invitedUserId = invitedUser?.id ?? null;
 
     const existingInvitation = await getDatabase().query.teamUserInvitations.findFirst({
       where: and(
         eq(teamUserInvitations.teamId, teamId),
-        userId ? eq(teamUserInvitations.userId, userId) : eq(teamUserInvitations.email, email),
+        invitedUserId
+          ? eq(teamUserInvitations.userId, invitedUserId)
+          : eq(teamUserInvitations.email, email),
         isNull(teamUserInvitations.acceptedAt),
         isNull(teamUserInvitations.rejectedAt)
       ),
@@ -539,18 +537,21 @@ export class TeamsManager {
       throw new Error('User is already invited');
     }
 
-    if (userId) {
+    if (invitedUserId) {
       const existingTeamMember = await getDatabase().query.teamUsers.findFirst({
-        where: and(eq(teamUsers.teamId, teamId), eq(teamUsers.userId, userId)),
+        where: and(eq(teamUsers.teamId, teamId), eq(teamUsers.userId, invitedUserId)),
       });
       if (existingTeamMember) {
         throw new Error('User is already a member');
       }
     }
 
-    const invitedByUser = await getDatabase().query.users.findFirst({
-      where: eq(users.id, invitedByUserId),
+    const user = await getDatabase().query.users.findFirst({
+      where: eq(users.id, userId),
     });
+    if (!user) {
+      throw new Error('Invited by user not found');
+    }
 
     const team = await this.findOneById(teamId);
     if (!team) {
@@ -568,20 +569,20 @@ export class TeamsManager {
         token,
         expiresAt,
         teamId,
-        userId,
-        invitedByUserId,
+        userId: invitedUserId,
+        invitedByUserId: userId,
       })
       .returning();
 
     const teamUserInvitation = teamUserInvitationRows[0];
     if (!teamUserInvitation) {
-      throw new Error('Failed to create team user invitation. Please try again.');
+      throw new Error('Failed to create a team user invitation. Please try again.');
     }
 
-    await mailer.sendAuthTeamInviteMemberEmail({
+    await mailer.sendTeamsUserInvitationEmail({
       userEmail: email,
       teamName: team.name,
-      invitedByUserDisplayName: invitedByUser?.displayName ?? 'Unknown',
+      invitedByUserDisplayName: user.displayName ?? 'User',
       registerUrl: `${WEB_URL}/register?teamUserInvitationToken=${token}`,
     });
 

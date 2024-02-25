@@ -118,7 +118,7 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Body() body: EmailDto
   ): Promise<AbstractResponseDto<TeamUserInvitation>> {
-    const data = await teamsManager.sendInvitation(teamId, req.user.id, body.email);
+    const data = await teamsManager.invite(req.user.id, teamId, body.email);
 
     return {
       success: true,

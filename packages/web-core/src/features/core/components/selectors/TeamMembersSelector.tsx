@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from '@moaitime/web-ui';
 
-import { useTeamsStore } from '../../../auth/state/teamsStore';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 
 export type TeamMembersSelectorProps = {
   value?: string[];

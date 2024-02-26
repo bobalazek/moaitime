@@ -21,8 +21,8 @@ import {
   Switch,
 } from '@moaitime/web-ui';
 
-import { useTeamsStore } from '../../../auth/state/teamsStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 import { useListsStore } from '../../state/listsStore';
 
 export default function ListEditDialog() {

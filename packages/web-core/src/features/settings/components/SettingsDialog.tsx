@@ -10,8 +10,6 @@ import AccountSettingsSection from '../../auth/components/account-settings/Accou
 import AccountSettingsSectionHeaderText from '../../auth/components/account-settings/AccountSettingsSectionHeaderText';
 import PrivacySettingsSection from '../../auth/components/privacy-settings/PrivacySettingsSection';
 import PrivacySettingsSectionHeaderText from '../../auth/components/privacy-settings/PrivacySettingsSectionHeaderText';
-import TeamSettingsSection from '../../auth/components/team-settings/TeamSettingsSection';
-import TeamSettingsSectionHeaderText from '../../auth/components/team-settings/TeamSettingsSectionHeaderText';
 import { useAuthStore } from '../../auth/state/authStore';
 import CalendarSettingsSection from '../../calendar/components/calendar-settings/CalendarSettingsSection';
 import CalendarSettingsSectionHeaderText from '../../calendar/components/calendar-settings/CalendarSettingsSectionHeaderText';
@@ -23,6 +21,8 @@ import NotesSettingsSection from '../../notes/components/notes-settings/NotesSet
 import NotesSettingsSectionHeaderText from '../../notes/components/notes-settings/NotesSettingsSectionHeaderText';
 import TasksSettingsSection from '../../tasks/components/tasks-settings/TasksSettingsSection';
 import TasksSettingsSectionHeaderText from '../../tasks/components/tasks-settings/TasksSettingsSectionHeaderText';
+import TeamSettingsSection from '../../teams/components/team-settings/TeamSettingsSection';
+import TeamSettingsSectionHeaderText from '../../teams/components/team-settings/TeamSettingsSectionHeaderText';
 import { useSettingsStore } from '../state/settingsStore';
 import ChangelogSettingsSection from './changelog-settings/ChangelogSettingsSection';
 import ChangelogSettingsSectionHeaderText from './changelog-settings/ChangelogSettingsSectionHeaderText';

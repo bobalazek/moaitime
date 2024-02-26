@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { ThemeEnum } from '@moaitime/shared-common';
 
 import { useAuthStore } from '../../auth/state/authStore';
-import { useTeamsStore } from '../../auth/state/teamsStore';
 import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { useBackgroundStore } from '../../background/state/backgroundStore';
 import { useGreetingStore } from '../../greeting/state/greetingStore';
@@ -11,6 +10,7 @@ import { useUserNotificationsStore } from '../../notifications/state/userNotific
 import { useQuoteStore } from '../../quote/state/quoteStore';
 import { useListsStore } from '../../tasks/state/listsStore';
 import { useTagsStore } from '../../tasks/state/tagsStore';
+import { useTeamsStore } from '../../teams/state/teamsStore';
 import { websocketManager } from '../utils/WebsocketManager';
 
 export type AppStore = {

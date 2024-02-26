@@ -6,7 +6,6 @@ import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotP
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
-import TeamEditDialog from './features/auth/components/team-edit-dialog/TeamEditDialog';
 import CalendarDeleteAlertDialog from './features/calendar/components/calendar-delete-alert-dialog/CalendarDeleteAlertDialog';
 import CalendarEditDialog from './features/calendar/components/calendar-edit-dialog/CalendarEditDialog';
 import DeletedCalendarsDialog from './features/calendar/components/deleted-calendars-dialog/DeletedCalendarsDialog';
@@ -37,6 +36,7 @@ import TagEditDialog from './features/tasks/components/tag-edit-dialog/TagEditDi
 import TagsDialog from './features/tasks/components/tags-dialog/TagsDialog';
 import TaskEditDialog from './features/tasks/components/task-edit-dialog/TaskEditDialog';
 import TasksPopover from './features/tasks/components/TasksPopover';
+import TeamEditDialog from './features/teams/components/team-edit-dialog/TeamEditDialog';
 
 function GlobalDialogs() {
   return (

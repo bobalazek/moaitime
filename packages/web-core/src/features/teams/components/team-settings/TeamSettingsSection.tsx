@@ -1,4 +1,4 @@
-import { useAuthStore } from '../../state/authStore';
+import { useAuthStore } from '../../../auth/state/authStore';
 import TeamSettingsSectionContent from './TeamSettingsSectionContent';
 
 export default function TeamSettingsSection() {

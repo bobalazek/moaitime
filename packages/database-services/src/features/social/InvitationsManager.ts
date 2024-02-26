@@ -57,6 +57,12 @@ export class InvitationsManager {
   }
 
   // API Helpers
+  async list(userId: string) {
+    return this.findMany({
+      where: eq(invitations.userId, userId),
+    });
+  }
+
   async invite(userId: string, email: string): Promise<Invitation> {
     const invitedByUser = await usersManager.findOneById(userId);
     if (!invitedByUser) {

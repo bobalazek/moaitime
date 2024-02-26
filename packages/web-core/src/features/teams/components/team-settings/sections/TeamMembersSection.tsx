@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@moaitime/web-ui';
 
-import { useAuthStore } from '../../../state/authStore';
+import { useAuthStore } from '../../../../auth/state/authStore';
 import { useTeamsStore } from '../../../state/teamsStore';
 import TeamMemberEditDialog from '../../team-member-edit-dialog/TeamMemberEditDialog';
 

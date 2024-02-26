@@ -2,9 +2,9 @@ import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 import { sonnerToast } from '../../../../../web-ui/src/components/sonner-toast';
 import { useAuthStore } from '../../auth/state/authStore';
-import { useTeamsStore } from '../../auth/state/teamsStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useListsStore } from '../../tasks/state/listsStore';
+import { useTeamsStore } from '../../teams/state/teamsStore';
 import { setWebsocketToken } from './FetchHelpers';
 import { getWebsocketUrl } from './WebsocketHelpers';
 

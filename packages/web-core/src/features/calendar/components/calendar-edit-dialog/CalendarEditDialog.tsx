@@ -21,8 +21,8 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
-import { useTeamsStore } from '../../../auth/state/teamsStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 import { useCalendarStore } from '../../state/calendarStore';
 
 export default function CalendarEditDialog() {

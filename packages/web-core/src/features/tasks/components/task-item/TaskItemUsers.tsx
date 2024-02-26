@@ -2,7 +2,7 @@ import { UsersIcon } from 'lucide-react';
 
 import { Task } from '@moaitime/shared-common';
 
-import { useTeamsStore } from '../../../auth/state/teamsStore';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 
 const TaskItemUsers = ({ task }: { task: Task }) => {
   const { joinedTeamMembers } = useTeamsStore();

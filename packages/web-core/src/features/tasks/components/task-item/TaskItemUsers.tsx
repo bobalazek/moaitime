@@ -19,9 +19,7 @@ const TaskItemUsers = ({ task }: { task: Task }) => {
       <UsersIcon size={12} />
       <span className="flex gap-2">
         {task.users.map((user) => {
-          const joinedTeamMember = joinedTeamMembers.find(
-            (teamMember) => teamMember.userId === user.id
-          );
+          const teamMember = joinedTeamMembers.find((teamMember) => teamMember.userId === user.id);
 
           return (
             <span
@@ -30,7 +28,7 @@ const TaskItemUsers = ({ task }: { task: Task }) => {
               data-test="tasks--task--user"
             >
               {user.displayName}
-              {joinedTeamMember?.displayName && ` "${joinedTeamMember.displayName}"`}
+              {teamMember?.displayName && ` "${teamMember.displayName}"`}
             </span>
           );
         })}

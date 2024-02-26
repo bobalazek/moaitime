@@ -27,6 +27,14 @@ export function ListSelector({ value, onChangeValue }: ListSelectorProps) {
   const [open, setOpen] = useState(false);
 
   const selectedList = lists.find((list) => list.id === value) ?? null;
+  const filteredLists = lists.filter((list) => {
+    if (!selectedList) {
+      return !list.teamId;
+    }
+
+    return selectedList?.teamId === list.teamId;
+  });
+  const showUnlistedList = !selectedList?.teamId;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,22 +64,24 @@ export function ListSelector({ value, onChangeValue }: ListSelectorProps) {
           <CommandEmpty>No list found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
-              <CommandItem
-                onSelect={() => {
-                  onChangeValue(undefined);
-                  setOpen(false);
-                }}
-                className="cursor-pointer border-l-4 border-l-transparent"
-              >
-                <CheckIcon
-                  className={clsx(
-                    'mr-2 h-4 w-4',
-                    value === undefined ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-                Unlisted
-              </CommandItem>
-              {lists.map((list) => (
+              {showUnlistedList && (
+                <CommandItem
+                  onSelect={() => {
+                    onChangeValue(undefined);
+                    setOpen(false);
+                  }}
+                  className="cursor-pointer border-l-4 border-l-transparent"
+                >
+                  <CheckIcon
+                    className={clsx(
+                      'mr-2 h-4 w-4',
+                      value === undefined ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  Unlisted
+                </CommandItem>
+              )}
+              {filteredLists.map((list) => (
                 <CommandItem
                   key={list.id}
                   value={list.id}

@@ -15,7 +15,7 @@ export class TeamUserInvitationsController {
     @Req() req: Request,
     @Param('teamUserInvitationId') teamUserInvitationId: string
   ): Promise<AbstractResponseDto<TeamUserInvitation>> {
-    const data = await teamsManager.acceptInvitation(req.user.id, teamUserInvitationId);
+    const data = await teamsManager.acceptTeamInvitation(req.user.id, teamUserInvitationId);
     if (!data) {
       throw new NotFoundException('Invitation not found');
     }
@@ -32,7 +32,7 @@ export class TeamUserInvitationsController {
     @Req() req: Request,
     @Param('teamUserInvitationId') teamUserInvitationId: string
   ): Promise<AbstractResponseDto<TeamUserInvitation>> {
-    const data = await teamsManager.rejectInvitation(req.user.id, teamUserInvitationId);
+    const data = await teamsManager.rejectTeamInvitation(req.user.id, teamUserInvitationId);
     if (!data) {
       throw new NotFoundException('Invitation not found');
     }
@@ -49,7 +49,7 @@ export class TeamUserInvitationsController {
     @Req() req: Request,
     @Param('teamUserInvitationId') teamUserInvitationId: string
   ): Promise<AbstractResponseDto<TeamUserInvitation>> {
-    const data = await teamsManager.deleteInvitation(req.user.id, teamUserInvitationId);
+    const data = await teamsManager.deleteTeamInvitation(req.user.id, teamUserInvitationId);
     if (!data) {
       throw new NotFoundException('Invitation not found');
     }

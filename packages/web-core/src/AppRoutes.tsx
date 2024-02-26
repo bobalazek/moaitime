@@ -35,6 +35,7 @@ import ListEditDialog from './features/tasks/components/list-edit-dialog/ListEdi
 import TagEditDialog from './features/tasks/components/tag-edit-dialog/TagEditDialog';
 import TagsDialog from './features/tasks/components/tags-dialog/TagsDialog';
 import TaskEditDialog from './features/tasks/components/task-edit-dialog/TaskEditDialog';
+import TaskUsersNudgeDialog from './features/tasks/components/task-users-nudge-dialog/TaskUsersNudgeDialog';
 import TasksPopover from './features/tasks/components/TasksPopover';
 import TeamEditDialog from './features/teams/components/team-edit-dialog/TeamEditDialog';
 
@@ -42,6 +43,7 @@ function GlobalDialogs() {
   return (
     <>
       <TaskEditDialog />
+      <TaskUsersNudgeDialog />
       <ListEditDialog />
       <ListDeleteAlertDialog />
       <TagsDialog />

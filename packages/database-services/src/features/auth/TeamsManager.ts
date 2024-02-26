@@ -264,7 +264,7 @@ export class TeamsManager {
     };
   }
 
-  async getMembers(userId: string, teamId: string): Promise<TeamUser[]> {
+  async getTeamMembers(userId: string, teamId: string): Promise<TeamUser[]> {
     const canView = await this.userCanView(userId, teamId);
     if (!canView) {
       return [];

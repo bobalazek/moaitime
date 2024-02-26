@@ -1,4 +1,4 @@
-import { PencilIcon } from 'lucide-react';
+import { PencilIcon, WavesIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -35,6 +35,7 @@ export default function TaskEditDialog() {
   const {
     selectedTaskDialogOpen,
     selectedTask,
+    setUsersNudgeDialogOpen,
     setSelectedTaskDialogOpen,
     addTask,
     editTask,
@@ -234,8 +235,9 @@ export default function TaskEditDialog() {
               onClick={() => {
                 setTagsDialogOpen(true);
               }}
+              title="Open tags dialog"
             >
-              <PencilIcon size={12} />
+              <PencilIcon size={16} />
             </button>
           </Label>
           <TagsSelector
@@ -247,7 +249,18 @@ export default function TaskEditDialog() {
         {selectedList?.teamId && (
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-assignees" className="flex items-center gap-2">
-              Assignees
+              <div>Assignees</div>
+              {data?.userIds && data?.userIds.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsersNudgeDialogOpen(true);
+                  }}
+                  title="Open user nudge dialog"
+                >
+                  <WavesIcon size={16} />
+                </button>
+              )}
             </Label>
             <TeamMembersSelector
               value={data?.userIds ?? []}

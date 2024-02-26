@@ -46,6 +46,9 @@ export type TasksStore = {
   // Highlighted Task
   highlightedTaskId: string | null;
   setHighlightedTaskId: (highlightedTaskId: string | null) => void;
+  // Users Nudge Dialog
+  usersNudgeDialogOpen: boolean;
+  setUsersNudgeDialogOpen: (usersNudgeDialogOpen: boolean) => void;
 };
 
 export const useTasksStore = create<TasksStore>()((set, get) => ({
@@ -324,6 +327,13 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
   setHighlightedTaskId: (highlightedTaskId: string | null) => {
     set({
       highlightedTaskId,
+    });
+  },
+  // Users Nudge Dialog
+  usersNudgeDialogOpen: false,
+  setUsersNudgeDialogOpen: (usersNudgeDialogOpen: boolean) => {
+    set({
+      usersNudgeDialogOpen,
     });
   },
 }));

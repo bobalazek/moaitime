@@ -118,7 +118,7 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Body() body: EmailDto
   ): Promise<AbstractResponseDto<TeamUserInvitation>> {
-    const data = await teamsManager.invite(req.user.id, teamId, body.email);
+    const data = await teamsManager.inviteTeamMember(req.user.id, teamId, body.email);
 
     return {
       success: true,
@@ -133,7 +133,7 @@ export class TeamsController {
     @Req() req: Request,
     @Param('teamId') teamId: string
   ): Promise<AbstractResponseDto<TeamUser[]>> {
-    const data = await teamsManager.getMembers(req.user.id, teamId);
+    const data = await teamsManager.getTeamMembers(req.user.id, teamId);
 
     return {
       success: true,
@@ -149,7 +149,7 @@ export class TeamsController {
     @Param('userId') userId: string,
     @Body() body: UpdateTeamUserDto
   ): Promise<AbstractResponseDto<TeamUser>> {
-    const data = await teamsManager.updateMember(req.user.id, userId, teamId, body);
+    const data = await teamsManager.updateTeamMember(req.user.id, userId, teamId, body);
 
     return {
       success: true,
@@ -164,7 +164,7 @@ export class TeamsController {
     @Param('teamId') teamId: string,
     @Param('userId') userId: string
   ): Promise<AbstractResponseDto<TeamUser>> {
-    const data = await teamsManager.deleteMember(req.user.id, userId, teamId);
+    const data = await teamsManager.deleteTeamMember(req.user.id, userId, teamId);
 
     return {
       success: true,

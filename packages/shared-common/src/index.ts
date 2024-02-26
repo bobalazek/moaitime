@@ -113,3 +113,4 @@ export * from './achievements/AchievementType';
 export * from './social/PostSchema';
 export * from './social/PostTypeEnum';
 export * from './social/PostVisibilityEnum';
+export * from './social/InvitationSchema';

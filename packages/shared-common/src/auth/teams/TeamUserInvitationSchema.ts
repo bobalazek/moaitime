@@ -19,6 +19,7 @@ export const TeamUserInvitationSchema = z.object({
 });
 
 export const CreateTeamUserInvitationSchema = z.object({
+  email: z.string({ required_error: 'Email is required' }).email(),
   teamId: z.string({ required_error: 'Team is required' }),
 });
 

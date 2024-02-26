@@ -19,6 +19,8 @@ import MoodSettingsSection from '../../mood/components/mood-settings/MoodSetting
 import MoodSettingsSectionHeaderText from '../../mood/components/mood-settings/MoodSettingsSectionHeaderText';
 import NotesSettingsSection from '../../notes/components/notes-settings/NotesSettingsSection';
 import NotesSettingsSectionHeaderText from '../../notes/components/notes-settings/NotesSettingsSectionHeaderText';
+import InvitationsSettingsSection from '../../social/components/invitations-settings/InvitationsSettingsSection';
+import InvitationsSettingsSectionHeaderText from '../../social/components/invitations-settings/InvitationsSettingsSectionHeaderText';
 import TasksSettingsSection from '../../tasks/components/tasks-settings/TasksSettingsSection';
 import TasksSettingsSectionHeaderText from '../../tasks/components/tasks-settings/TasksSettingsSectionHeaderText';
 import TeamSettingsSection from '../../teams/components/team-settings/TeamSettingsSection';
@@ -50,14 +52,19 @@ const tabs = [
     content: <AccountSettingsSection />,
   },
   {
-    id: 'team',
-    label: <TeamSettingsSectionHeaderText />,
-    content: <TeamSettingsSection />,
-  },
-  {
     id: 'privacy',
     label: <PrivacySettingsSectionHeaderText />,
     content: <PrivacySettingsSection />,
+  },
+  {
+    id: 'invitations',
+    label: <InvitationsSettingsSectionHeaderText />,
+    content: <InvitationsSettingsSection />,
+  },
+  {
+    id: 'team',
+    label: <TeamSettingsSectionHeaderText />,
+    content: <TeamSettingsSection />,
   },
   {
     id: 'user-settings-hr',

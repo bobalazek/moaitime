@@ -114,7 +114,7 @@ export default function TeamEditDialog() {
 
   return (
     <Dialog open={selectedTeamDialogOpen} onOpenChange={setSelectedTeamDialogOpen}>
-      <DialogContent data-test="team--edit-dialog">
+      <DialogContent data-test="teams--edit-dialog">
         <DialogHeader>
           <DialogTitle className="truncate">
             {selectedTeam?.id && <>Edit "{selectedTeam.name}" Team</>}

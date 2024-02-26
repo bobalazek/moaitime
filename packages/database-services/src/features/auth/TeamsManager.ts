@@ -373,6 +373,9 @@ export class TeamsManager {
             }
           : undefined;
 
+        // We don't want to expose the token
+        row.team_user_invitations.token = '';
+
         return {
           ...row.team_user_invitations,
           team: row.teams,

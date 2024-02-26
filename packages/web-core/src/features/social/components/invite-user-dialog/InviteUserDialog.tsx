@@ -11,38 +11,25 @@ import {
   sonnerToast,
 } from '@moaitime/web-ui';
 
-import { useTeamsStore } from '../../state/teamsStore';
+import { useInvitationsStore } from '../../state/invitationsStore';
 
-export default function InviteTeamMemberDialog() {
-  const {
-    joinedTeam,
-    inviteTeamMemberDialogOpen,
-    sendTeamInvitation,
-    setInviteTeamMemberDialogOpen,
-  } = useTeamsStore();
+export default function InviteUserDialog() {
+  const { inviteUserDialogOpen, sendInvitation, setInviteUserDialogOpen } = useInvitationsStore();
   const [email, setEmail] = useState('');
 
   const onCancelButtonClick = () => {
-    setInviteTeamMemberDialogOpen(false);
+    setInviteUserDialogOpen(false);
   };
 
   const onInviteButtonClick = async () => {
-    if (!joinedTeam) {
-      sonnerToast.error('Oops!', {
-        description: 'No team selected',
-      });
-
-      return;
-    }
-
     try {
-      await sendTeamInvitation(joinedTeam.team.id, email);
+      await sendInvitation(email);
 
-      sonnerToast.success(`Team member "${email}" invited`, {
-        description: 'You have successfully invited a team member',
+      sonnerToast.success(`User "${email}" invited`, {
+        description: 'You have successfully invited a user',
       });
 
-      setInviteTeamMemberDialogOpen(false);
+      setInviteUserDialogOpen(false);
       setEmail('');
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
@@ -50,16 +37,16 @@ export default function InviteTeamMemberDialog() {
   };
 
   return (
-    <Dialog open={inviteTeamMemberDialogOpen} onOpenChange={setInviteTeamMemberDialogOpen}>
-      <DialogContent data-test="teams--invite-team-member-dialog">
+    <Dialog open={inviteUserDialogOpen} onOpenChange={setInviteUserDialogOpen}>
+      <DialogContent data-test="social--invite-user-dialog">
         <DialogHeader>
-          <DialogTitle>Invite a Team Member</DialogTitle>
+          <DialogTitle>Invite a User</DialogTitle>
         </DialogHeader>
         <div className="mb-4 flex flex-col gap-2">
-          <Label htmlFor="invite-team-member-email">Email</Label>
+          <Label htmlFor="invite-user-email">Email</Label>
           <Input
             type="email"
-            id="invite-team-member-email"
+            id="invite-user-email"
             value={email ?? ''}
             onChange={(event) => {
               setEmail(event.target.value);

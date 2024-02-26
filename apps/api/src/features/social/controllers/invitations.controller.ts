@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { invitationsManager } from '@moaitime/database-services';
@@ -22,8 +22,22 @@ export class InvitationsController {
 
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async invite(@Req() req: Request, @Body() body: EmailDto): Promise<AbstractResponseDto> {
-    const data = await invitationsManager.invite(req.user.id, body.email);
+  async create(@Req() req: Request, @Body() body: EmailDto): Promise<AbstractResponseDto> {
+    const data = await invitationsManager.create(req.user.id, body.email);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete(':invitationId')
+  async delete(
+    @Req() req: Request,
+    @Param('invitationId') invitationId: string
+  ): Promise<AbstractResponseDto> {
+    const data = await invitationsManager.delete(req.user.id, invitationId);
 
     return {
       success: true,

@@ -21,6 +21,14 @@ export class InvitationsManager {
     return row ?? null;
   }
 
+  async findOneByIdAndUserId(id: string, userId: string): Promise<Invitation | null> {
+    const row = await getDatabase().query.invitations.findFirst({
+      where: and(eq(invitations.id, id), eq(invitations.userId, userId)),
+    });
+
+    return row ?? null;
+  }
+
   async insertOne(data: NewInvitation): Promise<Invitation> {
     const rows = await getDatabase().insert(invitations).values(data).returning();
 
@@ -63,17 +71,28 @@ export class InvitationsManager {
     });
   }
 
-  async invite(userId: string, email: string): Promise<Invitation> {
-    const invitedByUser = await usersManager.findOneById(userId);
-    if (!invitedByUser) {
+  async create(userId: string, email: string): Promise<Invitation> {
+    const user = await usersManager.findOneById(userId);
+    if (!user) {
       throw new Error('User not found');
+    }
+
+    const existingUser = await usersManager.findOneByEmail(email);
+    if (existingUser) {
+      throw new Error('A user with this email is already registered');
     }
 
     const existingInvitation = await getDatabase().query.invitations.findFirst({
       where: and(eq(invitations.userId, userId), eq(invitations.email, email)),
     });
     if (existingInvitation) {
-      throw new Error('User is already invited');
+      throw new Error('A user with this email was already invited');
+    }
+
+    const count = await this.countByUserId(userId);
+    const countLimit = await usersManager.getUserLimit(user, 'userInvitationsMaxPerUserCount');
+    if (count >= countLimit) {
+      throw new Error('You have reached the maximum number of invitations');
     }
 
     const expiresAt = addDays(new Date(), 7);
@@ -96,11 +115,24 @@ export class InvitationsManager {
 
     await mailer.sendSocialUserInvitationEmail({
       userEmail: email,
-      invitedByUserDisplayName: invitedByUser.displayName ?? 'User',
+      invitedByUserDisplayName: user.displayName ?? 'User',
       registerUrl: `${WEB_URL}/register?invitationToken=${token}`,
     });
 
     return invitation;
+  }
+
+  async delete(userId: string, invitationId: string): Promise<Invitation> {
+    const invitation = await this.findOneByIdAndUserId(invitationId, userId);
+    if (!invitation) {
+      throw new Error('Invitation not found');
+    }
+
+    if (invitation.claimedAt) {
+      throw new Error('You cannot remove an already claimed invitation');
+    }
+
+    return this.deleteOneById(invitationId);
   }
 }
 

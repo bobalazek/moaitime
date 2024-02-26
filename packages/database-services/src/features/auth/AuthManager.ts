@@ -6,7 +6,13 @@ import { addSeconds } from 'date-fns';
 import { UAParser } from 'ua-parser-js';
 import { v4 as uuidv4 } from 'uuid';
 
-import { NewUser, User, UserAccessToken } from '@moaitime/database-core';
+import {
+  Invitation,
+  NewUser,
+  TeamUserInvitation,
+  User,
+  UserAccessToken,
+} from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
@@ -25,6 +31,7 @@ import {
   GlobalEventsEnum,
   MAIN_COLORS,
   ProcessingStatusEnum,
+  RegisterUser,
   UserPasswordSchema,
   UserRoleEnum,
   UserSettingsSchema,
@@ -33,8 +40,10 @@ import {
 import { uploader } from '@moaitime/uploader';
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
+import { InvitationsManager, invitationsManager } from '../social/InvitationsManager';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
 import { TasksManager, tasksManager } from '../tasks/TasksManager';
+import { TeamsManager, teamsManager } from './TeamsManager';
 import { UserAccessTokensManager, userAccessTokensManager } from './UserAccessTokensManager';
 import { UserDataExportsManager, userDataExportsManager } from './UserDataExportsManager';
 import { UsersManager, usersManager } from './UsersManager';
@@ -49,9 +58,11 @@ export class AuthManager {
     private _usersManager: UsersManager,
     private _userAccessTokensManager: UserAccessTokensManager,
     private _userExportsManager: UserDataExportsManager,
+    private _teamsManager: TeamsManager,
     private _listsManager: ListsManager,
     private _tasksManager: TasksManager,
-    private _calendarsManager: CalendarsManager
+    private _calendarsManager: CalendarsManager,
+    private _invitationsManager: InvitationsManager
   ) {}
 
   // Login
@@ -99,7 +110,7 @@ export class AuthManager {
   }
 
   // Register
-  async register(data: NewUser): Promise<User> {
+  async register(data: RegisterUser): Promise<User> {
     const { password, ...user } = data;
     if (!password) {
       throw new Error('Password is not set');
@@ -119,6 +130,21 @@ export class AuthManager {
       throw new Error('User with this username already exists');
     }
 
+    let teamUserInvitation: TeamUserInvitation | null = null;
+    let invitation: Invitation | null = null;
+
+    if (data.teamUserInvitationToken) {
+      teamUserInvitation = await this._teamsManager.getAvailableInvitationByToken(
+        data.teamUserInvitationToken
+      );
+    }
+
+    if (data.invitationToken) {
+      invitation = await this._invitationsManager.getAvailableInvitationByToken(
+        data.invitationToken
+      );
+    }
+
     const hashedPassword = await this.validateAndHashPassword(password);
 
     const newUser = await this._usersManager.insertOne({
@@ -128,6 +154,14 @@ export class AuthManager {
       emailConfirmationToken: uuidv4(),
       emailConfirmationLastSentAt: new Date(),
     } as NewUser);
+
+    if (invitation) {
+      await this._invitationsManager.claimInvitation(newUser.id, invitation);
+    }
+
+    if (teamUserInvitation) {
+      await this._teamsManager.acceptTeamInvitation(newUser.id, teamUserInvitation.id);
+    }
 
     for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
       const name = LISTS_DEFAULT_NAMES[i] as keyof typeof TASKS_DEFAULT_ENTRIES;
@@ -837,7 +871,9 @@ export const authManager = new AuthManager(
   usersManager,
   userAccessTokensManager,
   userDataExportsManager,
+  teamsManager,
   listsManager,
   tasksManager,
-  calendarsManager
+  calendarsManager,
+  invitationsManager
 );

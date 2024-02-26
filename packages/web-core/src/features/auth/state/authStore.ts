@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import {
   Auth,
+  RegisterUser,
   ResponseInterface,
   UpdateUser,
   UpdateUserPassword,
@@ -42,12 +43,7 @@ export type AuthStore = {
   // Logout
   logout: () => Promise<ResponseInterface>;
   // Register
-  register: (
-    displayName: string,
-    username: string,
-    email: string,
-    password: string
-  ) => Promise<ResponseInterface>;
+  register: (data: RegisterUser) => Promise<ResponseInterface>;
   // Reset Password
   requestPasswordReset: (email: string) => Promise<ResponseInterface>;
   resetPassword: (token: string, password: string) => Promise<ResponseInterface>;
@@ -108,8 +104,8 @@ export const useAuthStore = create<AuthStore>()(
         return response;
       },
       // Register
-      register: async (displayName: string, username: string, email: string, password: string) => {
-        const response = await register(displayName, username, email, password);
+      register: async (data: RegisterUser) => {
+        const response = await register(data);
 
         set({ auth: response.data });
 

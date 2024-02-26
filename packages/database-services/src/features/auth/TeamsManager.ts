@@ -81,6 +81,25 @@ export class TeamsManager {
     return rows[0];
   }
 
+  // Invitations
+  async findOneInvitationById(teamUserInvitationId: string): Promise<TeamUserInvitation | null> {
+    const row = await getDatabase().query.teamUserInvitations.findFirst({
+      where: eq(teamUserInvitations.id, teamUserInvitationId),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneInvitationByToken(
+    teamUserInvitationToken: string
+  ): Promise<TeamUserInvitation | null> {
+    const row = await getDatabase().query.teamUserInvitations.findFirst({
+      where: eq(teamUserInvitations.token, teamUserInvitationToken),
+    });
+
+    return row ?? null;
+  }
+
   // Permissions
   async userCanView(userId: string, teamId: string): Promise<boolean> {
     const row = await getDatabase().query.teamUsers.findFirst({
@@ -219,14 +238,6 @@ export class TeamsManager {
     }
 
     return rows[0] ?? null;
-  }
-
-  async getInvitationById(teamUserInvitationId: string): Promise<TeamUserInvitation | null> {
-    const row = await getDatabase().query.teamUserInvitations.findFirst({
-      where: eq(teamUserInvitations.id, teamUserInvitationId),
-    });
-
-    return row ?? null;
   }
 
   async getJoinedTeamByUserId(userId: string): Promise<{ team: Team; teamUser: TeamUser } | null> {
@@ -384,7 +395,7 @@ export class TeamsManager {
       });
   }
 
-  async acceptInvitation(
+  async acceptTeamInvitation(
     userId: string,
     teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
@@ -415,7 +426,7 @@ export class TeamsManager {
     return row;
   }
 
-  async rejectInvitation(
+  async rejectTeamInvitation(
     userId: string,
     teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
@@ -439,11 +450,11 @@ export class TeamsManager {
     return row;
   }
 
-  async deleteInvitation(
+  async deleteTeamInvitation(
     userId: string,
     teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
-    const teamUserInvitation = await this.getInvitationById(teamUserInvitationId);
+    const teamUserInvitation = await this.findOneInvitationById(teamUserInvitationId);
     if (!teamUserInvitation) {
       return null;
     }
@@ -470,7 +481,11 @@ export class TeamsManager {
     return row;
   }
 
-  async invite(userId: string, teamId: string, email: string): Promise<TeamUserInvitation> {
+  async inviteTeamMember(
+    userId: string,
+    teamId: string,
+    email: string
+  ): Promise<TeamUserInvitation> {
     const canInvite = await this.userCanInviteMember(userId, teamId);
     if (!canInvite) {
       throw new Error('You cannot send invites for this team');
@@ -547,7 +562,7 @@ export class TeamsManager {
     return teamUserInvitation;
   }
 
-  async deleteMember(adminUserId: string, userId: string, teamId: string) {
+  async deleteTeamMember(adminUserId: string, userId: string, teamId: string) {
     if (adminUserId === userId) {
       throw new Error('You cannot remove yourself from the team');
     }
@@ -586,7 +601,12 @@ export class TeamsManager {
     return row;
   }
 
-  async updateMember(adminUserId: string, userId: string, teamId: string, data: UpdateTeamUser) {
+  async updateTeamMember(
+    adminUserId: string,
+    userId: string,
+    teamId: string,
+    data: UpdateTeamUser
+  ) {
     const team = await this.findOneById(teamId);
     if (!team) {
       throw new Error('Team not found');
@@ -705,6 +725,28 @@ export class TeamsManager {
       usersCount,
       calendarsCount,
     };
+  }
+
+  async getAvailableInvitationByToken(token: string): Promise<TeamUserInvitation> {
+    const invitation = await this.findOneInvitationByToken(token);
+    if (!invitation) {
+      throw new Error('Invitation not found');
+    }
+
+    const now = new Date();
+    if (invitation.expiresAt && invitation.expiresAt < now) {
+      throw new Error('Invitation has already expired');
+    }
+
+    if (invitation.acceptedAt) {
+      throw new Error('Invitation was already accepted');
+    }
+
+    if (invitation.rejectedAt) {
+      throw new Error('Invitation was already rejected');
+    }
+
+    return invitation;
   }
 }
 

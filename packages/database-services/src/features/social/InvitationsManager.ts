@@ -21,6 +21,14 @@ export class InvitationsManager {
     return row ?? null;
   }
 
+  async findOneByToken(token: string): Promise<Invitation | null> {
+    const row = await getDatabase().query.invitations.findFirst({
+      where: eq(invitations.token, token),
+    });
+
+    return row ?? null;
+  }
+
   async findOneByIdAndUserId(id: string, userId: string): Promise<Invitation | null> {
     const row = await getDatabase().query.invitations.findFirst({
       where: and(eq(invitations.id, id), eq(invitations.userId, userId)),
@@ -64,11 +72,47 @@ export class InvitationsManager {
     return result[0].count ?? 0;
   }
 
+  async getAvailableInvitationByToken(token: string): Promise<Invitation> {
+    const invitation = await this.findOneByToken(token);
+    if (!invitation) {
+      throw new Error('Invitation not found');
+    }
+
+    const now = new Date();
+    if (invitation.expiresAt && invitation.expiresAt < now) {
+      throw new Error('Invitation has already expired');
+    }
+
+    if (invitation.claimedAt) {
+      throw new Error('Invitation was already claimed');
+    }
+
+    return invitation;
+  }
+
+  async claimInvitation(userId: string, invitation: Invitation): Promise<Invitation> {
+    const now = new Date();
+
+    const updatedInvitation = await this.updateOneById(invitation.id, {
+      claimedAt: now,
+      claimedUserId: userId,
+    });
+
+    return updatedInvitation;
+  }
+
   // API Helpers
   async list(userId: string) {
-    return this.findMany({
+    const data = await this.findMany({
       where: eq(invitations.userId, userId),
     });
+
+    return data.map((row) => ({
+      ...row,
+      permissions: {
+        canDelete: !row.claimedAt,
+      },
+    }));
   }
 
   async create(userId: string, email: string): Promise<Invitation> {

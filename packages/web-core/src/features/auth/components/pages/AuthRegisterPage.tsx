@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import {
   Button,
@@ -20,11 +20,22 @@ import { useAuthStore } from '../../state/authStore';
 export default function AuthRegisterPage() {
   const { register } = useAuthStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [invitationToken, setInvitationToken] = useState<string>();
+  const [teamUserInvitationToken, setTeamUserInvitationToken] = useState<string>();
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [terms, setTerms] = useState(false);
+
+  useEffect(() => {
+    const invitationTokenParam = searchParams.get('invitationToken') ?? undefined;
+    const teamUserInvitationTokenParam = searchParams.get('teamUserInvitationToken') ?? undefined;
+
+    setInvitationToken(invitationTokenParam);
+    setTeamUserInvitationToken(teamUserInvitationTokenParam);
+  }, [searchParams]);
 
   const onLoginButtonClick = () => {
     navigate('/login');
@@ -39,7 +50,14 @@ export default function AuthRegisterPage() {
     }
 
     try {
-      const response = await register(displayName, username, email, password);
+      const response = await register({
+        displayName,
+        username,
+        email,
+        password,
+        invitationToken,
+        teamUserInvitationToken,
+      });
 
       sonnerToast.success('Success!', {
         description: response.message ?? 'You have successfully registered!',
@@ -59,6 +77,32 @@ export default function AuthRegisterPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col space-y-6">
+              {teamUserInvitationToken && (
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="register-teamUserInvitationToken">Team Invitation Token</Label>
+                  <Input
+                    id="register-teamUserInvitationToken"
+                    autoFocus
+                    value={teamUserInvitationToken}
+                    onChange={(event) => {
+                      setTeamUserInvitationToken(event.target.value);
+                    }}
+                  />
+                </div>
+              )}
+              {!teamUserInvitationToken && (
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="register-invitationToken">Invitation Token</Label>
+                  <Input
+                    id="register-invitationToken"
+                    autoFocus
+                    value={invitationToken}
+                    onChange={(event) => {
+                      setInvitationToken(event.target.value);
+                    }}
+                  />
+                </div>
+              )}
               <div className="flex flex-col space-y-2">
                 <Label htmlFor="register-displayName">Display Name</Label>
                 <Input

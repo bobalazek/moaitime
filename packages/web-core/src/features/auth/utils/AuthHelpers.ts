@@ -1,6 +1,7 @@
 import {
   API_URL,
   Auth,
+  RegisterUser,
   ResponseInterface,
   UpdateUser,
   UpdateUserPassword,
@@ -36,17 +37,9 @@ export const logout = async () => {
   return response;
 };
 
-export const register = async (
-  displayName: string,
-  username: string,
-  email: string,
-  password: string
-) => {
-  const data = {
-    displayName,
-    username,
-    email,
-    password,
+export const register = async (data: RegisterUser) => {
+  const finalData = {
+    ...data,
     settings: {
       generalTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       clockUse24HourClock: !Intl.DateTimeFormat().resolvedOptions().hour12,
@@ -55,7 +48,7 @@ export const register = async (
 
   const response = await fetchJson<ResponseInterface<Auth>>(`${API_URL}/api/v1/auth/register`, {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: JSON.stringify(finalData),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',

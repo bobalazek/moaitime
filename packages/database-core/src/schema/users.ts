@@ -28,7 +28,7 @@ export const users = pgTable(
       .notNull()
       .default(JSON.stringify([UserRoleEnum.USER]))
       .$type<UserRoleEnum[]>(),
-    settings: jsonb('settings').$type<UserSettings>(),
+    settings: jsonb('settings').$type<Partial<UserSettings>>(),
     birthDate: date('birth_date', {
       mode: 'string',
     }),

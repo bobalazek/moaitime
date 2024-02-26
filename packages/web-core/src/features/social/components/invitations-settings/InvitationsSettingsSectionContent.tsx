@@ -80,13 +80,15 @@ export default function InvitationsSettingsSectionContent() {
                     {invitation.claimedAt ? new Date(invitation.claimedAt).toLocaleString() : ''}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => onDeleteInvitationClick(invitation.id)}
-                    >
-                      Remove
-                    </Button>
+                    {invitation.permissions?.canDelete && (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => onDeleteInvitationClick(invitation.id)}
+                      >
+                        Remove
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

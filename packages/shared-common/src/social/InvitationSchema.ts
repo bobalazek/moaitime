@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { PermissionsSchema } from '../core/PermissionsSchema';
+
 export const InvitationSchema = z.object({
   id: z.string(),
   email: z.string(),
@@ -7,6 +9,7 @@ export const InvitationSchema = z.object({
   claimedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  permissions: PermissionsSchema.optional(),
 });
 
 export const CreateInvitationSchema = z.object({

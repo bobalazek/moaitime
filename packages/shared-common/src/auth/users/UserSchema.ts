@@ -106,6 +106,8 @@ export const RegisterUserSchema = z.object({
     generalTimezone: true,
     clockUse24HourClock: true,
   }).optional(),
+  invitationToken: z.string().optional(),
+  teamUserInvitationToken: z.string().optional(),
 });
 
 // User Access Token

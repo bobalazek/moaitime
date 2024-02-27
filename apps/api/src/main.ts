@@ -9,6 +9,9 @@ import { ErrorFilter } from './filters/error.filter';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { ZodValidationPipe } from './utils/validation-helpers';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const module: any;
+
 export async function bootstrap() {
   // Variables
   const { API_PORT, NODE_ENV } = getEnv();
@@ -51,6 +54,11 @@ export async function bootstrap() {
   const url = await app.getUrl();
 
   Logger.log(`🚀 Application is running on: ${url}`);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 
   return app;
 }

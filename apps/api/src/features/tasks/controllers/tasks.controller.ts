@@ -161,4 +161,19 @@ export class TasksController {
       data,
     };
   }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':taskId/nudge')
+  async nudge(
+    @Req() req: Request,
+    @Param('taskId') taskId: string,
+    @Body() body: { userIds: string[] }
+  ): Promise<AbstractResponseDto<Task>> {
+    const data = await tasksManager.nudge(req.user.id, taskId, body.userIds);
+
+    return {
+      success: true,
+      data,
+    };
+  }
 }

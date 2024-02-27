@@ -43,14 +43,22 @@ export class WebsocketGateway
           const { type, payload } = message;
 
           const teamId = 'teamId' in payload ? payload.teamId : undefined;
+          const userIds = 'userIds' in payload ? payload.userIds : undefined;
           const actorUserId = 'actorUserId' in payload ? payload.actorUserId : undefined;
           const actorWebsocketToken =
             'actorWebsocketToken' in payload ? payload.actorWebsocketToken : undefined;
 
-          const userWebsockets = this._getWebsockets(teamId, actorUserId);
+          const allUserIds = Array.from(
+            new Set<string>([...(userIds ?? []), ...(actorUserId ? [actorUserId] : [])])
+          );
+
+          const userWebsockets = this._getWebsockets(teamId, allUserIds);
 
           // We do not want to push the websocket token of the actor that triggered it for security reasons
-          const finalPayload = { ...payload, actorWebsocketToken: undefined };
+          const finalPayload = {
+            ...payload,
+            actorWebsocketToken: undefined,
+          };
 
           for (const websocket of userWebsockets) {
             const websocketToken = this._getWebsocketToken(websocket);
@@ -128,7 +136,7 @@ export class WebsocketGateway
   }
 
   // Private
-  private _getWebsockets(teamId?: string, userId?: string) {
+  private _getWebsockets(teamId?: string, userIds?: string[]) {
     const websocketsSet = new Set<WebSocket>();
 
     if (teamId) {
@@ -137,18 +145,24 @@ export class WebsocketGateway
         const userWebsocketTokens = this._userIdToWebsocketTokensMap.get(teamUserId) ?? [];
         for (const websocketToken of userWebsocketTokens) {
           const websocket = this._websocketTokenToWebsocketMap.get(websocketToken);
-          if (websocket) {
-            websocketsSet.add(websocket);
+          if (!websocket) {
+            continue;
           }
+
+          websocketsSet.add(websocket);
         }
       }
     }
 
-    if (userId) {
-      const userWebsocketTokens = this._userIdToWebsocketTokensMap.get(userId) || [];
-      for (const websocketToken of userWebsocketTokens) {
-        const websocket = this._websocketTokenToWebsocketMap.get(websocketToken);
-        if (websocket) {
+    if (userIds && userIds.length > 0) {
+      for (const userId of userIds) {
+        const userWebsocketTokens = this._userIdToWebsocketTokensMap.get(userId) || [];
+        for (const websocketToken of userWebsocketTokens) {
+          const websocket = this._websocketTokenToWebsocketMap.get(websocketToken);
+          if (!websocket) {
+            continue;
+          }
+
           websocketsSet.add(websocket);
         }
       }

@@ -11,23 +11,44 @@ import {
   DialogHeader,
   DialogTitle,
   Label,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
+import { useAuthStore } from '../../../auth/state/authStore';
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function TaskUsersNudgeDialog() {
-  const { selectedTask, usersNudgeDialogOpen, setUsersNudgeDialogOpen } = useTasksStore();
-
+  const { auth } = useAuthStore();
+  const { selectedTask, usersNudgeDialogOpen, setUsersNudgeDialogOpen, nudgedTask } =
+    useTasksStore();
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
+  const myUserId = auth?.user?.id;
 
   useEffect(() => {
     if (selectedTask) {
-      setSelectedUserIds(selectedTask.users?.map((user) => user.id) ?? []);
+      setSelectedUserIds(
+        selectedTask.users
+          ?.filter((user) => {
+            return user.id !== myUserId;
+          })
+          .map((user) => user.id) ?? []
+      );
     }
-  }, [selectedTask]);
+  }, [selectedTask, myUserId]);
 
-  const onSubmitButtonClick = () => {
-    console.log('Nudge users');
+  const onSubmitButtonClick = async () => {
+    try {
+      await nudgedTask(selectedTask!.id, selectedUserIds);
+
+      sonnerToast.success('Users nudged successfully', {
+        description: 'The users have been nudged successfully',
+      });
+
+      setUsersNudgeDialogOpen(false);
+    } catch (error) {
+      // Already handled in the store
+    }
   };
 
   return (
@@ -62,8 +83,8 @@ export default function TaskUsersNudgeDialog() {
                     return (
                       <div key={user.id} className="flex items-center gap-2">
                         <Checkbox
-                          id={`task-users-nudge-dialog--user-${user.id}`}
-                          checked={selectedUserIds.includes(user.id)}
+                          id={`tasks--task-users-nudge-dialog--user-${user.id}`}
+                          checked={selectedUserIds.includes(user.id) && user.id !== myUserId}
                           onCheckedChange={(check) => {
                             setSelectedUserIds(
                               check
@@ -71,8 +92,9 @@ export default function TaskUsersNudgeDialog() {
                                 : selectedUserIds.filter((e) => e !== user.id)
                             );
                           }}
+                          disabled={user.id === myUserId}
                         />
-                        <Label htmlFor={`task-users-nudge-dialog--user-${user.id}`}>
+                        <Label htmlFor={`tasks--task-users-nudge-dialog--user-${user.id}`}>
                           <span>{user.displayName}</span>
                           <small className="text-muted-foreground"> ({user.email})</small>
                         </Label>

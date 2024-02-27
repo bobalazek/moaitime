@@ -202,6 +202,7 @@ export type GlobalEvents = {
   };
   [GlobalEventsEnum.TASKS_TASK_NUDGED]: {
     actorUserId: string;
+    userIds: string[]; // which users were nudged?
     taskId: string;
     listId?: string;
     teamId?: string;

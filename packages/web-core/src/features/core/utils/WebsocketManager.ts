@@ -4,6 +4,7 @@ import { sonnerToast } from '../../../../../web-ui/src/components/sonner-toast';
 import { useAuthStore } from '../../auth/state/authStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useListsStore } from '../../tasks/state/listsStore';
+import { useTasksStore } from '../../tasks/state/tasksStore';
 import { useTeamsStore } from '../../teams/state/teamsStore';
 import { setWebsocketToken } from './FetchHelpers';
 import { getWebsocketUrl } from './WebsocketHelpers';
@@ -115,7 +116,37 @@ export class WebsocketManager {
       payload: GlobalEvents[GlobalEventsEnum];
     };
 
-    if (data.type.startsWith('tasks:list:')) {
+    if (data.type === GlobalEventsEnum.TASKS_TASK_NUDGED) {
+      const { joinedTeamMembers } = useTeamsStore.getState();
+      const { getTask, openPopoverForTask } = useTasksStore.getState();
+      const payload = data.payload as GlobalEvents[GlobalEventsEnum.TASKS_TASK_NUDGED];
+
+      const task = await getTask(payload.taskId);
+      if (!task) {
+        return;
+      }
+
+      let nudgerName = 'Unknown';
+      for (const teamMember of joinedTeamMembers) {
+        if (teamMember.user?.id === task.id) {
+          nudgerName = teamMember.user!.displayName;
+          break;
+        }
+      }
+
+      sonnerToast.info('Task Nudged', {
+        description: `The task "${task.name}" was nudged by ${nudgerName}.`,
+        duration: 15000,
+        action: {
+          label: 'View Task',
+          onClick: () => {
+            openPopoverForTask(task);
+          },
+        },
+      });
+
+      // TODO: also play a sound
+    } else if (data.type.startsWith('tasks:list:')) {
       const { reloadLists, reloadSelectedListTasks } = useListsStore.getState();
 
       await reloadLists();

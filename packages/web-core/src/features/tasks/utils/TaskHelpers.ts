@@ -114,6 +114,22 @@ export const uncompleteTask = async (taskId: string): Promise<Task> => {
   return response.data as Task;
 };
 
+export const nudgeTask = async (taskId: string, userIds: string[]): Promise<Task> => {
+  const response = await fetchJson<ResponseInterface<Task>>(
+    `${API_URL}/api/v1/tasks/${taskId}/nudge`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ userIds }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as Task;
+};
+
 export const reorderTask = async (
   originalTaskId: string,
   newTaskId: string,

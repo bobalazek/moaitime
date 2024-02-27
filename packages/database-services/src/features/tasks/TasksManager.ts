@@ -705,6 +705,31 @@ export class TasksManager {
     return data;
   }
 
+  async nudge(userId: string, taskId: string, userIds: string[]) {
+    const task = await this.findOneByIdAndUserId(taskId, userId);
+    if (!task) {
+      throw new Error('Task not found');
+    }
+
+    if (userIds.length === 0) {
+      throw new Error('You need to provide at least one user to nudge');
+    }
+
+    if (userIds.includes(userId)) {
+      throw new Error('You cannot nudge yourself');
+    }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_NUDGED, {
+      actorUserId: userId,
+      taskId,
+      userIds,
+      listId: task.listId ?? undefined,
+      teamId: task.list?.teamId ?? undefined,
+    });
+
+    return task;
+  }
+
   // Helpers
   async updateReorder(map: { [key: string]: number }) {
     return getDatabase().transaction(async (tx) => {

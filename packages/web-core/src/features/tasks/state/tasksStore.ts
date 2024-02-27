@@ -13,6 +13,7 @@ import {
   editTask,
   getTask,
   getTasks,
+  nudgeTask,
   reorderTask,
   uncompleteTask,
   undeleteTask,
@@ -23,7 +24,7 @@ export type TasksStore = {
   /********** General **********/
   popoverOpen: boolean;
   setPopoverOpen: (popoverOpen: boolean) => Promise<void>;
-  openPopoverForTask: (taskId: string) => Promise<void>;
+  openPopoverForTask: (taskOrTaskId: Task | string) => Promise<void>;
   // Tasks List End Element
   listEndElement: HTMLElement | null;
   setListEndElement: (listEndElement: HTMLElement | null) => void;
@@ -38,6 +39,7 @@ export type TasksStore = {
   duplicateTask: (taskId: string) => Promise<Task>;
   completeTask: (taskId: string) => Promise<Task>;
   uncompleteTask: (taskId: string) => Promise<Task>;
+  nudgedTask: (taskId: string, userIds: string[]) => Promise<Task>;
   reorderTasks: (activeTaskId: string, overTaskId: string) => Promise<void>;
   // Selected
   selectedTaskDialogOpen: boolean;
@@ -66,13 +68,13 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       await reloadSelectedListTasks();
     }
   },
-  openPopoverForTask: async (taskId: string) => {
+  openPopoverForTask: async (taskOrTaskId: Task | string) => {
     const { setPopoverOpen, setHighlightedTaskId, getTask } = get();
     const { getList, setSelectedList } = useListsStore.getState();
 
     await setPopoverOpen(true);
 
-    const task = await getTask(taskId);
+    const task = typeof taskOrTaskId === 'string' ? await getTask(taskOrTaskId) : taskOrTaskId;
     if (!task) {
       return;
     }
@@ -81,10 +83,10 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     await setSelectedList(list);
 
-    setHighlightedTaskId(taskId);
+    setHighlightedTaskId(task.id);
 
     setTimeout(() => {
-      const taskElement = document.getElementById(`task-${taskId}`);
+      const taskElement = document.getElementById(`task-${task.id}`);
       if (taskElement) {
         taskElement.scrollIntoView({
           behavior: 'smooth',
@@ -286,6 +288,18 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     await reloadTasksCountMap();
 
     return uncompletedTask;
+  },
+  nudgedTask: async (taskId: string, userIds: string[]) => {
+    const nudgedTask = await nudgeTask(taskId, userIds);
+
+    globalEventsEmitter.emit(GlobalEventsEnum.TASKS_TASK_NUDGED, {
+      actorUserId: nudgedTask.userId,
+      taskId: nudgedTask.id,
+      task: nudgedTask,
+      userIds,
+    });
+
+    return nudgedTask;
   },
   reorderTasks: async (originalTaskId: string, newTaskId: string) => {
     const {

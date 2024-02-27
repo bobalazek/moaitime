@@ -128,7 +128,7 @@ export class WebsocketManager {
 
       let nudgerName = 'Unknown';
       for (const teamMember of joinedTeamMembers) {
-        if (teamMember.user?.id === task.id) {
+        if (teamMember.user?.id === payload.actorUserId) {
           nudgerName = teamMember.user!.displayName;
           break;
         }
@@ -137,6 +137,7 @@ export class WebsocketManager {
       sonnerToast.info('Task Nudged', {
         description: `The task "${task.name}" was nudged by ${nudgerName}.`,
         duration: 15000,
+        position: 'top-right',
         action: {
           label: 'View Task',
           onClick: () => {

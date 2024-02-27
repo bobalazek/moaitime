@@ -215,3 +215,18 @@ export const convertObjectNullPropertiesToUndefined = <T extends Record<string, 
 
   return newObj;
 };
+
+// Compare
+export const areArraysEqual = (arr1: string[], arr2: string[]) => {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  for (const item of arr1) {
+    if (!arr2.includes(item)) {
+      return false;
+    }
+  }
+
+  return true;
+};

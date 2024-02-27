@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { areArraysEqual } from '@moaitime/shared-common';
 import {
   Button,
   Checkbox,
@@ -15,27 +16,32 @@ import {
 } from '@moaitime/web-ui';
 
 import { useAuthStore } from '../../../auth/state/authStore';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 import { useTasksStore } from '../../state/tasksStore';
 
 export default function TaskUsersNudgeDialog() {
   const { auth } = useAuthStore();
+  const { joinedTeamMembers } = useTeamsStore();
   const { selectedTask, usersNudgeDialogOpen, setUsersNudgeDialogOpen, nudgedTask } =
     useTasksStore();
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
   const myUserId = auth?.user?.id;
+  const teamUsers = joinedTeamMembers?.map((member) => member.user!);
 
   useEffect(() => {
-    if (selectedTask) {
-      setSelectedUserIds(
-        selectedTask.users
-          ?.filter((user) => {
-            return user.id !== myUserId;
-          })
-          .map((user) => user.id) ?? []
-      );
+    if (!selectedTask) {
+      return;
     }
-  }, [selectedTask, myUserId]);
+
+    const newSelectedUserIds = (selectedTask.users?.map((user) => user.id) ?? []).filter(
+      (id) => id !== myUserId && !!teamUsers?.find((user) => user.id === id)
+    );
+
+    if (!areArraysEqual(newSelectedUserIds, selectedUserIds)) {
+      setSelectedUserIds(newSelectedUserIds);
+    }
+  }, [selectedUserIds, selectedTask, myUserId, teamUsers]);
 
   const onSubmitButtonClick = async () => {
     try {
@@ -77,14 +83,16 @@ export default function TaskUsersNudgeDialog() {
                   </div>
                 </div>
               )}
-              {selectedTask.users && selectedTask.users.length > 0 && (
+              {teamUsers && teamUsers.length > 0 && (
                 <div className="flex flex-col gap-4">
-                  {selectedTask.users.map((user) => {
+                  {teamUsers.map((user) => {
+                    const checked = selectedUserIds.includes(user.id) && user.id !== myUserId;
+
                     return (
                       <div key={user.id} className="flex items-center gap-2">
                         <Checkbox
                           id={`tasks--task-users-nudge-dialog--user-${user.id}`}
-                          checked={selectedUserIds.includes(user.id) && user.id !== myUserId}
+                          checked={checked}
                           onCheckedChange={(check) => {
                             setSelectedUserIds(
                               check

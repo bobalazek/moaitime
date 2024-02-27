@@ -40,6 +40,7 @@ export const getTestUserAccessToken = (user: User): UserAccessToken => ({
   userAgent: 'test-user-agent',
   userAgentParsed: null,
   deviceUid: null,
+  ip: null,
   revokedReason: null,
   refreshToken: 'test-refresh-token',
   refreshTokenClaimedAt: null,

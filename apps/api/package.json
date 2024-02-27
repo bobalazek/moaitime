@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsup",
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
-    "dev": "nest start --tsc --watch",
+    "dev": "tsup --env.TSUP_WATCH=true",
+    "dev:not-working-yet": "nest start --watch",
     "lint": "eslint .",
     "serve": "node ./dist/main.js",
     "test": "vitest run",
@@ -60,9 +61,11 @@
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.41",
     "@types/request-ip": "^0.0.41",
-    "@types/supertest": "^2.0.16",
     "@types/ws": "^8.5.10",
-    "supertest": "^6.3.4",
-    "typescript": "^5.3.2"
+    "run-script-webpack-plugin": "^0.2.0",
+    "swc-loader": "^0.2.6",
+    "typescript": "^5.3.2",
+    "webpack": "^5.51.1",
+    "webpack-node-externals": "^3.0.0"
   }
 }

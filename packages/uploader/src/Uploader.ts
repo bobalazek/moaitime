@@ -49,7 +49,9 @@ export class Uploader {
       Key: key,
     });
 
-    await client.send(deleteObjectCommand);
+    // error TS2339: Property 'send' does not exist on type 'S3Client' otherwise. Brilliant job on the S3 library there ...
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (client as any).send(deleteObjectCommand);
   }
 
   // Private
@@ -82,20 +84,22 @@ export class Uploader {
     // Keeping this is, in case in the future I decide to try optimize this part and break everything.
     // const endpoint = `${protocol}://${domain}`;
 
+    const client = new S3Client({
+      region,
+      endpoint: {
+        hostname: domain,
+        path: '/',
+        protocol: `${protocol}:`,
+      },
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      forcePathStyle,
+    });
+
     return {
-      client: new S3Client({
-        region,
-        endpoint: {
-          hostname: domain,
-          path: '/',
-          protocol: `${protocol}:`,
-        },
-        credentials: {
-          accessKeyId,
-          secretAccessKey,
-        },
-        forcePathStyle,
-      }),
+      client,
       bucket,
     };
   }

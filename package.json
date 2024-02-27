@@ -6,8 +6,9 @@
     "build": "turbo build --no-daemon",
     "clean": "turbo clean --no-daemon --parallel && pnpm dlx rimraf --glob node_modules",
     "cli": "pnpm build && cd apps/cli && pnpm run-exec",
-    "dev": "cross-env NODE_ENV=development turbo dev --no-daemon --concurrency=50 --filter='./apps/*' --filter='!./apps/web-e2e'",
+    "dev": "cross-env NODE_ENV=development turbo dev --no-daemon --concurrency=50",
     "dev:e2e": "cross-env NODE_ENV=test turbo dev:e2e --no-daemon --concurrency=1",
+    "dev:not-working-yet": "cross-env NODE_ENV=development turbo dev --no-daemon --concurrency=50 --filter='./apps/*' --filter='!./apps/web-e2e'",
     "e2e": "cross-env NODE_ENV=test turbo e2e --no-daemon --concurrency=1",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"./{apps,packages}/**/*.{ts,tsx}\" \"./**/*.json\"",
@@ -19,7 +20,6 @@
     "turbo:clean": "pnpx turbo daemon clean"
   },
   "dependencies": {
-    "tslib": "^2.6.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -37,9 +37,11 @@
     "prettier": "^3.2.5",
     "syncpack": "^12.3.0",
     "ts-loader": "^9.5.1",
+    "tslib": "^2.6.2",
     "tsup": "^8.0.2",
     "turbo": "^1.12.4",
     "vite": "^5.1.4",
+    "vite-plugin-node": "^3.1.0",
     "vite-tsconfig-paths": "^4.3.1",
     "vitest": "^1.3.1"
   },

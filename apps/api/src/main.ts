@@ -12,7 +12,11 @@ import { ZodValidationPipe } from './utils/validation-helpers';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const module: any;
 
+// TODO: Why are 2 processes spawned?
+
 export async function bootstrap() {
+  Logger.log('🚀 Starting the API server...');
+
   // Variables
   const { API_PORT, NODE_ENV } = getEnv();
   const port = API_PORT || 3636;
@@ -56,8 +60,14 @@ export async function bootstrap() {
   Logger.log(`🚀 Application is running on: ${url}`);
 
   if (module.hot) {
+    Logger.log('✅ Server-side HMR enabled');
+
     module.hot.accept();
-    module.hot.dispose(() => app.close());
+    module.hot.dispose(async () => {
+      await app.close();
+
+      Logger.log('🔥 Server-side HMR terminated');
+    });
   }
 
   return app;

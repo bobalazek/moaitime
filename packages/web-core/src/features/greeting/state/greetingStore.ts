@@ -2,7 +2,6 @@ import { create } from 'zustand';
 
 import { GreetingInterface } from '@moaitime/shared-common';
 
-import { queryEvaluator } from '../../core/utils/QueryEvaluatorHelpers';
 import { getGreetings } from '../utils/GreetingsHelpers';
 
 export type GreetingStore = {
@@ -23,14 +22,7 @@ export const useGreetingStore = create<GreetingStore>()((set, get) => ({
   setRandomGreeting: async () => {
     const { greetings, setGreeting } = get();
 
-    const suitableGreetings = greetings.filter((greeting) => {
-      try {
-        return greeting.query ? queryEvaluator(greeting.query) : true;
-      } catch {
-        return false;
-      }
-    });
-    const greeting = suitableGreetings[Math.floor(Math.random() * suitableGreetings.length)];
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
 
     setGreeting(greeting);
 

@@ -1,4 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 
 import { Greeting } from '@moaitime/database-core';
 import { greetingsManager } from '@moaitime/database-services';
@@ -10,8 +11,8 @@ import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 export class GreetingsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
-  async list(): Promise<AbstractResponseDto<Greeting[]>> {
-    const data = await greetingsManager.list();
+  async list(@Req() req: Request): Promise<AbstractResponseDto<Greeting[]>> {
+    const data = await greetingsManager.list(req.user);
 
     return {
       success: true,

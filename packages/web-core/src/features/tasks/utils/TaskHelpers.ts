@@ -158,6 +158,12 @@ export const playCompleteTaskSound = () => {
   audio.play();
 };
 
+export const playNudgeTaskSound = () => {
+  const audio = new Audio();
+  audio.src = '/assets/tasks/nudge_task.mp3';
+  audio.play();
+};
+
 /********** Misc **********/
 export function setCursorToEnd(element: HTMLElement) {
   const range = document.createRange();

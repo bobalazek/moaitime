@@ -5,6 +5,7 @@ import { useAuthStore } from '../../auth/state/authStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useListsStore } from '../../tasks/state/listsStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
+import { playNudgeTaskSound } from '../../tasks/utils/TaskHelpers';
 import { useTeamsStore } from '../../teams/state/teamsStore';
 import { setWebsocketToken } from './FetchHelpers';
 import { getWebsocketUrl } from './WebsocketHelpers';
@@ -134,6 +135,8 @@ export class WebsocketManager {
         }
       }
 
+      playNudgeTaskSound();
+
       sonnerToast.info('Task Nudged', {
         description: `The task "${task.name}" was nudged by ${nudgerName}.`,
         duration: 15000,
@@ -145,8 +148,6 @@ export class WebsocketManager {
           },
         },
       });
-
-      // TODO: also play a sound
     } else if (data.type.startsWith('tasks:list:')) {
       const { reloadLists, reloadSelectedListTasks } = useListsStore.getState();
 

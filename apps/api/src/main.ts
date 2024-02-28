@@ -12,8 +12,6 @@ import { ZodValidationPipe } from './utils/validation-helpers';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const module: any;
 
-// TODO: Why are 2 processes spawned?
-
 export async function bootstrap() {
   Logger.log('🚀 Starting the API server...');
 

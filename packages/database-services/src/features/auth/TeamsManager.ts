@@ -16,7 +16,9 @@ import {
   users,
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
+  GlobalEventsEnum,
   TeamLimits,
   TeamUsage,
   TeamUserRoleEnum,
@@ -149,7 +151,14 @@ export class TeamsManager {
       throw new Error('Team not found');
     }
 
-    return this.updateOneById(teamId, data);
+    const updatedTeam = await this.updateOneById(teamId, data);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_EDITED, {
+      actorUserId: userId,
+      teamId,
+    });
+
+    return updatedTeam;
   }
 
   async delete(userId: string, teamId: string, isHardDelete?: boolean) {
@@ -158,11 +167,18 @@ export class TeamsManager {
       throw new Error('Team not found');
     }
 
-    return isHardDelete
-      ? this.deleteOneById(teamId)
-      : this.updateOneById(teamId, {
+    const team = isHardDelete
+      ? await this.deleteOneById(teamId)
+      : await this.updateOneById(teamId, {
           deletedAt: new Date(),
         });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_DELETED, {
+      actorUserId: userId,
+      teamId: team.id,
+    });
+
+    return team;
   }
 
   async undelete(userId: string, teamId: string) {
@@ -171,9 +187,16 @@ export class TeamsManager {
       throw new Error('You cannot undelete this team');
     }
 
-    return this.updateOneById(teamId, {
+    const team = await this.updateOneById(teamId, {
       deletedAt: null,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_UNDELETED, {
+      actorUserId: userId,
+      teamId: team.id,
+    });
+
+    return team;
   }
 
   async createAndJoin(user: User, teamName: string): Promise<{ team: Team; teamUser: TeamUser }> {
@@ -196,10 +219,19 @@ export class TeamsManager {
         roles: [TeamUserRoleEnum.OWNER],
       })
       .returning();
+    const row = teamUserRows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to join the team. Please try again.');
+    }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_ADDED, {
+      actorUserId: user.id,
+      teamId: team.id,
+    });
 
     return {
       team,
-      teamUser: teamUserRows[0],
+      teamUser: row,
     };
   }
 
@@ -232,12 +264,22 @@ export class TeamsManager {
       .delete(teamUsers)
       .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
       .returning();
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to leave the team');
+    }
 
     if (isOwner) {
       await this.delete(userId, teamId);
     }
 
-    return rows[0] ?? null;
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_LEFT, {
+      actorUserId: userId,
+      teamId,
+      userId,
+    });
+
+    return row;
   }
 
   async getJoinedTeamByUserId(userId: string): Promise<{ team: Team; teamUser: TeamUser } | null> {
@@ -253,8 +295,8 @@ export class TeamsManager {
       return null;
     }
 
-    const row = rows[0];
-    if (!row.teams || !row.team_users) {
+    const row = rows[0] ?? null;
+    if (!row || !row.teams || !row.team_users) {
       return null;
     }
 
@@ -399,29 +441,51 @@ export class TeamsManager {
     userId: string,
     teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
+    const teamUserInvitation = await this.findOneInvitationById(teamUserInvitationId);
+    if (!teamUserInvitation) {
+      throw new Error('Invitation not found');
+    }
+
+    if (teamUserInvitation.userId !== userId) {
+      throw new Error('You cannot accept this invitation');
+    }
+
+    if (teamUserInvitation.acceptedAt) {
+      throw new Error('Invitation was already accepted');
+    }
+
+    if (teamUserInvitation.rejectedAt) {
+      throw new Error('Invitation was already rejected');
+    }
+
     const now = new Date();
-    const where = and(
-      eq(teamUserInvitations.id, teamUserInvitationId),
-      eq(teamUserInvitations.userId, userId),
-      isNull(teamUserInvitations.acceptedAt),
-      isNull(teamUserInvitations.rejectedAt),
-      gt(teamUserInvitations.expiresAt, now)
-    );
+    if (teamUserInvitation.expiresAt && teamUserInvitation.expiresAt < now) {
+      throw new Error('Invitation has already expired');
+    }
 
     const rows = await getDatabase()
       .update(teamUserInvitations)
       .set({ acceptedAt: now })
-      .where(where)
+      .where(eq(teamUserInvitations.id, teamUserInvitationId))
       .returning();
 
     const row = rows[0] ?? null;
-    if (row) {
-      await getDatabase().insert(teamUsers).values({
-        teamId: row.teamId,
-        userId,
-        roles: row.roles,
-      });
+    if (!row) {
+      throw new Error('Failed to accept invitation');
     }
+
+    await getDatabase().insert(teamUsers).values({
+      teamId: row.teamId,
+      userId,
+      roles: row.roles,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITE_ACCEPTED, {
+      actorUserId: userId,
+      teamId: teamUserInvitation.teamId,
+      userId,
+      teamUserInvitationId,
+    });
 
     return row;
   }
@@ -430,22 +494,34 @@ export class TeamsManager {
     userId: string,
     teamUserInvitationId: string
   ): Promise<TeamUserInvitation | null> {
+    const teamUserInvitation = await this.findOneInvitationById(teamUserInvitationId);
+    if (!teamUserInvitation) {
+      throw new Error('Invitation not found');
+    }
+
+    if (teamUserInvitation.userId !== userId) {
+      throw new Error('You cannot reject this invitation');
+    }
+
     const now = new Date();
-    const where = and(
-      eq(teamUserInvitations.id, teamUserInvitationId),
-      eq(teamUserInvitations.userId, userId),
-      isNull(teamUserInvitations.acceptedAt),
-      isNull(teamUserInvitations.rejectedAt),
-      gt(teamUserInvitations.expiresAt, now)
-    );
 
     const rows = await getDatabase()
       .update(teamUserInvitations)
       .set({ rejectedAt: now })
-      .where(where)
+      .where(eq(teamUserInvitations.id, teamUserInvitationId))
       .returning();
 
     const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to reject invitation');
+    }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITE_REJECTED, {
+      actorUserId: userId,
+      teamId: teamUserInvitation.teamId,
+      userId,
+      teamUserInvitationId,
+    });
 
     return row;
   }
@@ -472,11 +548,17 @@ export class TeamsManager {
       .delete(teamUserInvitations)
       .where(eq(teamUserInvitations.id, teamUserInvitation.id))
       .returning();
-
     const row = rows[0] ?? null;
     if (!row) {
       throw new Error('Failed to delete invitation');
     }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITE_DELETED, {
+      actorUserId: userId,
+      teamId: teamUserInvitation.teamId,
+      userId,
+      teamUserInvitationId,
+    });
 
     return row;
   }
@@ -547,8 +629,8 @@ export class TeamsManager {
       })
       .returning();
 
-    const teamUserInvitation = teamUserInvitationRows[0];
-    if (!teamUserInvitation) {
+    const row = teamUserInvitationRows[0];
+    if (!row) {
       throw new Error('Failed to create a team user invitation. Please try again.');
     }
 
@@ -559,7 +641,13 @@ export class TeamsManager {
       registerUrl: `${WEB_URL}/register?teamUserInvitationToken=${token}`,
     });
 
-    return teamUserInvitation;
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITED, {
+      actorUserId: userId,
+      teamId,
+      teamUserInvitationId: row.id,
+    });
+
+    return row;
   }
 
   async deleteTeamMember(adminUserId: string, userId: string, teamId: string) {
@@ -597,6 +685,12 @@ export class TeamsManager {
     if (!row) {
       throw new Error('Failed to remove member from the team');
     }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_DELETED, {
+      actorUserId: adminUserId,
+      teamId,
+      userId,
+    });
 
     return row;
   }
@@ -677,6 +771,12 @@ export class TeamsManager {
     if (!row) {
       throw new Error('Failed to update member');
     }
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_UPDATED, {
+      actorUserId: adminUserId,
+      teamId,
+      userId,
+    });
 
     return row;
   }

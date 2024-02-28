@@ -26,7 +26,9 @@ module.exports = function (options, webpack) {
       new webpack.WatchIgnorePlugin({
         paths: [/\.js$/, /\.d\.ts$/],
       }),
-      //new RunScriptWebpackPlugin({ name: options.output.filename, autoRestart: false }), // This one for some reason just creates a new process
+      // TODO
+      // This one for some reason just creates a new process, however, now we are not reloading all the nest routes again
+      //new RunScriptWebpackPlugin({ name: options.output.filename, autoRestart: false }),
     ],
   };
 };

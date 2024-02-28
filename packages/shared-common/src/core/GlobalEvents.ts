@@ -1,3 +1,4 @@
+import { Team } from '../auth/teams/TeamSchema';
 import { Calendar } from '../calendar/CalendarSchema';
 import { Event } from '../calendar/EventSchema';
 import { FocusSession } from '../focus/FocusSessionSchema';
@@ -20,6 +21,18 @@ export enum GlobalEventsEnum {
   AUTH_USER_BLOCKED_USER = 'auth:user:blocked-user',
   AUTH_USER_UNBLOCKED_USER = 'auth:user:unblocked-user',
   AUTH_USER_REPORTED_USER = 'auth:user:reported-user',
+  // Teams
+  TEAMS_TEAM_ADDED = 'teams:team:added',
+  TEAMS_TEAM_EDITED = 'teams:team:edited',
+  TEAMS_TEAM_DELETED = 'teams:team:deleted',
+  TEAMS_TEAM_UNDELETED = 'teams:team:undeleted',
+  TEAMS_TEAM_MEMBER_INVITED = 'teams:team-member:invited',
+  TEAMS_TEAM_MEMBER_INVITE_ACCEPTED = 'teams:team-member:invite-accepted',
+  TEAMS_TEAM_MEMBER_INVITE_REJECTED = 'teams:team-member:invite-rejected',
+  TEAMS_TEAM_MEMBER_INVITE_DELETED = 'teams:team-member:invite-deleted',
+  TEAMS_TEAM_MEMBER_UPDATED = 'teams:team-member:updated',
+  TEAMS_TEAM_MEMBER_DELETED = 'teams:team-member:deleted',
+  TEAMS_TEAM_MEMBER_LEFT = 'teams:team-member:left',
   // Tasks
   TASKS_TASK_ADDED = 'tasks:task:added',
   TASKS_TASK_EDITED = 'tasks:task:edited',
@@ -131,6 +144,77 @@ export type GlobalEvents = {
     actorUserId: string;
     userId: string;
     reportId: string;
+    actorWebsocketToken?: string;
+  };
+  // Teams
+  [GlobalEventsEnum.TEAMS_TEAM_ADDED]: {
+    actorUserId: string;
+    teamId: string;
+    team?: Team;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_EDITED]: {
+    actorUserId: string;
+    teamId: string;
+    team?: Team;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_DELETED]: {
+    actorUserId: string;
+    teamId: string;
+    isHardDelete?: boolean;
+    team?: Team;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_UNDELETED]: {
+    actorUserId: string;
+    teamId: string;
+    team?: Team;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITED]: {
+    actorUserId: string;
+    teamId: string;
+    teamUserInvitationId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITE_ACCEPTED]: {
+    actorUserId: string;
+    teamId: string;
+    userId: string;
+    teamUserInvitationId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITE_REJECTED]: {
+    actorUserId: string;
+    teamId: string;
+    userId: string;
+    teamUserInvitationId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITE_DELETED]: {
+    actorUserId: string;
+    teamId: string;
+    userId: string;
+    teamUserInvitationId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_MEMBER_UPDATED]: {
+    actorUserId: string;
+    teamId: string;
+    userId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_MEMBER_DELETED]: {
+    actorUserId: string;
+    teamId: string;
+    userId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TEAMS_TEAM_MEMBER_LEFT]: {
+    actorUserId: string;
+    teamId: string;
+    userId: string;
     actorWebsocketToken?: string;
   };
   // Tasks

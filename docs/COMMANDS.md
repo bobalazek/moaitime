@@ -3,11 +3,12 @@
 ## General
 
 - `pnpm dev` - starts all the apps (web and API) for development on <http://localhost:4200> and <http://localhost:3636>
+- `pnpm dev:e2e` - runs the E2E tests with Cypress Studio, while also starting the API and web apps
+- `pnpm dev:emails` - runs the emails server on <http://localhost:3535>
 - `pnpm build` - builds all the apps and libraries
 - `pnpm test` - runs all the unit tests with Vitest
 - `pnpm test:watch` - runs all the unit tests with Vitest in watch mode
 - `pnpm e2e` - runs the E2E tests with Cypress, while also starting the API and web apps
-- `pnpm dev:e2e` - runs the E2E tests with Cypress Studio, while also starting the API and web apps
 - `pnpm lint` - runs ESLint
 - `pnpm format` - runs and fixes issues with the Prettier
 - `pnpm format:check` - checks if there are any issues with the Prettier

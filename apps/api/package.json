@@ -20,7 +20,7 @@
     "build": "tsup",
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "nest start --watch",
-    "dev:original": "tsup --env.TSUP_WATCH=true",
+    "dev:legacy": "tsup --env.TSUP_WATCH=true",
     "lint": "eslint .",
     "serve": "node ./dist/main.js",
     "test": "vitest run",

@@ -31,6 +31,10 @@
     "dev:e2e": {
       "dependsOn": ["^build"],
       "cache": false
+    },
+    "dev:emails": {
+      "dependsOn": ["^build"],
+      "cache": false
     }
   }
 }

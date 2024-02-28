@@ -22,7 +22,9 @@ export default function UserProfileDropdown() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger
+      title="Go to profile"
+      data-test="social--header--user-profile--dropdown-menu--trigger-button">
         <UserAvatar user={auth.user} sizePx={32} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">

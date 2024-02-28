@@ -18,5 +18,4 @@ describe('social.cy.ts', () => {
 
     cy.getBySel('social--index').should('not.exist');
   });
-
 });

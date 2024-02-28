@@ -57,11 +57,13 @@ export async function bootstrap() {
 
   Logger.log(`🚀 Application is running on: ${url}`);
 
-  if (module.hot) {
+  if (module?.hot) {
     Logger.log('✅ Server-side HMR enabled');
 
     module.hot.accept();
     module.hot.dispose(async () => {
+      Logger.log('🔥 Server-side HMR disposing ...');
+
       await app.close();
 
       Logger.log('🔥 Server-side HMR terminated');

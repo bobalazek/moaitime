@@ -21,10 +21,8 @@ export default defineConfig((options) => {
     for (const packageName of packages) {
       // TODO: we can only watch the packages that have @moaitime/api as dependency
 
-      // That is not really working, because now, for some reason Vite doesn't recognize the changes
-      // to the packages that are not being watched. I think we will need to fix that there
       if (packageName.startsWith('web-')) {
-        //continue;
+        continue;
       }
 
       watch.push(join(__dirname, `../../packages/${packageName}/dist/**/index.{js,mjs}`));

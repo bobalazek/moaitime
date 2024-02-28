@@ -1,5 +1,27 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const nodeExternals = require('webpack-node-externals');
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
+const WatchExternalFilesPlugin = require('webpack-watch-external-files-plugin');
+const { readdirSync } = require('fs');
+const { join } = require('path');
+
+// Packages and aliases
+const packagePaths = [];
+const packageResolvedAliases = {};
+const packages = readdirSync(join(__dirname, '../../packages'));
+for (const packageName of packages) {
+  // TODO: we can only watch the packages that have @moaitime/api as dependency
+
+  if (packageName.startsWith('web-')) {
+    continue;
+  }
+
+  const packagePath = join(__dirname, `../../packages/${packageName}/src/`);
+
+  packagePaths.push(`${packagePath}**/*.ts`);
+  packageResolvedAliases[`@moaitime/${packageName}`] = packagePath;
+}
 
 module.exports = function (options, webpack) {
   return {
@@ -14,10 +36,10 @@ module.exports = function (options, webpack) {
         },
       ],
     },
-    entry: ['webpack/hot/poll?100', options.entry],
+    entry: ['webpack/hot/poll?500', options.entry],
     externals: [
       nodeExternals({
-        allowlist: ['webpack/hot/poll?100'],
+        allowlist: ['webpack/hot/poll?500'],
       }),
     ],
     plugins: [
@@ -26,9 +48,20 @@ module.exports = function (options, webpack) {
       new webpack.WatchIgnorePlugin({
         paths: [/\.js$/, /\.d\.ts$/],
       }),
-      // TODO
-      // This one for some reason just creates a new process, however, now we are not reloading all the nest routes again
-      //new RunScriptWebpackPlugin({ name: options.output.filename, autoRestart: false }),
+      new WatchExternalFilesPlugin({
+        files: packagePaths,
+      }),
+      new RunScriptWebpackPlugin({
+        name: options.output.filename,
+        signal: 'SIGTERM',
+      }),
     ],
+    resolve: {
+      ...options.resolve,
+      alias: {
+        ...options.resolve.alias,
+        ...packageResolvedAliases,
+      },
+    },
   };
 };

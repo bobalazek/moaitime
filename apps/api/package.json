@@ -19,8 +19,8 @@
   "scripts": {
     "build": "tsup",
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
-    "dev": "tsup --env.TSUP_WATCH=true",
-    "dev:not-working-yet": "nest start --watch",
+    "dev": "nest build --watch",
+    "dev:legacy": "tsup --env.TSUP_WATCH=true",
     "lint": "eslint .",
     "serve": "node ./dist/main.js",
     "test": "vitest run",
@@ -66,6 +66,7 @@
     "swc-loader": "^0.2.6",
     "typescript": "^5.3.2",
     "webpack": "^5.51.1",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-node-externals": "^3.0.0",
+    "webpack-watch-external-files-plugin": "^3.0.0"
   }
 }

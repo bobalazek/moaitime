@@ -153,7 +153,11 @@ export class UserNotificationsManager {
     }
 
     const user = await usersManager.findOneById(userId);
-    const data = await this._parseRows(user!, rows);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const data = await this._parseRows(user, rows);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -269,6 +273,30 @@ export class UserNotificationsManager {
     );
 
     return rows;
+  }
+
+  async view(userId: string, userNotificationId: string) {
+    const canView = await this.userCanView(userId, userNotificationId);
+    if (!canView) {
+      throw new Error('User cannot view this user notification');
+    }
+
+    const row = await this.findOneById(userNotificationId);
+    if (!row) {
+      throw new Error('User notification not found');
+    }
+
+    const user = await usersManager.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const processedRows = await this._parseRows(user, [row]);
+    if (processedRows.length === 0) {
+      throw new Error('User notification not found');
+    }
+
+    return processedRows[0];
   }
 
   async delete(userId: string, userNotificationId: string) {

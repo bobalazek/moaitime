@@ -7,6 +7,7 @@ import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
   deleteUserNotification,
   getUnreadUserNotificationsCount,
+  getUserNotification,
   markAllUserNotificationsAsRead,
   markUserNotificationAsRead,
   markUserNotificationAsUnread,
@@ -16,6 +17,7 @@ export type UserNotificationsStore = {
   unreadUserNotificationsCount: number;
   reloadUnreadUserNotificationsCount: () => Promise<number>;
   markAllUserNotificationsAsRead: () => Promise<void>;
+  getUserNotification: (userNotificationId: string) => Promise<UserNotification>;
   markUserNotificationAsRead: (userNotificationId: string) => Promise<UserNotification>;
   markUserNotificationAsUnread: (userNotificationId: string) => Promise<UserNotification>;
   deleteUserNotification: (userNotificationId: string) => Promise<UserNotification>;
@@ -46,6 +48,11 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set, 
     globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ, {
       actorUserId: auth!.user.id,
     });
+  },
+  getUserNotification: async (userNotificationId: string) => {
+    const userNotification = await getUserNotification(userNotificationId);
+
+    return userNotification;
   },
   markUserNotificationAsRead: async (userNotificationId) => {
     const userNotification = await markUserNotificationAsRead(userNotificationId);

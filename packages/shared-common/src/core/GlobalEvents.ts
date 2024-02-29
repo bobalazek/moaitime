@@ -81,6 +81,8 @@ export enum GlobalEventsEnum {
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ = 'notifications:user-notification:marked-as-read',
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD = 'notifications:user-notification:marked-as-unread',
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ = 'notifications:user-notification:marked-all-as-unread',
+  // Misc
+  NAVIGATE_TO = 'navigate-to',
 }
 
 export type GlobalEvents = {
@@ -512,5 +514,9 @@ export type GlobalEvents = {
   [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ]: {
     actorUserId: string;
     actorWebsocketToken?: string;
+  };
+  // Misc
+  [GlobalEventsEnum.NAVIGATE_TO]: {
+    location: string;
   };
 };

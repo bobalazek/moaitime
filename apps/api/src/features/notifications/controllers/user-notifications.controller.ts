@@ -80,6 +80,22 @@ export class UserNotificationsController {
     };
   }
 
+  // Make sure that this, order-wise, needs to be AFTER unreadCount and unseenCount,
+  // otherwise those endpoints will throw "invalid uuid" errors
+  @UseGuards(AuthenticatedGuard)
+  @Get(':userNotificationId')
+  async view(
+    @Req() req: Request,
+    @Param('userNotificationId') userNotificationId: string
+  ): Promise<AbstractResponseDto<UserNotificationStripped>> {
+    const data = await userNotificationsManager.view(req.user.id, userNotificationId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
   @UseGuards(AuthenticatedGuard)
   @Post(':userNotificationId/mark-as-read')
   async markAsRead(

@@ -19,8 +19,13 @@ export class UserExperiencePointsProcessor {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const relatedEntities = userExperiencePointsByEvent[finalType].relatedEntities(data as any);
 
+      const userId = (data as { actorUserId: string }).actorUserId as string;
+      if (!userId) {
+        return;
+      }
+
       await this._userExperiencePointsManager.addExperiencePointsToUser(
-        data.actorUserId,
+        userId,
         `global-event:${type}`,
         amount,
         relatedEntities

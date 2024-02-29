@@ -1,12 +1,17 @@
 import { Task, User, UserNotification } from '@moaitime/database-core';
-import { EntityTypeEnum, UserNotificationTypeEnum } from '@moaitime/shared-common';
+import {
+  AchievementEnum,
+  AchievementsMap,
+  EntityTypeEnum,
+  UserNotificationTypeEnum,
+} from '@moaitime/shared-common';
 
 import { UserNotificationsManager, userNotificationsManager } from './UserNotificationsManager';
 
 export class UserNotificationsSender {
   constructor(private _userNotificationsManager: UserNotificationsManager) {}
 
-  async sendUserFollowRequestNotification(
+  async sendUserFollowRequestReceivedNotification(
     userId: string,
     followingUser: User
   ): Promise<UserNotification> {
@@ -17,23 +22,18 @@ export class UserNotificationsSender {
         __entityType: EntityTypeEnum.USERS,
       },
     };
-    const relatedEntities = Object.values(variables).map((v) => {
-      return {
-        id: v.id,
-        type: v.__entityType,
-      };
-    });
+    const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: followingUser.id,
       type: EntityTypeEnum.USERS,
     };
 
     return this._userNotificationsManager.addNotification({
-      type: UserNotificationTypeEnum.USER_FOLLOW_REQUEST,
+      type: UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED,
       userId,
       content: `**{{followingUser.displayName}}** has requested to follow you.`,
       data: {
-        variables: variables,
+        variables,
       },
       targetEntity,
       relatedEntities,
@@ -51,12 +51,7 @@ export class UserNotificationsSender {
         __entityType: EntityTypeEnum.USERS,
       },
     };
-    const relatedEntities = Object.values(variables).map((v) => {
-      return {
-        id: v.id,
-        type: v.__entityType,
-      };
-    });
+    const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: approvingUser.id,
       type: EntityTypeEnum.USERS,
@@ -67,14 +62,14 @@ export class UserNotificationsSender {
       userId,
       content: `**{{approvingUser.displayName}}** has approved your request.`,
       data: {
-        variables: variables,
+        variables,
       },
       targetEntity,
       relatedEntities,
     });
   }
 
-  async sendAssignedUserToTaskNotification(
+  async sendUserAssignedToTaskNotification(
     userId: string,
     assigningUser: User,
     task: Task
@@ -91,12 +86,7 @@ export class UserNotificationsSender {
         __entityType: EntityTypeEnum.TASKS,
       },
     };
-    const relatedEntities = Object.values(variables).map((v) => {
-      return {
-        id: v.id,
-        type: v.__entityType,
-      };
-    });
+    const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: task.id,
       type: EntityTypeEnum.TASKS,
@@ -107,10 +97,56 @@ export class UserNotificationsSender {
       userId,
       content: `**{{assigningUser.displayName}}** has assigned you to the "{{task.name}}" task.`,
       data: {
-        variables: variables,
+        variables,
       },
       targetEntity,
       relatedEntities,
+    });
+  }
+
+  async sendUserAchievementReceivedNotification(
+    userId: string,
+    achievementKey: AchievementEnum
+  ): Promise<UserNotification> {
+    const achievement = AchievementsMap.get(achievementKey);
+    if (!achievement) {
+      throw new Error(`Achievement with key "${achievementKey}" not found`);
+    }
+
+    const variables = {
+      achievement: {
+        id: achievement.key,
+        name: achievement.name,
+        __entityType: EntityTypeEnum.ACHIEVEMENTS,
+      },
+    };
+    const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
+    const targetEntity = {
+      id: userId,
+      type: EntityTypeEnum.USERS,
+    };
+
+    return this._userNotificationsManager.addNotification({
+      type: UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED,
+      userId,
+      content: `You have received the achievement "{{achievement.name}}".`,
+      data: {
+        variables,
+      },
+      targetEntity,
+      relatedEntities,
+    });
+  }
+
+  // Private
+  private _getRelatedEntitiesFromVariables(
+    variables: Record<string, { id: string; __entityType: EntityTypeEnum }>
+  ) {
+    return Object.values(variables).map((v) => {
+      return {
+        id: v.id,
+        type: v.__entityType,
+      };
     });
   }
 }

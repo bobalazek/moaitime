@@ -76,6 +76,7 @@ export enum GlobalEventsEnum {
   MOOD_MOOD_ENTRY_DELETED = 'mood:mood-entry:deleted',
   MOOD_MOOD_ENTRY_UNDELETED = 'mood:mood-entry:undeleted',
   // Notifications
+  NOTIFICATIONS_USER_NOTIFICATION_ADDED = 'notifications:user-notification:added',
   NOTIFICATIONS_USER_NOTIFICATION_DELETED = 'notifications:user-notification:deleted',
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ = 'notifications:user-notification:marked-as-read',
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD = 'notifications:user-notification:marked-as-unread',
@@ -487,6 +488,11 @@ export type GlobalEvents = {
     actorWebsocketToken?: string;
   };
   // Notifications
+  [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED]: {
+    actorUserId: string;
+    userNotificationId: string;
+    actorWebsocketToken?: string;
+  };
   [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED]: {
     actorUserId: string;
     userNotificationId: string;

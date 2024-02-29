@@ -1,5 +1,5 @@
 {
-  "id": "71726b5b-6a70-4f83-90e4-d465c3038242",
+  "id": "7378ca51-feb4-48b8-85c0-3c154c1df2b1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -2667,12 +2667,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "history": {
-          "name": "history",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -2700,8 +2694,8 @@
           "columns": ["achievement_key"],
           "isUnique": false
         },
-        "user_achievements_points_user_id_idx": {
-          "name": "user_achievements_points_user_id_idx",
+        "user_achievements_user_id_idx": {
+          "name": "user_achievements_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
         }
@@ -2712,6 +2706,82 @@
           "tableFrom": "user_achievements",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "user_achievement_entries": {
+      "name": "user_achievement_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_achievement_id": {
+          "name": "user_achievement_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "user_achievement_entries_key_idx": {
+          "name": "user_achievement_entries_key_idx",
+          "columns": ["key"],
+          "isUnique": false
+        },
+        "user_achievement_entries_user_achievement_id_idx": {
+          "name": "user_achievement_entries_user_achievement_id_idx",
+          "columns": ["user_achievement_id"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "user_achievement_entries_user_achievement_id_user_achievements_id_fk": {
+          "name": "user_achievement_entries_user_achievement_id_user_achievements_id_fk",
+          "tableFrom": "user_achievement_entries",
+          "tableTo": "user_achievements",
+          "columnsFrom": ["user_achievement_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"

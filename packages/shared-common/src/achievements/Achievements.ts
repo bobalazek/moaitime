@@ -11,13 +11,15 @@ export const Achievements: AchievementType[] = [
   {
     key: AchievementEnum.USER_TASKS_ADDED,
     name: 'Task Master',
-    description: 'Keep up the good working adding tasks',
-    levelPoints: [1],
+    description: 'Keep up the good working adding tasks!',
+    levelPoints: [1, 5, 10, 25, 50, 100, 500],
   },
   {
     key: AchievementEnum.USER_TASKS_COMPLETED,
     name: 'Task Slayer',
     description: 'Slaying those tasks like a boss!',
-    levelPoints: [1],
+    levelPoints: [1, 5, 10, 25, 50, 100, 500],
   },
 ];
+
+export const AchievementsMap = new Map(Achievements.map((a) => [a.key as AchievementEnum, a]));

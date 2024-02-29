@@ -1,5 +1,15 @@
-import { tasksManager, userAchievementsManager, usersManager } from '@moaitime/database-services';
-import { AchievementEnum, GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
+import {
+  tasksManager,
+  userAchievementsManager,
+  userNotificationsSender,
+  usersManager,
+} from '@moaitime/database-services';
+import {
+  AchievementEnum,
+  EntityTypeEnum,
+  GlobalEvents,
+  GlobalEventsEnum,
+} from '@moaitime/shared-common';
 
 export class UserAchievementsProcessor {
   async process<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
@@ -63,21 +73,28 @@ export class UserAchievementsProcessor {
       throw new Error(`Task with id "${data.taskId}" not found`);
     }
 
-    // TODO: perhaps we should only awatd an achievement once per day, even if the repeat is daily,
-    // to avoid spamming the user with achievements.
+    const now = new Date();
+    const key = `${EntityTypeEnum.TASKS}:${task.id}:${now.toISOString().split('T')[0]}`;
 
-    const achievement = await userAchievementsManager.findOneByUserIdAndAchievementKey(
+    const userAchievementEntry = await userAchievementsManager.addOrUpdateAchievementForUser(
+      data.actorUserId,
+      achievementKey,
+      1,
+      key,
+      {
+        id: task.id,
+        type: EntityTypeEnum.TASKS,
+      }
+    );
+    if (!userAchievementEntry) {
+      // It is a duplicate entry, so we can just return.
+      return;
+    }
+
+    await userNotificationsSender.sendUserAchievementReceivedNotification(
       data.actorUserId,
       achievementKey
     );
-
-    if (!achievement) {
-      await userAchievementsManager.addAchievementToUser(data.actorUserId, achievementKey, 1);
-    } else {
-      const currentPoints = achievement.points;
-
-      await userAchievementsManager.updateAchievement(achievement.id, currentPoints + 1);
-    }
   }
 }
 

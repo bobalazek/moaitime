@@ -355,10 +355,19 @@ CREATE TABLE IF NOT EXISTS "user_achievements" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"achievement_key" text NOT NULL,
 	"points" integer NOT NULL,
-	"history" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_achievement_entries" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"key" text NOT NULL,
+	"points" integer NOT NULL,
+	"data" jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_achievement_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_experience_points" (
@@ -496,7 +505,9 @@ CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("us
 CREATE INDEX IF NOT EXISTS "user_calendars_calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_notifications_user_id_idx" ON "user_notifications" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_achievements_achievement_key_idx" ON "user_achievements" ("achievement_key");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "user_achievements_points_user_id_idx" ON "user_achievements" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_achievements_user_id_idx" ON "user_achievements" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_achievement_entries_key_idx" ON "user_achievement_entries" ("key");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "user_achievement_entries_user_achievement_id_idx" ON "user_achievement_entries" ("user_achievement_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_experience_points_type_idx" ON "user_experience_points" ("type");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_experience_points_user_id_idx" ON "user_experience_points" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_followed_users_user_id_idx" ON "user_followed_users" ("user_id");--> statement-breakpoint
@@ -762,6 +773,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_achievements" ADD CONSTRAINT "user_achievements_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_achievement_entries" ADD CONSTRAINT "user_achievement_entries_user_achievement_id_user_achievements_id_fk" FOREIGN KEY ("user_achievement_id") REFERENCES "user_achievements"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

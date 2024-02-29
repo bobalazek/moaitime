@@ -36,7 +36,7 @@ export class UserNotificationsProcessor {
       throw new Error(`User followed user with id "${data.userFollowedUserId}" not found`);
     }
 
-    await userNotificationsSender.sendUserFollowRequestNotification(
+    await userNotificationsSender.sendUserFollowRequestReceivedNotification(
       userFollowedUser.followedUserId,
       actorUser
     );
@@ -79,7 +79,7 @@ export class UserNotificationsProcessor {
       throw new Error(`Task with id "${data.taskId}" not found`);
     }
 
-    await userNotificationsSender.sendAssignedUserToTaskNotification(data.userId, actorUser, task);
+    await userNotificationsSender.sendUserAssignedToTaskNotification(data.userId, actorUser, task);
   }
 }
 

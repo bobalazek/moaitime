@@ -4,6 +4,8 @@ import {
   getDatabase,
   NewUserAchievement,
   UserAchievement,
+  userAchievementEntries,
+  UserAchievementEntry,
   userAchievements,
 } from '@moaitime/database-core';
 import { AchievementEnum } from '@moaitime/shared-common';
@@ -61,6 +63,49 @@ export class UserAchievementsManager {
   }
 
   // Helpers
+  async addOrUpdateAchievementForUser(
+    userId: string,
+    achievementKey: AchievementEnum,
+    points: number,
+    key: string, // this is basically an index that will be created for the userAchievementEntries table, to prevent awarding achievements for the same thing multiple times
+    data?: Record<string, unknown>
+  ): Promise<UserAchievementEntry | null> {
+    let userAchievement = await this.findOneByUserIdAndAchievementKey(userId, achievementKey);
+    if (!userAchievement) {
+      userAchievement = await this.addAchievementToUser(userId, achievementKey, points);
+    }
+
+    const userAchievementEntry = await getDatabase().query.userAchievementEntries.findFirst({
+      where: and(
+        eq(userAchievementEntries.userAchievementId, userAchievement.id),
+        eq(userAchievementEntries.key, key)
+      ),
+    });
+    if (userAchievementEntry) {
+      return null;
+    }
+
+    const rows = await getDatabase()
+      .insert(userAchievementEntries)
+      .values({
+        key,
+        points,
+        data,
+        userAchievementId: userAchievement.id,
+      })
+      .returning();
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to create user achievement entry');
+    }
+
+    userAchievement = await this.updateAchievement(userAchievement.id, {
+      points: userAchievement.points + points,
+    });
+
+    return row;
+  }
+
   async addAchievementToUser(
     userId: string,
     achievementKey: AchievementEnum,
@@ -73,17 +118,20 @@ export class UserAchievementsManager {
     });
   }
 
-  async updateAchievement(id: string, points: number): Promise<UserAchievement> {
-    const achievement = await this.findOneById(id);
-    if (!achievement) {
-      throw new Error(`Achievement with ID "${id}" not found`);
+  async updateAchievement(
+    userAchievementId: string,
+    data: Partial<NewUserAchievement>
+  ): Promise<UserAchievement> {
+    const userAchievement = await this.findOneById(userAchievementId);
+    if (!userAchievement) {
+      throw new Error(`Achievement with ID "${userAchievementId}" not found`);
     }
 
-    return this.updateOneById(achievement.id, { points });
+    return this.updateOneById(userAchievement.id, data);
   }
 
-  async removeAchievement(id: string): Promise<UserAchievement> {
-    return this.deleteOneById(id);
+  async removeAchievement(userAchievementId: string): Promise<UserAchievement> {
+    return this.deleteOneById(userAchievementId);
   }
 }
 

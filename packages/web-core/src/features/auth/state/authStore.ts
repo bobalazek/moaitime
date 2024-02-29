@@ -13,6 +13,7 @@ import {
 import { sonnerToast } from '@moaitime/web-ui';
 
 import { useAppStore } from '../../core/state/appStore';
+import { useTasksStore } from '../../tasks/state/tasksStore';
 import {
   cancelNewEmail,
   confirmEmail,
@@ -95,11 +96,17 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Logout
       logout: async () => {
+        const { setPopoverOpen } = useTasksStore.getState();
+
         const response = await logout();
 
         set({ auth: null });
 
         localStorage.removeItem('device-uid');
+
+        // Make sure we close the popover, as it can stay open sometimes when logging in,
+        // if it was open
+        setPopoverOpen(false);
 
         return response;
       },

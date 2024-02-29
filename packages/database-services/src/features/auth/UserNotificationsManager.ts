@@ -23,8 +23,11 @@ import {
   UserNotification,
   userNotifications,
 } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
+  Achievements,
   Entity,
+  GlobalEventsEnum,
   SortDirectionEnum,
   UserNotificationSchema,
   UserNotification as UserNotificationStripped, // We strip out things like `data` and `relatedEntities` from the UserNotification type
@@ -252,9 +255,16 @@ export class UserNotificationsManager {
       throw new Error('User cannot delete this user notification');
     }
 
-    return this.updateOneById(userNotificationId, {
+    const data = await this.updateOneById(userNotificationId, {
       deletedAt: new Date(),
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, {
+      actorUserId: userId,
+      userNotificationId,
+    });
+
+    return data;
   }
 
   async markAsRead(userId: string, userNotificationId: string) {
@@ -263,9 +273,16 @@ export class UserNotificationsManager {
       throw new Error('User cannot update this user notification');
     }
 
-    return this.updateOneById(userNotificationId, {
+    const data = await this.updateOneById(userNotificationId, {
       readAt: new Date(),
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ, {
+      actorUserId: userId,
+      userNotificationId,
+    });
+
+    return data;
   }
 
   async markAsUnread(userId: string, userNotificationId: string) {
@@ -274,9 +291,19 @@ export class UserNotificationsManager {
       throw new Error('User cannot update this user notification');
     }
 
-    return this.updateOneById(userNotificationId, {
+    const data = await this.updateOneById(userNotificationId, {
       readAt: null,
     });
+
+    globalEventsNotifier.publish(
+      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
+      {
+        actorUserId: userId,
+        userNotificationId,
+      }
+    );
+
+    return data;
   }
 
   // Helpers
@@ -324,7 +351,14 @@ export class UserNotificationsManager {
     relatedEntities?: Entity[];
     data?: Record<string, unknown>;
   }) {
-    return this.insertOne(data);
+    const userNotification = await this.insertOne(data);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED, {
+      actorUserId: data.userId,
+      userNotificationId: userNotification.id,
+    });
+
+    return userNotification;
   }
 
   // Private
@@ -359,7 +393,16 @@ export class UserNotificationsManager {
       const entityIds = entityObjects.map((entity) => entity.id);
       const entityRows: { id: string }[] = [];
 
-      if (entityType === 'users') {
+      if (entityType === 'achievements') {
+        for (const achievement of Achievements) {
+          if (entityIds.includes(achievement.key)) {
+            entityRows.push({
+              id: achievement.key,
+              ...achievement,
+            });
+          }
+        }
+      } else if (entityType === 'users') {
         entityRows.push(
           ...(await getDatabase().query.users.findMany({
             columns: {
@@ -400,7 +443,7 @@ export class UserNotificationsManager {
       const parsedContent = this._parseContent(content, variables, objectsMap);
 
       let link = null;
-      if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST) {
+      if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED) {
         link = `/social/users/${user.username}/follow-requests`;
       } else if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED) {
         const targetUser = rest.targetEntity
@@ -416,6 +459,8 @@ export class UserNotificationsManager {
         if (targetTask) {
           link = `/?taskId=${targetTask.id}${targetTask.listId ? `&listId=${targetTask.listId}` : ''}`;
         }
+      } else if (rest.type === UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED) {
+        link = `/social/users/${user.username}`;
       }
 
       const parsedRow = UserNotificationSchema.parse({

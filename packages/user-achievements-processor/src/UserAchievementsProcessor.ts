@@ -49,10 +49,16 @@ export class UserAchievementsProcessor {
     );
 
     if (hasProfilePicture && !achievement) {
-      await userAchievementsManager.addAchievementToUser(
+      const key = `${EntityTypeEnum.USERS}:${data.userId}`;
+      await userAchievementsManager.addOrUpdateAchievementForUser(
         data.userId,
         AchievementEnum.USER_AVATAR_SET,
-        1
+        1,
+        key,
+        {
+          id: data.userId,
+          type: EntityTypeEnum.USERS,
+        }
       );
     } else if (!hasProfilePicture && achievement) {
       await userAchievementsManager.removeAchievement(achievement.id);

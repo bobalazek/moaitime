@@ -111,15 +111,17 @@ export class UserAchievementsManager {
       throw new Error('Failed to create user achievement entry');
     }
 
+    const newPoints = newlyCreatedAchievement ? points : userAchievement.points + points;
+
     userAchievement = await this.updateAchievement(userAchievement.id, {
-      points: userAchievement.points + points,
+      points: newPoints,
     });
 
     const userAchievementNewLevel = this._getLevelForUserAchievement(userAchievement);
 
     return {
       userAchievementEntry: row,
-      userAchievementPreviousLevel,
+      userAchievementPreviousLevel: newlyCreatedAchievement ? 0 : userAchievementPreviousLevel,
       userAchievementNewLevel,
     };
   }

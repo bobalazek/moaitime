@@ -76,7 +76,7 @@ export class UserAchievementsProcessor {
     const now = new Date();
     const key = `${EntityTypeEnum.TASKS}:${task.id}:${now.toISOString().split('T')[0]}`;
 
-    const { userAchievementEntry, userAchievementPreviousLevel, userAchievementNewLevel } =
+    const { userAchievementPreviousLevel, userAchievementNewLevel } =
       await userAchievementsManager.addOrUpdateAchievementForUser(
         data.actorUserId,
         achievementKey,
@@ -87,10 +87,6 @@ export class UserAchievementsProcessor {
           type: EntityTypeEnum.TASKS,
         }
       );
-    if (!userAchievementEntry) {
-      // It is a duplicate entry, so we can just return.
-      return;
-    }
 
     if (userAchievementPreviousLevel === userAchievementNewLevel) {
       return;

@@ -50,15 +50,23 @@ export class UserAchievementsProcessor {
 
     if (hasProfilePicture && !achievement) {
       const key = `${EntityTypeEnum.USERS}:${data.userId}`;
+      const achievementKey = AchievementEnum.USER_AVATAR_SET;
+
       await userAchievementsManager.addOrUpdateAchievementForUser(
         data.userId,
-        AchievementEnum.USER_AVATAR_SET,
+        achievementKey,
         1,
         key,
         {
           id: data.userId,
           type: EntityTypeEnum.USERS,
         }
+      );
+
+      await userNotificationsSender.sendUserAchievementReceivedNotification(
+        data.actorUserId,
+        achievementKey,
+        1
       );
     } else if (!hasProfilePicture && achievement) {
       await userAchievementsManager.removeAchievement(achievement.id);

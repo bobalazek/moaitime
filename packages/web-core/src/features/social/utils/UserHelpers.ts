@@ -4,6 +4,7 @@ import {
   PaginationCursorsType,
   PublicUser,
   ResponseInterface,
+  UserAchievement,
 } from '@moaitime/shared-common';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -84,6 +85,17 @@ export const getUserFollowRequests = async (
   });
 
   return response;
+};
+
+export const getUserAchievements = async (userIdOrUsername: string) => {
+  const response = await fetchJson<ResponseInterface<UserAchievement[]>>(
+    `${API_URL}/api/v1/users/${userIdOrUsername}/achievements`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as UserAchievement[];
 };
 
 export const getUserSearch = async (query?: string, options?: PaginationCursorsType) => {

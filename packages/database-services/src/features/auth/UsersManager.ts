@@ -25,6 +25,7 @@ import {
   teams,
   teamUsers,
   User,
+  userAchievements,
   userBlockedUsers,
   userExperiencePoints,
   userFollowedUsers,
@@ -32,6 +33,7 @@ import {
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
+  AchievementsMap,
   CreateReport,
   DEFAULT_USER_SETTINGS,
   EntityTypeEnum,
@@ -40,6 +42,7 @@ import {
   PublicUser,
   PublicUserSchema,
   SortDirectionEnum,
+  UserAchievement,
   UserLimits,
   UserSettings,
   UserUsage,
@@ -660,6 +663,76 @@ export class UsersManager {
     options: UsersManagerFollowOptions
   ) {
     return this._getFollowUsers('follow-requests', userId, userIdOrUsername, options);
+  }
+
+  async achievements(userId: string, userIdOrUsername: string) {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBlocked = await this.isBlockingUser(user.id, userId);
+    if (isBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const canViewUserIfPrivate = await this.canViewUserIfPrivate(userId, user);
+    if (!canViewUserIfPrivate) {
+      throw new Error('This user is private.');
+    }
+
+    const userAchievementEntries = await getDatabase().query.userAchievements.findMany({
+      where: eq(userAchievements.userId, user.id),
+    });
+
+    const data: UserAchievement[] = [];
+
+    for (const achievementEntry of userAchievementEntries) {
+      const achievement = AchievementsMap.get(achievementEntry.achievementKey);
+      if (!achievement) {
+        continue;
+      }
+
+      const points = achievementEntry.points;
+      let level = 0;
+      let currentLevelPoints = 0;
+      let nextLevelPoints = Infinity;
+      let nextLevelProgressPercentages = 0;
+
+      for (let i = 0; i < achievement.levelPoints.length; i++) {
+        const levelPoints = achievement.levelPoints[i];
+        if (points < levelPoints) {
+          break;
+        }
+
+        level = i + 1;
+        currentLevelPoints = levelPoints;
+        if (i + 1 < achievement.levelPoints.length) {
+          nextLevelPoints = achievement.levelPoints[i + 1];
+          nextLevelProgressPercentages = Math.floor(
+            ((points - levelPoints) / (nextLevelPoints - levelPoints)) * 100
+          );
+        } else {
+          nextLevelPoints = levelPoints;
+          nextLevelProgressPercentages = 100;
+
+          break;
+        }
+      }
+
+      data.push({
+        key: achievement.key,
+        name: achievement.name,
+        description: achievement.description,
+        points,
+        level,
+        currentLevelPoints,
+        nextLevelPoints: nextLevelPoints === Infinity ? currentLevelPoints : nextLevelPoints,
+        nextLevelProgressPercentages,
+      });
+    }
+
+    return data;
   }
 
   // Helpers

@@ -116,6 +116,20 @@ export class UsersController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Get(':userIdOrUsername/achievements')
+  async achievements(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string
+  ): Promise<AbstractResponseDto> {
+    const data = await usersManager.achievements(req.user.id, userIdOrUsername);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Post(':userIdOrUsername/follow')
   async follow(
     @Req() req: Request,

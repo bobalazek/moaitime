@@ -109,6 +109,7 @@ export * from './statistics/StatisticsFocusBasicData';
 export * from './achievements/Achievements';
 export * from './achievements/AchievementType';
 export * from './achievements/AchievementEnum';
+export * from './achievements/UserAchievementSchema';
 
 // Social
 export * from './social/PostSchema';

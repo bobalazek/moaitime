@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@moaitime/web-ui';
 
 import { UserAvatar } from '../../../../core/components/UserAvatar';
 import { useStateAndUrlSync } from '../../../../core/hooks/useStateAndUrlSync';
+import UserAchievementsGrid from '../../user-achievements-grid/UserAchievementsGrid';
 import UserBlockButton from '../../user-buttons/UserBlockButton';
 import UserFollowButton from '../../user-buttons/UserFollowButton';
 import UserReportButton from '../../user-buttons/UserReportButton';
@@ -169,6 +170,10 @@ const SocialUsersViewPageContent = ({
             </Tabs>
           </div>
         )}
+      </div>
+      <div className="mt-8">
+        <h3 className="text-2xl font-bold">Achievements</h3>
+        <UserAchievementsGrid user={user} />
       </div>
     </div>
   );

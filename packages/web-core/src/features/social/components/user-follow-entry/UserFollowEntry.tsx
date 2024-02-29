@@ -51,7 +51,7 @@ export default function UserFollowEntry({
       </div>
       <div>
         {type === 'follow-requests' && (
-          <UserApproveAndDeleteFollowButtons user={user} onAfterClick={onAfterClick} size="sm" />
+          <UserApproveAndDeleteFollowButtons user={user} onAfterClick={onAfterClick} />
         )}
         {type !== 'follow-requests' && (
           <UserFollowButton user={user} onAfterClick={onAfterClick} size="sm" />

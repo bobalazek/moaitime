@@ -683,6 +683,7 @@ export class UsersManager {
 
     const userAchievementEntries = await getDatabase().query.userAchievements.findMany({
       where: eq(userAchievements.userId, user.id),
+      orderBy: desc(userAchievements.updatedAt),
     });
 
     const data: UserAchievement[] = [];

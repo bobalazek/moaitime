@@ -8,7 +8,7 @@ import {
   UserAchievementEntry,
   userAchievements,
 } from '@moaitime/database-core';
-import { AchievementEnum } from '@moaitime/shared-common';
+import { AchievementEnum, AchievementsMap } from '@moaitime/shared-common';
 
 export class UserAchievementsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<UserAchievement[]> {
@@ -69,11 +69,19 @@ export class UserAchievementsManager {
     points: number,
     key: string, // this is basically an index that will be created for the userAchievementEntries table, to prevent awarding achievements for the same thing multiple times
     data?: Record<string, unknown>
-  ): Promise<UserAchievementEntry | null> {
+  ): Promise<{
+    userAchievementEntry: UserAchievementEntry | null;
+    userAchievementPreviousLevel: number;
+    userAchievementNewLevel: number;
+  }> {
+    let newlyCreatedAchievement = false;
     let userAchievement = await this.findOneByUserIdAndAchievementKey(userId, achievementKey);
     if (!userAchievement) {
       userAchievement = await this.addAchievementToUser(userId, achievementKey, points);
+      newlyCreatedAchievement = true;
     }
+
+    const userAchievementPreviousLevel = this._getLevelForUserAchievement(userAchievement);
 
     const userAchievementEntry = await getDatabase().query.userAchievementEntries.findFirst({
       where: and(
@@ -82,7 +90,11 @@ export class UserAchievementsManager {
       ),
     });
     if (userAchievementEntry) {
-      return null;
+      return {
+        userAchievementEntry,
+        userAchievementPreviousLevel: newlyCreatedAchievement ? 0 : userAchievementPreviousLevel,
+        userAchievementNewLevel: userAchievementPreviousLevel,
+      };
     }
 
     const rows = await getDatabase()
@@ -103,7 +115,13 @@ export class UserAchievementsManager {
       points: userAchievement.points + points,
     });
 
-    return row;
+    const userAchievementNewLevel = this._getLevelForUserAchievement(userAchievement);
+
+    return {
+      userAchievementEntry: row,
+      userAchievementPreviousLevel,
+      userAchievementNewLevel,
+    };
   }
 
   async addAchievementToUser(
@@ -132,6 +150,24 @@ export class UserAchievementsManager {
 
   async removeAchievement(userAchievementId: string): Promise<UserAchievement> {
     return this.deleteOneById(userAchievementId);
+  }
+
+  // Private
+  private _getLevelForUserAchievement(userAchievement: UserAchievement) {
+    const achievement = AchievementsMap.get(userAchievement.achievementKey);
+    if (!achievement) {
+      throw new Error(`Achievement with key "${userAchievement.achievementKey}" not found`);
+    }
+
+    const levelPoints = achievement.levelPoints;
+    let level = 0;
+    for (let i = 0; i < levelPoints.length; i++) {
+      if (userAchievement.points >= levelPoints[i]) {
+        level = i + 1;
+      }
+    }
+
+    return level;
   }
 }
 

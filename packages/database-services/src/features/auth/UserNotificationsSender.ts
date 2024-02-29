@@ -106,7 +106,8 @@ export class UserNotificationsSender {
 
   async sendUserAchievementReceivedNotification(
     userId: string,
-    achievementKey: AchievementEnum
+    achievementKey: AchievementEnum,
+    achievementLevel: number
   ): Promise<UserNotification> {
     const achievement = AchievementsMap.get(achievementKey);
     if (!achievement) {
@@ -119,6 +120,7 @@ export class UserNotificationsSender {
         name: achievement.name,
         __entityType: EntityTypeEnum.ACHIEVEMENTS,
       },
+      achievementLevel,
     };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
@@ -129,7 +131,7 @@ export class UserNotificationsSender {
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED,
       userId,
-      content: `You have received the achievement "{{achievement.name}}".`,
+      content: `You have received the achievement "{{achievement.name}}", level {{achievementLevel}}.`,
       data: {
         variables,
       },
@@ -139,15 +141,26 @@ export class UserNotificationsSender {
   }
 
   // Private
-  private _getRelatedEntitiesFromVariables(
-    variables: Record<string, { id: string; __entityType: EntityTypeEnum }>
-  ) {
-    return Object.values(variables).map((v) => {
-      return {
-        id: v.id,
-        type: v.__entityType,
-      };
-    });
+  private _getRelatedEntitiesFromVariables(variables: Record<string, unknown>) {
+    const result: { id: string; type: EntityTypeEnum }[] = [];
+    for (const key in variables) {
+      const variable = variables[key];
+      if (
+        !variable ||
+        typeof variable !== 'object' ||
+        typeof (variable as { id: string }).id !== 'string' ||
+        typeof (variable as { __entityType: EntityTypeEnum }).__entityType !== 'string'
+      ) {
+        continue;
+      }
+
+      result.push({
+        id: (variable as { id: string }).id,
+        type: (variable as { __entityType: EntityTypeEnum }).__entityType,
+      });
+    }
+
+    return result;
   }
 }
 

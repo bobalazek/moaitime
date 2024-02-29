@@ -76,24 +76,30 @@ export class UserAchievementsProcessor {
     const now = new Date();
     const key = `${EntityTypeEnum.TASKS}:${task.id}:${now.toISOString().split('T')[0]}`;
 
-    const userAchievementEntry = await userAchievementsManager.addOrUpdateAchievementForUser(
-      data.actorUserId,
-      achievementKey,
-      1,
-      key,
-      {
-        id: task.id,
-        type: EntityTypeEnum.TASKS,
-      }
-    );
+    const { userAchievementEntry, userAchievementPreviousLevel, userAchievementNewLevel } =
+      await userAchievementsManager.addOrUpdateAchievementForUser(
+        data.actorUserId,
+        achievementKey,
+        1,
+        key,
+        {
+          id: task.id,
+          type: EntityTypeEnum.TASKS,
+        }
+      );
     if (!userAchievementEntry) {
       // It is a duplicate entry, so we can just return.
       return;
     }
 
+    if (userAchievementPreviousLevel === userAchievementNewLevel) {
+      return;
+    }
+
     await userNotificationsSender.sendUserAchievementReceivedNotification(
       data.actorUserId,
-      achievementKey
+      achievementKey,
+      userAchievementNewLevel
     );
   }
 }

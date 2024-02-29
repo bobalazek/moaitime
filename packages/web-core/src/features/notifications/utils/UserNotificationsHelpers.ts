@@ -37,6 +37,17 @@ export const getUserNotifications = async (): Promise<UserNotification[]> => {
   return response.data ?? [];
 };
 
+export const getUserNotification = async (userNotificationId: string) => {
+  const response = await fetchJson<ResponseInterface<UserNotification>>(
+    `${API_URL}/api/v1/user-notifications/${userNotificationId}`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as UserNotification;
+};
+
 export const markAllUserNotificationsAsRead = async () => {
   const response = await fetchJson<ResponseInterface>(
     `${API_URL}/api/v1/user-notifications/mark-all-as-read`,

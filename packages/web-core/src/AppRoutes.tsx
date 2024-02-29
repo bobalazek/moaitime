@@ -1,4 +1,7 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+
+import { GlobalEventsEnum } from '@moaitime/shared-common';
 
 import AuthConfirmEmailPage from './features/auth/components/pages/AuthConfirmEmailPage';
 import AuthDeleteAccountPage from './features/auth/components/pages/AuthDeleteAccountPage';
@@ -13,6 +16,7 @@ import HomePage from './features/core/pages/HomePage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
 import PrivacyPage from './features/core/pages/PrivacyPage';
 import TermsPage from './features/core/pages/TermsPage';
+import { globalEventsEmitter } from './features/core/state/globalEventsEmitter';
 import FocusPage from './features/focus/components/pages/FocusPage';
 import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
@@ -22,6 +26,18 @@ import SocialUserSearchPage from './features/social/components/pages/SocialUserS
 import SocialUsersViewPage from './features/social/components/pages/SocialUsersViewPage';
 import StatisticsPage from './features/statistics/components/pages/StatisticsPage';
 import { GlobalDialogs } from './GlobalDialogs';
+
+function NavigationEvenListener() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    globalEventsEmitter.on(GlobalEventsEnum.NAVIGATE_TO, (payload) => {
+      navigate(payload.location);
+    });
+  }, [navigate]);
+
+  return null;
+}
 
 export function AppRoutes() {
   return (
@@ -146,6 +162,7 @@ export function AppRoutes() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <GlobalDialogs />
+      <NavigationEvenListener />
     </BrowserRouter>
   );
 }

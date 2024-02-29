@@ -3,10 +3,12 @@ import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 import { sonnerToast } from '../../../../../web-ui/src/components/sonner-toast';
 import { useAuthStore } from '../../auth/state/authStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
+import { useUserNotificationsStore } from '../../notifications/state/userNotificationsStore';
 import { useListsStore } from '../../tasks/state/listsStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import { playNudgeTaskSound } from '../../tasks/utils/TaskHelpers';
 import { useTeamsStore } from '../../teams/state/teamsStore';
+import { globalEventsEmitter } from '../state/globalEventsEmitter';
 import { setWebsocketToken } from './FetchHelpers';
 import { getWebsocketUrl } from './WebsocketHelpers';
 
@@ -145,6 +147,45 @@ export class WebsocketManager {
           label: 'View Task',
           onClick: () => {
             openPopoverForTask(task);
+          },
+        },
+      });
+    } else if (data.type === GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED) {
+      const {
+        getUserNotification,
+        markUserNotificationAsRead,
+        reloadUnreadUserNotificationsCount,
+      } = useUserNotificationsStore.getState();
+      const payload =
+        data.payload as GlobalEvents[GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED];
+
+      await reloadUnreadUserNotificationsCount();
+
+      const userNotification = await getUserNotification(payload.userNotificationId);
+      if (!userNotification) {
+        return;
+      }
+
+      sonnerToast.info('New Notification', {
+        description: userNotification.content,
+        duration: 15000,
+        position: 'top-right',
+        action: {
+          label: 'View',
+          onClick: async () => {
+            await markUserNotificationAsRead(userNotification.id);
+
+            if (!userNotification.link) {
+              globalEventsEmitter.emit(GlobalEventsEnum.NAVIGATE_TO, {
+                location: '/notifications',
+              });
+
+              return;
+            }
+
+            globalEventsEmitter.emit(GlobalEventsEnum.NAVIGATE_TO, {
+              location: userNotification.link,
+            });
           },
         },
       });

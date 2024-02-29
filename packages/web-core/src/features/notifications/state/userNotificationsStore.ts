@@ -2,10 +2,12 @@ import { create } from 'zustand';
 
 import { GlobalEventsEnum, UserNotification } from '@moaitime/shared-common';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
   deleteUserNotification,
   getUnreadUserNotificationsCount,
+  markAllUserNotificationsAsRead,
   markUserNotificationAsRead,
   markUserNotificationAsUnread,
 } from '../utils/UserNotificationsHelpers';
@@ -13,12 +15,16 @@ import {
 export type UserNotificationsStore = {
   unreadUserNotificationsCount: number;
   reloadUnreadUserNotificationsCount: () => Promise<number>;
+  markAllUserNotificationsAsRead: () => Promise<void>;
   markUserNotificationAsRead: (userNotificationId: string) => Promise<UserNotification>;
   markUserNotificationAsUnread: (userNotificationId: string) => Promise<UserNotification>;
   deleteUserNotification: (userNotificationId: string) => Promise<UserNotification>;
+  // Unread Only
+  unreadOnly: boolean;
+  setUnreadOnly: (unreadOnly: boolean) => void;
 };
 
-export const useUserNotificationsStore = create<UserNotificationsStore>()((set) => ({
+export const useUserNotificationsStore = create<UserNotificationsStore>()((set, get) => ({
   unreadUserNotificationsCount: 0,
   reloadUnreadUserNotificationsCount: async () => {
     const unreadUserNotificationsCount = await getUnreadUserNotificationsCount();
@@ -28,6 +34,18 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set) 
     });
 
     return unreadUserNotificationsCount;
+  },
+  markAllUserNotificationsAsRead: async () => {
+    const { reloadUnreadUserNotificationsCount } = get();
+    const { auth } = useAuthStore.getState();
+
+    await markAllUserNotificationsAsRead();
+
+    await reloadUnreadUserNotificationsCount();
+
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ, {
+      actorUserId: auth!.user.id,
+    });
   },
   markUserNotificationAsRead: async (userNotificationId) => {
     const userNotification = await markUserNotificationAsRead(userNotificationId);
@@ -70,5 +88,12 @@ export const useUserNotificationsStore = create<UserNotificationsStore>()((set) 
     });
 
     return userNotification;
+  },
+  // Unread
+  unreadOnly: false,
+  setUnreadOnly: (unreadOnly: boolean) => {
+    set({
+      unreadOnly,
+    });
   },
 }));

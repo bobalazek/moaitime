@@ -15,20 +15,32 @@ export class UserNotificationsController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async index(@Req() req: Request): Promise<AbstractResponseDto<UserNotificationStripped[]>> {
-    const limit = 10;
+    const limit = 20;
     const previousCursorParameter = req.query.previousCursor as string | undefined;
     const nextCursorParameter = req.query.nextCursor as string | undefined;
+    const unreadOnlyParameter = req.query.unreadOnly === 'true';
 
     const { data, meta } = await userNotificationsManager.list(req.user.id, {
       limit,
       previousCursor: previousCursorParameter,
       nextCursor: nextCursorParameter,
+      unreadOnly: unreadOnlyParameter,
     });
 
     return {
       success: true,
       data,
       meta,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('mark-all-as-read')
+  async markAllAsRead(@Req() req: Request): Promise<AbstractResponseDto> {
+    await userNotificationsManager.markAllAsRead(req.user.id);
+
+    return {
+      success: true,
     };
   }
 

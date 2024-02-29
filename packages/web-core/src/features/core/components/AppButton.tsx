@@ -44,9 +44,7 @@ export const AppButton: React.FC<
       {...rest}
     >
       <Icon className="h-8 w-8 text-white" />
-      {badgeCount &&
-      badgeCount >
-        0 /* Is there a better way without causing to render a "0" if this is false? */ ? (
+      {badgeCount && badgeCount > 0 ? (
         <div className="absolute right-[-4px] top-[-4px] flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-lg">
           {badgeCount > 9 ? '9+' : badgeCount}
         </div>

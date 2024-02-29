@@ -9,6 +9,7 @@ import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { globalEventsEmitter } from '../../../core/state/globalEventsEmitter';
 import { useUserNotificationsQuery } from '../../hooks/useUserNotificationsQuery';
+import { useUserNotificationsStore } from '../../state/userNotificationsStore';
 import { UserNotification } from '../user-notification/UserNotification';
 
 const animationVariants = {
@@ -36,6 +37,7 @@ function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
 }
 
 function UserNotificationsActivityInner() {
+  const { unreadOnly } = useUserNotificationsStore();
   const {
     data,
     isLoading,
@@ -45,13 +47,17 @@ function UserNotificationsActivityInner() {
     fetchPreviousPage,
     refetch,
     error,
-  } = useUserNotificationsQuery();
+  } = useUserNotificationsQuery(unreadOnly);
 
   useEffect(() => {
     const callback = () => {
       refetch();
     };
 
+    globalEventsEmitter.on(
+      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ,
+      callback
+    );
     globalEventsEmitter.on(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, callback);
     globalEventsEmitter.on(
       GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ,
@@ -63,6 +69,10 @@ function UserNotificationsActivityInner() {
     );
 
     return () => {
+      globalEventsEmitter.off(
+        GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ,
+        callback
+      );
       globalEventsEmitter.off(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, callback);
       globalEventsEmitter.off(
         GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ,

@@ -6,6 +6,7 @@ import { fetchJson } from '../../core/utils/FetchHelpers';
 export type NotificationsManagerFindOptions = {
   previousCursor?: string;
   nextCursor?: string;
+  unreadOnly?: boolean;
 };
 
 export const getUserNotificationsRawResponse = async (
@@ -21,6 +22,10 @@ export const getUserNotificationsRawResponse = async (
     url.searchParams.append('nextCursor', options.nextCursor);
   }
 
+  if (options?.unreadOnly) {
+    url.searchParams.append('unreadOnly', 'true');
+  }
+
   return fetchJson<ResponseInterface<UserNotification[]>>(url.toString(), {
     method: 'GET',
   });
@@ -30,6 +35,17 @@ export const getUserNotifications = async (): Promise<UserNotification[]> => {
   const response = await getUserNotificationsRawResponse();
 
   return response.data ?? [];
+};
+
+export const markAllUserNotificationsAsRead = async () => {
+  const response = await fetchJson<ResponseInterface>(
+    `${API_URL}/api/v1/user-notifications/mark-all-as-read`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response;
 };
 
 export const deleteUserNotification = async (userNotificationId: string) => {

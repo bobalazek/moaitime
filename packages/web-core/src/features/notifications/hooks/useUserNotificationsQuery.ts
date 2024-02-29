@@ -14,13 +14,15 @@ import {
 
 export const NOTIFICATIONS_QUERY_KEY = 'notifications';
 
-export const useUserNotificationsQuery = () => {
+export const useUserNotificationsQuery = (unreadOnly = false) => {
   return useInfiniteQuery<AsyncReturnType<typeof getUserNotificationsRawResponse>>({
     initialPageParam: undefined,
-    maxPages: 5,
-    queryKey: [NOTIFICATIONS_QUERY_KEY],
+    maxPages: 2,
+    queryKey: [NOTIFICATIONS_QUERY_KEY, unreadOnly],
     queryFn: ({ pageParam, direction }) => {
-      let params: NotificationsManagerFindOptions | undefined = undefined;
+      let params: NotificationsManagerFindOptions | undefined = unreadOnly
+        ? { unreadOnly }
+        : undefined;
       if (pageParam && typeof pageParam === 'string') {
         // We do NOT want to set the previous cursor if we are going forward,
         // because the only case where going forward and a previous cursor is set is,
@@ -30,10 +32,12 @@ export const useUserNotificationsQuery = () => {
         // we will not have any next cursor, since there will be no items there.
         if (pageParam.startsWith('previousCursor=') && direction === 'backward') {
           params = {
+            ...params,
             previousCursor: pageParam.replace('previousCursor=', ''),
           };
         } else if (pageParam.startsWith('nextCursor=')) {
           params = {
+            ...params,
             nextCursor: pageParam.replace('nextCursor=', ''),
           };
         }

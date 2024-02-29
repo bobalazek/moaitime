@@ -43,6 +43,7 @@ export type UserNotificationsManagerFindOptions = {
   previousCursor?: string;
   limit?: number;
   sortDirection?: SortDirectionEnum;
+  unreadOnly?: boolean;
 };
 
 export class UserNotificationsManager {
@@ -91,6 +92,10 @@ export class UserNotificationsManager {
       where = and(where, gte(userNotifications.createdAt, new Date(options.from))) as SQL<unknown>;
     } else if (options?.to) {
       where = and(where, lte(userNotifications.createdAt, new Date(options.to))) as SQL<unknown>;
+    }
+
+    if (options?.unreadOnly) {
+      where = and(where, isNull(userNotifications.readAt)) as SQL<unknown>;
     }
 
     if (options?.previousCursor) {
@@ -247,6 +252,23 @@ export class UserNotificationsManager {
   // API Helpers
   async list(userId: string, options?: UserNotificationsManagerFindOptions) {
     return this.findManyByUserIdWithDataAndMeta(userId, options);
+  }
+
+  async markAllAsRead(userId: string) {
+    const rows = await getDatabase()
+      .update(userNotifications)
+      .set({ readAt: new Date() })
+      .where(and(eq(userNotifications.userId, userId), isNull(userNotifications.deletedAt)))
+      .returning();
+
+    globalEventsNotifier.publish(
+      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ,
+      {
+        actorUserId: userId,
+      }
+    );
+
+    return rows;
   }
 
   async delete(userId: string, userNotificationId: string) {

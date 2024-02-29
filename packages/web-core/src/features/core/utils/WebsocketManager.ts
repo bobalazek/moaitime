@@ -120,75 +120,17 @@ export class WebsocketManager {
     };
 
     if (data.type === GlobalEventsEnum.TASKS_TASK_NUDGED) {
-      const { joinedTeamMembers } = useTeamsStore.getState();
-      const { getTask, openPopoverForTask } = useTasksStore.getState();
-      const payload = data.payload as GlobalEvents[GlobalEventsEnum.TASKS_TASK_NUDGED];
-
-      const task = await getTask(payload.taskId);
-      if (!task) {
-        return;
-      }
-
-      let nudgerName = 'Unknown';
-      for (const teamMember of joinedTeamMembers) {
-        if (teamMember.user?.id === payload.actorUserId) {
-          nudgerName = teamMember.user!.displayName;
-          break;
-        }
-      }
-
-      playNudgeTaskSound();
-
-      sonnerToast.info('Task Nudged', {
-        description: `The task "${task.name}" was nudged by ${nudgerName}.`,
-        duration: 15000,
-        position: 'top-right',
-        action: {
-          label: 'View Task',
-          onClick: () => {
-            openPopoverForTask(task);
-          },
-        },
-      });
+      await this._onTasksTaskNudged(
+        data.payload as GlobalEvents[GlobalEventsEnum.TASKS_TASK_NUDGED]
+      );
     } else if (data.type === GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED) {
-      const {
-        getUserNotification,
-        markUserNotificationAsRead,
-        reloadUnreadUserNotificationsCount,
-      } = useUserNotificationsStore.getState();
-      const payload =
-        data.payload as GlobalEvents[GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED];
-
-      await reloadUnreadUserNotificationsCount();
-
-      const userNotification = await getUserNotification(payload.userNotificationId);
-      if (!userNotification) {
-        return;
-      }
-
-      sonnerToast.info('New Notification', {
-        description: userNotification.content,
-        duration: 15000,
-        position: 'top-right',
-        action: {
-          label: 'View',
-          onClick: async () => {
-            await markUserNotificationAsRead(userNotification.id);
-
-            if (!userNotification.link) {
-              globalEventsEmitter.emit(GlobalEventsEnum.NAVIGATE_TO, {
-                location: '/notifications',
-              });
-
-              return;
-            }
-
-            globalEventsEmitter.emit(GlobalEventsEnum.NAVIGATE_TO, {
-              location: userNotification.link,
-            });
-          },
-        },
-      });
+      await this._onNotificationsUserNotificationAdded(
+        data.payload as GlobalEvents[GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED]
+      );
+    } else if (data.type.startsWith('achievements:achievement:')) {
+      // Just so we can trigger a re-fetch of the achievements on the grid component
+      // or wherever it's used
+      globalEventsEmitter.emit(data.type, data.payload);
     } else if (data.type.startsWith('tasks:list:')) {
       const { reloadLists, reloadSelectedListTasks } = useListsStore.getState();
 
@@ -208,6 +150,79 @@ export class WebsocketManager {
 
       await reloadJoinedTeamMembers();
     }
+  }
+
+  // Private
+  // Tasks
+  async _onTasksTaskNudged(payload: GlobalEvents[GlobalEventsEnum.TASKS_TASK_NUDGED]) {
+    const { joinedTeamMembers } = useTeamsStore.getState();
+    const { getTask, openPopoverForTask } = useTasksStore.getState();
+
+    const task = await getTask(payload.taskId);
+    if (!task) {
+      return;
+    }
+
+    let nudgerName = 'Unknown';
+    for (const teamMember of joinedTeamMembers) {
+      if (teamMember.user?.id === payload.actorUserId) {
+        nudgerName = teamMember.user!.displayName;
+        break;
+      }
+    }
+
+    playNudgeTaskSound();
+
+    sonnerToast.info('Task Nudged', {
+      description: `The task "${task.name}" was nudged by ${nudgerName}.`,
+      duration: 15000,
+      position: 'top-right',
+      action: {
+        label: 'View Task',
+        onClick: () => {
+          openPopoverForTask(task);
+        },
+      },
+    });
+  }
+
+  // Notifications
+  async _onNotificationsUserNotificationAdded(
+    payload: GlobalEvents[GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_ADDED]
+  ) {
+    const { getUserNotification, markUserNotificationAsRead, reloadUnreadUserNotificationsCount } =
+      useUserNotificationsStore.getState();
+
+    await reloadUnreadUserNotificationsCount();
+
+    const userNotification = await getUserNotification(payload.userNotificationId);
+    if (!userNotification) {
+      return;
+    }
+
+    sonnerToast.info('New Notification', {
+      description: userNotification.content,
+      duration: 15000,
+      position: 'top-right',
+      action: {
+        label: 'View',
+        onClick: async () => {
+          await markUserNotificationAsRead(userNotification.id);
+
+          if (!userNotification.link) {
+            globalEventsEmitter.emit(GlobalEventsEnum.NAVIGATE_TO, {
+              location: '/notifications',
+            });
+
+            return;
+          }
+
+          globalEventsEmitter.emit(GlobalEventsEnum.NAVIGATE_TO, {
+            location: userNotification.link,
+          });
+        },
+      },
+    });
   }
 }
 

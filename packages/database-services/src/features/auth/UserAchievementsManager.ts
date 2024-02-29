@@ -8,7 +8,8 @@ import {
   UserAchievementEntry,
   userAchievements,
 } from '@moaitime/database-core';
-import { AchievementEnum, AchievementsMap } from '@moaitime/shared-common';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
+import { AchievementEnum, AchievementsMap, GlobalEventsEnum } from '@moaitime/shared-common';
 
 export class UserAchievementsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<UserAchievement[]> {
@@ -113,7 +114,7 @@ export class UserAchievementsManager {
 
     const newPoints = newlyCreatedAchievement ? points : userAchievement.points + points;
 
-    userAchievement = await this.updateAchievement(userAchievement.id, {
+    userAchievement = await this.updateAchievement(userId, userAchievement.id, {
       points: newPoints,
     });
 
@@ -131,14 +132,22 @@ export class UserAchievementsManager {
     achievementKey: AchievementEnum,
     points: number
   ): Promise<UserAchievement> {
-    return this.insertOne({
+    const userAchievement = await this.insertOne({
       userId,
       achievementKey,
       points,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_ADDED, {
+      actorUserId: userId,
+      userAchievementId: userAchievement.id,
+    });
+
+    return userAchievement;
   }
 
   async updateAchievement(
+    userId: string,
     userAchievementId: string,
     data: Partial<NewUserAchievement>
   ): Promise<UserAchievement> {
@@ -147,11 +156,25 @@ export class UserAchievementsManager {
       throw new Error(`Achievement with ID "${userAchievementId}" not found`);
     }
 
-    return this.updateOneById(userAchievement.id, data);
+    const updatedUserAchievement = await this.updateOneById(userAchievement.id, data);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_UPDATED, {
+      actorUserId: userId,
+      userAchievementId: userAchievement.id,
+    });
+
+    return updatedUserAchievement;
   }
 
-  async removeAchievement(userAchievementId: string): Promise<UserAchievement> {
-    return this.deleteOneById(userAchievementId);
+  async removeAchievement(userId: string, userAchievementId: string): Promise<UserAchievement> {
+    const deletedUserAchievement = await this.deleteOneById(userAchievementId);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_UPDATED, {
+      actorUserId: userId,
+      userAchievementId: deletedUserAchievement.id,
+    });
+
+    return deletedUserAchievement;
   }
 
   // Private

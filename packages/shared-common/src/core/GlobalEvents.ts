@@ -81,6 +81,10 @@ export enum GlobalEventsEnum {
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ = 'notifications:user-notification:marked-as-read',
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD = 'notifications:user-notification:marked-as-unread',
   NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ = 'notifications:user-notification:marked-all-as-unread',
+  // Achievements
+  ACHIEVEMENTS_ACHIEVEMENT_ADDED = 'achievements:achievement:added',
+  ACHIEVEMENTS_ACHIEVEMENT_UPDATED = 'achievements:achievement:updated',
+  ACHIEVEMENTS_ACHIEVEMENT_DELETED = 'achievements:achievement:deleted',
   // Misc
   NAVIGATE_TO = 'navigate-to',
 }
@@ -513,6 +517,22 @@ export type GlobalEvents = {
   };
   [GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ]: {
     actorUserId: string;
+    actorWebsocketToken?: string;
+  };
+  // Achievements
+  [GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_ADDED]: {
+    actorUserId: string;
+    userAchievementId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_UPDATED]: {
+    actorUserId: string;
+    userAchievementId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_DELETED]: {
+    actorUserId: string;
+    userAchievementId: string;
     actorWebsocketToken?: string;
   };
   // Misc

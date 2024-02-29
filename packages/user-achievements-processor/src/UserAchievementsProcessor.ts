@@ -69,7 +69,7 @@ export class UserAchievementsProcessor {
         1
       );
     } else if (!hasProfilePicture && achievement) {
-      await userAchievementsManager.removeAchievement(achievement.id);
+      await userAchievementsManager.removeAchievement(data.userId, achievement.id);
     }
   }
 

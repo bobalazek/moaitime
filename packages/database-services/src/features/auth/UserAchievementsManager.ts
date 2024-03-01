@@ -68,6 +68,7 @@ export class UserAchievementsManager {
     userId: string,
     achievementKey: AchievementEnum,
     points: number,
+    pointsAction: 'add' | 'set' = 'add',
     key: string, // this is basically an index that will be created for the userAchievementEntries table, to prevent awarding achievements for the same thing multiple times
     data?: Record<string, unknown>
   ): Promise<{
@@ -75,14 +76,29 @@ export class UserAchievementsManager {
     userAchievementPreviousLevel: number;
     userAchievementNewLevel: number;
   }> {
-    let newlyCreatedAchievement = false;
+    let isNewlyCreatedAchievement = false;
     let userAchievement = await this.findOneByUserIdAndAchievementKey(userId, achievementKey);
-    if (!userAchievement) {
-      userAchievement = await this.addAchievementToUser(userId, achievementKey, points);
-      newlyCreatedAchievement = true;
+    let userAchievementPreviousLevel = userAchievement
+      ? this._getLevelForUserAchievement(userAchievement)
+      : 0;
+
+    if (pointsAction === 'set' && points === 0) {
+      if (userAchievement) {
+        await userAchievementsManager.removeAchievement(userId, userAchievement.id);
+      }
+
+      return {
+        userAchievementEntry: null,
+        userAchievementPreviousLevel,
+        userAchievementNewLevel: 0,
+      };
     }
 
-    const userAchievementPreviousLevel = this._getLevelForUserAchievement(userAchievement);
+    if (!userAchievement) {
+      userAchievement = await this.addAchievementToUser(userId, achievementKey, points);
+      isNewlyCreatedAchievement = true;
+      userAchievementPreviousLevel = 0;
+    }
 
     const userAchievementEntry = await getDatabase().query.userAchievementEntries.findFirst({
       where: and(
@@ -93,8 +109,8 @@ export class UserAchievementsManager {
     if (userAchievementEntry) {
       return {
         userAchievementEntry,
-        userAchievementPreviousLevel: newlyCreatedAchievement ? 0 : userAchievementPreviousLevel,
-        userAchievementNewLevel: userAchievementPreviousLevel,
+        userAchievementPreviousLevel,
+        userAchievementNewLevel: this._getLevelForUserAchievement(userAchievement),
       };
     }
 
@@ -107,12 +123,15 @@ export class UserAchievementsManager {
         userAchievementId: userAchievement.id,
       })
       .returning();
-    const row = rows[0] ?? null;
-    if (!row) {
+    const newUserAchievementEntry = rows[0] ?? null;
+    if (!newUserAchievementEntry) {
       throw new Error('Failed to create user achievement entry');
     }
 
-    const newPoints = newlyCreatedAchievement ? points : userAchievement.points + points;
+    const newPoints =
+      pointsAction === 'set' || isNewlyCreatedAchievement
+        ? points
+        : userAchievement.points + points;
 
     userAchievement = await this.updateAchievement(userId, userAchievement.id, {
       points: newPoints,
@@ -121,8 +140,8 @@ export class UserAchievementsManager {
     const userAchievementNewLevel = this._getLevelForUserAchievement(userAchievement);
 
     return {
-      userAchievementEntry: row,
-      userAchievementPreviousLevel: newlyCreatedAchievement ? 0 : userAchievementPreviousLevel,
+      userAchievementEntry: newUserAchievementEntry,
+      userAchievementPreviousLevel,
       userAchievementNewLevel,
     };
   }
@@ -169,7 +188,7 @@ export class UserAchievementsManager {
   async removeAchievement(userId: string, userAchievementId: string): Promise<UserAchievement> {
     const deletedUserAchievement = await this.deleteOneById(userAchievementId);
 
-    globalEventsNotifier.publish(GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_UPDATED, {
+    globalEventsNotifier.publish(GlobalEventsEnum.ACHIEVEMENTS_ACHIEVEMENT_DELETED, {
       actorUserId: userId,
       userAchievementId: deletedUserAchievement.id,
     });

@@ -51,10 +51,6 @@ export default function AccountSettingsSectionContent() {
 
     try {
       await deleteAccountAvatar();
-
-      sonnerToast.success(`Avatar removed`, {
-        description: `Your avatar has been successfully removed.`,
-      });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     } finally {

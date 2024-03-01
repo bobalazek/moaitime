@@ -9,6 +9,12 @@ export const Achievements: AchievementType[] = [
     levelPoints: [1],
   },
   {
+    key: AchievementEnum.USER_FOLLOWED_USERS,
+    name: 'Social Butterfly',
+    description: 'Following all the cool people!',
+    levelPoints: [1, 3, 10],
+  },
+  {
     key: AchievementEnum.USER_TASKS_ADDED,
     name: 'Task Master',
     description: 'Keep up the good working adding tasks!',

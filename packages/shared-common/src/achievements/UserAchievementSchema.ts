@@ -8,7 +8,8 @@ export const UserAchievementSchema = z.object({
   level: z.number(),
   currentLevelPoints: z.number(),
   nextLevelPoints: z.number(),
-  nextLevelProgressPercentages: z.number(),
+  nextLevelProgressPercentage: z.number(),
+  hasReachedMaxProgress: z.boolean(),
 });
 
 // Types

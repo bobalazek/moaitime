@@ -698,7 +698,7 @@ export class UsersManager {
       let level = 0;
       let currentLevelPoints = 0;
       let nextLevelPoints = Infinity;
-      let nextLevelProgressPercentages = 0;
+      let nextLevelProgressPercentage = 0;
 
       for (let i = 0; i < achievement.levelPoints.length; i++) {
         const levelPoints = achievement.levelPoints[i];
@@ -710,12 +710,12 @@ export class UsersManager {
         currentLevelPoints = levelPoints;
         if (i + 1 < achievement.levelPoints.length) {
           nextLevelPoints = achievement.levelPoints[i + 1];
-          nextLevelProgressPercentages = Math.floor(
+          nextLevelProgressPercentage = Math.floor(
             ((points - levelPoints) / (nextLevelPoints - levelPoints)) * 100
           );
         } else {
           nextLevelPoints = levelPoints;
-          nextLevelProgressPercentages = 100;
+          nextLevelProgressPercentage = 100;
 
           break;
         }
@@ -729,7 +729,8 @@ export class UsersManager {
         level,
         currentLevelPoints,
         nextLevelPoints: nextLevelPoints === Infinity ? currentLevelPoints : nextLevelPoints,
-        nextLevelProgressPercentages,
+        nextLevelProgressPercentage,
+        hasReachedMaxProgress: nextLevelProgressPercentage === 100,
       });
     }
 

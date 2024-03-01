@@ -66,7 +66,10 @@ export default function UserAchievementsGrid({ user }: UserAchievementsGridProps
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div
+      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+      data-test="social--user-achievements-grid"
+    >
       <AnimatePresence>
         {data.map((achievement) => (
           <motion.div
@@ -77,6 +80,10 @@ export default function UserAchievementsGrid({ user }: UserAchievementsGridProps
             exit="exit"
             variants={animationVariants}
             className="flex flex-col gap-3 rounded-lg border-2 p-3"
+            data-test="social--user-achievements-grid--user-achievement"
+            data-achievement-key={achievement.key}
+            data-achievement-level={achievement.level}
+            data-achievement-points={achievement.points}
           >
             <div className="flex justify-between">
               <h5 className="text-lg">

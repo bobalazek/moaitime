@@ -114,5 +114,7 @@ export * from './achievements/UserAchievementSchema';
 // Social
 export * from './social/PostSchema';
 export * from './social/PostTypeEnum';
+export * from './social/PostStatusTypeEnum';
 export * from './social/PostVisibilityEnum';
 export * from './social/InvitationSchema';
+export * from './social/FeedEntrySchema';

@@ -31,8 +31,11 @@ export default function UserProfileDropdown() {
       >
         <UserAvatar user={auth.user} sizePx={32} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-40"
-        data-test="social--header--user-profile--dropdown-menu">
+      <DropdownMenuContent
+        align="end"
+        className="min-w-40"
+        data-test="social--header--user-profile--dropdown-menu"
+      >
         <DropdownMenuItem asChild>
           <Link to={`/social/users/${auth.user.username}`} className="cursor-pointer">
             <UserIcon className="mr-2 h-4 w-4" />

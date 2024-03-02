@@ -15,6 +15,8 @@ export * from './features/auth/UserOnlineActivityEntriesManager';
 
 // Social
 export * from './features/social/InvitationsManager';
+export * from './features/social/PostsManager';
+export * from './features/social/FeedManager';
 
 // Backgrounds
 export * from './features/backgrounds/BackgroundsManager';

@@ -33,9 +33,9 @@ describe('social.cy.ts', () => {
     cy.getBySel('social--header--user-profile--dropdown-menu--trigger-button').click();
 
     cy.getBySel('social--header--user-profile--dropdown-menu')
-    .find('a[role="menuitem"]')
-    .contains('Profile')
-    .click();
+      .find('a[role="menuitem"]')
+      .contains('Profile')
+      .click();
 
     cy.getBySel('social--users-view--content').should('exist');
   });
@@ -46,9 +46,9 @@ describe('social.cy.ts', () => {
     cy.getBySel('social--header--user-profile--dropdown-menu--trigger-button').click();
 
     cy.getBySel('social--header--user-profile--dropdown-menu')
-    .find('a[role="menuitem"]')
-    .contains('Notifications')
-    .click();
+      .find('a[role="menuitem"]')
+      .contains('Notifications')
+      .click();
 
     cy.getBySel('notifications--content').should('exist');
   });
@@ -59,9 +59,9 @@ describe('social.cy.ts', () => {
     cy.getBySel('social--header--user-profile--dropdown-menu--trigger-button').click();
 
     cy.getBySel('social--header--user-profile--dropdown-menu')
-    .find('div[role="menuitem"]')
-    .contains('Settings')
-    .click();
+      .find('div[role="menuitem"]')
+      .contains('Settings')
+      .click();
 
     cy.getBySel('settings--dialog').should('exist');
   });
@@ -72,11 +72,10 @@ describe('social.cy.ts', () => {
     cy.getBySel('social--header--user-profile--dropdown-menu--trigger-button').click();
 
     cy.getBySel('social--header--user-profile--dropdown-menu')
-    .find('div[role="menuitem"]')
-    .contains('Logout')
-    .click();
+      .find('div[role="menuitem"]')
+      .contains('Logout')
+      .click();
 
     cy.get('div').contains('Sign In').should('exist');
   });
-
 });

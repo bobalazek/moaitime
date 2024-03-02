@@ -191,6 +191,7 @@ export default function AccountSettingsSectionContent() {
         <h4 className="text-lg font-bold">Display Name</h4>
         <p className="mb-2 text-xs text-gray-400">What shall we call you?</p>
         <Input
+          id='account-settings-display-name'
           value={userDisplayName}
           onChange={(event) => {
             setUserDisplayName(event.target.value);
@@ -201,6 +202,7 @@ export default function AccountSettingsSectionContent() {
         <h4 className="text-lg font-bold">Username</h4>
         <p className="mb-2 text-xs text-gray-400">What about your username?</p>
         <Input
+        id='account-settings-username'
           value={userUsername}
           onChange={(event) => {
             setUserUsername(event.target.value);
@@ -211,6 +213,7 @@ export default function AccountSettingsSectionContent() {
         <h4 className="text-lg font-bold">Email</h4>
         <p className="mb-2 text-xs text-gray-400">What is your email?</p>
         <Input
+          id='account-settings-email'
           value={userEmail}
           onChange={(event) => {
             setUserEmail(event.target.value);
@@ -274,6 +277,7 @@ export default function AccountSettingsSectionContent() {
           Anything interesting you want to tell us about yourself?
         </p>
         <Textarea
+          id='account-settings-bio'
           value={userBiography}
           onChange={(event) => {
             setUserBiography(event.target.value);

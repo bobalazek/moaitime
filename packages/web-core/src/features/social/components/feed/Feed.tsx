@@ -1,6 +1,7 @@
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useFeedQuery } from '../../hooks/useFeedQuery';
+import FeedEntry from './FeedEntry';
 
 const Feed = ({ userIdOrUsername }: { userIdOrUsername?: string }) => {
   const { isLoading, error, data } = useFeedQuery(userIdOrUsername);
@@ -19,11 +20,9 @@ const Feed = ({ userIdOrUsername }: { userIdOrUsername?: string }) => {
   }
 
   return (
-    <div data-test="feed" className="flex flex-col gap-2">
-      {items.map((post) => (
-        <div key={post.id} className="rounded-lg border-2 p-4 shadow-md">
-          {post.content}
-        </div>
+    <div data-test="feed" className="flex flex-col gap-4">
+      {items.map((feedEntry) => (
+        <FeedEntry key={feedEntry.id} feedEntry={feedEntry} />
       ))}
     </div>
   );

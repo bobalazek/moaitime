@@ -1,4 +1,4 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { and, DBQueryConfig, eq } from 'drizzle-orm';
 
 import { getDatabase, NewPost, Post, posts, User } from '@moaitime/database-core';
 import {
@@ -89,8 +89,13 @@ export class PostsManager {
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
 
+    let where = eq(posts.visibility, PostVisibilityEnum.PUBLIC);
+    if (user) {
+      where = and(where, eq(posts.userId, user.id))!;
+    }
+
     const data = await this.findMany({
-      where: user ? eq(posts.userId, user.id) : undefined,
+      where,
     });
 
     return {

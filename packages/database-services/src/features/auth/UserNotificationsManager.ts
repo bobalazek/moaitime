@@ -32,6 +32,7 @@ import {
   UserNotificationSchema,
   UserNotification as UserNotificationStripped, // We strip out things like `data` and `relatedEntities` from the UserNotification type
   UserNotificationTypeEnum,
+  UserNotificationTypeMessages,
 } from '@moaitime/shared-common';
 
 import { usersManager } from './UsersManager';
@@ -396,7 +397,6 @@ export class UserNotificationsManager {
   async addNotification(data: {
     type: UserNotificationTypeEnum;
     userId: string;
-    content: string;
     targetEntity?: Entity;
     relatedEntities?: Entity[];
     data?: Record<string, unknown>;
@@ -483,38 +483,37 @@ export class UserNotificationsManager {
     }
 
     for (const row of rows) {
-      const { content, ...rest } = row;
-
+      const content = UserNotificationTypeMessages[row.type as UserNotificationTypeEnum];
       const variables = (
-        rest.data && typeof rest.data === 'object' && 'variables' in rest.data
-          ? rest.data.variables
+        row.data && typeof row.data === 'object' && 'variables' in row.data
+          ? row.data.variables
           : {}
       ) as Record<string, unknown>;
       const parsedContent = this._parseContent(content, variables, objectsMap);
 
       let link = null;
-      if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED) {
+      if (row.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED) {
         link = `/social/users/${user.username}/follow-requests`;
-      } else if (rest.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED) {
-        const targetUser = rest.targetEntity
-          ? objectsMap.get(`${rest.targetEntity.type}:${rest.targetEntity.id}`)
+      } else if (row.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED) {
+        const targetUser = row.targetEntity
+          ? objectsMap.get(`${row.targetEntity.type}:${row.targetEntity.id}`)
           : null;
         if (targetUser) {
           link = `/social/users/${targetUser.username}`;
         }
-      } else if (rest.type === UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK) {
-        const targetTask = rest.targetEntity
-          ? objectsMap.get(`${rest.targetEntity.type}:${rest.targetEntity.id}`)
+      } else if (row.type === UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK) {
+        const targetTask = row.targetEntity
+          ? objectsMap.get(`${row.targetEntity.type}:${row.targetEntity.id}`)
           : null;
         if (targetTask) {
           link = `/?taskId=${targetTask.id}${targetTask.listId ? `&listId=${targetTask.listId}` : ''}`;
         }
-      } else if (rest.type === UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED) {
+      } else if (row.type === UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED) {
         link = `/social/users/${user.username}`;
       }
 
       const parsedRow = UserNotificationSchema.parse({
-        ...rest,
+        ...row,
         content: parsedContent,
         link,
       });

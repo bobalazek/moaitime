@@ -4,6 +4,7 @@ import {
   AchievementsMap,
   EntityTypeEnum,
   UserNotificationTypeEnum,
+  UserNotificationTypeVariables,
 } from '@moaitime/shared-common';
 
 import { UserNotificationsManager, userNotificationsManager } from './UserNotificationsManager';
@@ -13,25 +14,25 @@ export class UserNotificationsSender {
 
   async sendUserFollowRequestReceivedNotification(
     userId: string,
-    followingUser: User
+    requestingUser: User
   ): Promise<UserNotification> {
-    const variables = {
-      followingUser: {
-        id: followingUser.id,
-        displayName: followingUser.displayName,
-        __entityType: EntityTypeEnum.USERS,
-      },
-    };
+    const variables: UserNotificationTypeVariables[UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED] =
+      {
+        requestingUser: {
+          id: requestingUser.id,
+          displayName: requestingUser.displayName,
+          __entityType: EntityTypeEnum.USERS,
+        },
+      };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
-      id: followingUser.id,
+      id: requestingUser.id,
       type: EntityTypeEnum.USERS,
     };
 
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED,
       userId,
-      content: `**{{followingUser.displayName}}** has requested to follow you.`,
       data: {
         variables,
       },
@@ -44,13 +45,14 @@ export class UserNotificationsSender {
     userId: string,
     approvingUser: User
   ): Promise<UserNotification> {
-    const variables = {
-      approvingUser: {
-        id: approvingUser.id,
-        displayName: approvingUser.displayName,
-        __entityType: EntityTypeEnum.USERS,
-      },
-    };
+    const variables: UserNotificationTypeVariables[UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED] =
+      {
+        approvingUser: {
+          id: approvingUser.id,
+          displayName: approvingUser.displayName,
+          __entityType: EntityTypeEnum.USERS,
+        },
+      };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: approvingUser.id,
@@ -60,7 +62,6 @@ export class UserNotificationsSender {
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED,
       userId,
-      content: `**{{approvingUser.displayName}}** has approved your request.`,
       data: {
         variables,
       },
@@ -74,18 +75,19 @@ export class UserNotificationsSender {
     assigningUser: User,
     task: Task
   ): Promise<UserNotification> {
-    const variables = {
-      assigningUser: {
-        id: assigningUser.id,
-        displayName: assigningUser.displayName,
-        __entityType: EntityTypeEnum.USERS,
-      },
-      task: {
-        id: task.id,
-        name: task.name,
-        __entityType: EntityTypeEnum.TASKS,
-      },
-    };
+    const variables: UserNotificationTypeVariables[UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK] =
+      {
+        assigningUser: {
+          id: assigningUser.id,
+          displayName: assigningUser.displayName,
+          __entityType: EntityTypeEnum.USERS,
+        },
+        task: {
+          id: task.id,
+          name: task.name,
+          __entityType: EntityTypeEnum.TASKS,
+        },
+      };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: task.id,
@@ -95,7 +97,6 @@ export class UserNotificationsSender {
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK,
       userId,
-      content: `**{{assigningUser.displayName}}** has assigned you to the "{{task.name}}" task.`,
       data: {
         variables,
       },
@@ -114,14 +115,15 @@ export class UserNotificationsSender {
       throw new Error(`Achievement with key "${achievementKey}" not found`);
     }
 
-    const variables = {
-      achievement: {
-        id: achievement.key,
-        name: achievement.name,
-        __entityType: EntityTypeEnum.ACHIEVEMENTS,
-      },
-      achievementLevel,
-    };
+    const variables: UserNotificationTypeVariables[UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED] =
+      {
+        achievement: {
+          id: achievement.key,
+          name: achievement.name,
+          __entityType: EntityTypeEnum.ACHIEVEMENTS,
+        },
+        achievementLevel,
+      };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: userId,
@@ -131,7 +133,6 @@ export class UserNotificationsSender {
     return this._userNotificationsManager.addNotification({
       type: UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED,
       userId,
-      content: `You have received the achievement "{{achievement.name}}", level {{achievementLevel}}.`,
       data: {
         variables,
       },

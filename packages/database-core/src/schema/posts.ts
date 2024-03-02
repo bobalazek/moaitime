@@ -1,7 +1,12 @@
 import { relations } from 'drizzle-orm';
-import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-import { PostStatusTypeEnum, PostTypeEnum, PostVisibilityEnum } from '@moaitime/shared-common';
+import {
+  Entity,
+  PostStatusTypeEnum,
+  PostTypeEnum,
+  PostVisibilityEnum,
+} from '@moaitime/shared-common';
 
 import { users } from './users';
 
@@ -12,7 +17,9 @@ export const posts = pgTable(
     type: text('type').notNull().$type<PostTypeEnum>(),
     subType: text('sub_type').$type<PostStatusTypeEnum | null>(),
     visibility: text('visibility').notNull().$type<PostVisibilityEnum>(),
-    content: text('content').notNull(),
+    content: text('content'),
+    relatedEntities: jsonb('related_entities').$type<Entity[]>(), // Those are the entities we will get from the DB before rendering the content
+    data: jsonb('data'),
     deletedAt: timestamp('deleted_at'),
     publishedAt: timestamp('published_at').defaultNow(),
     createdAt: timestamp('created_at').defaultNow(),

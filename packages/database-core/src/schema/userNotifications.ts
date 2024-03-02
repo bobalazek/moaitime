@@ -10,7 +10,6 @@ export const userNotifications = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     type: text('type').notNull().$type<UserNotificationTypeEnum>(),
-    content: text('content').notNull(),
     targetEntity: jsonb('target_entity').$type<Entity>(),
     relatedEntities: jsonb('related_entities').$type<Entity[]>(), // Those are the entities we will get from the DB before rendering the content
     data: jsonb('data'),

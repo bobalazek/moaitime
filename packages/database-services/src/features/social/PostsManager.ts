@@ -60,7 +60,7 @@ export class PostsManager {
     type: PostTypeEnum,
     subType: PostStatusTypeEnum,
     visibility: PostVisibilityEnum,
-    content: string
+    content?: string
   ) {
     const data = await this.insertOne({
       userId,

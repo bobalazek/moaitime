@@ -230,8 +230,11 @@ CREATE TABLE IF NOT EXISTS "task_users" (
 CREATE TABLE IF NOT EXISTS "posts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" text NOT NULL,
+	"sub_type" text,
 	"visibility" text NOT NULL,
-	"content" text NOT NULL,
+	"content" text,
+	"related_entities" jsonb,
+	"data" jsonb,
 	"deleted_at" timestamp,
 	"published_at" timestamp DEFAULT now(),
 	"created_at" timestamp DEFAULT now(),
@@ -339,7 +342,6 @@ CREATE TABLE IF NOT EXISTS "user_calendars" (
 CREATE TABLE IF NOT EXISTS "user_notifications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" text NOT NULL,
-	"content" text NOT NULL,
 	"target_entity" jsonb,
 	"related_entities" jsonb,
 	"data" jsonb,

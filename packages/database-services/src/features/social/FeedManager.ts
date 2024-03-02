@@ -1,7 +1,13 @@
 import { inArray } from 'drizzle-orm';
 
 import { users } from '@moaitime/database-core';
-import { FeedEntry, PublicUserSchema, SortDirectionEnum } from '@moaitime/shared-common';
+import {
+  FeedEntry,
+  PostStatusTypeEnum,
+  PostStatusTypeMessages,
+  PublicUserSchema,
+  SortDirectionEnum,
+} from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
 import { postsManager, PostsManagerFindOptions } from './PostsManager';
@@ -38,9 +44,13 @@ export class FeedManager {
     const data = result.data.map((post) => {
       const user = publicUsersMap.get(post.userId);
       const parsedUser = PublicUserSchema.parse(user);
+      const content =
+        PostStatusTypeMessages[post.subType as PostStatusTypeEnum] ??
+        `Unknown content. Please do ping us about this mistake and provide us with the following post ID: ${post.id}`;
 
       return {
         ...post,
+        content,
         user: parsedUser,
         deletedAt: post.deletedAt?.toISOString() ?? null,
         publishedAt: post.publishedAt!.toISOString(),

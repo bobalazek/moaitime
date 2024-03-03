@@ -25,9 +25,9 @@ describe('AuthManager.ts', () => {
     });
 
     it('should login with valid credentials', async () => {
-      const result = await authManager.login('tester@corcosoft.com', 'password');
+      const result = await authManager.login('tester@moaitime.com', 'password');
 
-      expect(result.user.email).toBe('tester@corcosoft.com');
+      expect(result.user.email).toBe('tester@moaitime.com');
       expect(result.user.displayName).toBe('Tester');
       expect(result.userAccessToken).toBeDefined();
     });
@@ -35,7 +35,7 @@ describe('AuthManager.ts', () => {
 
   describe('logout()', () => {
     it('should work correctly', async () => {
-      const result = await authManager.login('tester@corcosoft.com', 'password');
+      const result = await authManager.login('tester@moaitime.com', 'password');
       const token = result.userAccessToken.token;
 
       await authManager.logout(token);
@@ -55,7 +55,7 @@ describe('AuthManager.ts', () => {
         authManager.register({
           displayName: 'Tester',
           username: 'tester',
-          email: 'tester@corcosoft.com',
+          email: 'tester@moaitime.com',
           password: 'password12345',
         });
 
@@ -67,7 +67,7 @@ describe('AuthManager.ts', () => {
         authManager.register({
           displayName: 'Tester',
           username: 'tester',
-          email: 'tester+custom-email@corcosoft.com',
+          email: 'tester+custom-email@moaitime.com',
           password: 'password12345',
         });
 
@@ -79,7 +79,8 @@ describe('AuthManager.ts', () => {
         authManager.register({
           displayName: 'Tester0',
           username: 'tester0',
-          email: 'tester+0@corcosoft.com',
+          email: 'tester+0@moaitime.com',
+          password: '',
         });
 
       await expect(result).rejects.toThrow('Password is not set');
@@ -89,12 +90,12 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester0',
         username: 'tester0',
-        email: 'tester+0@corcosoft.com',
+        email: 'tester+0@moaitime.com',
         password: 'password',
       });
 
       expect(user.displayName).toBe('Tester0');
-      expect(user.email).toBe('tester+0@corcosoft.com');
+      expect(user.email).toBe('tester+0@moaitime.com');
       expect(user.roles).toStrictEqual(['user']);
       expect(user.emailConfirmationToken).not.toBe(null);
       expect(user.emailConfirmationLastSentAt).not.toBe(null);
@@ -118,7 +119,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester1',
         username: 'tester1',
-        email: 'tester+1@corcosoft.com',
+        email: 'tester+1@moaitime.com',
         password: 'password',
       });
 
@@ -131,7 +132,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester2',
         username: 'tester2',
-        email: 'tester+2@corcosoft.com',
+        email: 'tester+2@moaitime.com',
         password: 'password',
       });
 
@@ -148,11 +149,11 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester3',
         username: 'tester3',
-        email: 'tester+3@corcosoft.com',
+        email: 'tester+3@moaitime.com',
         password: 'password',
       });
 
-      const newEmail = 'tester+3newemail@corcosoft.com';
+      const newEmail = 'tester+3newemail@moaitime.com';
       const newEmailConfirmationToken = uuidv4();
       await usersManager.updateOneById(user.id, {
         newEmail,
@@ -171,7 +172,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester4',
         username: 'tester4',
-        email: 'tester+4@corcosoft.com',
+        email: 'tester+4@moaitime.com',
         password: 'password',
       });
 
@@ -191,7 +192,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester5',
         username: 'tester5',
-        email: 'tester+5@corcosoft.com',
+        email: 'tester+5@moaitime.com',
         password: 'password',
       });
 
@@ -215,7 +216,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester6',
         username: 'tester6',
-        email: 'tester+6@corcosoft.com',
+        email: 'tester+6@moaitime.com',
         password: 'password',
       });
 
@@ -228,11 +229,11 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester7',
         username: 'tester7',
-        email: 'tester+7@corcosoft.com',
+        email: 'tester+7@moaitime.com',
         password: 'password',
       });
 
-      const newEmail = 'tester+7newemail@corcosoft.com';
+      const newEmail = 'tester+7newemail@moaitime.com';
       const newEmailConfirmationToken = uuidv4();
       await usersManager.updateOneById(user.id, {
         newEmail,
@@ -242,7 +243,7 @@ describe('AuthManager.ts', () => {
 
       const updatedUser = await authManager.cancelNewEmail(user.id);
 
-      expect(updatedUser.email).toBe('tester+7@corcosoft.com');
+      expect(updatedUser.email).toBe('tester+7@moaitime.com');
       expect(updatedUser.newEmail).toBe(null);
       expect(updatedUser.newEmailConfirmationToken).toBe(null);
       expect(updatedUser.newEmailConfirmationLastSentAt).toBe(null);
@@ -254,7 +255,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester8',
         username: 'tester8',
-        email: 'tester+8@corcosoft.com',
+        email: 'tester+8@moaitime.com',
         password: 'password',
       });
 
@@ -268,7 +269,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester9',
         username: 'tester9',
-        email: 'tester+9@corcosoft.com',
+        email: 'tester+9@moaitime.com',
         password: 'password',
       });
 
@@ -297,7 +298,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester10',
         username: 'tester10',
-        email: 'tester+10@corcosoft.com',
+        email: 'tester+10@moaitime.com',
         password: 'password',
       });
 
@@ -318,7 +319,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester11',
         username: 'tester11',
-        email: 'tester+11@corcosoft.com',
+        email: 'tester+11@moaitime.com',
         password: 'password',
       });
 
@@ -338,7 +339,7 @@ describe('AuthManager.ts', () => {
 
   describe('refreshToken()', () => {
     it('should work correctly', async () => {
-      const email = 'tester+12@corcosoft.com';
+      const email = 'tester+12@moaitime.com';
       const password = 'password';
       await authManager.register({
         displayName: 'Tester12',
@@ -359,7 +360,7 @@ describe('AuthManager.ts', () => {
     });
 
     it('should prevent refreshing if it was revoked', async () => {
-      const email = 'tester+13@corcosoft.com';
+      const email = 'tester+13@moaitime.com';
       const password = 'password';
       await authManager.register({
         displayName: 'Tester13',
@@ -381,7 +382,7 @@ describe('AuthManager.ts', () => {
     });
 
     it('should prevent refreshing if it has expired', async () => {
-      const email = 'tester+14@corcosoft.com';
+      const email = 'tester+14@moaitime.com';
       const password = 'password';
       await authManager.register({
         displayName: 'Tester14',
@@ -403,7 +404,7 @@ describe('AuthManager.ts', () => {
     });
 
     it('should prevent refreshing if it has expired', async () => {
-      const email = 'tester+15@corcosoft.com';
+      const email = 'tester+15@moaitime.com';
       const password = 'password';
       await authManager.register({
         displayName: 'Tester15',
@@ -425,7 +426,7 @@ describe('AuthManager.ts', () => {
     });
 
     it('should create default lists and a calendar for a new user', async () => {
-      const email = 'tester+16@corcosoft.com';
+      const email = 'tester+16@moaitime.com';
       const password = 'password';
       const user = await authManager.register({
         displayName: 'Tester16',
@@ -447,20 +448,20 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester17',
         username: 'tester17',
-        email: 'tester+17@corcosoft.com',
+        email: 'tester+17@moaitime.com',
         password: 'password',
       });
 
       const updatedUser = await authManager.update(user.id, {
         displayName: 'Tester17Updated',
         birthDate: '1990-01-01',
-        email: 'tester+17updated@corcosoft.com',
+        email: 'tester+17updated@moaitime.com',
       });
 
       expect(updatedUser.displayName).toBe('Tester17Updated');
       expect(updatedUser.birthDate).toStrictEqual('1990-01-01');
-      expect(updatedUser.email).toBe('tester+17@corcosoft.com');
-      expect(updatedUser.newEmail).toBe('tester+17updated@corcosoft.com');
+      expect(updatedUser.email).toBe('tester+17@moaitime.com');
+      expect(updatedUser.newEmail).toBe('tester+17updated@moaitime.com');
       expect(updatedUser.newEmailConfirmationToken).not.toBe(null);
       expect(updatedUser.newEmailConfirmationLastSentAt).not.toBe(null);
     });
@@ -471,7 +472,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester18',
         username: 'tester18',
-        email: 'tester+18@corcosoft.com',
+        email: 'tester+18@moaitime.com',
         password: 'password',
       });
 
@@ -484,7 +485,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester19',
         username: 'tester19',
-        email: 'tester+19@corcosoft.com',
+        email: 'tester+19@moaitime.com',
         password: 'password',
       });
 
@@ -513,7 +514,7 @@ describe('AuthManager.ts', () => {
       const user = await authManager.register({
         displayName: 'Tester20',
         username: 'tester20',
-        email: 'tester+20@corcosoft.com',
+        email: 'tester+20@moaitime.com',
         password: 'password',
       });
 

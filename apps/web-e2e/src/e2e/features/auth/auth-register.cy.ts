@@ -10,7 +10,7 @@ describe('auth-register.cy.ts', () => {
 
     cy.get('#register-displayName').type('NewTester');
     cy.get('#register-username').type('newtester');
-    cy.get('#register-email').type('newtester@corcosoft.com');
+    cy.get('#register-email').type('newtester@moaitime.com');
     cy.get('#register-password').type('password');
 
     cy.intercept('POST', '/api/v1/auth/register').as('register');
@@ -30,7 +30,7 @@ describe('auth-register.cy.ts', () => {
       const { data } = response.body;
 
       expect(data).to.not.be.null;
-      expect(data.data.to).eq('newtester@corcosoft.com');
+      expect(data.data.to).eq('newtester@moaitime.com');
       expect(data.data.subject).includes('Welcome to');
       expect(data.data.html).includes('/confirm-email?token='); // We want to make sure that the email includes the verify email link
     });

@@ -4,7 +4,7 @@ const { defineConfig } = require('cypress');
 const env = {
   users: {
     default: {
-      email: 'tester@corcosoft.com',
+      email: 'tester@moaitime.com',
       password: 'password',
     },
   },

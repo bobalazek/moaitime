@@ -8,7 +8,7 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
   return [
     {
       username: 'tester',
-      email: 'tester@corcosoft.com',
+      email: 'tester@moaitime.com',
       password: await generateHash('password'),
       displayName: 'Tester',
       roles: [UserRoleEnum.USER],
@@ -20,7 +20,7 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
     },
     {
       username: 'nonverifiedtester',
-      email: 'tester+nonverified@corcosoft.com',
+      email: 'tester+nonverified@moaitime.com',
       password: await generateHash('password'),
       roles: [UserRoleEnum.USER],
       displayName: 'NonVerifiedTester',
@@ -31,7 +31,7 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
     },
     {
       username: 'privatetester',
-      email: 'tester+private@corcosoft.com',
+      email: 'tester+private@moaitime.com',
       password: await generateHash('password'),
       roles: [UserRoleEnum.USER],
       displayName: 'PrivateTester',

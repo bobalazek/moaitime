@@ -114,7 +114,8 @@ export class CalendarEntriesManager {
     }
 
     const listIds = await listsManager.getVisibleListIdsByUserId(user.id);
-    const tasks = await tasksManager.findManyByListIdsAndRange(listIds, from, to);
+    const rawTasks = await tasksManager.findManyByListIdsAndRange(listIds, from, to);
+    const tasks = await tasksManager.populateTagsAndUsers(rawTasks);
     for (const task of tasks) {
       // We should never have a task without a due date,
       // but we need to apease typescript.

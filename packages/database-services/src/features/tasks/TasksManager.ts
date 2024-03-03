@@ -49,6 +49,8 @@ import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
 import { tagsManager } from './TagsManager';
 
+export type TaskWithListColor = Task & { listColor?: string | null };
+
 export type TaskManagerListOptions = {
   includeCompleted?: boolean;
   includeDeleted?: boolean;
@@ -165,7 +167,7 @@ export class TasksManager {
     listIds: string[],
     from?: Date,
     to?: Date
-  ): Promise<(Task & { listColor: string | null })[]> {
+  ): Promise<TaskWithListColor[]> {
     if (listIds.length === 0) {
       return [];
     }
@@ -358,7 +360,7 @@ export class TasksManager {
       limit,
     });
 
-    return this._populateTagsAndUsers(tasks);
+    return this.populateTagsAndUsers(tasks);
   }
 
   async reorder(
@@ -393,7 +395,9 @@ export class TasksManager {
       throw new Error('Task not found');
     }
 
-    return (await this._populateTagsAndUsers([row]))[0];
+    const tasks = await this.populateTagsAndUsers([row]);
+
+    return tasks[0];
   }
 
   async create(user: User, data: CreateTask) {
@@ -1091,24 +1095,7 @@ export class TasksManager {
     });
   }
 
-  // Private
-  private _fixRowColumns(task: Task) {
-    // TODO
-    // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
-    // Should actually be a string
-    if (task.dueDate && (task.dueDate as unknown as Date) instanceof Date) {
-      task.dueDate = format(task.dueDate as unknown as Date, 'yyyy-MM-dd');
-    }
-
-    // We do not want the seconds here
-    if (task.dueDateTime && task.dueDateTime.length === 8) {
-      task.dueDateTime = task.dueDateTime.slice(0, -3);
-    }
-
-    return task;
-  }
-
-  private async _populateTagsAndUsers(tasks: Task[]) {
+  async populateTagsAndUsers(tasks: TaskWithListColor[]) {
     const taskIds = tasks.map((task) => task.id);
     const tagsMap = await this.getTagIdsForTaskIds(taskIds);
     const usersMap = await this.getUserIdsForTaskIds(taskIds);
@@ -1127,6 +1114,23 @@ export class TasksManager {
         userIds,
       };
     });
+  }
+
+  // Private
+  private _fixRowColumns(task: Task) {
+    // TODO
+    // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
+    // Should actually be a string
+    if (task.dueDate && (task.dueDate as unknown as Date) instanceof Date) {
+      task.dueDate = format(task.dueDate as unknown as Date, 'yyyy-MM-dd');
+    }
+
+    // We do not want the seconds here
+    if (task.dueDateTime && task.dueDateTime.length === 8) {
+      task.dueDateTime = task.dueDateTime.slice(0, -3);
+    }
+
+    return task;
   }
 
   private async _doMaxTasksPerListCheck(user: User, list: List | null, skipError?: boolean) {

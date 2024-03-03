@@ -52,4 +52,11 @@ export const getRuleIterationsBetween = (
   return rule.between(startDate, endDate, true);
 };
 
+export const getRuleDates = (ruleOrRuleString: RRule | string, count: number) => {
+  const rule =
+    typeof ruleOrRuleString === 'string' ? getRuleFromString(ruleOrRuleString) : ruleOrRuleString;
+
+  return rule.all((_, index) => index < count);
+};
+
 export { Options as RuleOptions, Frequency as RuleFrequency };

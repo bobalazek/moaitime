@@ -52,6 +52,7 @@ export default function StatisticsChart({
             toolbar: {
               show: false,
             },
+            background: 'transparent',
           },
           xaxis: {
             categories: dates,

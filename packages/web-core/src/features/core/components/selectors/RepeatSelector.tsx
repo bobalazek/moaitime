@@ -7,6 +7,7 @@ import {
   addDateTimezoneToItself,
   convertRuleToString,
   createRule,
+  getRuleDates,
   getRuleFromString,
   removeDateTimezoneFromItself,
   RuleFrequency,
@@ -67,7 +68,7 @@ export function RepeatSelector({
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
   const ruleString = rule.toText();
-  const ruleDates = rule.all((_, index) => index < MAX_DATES_TO_SHOW);
+  const ruleDates = getRuleDates(rule, MAX_DATES_TO_SHOW);
 
   useEffect(() => {
     const newRule = value

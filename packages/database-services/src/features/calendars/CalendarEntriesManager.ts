@@ -31,8 +31,17 @@ export class CalendarEntriesManager {
     }
 
     const timezone = user?.settings?.generalTimezone ?? 'UTC';
-    const timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
-    const timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
+
+    let timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
+    let timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
+
+    // To be safe, we need to additionally pull a day before and end, so we catch all events in all timezones.
+    if (timezonedFrom) {
+      timezonedFrom = addDays(timezonedFrom, -1);
+    }
+    if (timezonedTo) {
+      timezonedTo = addDays(timezonedTo, 1);
+    }
 
     return calendarEntriesManager.findAllForRange(user, timezonedFrom, timezonedTo);
   }

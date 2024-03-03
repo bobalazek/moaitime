@@ -21,6 +21,7 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
+import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useHabitsStore } from '../../state/habitsStore';
 
 export default function HabitEditDialog() {
@@ -100,6 +101,20 @@ export default function HabitEditDialog() {
                 value={data?.description ?? ''}
                 onChange={(event) => {
                   setData((current) => ({ ...current, description: event.target.value }));
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="habit-color">Color</Label>
+              <ColorSelector
+                value={data?.color ?? undefined}
+                onChangeValue={(value) => setData((current) => ({ ...current, color: value }))}
+                triggerProps={{
+                  id: 'user-calendar-edit-color',
+                  'data-test': 'habits--habit-edit-dialog--color-select--trigger-button',
+                }}
+                contentProps={{
+                  'data-test': 'habits--habit-edit-dialog--color-select',
                 }}
               />
             </div>

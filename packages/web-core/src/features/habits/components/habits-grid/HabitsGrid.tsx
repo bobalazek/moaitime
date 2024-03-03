@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useHabitsQuery } from '../../../habits/hooks/useHabitsQuery';
+import HabitEntry from '../habit-entry/HabitEntry';
 
 const animationVariants = {
   initial: {
@@ -48,15 +49,9 @@ export default function HabitsGrid() {
             animate="animate"
             exit="exit"
             variants={animationVariants}
-            className="flex flex-col gap-3 rounded-lg border-2 p-3"
-            data-test="habits--habit-grid--habit"
+            className="flex flex-col gap-3"
           >
-            <div className="flex justify-between">
-              <h5 className="text-lg">
-                <span className="font-bold">{habit.name}</span>
-              </h5>
-            </div>
-            <div className="text-muted-foreground text-sm">{habit.description}</div>
+            <HabitEntry habit={habit} />
           </motion.div>
         ))}
       </AnimatePresence>

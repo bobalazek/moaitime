@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 import { CreateHabit, Habit, UpdateHabit } from '@moaitime/shared-common';
 
+import { queryClient } from '../../core/utils/FetchHelpers';
+import { HABITS_QUERY_KEY } from '../hooks/useHabitsQuery';
 import { addHabit, deleteHabit, editHabit, getHabit, undeleteHabit } from '../utils/HabitHelpers';
 
 export type HabitsStore = {
@@ -30,20 +32,36 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
   addHabit: async (Habit: CreateHabit) => {
     const newHabit = await addHabit(Habit);
 
+    queryClient.invalidateQueries({
+      queryKey: [HABITS_QUERY_KEY],
+    });
+
     return newHabit;
   },
   editHabit: async (habitId: string, Habit: UpdateHabit) => {
     const editedHabit = await editHabit(habitId, Habit);
+
+    queryClient.invalidateQueries({
+      queryKey: [HABITS_QUERY_KEY],
+    });
 
     return editedHabit;
   },
   deleteHabit: async (habitId: string, isHardDelete?: boolean) => {
     const deletedHabit = await deleteHabit(habitId, isHardDelete);
 
+    queryClient.invalidateQueries({
+      queryKey: [HABITS_QUERY_KEY],
+    });
+
     return deletedHabit;
   },
   undeleteHabit: async (habitId: string) => {
     const undeletedHabit = await undeleteHabit(habitId);
+
+    queryClient.invalidateQueries({
+      queryKey: [HABITS_QUERY_KEY],
+    });
 
     return undeletedHabit;
   },

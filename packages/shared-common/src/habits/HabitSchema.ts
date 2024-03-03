@@ -19,7 +19,7 @@ export const CreateHabitSchema = z.object({
   name: z.string().min(1, {
     message: 'Habit name must be provided',
   }),
-  color: ColorSchema.optional(),
+  color: ColorSchema.nullable().optional(),
   priority: z.number().nullable().optional(),
   description: z.string().nullable().optional(),
 });

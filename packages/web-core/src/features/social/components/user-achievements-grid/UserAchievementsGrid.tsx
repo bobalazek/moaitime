@@ -1,4 +1,3 @@
-import { clsx } from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 
@@ -9,6 +8,7 @@ import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { globalEventsEmitter } from '../../../core/state/globalEventsEmitter';
 import { useUserAchievementsQuery } from '../../hooks/useUserAchievementsQuery';
+import UserAchievementEntry from '../user-achievement/UserAchievementEntry';
 
 const animationVariants = {
   initial: {
@@ -79,47 +79,8 @@ export default function UserAchievementsGrid({ user }: UserAchievementsGridProps
             animate="animate"
             exit="exit"
             variants={animationVariants}
-            className="flex flex-col gap-3 rounded-lg border-2 p-3"
-            data-test="social--user-achievements-grid--user-achievement"
-            data-achievement-key={achievement.key}
-            data-achievement-level={achievement.level}
-            data-achievement-points={achievement.points}
           >
-            <div className="flex justify-between">
-              <h5 className="text-lg">
-                <span className="font-bold">{achievement.name}</span>
-                <span className="text-sm"> (Level {achievement.level})</span>
-              </h5>
-              <div className="text-muted-foreground">
-                {achievement.points}/{achievement.nextLevelPoints}
-              </div>
-            </div>
-            <div className="relative flex flex-col gap-1">
-              <div className="bg-muted h-5 rounded-lg ">
-                <div
-                  className={clsx(
-                    'h-full rounded-lg',
-                    !achievement.hasReachedMaxProgress && 'bg-yellow-400',
-                    achievement.hasReachedMaxProgress && 'bg-green-500'
-                  )}
-                  style={{
-                    width: `${achievement.nextLevelProgressPercentage}%`,
-                  }}
-                />
-              </div>
-              {achievement.currentLevelPoints !== achievement.nextLevelPoints && (
-                <div
-                  className="absolute flex h-5 w-full items-center justify-between px-2 text-xs text-white"
-                  style={{
-                    textShadow: '1px 1px 1px rgba(0, 0, 0, 1)',
-                  }}
-                >
-                  <div>{achievement.currentLevelPoints}</div>
-                  <div>{achievement.nextLevelPoints}</div>
-                </div>
-              )}
-            </div>
-            <div className="text-muted-foreground text-sm">{achievement.description}</div>
+            <UserAchievementEntry userAchievement={achievement} />
           </motion.div>
         ))}
       </AnimatePresence>

@@ -6,7 +6,7 @@ import { Button } from '@moaitime/web-ui';
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useFeedQuery } from '../../hooks/useFeedQuery';
-import FeedEntry from './FeedEntry';
+import FeedPost from './FeedPost';
 
 function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
   const ref = useRef<HTMLButtonElement>(null);
@@ -53,8 +53,8 @@ const Feed = ({ userIdOrUsername }: { userIdOrUsername?: string }) => {
         </div>
       )}
       <div data-test="feed" className="flex flex-col gap-4">
-        {items.map((feedEntry) => (
-          <FeedEntry key={feedEntry.id} feedEntry={feedEntry} />
+        {items.map((feedPost) => (
+          <FeedPost key={feedPost.id} feedPost={feedPost} />
         ))}
       </div>
       {hasNextPage && (

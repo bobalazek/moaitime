@@ -1,6 +1,6 @@
 import {
   API_URL,
-  FeedEntry,
+  FeedPost,
   PaginationCursorsType,
   ResponseInterface,
 } from '@moaitime/shared-common';
@@ -22,7 +22,7 @@ export const getFeed = async (userIdOrUsername?: string, options?: PaginationCur
     url.searchParams.append('nextCursor', options.nextCursor);
   }
 
-  const response = await fetchJson<ResponseInterface<FeedEntry[]>>(url.toString(), {
+  const response = await fetchJson<ResponseInterface<FeedPost[]>>(url.toString(), {
     method: 'GET',
   });
 

@@ -18,7 +18,7 @@ import {
 import { getDatabase, NewPost, Post, posts, User, users } from '@moaitime/database-core';
 import {
   Entity,
-  FeedEntry,
+  FeedPost,
   PostStatusTypeEnum,
   PostStatusTypeMessages,
   PostTypeEnum,
@@ -50,7 +50,7 @@ export class PostsManager {
     userIdOrUsername?: string,
     options?: PostsManagerFindOptions
   ): Promise<{
-    data: FeedEntry[];
+    data: FeedPost[];
     meta: {
       previousCursor?: string;
       nextCursor?: string;

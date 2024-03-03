@@ -117,4 +117,4 @@ export * from './social/PostTypeEnum';
 export * from './social/PostStatusTypeEnum';
 export * from './social/PostVisibilityEnum';
 export * from './social/InvitationSchema';
-export * from './social/FeedEntrySchema';
+export * from './social/FeedPostSchema';

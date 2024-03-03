@@ -1,10 +1,34 @@
+import { useEffect, useRef } from 'react';
+import { useIntersectionObserver } from 'usehooks-ts';
+
+import { Button } from '@moaitime/web-ui';
+
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useFeedQuery } from '../../hooks/useFeedQuery';
 import FeedEntry from './FeedEntry';
 
+function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const entry = useIntersectionObserver(ref, {});
+  const isVisible = !!entry?.isIntersecting;
+
+  useEffect(() => {
+    if (isVisible) {
+      fetchNextPage();
+    }
+  }, [isVisible, fetchNextPage]);
+
+  return (
+    <Button ref={ref} className="btn btn-primary" onClick={() => fetchNextPage()}>
+      Load More
+    </Button>
+  );
+}
+
 const Feed = ({ userIdOrUsername }: { userIdOrUsername?: string }) => {
-  const { isLoading, error, data } = useFeedQuery(userIdOrUsername);
+  const { isLoading, error, data, hasPreviousPage, hasNextPage, fetchPreviousPage, fetchNextPage } =
+    useFeedQuery(userIdOrUsername);
 
   if (isLoading) {
     return <Loader />;
@@ -20,10 +44,24 @@ const Feed = ({ userIdOrUsername }: { userIdOrUsername?: string }) => {
   }
 
   return (
-    <div data-test="feed" className="flex flex-col gap-4">
-      {items.map((feedEntry) => (
-        <FeedEntry key={feedEntry.id} feedEntry={feedEntry} />
-      ))}
+    <div>
+      {hasPreviousPage && (
+        <div className="flex justify-center">
+          <Button className="btn btn-primary" onClick={() => fetchPreviousPage()}>
+            Load newer
+          </Button>
+        </div>
+      )}
+      <div data-test="feed" className="flex flex-col gap-4">
+        {items.map((feedEntry) => (
+          <FeedEntry key={feedEntry.id} feedEntry={feedEntry} />
+        ))}
+      </div>
+      {hasNextPage && (
+        <div className="flex justify-center">
+          <FetchNextPageButton fetchNextPage={fetchNextPage} />
+        </div>
+      )}
     </div>
   );
 };

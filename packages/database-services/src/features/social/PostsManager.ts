@@ -47,6 +47,7 @@ export class PostsManager {
 
   async findManyByUserIdWithDataAndMeta(
     userId: string,
+    userIdOrUsername?: string,
     options?: PostsManagerFindOptions
   ): Promise<{
     data: FeedEntry[];
@@ -57,14 +58,25 @@ export class PostsManager {
       limit?: number;
     };
   }> {
+    let user: User | null = null;
+    if (userIdOrUsername) {
+      user = await usersManager.findOneByIdOrUsername(userIdOrUsername);
+      if (!user) {
+        throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+      }
+    }
+
     const limit = options?.limit ?? 20;
     const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
-
     const isSortAscending = sortDirection === SortDirectionEnum.ASC;
 
     let orderWasReversed = false;
     let orderBy = isSortAscending ? asc(posts.createdAt) : desc(posts.createdAt);
-    let where = and(eq(posts.userId, userId), isNull(posts.deletedAt));
+    let where = isNull(posts.deletedAt);
+
+    if (user) {
+      where = and(where, eq(posts.userId, user.id)) as SQL<unknown>;
+    }
 
     if (options?.from && options?.to) {
       where = and(
@@ -127,12 +139,7 @@ export class PostsManager {
       rows.reverse();
     }
 
-    const user = await usersManager.findOneById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const data = await this._parseRows(user, rows);
+    const data = await this._parseRows(userId, rows);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -218,21 +225,37 @@ export class PostsManager {
     return post;
   }
 
-  // API Helpers
-  async list(userId: string, userIdOrUsername?: string, options?: PostsManagerFindOptions) {
-    let user: User | null = null;
-    if (userIdOrUsername) {
-      user = await usersManager.findOneByIdOrUsername(userIdOrUsername);
-      if (!user) {
-        throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
-      }
+  // Permissions
+  async userCanDelete(actorUserId: string, postOrPostId: string | Post): Promise<boolean> {
+    const post =
+      typeof postOrPostId === 'string' ? await this.findOneById(postOrPostId) : postOrPostId;
+    if (!post) {
+      return false;
     }
 
-    return this.findManyByUserIdWithDataAndMeta(userId, options);
+    if (post.userId !== actorUserId) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // API Helpers
+  async list(actorUserId: string, userIdOrUsername?: string, options?: PostsManagerFindOptions) {
+    return this.findManyByUserIdWithDataAndMeta(actorUserId, userIdOrUsername, options);
+  }
+
+  async delete(actorUserId: string, postId: string) {
+    const canDelete = await this.userCanDelete(actorUserId, postId);
+    if (!canDelete) {
+      throw new Error(`You do not have permission to delete this post.`);
+    }
+
+    return this.deleteOneById(postId);
   }
 
   // Private
-  private async _parseRows(user: User, rows: Post[]) {
+  private async _parseRows(actorUserId: string, rows: Post[]) {
     const usersSet = new Set<string>();
     for (const post of rows) {
       usersSet.add(post.userId);
@@ -264,6 +287,9 @@ export class PostsManager {
         ...row,
         content,
         user: parsedUser,
+        permissions: {
+          canDelete: actorUserId === row.userId,
+        },
         deletedAt: row.deletedAt?.toISOString() ?? null,
         publishedAt: row.publishedAt!.toISOString(),
         createdAt: row.createdAt!.toISOString(),

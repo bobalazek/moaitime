@@ -75,7 +75,6 @@ export class UserNotificationsManager {
   }> {
     const limit = options?.limit ?? 20;
     const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
-
     const isSortAscending = sortDirection === SortDirectionEnum.ASC;
 
     let orderWasReversed = false;

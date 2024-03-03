@@ -1,8 +1,8 @@
 import { PublicUser } from '@moaitime/shared-common';
 
-export const UserAvatarInner = ({ user, sizePx = 64 }: { user: PublicUser; sizePx?: number }) => {
-  if (!user.avatarImageUrl) {
-    const character = user.displayName?.slice(0, 1).toUpperCase() ?? '?';
+export const UserAvatarInner = ({ user, sizePx = 64 }: { user?: PublicUser; sizePx?: number }) => {
+  if (!user || !user.avatarImageUrl) {
+    const character = user?.displayName?.slice(0, 1).toUpperCase() ?? '?';
 
     return (
       <div
@@ -30,10 +30,11 @@ export const UserAvatarInner = ({ user, sizePx = 64 }: { user: PublicUser; sizeP
   );
 };
 
-export const UserAvatar = ({ user, sizePx = 64 }: { user: PublicUser; sizePx?: number }) => {
+export const UserAvatar = ({ user, sizePx = 64 }: { user?: PublicUser; sizePx?: number }) => {
   const now = new Date();
-  const isOnline =
-    user.lastActiveAt && now.getTime() - new Date(user.lastActiveAt).getTime() < 5 * 60 * 1000;
+  const isOnline = user
+    ? user.lastActiveAt && now.getTime() - new Date(user.lastActiveAt).getTime() < 5 * 60 * 1000
+    : false;
 
   return (
     <div className="relative">

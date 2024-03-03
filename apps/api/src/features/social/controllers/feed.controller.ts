@@ -1,7 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
-import { feedManager } from '@moaitime/database-services';
+import { postsManager } from '@moaitime/database-services';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
@@ -15,7 +15,7 @@ export class FeedController {
     const previousCursor = req.query.previousCursor as string | undefined;
     const nextCursor = req.query.nextCursor as string | undefined;
 
-    const { data, meta } = await feedManager.list(req.user.id, undefined, {
+    const { data, meta } = await postsManager.list(req.user.id, undefined, {
       limit,
       previousCursor,
       nextCursor,

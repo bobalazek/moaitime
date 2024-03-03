@@ -1,3 +1,7 @@
+// Core
+export * from './features/core/EntityManager';
+export * from './features/core/ContentParser';
+
 // Auth
 export * from './features/auth/AuthManager';
 export * from './features/auth/TeamsManager';
@@ -15,7 +19,6 @@ export * from './features/auth/UserOnlineActivityEntriesManager';
 
 // Social
 export * from './features/social/InvitationsManager';
-export * from './features/social/FeedManager';
 export * from './features/social/PostsManager';
 export * from './features/social/PostStatusSender';
 

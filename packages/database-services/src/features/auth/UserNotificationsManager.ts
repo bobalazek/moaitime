@@ -25,7 +25,6 @@ import {
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
-  Achievements,
   Entity,
   GlobalEventsEnum,
   SortDirectionEnum,
@@ -35,6 +34,8 @@ import {
   UserNotificationTypeMessages,
 } from '@moaitime/shared-common';
 
+import { contentParser } from '../core/ContentParser';
+import { entityManager } from '../core/EntityManager';
 import { usersManager } from './UsersManager';
 
 export type UserNotificationsManagerFindOptions = {
@@ -163,7 +164,7 @@ export class UserNotificationsManager {
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
     if (data.length > 0) {
-      const isLessThanLimit = data.length < (options?.limit ?? 0);
+      const isLessThanLimit = data.length < limit;
       const firstItem = data[0];
       const lastItem = data[data.length - 1];
 
@@ -415,72 +416,7 @@ export class UserNotificationsManager {
   private async _parseRows(user: User, rows: UserNotification[]) {
     const parsedRows: UserNotificationStripped[] = [];
 
-    const relatedEntitiesMap = new Map<string, Entity[]>();
-    for (const row of rows) {
-      if (!row.relatedEntities) {
-        continue;
-      }
-
-      for (const relatedEntity of row.relatedEntities) {
-        const { id, type } = relatedEntity;
-        if (!relatedEntitiesMap.has(type)) {
-          relatedEntitiesMap.set(type, []);
-        }
-
-        const entities = relatedEntitiesMap.get(type) ?? [];
-
-        entities.push({
-          id,
-          type,
-        });
-
-        relatedEntitiesMap.set(type, entities);
-      }
-    }
-
-    const objectsMap = new Map<string, Record<string, unknown>>();
-    for (const [entityType, entityObjects] of relatedEntitiesMap) {
-      const entityIds = entityObjects.map((entity) => entity.id);
-      const entityRows: { id: string }[] = [];
-
-      if (entityType === 'achievements') {
-        for (const achievement of Achievements) {
-          if (entityIds.includes(achievement.key)) {
-            entityRows.push({
-              id: achievement.key,
-              ...achievement,
-            });
-          }
-        }
-      } else if (entityType === 'users') {
-        entityRows.push(
-          ...(await getDatabase().query.users.findMany({
-            columns: {
-              id: true,
-              displayName: true,
-              email: true,
-              username: true,
-            },
-            where: inArray(userNotifications.id, entityIds),
-          }))
-        );
-      } else if (entityType === 'tasks') {
-        entityRows.push(
-          ...(await getDatabase().query.tasks.findMany({
-            columns: {
-              id: true,
-              name: true,
-              listId: true,
-            },
-            where: inArray(userNotifications.id, entityIds),
-          }))
-        );
-      }
-
-      for (const entityRow of entityRows) {
-        objectsMap.set(`${entityType}:${entityRow.id}`, entityRow);
-      }
-    }
+    const objectsMap = await entityManager.getObjectsMap(rows);
 
     for (const row of rows) {
       const content = UserNotificationTypeMessages[row.type as UserNotificationTypeEnum];
@@ -489,7 +425,7 @@ export class UserNotificationsManager {
           ? row.data.variables
           : {}
       ) as Record<string, unknown>;
-      const parsedContent = this._parseContent(content, variables, objectsMap);
+      const parsedContent = contentParser.parse(content, variables, objectsMap);
 
       let link = null;
       if (row.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED) {
@@ -522,51 +458,6 @@ export class UserNotificationsManager {
     }
 
     return parsedRows;
-  }
-
-  private _parseContent(
-    content: string,
-    variables: Record<string, unknown>,
-    objectsMap: Map<string, Record<string, unknown>>
-  ) {
-    let parsedContent = content;
-
-    const flatVariables = Object.entries(variables).reduce((acc, [key, value]) => {
-      if (typeof value === 'object' && value !== null) {
-        if ('__entityType' in value && 'id' in value) {
-          const entityType = value.__entityType as string;
-          const entityId = value.id as string;
-
-          value = {
-            ...value,
-            ...objectsMap.get(`${entityType}:${entityId}`),
-          };
-        }
-
-        return {
-          ...acc,
-          ...Object.entries(value as Record<string, unknown>).reduce((acc2, [key2, value2]) => {
-            return {
-              ...acc2,
-              [`${key}.${key2}`]: value2,
-            };
-          }, {}),
-        };
-      }
-
-      return {
-        ...acc,
-        [key]: value,
-      };
-    }, {});
-
-    for (const [key, value] of Object.entries(flatVariables)) {
-      parsedContent = parsedContent.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
-    }
-
-    parsedContent = parsedContent.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-
-    return parsedContent;
   }
 
   private _propertiesToCursor(properties: { id: string; createdAt: string }): string {

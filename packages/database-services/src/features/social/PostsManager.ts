@@ -1,15 +1,35 @@
-import { and, DBQueryConfig, desc, eq } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  DBQueryConfig,
+  desc,
+  eq,
+  gt,
+  gte,
+  inArray,
+  isNull,
+  lt,
+  lte,
+  ne,
+  or,
+  SQL,
+} from 'drizzle-orm';
 
-import { getDatabase, NewPost, Post, posts, User } from '@moaitime/database-core';
+import { getDatabase, NewPost, Post, posts, User, users } from '@moaitime/database-core';
 import {
   Entity,
+  FeedEntry,
   PostStatusTypeEnum,
+  PostStatusTypeMessages,
   PostTypeEnum,
   PostVisibilityEnum,
+  PublicUserSchema,
   SortDirectionEnum,
 } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
+import { contentParser } from '../core/ContentParser';
+import { entityManager } from '../core/EntityManager';
 
 export type PostsManagerFindOptions = {
   from?: string;
@@ -23,6 +43,134 @@ export type PostsManagerFindOptions = {
 export class PostsManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<Post[]> {
     return getDatabase().query.posts.findMany(options);
+  }
+
+  async findManyByUserIdWithDataAndMeta(
+    userId: string,
+    options?: PostsManagerFindOptions
+  ): Promise<{
+    data: FeedEntry[];
+    meta: {
+      previousCursor?: string;
+      nextCursor?: string;
+      sortDirection?: SortDirectionEnum;
+      limit?: number;
+    };
+  }> {
+    const limit = options?.limit ?? 20;
+    const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
+
+    const isSortAscending = sortDirection === SortDirectionEnum.ASC;
+
+    let orderWasReversed = false;
+    let orderBy = isSortAscending ? asc(posts.createdAt) : desc(posts.createdAt);
+    let where = and(eq(posts.userId, userId), isNull(posts.deletedAt));
+
+    if (options?.from && options?.to) {
+      where = and(
+        where,
+        gte(posts.createdAt, new Date(options.from)),
+        lte(posts.createdAt, new Date(options.to))
+      ) as SQL<unknown>;
+    } else if (options?.from) {
+      where = and(where, gte(posts.createdAt, new Date(options.from))) as SQL<unknown>;
+    } else if (options?.to) {
+      where = and(where, lte(posts.createdAt, new Date(options.to))) as SQL<unknown>;
+    }
+
+    if (options?.previousCursor) {
+      const { id: previousId, createdAt: previousCreatedAt } = this._cursorToProperties(
+        options.previousCursor
+      );
+
+      const previosCreatedAtDate = new Date(previousCreatedAt);
+
+      where = and(
+        where,
+        or(
+          isSortAscending
+            ? lt(posts.createdAt, previosCreatedAtDate)
+            : gt(posts.createdAt, previosCreatedAtDate),
+          and(eq(posts.createdAt, previosCreatedAtDate), ne(posts.id, previousId))
+        )
+      ) as SQL<unknown>;
+
+      // If we are going backwards, we need to reverse the order so we do not miss any entries in the middle
+      orderBy = isSortAscending ? desc(posts.createdAt) : asc(posts.createdAt);
+      orderWasReversed = true;
+    }
+
+    if (options?.nextCursor) {
+      const { id: nextId, createdAt: nextCreatedAt } = this._cursorToProperties(options.nextCursor);
+
+      const nextCreatedAtDate = new Date(nextCreatedAt);
+
+      where = and(
+        where,
+        or(
+          isSortAscending
+            ? gt(posts.createdAt, nextCreatedAtDate)
+            : lt(posts.createdAt, nextCreatedAtDate),
+          and(eq(posts.createdAt, nextCreatedAtDate), ne(posts.id, nextId))
+        )
+      ) as SQL<unknown>;
+    }
+
+    const rows = await getDatabase().query.posts.findMany({
+      where,
+      orderBy,
+      limit,
+    });
+
+    // Here we reverse the order back to what it was originally
+    if (orderWasReversed) {
+      rows.reverse();
+    }
+
+    const user = await usersManager.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const data = await this._parseRows(user, rows);
+
+    let previousCursor: string | undefined;
+    let nextCursor: string | undefined;
+    if (data.length > 0) {
+      const isLessThanLimit = data.length < limit;
+      const firstItem = data[0];
+      const lastItem = data[data.length - 1];
+
+      previousCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: firstItem.id,
+            createdAt: firstItem.createdAt,
+          })
+        : undefined;
+      nextCursor = !isLessThanLimit
+        ? this._propertiesToCursor({
+            id: lastItem.id,
+            createdAt: lastItem.createdAt,
+          })
+        : undefined;
+    }
+
+    if (!options?.previousCursor) {
+      // Since no previousCursor was provided by the request,
+      // we assume that this is the very first page, and because of that,
+      // we certainly have no previous entries.
+      previousCursor = undefined;
+    }
+
+    return {
+      data,
+      meta: {
+        previousCursor,
+        nextCursor,
+        sortDirection,
+        limit,
+      },
+    };
   }
 
   async findOneById(id: string): Promise<Post | null> {
@@ -80,31 +228,56 @@ export class PostsManager {
       }
     }
 
-    const limit = options?.limit ?? 20;
-    const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
+    return this.findManyByUserIdWithDataAndMeta(userId, options);
+  }
 
-    let previousCursor: string | undefined;
-    let nextCursor: string | undefined;
-
-    let where = eq(posts.visibility, PostVisibilityEnum.PUBLIC);
-    if (user) {
-      where = and(where, eq(posts.userId, user.id))!;
+  // Private
+  private async _parseRows(user: User, rows: Post[]) {
+    const usersSet = new Set<string>();
+    for (const post of rows) {
+      usersSet.add(post.userId);
     }
 
-    const data = await this.findMany({
-      where,
-      orderBy: desc(posts.createdAt),
-    });
+    const publicUsers =
+      usersSet.size > 0
+        ? await usersManager.findMany({
+            where: inArray(users.id, Array.from(usersSet)),
+          })
+        : [];
+    const publicUsersMap = new Map(publicUsers.map((user) => [user.id, user]));
+    const objectsMap = await entityManager.getObjectsMap(rows);
 
-    return {
-      data,
-      meta: {
-        previousCursor,
-        nextCursor,
-        sortDirection,
-        limit,
-      },
-    };
+    return rows.map((row) => {
+      const user = publicUsersMap.get(row.userId);
+      const parsedUser = PublicUserSchema.parse(user);
+      const rawContent =
+        PostStatusTypeMessages[row.subType as PostStatusTypeEnum] ??
+        `Unknown content. Please do ping us about this mistake and provide us with the following post ID: ${row.id}`;
+      const variables = (
+        row.data && typeof row.data === 'object' && 'variables' in row.data
+          ? row.data.variables
+          : {}
+      ) as Record<string, unknown>;
+      const content = contentParser.parse(rawContent, variables, objectsMap);
+
+      return {
+        ...row,
+        content,
+        user: parsedUser,
+        deletedAt: row.deletedAt?.toISOString() ?? null,
+        publishedAt: row.publishedAt!.toISOString(),
+        createdAt: row.createdAt!.toISOString(),
+        updatedAt: row.updatedAt!.toISOString(),
+      };
+    });
+  }
+
+  private _propertiesToCursor(properties: { id: string; createdAt: string }): string {
+    return btoa(JSON.stringify(properties));
+  }
+
+  private _cursorToProperties(cursor: string): { id: string; createdAt: string } {
+    return JSON.parse(atob(cursor));
   }
 }
 

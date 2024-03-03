@@ -19,7 +19,11 @@ export default function FeedEntry({ feedEntry }: { feedEntry: FeedEntryType }) {
             {new Date(feedEntry.createdAt).toLocaleString()}
           </span>
         </div>
-        {feedEntry.content}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: feedEntry.content,
+          }}
+        />
       </div>
     </div>
   );

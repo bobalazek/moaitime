@@ -8,7 +8,7 @@ export const getUserSeeds = async (): Promise<NewUser[]> => {
   return [
     {
       username: 'bobalazek',
-      email: 'bobalazek124@gmail.com',
+      email: 'borut@moaitime.com',
       password: await generateHash('password'),
       displayName: 'Borut',
       roles: [UserRoleEnum.ADMIN],
@@ -20,7 +20,7 @@ export const getUserSeeds = async (): Promise<NewUser[]> => {
     },
     {
       username: 'anak',
-      email: 'anakociper124@gmail.com',
+      email: 'ana@moaitime.com',
       password: await generateHash('password'),
       displayName: 'Ana',
       roles: [UserRoleEnum.ADMIN],

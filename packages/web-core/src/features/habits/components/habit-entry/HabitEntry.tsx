@@ -1,19 +1,11 @@
-import { PencilIcon } from 'lucide-react';
-
 import { Habit } from '@moaitime/shared-common';
 
-import { useHabitsStore } from '../../state/habitsStore';
+import HabitEntryActions from './HabitEntryActions';
 
 export default function HabitEntry({ habit }: { habit: Habit }) {
-  const { setSelectedHabitDialogOpen } = useHabitsStore();
-
-  const onHabitButtonClick = async () => {
-    setSelectedHabitDialogOpen(true, habit);
-  };
-
   return (
     <div
-      className="rounded-lg border-2 p-2 text-left"
+      className="rounded-lg border-2 px-3 py-2 text-left"
       style={{
         borderColor: habit.color ?? undefined,
       }}
@@ -21,9 +13,7 @@ export default function HabitEntry({ habit }: { habit: Habit }) {
       <div className="flex justify-between">
         <div className="flex w-full justify-between">
           <h5 className="text-lg font-bold">{habit.name}</h5>
-          <button onClick={onHabitButtonClick}>
-            <PencilIcon size={16} />
-          </button>
+          <HabitEntryActions habit={habit} />
         </div>
       </div>
       {habit.description && (

@@ -255,20 +255,25 @@ export default function SettingsDialog() {
           </div>
         )}
         {showContent && (
-          <div className="h-full w-full p-4 md:w-3/4" data-test="settings--dialog--content">
-            <AnimatePresence>
-              <motion.div
-                layout="position"
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  y: -100,
-                }}
-                animate={{ y: 0 }}
-              >
-                {renderContent()}
-              </motion.div>
-            </AnimatePresence>
+          <div
+            className="h-full max-h-[calc(100vh-12rem)] w-full md:w-3/4"
+            data-test="settings--dialog--content"
+          >
+            <div className="p-4">
+              <AnimatePresence>
+                <motion.div
+                  layout="position"
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                    y: -100,
+                  }}
+                  animate={{ y: 0 }}
+                >
+                  {renderContent()}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         )}
       </DialogContent>

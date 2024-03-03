@@ -484,7 +484,7 @@ export class TasksManager {
         throw new Error('You cannot change the list to a list from a different team');
       }
 
-      if (task.parentId) {
+      if (task.parentId && task.listId !== data.listId) {
         throw new Error('You cannot change the list of a task that is assigned to a parent task');
       }
 

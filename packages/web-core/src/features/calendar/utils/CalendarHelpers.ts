@@ -514,10 +514,21 @@ export const convertObjectToIsoString = <T extends Record<string, string | null>
   }
 
   if (object.dateTime) {
-    return { iso: `${object.date}T${object.dateTime}`, timezone: undefined };
+    let dateTime = object.dateTime;
+    if (dateTime.length === 5) {
+      dateTime = `${dateTime}:00.000`;
+    }
+
+    return {
+      iso: `${object.date}T${dateTime}`,
+      timezone: undefined,
+    };
   }
 
-  return { iso: `${object.date}T00:00:00.000`, timezone: undefined };
+  return {
+    iso: `${object.date}T00:00:00.000`,
+    timezone: undefined,
+  };
 };
 
 // Calendar Entry

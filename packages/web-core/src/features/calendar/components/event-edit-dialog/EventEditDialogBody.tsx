@@ -1,8 +1,8 @@
-import { format } from 'date-fns';
+import { addMinutes, format } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import { useEffect, useState } from 'react';
 
-import { CreateEvent, UpdateEvent } from '@moaitime/shared-common';
+import { addDateTimezoneToItself, CreateEvent, UpdateEvent } from '@moaitime/shared-common';
 import { Button, Input, Label, sonnerToast, Switch, Textarea } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
@@ -162,13 +162,22 @@ export default function EventEditDialogBody() {
           )}
           onSaveData={(saveData) => {
             const result = convertObjectToIsoString<DateSelectorData>(saveData);
+            const startsAt = result?.iso ? result.iso : undefined;
+
+            let endsAt = data?.endsAt; // we also want to update so it's always in the future
+            if (!dataIsAllDay && startsAt && endsAt && new Date(startsAt) >= new Date(endsAt)) {
+              endsAt = addDateTimezoneToItself(addMinutes(new Date(startsAt), 30))
+                .toISOString()
+                .slice(0, -1);
+            }
 
             setData(
               (current) =>
                 ({
                   ...current,
-                  startsAt: result?.iso,
+                  startsAt,
                   timezone: saveData.dateTimeZone,
+                  endsAt,
                 }) as CreateEvent
             );
           }}

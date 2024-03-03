@@ -51,6 +51,9 @@ export const UserSettingsSchema = z.object({
   // Notes
   notesEnabled: z.boolean(),
 
+  // Social
+  socialEnabled: z.boolean(),
+
   // Calendar
   calendarEnabled: z.boolean(),
   calendarVisibleCalendarIds: z.array(z.string()),

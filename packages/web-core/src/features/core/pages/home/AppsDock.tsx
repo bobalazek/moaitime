@@ -34,6 +34,7 @@ export default function AppsDock() {
   const habitsEnabled = useAuthUserSetting('habitsEnabled', false);
   const notesEnabled = useAuthUserSetting('notesEnabled', false);
   const focusEnabled = useAuthUserSetting('focusEnabled', false);
+  const socialEnabled = useAuthUserSetting('socialEnabled', false);
 
   let delay = 0;
 
@@ -121,9 +122,9 @@ export default function AppsDock() {
                   <FocusAppButton />
                 </motion.div>
               )}
-              {false && weatherEnabled && (
+              {socialEnabled && (
                 <motion.div
-                  key="weather"
+                  key="social"
                   layout
                   initial="initial"
                   animate="animate"
@@ -131,7 +132,7 @@ export default function AppsDock() {
                   variants={animationVariants}
                   transition={{ delay: delay++ * delayDuration }}
                 >
-                  <WeatherAppButton />
+                  <SocialAppButton />
                 </motion.div>
               )}
               {commandsEnabled && (
@@ -147,17 +148,19 @@ export default function AppsDock() {
                   <CommandsAppButton />
                 </motion.div>
               )}
-              <motion.div
-                key="social"
-                layout
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={animationVariants}
-                transition={{ delay: delay++ * delayDuration }}
-              >
-                <SocialAppButton />
-              </motion.div>
+              {false && weatherEnabled && (
+                <motion.div
+                  key="weather"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
+                >
+                  <WeatherAppButton />
+                </motion.div>
+              )}
               <motion.div
                 key="statistics"
                 layout

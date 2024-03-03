@@ -46,6 +46,9 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   // Notes
   notesEnabled: true,
 
+  // Social
+  socialEnabled: true,
+
   // Calendar
   calendarEnabled: true,
   calendarVisibleCalendarIds: ['*'],

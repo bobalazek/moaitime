@@ -23,6 +23,8 @@ import NotesSettingsSection from '../../notes/components/notes-settings/NotesSet
 import NotesSettingsSectionHeaderText from '../../notes/components/notes-settings/NotesSettingsSectionHeaderText';
 import InvitationsSettingsSection from '../../social/components/invitations-settings/InvitationsSettingsSection';
 import InvitationsSettingsSectionHeaderText from '../../social/components/invitations-settings/InvitationsSettingsSectionHeaderText';
+import SocialSettingsSection from '../../social/components/social-settings/SocialSettingsSection';
+import SocialSettingsSectionHeaderText from '../../social/components/social-settings/SocialSettingsSectionHeaderText';
 import TasksSettingsSection from '../../tasks/components/tasks-settings/TasksSettingsSection';
 import TasksSettingsSectionHeaderText from '../../tasks/components/tasks-settings/TasksSettingsSectionHeaderText';
 import TeamSettingsSection from '../../teams/components/team-settings/TeamSettingsSection';
@@ -85,6 +87,11 @@ const tabs = [
     id: 'tasks',
     label: <TasksSettingsSectionHeaderText />,
     content: <TasksSettingsSection />,
+  },
+  {
+    id: 'social',
+    label: <SocialSettingsSectionHeaderText />,
+    content: <SocialSettingsSection />,
   },
   {
     id: 'habits',

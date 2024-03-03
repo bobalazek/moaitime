@@ -1,7 +1,8 @@
-import { and, DBQueryConfig, eq } from 'drizzle-orm';
+import { and, DBQueryConfig, desc, eq } from 'drizzle-orm';
 
 import { getDatabase, NewPost, Post, posts, User } from '@moaitime/database-core';
 import {
+  Entity,
   PostStatusTypeEnum,
   PostTypeEnum,
   PostVisibilityEnum,
@@ -55,22 +56,18 @@ export class PostsManager {
   }
 
   // Helpers
-  async createPost(
-    userId: string,
-    type: PostTypeEnum,
-    subType: PostStatusTypeEnum,
-    visibility: PostVisibilityEnum,
-    content?: string
-  ) {
-    const data = await this.insertOne({
-      userId,
-      type,
-      subType,
-      visibility,
-      content,
-    });
+  async addPost(data: {
+    userId: string;
+    type: PostTypeEnum;
+    subType: PostStatusTypeEnum;
+    visibility: PostVisibilityEnum;
+    content?: string;
+    data: Record<string, unknown>;
+    relatedEntities: Entity[];
+  }) {
+    const post = await this.insertOne(data);
 
-    return data;
+    return post;
   }
 
   // API Helpers
@@ -96,6 +93,7 @@ export class PostsManager {
 
     const data = await this.findMany({
       where,
+      orderBy: desc(posts.createdAt),
     });
 
     return {

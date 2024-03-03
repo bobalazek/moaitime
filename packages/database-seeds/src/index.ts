@@ -8,3 +8,4 @@ export * from './data/Lists';
 export * from './data/Tasks';
 export * from './data/Quotes';
 export * from './data/Users';
+export * from './data/Posts';

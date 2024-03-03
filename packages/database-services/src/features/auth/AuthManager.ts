@@ -41,6 +41,7 @@ import { uploader } from '@moaitime/uploader';
 
 import { CalendarsManager, calendarsManager } from '../calendars/CalendarsManager';
 import { InvitationsManager, invitationsManager } from '../social/InvitationsManager';
+import { PostStatusSender, postStatusSender } from '../social/PostStatusSender';
 import { ListsManager, listsManager } from '../tasks/ListsManager';
 import { TasksManager, tasksManager } from '../tasks/TasksManager';
 import { TeamsManager, teamsManager } from './TeamsManager';
@@ -62,7 +63,8 @@ export class AuthManager {
     private _listsManager: ListsManager,
     private _tasksManager: TasksManager,
     private _calendarsManager: CalendarsManager,
-    private _invitationsManager: InvitationsManager
+    private _invitationsManager: InvitationsManager,
+    private _postStatusSender: PostStatusSender
   ) {}
 
   // Login
@@ -207,15 +209,17 @@ export class AuthManager {
       }
     }
 
-    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REGISTERED, {
-      actorUserId: newUser.id,
-      userId: newUser.id,
-    });
+    await this._postStatusSender.sendUserCreatedPost(newUser);
 
     await mailer.sendAuthWelcomeEmail({
       userEmail: newUser.email,
       userDisplayName: newUser.displayName,
       confirmEmailUrl: `${WEB_URL}/confirm-email?token=${newUser.emailConfirmationToken}`,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REGISTERED, {
+      actorUserId: newUser.id,
+      userId: newUser.id,
     });
 
     return newUser;
@@ -875,5 +879,6 @@ export const authManager = new AuthManager(
   listsManager,
   tasksManager,
   calendarsManager,
-  invitationsManager
+  invitationsManager,
+  postStatusSender
 );

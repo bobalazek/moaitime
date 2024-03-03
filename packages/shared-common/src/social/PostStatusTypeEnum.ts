@@ -5,12 +5,12 @@ export enum PostStatusTypeEnum {
 }
 
 export const PostStatusTypeMessages: Record<PostStatusTypeEnum, string> = {
-  [PostStatusTypeEnum.USER_CREATED]: `**{{requestingUser.displayName}}** has sent you a follow request.`,
+  [PostStatusTypeEnum.USER_CREATED]: `**{{user.displayName}}** has joined the platform!`,
 };
 
 export type PostStatusTypeVariables = {
   [PostStatusTypeEnum.USER_CREATED]: {
-    requestingUser: {
+    user: {
       id: string;
       displayName: string;
       __entityType: EntityTypeEnum.USERS;

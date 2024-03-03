@@ -1,9 +1,17 @@
-import { calendars, events, getMigrationDatabase, lists, users } from '@moaitime/database-core';
+import {
+  calendars,
+  events,
+  getMigrationDatabase,
+  lists,
+  posts,
+  users,
+} from '@moaitime/database-core';
 import { logger } from '@moaitime/logging';
 
 import { getCalendarFixtures } from './data/Calendars';
 import { getEventFixtures } from './data/Events';
 import { getListFixtures } from './data/Lists';
+import { getPostFixtures } from './data/Posts';
 import { getUserFixtures } from './data/Users';
 
 export const insertDatabaseFixtureData = async () => {
@@ -15,6 +23,10 @@ export const insertDatabaseFixtureData = async () => {
     logger.debug('Inserting user fixtures ...');
     const userFixtures = await getUserFixtures();
     await database.insert(users).values(userFixtures).execute();
+
+    logger.debug('Inserting post fixtures ...');
+    const postFixtures = await getPostFixtures();
+    await database.insert(posts).values(postFixtures).execute();
 
     logger.debug('Inserting calendar fixtures ...');
     const calendarFixtures = await getCalendarFixtures();

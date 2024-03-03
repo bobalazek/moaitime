@@ -170,7 +170,21 @@ export class TasksManager {
       return [];
     }
 
-    let where = and(inArray(lists.id, listIds), isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
+    const includesUnlisted = listIds.includes('');
+    const finalListIds = includesUnlisted ? listIds.filter((id) => id !== '') : listIds;
+
+    let where = and(isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
+
+    if (finalListIds.length === 0 && !includesUnlisted) {
+      return [];
+    }
+
+    where = and(
+      where,
+      includesUnlisted
+        ? or(inArray(lists.id, finalListIds), isNull(lists.id))
+        : inArray(lists.id, finalListIds)
+    ) as SQL<unknown>;
 
     if (from && to) {
       where = and(

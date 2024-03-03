@@ -108,6 +108,10 @@ export class ListsController {
     @Req() req: Request,
     @Param('listId') listId: string
   ): Promise<AbstractResponseDto> {
+    if (listId === 'unlisted') {
+      listId = '';
+    }
+
     await listsManager.addVisible(req.user.id, listId);
 
     return {
@@ -121,6 +125,10 @@ export class ListsController {
     @Req() req: Request,
     @Param('listId') listId: string
   ): Promise<AbstractResponseDto> {
+    if (listId === 'unlisted') {
+      listId = '';
+    }
+
     await listsManager.removeVisible(req.user.id, listId);
 
     return {

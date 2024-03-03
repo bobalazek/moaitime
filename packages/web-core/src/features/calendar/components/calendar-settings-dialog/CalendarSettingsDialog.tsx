@@ -86,9 +86,18 @@ export default function CalendarSettingsDialog() {
               <h3 className="font-bold">Lists</h3>
               <UsageBadge limitKey="listsMaxPerUserCount" usageKey="listsCount" />
             </div>
-            {lists.length === 0 && (
-              <p className="text-xs text-gray-500">You do not have any lists at the moment.</p>
-            )}
+            <ListItem
+              list={{
+                id: 'unlisted',
+                name: 'Unlisted',
+                color: null,
+                teamId: null,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                deletedAt: null,
+                tasksCount: 0,
+              }}
+            />
             {lists.map((list) => (
               <ListItem key={list.id} list={list} />
             ))}

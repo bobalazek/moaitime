@@ -90,6 +90,11 @@ export class ListsManager {
 
   // Permissions
   async userCanView(userId: string, listId: string): Promise<boolean> {
+    if (listId === '') {
+      // This is the unlisted list - everybody can view it
+      return true;
+    }
+
     const row = await getDatabase().query.lists.findFirst({
       where: eq(lists.id, listId),
     });
@@ -321,6 +326,8 @@ export class ListsManager {
       where: eq(lists.userId, userId),
     });
 
+    idsSet.add(''); // Unlisted
+
     for (const row of userLists) {
       idsSet.add(row.id);
     }
@@ -362,7 +369,8 @@ export class ListsManager {
       return null;
     }
 
-    const list = this.findOneById(listId);
+    // Allow for unlisted ("" - empty string)
+    const list = listId ? this.findOneById(listId) : null;
 
     const userSettings = usersManager.getUserSettings(user);
     const userListIds = await this.getVisibleListIdsByUserId(userId);
@@ -388,7 +396,8 @@ export class ListsManager {
       return null;
     }
 
-    const list = this.findOneById(listId);
+    // Allow for unlisted ("" - empty string)
+    const list = listId ? this.findOneById(listId) : null;
 
     const userSettings = usersManager.getUserSettings(user);
     const userListIds = await this.getVisibleListIdsByUserId(userId);

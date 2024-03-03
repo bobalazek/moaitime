@@ -17,7 +17,8 @@ export default function ListItem({ list, hideCheckbox }: ListItemProps) {
 
   const visibleListIds = useAuthUserSetting('calendarVisibleListIds', [] as string[]);
 
-  const isChecked = visibleListIds.includes('*') || visibleListIds.includes(list.id);
+  const isChecked =
+    visibleListIds.includes('*') || visibleListIds.includes(list.id === 'unlisted' ? '' : list.id);
 
   const onCheckedChange = async () => {
     if (isChecked) {

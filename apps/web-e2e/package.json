@@ -8,7 +8,7 @@
     "dev:e2e": "start-server-and-test servers:start \":4200|:3636\" cypress:open",
     "e2e": "start-server-and-test servers:start \":4200|:3636\" cypress:run",
     "lint": "eslint .",
-    "servers:start": "cd ../../ && pnpm build && pnpm cli database:reload && concurrently --kill-others \"cd ./apps/web && pnpm serve\" \"cd ./apps/api && pnpm serve\" \"pnpm cli jobs:runner:start\""
+    "servers:start": "cd ../../ && pnpm build && concurrently --kill-others \"cd ./apps/web && pnpm serve\" \"cd ./apps/api && pnpm serve\" \"pnpm cli jobs:runner:start\""
   },
   "dependencies": {
     "@moaitime/shared-common": "workspace:*",

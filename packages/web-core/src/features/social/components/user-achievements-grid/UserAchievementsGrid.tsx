@@ -109,9 +109,9 @@ export default function UserAchievementsGrid({ user }: UserAchievementsGridProps
               </div>
               {achievement.currentLevelPoints !== achievement.nextLevelPoints && (
                 <div
-                  className="absolute flex w-full justify-between px-2 py-0.5 text-xs text-white"
+                  className="absolute flex h-5 w-full items-center justify-between px-2 text-xs text-white"
                   style={{
-                    textShadow: '1px 1px 2px rgba(0, 0, 0, 1)',
+                    textShadow: '1px 1px 1px rgba(0, 0, 0, 1)',
                   }}
                 >
                   <div>{achievement.currentLevelPoints}</div>

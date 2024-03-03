@@ -117,6 +117,19 @@ CREATE TABLE IF NOT EXISTS "mood_entries" (
 	"user_id" uuid NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "habits" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"description" text,
+	"order" integer DEFAULT 0,
+	"color" text,
+	"priority" integer,
+	"deleted_at" timestamp,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "notes" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" text DEFAULT 'note' NOT NULL,
@@ -475,6 +488,7 @@ CREATE INDEX IF NOT EXISTS "interests_parent_id_idx" ON "interests" ("parent_id"
 CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "lists" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "lists_team_id_idx" ON "lists" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "mood_entries_user_id_idx" ON "mood_entries" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "habits_user_id_idx" ON "habits" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "notes_user_id_idx" ON "notes" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organizations_user_id_idx" ON "organizations" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_users_organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
@@ -483,7 +497,7 @@ CREATE INDEX IF NOT EXISTS "subscriptions_user_id_idx" ON "subscriptions" ("orga
 CREATE INDEX IF NOT EXISTS "quotes_user_id_idx" ON "quotes" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tags_user_id_idx" ON "tags" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tags_team_id_idx" ON "tags" ("team_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "tasks_user_id_idx" ON "tasks" ("list_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "tasks_user_id_idx" ON "tasks" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tasks_list_id_idx" ON "tasks" ("list_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "tasks_parent_id_idx" ON "tasks" ("parent_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "task_tags_task_id_idx" ON "task_tags" ("task_id");--> statement-breakpoint
@@ -601,6 +615,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "mood_entries" ADD CONSTRAINT "mood_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "habits" ADD CONSTRAINT "habits_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

@@ -38,7 +38,7 @@ export const tasks = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('tasks_user_id_idx').on(table.listId),
+      userIdIdx: index('tasks_user_id_idx').on(table.userId),
       listIdIdx: index('tasks_list_id_idx').on(table.listId),
       parentIdIdx: index('tasks_parent_id_idx').on(table.parentId),
     };
@@ -58,6 +58,10 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
     relationName: 'children',
   }),
   taskTags: many(taskTags),
+  user: one(users, {
+    fields: [tasks.userId],
+    references: [users.id],
+  }),
 }));
 
 export type Task = typeof tasks.$inferSelect;

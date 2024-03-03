@@ -45,6 +45,9 @@ export const UserSettingsSchema = z.object({
   tasksEnabled: z.boolean(),
   tasksSoundsEnabled: z.boolean(),
 
+  // Habits
+  habitsEnabled: z.boolean(),
+
   // Notes
   notesEnabled: z.boolean(),
 

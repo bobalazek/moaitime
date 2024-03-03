@@ -40,6 +40,9 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   tasksEnabled: true,
   tasksSoundsEnabled: true,
 
+  // Habits
+  habitsEnabled: true,
+
   // Notes
   notesEnabled: true,
 

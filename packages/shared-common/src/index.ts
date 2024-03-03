@@ -89,6 +89,9 @@ export * from './tasks/ListSchema';
 export * from './tasks/TaskSchema';
 export * from './tasks/TagSchema';
 
+// Habits
+export * from './habits/HabitSchema';
+
 // Mood
 export * from './mood/MoodEntrySchema';
 export * from './mood/Emotions';

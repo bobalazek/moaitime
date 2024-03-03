@@ -579,6 +579,13 @@ export class TasksManager {
           deletedAt: new Date(),
         });
 
+    const children = await this.findManyByParentId(taskId);
+    if (children.length > 0) {
+      for (const child of children) {
+        await this.delete(userId, child.id, isHardDelete);
+      }
+    }
+
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_DELETED, {
       actorUserId: userId,
       taskId,

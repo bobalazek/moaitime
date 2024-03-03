@@ -51,6 +51,7 @@ import {
 import { calendarsManager } from '../calendars/CalendarsManager';
 import { eventsManager } from '../calendars/EventsManager';
 import { focusSessionsManager } from '../focus/FocusSessionsManager';
+import { habitsManager } from '../habits/HabitsManager';
 import { moodEntriesManager } from '../mood/MoodEntriesManager';
 import { notesManager } from '../notes/NotesManager';
 import { reportsManager } from '../reports/ReportsManager';
@@ -884,6 +885,7 @@ export class UsersManager {
       tasksMaxPerListCount: 25,
       listsMaxPerUserCount: 10,
       tagsMaxPerUserCount: 10,
+      habitsMaxPerUserCount: 5,
       calendarsMaxPerUserCount: 5,
       calendarsMaxEventsPerCalendarCount: 1000,
       calendarsMaxUserCalendarsPerUserCount: 3,
@@ -903,24 +905,26 @@ export class UsersManager {
 
     const listsCount = await listsManager.countByUserId(user.id);
     const tasksCount = await tasksManager.countByUserId(user.id);
+    const tagsCount = await tagsManager.countByUserId(user.id);
+    const habitsCount = await habitsManager.countByUserId(user.id);
     const notesCount = await notesManager.countByUserId(user.id);
     const moodEntriesCount = await moodEntriesManager.countByUserId(user.id);
     const calendarsCount = await calendarsManager.countByUserId(user.id);
     const userCalendarsCount = await calendarsManager.countUserCalendarsByUserId(user.id);
     const eventsCount = await eventsManager.countByUserId(user.id);
-    const tagsCount = await tagsManager.countByUserId(user.id);
     const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
     const userInvitationsCount = await invitationsManager.countByUserId(user.id);
 
     return {
       listsCount,
       tasksCount,
+      tagsCount,
+      habitsCount,
       notesCount,
       moodEntriesCount,
       calendarsCount,
       userCalendarsCount,
       eventsCount,
-      tagsCount,
       focusSessionsCount,
       userInvitationsCount,
     };

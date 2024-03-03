@@ -11,9 +11,16 @@ export type HabitsStore = {
   editHabit: (habitId: string, Habit: UpdateHabit) => Promise<Habit>;
   deleteHabit: (habitId: string, isHardDelete?: boolean) => Promise<Habit>;
   undeleteHabit: (habitId: string) => Promise<Habit>;
+  // Selected Habit Dialog
+  selectedHabitDialogOpen: boolean;
+  selectedHabitDialog: Habit | null;
+  setSelectedHabitDialogOpen: (
+    selectedHabitDialogOpen: boolean,
+    selectedHabitDialog?: Habit | null
+  ) => void;
 };
 
-export const useHabitsStore = create<HabitsStore>()(() => ({
+export const useHabitsStore = create<HabitsStore>()((set) => ({
   /********** Focus Sessions **********/
   getHabit: async (habitId: string) => {
     const habit = await getHabit(habitId);
@@ -39,5 +46,14 @@ export const useHabitsStore = create<HabitsStore>()(() => ({
     const undeletedHabit = await undeleteHabit(habitId);
 
     return undeletedHabit;
+  },
+  // Selected Habit Dialog
+  selectedHabitDialogOpen: false,
+  selectedHabitDialog: null,
+  setSelectedHabitDialogOpen(selectedHabitDialogOpen: boolean, selectedHabitDialog?: Habit | null) {
+    set({
+      selectedHabitDialogOpen,
+      selectedHabitDialog,
+    });
   },
 }));

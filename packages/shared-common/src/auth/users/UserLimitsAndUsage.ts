@@ -3,6 +3,7 @@ export type UserLimits = {
   tasksMaxPerListCount: number;
   listsMaxPerUserCount: number;
   tagsMaxPerUserCount: number;
+  habitsMaxPerUserCount: number;
   calendarsMaxPerUserCount: number;
   calendarsMaxEventsPerCalendarCount: number;
   calendarsMaxUserCalendarsPerUserCount: number;
@@ -13,12 +14,13 @@ export type UserLimits = {
 export type UserUsage = {
   listsCount: number;
   tasksCount: number;
+  tagsCount: number;
+  habitsCount: number;
   notesCount: number;
   moodEntriesCount: number;
   calendarsCount: number;
   userCalendarsCount: number; // those are the user_calendars, or rather "shared calendars" as we call them on the frontend
   eventsCount: number;
-  tagsCount: number;
   focusSessionsCount: number;
   userInvitationsCount: number;
 };

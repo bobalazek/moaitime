@@ -96,7 +96,7 @@ export default function MoodEntryEditDialog() {
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 p-1">
             <div
               className="flex w-full flex-row justify-between gap-2 py-4"
               data-test="mood--mood-entry-edit-dialog--scores"

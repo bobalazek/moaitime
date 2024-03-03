@@ -39,6 +39,9 @@ export * from './features/greetings/GreetingsManager';
 // Notes
 export * from './features/notes/NotesManager';
 
+// Habits
+export * from './features/habits/HabitsManager';
+
 // Quotes
 export * from './features/quotes/QuotesManager';
 

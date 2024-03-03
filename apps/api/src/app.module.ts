@@ -10,6 +10,7 @@ import { BackgroundsModule } from './features/backgrounds/backgrounds.module';
 import { CalendarsModule } from './features/calendar/calendar.module';
 import { FocusModule } from './features/focus/focus.module';
 import { GreetingsModule } from './features/greetings/greetings.module';
+import { HabitsModule } from './features/habits/habits.module';
 import { MoodModule } from './features/mood/mood.module';
 import { NotesModule } from './features/notes/notes.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
@@ -35,6 +36,7 @@ const { NODE_ENV } = getEnv();
       NotesModule,
       QuotesModule,
       TasksModule,
+      HabitsModule,
       CalendarsModule,
       WeatherModule,
       MoodModule,

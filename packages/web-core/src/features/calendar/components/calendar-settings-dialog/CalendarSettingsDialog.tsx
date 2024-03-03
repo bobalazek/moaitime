@@ -45,7 +45,7 @@ export default function CalendarSettingsDialog() {
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
-          <div data-test="calendar--settings-dialog--calendars-wrapper">
+          <div className="p-1" data-test="calendar--settings-dialog--calendars-wrapper">
             <div className="mb-1 flex items-center gap-1">
               <h3 className="font-bold">Calendars</h3>
               <CalendarSettingsDialogMyCalendarsActions />

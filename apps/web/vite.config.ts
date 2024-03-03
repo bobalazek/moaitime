@@ -7,6 +7,10 @@ export default defineConfig({
     port: 4200,
     host: '0.0.0.0',
     hmr: true,
+    fs: {
+      // https://github.com/vitejs/vite/issues/15784
+      cachedChecks: false,
+    },
   },
   preview: {
     port: 4300,

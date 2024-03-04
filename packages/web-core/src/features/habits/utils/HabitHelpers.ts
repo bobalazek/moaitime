@@ -2,6 +2,8 @@ import {
   API_URL,
   CreateHabit,
   Habit,
+  HabitDailtEntry,
+  HabitDaily,
   ResponseInterface,
   UpdateHabit,
 } from '@moaitime/shared-common';
@@ -85,4 +87,36 @@ export const undeleteHabit = async (habitId: string): Promise<Habit> => {
   );
 
   return response.data as Habit;
+};
+
+/********** Habits Daily **********/
+export const getHabitsDaily = async (date: string): Promise<HabitDaily[]> => {
+  const response = await fetchJson<ResponseInterface<HabitDaily[]>>(
+    `${API_URL}/api/v1/habits/daily/${date}`,
+    {
+      method: 'GET',
+    }
+  );
+
+  return response.data as HabitDaily[];
+};
+
+export const updateHabitDaily = async (
+  habitId: string,
+  date: string,
+  amount: number
+): Promise<HabitDailtEntry> => {
+  const response = await fetchJson<ResponseInterface<HabitDailtEntry>>(
+    `${API_URL}/api/v1/habits/${habitId}/daily/${date}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ amount }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data as HabitDailtEntry;
 };

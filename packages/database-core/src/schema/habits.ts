@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm';
 import { index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
+import { HabitGoalFrequencyEnum } from '@moaitime/shared-common';
+
 import { users } from './users';
 
 export const habits = pgTable(
@@ -14,7 +16,7 @@ export const habits = pgTable(
     priority: integer('priority'),
     goalAmount: integer('goal_amount').notNull().default(1),
     goalUnit: text('goal_unit').notNull().default('times'),
-    goalFrequency: text('goal_frequency').notNull().default('day'), // day, week, month, year
+    goalFrequency: text('goal_frequency').notNull().default('day').$type<HabitGoalFrequencyEnum>(), // day, week, month, year
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

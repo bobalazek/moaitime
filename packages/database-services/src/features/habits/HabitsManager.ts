@@ -1,7 +1,15 @@
-import { and, count, DBQueryConfig, desc, eq, isNull, SQL } from 'drizzle-orm';
+import { endOfDay } from 'date-fns';
+import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, lte, SQL } from 'drizzle-orm';
 
-import { getDatabase, Habit, habits, NewHabit, User } from '@moaitime/database-core';
-import { CreateHabit, UpdateHabit } from '@moaitime/shared-common';
+import {
+  getDatabase,
+  Habit,
+  habitDailyEntries,
+  habits,
+  NewHabit,
+  User,
+} from '@moaitime/database-core';
+import { CreateHabit, HabitDaily, UpdateHabit } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
 
@@ -97,6 +105,50 @@ export class HabitsManager {
     return this.findManyByUserIdWithOptions(userId, options);
   }
 
+  async daily(userId: string, date: string): Promise<HabitDaily[]> {
+    const dateObject = endOfDay(new Date(date));
+    const where = and(
+      eq(habits.userId, userId),
+      isNull(habits.deletedAt),
+      lte(habits.createdAt, dateObject)
+    );
+
+    const dailyHabits = await getDatabase()
+      .select()
+      .from(habits)
+      .where(where)
+      .orderBy(asc(habits.order))
+      .execute();
+
+    if (dailyHabits.length === 0) {
+      return [];
+    }
+
+    const habitIds = dailyHabits.map((habit) => habit.id);
+
+    const dailyEntries = await getDatabase().query.habitDailyEntries.findMany({
+      where: and(inArray(habitDailyEntries.habitId, habitIds), eq(habitDailyEntries.date, date)),
+    });
+
+    const dailyEntriesMap = new Map<string, number>();
+    for (const entry of dailyEntries) {
+      dailyEntriesMap.set(entry.habitId, entry.amount);
+    }
+
+    return dailyHabits.map((habit) => ({
+      id: `${habit.id}-${date}`,
+      date,
+      amount: dailyEntriesMap.get(habit.id) ?? 0,
+      habit: {
+        ...habit,
+        order: habit.order ?? 0,
+        deletedAt: habit.deletedAt?.toISOString() ?? null,
+        createdAt: habit.createdAt!.toISOString(),
+        updatedAt: habit.updatedAt!.toISOString(),
+      },
+    }));
+  }
+
   async view(userId: string, habitId: string) {
     const canView = await this.userCanView(userId, habitId);
     if (!canView) {
@@ -109,6 +161,42 @@ export class HabitsManager {
     }
 
     return data;
+  }
+
+  async dailyUpdate(userId: string, habitId: string, date: string, amount: number) {
+    await this.view(userId, habitId);
+
+    const dailyEntry = await getDatabase().query.habitDailyEntries.findFirst({
+      where: and(eq(habitDailyEntries.habitId, habitId), eq(habitDailyEntries.date, date)),
+    });
+    if (dailyEntry) {
+      const rows = await getDatabase()
+        .update(habitDailyEntries)
+        .set({ amount, updatedAt: new Date() })
+        .where(eq(habitDailyEntries.id, dailyEntry.id))
+        .returning();
+      const row = rows[0] ?? null;
+      if (!row) {
+        throw new Error('Failed to update daily entry');
+      }
+
+      return row;
+    }
+
+    const rows = await getDatabase()
+      .insert(habitDailyEntries)
+      .values({
+        habitId,
+        date,
+        amount,
+      })
+      .returning();
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to create daily entry');
+    }
+
+    return row;
   }
 
   async create(user: User, data: CreateHabit) {

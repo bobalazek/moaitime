@@ -2,7 +2,7 @@ import LayoutPageHeader from '../../../../core/components/layout/LayoutPageHeade
 import { useHabitsStore } from '../../../state/habitsStore';
 import HabitsPageHeaderButtons from './HabitsPageHeaderButtons';
 
-const HabisPageHeader = () => {
+const HabitsPageHeader = () => {
   const { selectedDate } = useHabitsStore();
 
   return (
@@ -20,4 +20,4 @@ const HabisPageHeader = () => {
   );
 };
 
-export default HabisPageHeader;
+export default HabitsPageHeader;

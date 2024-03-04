@@ -90,6 +90,8 @@ export * from './tasks/TagSchema';
 
 // Habits
 export * from './habits/HabitSchema';
+export * from './habits/HabitDailySchema';
+export * from './habits/HabitDailyEntrySchema';
 export * from './habits/HabitGoalFrequencyEnum';
 export * from './habits/HabitGoalUnitsDefault';
 

@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 
-import { CreateHabit, Habit, UpdateHabit } from '@moaitime/shared-common';
+import { CreateHabit, Habit, HabitDailtEntry, UpdateHabit } from '@moaitime/shared-common';
 
 import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { queryClient } from '../../core/utils/FetchHelpers';
-import { HABITS_QUERY_KEY } from '../hooks/useHabitsQuery';
+import { HABITS_DAILY_QUERY_KEY } from '../hooks/useHabitsDailyQuery';
 import {
   addHabit,
   deleteHabit,
@@ -12,6 +12,7 @@ import {
   getHabit,
   getHabits,
   undeleteHabit,
+  updateHabitDaily,
 } from '../utils/HabitHelpers';
 
 export type HabitsStore = {
@@ -24,6 +25,7 @@ export type HabitsStore = {
   editHabit: (habitId: string, Habit: UpdateHabit) => Promise<Habit>;
   deleteHabit: (habitId: string, isHardDelete?: boolean) => Promise<Habit>;
   undeleteHabit: (habitId: string) => Promise<Habit>;
+  updateHabitDaily: (habitId: string, date: string, amount: number) => Promise<HabitDailtEntry>;
   // Selected Date
   selectedDate: Date;
   setSelectedDate: (selectedDate: Date) => void;
@@ -65,7 +67,7 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     await reloadUserUsage();
 
     queryClient.invalidateQueries({
-      queryKey: [HABITS_QUERY_KEY],
+      queryKey: [HABITS_DAILY_QUERY_KEY],
     });
 
     return newHabit;
@@ -74,7 +76,7 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     const editedHabit = await editHabit(habitId, Habit);
 
     queryClient.invalidateQueries({
-      queryKey: [HABITS_QUERY_KEY],
+      queryKey: [HABITS_DAILY_QUERY_KEY],
     });
 
     return editedHabit;
@@ -87,7 +89,7 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     await reloadUserUsage();
 
     queryClient.invalidateQueries({
-      queryKey: [HABITS_QUERY_KEY],
+      queryKey: [HABITS_DAILY_QUERY_KEY],
     });
 
     return deletedHabit;
@@ -100,10 +102,19 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     await reloadUserUsage();
 
     queryClient.invalidateQueries({
-      queryKey: [HABITS_QUERY_KEY],
+      queryKey: [HABITS_DAILY_QUERY_KEY],
     });
 
     return undeletedHabit;
+  },
+  updateHabitDaily: async (habitId: string, date: string, amount: number) => {
+    const habitDailyEntry = await updateHabitDaily(habitId, date, amount);
+
+    await queryClient.invalidateQueries({
+      queryKey: [HABITS_DAILY_QUERY_KEY],
+    });
+
+    return habitDailyEntry;
   },
   // Selected Date
   selectedDate: new Date(),

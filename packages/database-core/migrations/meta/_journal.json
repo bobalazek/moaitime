@@ -15,6 +15,20 @@
       "when": 1709541921145,
       "tag": "0001_easy_revanche",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1709571360648,
+      "tag": "0002_high_cerebro",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1709573503910,
+      "tag": "0003_panoramic_mephisto",
+      "breakpoints": true
     }
   ]
 }

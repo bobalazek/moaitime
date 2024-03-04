@@ -3,6 +3,7 @@ import { Request } from 'express';
 
 import { Habit } from '@moaitime/database-core';
 import { habitsManager } from '@moaitime/database-services';
+import { HabitDaily, isValidDate } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -24,12 +25,55 @@ export class HabitsController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Get('daily/:date')
+  async daily(
+    @Req() req: Request,
+    @Param('date') date: string
+  ): Promise<AbstractResponseDto<HabitDaily[]>> {
+    if (!isValidDate(date)) {
+      throw new Error('Invalid date');
+    }
+
+    const data = await habitsManager.daily(req.user.id, date);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Get(':habitId')
   async view(
     @Req() req: Request,
     @Param('habitId') habitId: string
   ): Promise<AbstractResponseDto<Habit>> {
     const data = await habitsManager.view(req.user.id, habitId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Patch(':habitId/daily/:date')
+  async dailyUpdate(
+    @Req() req: Request,
+    @Param('habitId') habitId: string,
+    @Param('date') date: string,
+    @Body() body: { amount: string }
+  ): Promise<AbstractResponseDto> {
+    if (!isValidDate(date)) {
+      throw new Error('Invalid date');
+    }
+
+    const amount = parseInt(body.amount ?? '0');
+    if (amount < 0) {
+      throw new Error('Invalid amount');
+    }
+
+    const data = await habitsManager.dailyUpdate(req.user.id, habitId, date, amount);
 
     return {
       success: true,

@@ -7,7 +7,7 @@ import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { useEscapeToHome } from '../../../core/hooks/useEscapeToHome';
 import { useStateAndUrlSync } from '../../../core/hooks/useStateAndUrlSync';
 import { useHabitsStore } from '../../state/habitsStore';
-import HabisPageHeader from './habits/HabitsPageHeader';
+import HabitsPageHeader from './habits/HabitsPageHeader';
 import HabitsPageMain from './habits/HabitsPageMain';
 
 export default function HabitsPage() {
@@ -54,7 +54,7 @@ export default function HabitsPage() {
   return (
     <ErrorBoundary>
       <div className="flex h-screen flex-col" data-test="focus">
-        <HabisPageHeader />
+        <HabitsPageHeader />
         <HabitsPageMain />
       </div>
     </ErrorBoundary>

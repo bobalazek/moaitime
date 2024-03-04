@@ -5,16 +5,16 @@ import type { UseQueryResult } from '@tanstack/react-query';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { Habit } from '@moaitime/shared-common';
+import { HabitDaily } from '@moaitime/shared-common';
 
-import { getHabits } from '../utils/HabitHelpers';
+import { getHabitsDaily } from '../utils/HabitHelpers';
 
-export const HABITS_QUERY_KEY = 'habits';
+export const HABITS_DAILY_QUERY_KEY = 'habits';
 
-export const useHabitsQuery = () => {
-  return useQuery<Habit[]>({
-    queryKey: [HABITS_QUERY_KEY],
-    queryFn: () => getHabits(),
+export const useHabitsDailyQuery = (date: string) => {
+  return useQuery<HabitDaily[]>({
+    queryKey: [HABITS_DAILY_QUERY_KEY, date],
+    queryFn: () => getHabitsDaily(date),
     retry: false,
   });
 };

@@ -141,7 +141,7 @@ export default function HabitEditDialog() {
                 />
                 <select
                   id="habit-goal-unit"
-                  className="px-4 py-2"
+                  className="bg-background px-4 py-2"
                   value={data.goalUnit}
                   onChange={(event) => {
                     setData((current) => ({ ...current, goalUnit: event.target.value }));
@@ -156,7 +156,7 @@ export default function HabitEditDialog() {
                 <div>per</div>
                 <select
                   id="habit-goal-frequency"
-                  className="px-4 py-2"
+                  className="bg-background px-4 py-2"
                   value={data.goalFrequency}
                   onChange={(event) => {
                     setData((current) => ({

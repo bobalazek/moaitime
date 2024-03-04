@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "habit_daily_entries_date_idx" ON "habit_daily_entries" ("date");

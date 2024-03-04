@@ -52,7 +52,7 @@ const Feed = ({ userIdOrUsername }: { userIdOrUsername?: string }) => {
           </Button>
         </div>
       )}
-      <div data-test="feed" className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" data-test="feed">
         {items.map((feedPost) => (
           <FeedPost key={feedPost.id} feedPost={feedPost} />
         ))}

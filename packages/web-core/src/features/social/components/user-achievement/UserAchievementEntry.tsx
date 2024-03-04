@@ -30,8 +30,8 @@ export default function UserAchievementEntry({ userAchievement }: UserAchievemen
           <div
             className={clsx(
               'h-full rounded-lg',
-              !userAchievement.hasReachedMaxProgress && 'bg-yellow-400',
-              userAchievement.hasReachedMaxProgress && 'bg-green-500'
+              !userAchievement.hasReachedMaxProgress && 'bg-yellow-400 dark:bg-yellow-600',
+              userAchievement.hasReachedMaxProgress && 'bg-green-500 dark:bg-green-600'
             )}
             style={{
               width: `${userAchievement.nextLevelProgressPercentage}%`,
@@ -39,12 +39,7 @@ export default function UserAchievementEntry({ userAchievement }: UserAchievemen
           />
         </div>
         {userAchievement.currentLevelPoints !== userAchievement.nextLevelPoints && (
-          <div
-            className="absolute flex h-5 w-full items-center justify-between px-2 text-xs text-white"
-            style={{
-              textShadow: '1px 1px 1px rgba(0, 0, 0, 1)',
-            }}
-          >
+          <div className="text-muted-foreground absolute flex h-5 w-full items-center justify-between px-2 text-xs dark:text-gray-100">
             <div>{userAchievement.currentLevelPoints}</div>
             <div>{userAchievement.nextLevelPoints}</div>
           </div>

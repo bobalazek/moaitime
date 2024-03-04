@@ -34,10 +34,9 @@ import {
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
+import { recurrenceParser } from '@moaitime/recurrence-parser';
 import {
   CreateTask,
-  getRuleDateNext,
-  getRuleFromString,
   GlobalEventsEnum,
   SortDirectionEnum,
   TasksListSortFieldEnum,
@@ -663,9 +662,12 @@ export class TasksManager {
             ? `${task.dueDate}T${task.dueDateTime}`
             : addDays(new Date(task.dueDate), 1)
         );
-        const rule = getRuleFromString(task.dueDateRepeatPattern);
+        const rule = recurrenceParser.getRuleFromString(task.dueDateRepeatPattern);
 
-        const nextExecutionDate = getRuleDateNext(rule, addMilliseconds(currentDueDate, 1));
+        const nextExecutionDate = recurrenceParser.getRuleDateNext(
+          rule,
+          addMilliseconds(currentDueDate, 1)
+        );
         if (nextExecutionDate) {
           const dueDate = nextExecutionDate.toISOString().slice(0, 10);
           const dueDateTime = task.dueDateTime

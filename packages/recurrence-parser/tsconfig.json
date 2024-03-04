@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src/**/*", "../user-experience-points-processor/src/UserExperiencePointsByEvent.ts"]
+}

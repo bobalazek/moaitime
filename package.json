@@ -42,7 +42,6 @@
     "tsup": "^8.0.2",
     "turbo": "^1.12.4",
     "vite": "^5.1.4",
-    "vite-plugin-node": "^3.1.0",
     "vite-tsconfig-paths": "^4.3.1",
     "vitest": "^1.3.1"
   },

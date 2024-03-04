@@ -30,16 +30,14 @@ import {
   userCalendars,
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
+import { recurrenceParser } from '@moaitime/recurrence-parser';
 import {
   CreateEvent,
-  getRuleFromString,
-  getRulePattern,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
   GlobalEventsEnum,
   Permissions,
   UpdateEvent,
-  updateRule,
 } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
@@ -343,9 +341,9 @@ export class EventsManager {
 
     const repeatPattern = data.repeatPattern ?? event.repeatPattern;
     if (startsAt && repeatPattern && data.repeatPattern !== null) {
-      let rule = getRuleFromString(repeatPattern);
-      rule = updateRule(rule, { dtstart: startsAt });
-      data.repeatPattern = getRulePattern(rule);
+      let rule = recurrenceParser.getRuleFromString(repeatPattern);
+      rule = recurrenceParser.updateRule(rule, { dtstart: startsAt });
+      data.repeatPattern = recurrenceParser.getRulePattern(rule);
     }
 
     const newEvent = await this.updateOneById(eventId, {

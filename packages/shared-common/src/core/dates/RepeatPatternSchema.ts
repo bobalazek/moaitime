@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { getRuleFromString } from '../../RepeatHelpers';
+import { recurrenceParser } from '@moaitime/recurrence-parser';
 
 export const RepeatPatternSchema = z.string().refine(
   (data) => {
@@ -9,7 +9,7 @@ export const RepeatPatternSchema = z.string().refine(
     }
 
     try {
-      getRuleFromString(data);
+      recurrenceParser.getRuleFromString(data);
 
       return true;
     } catch (e) {

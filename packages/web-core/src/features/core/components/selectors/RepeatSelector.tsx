@@ -3,18 +3,8 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
-import {
-  addDateTimezoneToItself,
-  createRule,
-  getRuleDatesAll,
-  getRuleFromString,
-  getRulePattern,
-  getRuleToText,
-  removeDateTimezoneFromItself,
-  RuleFrequency,
-  RuleOptions,
-  updateRule,
-} from '@moaitime/shared-common';
+import { recurrenceParser, RuleFrequency } from '@moaitime/recurrence-parser';
+import { addDateTimezoneToItself, removeDateTimezoneFromItself } from '@moaitime/shared-common';
 import {
   Button,
   Input,
@@ -60,7 +50,7 @@ export function RepeatSelector({
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const [open, setOpen] = useState(false);
   const [rule, setRule] = useState(
-    createRule({
+    recurrenceParser.createRule({
       freq: RuleFrequency.DAILY,
       interval: 1,
       wkst: generalStartDayOfWeek,
@@ -68,13 +58,13 @@ export function RepeatSelector({
   );
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
-  const ruleString = getRuleToText(rule);
-  const ruleDates = getRuleDatesAll(rule, MAX_DATES_TO_SHOW);
+  const ruleString = recurrenceParser.getRuleToText(rule);
+  const ruleDates = recurrenceParser.getRuleDatesAll(rule, MAX_DATES_TO_SHOW);
 
   useEffect(() => {
     const newRule = value
-      ? getRuleFromString(value)
-      : updateRule(
+      ? recurrenceParser.getRuleFromString(value)
+      : recurrenceParser.updateRule(
           rule,
           {
             dtstart: zonedTimeToUtc(startsAt, 'UTC'),
@@ -106,7 +96,7 @@ export function RepeatSelector({
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    const ruleValue = getRulePattern(rule) ?? undefined;
+    const ruleValue = recurrenceParser.getRulePattern(rule) ?? undefined;
 
     onChangeValue(ruleValue, rule.options.until ?? undefined);
 
@@ -125,7 +115,9 @@ export function RepeatSelector({
           {!value && <span className="text-muted-foreground italic">Does not repeat</span>}
           {value && (
             <>
-              <span className="flex text-left">Repeats {getRuleToText(value)}</span>
+              <span className="flex text-left">
+                Repeats {recurrenceParser.getRuleToText(value)}
+              </span>
               <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
                 <XIcon />
               </span>
@@ -147,7 +139,7 @@ export function RepeatSelector({
               value={rule.options.interval}
               onChange={(event) => {
                 setRule(
-                  updateRule(
+                  recurrenceParser.updateRule(
                     rule,
                     {
                       interval: parseInt(event.target.value),
@@ -170,7 +162,7 @@ export function RepeatSelector({
                   updateData.byweekday = rule.options.byweekday;
                 }
 
-                setRule(updateRule(rule, updateData, disableTime));
+                setRule(recurrenceParser.updateRule(rule, updateData, disableTime));
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
             >
@@ -189,7 +181,7 @@ export function RepeatSelector({
               value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
                 setRule(
-                  updateRule(
+                  recurrenceParser.updateRule(
                     rule,
                     {
                       byweekday: value?.map((day) => parseInt(day)) ?? null,
@@ -231,7 +223,7 @@ export function RepeatSelector({
             onValueChange={(value) => {
               setEndsType(value as RepeatSelectorEndsEnum);
 
-              const options: Partial<RuleOptions> = {
+              const options = {
                 until:
                   value === RepeatSelectorEndsEnum.UNTIL_DATE
                     ? rule.options.until ?? addDays(new Date(), 7)
@@ -242,7 +234,7 @@ export function RepeatSelector({
                     : null,
               };
 
-              setRule(updateRule(rule, options, disableTime));
+              setRule(recurrenceParser.updateRule(rule, options, disableTime));
             }}
             className="flex flex-col gap-2"
           >
@@ -275,7 +267,7 @@ export function RepeatSelector({
                   );
 
                   setRule(
-                    updateRule(
+                    recurrenceParser.updateRule(
                       rule,
                       {
                         until,
@@ -305,7 +297,7 @@ export function RepeatSelector({
                   value={rule.options.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
                     setRule(
-                      updateRule(
+                      recurrenceParser.updateRule(
                         rule,
                         {
                           count: parseInt(event.target.value),

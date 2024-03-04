@@ -2,12 +2,12 @@ import { addDays, format, subMinutes } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import { User } from '@moaitime/database-core';
+import { recurrenceParser } from '@moaitime/recurrence-parser';
 import {
   CalendarEntry,
   CalendarEntryTypeEnum,
   CalendarEntryYearlyEntry,
   Event,
-  getRuleDatesBetween,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
   isValidDate,
@@ -102,7 +102,7 @@ export class CalendarEntriesManager {
           continue;
         }
 
-        const eventIterations = getRuleDatesBetween(event.repeatPattern, from, to);
+        const eventIterations = recurrenceParser.getRuleDatesBetween(event.repeatPattern, from, to);
         for (const eventIteration of eventIterations) {
           const calendarEntry = this._convertEventToCalendarEntry(event, eventIteration);
 

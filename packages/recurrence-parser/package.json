@@ -1,5 +1,5 @@
 {
-  "name": "@moaitime/database-services",
+  "name": "@moaitime/recurrence-parser",
   "version": "0.0.0",
   "exports": {
     ".": {
@@ -21,31 +21,15 @@
     "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest run --fileParallelism=false",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@moaitime/database-cache": "workspace:*",
-    "@moaitime/database-core": "workspace:*",
-    "@moaitime/database-testing": "workspace:*",
-    "@moaitime/emails-mailer": "workspace:*",
-    "@moaitime/global-events-notifier": "workspace:*",
-    "@moaitime/logging": "workspace:*",
-    "@moaitime/recurrence-parser": "workspace:*",
-    "@moaitime/shared-backend": "workspace:*",
-    "@moaitime/shared-common": "workspace:*",
-    "@moaitime/uploader": "workspace:*",
-    "archiver": "^6.0.1",
+    "@vvo/tzdb": "^6.124.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
-    "drizzle-orm": "^0.29.0",
-    "ua-parser-js": "^1.0.37",
-    "uuid": "^9.0.1"
+    "rrule": "^2.8.1"
   },
   "devDependencies": {
-    "@types/archiver": "^6.0.2",
-    "@types/ua-parser-js": "^0.7.39",
-    "@types/uuid": "^9.0.7",
     "typescript": "^5.3.2"
   }
 }

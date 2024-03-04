@@ -14,7 +14,6 @@ export const USER_FOLLOWERS_QUERY_KEY = 'user-followers';
 export const useUserFollowersQuery = (userIdOrUsername: string) => {
   return useInfiniteQuery<AsyncReturnType<typeof getUserFollowers>>({
     initialPageParam: undefined,
-    maxPages: 5,
     queryKey: [USER_FOLLOWERS_QUERY_KEY, userIdOrUsername],
     queryFn: ({ pageParam, direction }) => {
       let params: PaginationCursorsType | undefined = undefined;

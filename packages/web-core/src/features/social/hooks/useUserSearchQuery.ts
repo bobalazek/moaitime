@@ -14,7 +14,6 @@ export const USER_SEARCH_QUERY_KEY = 'user-search';
 export const useUserSearchQuery = (query?: string) => {
   return useInfiniteQuery<AsyncReturnType<typeof getUserSearch>>({
     initialPageParam: undefined,
-    maxPages: 5,
     enabled: !!query,
     queryKey: [USER_SEARCH_QUERY_KEY, query],
     queryFn: ({ pageParam, direction }) => {

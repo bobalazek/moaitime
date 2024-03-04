@@ -14,7 +14,6 @@ export const FEED_QUERY_KEY = 'feed';
 export const useFeedQuery = (userIdOrUsername?: string) => {
   return useInfiniteQuery<AsyncReturnType<typeof getFeed>>({
     initialPageParam: undefined,
-    maxPages: 5,
     queryKey: [FEED_QUERY_KEY, userIdOrUsername],
     queryFn: ({ pageParam, direction }) => {
       let params: PaginationCursorsType | undefined = undefined;

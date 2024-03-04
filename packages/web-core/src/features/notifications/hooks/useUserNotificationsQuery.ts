@@ -17,7 +17,6 @@ export const NOTIFICATIONS_QUERY_KEY = 'notifications';
 export const useUserNotificationsQuery = (unreadOnly = false) => {
   return useInfiniteQuery<AsyncReturnType<typeof getUserNotificationsRawResponse>>({
     initialPageParam: undefined,
-    maxPages: 2,
     queryKey: [NOTIFICATIONS_QUERY_KEY, unreadOnly],
     queryFn: ({ pageParam, direction }) => {
       let params: NotificationsManagerFindOptions | undefined = unreadOnly

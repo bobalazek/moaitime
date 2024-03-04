@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 
 import {
   CreateHabit,
+  HABIT_GOAL_UNITS_DEFAULT,
+  HabitGoalFrequencyEnum,
   UpdateHabit,
-  UpdateHabitSchema,
-  zodErrorToString,
 } from '@moaitime/shared-common';
 import {
   Button,
@@ -24,6 +24,13 @@ import {
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useHabitsStore } from '../../state/habitsStore';
 
+const DEFAULT_HABIT_DATA = {
+  name: '',
+  goalAmount: 1,
+  goalUnit: HABIT_GOAL_UNITS_DEFAULT[0],
+  goalFrequency: HabitGoalFrequencyEnum.DAY,
+};
+
 export default function HabitEditDialog() {
   const {
     selectedHabitDialogOpen,
@@ -32,23 +39,21 @@ export default function HabitEditDialog() {
     addHabit,
     editHabit,
   } = useHabitsStore();
-  const [data, setData] = useState<UpdateHabit>();
+  const [data, setData] = useState<CreateHabit>(DEFAULT_HABIT_DATA);
 
   useEffect(() => {
     if (!selectedHabitDialog) {
       return;
     }
 
-    const parsedSelectedHabit = UpdateHabitSchema.safeParse(selectedHabitDialog);
-    if (!parsedSelectedHabit.success) {
-      sonnerToast.error('Oops!', {
-        description: zodErrorToString(parsedSelectedHabit.error),
-      });
-
-      return;
-    }
-
-    setData(parsedSelectedHabit.data);
+    setData({
+      name: selectedHabitDialog.name,
+      description: selectedHabitDialog.description,
+      color: selectedHabitDialog.color,
+      goalAmount: selectedHabitDialog.goalAmount,
+      goalUnit: selectedHabitDialog.goalUnit,
+      goalFrequency: selectedHabitDialog.goalFrequency,
+    });
   }, [selectedHabitDialog]);
 
   const onSaveButtonClick = async () => {
@@ -63,7 +68,7 @@ export default function HabitEditDialog() {
       });
 
       setSelectedHabitDialogOpen(false);
-      setData(undefined);
+      setData(DEFAULT_HABIT_DATA);
     } catch (error) {
       sonnerToast.error('Oops!', {
         description:
@@ -110,13 +115,63 @@ export default function HabitEditDialog() {
                 value={data?.color ?? undefined}
                 onChangeValue={(value) => setData((current) => ({ ...current, color: value }))}
                 triggerProps={{
-                  id: 'user-calendar-edit-color',
+                  id: 'habit-color',
                   'data-test': 'habits--habit-edit-dialog--color-select--trigger-button',
                 }}
                 contentProps={{
                   'data-test': 'habits--habit-edit-dialog--color-select',
                 }}
               />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="habit-goal">Goal</Label>
+              <div className="flex w-full items-center gap-2">
+                <Input
+                  type="number"
+                  value={data.goalAmount}
+                  onChange={(event) => {
+                    setData((current) => ({
+                      ...current,
+                      goalAmount: parseInt(event.target.value),
+                    }));
+                  }}
+                  className="w-20"
+                  min={1}
+                  max={1000000}
+                />
+                <select
+                  id="habit-goal-unit"
+                  className="px-4 py-2"
+                  value={data.goalUnit}
+                  onChange={(event) => {
+                    setData((current) => ({ ...current, goalUnit: event.target.value }));
+                  }}
+                >
+                  {HABIT_GOAL_UNITS_DEFAULT.map((unit) => (
+                    <option key={unit} value={unit}>
+                      {unit}
+                    </option>
+                  ))}
+                </select>
+                <div>per</div>
+                <select
+                  id="habit-goal-frequency"
+                  className="px-4 py-2"
+                  value={data.goalFrequency}
+                  onChange={(event) => {
+                    setData((current) => ({
+                      ...current,
+                      goalFrequency: event.target.value as HabitGoalFrequencyEnum,
+                    }));
+                  }}
+                >
+                  {Object.values(HabitGoalFrequencyEnum).map((key) => (
+                    <option key={key} value={key}>
+                      {key}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </ScrollArea>

@@ -3,10 +3,10 @@ import { CalendarIcon } from 'lucide-react';
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
-import { useCalendarStore } from '../../../state/calendarStore';
+import { useHabitsStore } from '../../../state/habitsStore';
 
-function CalendarPageHeaderCalendar() {
-  const { selectedDays, selectedDate, setSelectedDate } = useCalendarStore();
+function HabitsPageHeaderCalendar() {
+  const { selectedDate, setSelectedDate } = useHabitsStore();
 
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const now = new Date();
@@ -19,12 +19,12 @@ function CalendarPageHeaderCalendar() {
           variant="ghost"
           size="sm"
           title="Open calendar selector"
-          data-test="calendar--header--calendar--trigger-button"
+          data-test="habits--header--calendar--trigger-button"
         >
           <CalendarIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-auto p-0" data-test="calendar--header--calendar">
+      <PopoverContent align="end" className="w-auto p-0" data-test="habits--header--calendar">
         <Calendar
           captionLayout="dropdown-buttons"
           mode="single"
@@ -34,9 +34,6 @@ function CalendarPageHeaderCalendar() {
           weekStartsOn={generalStartDayOfWeek}
           onSelect={(value) => {
             setSelectedDate(value ?? selectedDate);
-          }}
-          modifiers={{
-            selectedDays,
           }}
           modifiersStyles={{
             selectedDays: {
@@ -49,4 +46,4 @@ function CalendarPageHeaderCalendar() {
   );
 }
 
-export default CalendarPageHeaderCalendar;
+export default HabitsPageHeaderCalendar;

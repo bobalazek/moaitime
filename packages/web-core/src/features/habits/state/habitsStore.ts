@@ -8,6 +8,10 @@ import { addHabit, deleteHabit, editHabit, getHabit, undeleteHabit } from '../ut
 
 export type HabitsStore = {
   /********** Habits **********/
+  // Selected Date
+  selectedDate: Date;
+  setSelectedDate: (selectedDate: Date) => void;
+  // Actions
   getHabit: (habitId: string) => Promise<Habit | null>;
   addHabit: (Habit: CreateHabit) => Promise<Habit>;
   editHabit: (habitId: string, Habit: UpdateHabit) => Promise<Habit>;
@@ -23,7 +27,15 @@ export type HabitsStore = {
 };
 
 export const useHabitsStore = create<HabitsStore>()((set) => ({
-  /********** Focus Sessions **********/
+  /********** Habits **********/
+  // Selected Date
+  selectedDate: new Date(),
+  setSelectedDate: (selectedDate: Date) => {
+    set({
+      selectedDate,
+    });
+  },
+  // Actions
   getHabit: async (habitId: string) => {
     const habit = await getHabit(habitId);
 

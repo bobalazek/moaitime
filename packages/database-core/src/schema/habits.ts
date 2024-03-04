@@ -12,6 +12,9 @@ export const habits = pgTable(
     order: integer('order').default(0),
     color: text('color'),
     priority: integer('priority'),
+    goalAmount: integer('goal_amount').notNull().default(1),
+    goalUnit: text('goal_unit').notNull().default('times'),
+    goalFrequency: text('goal_frequency').notNull().default('day'), // day, week, month, year
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

@@ -12,13 +12,16 @@ export default function HabitEntry({ habit }: { habit: Habit }) {
     >
       <div className="flex justify-between">
         <div className="flex w-full justify-between">
-          <h5 className="text-lg font-bold">{habit.name}</h5>
+          <h5 className="text-xl font-bold">{habit.name}</h5>
           <HabitEntryActions habit={habit} />
         </div>
       </div>
       {habit.description && (
-        <div className="text-muted-foreground text-xs">{habit.description}</div>
+        <div className="text-muted-foreground text-sm">{habit.description}</div>
       )}
+      <div className="mt-3 text-lg">
+        <b>{habit.goalAmount}</b> <b>{habit.goalUnit}</b> per <b>{habit.goalFrequency}</b>
+      </div>
     </div>
   );
 }

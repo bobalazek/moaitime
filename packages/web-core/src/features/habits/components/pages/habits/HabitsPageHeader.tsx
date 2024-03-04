@@ -1,5 +1,5 @@
 import LayoutPageHeader from '../../../../core/components/layout/LayoutPageHeader';
-import HabitsPageHeaderButtons from './HabbitsPageHeaderButtons';
+import HabitsPageHeaderButtons from './HabitsPageHeaderButtons';
 
 const HabisPageHeader = () => {
   return (

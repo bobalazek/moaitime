@@ -3,6 +3,7 @@ import { PlusIcon } from 'lucide-react';
 import { Button } from '@moaitime/web-ui';
 
 import { useHabitsStore } from '../../../state/habitsStore';
+import HabitsPageHeaderCalendar from './HabitsPageHeaderCalendar';
 
 const HabitsPageHeaderButtons = () => {
   const { setSelectedHabitDialogOpen } = useHabitsStore();
@@ -13,10 +14,10 @@ const HabitsPageHeaderButtons = () => {
 
   return (
     <div className="flex gap-2">
+      <HabitsPageHeaderCalendar />
       <Button
         size="sm"
         variant="default"
-        className="h-8"
         onClick={onAddHabitButtonClick}
         data-test="habits--header--add-new-habit-button"
       >

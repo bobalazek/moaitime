@@ -59,4 +59,11 @@ export const getRuleDates = (ruleOrRuleString: RRule | string, count: number) =>
   return rule.all((_, index) => index < count);
 };
 
+export const getRuleToText = (ruleOrRuleString: RRule | string) => {
+  const rule =
+    typeof ruleOrRuleString === 'string' ? getRuleFromString(ruleOrRuleString) : ruleOrRuleString;
+
+  return rule.toText();
+};
+
 export { Options as RuleOptions, Frequency as RuleFrequency };

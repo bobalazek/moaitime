@@ -9,6 +9,7 @@ import {
   createRule,
   getRuleDates,
   getRuleFromString,
+  getRuleToText,
   removeDateTimezoneFromItself,
   RuleFrequency,
   RuleOptions,
@@ -67,7 +68,7 @@ export function RepeatSelector({
   );
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
-  const ruleString = rule.toText();
+  const ruleString = getRuleToText(rule);
   const ruleDates = getRuleDates(rule, MAX_DATES_TO_SHOW);
 
   useEffect(() => {
@@ -124,7 +125,7 @@ export function RepeatSelector({
           {!value && <span className="text-muted-foreground italic">Does not repeat</span>}
           {value && (
             <>
-              <span className="flex text-left">Repeats {getRuleFromString(value).toText()}</span>
+              <span className="flex text-left">Repeats {getRuleToText(value)}</span>
               <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
                 <XIcon />
               </span>

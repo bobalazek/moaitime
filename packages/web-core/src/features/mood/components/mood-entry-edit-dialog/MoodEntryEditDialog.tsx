@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import {
-  CreateMoodEntry,
-  MOOD_SCORES,
-  UpdateMoodEntry,
-  UpdateMoodEntrySchema,
-  zodErrorToString,
-} from '@moaitime/shared-common';
+import { CreateMoodEntry, MOOD_SCORES, UpdateMoodEntry } from '@moaitime/shared-common';
 import {
   Button,
   Dialog,
@@ -52,16 +46,12 @@ export default function MoodEntryEditDialog() {
       return;
     }
 
-    const parsedSelectedMoodEntry = UpdateMoodEntrySchema.safeParse(selectedMoodEntryDialog);
-    if (!parsedSelectedMoodEntry.success) {
-      sonnerToast.error('Oops!', {
-        description: zodErrorToString(parsedSelectedMoodEntry.error),
-      });
-
-      return;
-    }
-
-    setData(parsedSelectedMoodEntry.data);
+    setData({
+      happinessScore: selectedMoodEntryDialog.happinessScore,
+      emotions: selectedMoodEntryDialog.emotions,
+      note: selectedMoodEntryDialog.note,
+      loggedAt: selectedMoodEntryDialog.loggedAt,
+    });
   }, [selectedMoodEntryDialog]);
 
   const onSaveButtonClick = async () => {

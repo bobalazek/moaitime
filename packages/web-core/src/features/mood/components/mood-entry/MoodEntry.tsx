@@ -54,7 +54,7 @@ export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
                 ) as EmotionCategoryEnum;
                 const backgroundColor = EmotionCategoryColors[emotionCategory]
                   ? EmotionCategoryColors[emotionCategory]
-                  : undefined;
+                  : '#E0E0E0';
                 const color = getTextColor(backgroundColor);
 
                 return (

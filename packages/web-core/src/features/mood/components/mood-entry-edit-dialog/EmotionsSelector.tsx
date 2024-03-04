@@ -38,7 +38,7 @@ export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
           const isCategoryPressed = selectedEmotionCategories.includes(emotionCategory);
           const backgroundColor = EmotionCategoryColors[emotionCategory as EmotionCategoryEnum]
             ? EmotionCategoryColors[emotionCategory as EmotionCategoryEnum]
-            : undefined;
+            : '#E0E0E0';
           const color = getTextColor(backgroundColor);
 
           return (

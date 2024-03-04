@@ -76,7 +76,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
 
   return (
     <LayoutPageHeader testKey="calendar" title={<CalendarPageHeaderText />}>
-      <div className="mt-2 justify-center gap-2 sm:flex md:mt-0">
+      <div className="mt-2 justify-end gap-2 sm:flex md:mt-0">
         <CalendarSettingsDialog />
         <CalendarPageHeaderCalendar />
         <Button

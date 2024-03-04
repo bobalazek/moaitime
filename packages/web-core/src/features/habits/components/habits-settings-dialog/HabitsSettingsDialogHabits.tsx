@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
-import { useHabitsQuery } from '../../../habits/hooks/useHabitsQuery';
-import HabitEntry from '../habit-entry/HabitEntry';
+import { useHabitsQuery } from '../../hooks/useHabitsQuery';
+import HabitEntryActions from '../habit-entry/HabitEntryActions';
 
 const animationVariants = {
   initial: {
@@ -20,7 +20,7 @@ const animationVariants = {
   },
 };
 
-export default function HabitsGrid() {
+export default function HabitsSettingsDialogHabits() {
   const { isLoading, error, data } = useHabitsQuery();
 
   if (isLoading) {
@@ -36,10 +36,7 @@ export default function HabitsGrid() {
   }
 
   return (
-    <div
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-      data-test="habits--habits-grid"
-    >
+    <div data-test="habits--settings-dialog--habits">
       <AnimatePresence>
         {data.map((habit) => (
           <motion.div
@@ -49,9 +46,22 @@ export default function HabitsGrid() {
             animate="animate"
             exit="exit"
             variants={animationVariants}
-            className="flex flex-col gap-3"
           >
-            <HabitEntry habit={habit} />
+            <div className="flex justify-between">
+              <div className="flex w-full justify-between">
+                <h5>
+                  {habit.name}
+                  <div
+                    className="ml-2 inline-block h-2 w-2 rounded-full"
+                    style={{
+                      backgroundColor: habit.color ?? undefined,
+                      borderRadius: '50%',
+                    }}
+                  />
+                </h5>
+                <HabitEntryActions habit={habit} />
+              </div>
+            </div>
           </motion.div>
         ))}
       </AnimatePresence>

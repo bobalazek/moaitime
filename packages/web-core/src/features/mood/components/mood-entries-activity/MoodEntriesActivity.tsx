@@ -52,7 +52,11 @@ function MoodEntriesActivityInner() {
 
   useEffect(() => {
     const callback = () => {
-      refetch();
+      // I have absolutely no idea why this is needed, but it is, otherwise for some reason the refetch does not work,
+      // as altough we do get the new data pulled from the API, the data.pages does not contain the newest entry.
+      setTimeout(() => {
+        refetch();
+      }, 100);
     };
 
     globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, callback);

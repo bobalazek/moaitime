@@ -14,7 +14,6 @@ export const MOOD_ENTRIES_QUERY_KEY = 'mood-entries';
 export const useMoodEntriesQuery = () => {
   return useInfiniteQuery<AsyncReturnType<typeof getMoodEntries>>({
     initialPageParam: undefined,
-    structuralSharing: false, // MUST HAVE THIS, ELSE THE REFETCH WON'T WORK, AS WHEN HABING MORE THAN 1 PAGE, WE DO FETCH THE NEWEST ENTRY, BUT IT'S NOT THERE in "data.pages" FOR SOME REASON.
     queryKey: [MOOD_ENTRIES_QUERY_KEY],
     queryFn: ({ pageParam, direction }) => {
       let params: PaginationCursorsType | undefined = undefined;

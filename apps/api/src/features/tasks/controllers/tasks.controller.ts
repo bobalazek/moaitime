@@ -24,7 +24,8 @@ export class TasksController {
     const sortField = req.query.sortField as keyof Task;
     const sortDirection = req.query.sortDirection as SortDirectionEnum;
 
-    const data = await tasksManager.list(req.user.id, listId ?? null, {
+    // When it's a query, we want to filter by all lists, as this is what we use on the focus view to get the task for example
+    const data = await tasksManager.list(req.user.id, query ? undefined : listId ?? null, {
       query,
       includeCompleted,
       includeDeleted,

@@ -72,19 +72,22 @@ export class TasksManager {
 
   async findManyByUserId(
     userId: string,
-    listId: string | null,
+    listId?: string | null,
     options?: TaskManagerListOptions
   ): Promise<Task[]> {
-    let where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
     const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
 
-    // The null/unlisted list is an exception, so we always want to get the items as they are only from the user
-    if (!listId) {
-      where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;
-    } else {
-      const list = await listsManager.findOneByIdAndUserId(listId, userId);
-      if (!list) {
-        throw new Error('List for task not found');
+    let where: SQL<unknown> = sql`1 = 1`; // Need this, else typescript will complain down below
+    if (typeof listId !== 'undefined') {
+      where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+      // The null/unlisted list is an exception, so we always want to get the items as they are only from the user
+      if (!listId) {
+        where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;
+      } else {
+        const list = await listsManager.findOneByIdAndUserId(listId, userId);
+        if (!list) {
+          throw new Error('List for task not found');
+        }
       }
     }
 
@@ -343,7 +346,7 @@ export class TasksManager {
   }
 
   // API Helpers
-  async list(userId: string, listId: string, options: TaskManagerListOptions) {
+  async list(userId: string, listId: string | null | undefined, options: TaskManagerListOptions) {
     const { query, includeCompleted, includeDeleted, sortField, sortDirection } = options;
 
     const includeList = !!query; // the only place for now where we need the list is the search

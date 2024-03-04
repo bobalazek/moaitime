@@ -799,7 +799,7 @@ export class TeamsManager {
     // TODO: once we have plans, we need to adjust the limits depending on that
 
     return {
-      tasksMaxPerListCount: 10,
+      tasksMaxPerListCount: 25,
       listsMaxPerTeamCount: 3,
       usersMaxPerTeamCount: 5,
       calendarsMaxPerTeamCount: 3,

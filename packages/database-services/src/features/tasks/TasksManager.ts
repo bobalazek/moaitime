@@ -486,7 +486,7 @@ export class TasksManager {
         throw new Error('You cannot change the list to a list from a different team');
       }
 
-      if (task.parentId) {
+      if (task.parentId && task.listId !== data.listId) {
         throw new Error('You cannot change the list of a task that is assigned to a parent task');
       }
 
@@ -552,8 +552,11 @@ export class TasksManager {
     }
 
     if (Array.isArray(userIds)) {
-      if (!list?.teamId && userIds.length > 0) {
-        throw new Error('You cannot assign users to non-team list');
+      const taskCurrentList = task.listId
+        ? await listsManager.findOneByIdAndUserId(task.listId, user.id)
+        : null;
+      if (!taskCurrentList?.teamId && userIds.length > 0) {
+        throw new Error('You cannot assign users to a non-team list');
       }
 
       await this.setUsers(task, userIds, user, teamId);

@@ -470,7 +470,7 @@ export class TasksManager {
     let childrenUpdateData: Partial<NewTask> = {};
 
     let list: List | null = null;
-    if (typeof data.listId !== 'undefined') {
+    if (typeof data.listId !== 'undefined' && task.listId !== data.listId) {
       list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
 
       const { tasksMaxPerListCount, tasksCount } = await this._doMaxTasksPerListCheck(user, list);
@@ -486,7 +486,7 @@ export class TasksManager {
         throw new Error('You cannot change the list to a list from a different team');
       }
 
-      if (task.parentId && task.listId !== data.listId) {
+      if (task.parentId) {
         throw new Error('You cannot change the list of a task that is assigned to a parent task');
       }
 

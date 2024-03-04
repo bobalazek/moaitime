@@ -31,9 +31,9 @@ import {
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
-  convertRuleToString,
   CreateEvent,
   getRuleFromString,
+  getRulePattern,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
   GlobalEventsEnum,
@@ -345,7 +345,7 @@ export class EventsManager {
     if (startsAt && repeatPattern && data.repeatPattern !== null) {
       let rule = getRuleFromString(repeatPattern);
       rule = updateRule(rule, { dtstart: startsAt });
-      data.repeatPattern = convertRuleToString(rule);
+      data.repeatPattern = getRulePattern(rule);
     }
 
     const newEvent = await this.updateOneById(eventId, {

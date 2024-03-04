@@ -4,8 +4,8 @@ import { CalendarIcon, RepeatIcon, XIcon } from 'lucide-react';
 import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 
 import {
-  convertRuleToString,
   getRuleFromString,
+  getRulePattern,
   isValidTime,
   updateRule,
 } from '@moaitime/shared-common';
@@ -114,7 +114,7 @@ export default function DueDateSelector({
         dtstart: zonedTimeToUtc(newStartDate, 'UTC'),
       });
 
-      setRepeatPatternValue(convertRuleToString(rule));
+      setRepeatPatternValue(getRulePattern(rule));
     } catch (error) {
       // ignore, as it's most likely an invalid date
     }

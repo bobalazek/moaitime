@@ -2,6 +2,10 @@ import type { Options } from 'rrule';
 
 import { Frequency, RRule } from 'rrule';
 
+export type RuleOptions = Options;
+
+export const RuleFrequency = Frequency;
+
 export const createRule = (options?: Partial<Options>) => {
   return new RRule({ ...options, bysecond: [0] }, true);
 };
@@ -16,6 +20,18 @@ export const updateRule = (
   newOptions.byminute = !disableTime ? [newOptions.dtstart!.getUTCMinutes()] : null;
   newOptions.byhour = !disableTime ? [newOptions.dtstart!.getUTCHours()] : null;
 
+  if (!newOptions.count) {
+    newOptions.count = 1;
+  } else if (newOptions.count) {
+    newOptions.count = Math.round(newOptions.count); // Decimals break the library
+  }
+
+  if (!newOptions.interval) {
+    newOptions.interval = 1;
+  } else if (newOptions.interval) {
+    newOptions.interval = Math.round(newOptions.interval); // Decimals break the library
+  }
+
   return new RRule(newOptions, true);
 };
 
@@ -23,25 +39,18 @@ export const getRuleFromString = (ruleString: string) => {
   return RRule.fromString(ruleString);
 };
 
-export const convertRuleToString = (rule: RRule) => {
+export const getRulePattern = (rule: RRule) => {
   return RRule.optionsToString(rule.options);
 };
 
-export const getRuleIterationAfter = (ruleOrRuleString: RRule | string, date: Date) => {
+export const getRuleDateNext = (ruleOrRuleString: RRule | string, date: Date) => {
   const rule =
     typeof ruleOrRuleString === 'string' ? getRuleFromString(ruleOrRuleString) : ruleOrRuleString;
 
   return rule.after(date, true);
 };
 
-export const getRuleIterationBefore = (ruleOrRuleString: RRule, date: Date) => {
-  const rule =
-    typeof ruleOrRuleString === 'string' ? getRuleFromString(ruleOrRuleString) : ruleOrRuleString;
-
-  return rule.before(date, true);
-};
-
-export const getRuleIterationsBetween = (
+export const getRuleDatesBetween = (
   ruleOrRuleString: RRule | string,
   startDate: Date,
   endDate: Date
@@ -52,7 +61,7 @@ export const getRuleIterationsBetween = (
   return rule.between(startDate, endDate, true);
 };
 
-export const getRuleDates = (ruleOrRuleString: RRule | string, count: number) => {
+export const getRuleDatesAll = (ruleOrRuleString: RRule | string, count: number) => {
   const rule =
     typeof ruleOrRuleString === 'string' ? getRuleFromString(ruleOrRuleString) : ruleOrRuleString;
 
@@ -65,5 +74,3 @@ export const getRuleToText = (ruleOrRuleString: RRule | string) => {
 
   return rule.toText();
 };
-
-export { Options as RuleOptions, Frequency as RuleFrequency };

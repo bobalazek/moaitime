@@ -7,7 +7,7 @@ import {
   CalendarEntryTypeEnum,
   CalendarEntryYearlyEntry,
   Event,
-  getRuleIterationsBetween,
+  getRuleDatesBetween,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
   isValidDate,
@@ -102,7 +102,7 @@ export class CalendarEntriesManager {
           continue;
         }
 
-        const eventIterations = getRuleIterationsBetween(event.repeatPattern, from, to);
+        const eventIterations = getRuleDatesBetween(event.repeatPattern, from, to);
         for (const eventIteration of eventIterations) {
           const calendarEntry = this._convertEventToCalendarEntry(event, eventIteration);
 

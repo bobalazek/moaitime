@@ -36,8 +36,8 @@ import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { logger } from '@moaitime/logging';
 import {
   CreateTask,
+  getRuleDateNext,
   getRuleFromString,
-  getRuleIterationAfter,
   GlobalEventsEnum,
   SortDirectionEnum,
   TasksListSortFieldEnum,
@@ -665,7 +665,7 @@ export class TasksManager {
         );
         const rule = getRuleFromString(task.dueDateRepeatPattern);
 
-        const nextExecutionDate = getRuleIterationAfter(rule, addMilliseconds(currentDueDate, 1));
+        const nextExecutionDate = getRuleDateNext(rule, addMilliseconds(currentDueDate, 1));
         if (nextExecutionDate) {
           const dueDate = nextExecutionDate.toISOString().slice(0, 10);
           const dueDateTime = task.dueDateTime

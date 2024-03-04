@@ -5,10 +5,10 @@ import { MouseEvent, useEffect, useState } from 'react';
 
 import {
   addDateTimezoneToItself,
-  convertRuleToString,
   createRule,
-  getRuleDates,
+  getRuleDatesAll,
   getRuleFromString,
+  getRulePattern,
   getRuleToText,
   removeDateTimezoneFromItself,
   RuleFrequency,
@@ -69,7 +69,7 @@ export function RepeatSelector({
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
   const ruleString = getRuleToText(rule);
-  const ruleDates = getRuleDates(rule, MAX_DATES_TO_SHOW);
+  const ruleDates = getRuleDatesAll(rule, MAX_DATES_TO_SHOW);
 
   useEffect(() => {
     const newRule = value
@@ -106,7 +106,7 @@ export function RepeatSelector({
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    const ruleValue = convertRuleToString(rule) ?? undefined;
+    const ruleValue = getRulePattern(rule) ?? undefined;
 
     onChangeValue(ruleValue, rule.options.until ?? undefined);
 

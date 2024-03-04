@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useIntersectionObserver } from 'usehooks-ts';
 
@@ -18,6 +18,14 @@ const animationVariants = {
   initial: { opacity: 0, y: -100 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 100 },
+};
+
+const getHeading = (date: Date) => {
+  return date.toLocaleString('default', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 };
 
 function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
@@ -39,38 +47,34 @@ function FetchNextPageButton({ fetchNextPage }: { fetchNextPage: () => void }) {
 }
 
 function MoodEntriesActivityInner() {
-  const {
-    data,
-    isLoading,
-    hasNextPage,
-    fetchNextPage,
-    hasPreviousPage,
-    fetchPreviousPage,
-    refetch,
-    error,
-  } = useMoodEntriesQuery();
+  const { data, isLoading, hasNextPage, fetchNextPage, fetchPreviousPage, refetch, error } =
+    useMoodEntriesQuery();
 
   useEffect(() => {
-    const callback = () => {
+    const callbackAdded = () => {
       // I have absolutely no idea why this is needed, but it is, otherwise for some reason the refetch does not work,
       // as altough we do get the new data pulled from the API, the data.pages does not contain the newest entry.
       setTimeout(() => {
-        refetch();
+        fetchPreviousPage();
       }, 100);
     };
 
-    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, callback);
-    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, callback);
-    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, callback);
-    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, callback);
+    const callbackEdited = () => {
+      refetch();
+    };
+
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, callbackAdded);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, callbackEdited);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, callbackEdited);
+    globalEventsEmitter.on(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, callbackEdited);
 
     return () => {
-      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, callback);
-      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, callback);
-      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, callback);
-      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, callback);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, callbackAdded);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, callbackEdited);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, callbackEdited);
+      globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, callbackEdited);
     };
-  }, [refetch]);
+  }, [fetchPreviousPage, refetch]);
 
   const items = data?.pages.flatMap((page) => page.data!);
   if (!items) {
@@ -84,6 +88,8 @@ function MoodEntriesActivityInner() {
   if (error) {
     return <ErrorAlert error={error} />;
   }
+
+  let lastHeading: string | undefined;
 
   return (
     <>
@@ -101,27 +107,35 @@ function MoodEntriesActivityInner() {
       )}
       {items.length > 0 && (
         <div className="space-y-4">
-          {hasPreviousPage && (
-            <div className="flex justify-center">
-              <Button className="btn btn-primary" onClick={() => fetchPreviousPage()}>
-                Load newer
-              </Button>
-            </div>
-          )}
           <div className="flex flex-col gap-4">
             <AnimatePresence>
               {items.map((moodEntry) => {
+                let isHeadingChanged = false;
+                const date = new Date(moodEntry.loggedAt);
+                const heading = getHeading(date);
+
+                if (heading !== lastHeading) {
+                  lastHeading = heading;
+                  isHeadingChanged = true;
+                }
+
                 return (
-                  <motion.div
-                    key={moodEntry.id}
-                    layout
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    variants={animationVariants}
-                  >
-                    <MoodEntry moodEntry={moodEntry} />
-                  </motion.div>
+                  <Fragment key={moodEntry.id}>
+                    {isHeadingChanged && (
+                      <div key={heading} className="text-center text-lg font-bold">
+                        {heading}
+                      </div>
+                    )}
+                    <motion.div
+                      layout
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      variants={animationVariants}
+                    >
+                      <MoodEntry moodEntry={moodEntry} />
+                    </motion.div>
+                  </Fragment>
                 );
               })}
             </AnimatePresence>

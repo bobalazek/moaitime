@@ -53,6 +53,7 @@ export class MoodEntriesManager {
       nextCursor?: string;
       sortDirection?: SortDirectionEnum;
       limit?: number;
+      hasMore?: boolean;
     };
   }> {
     const limit = options?.limit ?? 20;
@@ -128,32 +129,22 @@ export class MoodEntriesManager {
       return this._fixRowColumns(row);
     });
 
+    let hasMore = false;
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
     if (data.length > 0) {
-      const isLessThanLimit = data.length < limit;
+      hasMore = data.length >= limit;
       const firstItem = data[0];
       const lastItem = data[data.length - 1];
 
-      previousCursor = !isLessThanLimit
-        ? this._propertiesToCursor({
-            id: firstItem.id,
-            loggedAt: firstItem.loggedAt,
-          })
-        : undefined;
-      nextCursor = !isLessThanLimit
-        ? this._propertiesToCursor({
-            id: lastItem.id,
-            loggedAt: lastItem.loggedAt,
-          })
-        : undefined;
-    }
-
-    if (!options?.previousCursor) {
-      // Since no previousCursor was provided by the request,
-      // we assume that this is the very first page, and because of that,
-      // we certainly have no previous entries.
-      previousCursor = undefined;
+      previousCursor = this._propertiesToCursor({
+        id: firstItem.id,
+        loggedAt: firstItem.loggedAt,
+      });
+      nextCursor = this._propertiesToCursor({
+        id: lastItem.id,
+        loggedAt: lastItem.loggedAt,
+      });
     }
 
     return {
@@ -163,6 +154,7 @@ export class MoodEntriesManager {
         nextCursor,
         sortDirection,
         limit,
+        hasMore,
       },
     };
   }

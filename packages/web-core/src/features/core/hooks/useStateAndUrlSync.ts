@@ -21,7 +21,7 @@ export const useStateAndUrlSync = (updateStateByUrl: () => void, targetUri: stri
     const currentUri = `${location.pathname}${location.search}`;
     if (currentUri !== targetUri) {
       // If we visit a page such as /calendar, we basically always get
-      // instantly redirectedto something like /calendar/{view}?selectedDate={date}
+      // instantly redirected to something like /calendar/{view}?selectedDate={date}
       // In that case, we really don't ever need to go back to /calendar, so we can
       // replace the current history entry with the new one.
       const replace = currentUri !== '/' && targetUri.startsWith(currentUri);

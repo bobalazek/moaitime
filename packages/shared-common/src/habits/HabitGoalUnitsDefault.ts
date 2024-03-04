@@ -15,7 +15,8 @@ export const HABIT_GOAL_UNITS_DEFAULT = [
   'yards',
   'miles',
   // Volume
-  'milliliters',
+  'mililiters',
+  'deciliters',
   'liters',
   'grams',
   'kilograms',

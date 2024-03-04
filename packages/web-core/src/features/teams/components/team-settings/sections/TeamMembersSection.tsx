@@ -63,7 +63,7 @@ export default function TeamMembersSection() {
                   {joinedTeamMember.user && (
                     <>
                       {joinedTeamMember.user.displayName}{' '}
-                      {joinedTeamMember.displayName && <>"{joinedTeamMember.displayName}"</>}
+                      {joinedTeamMember.displayName && <>"{joinedTeamMember.displayName}" </>}
                       <small className="text-muted-foreground text-xs">
                         ({joinedTeamMember.user.email})
                       </small>

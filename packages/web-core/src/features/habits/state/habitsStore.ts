@@ -5,22 +5,31 @@ import { CreateHabit, Habit, UpdateHabit } from '@moaitime/shared-common';
 import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { queryClient } from '../../core/utils/FetchHelpers';
 import { HABITS_QUERY_KEY } from '../hooks/useHabitsQuery';
-import { addHabit, deleteHabit, editHabit, getHabit, undeleteHabit } from '../utils/HabitHelpers';
+import {
+  addHabit,
+  deleteHabit,
+  editHabit,
+  getHabit,
+  getHabits,
+  undeleteHabit,
+} from '../utils/HabitHelpers';
 
 export type HabitsStore = {
   /********** Habits **********/
+  // General
+  habits: Habit[];
+  reloadHabits: () => Promise<Habit[]>;
+  getHabit: (habitId: string) => Promise<Habit | null>;
+  addHabit: (Habit: CreateHabit) => Promise<Habit>;
+  editHabit: (habitId: string, Habit: UpdateHabit) => Promise<Habit>;
+  deleteHabit: (habitId: string, isHardDelete?: boolean) => Promise<Habit>;
+  undeleteHabit: (habitId: string) => Promise<Habit>;
   // Selected Date
   selectedDate: Date;
   setSelectedDate: (selectedDate: Date) => void;
   // Settings Dialog
   settingsDialogOpen: boolean;
   setSettingsDialogOpen: (settingsDialogOpen: boolean) => void;
-  // Actions
-  getHabit: (habitId: string) => Promise<Habit | null>;
-  addHabit: (Habit: CreateHabit) => Promise<Habit>;
-  editHabit: (habitId: string, Habit: UpdateHabit) => Promise<Habit>;
-  deleteHabit: (habitId: string, isHardDelete?: boolean) => Promise<Habit>;
-  undeleteHabit: (habitId: string) => Promise<Habit>;
   // Selected Habit Dialog
   selectedHabitDialogOpen: boolean;
   selectedHabitDialog: Habit | null;
@@ -32,21 +41,17 @@ export type HabitsStore = {
 
 export const useHabitsStore = create<HabitsStore>()((set) => ({
   /********** Habits **********/
-  // Selected Date
-  selectedDate: new Date(),
-  setSelectedDate: (selectedDate: Date) => {
+  // General
+  habits: [],
+  reloadHabits: async () => {
+    const habits = await getHabits();
+
     set({
-      selectedDate,
+      habits,
     });
+
+    return habits;
   },
-  // Settings Dialog
-  settingsDialogOpen: false,
-  setSettingsDialogOpen: (settingsDialogOpen: boolean) => {
-    set({
-      settingsDialogOpen,
-    });
-  },
-  // Actions
   getHabit: async (habitId: string) => {
     const habit = await getHabit(habitId);
 
@@ -99,6 +104,20 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     });
 
     return undeletedHabit;
+  },
+  // Selected Date
+  selectedDate: new Date(),
+  setSelectedDate: (selectedDate: Date) => {
+    set({
+      selectedDate,
+    });
+  },
+  // Settings Dialog
+  settingsDialogOpen: false,
+  setSettingsDialogOpen: (settingsDialogOpen: boolean) => {
+    set({
+      settingsDialogOpen,
+    });
   },
   // Selected Habit Dialog
   selectedHabitDialogOpen: false,

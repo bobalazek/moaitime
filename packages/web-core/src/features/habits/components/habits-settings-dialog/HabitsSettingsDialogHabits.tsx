@@ -1,8 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
-import { ErrorAlert } from '../../../core/components/ErrorAlert';
-import { Loader } from '../../../core/components/Loader';
-import { useHabitsQuery } from '../../hooks/useHabitsQuery';
+import { useHabitsStore } from '../../state/habitsStore';
 import HabitEntryActions from '../habit-entry/HabitEntryActions';
 
 const animationVariants = {
@@ -21,24 +20,27 @@ const animationVariants = {
 };
 
 export default function HabitsSettingsDialogHabits() {
-  const { isLoading, error, data } = useHabitsQuery();
+  const { habits, reloadHabits } = useHabitsStore();
+  const isInitializedRef = useRef(false);
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  useEffect(() => {
+    if (isInitializedRef.current) {
+      return;
+    }
 
-  if (error) {
-    return <ErrorAlert error={error} />;
-  }
+    isInitializedRef.current = true;
 
-  if (!data || data.length === 0) {
+    reloadHabits();
+  }, [reloadHabits]);
+
+  if (habits.length === 0) {
     return <div className="text-muted-foreground">No habits yet</div>;
   }
 
   return (
     <div data-test="habits--settings-dialog--habits">
       <AnimatePresence>
-        {data.map((habit) => (
+        {habits.map((habit) => (
           <motion.div
             key={habit.id}
             layout

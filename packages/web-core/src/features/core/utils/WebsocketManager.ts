@@ -146,9 +146,10 @@ export class WebsocketManager {
 
       await reloadCalendarEntriesDebounced();
     } else if (data.type.startsWith('teams:team-member:')) {
-      const { reloadJoinedTeamMembers } = useTeamsStore.getState();
+      const { reloadJoinedTeamMembers, reloadJoinedTeamUserInvitations } = useTeamsStore.getState();
 
       await reloadJoinedTeamMembers();
+      await reloadJoinedTeamUserInvitations();
     }
   }
 

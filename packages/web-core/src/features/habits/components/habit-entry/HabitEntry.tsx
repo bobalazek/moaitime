@@ -38,6 +38,11 @@ const HabbitEntryEditPopover = ({ habitDaily }: HabitEntryProps) => {
           onChange={(e) => {
             setValue(e.target.value);
           }}
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              onSaveButtonClick();
+            }
+          }}
         />
         <Button onClick={onSaveButtonClick} variant="outline" size="sm">
           Save

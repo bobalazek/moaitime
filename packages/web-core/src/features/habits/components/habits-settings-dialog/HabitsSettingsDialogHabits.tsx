@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 
 import { useHabitsStore } from '../../state/habitsStore';
-import HabitEntryActions from '../habit-entry/HabitEntryActions';
+import HabitItem from '../habit-item/HabitItem';
 
 const animationVariants = {
   initial: {
@@ -49,21 +49,7 @@ export default function HabitsSettingsDialogHabits() {
             exit="exit"
             variants={animationVariants}
           >
-            <div className="flex justify-between">
-              <div className="flex w-full justify-between">
-                <h5>
-                  {habit.name}
-                  <div
-                    className="ml-2 inline-block h-2 w-2 rounded-full"
-                    style={{
-                      backgroundColor: habit.color ?? undefined,
-                      borderRadius: '50%',
-                    }}
-                  />
-                </h5>
-                <HabitEntryActions habit={habit} />
-              </div>
-            </div>
+            <HabitItem habit={habit} />
           </motion.div>
         ))}
       </AnimatePresence>

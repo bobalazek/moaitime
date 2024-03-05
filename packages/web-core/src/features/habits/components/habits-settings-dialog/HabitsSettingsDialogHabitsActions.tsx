@@ -1,4 +1,4 @@
-import { MoreVerticalIcon, PlusIcon } from 'lucide-react';
+import { MoreVerticalIcon, PlusIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -11,7 +11,7 @@ import {
 import { useHabitsStore } from '../../state/habitsStore';
 
 export default function HabitsSettingsDialogHabitsActions() {
-  const { setSelectedHabitDialogOpen } = useHabitsStore();
+  const { setSelectedHabitDialogOpen, setDeletedHabitsDialogOpen } = useHabitsStore();
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,6 +38,20 @@ export default function HabitsSettingsDialogHabitsActions() {
         >
           <PlusIcon className="mr-2 h-4 w-4" />
           <span>Add New Habit</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            setDeletedHabitsDialogOpen(true);
+
+            setOpen(false);
+          }}
+        >
+          <TrashIcon className="mr-2 h-4 w-4" />
+          <span>Show Deleted Habits</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

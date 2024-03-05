@@ -25,6 +25,17 @@ export class HabitsController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Get('deleted')
+  async listDeleted(@Req() req: Request): Promise<AbstractResponseDto<Habit[]>> {
+    const data = await habitsManager.listDeleted(req.user.id);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Get('daily/:date')
   async daily(
     @Req() req: Request,

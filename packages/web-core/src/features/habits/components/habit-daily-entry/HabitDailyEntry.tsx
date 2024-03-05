@@ -7,11 +7,11 @@ import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@moaitim
 
 import { useHabitsStore } from '../../state/habitsStore';
 
-export type HabitEntryProps = {
+export type HabitDailyEntryProps = {
   habitDaily: HabitDaily;
 };
 
-const HabbitEntryEditPopover = ({ habitDaily }: HabitEntryProps) => {
+const HabbitDailyEntryEditPopover = ({ habitDaily }: HabitDailyEntryProps) => {
   const { updateHabitDaily } = useHabitsStore();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(habitDaily.amount?.toString() ?? '');
@@ -52,7 +52,7 @@ const HabbitEntryEditPopover = ({ habitDaily }: HabitEntryProps) => {
   );
 };
 
-export default function HabitEntry({ habitDaily }: HabitEntryProps) {
+export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
   const { updateHabitDaily } = useHabitsStore();
   const [currentAmount, setCurrentAmount] = useState(habitDaily.amount);
 
@@ -123,7 +123,7 @@ export default function HabitEntry({ habitDaily }: HabitEntryProps) {
             </Button>
             <div className="flex select-none items-center gap-1">
               <span className="text-2xl font-bold">{currentAmount}</span>
-              <HabbitEntryEditPopover habitDaily={habitDaily} />
+              <HabbitDailyEntryEditPopover habitDaily={habitDaily} />
               <span>/</span>
               <span>{habit.goalAmount}</span>
               <span>{habit.goalUnit}</span>

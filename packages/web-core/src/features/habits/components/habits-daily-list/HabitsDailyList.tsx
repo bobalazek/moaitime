@@ -4,7 +4,7 @@ import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useHabitsDailyQuery } from '../../hooks/useHabitsDailyQuery';
 import { useHabitsStore } from '../../state/habitsStore';
-import HabitEntry from '../habit-entry/HabitEntry';
+import HabitDailyEntry from '../habit-daily-entry/HabitDailyEntry';
 
 const HabitsDailyList = () => {
   const { selectedDate } = useHabitsStore();
@@ -22,7 +22,7 @@ const HabitsDailyList = () => {
     <div>
       <div data-test="habits-daily-list" className="flex flex-col gap-4">
         {data.map((habitDaily) => (
-          <HabitEntry key={habitDaily.id} habitDaily={habitDaily} />
+          <HabitDailyEntry key={habitDaily.id} habitDaily={habitDaily} />
         ))}
       </div>
     </div>

@@ -13,7 +13,7 @@ import {
 
 import { useHabitsStore } from '../../state/habitsStore';
 
-const HabitEntryActions = memo(({ habit }: { habit: Habit }) => {
+const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
   const { deleteHabit, undeleteHabit, setSelectedHabitDialogOpen } = useHabitsStore();
   const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
 
@@ -126,4 +126,4 @@ const HabitEntryActions = memo(({ habit }: { habit: Habit }) => {
   );
 });
 
-export default HabitEntryActions;
+export default HabitItemActions;

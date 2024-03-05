@@ -29,6 +29,14 @@ export const getHabits = async (): Promise<Habit[]> => {
   return response.data as Habit[];
 };
 
+export const getDeletedHabits = async () => {
+  const response = await fetchJson<ResponseInterface<Habit[]>>(`${API_URL}/api/v1/habits/deleted`, {
+    method: 'GET',
+  });
+
+  return response.data ?? [];
+};
+
 export const addHabit = async (habit: CreateHabit): Promise<Habit> => {
   const response = await fetchJson<ResponseInterface<Habit>>(`${API_URL}/api/v1/habits`, {
     method: 'POST',

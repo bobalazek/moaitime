@@ -9,6 +9,7 @@ import {
   addHabit,
   deleteHabit,
   editHabit,
+  getDeletedHabits,
   getHabit,
   getHabits,
   undeleteHabit,
@@ -39,6 +40,11 @@ export type HabitsStore = {
     selectedHabitDialogOpen: boolean,
     selectedHabitDialog?: Habit | null
   ) => void;
+  // Deleted
+  deletedHabitsDialogOpen: boolean;
+  setDeletedHabitsDialogOpen: (deletedHabitsDialogOpen: boolean) => void;
+  deletedHabits: Habit[];
+  reloadDeletedHabits: () => Promise<Habit[]>;
 };
 
 export const useHabitsStore = create<HabitsStore>()((set, get) => ({
@@ -87,13 +93,17 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
     return editedHabit;
   },
   deleteHabit: async (habitId: string, isHardDelete?: boolean) => {
-    const { reloadHabits } = get();
+    const { reloadHabits, reloadDeletedHabits, deletedHabitsDialogOpen } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const deletedHabit = await deleteHabit(habitId, isHardDelete);
 
     await reloadHabits();
     await reloadUserUsage();
+
+    if (deletedHabitsDialogOpen) {
+      await reloadDeletedHabits();
+    }
 
     queryClient.invalidateQueries({
       queryKey: [HABITS_DAILY_QUERY_KEY],
@@ -102,13 +112,17 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
     return deletedHabit;
   },
   undeleteHabit: async (habitId: string) => {
-    const { reloadHabits } = get();
+    const { reloadHabits, reloadDeletedHabits, deletedHabitsDialogOpen } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const undeletedHabit = await undeleteHabit(habitId);
 
     await reloadHabits();
     await reloadUserUsage();
+
+    if (deletedHabitsDialogOpen) {
+      await reloadDeletedHabits();
+    }
 
     queryClient.invalidateQueries({
       queryKey: [HABITS_DAILY_QUERY_KEY],
@@ -147,5 +161,28 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
       selectedHabitDialogOpen,
       selectedHabitDialog,
     });
+  },
+  // Deleted
+  deletedHabitsDialogOpen: false,
+  setDeletedHabitsDialogOpen: (deletedHabitsDialogOpen: boolean) => {
+    const { reloadDeletedHabits } = get();
+
+    if (deletedHabitsDialogOpen) {
+      reloadDeletedHabits();
+    }
+
+    set({
+      deletedHabitsDialogOpen,
+    });
+  },
+  deletedHabits: [],
+  reloadDeletedHabits: async () => {
+    const deletedHabits = await getDeletedHabits();
+
+    set({
+      deletedHabits,
+    });
+
+    return deletedHabits;
   },
 }));

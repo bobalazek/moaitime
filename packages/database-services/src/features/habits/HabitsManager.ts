@@ -1,5 +1,17 @@
 import { endOfDay } from 'date-fns';
-import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, lte, SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  DBQueryConfig,
+  desc,
+  eq,
+  inArray,
+  isNotNull,
+  isNull,
+  lte,
+  SQL,
+} from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -43,6 +55,13 @@ export class HabitsManager {
 
     return getDatabase().query.habits.findMany({
       where,
+    });
+  }
+
+  async findManyDeletedByUserId(userId: string): Promise<Habit[]> {
+    return getDatabase().query.habits.findMany({
+      where: and(eq(habits.userId, userId), isNotNull(habits.deletedAt)),
+      orderBy: desc(habits.createdAt),
     });
   }
 
@@ -104,6 +123,10 @@ export class HabitsManager {
   // API Helpers
   async list(actorUserId: string, options?: HabitsManagerFindManyByUserIdWithOptions) {
     return this.findManyByUserIdWithOptions(actorUserId, options);
+  }
+
+  async listDeleted(actorUserId: string) {
+    return this.findManyDeletedByUserId(actorUserId);
   }
 
   async daily(actorUserId: string, date: string): Promise<HabitDaily[]> {

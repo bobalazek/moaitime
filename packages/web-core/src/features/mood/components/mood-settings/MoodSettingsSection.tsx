@@ -34,7 +34,7 @@ export default function MoodSettingsSection() {
     }
   }, 500);
 
-  const onLabelCange = (score: number, value: string) => {
+  const onLabelChange = (score: number, value: string) => {
     setMoodScoresData((current) => ({
       ...current,
       [score]: {
@@ -122,7 +122,7 @@ export default function MoodSettingsSection() {
                 <Input
                   value={moodScoresData[score]?.label}
                   onChange={(event) => {
-                    onLabelCange(score, event.target.value);
+                    onLabelChange(score, event.target.value);
                   }}
                 />
               </div>

@@ -22,12 +22,7 @@ const HabitsDailyList = () => {
     <div>
       <div data-test="habits-daily-list" className="flex flex-col gap-4">
         {data.map((habitDaily) => (
-          <HabitEntry
-            key={habitDaily.id}
-            habit={habitDaily.habit}
-            date={habitDaily.date}
-            currentAmount={habitDaily.amount}
-          />
+          <HabitEntry key={habitDaily.id} habitDaily={habitDaily} />
         ))}
       </div>
     </div>

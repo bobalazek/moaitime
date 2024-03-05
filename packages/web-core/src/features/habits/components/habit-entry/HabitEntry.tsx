@@ -1,31 +1,34 @@
 import { MinusIcon, PencilIcon, PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
-import { Habit } from '@moaitime/shared-common';
+import { HabitDaily } from '@moaitime/shared-common';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
 import { useHabitsStore } from '../../state/habitsStore';
 
 export type HabitEntryProps = {
-  habit: Habit;
-  date: string;
-  currentAmount: number;
+  habitDaily: HabitDaily;
 };
 
-const HabbitEntryEditPopover = ({ habit, date, currentAmount }: HabitEntryProps) => {
+const HabbitEntryEditPopover = ({ habitDaily }: HabitEntryProps) => {
   const { updateHabitDaily } = useHabitsStore();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(currentAmount ?? 0);
+  const [value, setValue] = useState(habitDaily.amount?.toString() ?? '');
+
+  useEffect(() => {
+    setValue(habitDaily.amount?.toString() ?? '');
+  }, [habitDaily.amount]);
 
   const onSaveButtonClick = async () => {
-    await updateHabitDaily(habit.id, date, value);
+    await updateHabitDaily(habitDaily.habit.id, habitDaily.date, parseInt(value));
 
     setOpen(false);
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild className="cursor-pointer">
         <PencilIcon size={16} />
       </PopoverTrigger>
       <PopoverContent align="end" className="flex w-auto flex-col gap-4 p-2">
@@ -33,7 +36,7 @@ const HabbitEntryEditPopover = ({ habit, date, currentAmount }: HabitEntryProps)
           type="number"
           value={value}
           onChange={(e) => {
-            setValue(parseInt(e.target.value));
+            setValue(e.target.value);
           }}
         />
         <Button onClick={onSaveButtonClick} variant="outline" size="sm">
@@ -44,28 +47,62 @@ const HabbitEntryEditPopover = ({ habit, date, currentAmount }: HabitEntryProps)
   );
 };
 
-export default function HabitEntry({ habit, date, currentAmount }: HabitEntryProps) {
+export default function HabitEntry({ habitDaily }: HabitEntryProps) {
   const { updateHabitDaily } = useHabitsStore();
+  const [currentAmount, setCurrentAmount] = useState(habitDaily.amount);
 
-  const hasReachedGoal = currentAmount >= habit.goalAmount;
+  const habit = habitDaily.habit;
+  const date = habitDaily.date;
+  const hasReachedGoal = currentAmount >= habitDaily.habit.goalAmount;
+
+  let goalPercentage = currentAmount === 0 ? 0 : (currentAmount / habit.goalAmount) * 100;
+  if (goalPercentage > 100) {
+    goalPercentage = 100;
+  }
+
+  const debouncedUpdateHabitDaily = useDebouncedCallback((newAmount) => {
+    updateHabitDaily(habit.id, date, newAmount);
+  }, 500);
 
   const onDecrementButtonClick = async () => {
-    await updateHabitDaily(habit.id, date, currentAmount - 1);
+    let newAmount = currentAmount - 1;
+    if (currentAmount <= 0) {
+      newAmount = 0;
+    }
+
+    setCurrentAmount(newAmount);
+
+    debouncedUpdateHabitDaily(newAmount);
   };
 
   const onIncrementButtonClick = async () => {
-    await updateHabitDaily(habit.id, date, currentAmount + 1);
+    const newAmount = currentAmount + 1;
+
+    setCurrentAmount(newAmount);
+
+    debouncedUpdateHabitDaily(newAmount);
   };
+
+  useEffect(() => {
+    setCurrentAmount(habitDaily.amount);
+  }, [habitDaily.amount]);
 
   return (
     <div
-      className="flex w-full flex-col flex-wrap rounded-lg border-2 px-6 py-4 text-left"
+      className="relative flex w-full flex-col flex-wrap rounded-lg border-2 px-6 py-4"
       style={{
         borderColor: habit.color ?? undefined,
         backgroundColor: hasReachedGoal ? habit.color ?? undefined : undefined,
       }}
     >
-      <div className="flex w-full flex-wrap items-center justify-between gap-2">
+      <div
+        className="bg-secondary absolute left-0 top-0 h-full rounded-lg transition-all"
+        style={{
+          width: `${goalPercentage}%`,
+          backgroundColor: habit.color ?? undefined,
+        }}
+      />
+      <div className="z-10 flex w-full flex-wrap items-center justify-between gap-2">
         <div className="flex flex-grow">
           <div className="w-full">
             <h5 className="text-xl font-bold">{habit.name}</h5>
@@ -81,7 +118,7 @@ export default function HabitEntry({ habit, date, currentAmount }: HabitEntryPro
             </Button>
             <div className="flex select-none items-center gap-1">
               <span className="text-2xl font-bold">{currentAmount}</span>
-              <HabbitEntryEditPopover habit={habit} date={date} currentAmount={currentAmount} />
+              <HabbitEntryEditPopover habitDaily={habitDaily} />
               <span>/</span>
               <span>{habit.goalAmount}</span>
               <span>{habit.goalUnit}</span>

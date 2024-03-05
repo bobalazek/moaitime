@@ -1,4 +1,5 @@
 import {
+  moodEntriesManager,
   tasksManager,
   userAchievementsManager,
   userNotificationsSender,
@@ -39,10 +40,46 @@ export class UserAchievementsProcessor {
             ? AchievementEnum.USER_TASKS_ADDED
             : AchievementEnum.USER_TASKS_COMPLETED
         );
+      case GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED:
+        return this._processMoodMoodEntryAddedEvent(
+          payload as GlobalEvents[GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED]
+        );
+      case GlobalEventsEnum.HABITS_HABIT_ADDED:
+        return this._processHabitsHabitAddedEvent(
+          payload as GlobalEvents[GlobalEventsEnum.HABITS_HABIT_ADDED]
+        );
     }
   }
 
   // Private
+  async _addAndNotifyAchievement(
+    userId: string,
+    achievementKey: AchievementEnum,
+    points: number,
+    pointsAction: 'add' | 'set',
+    key: string,
+    data?: Record<string, unknown>
+  ) {
+    const { userAchievementPreviousLevel, userAchievementNewLevel } =
+      await userAchievementsManager.addOrUpdateAchievementForUser(
+        userId,
+        achievementKey,
+        points,
+        pointsAction,
+        key,
+        data
+      );
+
+    if (userAchievementNewLevel > userAchievementPreviousLevel) {
+      await userNotificationsSender.sendUserAchievementReceivedNotification(
+        userId,
+        achievementKey,
+        userAchievementNewLevel
+      );
+    }
+  }
+
+  // Auth
   private async _processAuthUserUpdatedEvent(
     data: GlobalEvents[GlobalEventsEnum.AUTH_USER_UPDATED]
   ) {
@@ -91,6 +128,7 @@ export class UserAchievementsProcessor {
     );
   }
 
+  // Tasks
   private async _processTasksTaskAddedOrCompletedEvent(
     data: GlobalEvents[GlobalEventsEnum.TASKS_TASK_ADDED],
     achievementKey: AchievementEnum.USER_TASKS_ADDED | AchievementEnum.USER_TASKS_COMPLETED
@@ -114,32 +152,59 @@ export class UserAchievementsProcessor {
     });
   }
 
-  // Private
-  async _addAndNotifyAchievement(
-    userId: string,
-    achievementKey: AchievementEnum,
-    points: number,
-    pointsAction: 'add' | 'set',
-    key: string,
-    data?: Record<string, unknown>
+  // Mood
+  private async _processMoodMoodEntryAddedEvent(
+    data: GlobalEvents[GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED]
   ) {
-    const { userAchievementPreviousLevel, userAchievementNewLevel } =
-      await userAchievementsManager.addOrUpdateAchievementForUser(
-        userId,
-        achievementKey,
-        points,
-        pointsAction,
-        key,
-        data
-      );
-
-    if (userAchievementNewLevel > userAchievementPreviousLevel) {
-      await userNotificationsSender.sendUserAchievementReceivedNotification(
-        userId,
-        achievementKey,
-        userAchievementNewLevel
-      );
+    const user = await usersManager.findOneById(data.actorUserId);
+    if (!user) {
+      throw new Error(`User with id "${data.actorUserId}" not found`);
     }
+
+    const moodEntry = await moodEntriesManager.findOneById(data.moodEntryId);
+    if (!moodEntry) {
+      throw new Error(`Mood entry with id "${data.moodEntryId}" not found`);
+    }
+
+    const now = new Date();
+    const key = `${EntityTypeEnum.MOOD_ENTRIES}:${moodEntry.id}:${now.toISOString().split('T')[0]}`;
+
+    await this._addAndNotifyAchievement(
+      data.actorUserId,
+      AchievementEnum.USER_MOOD_ENTRIES_ADDED,
+      1,
+      'add',
+      key,
+      {
+        id: moodEntry.id,
+        type: EntityTypeEnum.MOOD_ENTRIES,
+      }
+    );
+  }
+
+  // Habits
+  private async _processHabitsHabitAddedEvent(
+    data: GlobalEvents[GlobalEventsEnum.HABITS_HABIT_ADDED]
+  ) {
+    const user = await usersManager.findOneById(data.actorUserId);
+    if (!user) {
+      throw new Error(`User with id "${data.actorUserId}" not found`);
+    }
+
+    const now = new Date();
+    const key = `${EntityTypeEnum.HABITS}:${data.habitId}:${now.toISOString().split('T')[0]}`;
+
+    await this._addAndNotifyAchievement(
+      data.actorUserId,
+      AchievementEnum.USER_HABITS_ADDED,
+      1,
+      'add',
+      key,
+      {
+        id: data.habitId,
+        type: EntityTypeEnum.HABITS,
+      }
+    );
   }
 }
 

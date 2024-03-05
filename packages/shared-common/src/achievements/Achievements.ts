@@ -16,7 +16,7 @@ export const Achievements: AchievementType[] = [
   },
   {
     key: AchievementEnum.USER_TASKS_ADDED,
-    name: 'Task Master',
+    name: 'Task Generator',
     description: 'Keep up the good working adding tasks!',
     levelPoints: [1, 5, 10, 25, 50, 100, 500],
   },
@@ -24,6 +24,18 @@ export const Achievements: AchievementType[] = [
     key: AchievementEnum.USER_TASKS_COMPLETED,
     name: 'Task Slayer',
     description: 'Slaying those tasks like a boss!',
+    levelPoints: [1, 5, 10, 25, 50, 100, 500],
+  },
+  {
+    key: AchievementEnum.USER_MOOD_ENTRIES_ADDED,
+    name: 'Moody',
+    description: 'Keeping track of your moods!',
+    levelPoints: [1, 5, 10, 25, 50, 100, 500],
+  },
+  {
+    key: AchievementEnum.USER_HABITS_ADDED,
+    name: 'Habitual',
+    description: 'Building those habits!',
     levelPoints: [1, 5, 10, 25, 50, 100, 500],
   },
 ];

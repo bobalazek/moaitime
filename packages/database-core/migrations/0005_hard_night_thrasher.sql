@@ -1,0 +1,2 @@
+ALTER TABLE "user_achievements" DROP CONSTRAINT "user_achievements_user_id_achievement_key_idx";--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "user_achievements_user_id_achievement_key_idx" ON "user_achievements" ("user_id","achievement_key");

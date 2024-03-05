@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 import { AchievementEnum } from '@moaitime/shared-common';
 
@@ -21,6 +21,10 @@ export const userAchievements = pgTable(
   },
   (table) => {
     return {
+      userIdAchievementKeyIdx: uniqueIndex('user_achievements_user_id_achievement_key_idx').on(
+        table.userId,
+        table.achievementKey
+      ),
       achievementKeyIdx: index('user_achievements_achievement_key_idx').on(table.achievementKey),
       userIdIdx: index('user_achievements_user_id_idx').on(table.userId),
     };

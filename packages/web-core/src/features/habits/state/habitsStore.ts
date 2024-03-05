@@ -41,7 +41,7 @@ export type HabitsStore = {
   ) => void;
 };
 
-export const useHabitsStore = create<HabitsStore>()((set) => ({
+export const useHabitsStore = create<HabitsStore>()((set, get) => ({
   /********** Habits **********/
   // General
   habits: [],
@@ -60,10 +60,12 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     return habit;
   },
   addHabit: async (Habit: CreateHabit) => {
+    const { reloadHabits } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const newHabit = await addHabit(Habit);
 
+    await reloadHabits();
     await reloadUserUsage();
 
     queryClient.invalidateQueries({
@@ -73,7 +75,10 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     return newHabit;
   },
   editHabit: async (habitId: string, Habit: UpdateHabit) => {
+    const { reloadHabits } = get();
     const editedHabit = await editHabit(habitId, Habit);
+
+    await reloadHabits();
 
     queryClient.invalidateQueries({
       queryKey: [HABITS_DAILY_QUERY_KEY],
@@ -82,10 +87,12 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     return editedHabit;
   },
   deleteHabit: async (habitId: string, isHardDelete?: boolean) => {
+    const { reloadHabits } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const deletedHabit = await deleteHabit(habitId, isHardDelete);
 
+    await reloadHabits();
     await reloadUserUsage();
 
     queryClient.invalidateQueries({
@@ -95,10 +102,12 @@ export const useHabitsStore = create<HabitsStore>()((set) => ({
     return deletedHabit;
   },
   undeleteHabit: async (habitId: string) => {
+    const { reloadHabits } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const undeletedHabit = await undeleteHabit(habitId);
 
+    await reloadHabits();
     await reloadUserUsage();
 
     queryClient.invalidateQueries({

@@ -1,13 +1,7 @@
 import { UsersIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import {
-  convertObjectNullPropertiesToUndefined,
-  CreateCalendar,
-  UpdateCalendar,
-  UpdateCalendarSchema,
-  zodErrorToString,
-} from '@moaitime/shared-common';
+import { CreateCalendar, UpdateCalendar } from '@moaitime/shared-common';
 import {
   Button,
   Dialog,
@@ -44,18 +38,12 @@ export default function CalendarEditDialog() {
       return;
     }
 
-    const parsedSelectedCalendar = UpdateCalendarSchema.safeParse(
-      convertObjectNullPropertiesToUndefined(selectedCalendar)
-    );
-    if (!parsedSelectedCalendar.success) {
-      sonnerToast.error('Oops!', {
-        description: zodErrorToString(parsedSelectedCalendar.error),
-      });
-
-      return;
-    }
-
-    setData(parsedSelectedCalendar.data);
+    setData({
+      name: selectedCalendar.name,
+      description: selectedCalendar.description,
+      color: selectedCalendar.color ?? undefined,
+      teamId: selectedCalendar.teamId,
+    });
   }, [selectedCalendar]);
 
   const calendarExists = !!selectedCalendar?.id;
@@ -66,6 +54,13 @@ export default function CalendarEditDialog() {
         description: 'No calendar selected',
       });
 
+      return;
+    }
+
+    const result = confirm(
+      `Are you sure you want to delete the calendar "${selectedCalendar.name}"?`
+    );
+    if (!result) {
       return;
     }
 

@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import {
-  convertObjectNullPropertiesToUndefined,
-  CreateTeam,
-  UpdateTeam,
-  UpdateTeamSchema,
-  zodErrorToString,
-} from '@moaitime/shared-common';
+import { CreateTeam, UpdateTeam } from '@moaitime/shared-common';
 import {
   Button,
   Dialog,
@@ -38,18 +32,9 @@ export default function TeamEditDialog() {
       return;
     }
 
-    const parsedSelectedTask = UpdateTeamSchema.safeParse(
-      convertObjectNullPropertiesToUndefined(selectedTeam)
-    );
-    if (!parsedSelectedTask.success) {
-      sonnerToast.error('Oops!', {
-        description: zodErrorToString(parsedSelectedTask.error),
-      });
-
-      return;
-    }
-
-    setData(parsedSelectedTask.data);
+    setData({
+      name: selectedTeam.name,
+    });
   }, [selectedTeam]);
 
   const teamExists = !!selectedTeam?.id;

@@ -9,9 +9,7 @@ import {
 import {
   Button,
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   Input,
@@ -38,8 +36,11 @@ export default function HabitEditDialog() {
     selectedHabitDialog,
     addHabit,
     editHabit,
+    deleteHabit,
   } = useHabitsStore();
   const [data, setData] = useState<CreateHabit>(DEFAULT_HABIT_DATA);
+
+  const habitExists = !!selectedHabitDialog?.id;
 
   useEffect(() => {
     if (!selectedHabitDialog) {
@@ -74,6 +75,41 @@ export default function HabitEditDialog() {
         description:
           error instanceof Error ? error.message : 'Something went wrong while saving the habit.',
       });
+    }
+  };
+
+  const onCancelButtonClick = () => {
+    setSelectedHabitDialogOpen(false);
+    setData(DEFAULT_HABIT_DATA);
+  };
+
+  const onDeleteButtonClick = async () => {
+    if (!selectedHabitDialog) {
+      sonnerToast.error('Oops!', {
+        description: 'No habit selected',
+      });
+
+      return;
+    }
+
+    const result = confirm(
+      `Are you sure you want to delete the habit "${selectedHabitDialog!.name}"?`
+    );
+    if (!result) {
+      return;
+    }
+
+    try {
+      await deleteHabit(selectedHabitDialog.id);
+
+      sonnerToast.success(`Habit "${selectedHabitDialog.name}" deleted`, {
+        description: 'You have successfully deleted the habit',
+      });
+
+      setSelectedHabitDialogOpen(false);
+      setData(DEFAULT_HABIT_DATA);
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
     }
   };
 
@@ -175,16 +211,23 @@ export default function HabitEditDialog() {
             </div>
           </div>
         </ScrollArea>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
+        <div className="flex flex-row justify-between gap-2">
+          <div>
+            {habitExists && (
+              <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
+                Delete
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="secondary" onClick={onCancelButtonClick}>
+              Cancel
             </Button>
-          </DialogClose>
-          <Button type="submit" variant="default" onClick={onSaveButtonClick}>
-            Save
-          </Button>
-        </DialogFooter>
+            <Button type="submit" variant="default" onClick={onSaveButtonClick}>
+              Save
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

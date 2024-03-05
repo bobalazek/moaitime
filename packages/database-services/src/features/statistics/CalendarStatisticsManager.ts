@@ -1,5 +1,5 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, lte, SQL, sql } from 'drizzle-orm';
 
 import { events, getDatabase, User } from '@moaitime/database-core';
 import {
@@ -54,7 +54,7 @@ export class CalendarStatisticsManager {
   }
 
   async getEventsCreated(user: User, from?: Date, to?: Date): Promise<StatisticsDateCountData> {
-    let where = and(eq(events.userId, user.id), isNull(events.deletedAt));
+    let where = eq(events.userId, user.id);
 
     if (from && to) {
       where = and(where, between(events.createdAt, from, to)) as SQL<unknown>;

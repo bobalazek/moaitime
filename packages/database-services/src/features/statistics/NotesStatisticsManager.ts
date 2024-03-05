@@ -1,5 +1,5 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, lte, SQL, sql } from 'drizzle-orm';
 
 import { getDatabase, notes, User } from '@moaitime/database-core';
 import {
@@ -54,7 +54,7 @@ export class NotesStatisticsManager {
   }
 
   async getNotesCreated(user: User, from?: Date, to?: Date): Promise<StatisticsDateCountData> {
-    let where = and(eq(notes.userId, user.id), isNull(notes.deletedAt));
+    let where = eq(notes.userId, user.id);
 
     if (from && to) {
       where = and(where, between(notes.createdAt, from, to)) as SQL<unknown>;

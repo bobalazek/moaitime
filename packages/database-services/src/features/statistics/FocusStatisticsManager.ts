@@ -1,5 +1,5 @@
 import { format, startOfMonth, startOfWeek } from 'date-fns';
-import { and, between, count, eq, gte, isNull, lte, SQL, sql } from 'drizzle-orm';
+import { and, between, count, eq, gte, lte, SQL, sql } from 'drizzle-orm';
 
 import { focusSessions, getDatabase, User } from '@moaitime/database-core';
 import {
@@ -58,7 +58,7 @@ export class FocusStatisticsManager {
     from?: Date,
     to?: Date
   ): Promise<StatisticsDateCountData> {
-    let where = and(eq(focusSessions.userId, user.id), isNull(focusSessions.deletedAt));
+    let where = eq(focusSessions.userId, user.id);
 
     if (from && to) {
       where = and(where, between(focusSessions.createdAt, from, to)) as SQL<unknown>;

@@ -14,14 +14,14 @@ export const EditorNodeBaseSchema = z.object({
   backgroundColor: z.string().optional(),
   highlight: z.string().optional(),
   align: z.string().optional(),
-  lineHeight: z.number().optional(),
+  lineHeight: z.coerce.number().optional(),
   url: z.string().optional(),
-  size: z.number().optional(),
+  size: z.coerce.number().optional(),
   colSizes: z.array(z.number()).optional(),
   borders: z
     .record(
       z.object({
-        size: z.number().optional(),
+        size: z.coerce.number().optional(),
       })
     )
     .optional(),

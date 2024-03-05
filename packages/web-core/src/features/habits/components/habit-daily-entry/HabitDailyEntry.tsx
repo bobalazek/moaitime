@@ -101,7 +101,7 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
       }}
     >
       <div
-        className="bg-secondary absolute left-0 top-0 h-full rounded-lg transition-all"
+        className="bg-secondary absolute left-0 top-0 h-full rounded-md transition-all"
         style={{
           width: `${goalPercentage}%`,
           backgroundColor: habit.color ?? undefined,

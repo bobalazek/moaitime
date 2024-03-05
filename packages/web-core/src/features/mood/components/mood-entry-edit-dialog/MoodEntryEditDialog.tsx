@@ -56,8 +56,7 @@ export default function MoodEntryEditDialog() {
 
   const onSaveButtonClick = async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const savedMoodEntry = selectedMoodEntryDialog
+      selectedMoodEntryDialog
         ? await editMoodEntry(selectedMoodEntryDialog.id, data as UpdateMoodEntry)
         : await addMoodEntry(data as CreateMoodEntry);
 

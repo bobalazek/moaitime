@@ -17,6 +17,11 @@ import { getWebsocketUrl } from './WebsocketHelpers';
 export class WebsocketManager {
   private _socket: WebSocket | null = null;
   private _isInitialized = false;
+  private _shouldReconnect = true;
+  private _reconnectionAttempts = 0;
+  private _maxReconnectionAttempts = 5;
+  private _reconnectionDelay = 1000;
+  private _maxReconnectionDelay = 16000;
 
   async joinAndConnect() {
     if (this._isInitialized) {
@@ -29,11 +34,15 @@ export class WebsocketManager {
   }
 
   connect(websocketUrl: string) {
+    this._reconnectionAttempts = 0;
+
     if (this._socket) {
+      this._shouldReconnect = false;
       this._socket.close();
       this._socket = null;
     }
 
+    this._shouldReconnect = true;
     this._socket = new WebSocket(websocketUrl);
 
     const url = new URL(websocketUrl);
@@ -52,6 +61,17 @@ export class WebsocketManager {
     };
 
     this._socket.onclose = (event) => {
+      if (this._shouldReconnect && this._reconnectionAttempts < this._maxReconnectionAttempts) {
+        const delay = Math.min(
+          this._reconnectionDelay * Math.pow(2, this._reconnectionAttempts),
+          this._maxReconnectionDelay
+        );
+        setTimeout(() => {
+          this._reconnectionAttempts++;
+          this.connect(websocketUrl);
+        }, delay);
+      }
+
       if (event.code > 4000 && event.code < 5000) {
         sonnerToast.error('Websocket Error', {
           description: event.reason ?? 'Unknown websocket error. Please refresh the page.',
@@ -74,6 +94,8 @@ export class WebsocketManager {
   }
 
   disconnect() {
+    this._shouldReconnect = false;
+
     if (!this._socket) {
       return;
     }

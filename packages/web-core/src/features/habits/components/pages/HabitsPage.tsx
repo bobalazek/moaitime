@@ -53,7 +53,7 @@ export default function HabitsPage() {
 
   return (
     <ErrorBoundary>
-      <div className="flex h-screen flex-col" data-test="focus">
+      <div data-test="focus">
         <HabitsPageHeader />
         <HabitsPageMain />
       </div>

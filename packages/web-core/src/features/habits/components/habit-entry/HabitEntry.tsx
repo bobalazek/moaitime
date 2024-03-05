@@ -59,34 +59,37 @@ export default function HabitEntry({ habit, date, currentAmount }: HabitEntryPro
 
   return (
     <div
-      className="flex w-full flex-col rounded-lg border-2 px-6 py-4 text-left"
+      className="flex w-full flex-col flex-wrap rounded-lg border-2 px-6 py-4 text-left"
       style={{
         borderColor: habit.color ?? undefined,
         backgroundColor: hasReachedGoal ? habit.color ?? undefined : undefined,
       }}
     >
-      <div className="flex w-full items-center justify-between ">
-        <div>
-          <h5 className="text-xl font-bold">{habit.name}</h5>
-          {habit.description && (
-            <div className="text-muted-foreground text-sm">{habit.description}</div>
-          )}
-        </div>
-        <div className="flex items-center gap-4">
-          <Button onClick={onDecrementButtonClick} variant="outline" size="sm">
-            <MinusIcon size={24} />
-          </Button>
-          <div className="flex select-none items-center gap-1">
-            <span className="text-2xl font-bold">{currentAmount}</span>
-
-            <HabbitEntryEditPopover habit={habit} date={date} currentAmount={currentAmount} />
-            <span>/</span>
-            <span>{habit.goalAmount}</span>
-            <span>{habit.goalUnit}</span>
+      <div className="flex w-full flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-grow">
+          <div className="w-full">
+            <h5 className="text-xl font-bold">{habit.name}</h5>
+            {habit.description && (
+              <div className="text-muted-foreground text-sm">{habit.description}</div>
+            )}
           </div>
-          <Button onClick={onIncrementButtonClick} variant="outline" size="sm">
-            <PlusIcon size={24} />
-          </Button>
+        </div>
+        <div className="flex flex-shrink">
+          <div className="flex flex-row flex-wrap items-center gap-4">
+            <Button onClick={onDecrementButtonClick} variant="outline" size="sm">
+              <MinusIcon size={24} />
+            </Button>
+            <div className="flex select-none items-center gap-1">
+              <span className="text-2xl font-bold">{currentAmount}</span>
+              <HabbitEntryEditPopover habit={habit} date={date} currentAmount={currentAmount} />
+              <span>/</span>
+              <span>{habit.goalAmount}</span>
+              <span>{habit.goalUnit}</span>
+            </div>
+            <Button onClick={onIncrementButtonClick} variant="outline" size="sm">
+              <PlusIcon size={24} />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ export class JoinedTeamController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async index(@Req() req: Request): Promise<AbstractResponseDto<JoinedTeam | null>> {
-    const data = await teamsManager.getJoinedTeamByUserId(req.user.id);
+    const data = await teamsManager.getJoinedTeamAndTeamUser(req.user.id);
 
     return {
       success: true,

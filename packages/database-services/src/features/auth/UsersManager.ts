@@ -219,20 +219,20 @@ export class UsersManager {
   }
 
   // API Helpers
-  async view(userId: string, userIdOrUsername: string): Promise<PublicUser> {
+  async view(actorUserId: string, userIdOrUsername: string): Promise<PublicUser> {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlockingUser(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, actorUserId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
     const parsedUser = PublicUserSchema.parse(user);
 
-    const canViewUserIfPrivate = await this.canViewUserIfPrivate(userId, user);
+    const canViewUserIfPrivate = await this.canViewUserIfPrivate(actorUserId, user);
     const followersCount = canViewUserIfPrivate ? await this.countFollowers(user.id) : 0;
     const followingCount = canViewUserIfPrivate ? await this.countFollowing(user.id) : 0;
     const lastActiveAt = canViewUserIfPrivate
@@ -242,10 +242,10 @@ export class UsersManager {
       ? await this.getExperincePointsByUserId(user.id)
       : 0;
 
-    const isMyself = userId === user.id;
-    const myselfIsFollowingThisUser = await this.isFollowingUser(userId, user.id);
-    const myselfIsFollowedByThisUser = await this.isFollowingUser(user.id, userId);
-    const myselfIsBlockingThisUser = await this.isBlockingUser(userId, user.id);
+    const isMyself = actorUserId === user.id;
+    const myselfIsFollowingThisUser = await this.isFollowingUser(actorUserId, user.id);
+    const myselfIsFollowedByThisUser = await this.isFollowingUser(user.id, actorUserId);
+    const myselfIsBlockingThisUser = await this.isBlockingUser(actorUserId, user.id);
 
     return {
       ...parsedUser,
@@ -260,29 +260,29 @@ export class UsersManager {
     };
   }
 
-  async follow(userId: string, userIdOrUsername: string) {
+  async follow(actorUserId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    if (userId === user.id) {
+    if (actorUserId === user.id) {
       throw new Error('You cannot follow yourself.');
     }
 
-    const isBlocked = await this.isBlockingUser(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, actorUserId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocking = await this.isBlockingUser(userId, user.id);
+    const isBlocking = await this.isBlockingUser(actorUserId, user.id);
     if (isBlocking) {
       throw new Error(`You can not follow a user that you are blocking`);
     }
 
     const follow = await getDatabase().query.userFollowedUsers.findFirst({
       where: and(
-        eq(userFollowedUsers.userId, userId),
+        eq(userFollowedUsers.userId, actorUserId),
         eq(userFollowedUsers.followedUserId, user.id)
       ),
     });
@@ -297,7 +297,7 @@ export class UsersManager {
     const rows = await getDatabase()
       .insert(userFollowedUsers)
       .values({
-        userId,
+        userId: actorUserId,
         followedUserId: user.id,
         approvedAt: !user.isPrivate ? new Date() : null,
       })
@@ -308,12 +308,12 @@ export class UsersManager {
     }
 
     // Cache
-    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
-    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:countFollowing`);
     await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_FOLLOWED_USER, {
-      actorUserId: userId,
+      actorUserId,
       userId: user.id,
       userFollowedUserId: row.id,
       needsApproval: !row.approvedAt,
@@ -322,22 +322,22 @@ export class UsersManager {
     return row;
   }
 
-  async unfollow(userId: string, userIdOrUsername: string) {
+  async unfollow(actorUserId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlockingUser(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, actorUserId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    if (userId === user.id) {
+    if (actorUserId === user.id) {
       throw new Error('You cannot unfollow yourself.');
     }
 
-    const isFollowing = await this.isFollowingUser(userId, user.id);
+    const isFollowing = await this.isFollowingUser(actorUserId, user.id);
     if (!isFollowing) {
       throw new Error('You are not following this user.');
     }
@@ -345,7 +345,10 @@ export class UsersManager {
     const rows = await getDatabase()
       .delete(userFollowedUsers)
       .where(
-        and(eq(userFollowedUsers.userId, userId), eq(userFollowedUsers.followedUserId, user.id))
+        and(
+          eq(userFollowedUsers.userId, actorUserId),
+          eq(userFollowedUsers.followedUserId, user.id)
+        )
       )
       .returning();
     const row = rows[0];
@@ -354,12 +357,12 @@ export class UsersManager {
     }
 
     // Cache
-    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
-    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:countFollowing`);
     await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNFOLLOWED_USER, {
-      actorUserId: userId,
+      actorUserId,
       userId: user.id,
       userFollowedUserId: row.id,
     });
@@ -367,18 +370,18 @@ export class UsersManager {
     return row;
   }
 
-  async approveFollower(userId: string, userIdOrUsername: string) {
+  async approveFollower(actorUserId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlockingUser(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, actorUserId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isFollowing = await this.isFollowingUser(user.id, userId);
+    const isFollowing = await this.isFollowingUser(user.id, actorUserId);
     if (!isFollowing) {
       throw new Error('This user is not following you.');
     }
@@ -387,7 +390,10 @@ export class UsersManager {
       .update(userFollowedUsers)
       .set({ approvedAt: new Date() })
       .where(
-        and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
+        and(
+          eq(userFollowedUsers.userId, user.id),
+          eq(userFollowedUsers.followedUserId, actorUserId)
+        )
       )
       .returning();
     const row = rows[0];
@@ -396,12 +402,12 @@ export class UsersManager {
     }
 
     // Cache
-    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
-    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:countFollowing`);
     await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_APPROVE_FOLLOWED_USER, {
-      actorUserId: userId,
+      actorUserId,
       userId: user.id,
       userFollowedUserId: row.id,
     });
@@ -409,13 +415,13 @@ export class UsersManager {
     return row;
   }
 
-  async removeFollower(userId: string, userIdOrUsername: string) {
+  async removeFollower(actorUserId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isFollowing = await this.isFollowingUser(user.id, userId);
+    const isFollowing = await this.isFollowingUser(user.id, actorUserId);
     if (!isFollowing) {
       throw new Error('This user is not following you.');
     }
@@ -423,7 +429,10 @@ export class UsersManager {
     const rows = await getDatabase()
       .delete(userFollowedUsers)
       .where(
-        and(eq(userFollowedUsers.userId, user.id), eq(userFollowedUsers.followedUserId, userId))
+        and(
+          eq(userFollowedUsers.userId, user.id),
+          eq(userFollowedUsers.followedUserId, actorUserId)
+        )
       )
       .returning();
     const row = rows[0];
@@ -432,12 +441,12 @@ export class UsersManager {
     }
 
     // Cache
-    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
-    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:countFollowing`);
     await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REMOVE_FOLLOWED_USER, {
-      actorUserId: userId,
+      actorUserId,
       userId: user.id,
       userFollowedUserId: row.id,
     });
@@ -445,13 +454,13 @@ export class UsersManager {
     return row;
   }
 
-  async block(userId: string, userIdOrUsername: string) {
+  async block(actorUserId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlockingUser(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, actorUserId);
     if (isBlocked) {
       throw new Error('You are already blocking this user.');
     }
@@ -459,7 +468,7 @@ export class UsersManager {
     const rows = await getDatabase()
       .insert(userBlockedUsers)
       .values({
-        userId,
+        userId: actorUserId,
         blockedUserId: user.id,
       })
       .returning();
@@ -472,17 +481,20 @@ export class UsersManager {
     await getDatabase()
       .delete(userFollowedUsers)
       .where(
-        and(eq(userFollowedUsers.userId, userId), eq(userFollowedUsers.followedUserId, user.id))
+        and(
+          eq(userFollowedUsers.userId, actorUserId),
+          eq(userFollowedUsers.followedUserId, user.id)
+        )
       );
 
     // Cache
-    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
-    await databaseCacheManager.delete(`users:${userId}:countFollowing`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:countFollowing`);
     await databaseCacheManager.delete(`users:${user.id}:countFollowers`);
-    await databaseCacheManager.delete(`users:${userId}:isBlockingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isBlockingUser:${user.id}`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_BLOCKED_USER, {
-      actorUserId: userId,
+      actorUserId,
       userId: user.id,
       userBlockedUserId: row.id,
     });
@@ -490,20 +502,22 @@ export class UsersManager {
     return row;
   }
 
-  async unblock(userId: string, userIdOrUsername: string) {
+  async unblock(actorUserId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocking = await this.isBlockingUser(userId, user.id);
+    const isBlocking = await this.isBlockingUser(actorUserId, user.id);
     if (!isBlocking) {
       throw new Error('You are not blocking this user.');
     }
 
     const rows = await getDatabase()
       .delete(userBlockedUsers)
-      .where(and(eq(userBlockedUsers.userId, userId), eq(userBlockedUsers.blockedUserId, user.id)))
+      .where(
+        and(eq(userBlockedUsers.userId, actorUserId), eq(userBlockedUsers.blockedUserId, user.id))
+      )
       .returning();
     const row = rows[0];
     if (!row) {
@@ -511,11 +525,11 @@ export class UsersManager {
     }
 
     // Cache
-    await databaseCacheManager.delete(`users:${userId}:isFollowingUser:${user.id}`);
-    await databaseCacheManager.delete(`users:${userId}:isBlockingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isFollowingUser:${user.id}`);
+    await databaseCacheManager.delete(`users:${actorUserId}:isBlockingUser:${user.id}`);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_UNBLOCKED_USER, {
-      actorUserId: userId,
+      actorUserId,
       userId: user.id,
       userBlockedUserId: row.id,
     });
@@ -523,14 +537,14 @@ export class UsersManager {
     return row;
   }
 
-  async report(userId: string, userIdOrUsername: string, data: CreateReport) {
+  async report(actorUserId: string, userIdOrUsername: string, data: CreateReport) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
     const report = await reportsManager.insertOne({
-      userId,
+      userId: actorUserId,
       targetEntity: {
         id: user.id,
         type: EntityTypeEnum.USERS,
@@ -539,7 +553,7 @@ export class UsersManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REPORTED_USER, {
-      actorUserId: userId,
+      actorUserId,
       userId: user.id,
       reportId: report.id,
     });
@@ -547,7 +561,7 @@ export class UsersManager {
     return report;
   }
 
-  async search(userId: string, options: UsersManagerSearchOptions) {
+  async search(actorUserId: string, options: UsersManagerSearchOptions) {
     const query = options.query!;
     const limit = options.limit ?? 10;
     const sortDirection = options.sortDirection ?? SortDirectionEnum.DESC;
@@ -609,7 +623,7 @@ export class UsersManager {
       return PublicUserSchema.parse(row);
     });
 
-    const data = await this._populatePublicUsers(parsedRows, userId);
+    const data = await this._populatePublicUsers(parsedRows, actorUserId);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -650,34 +664,42 @@ export class UsersManager {
     };
   }
 
-  async followers(userId: string, userIdOrUsername: string, options: UsersManagerFollowOptions) {
-    return this._getFollowUsers('followers', userId, userIdOrUsername, options);
-  }
-
-  async following(userId: string, userIdOrUsername: string, options: UsersManagerFollowOptions) {
-    return this._getFollowUsers('following', userId, userIdOrUsername, options);
-  }
-
-  async followRequests(
-    userId: string,
+  async followers(
+    actorUserId: string,
     userIdOrUsername: string,
     options: UsersManagerFollowOptions
   ) {
-    return this._getFollowUsers('follow-requests', userId, userIdOrUsername, options);
+    return this._getFollowUsers('followers', actorUserId, userIdOrUsername, options);
   }
 
-  async achievements(userId: string, userIdOrUsername: string) {
+  async following(
+    actorUserId: string,
+    userIdOrUsername: string,
+    options: UsersManagerFollowOptions
+  ) {
+    return this._getFollowUsers('following', actorUserId, userIdOrUsername, options);
+  }
+
+  async followRequests(
+    actorUserId: string,
+    userIdOrUsername: string,
+    options: UsersManagerFollowOptions
+  ) {
+    return this._getFollowUsers('follow-requests', actorUserId, userIdOrUsername, options);
+  }
+
+  async achievements(actorUserId: string, userIdOrUsername: string) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const isBlocked = await this.isBlockingUser(user.id, userId);
+    const isBlocked = await this.isBlockingUser(user.id, actorUserId);
     if (isBlocked) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const canViewUserIfPrivate = await this.canViewUserIfPrivate(userId, user);
+    const canViewUserIfPrivate = await this.canViewUserIfPrivate(actorUserId, user);
     if (!canViewUserIfPrivate) {
       throw new Error('This user is private.');
     }

@@ -48,8 +48,8 @@ export class GreetingsManager {
   }
 
   // API Helpers
-  async list(user: User) {
-    return this.getGreetings(user);
+  async list(actorUser: User) {
+    return this.getGreetings(actorUser);
   }
 
   // Helpers

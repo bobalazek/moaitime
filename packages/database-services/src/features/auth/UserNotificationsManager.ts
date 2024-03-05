@@ -255,29 +255,29 @@ export class UserNotificationsManager {
   }
 
   // API Helpers
-  async list(userId: string, options?: UserNotificationsManagerFindOptions) {
-    return this.findManyByUserIdWithDataAndMeta(userId, options);
+  async list(actorUserId: string, options?: UserNotificationsManagerFindOptions) {
+    return this.findManyByUserIdWithDataAndMeta(actorUserId, options);
   }
 
-  async markAllAsRead(userId: string) {
+  async markAllAsRead(actorUserId: string) {
     const rows = await getDatabase()
       .update(userNotifications)
       .set({ readAt: new Date() })
-      .where(and(eq(userNotifications.userId, userId), isNull(userNotifications.deletedAt)))
+      .where(and(eq(userNotifications.userId, actorUserId), isNull(userNotifications.deletedAt)))
       .returning();
 
     globalEventsNotifier.publish(
       GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ,
       {
-        actorUserId: userId,
+        actorUserId,
       }
     );
 
     return rows;
   }
 
-  async view(userId: string, userNotificationId: string) {
-    const canView = await this.userCanView(userId, userNotificationId);
+  async view(actorUserId: string, userNotificationId: string) {
+    const canView = await this.userCanView(actorUserId, userNotificationId);
     if (!canView) {
       throw new Error('User cannot view this user notification');
     }
@@ -287,7 +287,7 @@ export class UserNotificationsManager {
       throw new Error('User notification not found');
     }
 
-    const user = await usersManager.findOneById(userId);
+    const user = await usersManager.findOneById(actorUserId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -300,8 +300,8 @@ export class UserNotificationsManager {
     return processedRows[0];
   }
 
-  async delete(userId: string, userNotificationId: string) {
-    const canDelete = await this.userCanDelete(userId, userNotificationId);
+  async delete(actorUserId: string, userNotificationId: string) {
+    const canDelete = await this.userCanDelete(actorUserId, userNotificationId);
     if (!canDelete) {
       throw new Error('User cannot delete this user notification');
     }
@@ -311,15 +311,15 @@ export class UserNotificationsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       userNotificationId,
     });
 
     return data;
   }
 
-  async markAsRead(userId: string, userNotificationId: string) {
-    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
+  async markAsRead(actorUserId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(actorUserId, userNotificationId);
     if (!canUpdate) {
       throw new Error('User cannot update this user notification');
     }
@@ -329,15 +329,15 @@ export class UserNotificationsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ, {
-      actorUserId: userId,
+      actorUserId,
       userNotificationId,
     });
 
     return data;
   }
 
-  async markAsUnread(userId: string, userNotificationId: string) {
-    const canUpdate = await this.userCanUpdate(userId, userNotificationId);
+  async markAsUnread(actorUserId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(actorUserId, userNotificationId);
     if (!canUpdate) {
       throw new Error('User cannot update this user notification');
     }
@@ -349,7 +349,7 @@ export class UserNotificationsManager {
     globalEventsNotifier.publish(
       GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
       {
-        actorUserId: userId,
+        actorUserId,
         userNotificationId,
       }
     );

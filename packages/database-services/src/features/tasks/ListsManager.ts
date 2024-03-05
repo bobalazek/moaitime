@@ -124,17 +124,17 @@ export class ListsManager {
   }
 
   // API Helpers
-  async list(userId: string) {
-    return this.findManyByUserId(userId);
+  async list(actorUserId: string) {
+    return this.findManyByUserId(actorUserId);
   }
 
-  async view(userId: string, listId: string) {
-    const canView = await this.userCanView(userId, listId);
+  async view(actorUserId: string, listId: string) {
+    const canView = await this.userCanView(actorUserId, listId);
     if (!canView) {
       throw new Error('You cannot view this list');
     }
 
-    const data = await this.findOneByIdAndUserId(listId, userId);
+    const data = await this.findOneByIdAndUserId(listId, actorUserId);
     if (!data) {
       throw new Error('List not found');
     }
@@ -142,13 +142,13 @@ export class ListsManager {
     return data;
   }
 
-  async create(user: User, data: CreateList) {
-    await this._checkIfReachedLimit(data, user);
+  async create(actorUser: User, data: CreateList) {
+    await this._checkIfReachedLimit(data, actorUser);
 
-    const list = await this.insertOne({ ...data, userId: user.id });
+    const list = await this.insertOne({ ...data, userId: actorUser.id });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADDED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       listId: list.id,
       teamId: list.teamId ?? undefined,
     });
@@ -156,8 +156,8 @@ export class ListsManager {
     return list;
   }
 
-  async update(userId: string, listId: string, data: UpdateList) {
-    const canUpdate = await this.userCanUpdate(userId, listId);
+  async update(actorUserId: string, listId: string, data: UpdateList) {
+    const canUpdate = await this.userCanUpdate(actorUserId, listId);
     if (!canUpdate) {
       throw new Error('You cannot update this list');
     }
@@ -165,7 +165,7 @@ export class ListsManager {
     const list = await this.updateOneById(listId, data);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_EDITED, {
-      actorUserId: userId,
+      actorUserId,
       listId: list.id,
       teamId: list.teamId ?? undefined,
     });
@@ -173,8 +173,8 @@ export class ListsManager {
     return list;
   }
 
-  async delete(userId: string, listId: string) {
-    const canDelete = await this.userCanDelete(userId, listId);
+  async delete(actorUserId: string, listId: string) {
+    const canDelete = await this.userCanDelete(actorUserId, listId);
     if (!canDelete) {
       throw new Error('You cannot delete this list');
     }
@@ -184,7 +184,7 @@ export class ListsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       listId: list.id,
       teamId: list.teamId ?? undefined,
     });
@@ -192,34 +192,38 @@ export class ListsManager {
     return list;
   }
 
-  async addVisible(userId: string, listId: string) {
-    const canView = await this.userCanView(userId, listId);
+  async addVisible(actorUserId: string, listId: string) {
+    const canView = await this.userCanView(actorUserId, listId);
     if (!canView) {
       throw new Error('You cannot view this list');
     }
 
-    const list = await this.addVisibleListIdByUserId(userId, listId);
+    const list = await this.addVisibleListIdByUserId(actorUserId, listId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_ADD_VISIBLE, {
-      actorUserId: userId,
+      actorUserId,
       listId,
       teamId: list?.teamId ?? undefined,
     });
+
+    return list;
   }
 
-  async removeVisible(userId: string, listId: string) {
-    const canView = await this.userCanView(userId, listId);
+  async removeVisible(actorUserId: string, listId: string) {
+    const canView = await this.userCanView(actorUserId, listId);
     if (!canView) {
       throw new Error('You cannot view this list');
     }
 
-    const list = await this.removeVisibleListIdByUserId(userId, listId);
+    const list = await this.removeVisibleListIdByUserId(actorUserId, listId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_REMOVE_VISIBLE, {
-      actorUserId: userId,
+      actorUserId,
       listId,
       teamId: list?.teamId ?? undefined,
     });
+
+    return list;
   }
 
   // Helpers

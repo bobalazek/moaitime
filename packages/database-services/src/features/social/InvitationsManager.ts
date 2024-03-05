@@ -102,9 +102,9 @@ export class InvitationsManager {
   }
 
   // API Helpers
-  async list(userId: string) {
+  async list(actorUserId: string) {
     const data = await this.findMany({
-      where: eq(invitations.userId, userId),
+      where: eq(invitations.userId, actorUserId),
     });
 
     return data.map((row) => ({

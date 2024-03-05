@@ -223,17 +223,17 @@ export class MoodEntriesManager {
   }
 
   // API Helpers
-  async list(userId: string, options?: MoodEntriesManagerFindOptions) {
-    return this.findManyByUserIdWithDataAndMeta(userId, options);
+  async list(actorUserId: string, options?: MoodEntriesManagerFindOptions) {
+    return this.findManyByUserIdWithDataAndMeta(actorUserId, options);
   }
 
-  async view(userId: string, moodEntryId: string) {
-    const canView = await this.userCanView(moodEntryId, userId);
+  async view(actorUserId: string, moodEntryId: string) {
+    const canView = await this.userCanView(moodEntryId, actorUserId);
     if (!canView) {
       throw new Error('You cannot view this mood entry');
     }
 
-    const data = await this.findOneByIdAndUserId(moodEntryId, userId);
+    const data = await this.findOneByIdAndUserId(moodEntryId, actorUserId);
     if (!data) {
       throw new Error('Mood entry not found');
     }
@@ -241,23 +241,23 @@ export class MoodEntriesManager {
     return data;
   }
 
-  async create(userId: string, data: CreateMoodEntry) {
+  async create(actorUserId: string, data: CreateMoodEntry) {
     const moodEntry = await this.insertOne({
       ...data,
       loggedAt: data.loggedAt ?? new Date().toISOString(),
-      userId,
+      userId: actorUserId,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
-      actorUserId: userId,
+      actorUserId,
       moodEntryId: moodEntry.id,
     });
 
     return moodEntry;
   }
 
-  async update(userId: string, moodEntryId: string, data: UpdateMoodEntry) {
-    const canUpdate = await this.userCanUpdate(userId, moodEntryId);
+  async update(actorUserId: string, moodEntryId: string, data: UpdateMoodEntry) {
+    const canUpdate = await this.userCanUpdate(actorUserId, moodEntryId);
     if (!canUpdate) {
       throw new Error('You cannot update this mood entry');
     }
@@ -268,15 +268,15 @@ export class MoodEntriesManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
-      actorUserId: userId,
+      actorUserId,
       moodEntryId: moodEntry.id,
     });
 
     return moodEntry;
   }
 
-  async delete(userId: string, moodEntryId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(userId, moodEntryId);
+  async delete(actorUserId: string, moodEntryId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(actorUserId, moodEntryId);
     if (!canDelete) {
       throw new Error('You cannot delete this mood entry');
     }
@@ -288,7 +288,7 @@ export class MoodEntriesManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       moodEntryId: data.id,
       isHardDelete,
     });
@@ -296,8 +296,8 @@ export class MoodEntriesManager {
     return data;
   }
 
-  async undelete(userId: string, moodEntryId: string) {
-    const canDelete = await this.userCanUpdate(userId, moodEntryId);
+  async undelete(actorUserId: string, moodEntryId: string) {
+    const canDelete = await this.userCanUpdate(actorUserId, moodEntryId);
     if (!canDelete) {
       throw new Error('You cannot undelete this mood entry');
     }
@@ -307,7 +307,7 @@ export class MoodEntriesManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
-      actorUserId: userId,
+      actorUserId,
       moodEntryId: moodEntry.id,
     });
 

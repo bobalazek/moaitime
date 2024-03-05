@@ -346,13 +346,17 @@ export class TasksManager {
   }
 
   // API Helpers
-  async list(userId: string, listId: string | null | undefined, options: TaskManagerListOptions) {
+  async list(
+    actorUserId: string,
+    listId: string | null | undefined,
+    options: TaskManagerListOptions
+  ) {
     const { query, includeCompleted, includeDeleted, sortField, sortDirection } = options;
 
     const includeList = !!query; // the only place for now where we need the list is the search
     const limit = !query ? undefined : 10; // Same as above
 
-    const tasks = await this.findManyByUserId(userId, listId, {
+    const tasks = await this.findManyByUserId(actorUserId, listId, {
       includeCompleted,
       includeDeleted,
       includeList,
@@ -366,7 +370,7 @@ export class TasksManager {
   }
 
   async reorder(
-    userId: string,
+    actorUserId: string,
     listId: string | null,
     data: {
       sortDirection: SortDirectionEnum;
@@ -377,15 +381,15 @@ export class TasksManager {
   ) {
     const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
 
-    const list = await listsManager.findOneByIdAndUserId(listId, userId);
+    const list = await listsManager.findOneByIdAndUserId(listId, actorUserId);
     if (!list) {
       throw new Error('List not found');
     }
 
-    await this.reorderList(newListId, userId, sortDirection, originalTaskId, newTaskId);
+    await this.reorderList(newListId, actorUserId, sortDirection, originalTaskId, newTaskId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
-      actorUserId: userId,
+      actorUserId: actorUserId,
       listId: listId ?? undefined,
       teamId: list?.teamId ?? undefined,
     });
@@ -402,16 +406,16 @@ export class TasksManager {
     return tasks[0];
   }
 
-  async create(user: User, data: CreateTask) {
+  async create(actorUser: User, data: CreateTask) {
     let list: List | null = null;
     if (data.listId) {
-      list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
+      list = await listsManager.findOneByIdAndUserId(data.listId, actorUser.id);
       if (!list) {
         throw new Error('List not found');
       }
     }
 
-    await this._doMaxTasksPerListCheck(user, list);
+    await this._doMaxTasksPerListCheck(actorUser, list);
 
     if (data.parentId) {
       await this.validateParentId(null, data.parentId);
@@ -431,7 +435,7 @@ export class TasksManager {
       ...insertData,
       order,
       dueDateRepeatEndsAt,
-      userId: user.id,
+      userId: actorUser.id,
     });
 
     if (Array.isArray(tagIds)) {
@@ -443,11 +447,11 @@ export class TasksManager {
         throw new Error('You cannot assign users to non-team list');
       }
 
-      await this.setUsers(task, userIds, user, teamId);
+      await this.setUsers(task, userIds, actorUser, teamId);
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_ADDED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       taskId: task.id,
       listId: task.listId ?? undefined,
       teamId,
@@ -456,8 +460,8 @@ export class TasksManager {
     return task;
   }
 
-  async update(user: User, taskId: string, data: UpdateTask) {
-    const task = await this.findOneByIdAndUserId(taskId, user.id);
+  async update(actorUser: User, taskId: string, data: UpdateTask) {
+    const task = await this.findOneByIdAndUserId(taskId, actorUser.id);
     if (!task) {
       throw new Error('Task not found');
     }
@@ -471,12 +475,15 @@ export class TasksManager {
 
     let list: List | null = null;
     if (typeof data.listId !== 'undefined' && task.listId !== data.listId) {
-      list = await listsManager.findOneByIdAndUserId(data.listId, user.id);
+      list = await listsManager.findOneByIdAndUserId(data.listId, actorUser.id);
 
-      const { tasksMaxPerListCount, tasksCount } = await this._doMaxTasksPerListCheck(user, list);
+      const { tasksMaxPerListCount, tasksCount } = await this._doMaxTasksPerListCheck(
+        actorUser,
+        list
+      );
 
       const currentList = task.listId
-        ? await listsManager.findOneByIdAndUserId(task.listId, user.id)
+        ? await listsManager.findOneByIdAndUserId(task.listId, actorUser.id)
         : null;
       if (currentList?.teamId && !list) {
         throw new Error('You cannot change the list to a non-team list');
@@ -553,17 +560,17 @@ export class TasksManager {
 
     if (Array.isArray(userIds)) {
       const taskCurrentList = task.listId
-        ? await listsManager.findOneByIdAndUserId(task.listId, user.id)
+        ? await listsManager.findOneByIdAndUserId(task.listId, actorUser.id)
         : null;
       if (!taskCurrentList?.teamId && userIds.length > 0) {
         throw new Error('You cannot assign users to a non-team list');
       }
 
-      await this.setUsers(task, userIds, user, teamId);
+      await this.setUsers(task, userIds, actorUser, teamId);
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_EDITED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       taskId: updatedTask.id,
       listId: updatedTask.listId ?? undefined,
       teamId,
@@ -572,8 +579,8 @@ export class TasksManager {
     return updatedTask;
   }
 
-  async delete(userId: string, taskId: string, isHardDelete?: boolean) {
-    const task = await this.findOneByIdAndUserId(taskId, userId);
+  async delete(actorUserId: string, taskId: string, isHardDelete?: boolean) {
+    const task = await this.findOneByIdAndUserId(taskId, actorUserId);
     if (!task) {
       throw new Error('Task not found');
     }
@@ -587,12 +594,12 @@ export class TasksManager {
     const children = await this.findManyByParentId(taskId);
     if (children.length > 0) {
       for (const child of children) {
-        await this.delete(userId, child.id, isHardDelete);
+        await this.delete(actorUserId, child.id, isHardDelete);
       }
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_DELETED, {
-      actorUserId: userId,
+      actorUserId: actorUserId,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -602,16 +609,18 @@ export class TasksManager {
     return data;
   }
 
-  async undelete(user: User, taskId: string) {
-    const task = await this.findOneByIdAndUserId(taskId, user.id);
+  async undelete(actorUser: User, taskId: string) {
+    const task = await this.findOneByIdAndUserId(taskId, actorUser.id);
     if (!task) {
       throw new Error('Task not found');
     }
 
     // We want to make that if if we undelete a task, we don't go over the limit
-    const list = task.listId ? await listsManager.findOneByIdAndUserId(task.listId, user.id) : null;
+    const list = task.listId
+      ? await listsManager.findOneByIdAndUserId(task.listId, actorUser.id)
+      : null;
     const { tasksCount, tasksMaxPerListCount } = await this._doMaxTasksPerListCheck(
-      user,
+      actorUser,
       list,
       true
     );
@@ -627,7 +636,7 @@ export class TasksManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNDELETED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -636,11 +645,11 @@ export class TasksManager {
     return updatedData;
   }
 
-  async duplicate(userId: string, taskId: string) {
-    const task = await this.duplicateTask(userId, taskId);
+  async duplicate(actorUserId: string, taskId: string) {
+    const task = await this.duplicateTask(actorUserId, taskId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_DUPLICATED, {
-      actorUserId: userId,
+      actorUserId: actorUserId,
       taskId,
       listId: task?.listId ?? undefined,
       teamId: task?.list?.teamId ?? undefined,
@@ -649,8 +658,8 @@ export class TasksManager {
     return task;
   }
 
-  async complete(userId: string, taskId: string) {
-    const task = await this.findOneByIdAndUserId(taskId, userId);
+  async complete(actorUserId: string, taskId: string) {
+    const task = await this.findOneByIdAndUserId(taskId, actorUserId);
     if (!task) {
       throw new Error('Task not found');
     }
@@ -709,7 +718,7 @@ export class TasksManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_COMPLETED, {
-      actorUserId: userId,
+      actorUserId: actorUserId,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -718,8 +727,8 @@ export class TasksManager {
     return data;
   }
 
-  async uncomplete(userId: string, taskId: string) {
-    const task = await this.findOneByIdAndUserId(taskId, userId);
+  async uncomplete(actorUserId: string, taskId: string) {
+    const task = await this.findOneByIdAndUserId(taskId, actorUserId);
     if (!task) {
       throw new Error('Task not found');
     }
@@ -729,7 +738,7 @@ export class TasksManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_UNCOMPLETED, {
-      actorUserId: userId,
+      actorUserId: actorUserId,
       taskId,
       listId: task.listId ?? undefined,
       teamId: task.list?.teamId ?? undefined,
@@ -738,8 +747,8 @@ export class TasksManager {
     return data;
   }
 
-  async nudge(userId: string, taskId: string, userIds: string[]) {
-    const task = await this.findOneByIdAndUserId(taskId, userId);
+  async nudge(actorUserId: string, taskId: string, userIds: string[]) {
+    const task = await this.findOneByIdAndUserId(taskId, actorUserId);
     if (!task) {
       throw new Error('Task not found');
     }
@@ -748,12 +757,12 @@ export class TasksManager {
       throw new Error('You need to provide at least one user to nudge');
     }
 
-    if (userIds.includes(userId)) {
+    if (userIds.includes(actorUserId)) {
       throw new Error('You cannot nudge yourself');
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_TASK_NUDGED, {
-      actorUserId: userId,
+      actorUserId,
       taskId,
       userIds,
       listId: task.listId ?? undefined,

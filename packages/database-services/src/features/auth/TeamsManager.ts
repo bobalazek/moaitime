@@ -136,12 +136,12 @@ export class TeamsManager {
   }
 
   // API Helpers
-  async list(userId: string) {
-    return this.findManyByUserId(userId);
+  async list(actorUserId: string) {
+    return this.findManyByUserId(actorUserId);
   }
 
-  async update(userId: string, teamId: string, data: UpdateTeam) {
-    const canView = await this.userCanUpdate(userId, teamId);
+  async update(actorUserId: string, teamId: string, data: UpdateTeam) {
+    const canView = await this.userCanUpdate(actorUserId, teamId);
     if (!canView) {
       throw new Error('You cannot update this team');
     }
@@ -154,15 +154,15 @@ export class TeamsManager {
     const updatedTeam = await this.updateOneById(teamId, data);
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_EDITED, {
-      actorUserId: userId,
+      actorUserId,
       teamId,
     });
 
     return updatedTeam;
   }
 
-  async delete(userId: string, teamId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(userId, teamId);
+  async delete(actorUserId: string, teamId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(actorUserId, teamId);
     if (!canDelete) {
       throw new Error('Team not found');
     }
@@ -174,15 +174,15 @@ export class TeamsManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       teamId: team.id,
     });
 
     return team;
   }
 
-  async undelete(userId: string, teamId: string) {
-    const canDelete = await this.userCanUpdate(userId, teamId);
+  async undelete(actorUserId: string, teamId: string) {
+    const canDelete = await this.userCanUpdate(actorUserId, teamId);
     if (!canDelete) {
       throw new Error('You cannot undelete this team');
     }
@@ -192,30 +192,33 @@ export class TeamsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_UNDELETED, {
-      actorUserId: userId,
+      actorUserId,
       teamId: team.id,
     });
 
     return team;
   }
 
-  async createAndJoin(user: User, teamName: string): Promise<{ team: Team; teamUser: TeamUser }> {
-    const maxCount = await usersManager.getUserLimit(user, 'teamsMaxPerUserCount');
-    const currentCount = await this.countByUserId(user.id);
+  async createAndJoin(
+    actorUser: User,
+    teamName: string
+  ): Promise<{ team: Team; teamUser: TeamUser }> {
+    const maxCount = await usersManager.getUserLimit(actorUser, 'teamsMaxPerUserCount');
+    const currentCount = await this.countByUserId(actorUser.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of teams per user (${maxCount}).`);
     }
 
     const team = await this.insertOne({
       name: teamName,
-      userId: user.id,
+      userId: actorUser.id,
     });
 
     const teamUserRows = await getDatabase()
       .insert(teamUsers)
       .values({
         teamId: team.id,
-        userId: user.id,
+        userId: actorUser.id,
         roles: [TeamUserRoleEnum.OWNER],
       })
       .returning();
@@ -225,7 +228,7 @@ export class TeamsManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_ADDED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       teamId: team.id,
     });
 
@@ -235,14 +238,14 @@ export class TeamsManager {
     };
   }
 
-  async leave(userId: string, teamId: string) {
+  async leave(actorUserId: string, teamId: string) {
     const team = await this.findOneById(teamId);
     if (!team) {
       throw new Error('Team not found');
     }
 
     const teamUser = await getDatabase().query.teamUsers.findFirst({
-      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
+      where: and(eq(teamUsers.userId, actorUserId), eq(teamUsers.teamId, teamId)),
     });
     if (!teamUser) {
       throw new Error('You are not a member of this team');
@@ -262,7 +265,7 @@ export class TeamsManager {
 
     const rows = await getDatabase()
       .delete(teamUsers)
-      .where(and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)))
+      .where(and(eq(teamUsers.userId, actorUserId), eq(teamUsers.teamId, teamId)))
       .returning();
     const row = rows[0] ?? null;
     if (!row) {
@@ -270,19 +273,22 @@ export class TeamsManager {
     }
 
     if (isOwner) {
-      await this.delete(userId, teamId);
+      await this.delete(actorUserId, teamId);
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_LEFT, {
-      actorUserId: userId,
+      actorUserId,
       teamId,
-      userId,
+      userId: actorUserId,
     });
 
     return row;
   }
 
-  async getJoinedTeamByUserId(userId: string): Promise<{ team: Team; teamUser: TeamUser } | null> {
+  // Helpers
+  async getJoinedTeamAndTeamUser(
+    userId: string
+  ): Promise<{ team: Team; teamUser: TeamUser } | null> {
     const rows = await getDatabase()
       .select()
       .from(teamUsers)

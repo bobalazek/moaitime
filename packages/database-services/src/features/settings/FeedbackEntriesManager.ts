@@ -54,7 +54,7 @@ export class FeedbackEntriesManager {
   }
 
   // API Helpers
-  async create(userId: string, data: CreateFeedbackEntry) {
+  async create(actorUserId: string, data: CreateFeedbackEntry) {
     const oneDayAgo = subDays(new Date(), 1);
 
     const result = await getDatabase()
@@ -62,7 +62,7 @@ export class FeedbackEntriesManager {
         count: count(feedbackEntries.id).mapWith(Number),
       })
       .from(feedbackEntries)
-      .where(and(eq(feedbackEntries.userId, userId), gt(feedbackEntries.createdAt, oneDayAgo)))
+      .where(and(eq(feedbackEntries.userId, actorUserId), gt(feedbackEntries.createdAt, oneDayAgo)))
       .execute();
 
     const rowsCount = result[0].count ?? 0;
@@ -72,7 +72,7 @@ export class FeedbackEntriesManager {
 
     return this.insertOne({
       ...data,
-      userId,
+      userId: actorUserId,
     });
   }
 }

@@ -21,7 +21,7 @@ import { eventsManager, EventsManagerEvent } from './EventsManager';
 
 export class CalendarEntriesManager {
   // API Helpers
-  async list(user: User, from: string, to: string) {
+  async list(actorUser: User, from: string, to: string) {
     if (!isValidDate(from)) {
       throw new Error('Invalid from date');
     }
@@ -30,7 +30,7 @@ export class CalendarEntriesManager {
       throw new Error('Invalid to date');
     }
 
-    const timezone = user?.settings?.generalTimezone ?? 'UTC';
+    const timezone = actorUser?.settings?.generalTimezone ?? 'UTC';
 
     let timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
     let timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
@@ -43,17 +43,17 @@ export class CalendarEntriesManager {
       timezonedTo = addDays(timezonedTo, 1);
     }
 
-    return calendarEntriesManager.findAllForRange(user, timezonedFrom, timezonedTo);
+    return calendarEntriesManager.findAllForRange(actorUser, timezonedFrom, timezonedTo);
   }
 
-  async yearly(userId: string, year: number) {
+  async yearly(actorUserId: string, year: number) {
     // Calendar
-    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(userId);
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(actorUserId);
     const calendarIds = Array.from(calendarIdsMap.keys());
     const calendarCounts = await eventsManager.getCountsByCalendarIdsAndYear(calendarIds, year);
 
     // Tasks
-    const listIds = await listsManager.getVisibleListIdsByUserId(userId);
+    const listIds = await listsManager.getVisibleListIdsByUserId(actorUserId);
     const taskCounts = await tasksManager.getCountsByListIdsAndYear(listIds, year);
 
     // Merge
@@ -73,6 +73,7 @@ export class CalendarEntriesManager {
     })) as CalendarEntryYearlyEntry[];
   }
 
+  // Helpers
   async findAllForRange(user: User, from?: Date, to?: Date): Promise<CalendarEntry[]> {
     const timezone = user.settings?.generalTimezone ?? 'UTC';
 

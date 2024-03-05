@@ -8,8 +8,10 @@ import {
   NoteWithoutContent,
   User,
 } from '@moaitime/database-core';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateNote,
+  GlobalEventsEnum,
   NotesListSortFieldEnum,
   SortDirectionEnum,
   UpdateNote,
@@ -123,17 +125,17 @@ export class NotesManager {
   }
 
   // API Helpers
-  async list(userId: string, options?: NotesManagerFindManyByUserIdWithOptions) {
-    return this.findManyByUserIdWithOptions(userId, options);
+  async list(actorUserId: string, options?: NotesManagerFindManyByUserIdWithOptions) {
+    return this.findManyByUserIdWithOptions(actorUserId, options);
   }
 
-  async view(userId: string, noteId: string) {
-    const canView = await this.userCanView(userId, noteId);
+  async view(actorUserId: string, noteId: string) {
+    const canView = await this.userCanView(actorUserId, noteId);
     if (!canView) {
       throw new Error('You cannot view this note');
     }
 
-    const data = await this.findOneByIdAndUserId(noteId, userId);
+    const data = await this.findOneByIdAndUserId(noteId, actorUserId);
     if (!data) {
       throw new Error('Note not found');
     }
@@ -141,20 +143,27 @@ export class NotesManager {
     return data;
   }
 
-  async create(user: User, data: CreateNote) {
-    const notesMaxPerUserCount = await usersManager.getUserLimit(user, 'notesMaxPerUserCount');
+  async create(actorUser: User, data: CreateNote) {
+    const notesMaxPerUserCount = await usersManager.getUserLimit(actorUser, 'notesMaxPerUserCount');
 
-    const notesCount = await this.countByUserId(user.id);
+    const notesCount = await this.countByUserId(actorUser.id);
     if (notesCount >= notesMaxPerUserCount) {
       throw new Error(
         `You have reached the maximum number of notes per user (${notesMaxPerUserCount}).`
       );
     }
 
-    return this.insertOne({
+    const note = await this.insertOne({
       ...data,
-      userId: user.id,
+      userId: actorUser.id,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_ADDED, {
+      actorUserId: actorUser.id,
+      noteId: note.id,
+    });
+
+    return note;
   }
 
   async update(userId: string, noteId: string, data: UpdateNote) {
@@ -168,7 +177,14 @@ export class NotesManager {
       throw new Error('Note not found');
     }
 
-    return this.updateOneById(noteId, data);
+    const updatedNote = await this.updateOneById(noteId, data);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_EDITED, {
+      actorUserId: userId,
+      noteId: updatedNote.id,
+    });
+
+    return updatedNote;
   }
 
   async delete(userId: string, noteId: string, isHardDelete?: boolean) {
@@ -177,11 +193,18 @@ export class NotesManager {
       throw new Error('Note not found');
     }
 
-    return isHardDelete
-      ? this.deleteOneById(noteId)
-      : this.updateOneById(noteId, {
+    const deletedNote = isHardDelete
+      ? await this.deleteOneById(noteId)
+      : await this.updateOneById(noteId, {
           deletedAt: new Date(),
         });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_DELETED, {
+      actorUserId: userId,
+      noteId: deletedNote.id,
+    });
+
+    return deletedNote;
   }
 
   async undelete(userId: string, noteId: string) {
@@ -190,11 +213,19 @@ export class NotesManager {
       throw new Error('You cannot undelete this note');
     }
 
-    return notesManager.updateOneById(noteId, {
+    const undeletedNote = await notesManager.updateOneById(noteId, {
       deletedAt: null,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_UNDELETED, {
+      actorUserId: userId,
+      noteId: undeletedNote.id,
+    });
+
+    return undeletedNote;
   }
 
+  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

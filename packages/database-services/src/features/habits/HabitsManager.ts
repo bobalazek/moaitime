@@ -102,14 +102,14 @@ export class HabitsManager {
   }
 
   // API Helpers
-  async list(userId: string, options?: HabitsManagerFindManyByUserIdWithOptions) {
-    return this.findManyByUserIdWithOptions(userId, options);
+  async list(actorUserId: string, options?: HabitsManagerFindManyByUserIdWithOptions) {
+    return this.findManyByUserIdWithOptions(actorUserId, options);
   }
 
-  async daily(userId: string, date: string): Promise<HabitDaily[]> {
+  async daily(actorUserId: string, date: string): Promise<HabitDaily[]> {
     const dateObject = endOfDay(new Date(date));
     const where = and(
-      eq(habits.userId, userId),
+      eq(habits.userId, actorUserId),
       isNull(habits.deletedAt),
       lte(habits.createdAt, dateObject)
     );
@@ -150,13 +150,13 @@ export class HabitsManager {
     }));
   }
 
-  async view(userId: string, habitId: string) {
-    const canView = await this.userCanView(userId, habitId);
+  async view(actorUserId: string, habitId: string) {
+    const canView = await this.userCanView(actorUserId, habitId);
     if (!canView) {
       throw new Error('You cannot view this habit');
     }
 
-    const data = await this.findOneByIdAndUserId(habitId, userId);
+    const data = await this.findOneByIdAndUserId(habitId, actorUserId);
     if (!data) {
       throw new Error('Habit not found');
     }
@@ -164,8 +164,8 @@ export class HabitsManager {
     return data;
   }
 
-  async dailyUpdate(userId: string, habitId: string, date: string, amount: number) {
-    await this.view(userId, habitId);
+  async dailyUpdate(actorUserId: string, habitId: string, date: string, amount: number) {
+    await this.view(actorUserId, habitId);
 
     const dailyEntry = await getDatabase().query.habitDailyEntries.findFirst({
       where: and(eq(habitDailyEntries.habitId, habitId), eq(habitDailyEntries.date, date)),
@@ -200,10 +200,13 @@ export class HabitsManager {
     return row;
   }
 
-  async create(user: User, data: CreateHabit) {
-    const habitsMaxPerUserCount = await usersManager.getUserLimit(user, 'habitsMaxPerUserCount');
+  async create(actorUser: User, data: CreateHabit) {
+    const habitsMaxPerUserCount = await usersManager.getUserLimit(
+      actorUser,
+      'habitsMaxPerUserCount'
+    );
 
-    const habitsCount = await this.countByUserId(user.id);
+    const habitsCount = await this.countByUserId(actorUser.id);
     if (habitsCount >= habitsMaxPerUserCount) {
       throw new Error(
         `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
@@ -212,19 +215,19 @@ export class HabitsManager {
 
     const habit = await this.insertOne({
       ...data,
-      userId: user.id,
+      userId: actorUser.id,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_ADDED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       habitId: habit.id,
     });
 
     return habit;
   }
 
-  async update(userId: string, habitId: string, data: UpdateHabit) {
-    const canView = await this.userCanUpdate(userId, habitId);
+  async update(actorUserId: string, habitId: string, data: UpdateHabit) {
+    const canView = await this.userCanUpdate(actorUserId, habitId);
     if (!canView) {
       throw new Error('You cannot update this habit');
     }
@@ -237,15 +240,15 @@ export class HabitsManager {
     const updatedHabit = await this.updateOneById(habitId, data);
 
     globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_EDITED, {
-      actorUserId: userId,
+      actorUserId,
       habitId: updatedHabit.id,
     });
 
     return updatedHabit;
   }
 
-  async delete(userId: string, habitId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(userId, habitId);
+  async delete(actorUserId: string, habitId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(actorUserId, habitId);
     if (!canDelete) {
       throw new Error('Habit not found');
     }
@@ -257,15 +260,15 @@ export class HabitsManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       habitId: deletedHabit.id,
     });
 
     return deletedHabit;
   }
 
-  async undelete(userId: string, habitId: string) {
-    const canDelete = await habitsManager.userCanUpdate(userId, habitId);
+  async undelete(actorUserId: string, habitId: string) {
+    const canDelete = await habitsManager.userCanUpdate(actorUserId, habitId);
     if (!canDelete) {
       throw new Error('You cannot undelete this habit');
     }
@@ -275,13 +278,14 @@ export class HabitsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       habitId: undeletedHabit.id,
     });
 
     return undeletedHabit;
   }
 
+  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

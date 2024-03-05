@@ -50,11 +50,21 @@ export enum GlobalEventsEnum {
   TASKS_LIST_DELETED = 'tasks:list:deleted',
   TASKS_LIST_ADD_VISIBLE = 'tasks:list:add-visible',
   TASKS_LIST_REMOVE_VISIBLE = 'tasks:list:remove-visible',
+  // Tags
+  TAGS_TAG_ADDED = 'tags:tag:added',
+  TAGS_TAG_EDITED = 'tags:tag:edited',
+  TAGS_TAG_DELETED = 'tags:tag:deleted',
+  TAGS_TAG_UNDELETED = 'tags:tag:undeleted',
   // Habits
   HABITS_HABIT_ADDED = 'habits:habit:added',
   HABITS_HABIT_EDITED = 'habits:habit:edited',
   HABITS_HABIT_DELETED = 'habits:habit:deleted',
   HABITS_HABIT_UNDELETED = 'habits:hait:undeleted',
+  // Notes
+  NOTES_NOTE_ADDED = 'notes:note:added',
+  NOTES_NOTE_EDITED = 'notes:note:edited',
+  NOTES_NOTE_DELETED = 'notes:note:deleted',
+  NOTES_NOTE_UNDELETED = 'notes:note:undeleted',
   // Calendar
   CALENDAR_CALENDAR_ADDED = 'calendar:calendar:added',
   CALENDAR_CALENDAR_EDITED = 'calendar:calendar:edited',
@@ -349,6 +359,28 @@ export type GlobalEvents = {
     list?: List;
     actorWebsocketToken?: string;
   };
+  // Tags
+  [GlobalEventsEnum.TAGS_TAG_ADDED]: {
+    actorUserId: string;
+    tagId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TAGS_TAG_EDITED]: {
+    actorUserId: string;
+    tagId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TAGS_TAG_DELETED]: {
+    actorUserId: string;
+    tagId: string;
+    isHardDelete?: boolean;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TAGS_TAG_UNDELETED]: {
+    actorUserId: string;
+    tagId: string;
+    actorWebsocketToken?: string;
+  };
   // Habits
   [GlobalEventsEnum.HABITS_HABIT_ADDED]: {
     actorUserId: string;
@@ -369,6 +401,28 @@ export type GlobalEvents = {
   [GlobalEventsEnum.HABITS_HABIT_UNDELETED]: {
     actorUserId: string;
     habitId: string;
+    actorWebsocketToken?: string;
+  };
+  // Notes
+  [GlobalEventsEnum.NOTES_NOTE_ADDED]: {
+    actorUserId: string;
+    noteId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.NOTES_NOTE_EDITED]: {
+    actorUserId: string;
+    noteId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.NOTES_NOTE_DELETED]: {
+    actorUserId: string;
+    noteId: string;
+    isHardDelete?: boolean;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.NOTES_NOTE_UNDELETED]: {
+    actorUserId: string;
+    noteId: string;
     actorWebsocketToken?: string;
   };
   // Calendars

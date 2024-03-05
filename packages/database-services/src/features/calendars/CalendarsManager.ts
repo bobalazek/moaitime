@@ -218,40 +218,40 @@ export class CalendarsManager {
   }
 
   // API Helpers
-  async list(userId: string) {
-    const calendars = await this.findManyByUserId(userId);
+  async list(actorUserId: string) {
+    const calendars = await this.findManyByUserId(actorUserId);
 
-    return this.convertToApiResponse(calendars, userId);
+    return this.convertToApiResponse(calendars, actorUserId);
   }
 
-  async listDeleted(userId: string) {
-    const calendars = await this.findManyDeletedByUserId(userId);
+  async listDeleted(actorUserId: string) {
+    const calendars = await this.findManyDeletedByUserId(actorUserId);
 
-    return this.convertToApiResponse(calendars, userId);
+    return this.convertToApiResponse(calendars, actorUserId);
   }
 
-  async listPublic(userId: string) {
+  async listPublic(actorUserId: string) {
     const calendars = await this.findManyPublic();
 
-    return this.convertToApiResponse(calendars, userId);
+    return this.convertToApiResponse(calendars, actorUserId);
   }
 
-  async create(user: User, data: CreateCalendar) {
-    const maxCount = await usersManager.getUserLimit(user, 'calendarsMaxPerUserCount');
-    const currentCount = await this.countByUserId(user.id);
+  async create(actorUser: User, data: CreateCalendar) {
+    const maxCount = await usersManager.getUserLimit(actorUser, 'calendarsMaxPerUserCount');
+    const currentCount = await this.countByUserId(actorUser.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of calendars per user (${maxCount}).`);
     }
 
     const calendar = await this.insertOne({
       ...data,
-      userId: user.id,
+      userId: actorUser.id,
     });
 
-    await this.addVisibleCalendarIdByUserId(user.id, calendar.id);
+    await this.addVisibleCalendarIdByUserId(actorUser.id, calendar.id);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_ADDED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       calendarId: calendar.id,
       teamId: calendar.teamId ?? undefined,
     });
@@ -259,8 +259,8 @@ export class CalendarsManager {
     return calendar;
   }
 
-  async update(userId: string, calendarId: string, body: UpdateCalendar) {
-    const canUpdate = await this.userCanUpdate(userId, calendarId);
+  async update(actorUserId: string, calendarId: string, body: UpdateCalendar) {
+    const canUpdate = await this.userCanUpdate(actorUserId, calendarId);
     if (!canUpdate) {
       throw new Error('You cannot update this calendar');
     }
@@ -268,7 +268,7 @@ export class CalendarsManager {
     const calendar = await this.updateOneById(calendarId, body);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_EDITED, {
-      actorUserId: userId,
+      actorUserId,
       calendarId: calendar.id,
       teamId: calendar.teamId ?? undefined,
     });
@@ -276,8 +276,8 @@ export class CalendarsManager {
     return calendar;
   }
 
-  async delete(userId: string, calendarId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(userId, calendarId);
+  async delete(actorUserId: string, calendarId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(actorUserId, calendarId);
     if (!canDelete) {
       throw new Error('You cannot delete this calendar');
     }
@@ -289,7 +289,7 @@ export class CalendarsManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       calendarId: calendar.id,
       teamId: calendar.teamId ?? undefined,
       isHardDelete,
@@ -298,8 +298,8 @@ export class CalendarsManager {
     return calendar;
   }
 
-  async undelete(userId: string, calendarId: string) {
-    const canDelete = await this.userCanUpdate(userId, calendarId);
+  async undelete(actorUserId: string, calendarId: string) {
+    const canDelete = await this.userCanUpdate(actorUserId, calendarId);
     if (!canDelete) {
       throw new Error('You cannot undelete this calendar');
     }
@@ -309,7 +309,7 @@ export class CalendarsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_UNDELETED, {
-      actorUserId: userId,
+      actorUserId,
       calendarId: calendar.id,
       teamId: calendar.teamId ?? undefined,
     });
@@ -317,16 +317,16 @@ export class CalendarsManager {
     return calendar;
   }
 
-  async addVisible(userId: string, calendarId: string) {
-    const canView = await this.userCanView(userId, calendarId);
+  async addVisible(actorUserId: string, calendarId: string) {
+    const canView = await this.userCanView(actorUserId, calendarId);
     if (!canView) {
       throw new Error('You cannot view this calendar');
     }
 
-    const calendar = await this.addVisibleCalendarIdByUserId(userId, calendarId);
+    const calendar = await this.addVisibleCalendarIdByUserId(actorUserId, calendarId);
     if (calendar) {
       globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_ADD_VISIBLE, {
-        actorUserId: userId,
+        actorUserId,
         calendarId: calendar.id,
         teamId: calendar.teamId ?? undefined,
       });
@@ -335,11 +335,11 @@ export class CalendarsManager {
     return calendar;
   }
 
-  async removeVisible(userId: string, calendarId: string) {
-    const calendar = await this.removeVisibleCalendarIdByUserId(userId, calendarId);
+  async removeVisible(actorUserId: string, calendarId: string) {
+    const calendar = await this.removeVisibleCalendarIdByUserId(actorUserId, calendarId);
     if (calendar) {
       globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_REMOVE_VISIBLE, {
-        actorUserId: userId,
+        actorUserId,
         calendarId: calendar.id,
         teamId: calendar.teamId ?? undefined,
       });

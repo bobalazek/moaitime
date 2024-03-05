@@ -1,7 +1,8 @@
 import { and, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, NewTag, Tag, tags, User } from '@moaitime/database-core';
-import { CreateTag, UpdateTag } from '@moaitime/shared-common';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
+import { CreateTag, GlobalEventsEnum, UpdateTag } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
 
@@ -93,19 +94,19 @@ export class TagsManager {
   }
 
   // API Helpers
-  async list(userId: string, includeDeleted?: boolean) {
-    return this.findManyByUserId(userId, {
+  async list(actorUserId: string, includeDeleted?: boolean) {
+    return this.findManyByUserId(actorUserId, {
       includeDeleted,
     });
   }
 
-  async view(userId: string, tagId: string) {
-    const canView = await this.userCanView(userId, tagId);
+  async view(actorUserId: string, tagId: string) {
+    const canView = await this.userCanView(actorUserId, tagId);
     if (!canView) {
       throw new Error('You cannot view this tag');
     }
 
-    const data = await this.findOneByIdAndUserId(tagId, userId);
+    const data = await this.findOneByIdAndUserId(tagId, actorUserId);
     if (!data) {
       throw new Error('Tag not found');
     }
@@ -113,54 +114,82 @@ export class TagsManager {
     return data;
   }
 
-  async create(user: User, data: CreateTag) {
-    const maxCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
-    const currentCount = await this.countByUserId(user.id);
+  async create(actorUser: User, data: CreateTag) {
+    const maxCount = await usersManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
+    const currentCount = await this.countByUserId(actorUser.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of tags per user (${maxCount}).`);
     }
 
     if (data.teamId) {
-      const teamIds = await usersManager.getTeamIds(user.id);
+      const teamIds = await usersManager.getTeamIds(actorUser.id);
       if (!teamIds.includes(data.teamId)) {
         throw new Error('You cannot create a tag for this team');
       }
     }
 
-    return this.insertOne({ ...data, userId: user.id });
+    const tag = await this.insertOne({ ...data, userId: actorUser.id });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_ADDED, {
+      actorUserId: actorUser.id,
+      tagId: tag.id,
+    });
+
+    return tag;
   }
 
-  async update(userId: string, tagId: string, data: UpdateTag) {
-    const canUpdate = await this.userCanUpdate(userId, tagId);
+  async update(actorUserId: string, tagId: string, data: UpdateTag) {
+    const canUpdate = await this.userCanUpdate(actorUserId, tagId);
     if (!canUpdate) {
       throw new Error('You cannot update this tag');
     }
 
-    return this.updateOneById(tagId, data);
+    const updatedTag = await this.updateOneById(tagId, data);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_EDITED, {
+      actorUserId,
+      tagId: updatedTag.id,
+    });
+
+    return updatedTag;
   }
 
-  async delete(userId: string, tagId: string, isHardDelete?: boolean) {
-    const canDelete = await tagsManager.userCanDelete(userId, tagId);
+  async delete(actorUserId: string, tagId: string, isHardDelete?: boolean) {
+    const canDelete = await tagsManager.userCanDelete(actorUserId, tagId);
     if (!canDelete) {
       throw new Error('You cannot delete this tag');
     }
 
-    return isHardDelete
-      ? this.deleteOneById(tagId)
-      : this.updateOneById(tagId, {
+    const deletedTag = isHardDelete
+      ? await this.deleteOneById(tagId)
+      : await this.updateOneById(tagId, {
           deletedAt: new Date(),
         });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_DELETED, {
+      actorUserId,
+      tagId: deletedTag.id,
+    });
+
+    return deletedTag;
   }
 
-  async undelete(userId: string, tagId: string) {
-    const canDelete = await tagsManager.userCanUpdate(userId, tagId);
+  async undelete(actorUserId: string, tagId: string) {
+    const canDelete = await tagsManager.userCanUpdate(actorUserId, tagId);
     if (!canDelete) {
       throw new Error('You cannot undelete this tag');
     }
 
-    return this.updateOneById(tagId, {
+    const undeletedTag = await this.updateOneById(tagId, {
       deletedAt: null,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_UNDELETED, {
+      actorUserId,
+      tagId: undeletedTag.id,
+    });
+
+    return undeletedTag;
   }
 
   // Helpers

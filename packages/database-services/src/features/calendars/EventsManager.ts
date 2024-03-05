@@ -261,43 +261,51 @@ export class EventsManager {
   }
 
   // API Helpers
-  async list(user: User, from: string, to: string) {
-    const timezone = user.settings?.generalTimezone ?? 'UTC';
+  async list(actorUser: User, from: string, to: string) {
+    const timezone = actorUser.settings?.generalTimezone ?? 'UTC';
     const timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
     const timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
 
-    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
-    return this.findManyByCalendarIdsAndRange(calendarIdsMap, user.id, timezonedFrom, timezonedTo);
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(actorUser.id);
+    return this.findManyByCalendarIdsAndRange(
+      calendarIdsMap,
+      actorUser.id,
+      timezonedFrom,
+      timezonedTo
+    );
   }
 
-  async create(user: User, data: CreateEvent) {
+  async create(actorUser: User, data: CreateEvent) {
     let calendar: Calendar | null = null;
     if (data.calendarId) {
-      calendar = await calendarsManager.findOneByIdAndUserId(data.calendarId, user.id);
+      calendar = await calendarsManager.findOneByIdAndUserId(data.calendarId, actorUser.id);
       if (!calendar) {
         throw new Error('Calendar not found');
       }
     }
 
-    const maxCount = await usersManager.getUserLimit(user, 'calendarsMaxEventsPerCalendarCount');
+    const maxCount = await usersManager.getUserLimit(
+      actorUser,
+      'calendarsMaxEventsPerCalendarCount'
+    );
     const currentCount = await eventsManager.countByCalendarId(data.calendarId);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of events per calendar (${maxCount}).`);
     }
 
-    const timezone = data.timezone ?? user?.settings?.generalTimezone ?? 'UTC';
+    const timezone = data.timezone ?? actorUser?.settings?.generalTimezone ?? 'UTC';
 
     const event = await this.insertOne({
       ...data,
       timezone,
-      userId: user.id,
+      userId: actorUser.id,
       startsAt: new Date(data.startsAt),
       endsAt: new Date(data.endsAt),
       repeatEndsAt: data.repeatEndsAt ? new Date(data.repeatEndsAt) : undefined,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_ADDED, {
-      actorUserId: user.id,
+      actorUserId: actorUser.id,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
@@ -306,8 +314,8 @@ export class EventsManager {
     return event;
   }
 
-  async update(userId: string, eventId: string, data: UpdateEvent) {
-    const canView = await this.userCanUpdate(userId, eventId);
+  async update(actorUserId: string, eventId: string, data: UpdateEvent) {
+    const canView = await this.userCanUpdate(actorUserId, eventId);
     if (!canView) {
       throw new Error('You cannot update this event');
     }
@@ -352,10 +360,10 @@ export class EventsManager {
       endsAt,
       repeatEndsAt,
     });
-    const calendar = await calendarsManager.findOneByIdAndUserId(newEvent.calendarId, userId);
+    const calendar = await calendarsManager.findOneByIdAndUserId(newEvent.calendarId, actorUserId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
-      actorUserId: userId,
+      actorUserId,
       eventId: newEvent.id,
       calendarId: newEvent.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
@@ -364,8 +372,8 @@ export class EventsManager {
     return newEvent;
   }
 
-  async delete(userId: string, eventId: string) {
-    const canDelete = await this.userCanDelete(userId, eventId);
+  async delete(actorUserId: string, eventId: string) {
+    const canDelete = await this.userCanDelete(actorUserId, eventId);
     if (!canDelete) {
       throw new Error('Event not found');
     }
@@ -373,10 +381,10 @@ export class EventsManager {
     const event = await this.updateOneById(eventId, {
       deletedAt: new Date(),
     });
-    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, actorUserId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
@@ -385,8 +393,8 @@ export class EventsManager {
     return event;
   }
 
-  async undelete(userId: string, eventId: string) {
-    const canDelete = await this.userCanUpdate(userId, eventId);
+  async undelete(actorUserId: string, eventId: string) {
+    const canDelete = await this.userCanUpdate(actorUserId, eventId);
     if (!canDelete) {
       throw new Error('You cannot undelete this event');
     }
@@ -394,10 +402,10 @@ export class EventsManager {
     const event = await this.updateOneById(eventId, {
       deletedAt: null,
     });
-    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, actorUserId);
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
-      actorUserId: userId,
+      actorUserId,
       eventId: event.id,
       calendarId: event.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,

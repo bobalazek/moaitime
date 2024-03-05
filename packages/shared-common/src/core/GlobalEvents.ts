@@ -50,6 +50,11 @@ export enum GlobalEventsEnum {
   TASKS_LIST_DELETED = 'tasks:list:deleted',
   TASKS_LIST_ADD_VISIBLE = 'tasks:list:add-visible',
   TASKS_LIST_REMOVE_VISIBLE = 'tasks:list:remove-visible',
+  // Habits
+  HABITS_HABIT_ADDED = 'habits:habit:added',
+  HABITS_HABIT_EDITED = 'habits:habit:edited',
+  HABITS_HABIT_DELETED = 'habits:habit:deleted',
+  HABITS_HABIT_UNDELETED = 'habits:hait:undeleted',
   // Calendar
   CALENDAR_CALENDAR_ADDED = 'calendar:calendar:added',
   CALENDAR_CALENDAR_EDITED = 'calendar:calendar:edited',
@@ -342,6 +347,28 @@ export type GlobalEvents = {
     listId: string;
     teamId?: string;
     list?: List;
+    actorWebsocketToken?: string;
+  };
+  // Habits
+  [GlobalEventsEnum.HABITS_HABIT_ADDED]: {
+    actorUserId: string;
+    habitId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.HABITS_HABIT_EDITED]: {
+    actorUserId: string;
+    habitId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.HABITS_HABIT_DELETED]: {
+    actorUserId: string;
+    habitId: string;
+    isHardDelete?: boolean;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.HABITS_HABIT_UNDELETED]: {
+    actorUserId: string;
+    habitId: string;
     actorWebsocketToken?: string;
   };
   // Calendars

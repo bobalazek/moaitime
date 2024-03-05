@@ -170,8 +170,8 @@ export class FocusSessionsManager {
   }
 
   async delete(userId: string, focusSessionId: string, isHardDelete?: boolean) {
-    const hasAccess = await this.userCanDelete(userId, focusSessionId);
-    if (!hasAccess) {
+    const canDelete = await this.userCanDelete(userId, focusSessionId);
+    if (!canDelete) {
       throw new Error('Focus session not found');
     }
 

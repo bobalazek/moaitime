@@ -9,7 +9,8 @@ import {
   NewHabit,
   User,
 } from '@moaitime/database-core';
-import { CreateHabit, HabitDaily, UpdateHabit } from '@moaitime/shared-common';
+import { globalEventsNotifier } from '@moaitime/global-events-notifier';
+import { CreateHabit, GlobalEventsEnum, HabitDaily, UpdateHabit } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
 
@@ -209,10 +210,17 @@ export class HabitsManager {
       );
     }
 
-    return this.insertOne({
+    const habit = await this.insertOne({
       ...data,
       userId: user.id,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_ADDED, {
+      actorUserId: user.id,
+      habitId: habit.id,
+    });
+
+    return habit;
   }
 
   async update(userId: string, habitId: string, data: UpdateHabit) {
@@ -226,20 +234,34 @@ export class HabitsManager {
       throw new Error('Habit not found');
     }
 
-    return this.updateOneById(habitId, data);
+    const updatedHabit = await this.updateOneById(habitId, data);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_EDITED, {
+      actorUserId: userId,
+      habitId: updatedHabit.id,
+    });
+
+    return updatedHabit;
   }
 
   async delete(userId: string, habitId: string, isHardDelete?: boolean) {
-    const hasAccess = await this.userCanDelete(userId, habitId);
-    if (!hasAccess) {
+    const canDelete = await this.userCanDelete(userId, habitId);
+    if (!canDelete) {
       throw new Error('Habit not found');
     }
 
-    return isHardDelete
-      ? this.deleteOneById(habitId)
-      : this.updateOneById(habitId, {
+    const deletedHabit = isHardDelete
+      ? await this.deleteOneById(habitId)
+      : await this.updateOneById(habitId, {
           deletedAt: new Date(),
         });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_DELETED, {
+      actorUserId: userId,
+      habitId: deletedHabit.id,
+    });
+
+    return deletedHabit;
   }
 
   async undelete(userId: string, habitId: string) {
@@ -248,9 +270,16 @@ export class HabitsManager {
       throw new Error('You cannot undelete this habit');
     }
 
-    return habitsManager.updateOneById(habitId, {
+    const undeletedHabit = await habitsManager.updateOneById(habitId, {
       deletedAt: null,
     });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_DELETED, {
+      actorUserId: userId,
+      habitId: undeletedHabit.id,
+    });
+
+    return undeletedHabit;
   }
 
   async countByUserId(userId: string): Promise<number> {

@@ -172,8 +172,8 @@ export class NotesManager {
   }
 
   async delete(userId: string, noteId: string, isHardDelete?: boolean) {
-    const hasAccess = await this.userCanDelete(userId, noteId);
-    if (!hasAccess) {
+    const canDelete = await this.userCanDelete(userId, noteId);
+    if (!canDelete) {
       throw new Error('Note not found');
     }
 

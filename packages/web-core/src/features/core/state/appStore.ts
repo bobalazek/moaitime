@@ -50,7 +50,7 @@ export const useAppStore = create<AppStore>()((_, get) => ({
     reloadTags();
 
     // Websocket
-    websocketManager.init();
+    websocketManager.joinAndConnect();
 
     // Ping
     (async () => {

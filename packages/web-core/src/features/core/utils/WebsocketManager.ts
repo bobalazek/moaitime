@@ -18,44 +18,12 @@ export class WebsocketManager {
   private _socket: WebSocket | null = null;
   private _isInitialized = false;
 
-  async init() {
+  async joinAndConnect() {
     if (this._isInitialized) {
       return;
     }
 
-    const { auth } = useAuthStore.getState();
-    if (auth) {
-      const websocketUrl = await getWebsocketUrl();
-      if (websocketUrl) {
-        this.connect(websocketUrl);
-      }
-    }
-
-    useAuthStore.subscribe(async (state, prevState) => {
-      if (state.auth?.user.id !== prevState.auth?.user.id) {
-        this.disconnect();
-
-        if (state.auth?.user.id) {
-          const websocketUrl = await getWebsocketUrl();
-          if (websocketUrl) {
-            this.connect(websocketUrl);
-          }
-        }
-      }
-    });
-
-    useTeamsStore.subscribe(async (state, prevState) => {
-      if (state.joinedTeam?.team.id !== prevState.joinedTeam?.team.id) {
-        this.disconnect();
-
-        if (state.joinedTeam?.team.id) {
-          const websocketUrl = await getWebsocketUrl();
-          if (websocketUrl) {
-            this.connect(websocketUrl);
-          }
-        }
-      }
-    });
+    this._subscribeToAuthAndTeamsStore();
 
     this._isInitialized = true;
   }
@@ -86,11 +54,13 @@ export class WebsocketManager {
     this._socket.onclose = (event) => {
       if (event.code > 4000 && event.code < 5000) {
         sonnerToast.error('Websocket Error', {
-          description: event.reason ?? 'Invalid access token. Please refresh the page.',
+          description: event.reason ?? 'Unknown websocket error. Please refresh the page.',
         });
       }
 
       this.disconnect();
+
+      // TODO: Possibly try to reconnect?
     };
 
     this._socket.onerror = () => {
@@ -110,11 +80,47 @@ export class WebsocketManager {
 
     this._socket.close();
     this._socket = null;
-
-    // TODO: Possibly try to reconnect?
   }
 
   // Private
+  async _subscribeToAuthAndTeamsStore() {
+    // Auth
+    const { auth } = useAuthStore.getState();
+    if (auth) {
+      const websocketUrl = await getWebsocketUrl();
+      if (websocketUrl) {
+        this.connect(websocketUrl);
+      }
+    }
+
+    useAuthStore.subscribe(async (state, prevState) => {
+      if (state.auth?.user.id !== prevState.auth?.user.id) {
+        this.disconnect();
+
+        if (state.auth?.user.id) {
+          const websocketUrl = await getWebsocketUrl();
+          if (websocketUrl) {
+            this.connect(websocketUrl);
+          }
+        }
+      }
+    });
+
+    // Teams
+    useTeamsStore.subscribe(async (state, prevState) => {
+      if (state.joinedTeam?.team.id !== prevState.joinedTeam?.team.id) {
+        this.disconnect();
+
+        if (state.joinedTeam?.team.id) {
+          const websocketUrl = await getWebsocketUrl();
+          if (websocketUrl) {
+            this.connect(websocketUrl);
+          }
+        }
+      }
+    });
+  }
+
   async _onMessage(event: MessageEvent) {
     const data = JSON.parse(event.data) as {
       type: GlobalEventsEnum;

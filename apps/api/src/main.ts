@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
+import { json } from 'express';
 
 import { getEnv } from '@moaitime/shared-backend';
 
@@ -27,6 +28,13 @@ export async function bootstrap() {
     // where it wouldn't want to close the connections while we were developing
     forceCloseConnections: !isProduction,
   });
+
+  // Middlewares
+  app.use(
+    json({
+      limit: '2mb',
+    })
+  );
 
   // Shutdown
   app.enableShutdownHooks();

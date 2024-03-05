@@ -1,4 +1,3 @@
-import { PencilIcon, WavesIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -228,16 +227,16 @@ export default function TaskEditDialog() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="task-tags" className="flex items-center gap-2">
+          <Label htmlFor="task-tags" className="flex items-end justify-between gap-2">
             <span>Tags</span>
             <button
               type="button"
+              className="bg-primary-foreground rounded-md px-2 py-0.5 text-xs"
               onClick={() => {
                 setTagsDialogOpen(true);
               }}
-              title="Open tags dialog"
             >
-              <PencilIcon size={16} />
+              Edit Tags
             </button>
           </Label>
           <TagsSelector
@@ -248,17 +247,17 @@ export default function TaskEditDialog() {
         </div>
         {selectedList?.teamId && (
           <div className="flex flex-col gap-2">
-            <Label htmlFor="task-assignees" className="flex items-center gap-2">
+            <Label htmlFor="task-assignees" className="flex items-end justify-between gap-2">
               <div>Assignees</div>
               {data?.userIds && data?.userIds.length > 0 && (
                 <button
                   type="button"
+                  className="bg-primary-foreground rounded-md px-2 py-0.5 text-xs"
                   onClick={() => {
                     setUsersNudgeDialogOpen(true);
                   }}
-                  title="Open user nudge dialog"
                 >
-                  <WavesIcon size={16} />
+                  Nudge
                 </button>
               )}
             </Label>

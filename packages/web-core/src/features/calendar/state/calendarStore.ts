@@ -82,10 +82,10 @@ export type CalendarStore = {
   ) => void;
   // Selected
   selectedCalendarDialogOpen: boolean;
-  selectedCalendar: Calendar | null;
+  selectedCalendarDialog: Calendar | null;
   setSelectedCalendarDialogOpen: (
     selectedCalendarDialogOpen: boolean,
-    selectedCalendar?: Calendar | null
+    selectedCalendarDialog?: Calendar | null
   ) => void;
   // Deleted
   deletedCalendarsDialogOpen: boolean;
@@ -343,14 +343,14 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
   },
   // Selected
   selectedCalendarDialogOpen: false,
-  selectedCalendar: null,
+  selectedCalendarDialog: null,
   setSelectedCalendarDialogOpen: (
     selectedCalendarDialogOpen: boolean,
-    selectedCalendar?: Calendar | null
+    selectedCalendarDialog?: Calendar | null
   ) => {
     set({
       selectedCalendarDialogOpen,
-      selectedCalendar,
+      selectedCalendarDialog,
     });
   },
   // User Calendar

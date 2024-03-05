@@ -22,7 +22,7 @@ import { useCalendarStore } from '../../state/calendarStore';
 export default function CalendarEditDialog() {
   const {
     selectedCalendarDialogOpen,
-    selectedCalendar,
+    selectedCalendarDialog,
     addCalendar,
     editCalendar,
     deleteCalendar,
@@ -32,24 +32,24 @@ export default function CalendarEditDialog() {
   const [data, setData] = useState<CreateCalendar | UpdateCalendar>();
 
   useEffect(() => {
-    if (!selectedCalendar) {
+    if (!selectedCalendarDialog) {
       setData(undefined);
 
       return;
     }
 
     setData({
-      name: selectedCalendar.name,
-      description: selectedCalendar.description,
-      color: selectedCalendar.color ?? undefined,
-      teamId: selectedCalendar.teamId,
+      name: selectedCalendarDialog.name,
+      description: selectedCalendarDialog.description,
+      color: selectedCalendarDialog.color ?? undefined,
+      teamId: selectedCalendarDialog.teamId,
     });
-  }, [selectedCalendar]);
+  }, [selectedCalendarDialog]);
 
-  const calendarExists = !!selectedCalendar?.id;
+  const calendarExists = !!selectedCalendarDialog?.id;
 
   const onDeleteButtonClick = async () => {
-    if (!selectedCalendar) {
+    if (!selectedCalendarDialog) {
       sonnerToast.error('Oops!', {
         description: 'No calendar selected',
       });
@@ -58,16 +58,16 @@ export default function CalendarEditDialog() {
     }
 
     const result = confirm(
-      `Are you sure you want to delete the calendar "${selectedCalendar.name}"?`
+      `Are you sure you want to delete the calendar "${selectedCalendarDialog.name}"?`
     );
     if (!result) {
       return;
     }
 
     try {
-      await deleteCalendar(selectedCalendar.id);
+      await deleteCalendar(selectedCalendarDialog.id);
 
-      sonnerToast.success(`Calendar "${selectedCalendar.name}" deleted`, {
+      sonnerToast.success(`Calendar "${selectedCalendarDialog.name}" deleted`, {
         description: 'You have successfully deleted the calendar',
       });
 
@@ -92,7 +92,7 @@ export default function CalendarEditDialog() {
 
     try {
       const editedCalendar = calendarExists
-        ? await editCalendar(selectedCalendar.id, data as UpdateCalendar)
+        ? await editCalendar(selectedCalendarDialog.id, data as UpdateCalendar)
         : await addCalendar(data as CreateCalendar);
 
       sonnerToast.success(`Calendar "${editedCalendar.name}" save`, {
@@ -111,8 +111,8 @@ export default function CalendarEditDialog() {
       <DialogContent data-test="calendar--edit-dialog">
         <DialogHeader>
           <DialogTitle className="truncate">
-            {selectedCalendar?.id && <>Edit "{selectedCalendar.name}" Calendar</>}
-            {!selectedCalendar?.id && <>Create Calendar</>}
+            {calendarExists && <>Edit "{selectedCalendarDialog!.name}" Calendar</>}
+            {!calendarExists && <>Create Calendar</>}
           </DialogTitle>
         </DialogHeader>
         <div className="mb-4 flex flex-col gap-2">
@@ -150,13 +150,13 @@ export default function CalendarEditDialog() {
             }}
           />
         </div>
-        {selectedCalendar?.id && selectedCalendar?.teamId && (
+        {calendarExists && selectedCalendarDialog?.teamId && (
           <div className="text-muted-foreground text-xs">
             <UsersIcon className="mr-1 inline-block" size={16} />
             This calendar was created and is owned by your team.
           </div>
         )}
-        {!selectedCalendar?.id && joinedTeam && (
+        {!calendarExists && joinedTeam && (
           <div className="flex flex-col gap-2">
             <div className="flex items-center">
               <Switch

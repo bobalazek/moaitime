@@ -18,9 +18,10 @@
   "types": "./dist/main.d.ts",
   "scripts": {
     "build": "tsup",
-    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
-    "dev": "tsup --env.TSUP_WATCH=true",
-    "dev:not-working-yet": "nest build --watch",
+    "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
+    "dev": "tsx watch ./src/main.ts",
+    "dev:legacy": "tsup --env.TSUP_WATCH=true",
+    "dev:legacy-2": "nest build --watch",
     "lint": "eslint .",
     "serve": "node ./dist/main.js",
     "test": "vitest run",
@@ -55,6 +56,7 @@
     "reflect-metadata": "^0.1.14",
     "request-ip": "^3.3.0",
     "rxjs": "^7.8.1",
+    "tsx": "^4.7.1",
     "ws": "^8.16.0"
   },
   "devDependencies": {

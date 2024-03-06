@@ -18,7 +18,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
-    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist --glob .react-email",
+    "clean": "rimraf --glob node_modules --glob .turbo --glob dist --glob .react-email",
     "dev": "tsup --watch",
     "dev:emails": "email dev --port 3535 --dir ./src/emails",
     "lint": "eslint .",

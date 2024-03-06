@@ -18,9 +18,10 @@
   "types": "./dist/main.d.ts",
   "scripts": {
     "build": "tsup",
-    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
+    "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
+    "dev:run-exec": "tsx ./src/main.ts",
     "lint": "eslint .",
-    "run-exec": "node ./dist/main.js"
+    "run-exec": "pnpm build && node ./dist/main.js"
   },
   "dependencies": {
     "@moaitime/database-core": "workspace:*",
@@ -30,6 +31,7 @@
     "@moaitime/job-runner": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "@moaitime/processes": "workspace:*",
-    "commander": "^11.1.0"
+    "commander": "^11.1.0",
+    "tsx": "^4.7.1"
   }
 }

@@ -18,8 +18,8 @@
   "types": "./dist/main.d.ts",
   "scripts": {
     "build": "vite build",
-    "clean": "pnpm dlx rimraf --glob node_modules --glob .turbo --glob dist",
-    "dev": "pnpm dlx rimraf --glob ./node_modules/.vite && vite",
+    "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
+    "dev": "rimraf --glob ./node_modules/.vite && vite",
     "lint": "eslint .",
     "preview": "vite preview",
     "serve": "serve ./dist --no-clipboard --single --listen tcp://127.0.0.1:4200"

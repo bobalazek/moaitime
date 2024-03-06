@@ -20,6 +20,7 @@ export class WebsocketController {
     return {
       data: {
         websocketUrl,
+        a: 'te',
       },
     };
   }

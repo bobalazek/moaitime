@@ -142,9 +142,6 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
               variant="secondary"
               size="sm"
               disabled={isSaving}
-              style={{
-                borderColor: backgroundColor,
-              }}
             >
               <MinusIcon size={24} />
             </Button>
@@ -163,9 +160,6 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
               variant="secondary"
               size="sm"
               disabled={isSaving}
-              style={{
-                borderColor: backgroundColor,
-              }}
             >
               <PlusIcon size={24} />
             </Button>

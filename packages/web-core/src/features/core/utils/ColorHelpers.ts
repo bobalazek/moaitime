@@ -20,3 +20,7 @@ export const getTextColor = (backgroundColor?: string) => {
 
   return contrastingColor;
 };
+
+export const getLighterBackgroundColor = (backgroundColor: string, amount: number = 0.1) => {
+  return colord(backgroundColor).lighten(amount).toHex();
+};

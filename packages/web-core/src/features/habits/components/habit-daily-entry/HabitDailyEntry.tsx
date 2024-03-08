@@ -5,6 +5,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { HabitDaily } from '@moaitime/shared-common';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
+import { getLighterBackgroundColor, getTextColor } from '../../../core/utils/ColorHelpers';
 import { useHabitsStore } from '../../state/habitsStore';
 
 export type HabitDailyEntryProps = {
@@ -54,19 +55,29 @@ const HabbitDailyEntryEditPopover = ({ habitDaily }: HabitDailyEntryProps) => {
 
 export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
   const { updateHabitDaily } = useHabitsStore();
+  const [isSaving, setIsSaving] = useState(false);
   const [currentAmount, setCurrentAmount] = useState(habitDaily.amount);
 
   const habit = habitDaily.habit;
   const date = habitDaily.date;
-  const hasReachedGoal = currentAmount >= habitDaily.habit.goalAmount;
 
   let goalPercentage = currentAmount === 0 ? 0 : (currentAmount / habit.goalAmount) * 100;
   if (goalPercentage > 100) {
     goalPercentage = 100;
   }
 
-  const debouncedUpdateHabitDaily = useDebouncedCallback((newAmount) => {
-    updateHabitDaily(habit.id, date, newAmount);
+  const backgroundColor = habit.color ?? '#aaaaaa';
+  const lighterBackgroundColor = getLighterBackgroundColor(backgroundColor, 0.15);
+  const textColor = getTextColor(backgroundColor);
+
+  const debouncedUpdateHabitDaily = useDebouncedCallback(async (newAmount) => {
+    setIsSaving(true);
+
+    try {
+      await updateHabitDaily(habit.id, date, newAmount);
+    } finally {
+      setIsSaving(false);
+    }
   }, 500);
 
   const onDecrementButtonClick = async () => {
@@ -96,15 +107,16 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
     <div
       className="relative flex w-full flex-col flex-wrap rounded-lg border-2 px-6 py-4"
       style={{
-        borderColor: habit.color ?? undefined,
-        backgroundColor: hasReachedGoal ? habit.color ?? undefined : undefined,
+        color: textColor,
+        borderColor: backgroundColor ?? undefined,
+        backgroundColor: lighterBackgroundColor,
       }}
     >
       <div
         className="bg-secondary absolute left-0 top-0 h-full rounded-md transition-all"
         style={{
           width: `${goalPercentage}%`,
-          backgroundColor: habit.color ?? undefined,
+          backgroundColor: backgroundColor ?? undefined,
         }}
       />
       <div className="z-10 flex w-full flex-wrap items-center justify-between gap-2">
@@ -112,23 +124,49 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
           <div className="w-full">
             <h5 className="text-xl font-bold">{habit.name}</h5>
             {habit.description && (
-              <div className="text-muted-foreground text-sm">{habit.description}</div>
+              <div
+                className="text-sm"
+                style={{
+                  color: textColor,
+                }}
+              >
+                {habit.description}
+              </div>
             )}
           </div>
         </div>
         <div className="flex flex-shrink">
           <div className="flex flex-row flex-wrap items-center gap-4">
-            <Button onClick={onDecrementButtonClick} variant="outline" size="sm">
+            <Button
+              onClick={onDecrementButtonClick}
+              variant="outline"
+              size="sm"
+              disabled={isSaving}
+              style={{
+                color: backgroundColor,
+              }}
+            >
               <MinusIcon size={24} />
             </Button>
-            <div className="flex select-none items-center gap-1">
-              <span className="text-2xl font-bold">{currentAmount}</span>
-              <HabbitDailyEntryEditPopover habitDaily={habitDaily} />
-              <span>/</span>
-              <span>{habit.goalAmount}</span>
-              <span>{habit.goalUnit}</span>
+            <div>
+              <div className="flex select-none items-center gap-1">
+                <span className="text-2xl font-bold">{currentAmount}</span>
+                <HabbitDailyEntryEditPopover habitDaily={habitDaily} />
+                <span>/</span>
+                <span>{habit.goalAmount}</span>
+                <span>{habit.goalUnit}</span>
+              </div>
+              <div className="text-center text-xs">per {habit.goalFrequency}</div>
             </div>
-            <Button onClick={onIncrementButtonClick} variant="outline" size="sm">
+            <Button
+              onClick={onIncrementButtonClick}
+              variant="outline"
+              size="sm"
+              disabled={isSaving}
+              style={{
+                color: backgroundColor,
+              }}
+            >
               <PlusIcon size={24} />
             </Button>
           </div>

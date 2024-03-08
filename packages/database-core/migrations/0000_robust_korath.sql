@@ -124,10 +124,22 @@ CREATE TABLE IF NOT EXISTS "habits" (
 	"order" integer DEFAULT 0,
 	"color" text,
 	"priority" integer,
+	"goal_amount" integer DEFAULT 1 NOT NULL,
+	"goal_unit" text DEFAULT 'times' NOT NULL,
+	"goal_frequency" text DEFAULT 'day' NOT NULL,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	"user_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "habit_entries" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"logged_at" timestamp DEFAULT now() NOT NULL,
+	"amount" integer DEFAULT 0 NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	"habit_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "notes" (
@@ -488,7 +500,10 @@ CREATE INDEX IF NOT EXISTS "interests_parent_id_idx" ON "interests" ("parent_id"
 CREATE INDEX IF NOT EXISTS "lists_user_id_idx" ON "lists" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "lists_team_id_idx" ON "lists" ("team_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "mood_entries_user_id_idx" ON "mood_entries" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "mood_entries_logged_at_idx" ON "mood_entries" ("logged_at");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "habits_user_id_idx" ON "habits" ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "habit_entries_habit_id_idx" ON "habit_entries" ("habit_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "habit_entries_logged_at_idx" ON "habit_entries" ("logged_at");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "notes_user_id_idx" ON "notes" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organizations_user_id_idx" ON "organizations" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "organization_users_organization_id_idx" ON "organization_users" ("organization_id");--> statement-breakpoint
@@ -520,6 +535,7 @@ CREATE INDEX IF NOT EXISTS "user_data_exports_user_id_idx" ON "user_data_exports
 CREATE INDEX IF NOT EXISTS "user_calendars_user_id_idx" ON "user_calendars" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_calendars_calendar_id_idx" ON "user_calendars" ("calendar_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_notifications_user_id_idx" ON "user_notifications" ("user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "user_achievements_user_id_achievement_key_idx" ON "user_achievements" ("user_id","achievement_key");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_achievements_achievement_key_idx" ON "user_achievements" ("achievement_key");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_achievements_user_id_idx" ON "user_achievements" ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_achievement_entries_key_idx" ON "user_achievement_entries" ("key");--> statement-breakpoint
@@ -621,6 +637,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "habits" ADD CONSTRAINT "habits_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "habit_entries" ADD CONSTRAINT "habit_entries_habit_id_habits_id_fk" FOREIGN KEY ("habit_id") REFERENCES "habits"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

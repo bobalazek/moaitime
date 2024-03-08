@@ -1,1 +1,0 @@
-ALTER TABLE "user_achievements" ADD CONSTRAINT "user_achievements_user_id_achievement_key_idx" UNIQUE("user_id","achievement_key");

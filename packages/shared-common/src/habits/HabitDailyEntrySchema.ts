@@ -10,4 +10,4 @@ export const HabitDailyEntrySchema = z.object({
 });
 
 // Types
-export type HabitDailtEntry = z.infer<typeof HabitDailyEntrySchema>;
+export type HabitDailyEntry = z.infer<typeof HabitDailyEntrySchema>;

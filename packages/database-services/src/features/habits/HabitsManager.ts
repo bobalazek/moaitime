@@ -1,7 +1,17 @@
-import { endOfDay } from 'date-fns';
+import {
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+} from 'date-fns';
 import {
   and,
   asc,
+  between,
   count,
   DBQueryConfig,
   desc,
@@ -13,16 +23,15 @@ import {
   SQL,
 } from 'drizzle-orm';
 
-import {
-  getDatabase,
-  Habit,
-  habitDailyEntries,
-  habits,
-  NewHabit,
-  User,
-} from '@moaitime/database-core';
+import { getDatabase, Habit, habitEntries, habits, NewHabit, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
-import { CreateHabit, GlobalEventsEnum, HabitDaily, UpdateHabit } from '@moaitime/shared-common';
+import {
+  CreateHabit,
+  GlobalEventsEnum,
+  HabitDaily,
+  HabitGoalFrequencyEnum,
+  UpdateHabit,
+} from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
 
@@ -130,39 +139,113 @@ export class HabitsManager {
   }
 
   async daily(actorUserId: string, date: string): Promise<HabitDaily[]> {
-    const dateObject = endOfDay(new Date(date));
+    const dateObject = new Date(date);
+    const endOfDayDate = endOfDay(dateObject);
+
     const where = and(
       eq(habits.userId, actorUserId),
       isNull(habits.deletedAt),
-      lte(habits.createdAt, dateObject)
+      lte(habits.createdAt, endOfDayDate)
     );
-
-    const dailyHabits = await getDatabase()
+    const allHabits = await getDatabase()
       .select()
       .from(habits)
       .where(where)
       .orderBy(asc(habits.order))
       .execute();
-
-    if (dailyHabits.length === 0) {
+    if (allHabits.length === 0) {
       return [];
     }
 
-    const habitIds = dailyHabits.map((habit) => habit.id);
+    const entriesMap = new Map<string, number>();
 
-    const dailyEntries = await getDatabase().query.habitDailyEntries.findMany({
-      where: and(inArray(habitDailyEntries.habitId, habitIds), eq(habitDailyEntries.date, date)),
-    });
+    // Daily
+    const dailyHabitIds = allHabits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.DAY;
+      })
+      .map((habit) => habit.id);
+    if (dailyHabitIds.length > 0) {
+      const startOfDayDate = startOfDay(dateObject);
+      const dailyHabitEntries = await getDatabase().query.habitEntries.findMany({
+        where: and(
+          inArray(habitEntries.habitId, dailyHabitIds),
+          between(habitEntries.loggedAt, startOfDayDate, endOfDayDate)
+        ),
+      });
 
-    const dailyEntriesMap = new Map<string, number>();
-    for (const entry of dailyEntries) {
-      dailyEntriesMap.set(entry.habitId, entry.amount);
+      for (const entry of dailyHabitEntries) {
+        entriesMap.set(entry.habitId, entry.amount);
+      }
     }
 
-    return dailyHabits.map((habit) => ({
+    // Weekly
+    const weeklyHabitIds = allHabits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.WEEK;
+      })
+      .map((habit) => habit.id);
+    if (weeklyHabitIds.length > 0) {
+      const startOfWeekDate = startOfWeek(dateObject);
+      const endOfWeekDate = endOfWeek(dateObject);
+      const weeklyHabitEntries = await getDatabase().query.habitEntries.findMany({
+        where: and(
+          inArray(habitEntries.habitId, weeklyHabitIds),
+          between(habitEntries.loggedAt, startOfWeekDate, endOfWeekDate)
+        ),
+      });
+
+      for (const entry of weeklyHabitEntries) {
+        entriesMap.set(entry.habitId, entry.amount);
+      }
+    }
+
+    // Monthly
+    const monthlyHabitIds = allHabits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.MONTH;
+      })
+      .map((habit) => habit.id);
+    if (monthlyHabitIds.length > 0) {
+      const startOfMonthDate = startOfMonth(dateObject);
+      const endOfMonthDate = endOfMonth(dateObject);
+      const monthlyHabitEntries = await getDatabase().query.habitEntries.findMany({
+        where: and(
+          inArray(habitEntries.habitId, monthlyHabitIds),
+          between(habitEntries.loggedAt, startOfMonthDate, endOfMonthDate)
+        ),
+      });
+
+      for (const entry of monthlyHabitEntries) {
+        entriesMap.set(entry.habitId, entry.amount);
+      }
+    }
+
+    // Yearly
+    const yearlyHabitIds = allHabits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.YEAR;
+      })
+      .map((habit) => habit.id);
+    if (yearlyHabitIds.length > 0) {
+      const startOfYearDate = startOfYear(dateObject);
+      const endOfYearDate = endOfYear(dateObject);
+      const yearlyHabitEntries = await getDatabase().query.habitEntries.findMany({
+        where: and(
+          inArray(habitEntries.habitId, yearlyHabitIds),
+          between(habitEntries.loggedAt, startOfYearDate, endOfYearDate)
+        ),
+      });
+
+      for (const entry of yearlyHabitEntries) {
+        entriesMap.set(entry.habitId, entry.amount);
+      }
+    }
+
+    return allHabits.map((habit) => ({
       id: `${habit.id}-${date}`,
       date,
-      amount: dailyEntriesMap.get(habit.id) ?? 0,
+      amount: entriesMap.get(habit.id) ?? 0,
       habit: {
         ...habit,
         order: habit.order ?? 0,
@@ -190,14 +273,16 @@ export class HabitsManager {
   async dailyUpdate(actorUserId: string, habitId: string, date: string, amount: number) {
     await this.view(actorUserId, habitId);
 
-    const dailyEntry = await getDatabase().query.habitDailyEntries.findFirst({
-      where: and(eq(habitDailyEntries.habitId, habitId), eq(habitDailyEntries.date, date)),
+    const loggedAt = new Date(date);
+
+    const dailyEntry = await getDatabase().query.habitEntries.findFirst({
+      where: and(eq(habitEntries.habitId, habitId), eq(habitEntries.loggedAt, loggedAt)),
     });
     if (dailyEntry) {
       const rows = await getDatabase()
-        .update(habitDailyEntries)
+        .update(habitEntries)
         .set({ amount, updatedAt: new Date() })
-        .where(eq(habitDailyEntries.id, dailyEntry.id))
+        .where(eq(habitEntries.id, dailyEntry.id))
         .returning();
       const row = rows[0] ?? null;
       if (!row) {
@@ -208,10 +293,10 @@ export class HabitsManager {
     }
 
     const rows = await getDatabase()
-      .insert(habitDailyEntries)
+      .insert(habitEntries)
       .values({
         habitId,
-        date,
+        loggedAt,
         amount,
       })
       .returning();

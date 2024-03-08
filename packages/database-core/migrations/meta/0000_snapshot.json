@@ -1,5 +1,5 @@
 {
-  "id": "ba62f77d-3618-4f78-ac5d-7b28f7dc0fde",
+  "id": "3988c7ef-0aff-441e-9bd8-b8db2533026a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -867,6 +867,11 @@
           "name": "mood_entries_user_id_idx",
           "columns": ["user_id"],
           "isUnique": false
+        },
+        "mood_entries_logged_at_idx": {
+          "name": "mood_entries_logged_at_idx",
+          "columns": ["logged_at"],
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -925,6 +930,27 @@
           "primaryKey": false,
           "notNull": false
         },
+        "goal_amount": {
+          "name": "goal_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "goal_unit": {
+          "name": "goal_unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'times'"
+        },
+        "goal_frequency": {
+          "name": "goal_frequency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'day'"
+        },
         "deleted_at": {
           "name": "deleted_at",
           "type": "timestamp",
@@ -965,6 +991,78 @@
           "tableFrom": "habits",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "habit_entries": {
+      "name": "habit_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "logged_at": {
+          "name": "logged_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "habit_id": {
+          "name": "habit_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "habit_entries_habit_id_idx": {
+          "name": "habit_entries_habit_id_idx",
+          "columns": ["habit_id"],
+          "isUnique": false
+        },
+        "habit_entries_logged_at_idx": {
+          "name": "habit_entries_logged_at_idx",
+          "columns": ["logged_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "habit_entries_habit_id_habits_id_fk": {
+          "name": "habit_entries_habit_id_habits_id_fk",
+          "tableFrom": "habit_entries",
+          "tableTo": "habits",
+          "columnsFrom": ["habit_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -2791,6 +2889,11 @@
         }
       },
       "indexes": {
+        "user_achievements_user_id_achievement_key_idx": {
+          "name": "user_achievements_user_id_achievement_key_idx",
+          "columns": ["user_id", "achievement_key"],
+          "isUnique": true
+        },
         "user_achievements_achievement_key_idx": {
           "name": "user_achievements_achievement_key_idx",
           "columns": ["achievement_key"],

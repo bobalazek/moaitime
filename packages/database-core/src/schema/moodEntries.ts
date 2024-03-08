@@ -25,6 +25,7 @@ export const moodEntries = pgTable(
   (table) => {
     return {
       userIdIdx: index('mood_entries_user_id_idx').on(table.userId),
+      loggedAtIdx: index('mood_entries_logged_at_idx').on(table.loggedAt),
     };
   }
 );

@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import {
   and,
   asc,
@@ -76,9 +75,7 @@ export class UsersManager {
   async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
     const rows = await getDatabase().query.users.findMany(options);
 
-    return rows.map((row) => {
-      return this._fixRowColumns(row);
-    });
+    return rows;
   }
 
   async findManyByEmails(emails: string[]): Promise<User[]> {
@@ -86,9 +83,7 @@ export class UsersManager {
       where: inArray(users.email, emails),
     });
 
-    return rows.map((row) => {
-      return this._fixRowColumns(row);
-    });
+    return rows;
   }
 
   async findOneById(id: string): Promise<User | null> {
@@ -100,7 +95,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixRowColumns(row);
+    return row;
   }
 
   async findOneByIdOrUsername(idOrUsername: string): Promise<User | null> {
@@ -120,7 +115,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixRowColumns(row);
+    return row;
   }
 
   async findOneByUsername(username: string): Promise<User | null> {
@@ -132,7 +127,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixRowColumns(row);
+    return row;
   }
 
   async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
@@ -144,7 +139,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixRowColumns(row);
+    return row;
   }
 
   async findOneByNewEmailConfirmationToken(
@@ -158,7 +153,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixRowColumns(row);
+    return row;
   }
 
   async findOneByPasswordResetToken(passwordResetToken: string): Promise<User | null> {
@@ -170,7 +165,7 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixRowColumns(row);
+    return row;
   }
 
   async findOneByDeletionToken(deletionToken: string): Promise<User | null> {
@@ -182,13 +177,13 @@ export class UsersManager {
       return null;
     }
 
-    return this._fixRowColumns(row);
+    return row;
   }
 
   async insertOne(data: NewUser): Promise<User> {
     const rows = await getDatabase().insert(users).values(data).returning();
 
-    return this._fixRowColumns(rows[0]);
+    return rows[0] ?? null;
   }
 
   async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
@@ -198,13 +193,13 @@ export class UsersManager {
       .where(eq(users.id, id))
       .returning();
 
-    return this._fixRowColumns(rows[0]);
+    return rows[0] ?? null;
   }
 
   async deleteOneById(id: string): Promise<User> {
     const rows = await getDatabase().delete(users).where(eq(users.id, id)).returning();
 
-    return this._fixRowColumns(rows[0]);
+    return rows[0] ?? null;
   }
 
   // Permissions
@@ -1202,17 +1197,6 @@ export class UsersManager {
         myselfIsBlockingThisUser,
       };
     });
-  }
-
-  private _fixRowColumns(user: User) {
-    // TODO
-    // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
-    // Should actually be a string
-    if (user.birthDate && (user.birthDate as unknown as Date) instanceof Date) {
-      user.birthDate = format(user.birthDate as unknown as Date, 'yyyy-MM-dd');
-    }
-
-    return user;
   }
 
   private _propertiesToCursor(properties: { id: string; createdAt: string }): string {

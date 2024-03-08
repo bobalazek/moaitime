@@ -1142,13 +1142,6 @@ export class TasksManager {
 
   // Private
   private _fixRowColumns(task: Task) {
-    // TODO
-    // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
-    // Should actually be a string
-    if (task.dueDate && (task.dueDate as unknown as Date) instanceof Date) {
-      task.dueDate = format(task.dueDate as unknown as Date, 'yyyy-MM-dd');
-    }
-
     // We do not want the seconds here
     if (task.dueDateTime && task.dueDateTime.length === 8) {
       task.dueDateTime = task.dueDateTime.slice(0, -3);

@@ -7,7 +7,9 @@ export const habitDailyEntries = pgTable(
   'habit_daily_entries',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    date: date('date').notNull(),
+    date: date('date', {
+      mode: 'string',
+    }).notNull(),
     amount: integer('goal_amount').notNull().default(0),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

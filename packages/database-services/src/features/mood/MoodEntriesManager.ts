@@ -329,16 +329,7 @@ export class MoodEntriesManager {
 
   // Private
   private _fixRowColumns(moodEntry: MoodEntry) {
-    // TODO
-    // Bug in drizzle: https://github.com/drizzle-team/drizzle-orm/issues/1185.
-    // Should actually be a string
-
-    // Keep in mind that once that is fixed,
-    // we will still need to keep this to remove the Z,
-    // as the loggedAt date stored here, is local, not UTC!
-    if (moodEntry.loggedAt && (moodEntry.loggedAt as unknown as Date) instanceof Date) {
-      moodEntry.loggedAt = (moodEntry.loggedAt as unknown as Date).toISOString().slice(0, -1);
-    }
+    moodEntry.loggedAt = moodEntry.loggedAt.replace(' ', 'T'); // For some reason there is a space instead of T
 
     return moodEntry;
   }

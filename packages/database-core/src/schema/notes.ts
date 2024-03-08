@@ -14,7 +14,9 @@ export const notes = pgTable(
     content: jsonb('content').notNull(),
     color: text('color'),
     directory: text('directory'),
-    journalDate: date('journal_date'),
+    journalDate: date('journal_date', {
+      mode: 'string',
+    }),
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

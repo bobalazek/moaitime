@@ -24,7 +24,15 @@ import {
   sum,
 } from 'drizzle-orm';
 
-import { getDatabase, Habit, habitEntries, habits, NewHabit, User } from '@moaitime/database-core';
+import {
+  getDatabase,
+  Habit,
+  habitEntries,
+  HabitEntry,
+  habits,
+  NewHabit,
+  User,
+} from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateHabit,
@@ -318,8 +326,6 @@ export class HabitsManager {
       ),
     });
 
-    const habitEntryAmount = habitEntry?.amount ?? 0;
-    let fullAmountForRange = habitEntryAmount;
     if (habit.goalFrequency === HabitGoalFrequencyEnum.WEEK) {
       const { generalStartDayOfWeek } = usersManager.getUserSettings(actorUser);
       const startOfWeekDate = startOfWeek(loggedAt, {
@@ -341,7 +347,12 @@ export class HabitsManager {
         )
         .execute();
 
-      fullAmountForRange = currentWeeklyResult[0].sum ?? 0;
+      const targetAmountDelta = newAmount - currentWeeklyResult[0].sum ?? 0;
+      if (habitEntry) {
+        return this.updateHabitEntry(habitEntry, habitEntry.amount + targetAmountDelta);
+      } else {
+        return this.createHabitEntry(habitId, loggedAt, targetAmountDelta);
+      }
     } else if (habit.goalFrequency === HabitGoalFrequencyEnum.MONTH) {
       const startOfMonthDate = startOfMonth(loggedAt);
       const endOfMonthDate = endOfMonth(loggedAt);
@@ -358,7 +369,12 @@ export class HabitsManager {
         )
         .execute();
 
-      fullAmountForRange = currentMonthlyResult[0].sum ?? 0;
+      const targetAmountDelta = newAmount - currentMonthlyResult[0].sum ?? 0;
+      if (habitEntry) {
+        return this.updateHabitEntry(habitEntry, habitEntry.amount + targetAmountDelta);
+      } else {
+        return this.createHabitEntry(habitId, loggedAt, targetAmountDelta);
+      }
     } else if (habit.goalFrequency === HabitGoalFrequencyEnum.YEAR) {
       const startOfYearDate = startOfYear(loggedAt);
       const endOfYearDate = endOfYear(loggedAt);
@@ -375,46 +391,20 @@ export class HabitsManager {
         )
         .execute();
 
-      fullAmountForRange = currentYearlyResult[0].sum ?? 0;
-    }
-
-    console.log('fullAmountForRange', fullAmountForRange);
-    console.log('habitEntryAmount', habitEntryAmount);
-    console.log('newAmount', newAmount);
-
-    if (habitEntry) {
-      const amountDelta =
-        habit.goalFrequency === HabitGoalFrequencyEnum.DAY
-          ? newAmount
-          : newAmount - fullAmountForRange;
-
-      const rows = await getDatabase()
-        .update(habitEntries)
-        .set({ amount: amountDelta, updatedAt: new Date() })
-        .where(eq(habitEntries.id, habitEntry.id))
-        .returning();
-      const row = rows[0] ?? null;
-      if (!row) {
-        throw new Error('Failed to update habit entry');
+      const targetAmountDelta = newAmount - currentYearlyResult[0].sum ?? 0;
+      if (habitEntry) {
+        return this.updateHabitEntry(habitEntry, habitEntry.amount + targetAmountDelta);
+      } else {
+        return this.createHabitEntry(habitId, loggedAt, targetAmountDelta);
       }
-
-      return row;
     }
 
-    const rows = await getDatabase()
-      .insert(habitEntries)
-      .values({
-        habitId,
-        loggedAt,
-        amount: newAmount,
-      })
-      .returning();
-    const row = rows[0] ?? null;
-    if (!row) {
-      throw new Error('Failed to create habit entry');
+    // Daily
+    if (habitEntry) {
+      return this.updateHabitEntry(habitEntry, newAmount);
     }
 
-    return row;
+    return this.createHabitEntry(habitId, loggedAt, newAmount);
   }
 
   async create(actorUser: User, data: CreateHabit) {
@@ -513,6 +503,37 @@ export class HabitsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  async updateHabitEntry(habitEntry: HabitEntry, amount: number) {
+    const rows = await getDatabase()
+      .update(habitEntries)
+      .set({ amount, updatedAt: new Date() })
+      .where(eq(habitEntries.id, habitEntry.id))
+      .returning();
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to update habit entry');
+    }
+
+    return row;
+  }
+
+  async createHabitEntry(habitId: string, loggedAt: Date, amount: number) {
+    const rows = await getDatabase()
+      .insert(habitEntries)
+      .values({
+        habitId,
+        loggedAt,
+        amount,
+      })
+      .returning();
+    const row = rows[0] ?? null;
+    if (!row) {
+      throw new Error('Failed to create habit entry');
+    }
+
+    return row;
   }
 }
 

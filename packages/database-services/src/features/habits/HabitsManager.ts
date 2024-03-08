@@ -21,6 +21,7 @@ import {
   isNull,
   lte,
   SQL,
+  sum,
 } from 'drizzle-orm';
 
 import { getDatabase, Habit, habitEntries, habits, NewHabit, User } from '@moaitime/database-core';
@@ -138,12 +139,12 @@ export class HabitsManager {
     return this.findManyDeletedByUserId(actorUserId);
   }
 
-  async daily(actorUserId: string, date: string): Promise<HabitDaily[]> {
+  async daily(actorUser: User, date: string): Promise<HabitDaily[]> {
     const dateObject = new Date(date);
     const endOfDayDate = endOfDay(dateObject);
 
     const where = and(
-      eq(habits.userId, actorUserId),
+      eq(habits.userId, actorUser.id),
       isNull(habits.deletedAt),
       lte(habits.createdAt, endOfDayDate)
     );
@@ -167,15 +168,22 @@ export class HabitsManager {
       .map((habit) => habit.id);
     if (dailyHabitIds.length > 0) {
       const startOfDayDate = startOfDay(dateObject);
-      const dailyHabitEntries = await getDatabase().query.habitEntries.findMany({
-        where: and(
-          inArray(habitEntries.habitId, dailyHabitIds),
-          between(habitEntries.loggedAt, startOfDayDate, endOfDayDate)
-        ),
-      });
-
+      const dailyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, dailyHabitIds),
+            between(habitEntries.loggedAt, startOfDayDate, endOfDayDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
       for (const entry of dailyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.amount);
+        entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
     }
 
@@ -186,17 +194,30 @@ export class HabitsManager {
       })
       .map((habit) => habit.id);
     if (weeklyHabitIds.length > 0) {
-      const startOfWeekDate = startOfWeek(dateObject);
-      const endOfWeekDate = endOfWeek(dateObject);
-      const weeklyHabitEntries = await getDatabase().query.habitEntries.findMany({
-        where: and(
-          inArray(habitEntries.habitId, weeklyHabitIds),
-          between(habitEntries.loggedAt, startOfWeekDate, endOfWeekDate)
-        ),
-      });
+      const { generalStartDayOfWeek } = usersManager.getUserSettings(actorUser);
 
+      const startOfWeekDate = startOfWeek(dateObject, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const endOfWeekDate = endOfWeek(dateObject, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const weeklyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, weeklyHabitIds),
+            between(habitEntries.loggedAt, startOfWeekDate, endOfWeekDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
       for (const entry of weeklyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.amount);
+        entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
     }
 
@@ -209,15 +230,22 @@ export class HabitsManager {
     if (monthlyHabitIds.length > 0) {
       const startOfMonthDate = startOfMonth(dateObject);
       const endOfMonthDate = endOfMonth(dateObject);
-      const monthlyHabitEntries = await getDatabase().query.habitEntries.findMany({
-        where: and(
-          inArray(habitEntries.habitId, monthlyHabitIds),
-          between(habitEntries.loggedAt, startOfMonthDate, endOfMonthDate)
-        ),
-      });
-
+      const monthlyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, monthlyHabitIds),
+            between(habitEntries.loggedAt, startOfMonthDate, endOfMonthDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
       for (const entry of monthlyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.amount);
+        entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
     }
 
@@ -230,15 +258,22 @@ export class HabitsManager {
     if (yearlyHabitIds.length > 0) {
       const startOfYearDate = startOfYear(dateObject);
       const endOfYearDate = endOfYear(dateObject);
-      const yearlyHabitEntries = await getDatabase().query.habitEntries.findMany({
-        where: and(
-          inArray(habitEntries.habitId, yearlyHabitIds),
-          between(habitEntries.loggedAt, startOfYearDate, endOfYearDate)
-        ),
-      });
-
+      const yearlyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, yearlyHabitIds),
+            between(habitEntries.loggedAt, startOfYearDate, endOfYearDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
       for (const entry of yearlyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.amount);
+        entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
     }
 

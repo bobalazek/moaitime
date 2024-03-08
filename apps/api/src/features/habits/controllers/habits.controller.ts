@@ -45,7 +45,7 @@ export class HabitsController {
       throw new Error('Invalid date');
     }
 
-    const data = await habitsManager.daily(req.user.id, date);
+    const data = await habitsManager.daily(req.user, date);
 
     return {
       success: true,

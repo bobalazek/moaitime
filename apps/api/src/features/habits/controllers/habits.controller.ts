@@ -84,7 +84,7 @@ export class HabitsController {
       throw new Error('Invalid amount');
     }
 
-    const data = await habitsManager.dailyUpdate(req.user.id, habitId, date, amount);
+    const data = await habitsManager.dailyUpdate(req.user, habitId, date, amount);
 
     return {
       success: true,

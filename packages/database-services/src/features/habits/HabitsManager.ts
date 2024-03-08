@@ -195,7 +195,6 @@ export class HabitsManager {
       .map((habit) => habit.id);
     if (weeklyHabitIds.length > 0) {
       const { generalStartDayOfWeek } = usersManager.getUserSettings(actorUser);
-
       const startOfWeekDate = startOfWeek(dateObject, {
         weekStartsOn: generalStartDayOfWeek,
       });
@@ -305,23 +304,98 @@ export class HabitsManager {
     return data;
   }
 
-  async dailyUpdate(actorUserId: string, habitId: string, date: string, amount: number) {
-    await this.view(actorUserId, habitId);
+  async dailyUpdate(actorUser: User, habitId: string, date: string, newAmount: number) {
+    const habit = await this.view(actorUser.id, habitId);
 
     const loggedAt = new Date(date);
+    const startOfDayDate = startOfDay(loggedAt);
+    const endOfDayDate = endOfDay(loggedAt);
 
-    const dailyEntry = await getDatabase().query.habitEntries.findFirst({
-      where: and(eq(habitEntries.habitId, habitId), eq(habitEntries.loggedAt, loggedAt)),
+    const habitEntry = await getDatabase().query.habitEntries.findFirst({
+      where: and(
+        eq(habitEntries.habitId, habitId),
+        between(habitEntries.loggedAt, startOfDayDate, endOfDayDate)
+      ),
     });
-    if (dailyEntry) {
+
+    const habitEntryAmount = habitEntry?.amount ?? 0;
+    let fullAmountForRange = habitEntryAmount;
+    if (habit.goalFrequency === HabitGoalFrequencyEnum.WEEK) {
+      const { generalStartDayOfWeek } = usersManager.getUserSettings(actorUser);
+      const startOfWeekDate = startOfWeek(loggedAt, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const endOfWeekDate = endOfWeek(loggedAt, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const currentWeeklyResult = await getDatabase()
+        .select({
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            eq(habitEntries.habitId, habitId),
+            between(habitEntries.loggedAt, startOfWeekDate, endOfWeekDate)
+          )
+        )
+        .execute();
+
+      fullAmountForRange = currentWeeklyResult[0].sum ?? 0;
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.MONTH) {
+      const startOfMonthDate = startOfMonth(loggedAt);
+      const endOfMonthDate = endOfMonth(loggedAt);
+      const currentMonthlyResult = await getDatabase()
+        .select({
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            eq(habitEntries.habitId, habitId),
+            between(habitEntries.loggedAt, startOfMonthDate, endOfMonthDate)
+          )
+        )
+        .execute();
+
+      fullAmountForRange = currentMonthlyResult[0].sum ?? 0;
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.YEAR) {
+      const startOfYearDate = startOfYear(loggedAt);
+      const endOfYearDate = endOfYear(loggedAt);
+      const currentYearlyResult = await getDatabase()
+        .select({
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            eq(habitEntries.habitId, habitId),
+            between(habitEntries.loggedAt, startOfYearDate, endOfYearDate)
+          )
+        )
+        .execute();
+
+      fullAmountForRange = currentYearlyResult[0].sum ?? 0;
+    }
+
+    console.log('fullAmountForRange', fullAmountForRange);
+    console.log('habitEntryAmount', habitEntryAmount);
+    console.log('newAmount', newAmount);
+
+    if (habitEntry) {
+      const amountDelta =
+        habit.goalFrequency === HabitGoalFrequencyEnum.DAY
+          ? newAmount
+          : newAmount - fullAmountForRange;
+
       const rows = await getDatabase()
         .update(habitEntries)
-        .set({ amount, updatedAt: new Date() })
-        .where(eq(habitEntries.id, dailyEntry.id))
+        .set({ amount: amountDelta, updatedAt: new Date() })
+        .where(eq(habitEntries.id, habitEntry.id))
         .returning();
       const row = rows[0] ?? null;
       if (!row) {
-        throw new Error('Failed to update daily entry');
+        throw new Error('Failed to update habit entry');
       }
 
       return row;
@@ -332,12 +406,12 @@ export class HabitsManager {
       .values({
         habitId,
         loggedAt,
-        amount,
+        amount: newAmount,
       })
       .returning();
     const row = rows[0] ?? null;
     if (!row) {
-      throw new Error('Failed to create daily entry');
+      throw new Error('Failed to create habit entry');
     }
 
     return row;

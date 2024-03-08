@@ -139,11 +139,11 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
           <div className="flex flex-row flex-wrap items-center gap-4">
             <Button
               onClick={onDecrementButtonClick}
-              variant="outline"
+              variant="secondary"
               size="sm"
               disabled={isSaving}
               style={{
-                color: backgroundColor,
+                borderColor: backgroundColor,
               }}
             >
               <MinusIcon size={24} />
@@ -160,11 +160,11 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
             </div>
             <Button
               onClick={onIncrementButtonClick}
-              variant="outline"
+              variant="secondary"
               size="sm"
               disabled={isSaving}
               style={{
-                color: backgroundColor,
+                borderColor: backgroundColor,
               }}
             >
               <PlusIcon size={24} />

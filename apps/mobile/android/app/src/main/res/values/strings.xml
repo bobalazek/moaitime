@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MoaiTime</string>
+    <string name="title_activity_main">MoaiTime</string>
+    <string name="package_name">com.moaitime.app</string>
+    <string name="custom_url_scheme">com.moaitime.app</string>
+</resources>

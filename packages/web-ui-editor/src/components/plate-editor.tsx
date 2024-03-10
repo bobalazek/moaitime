@@ -359,9 +359,11 @@ export function PlateEditor({
               <FixedToolbarButtons />
             </FixedToolbar>
             <Editor {...editorProps} />
+            {/*
             <FloatingToolbar>
               <FloatingToolbarButtons />
             </FloatingToolbar>
+            */}
             <MentionCombobox items={[]} />
             <CommentsPopover />
           </Plate>

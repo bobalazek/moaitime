@@ -64,7 +64,7 @@ export class NotesStatisticsManager {
       where = and(where, lte(notes.createdAt, to)) as SQL<unknown>;
     }
 
-    const createdAtDate = sql<Date>`DATE(${notes.createdAt})`;
+    const createdAtDate = sql<string>`DATE(${notes.createdAt})`;
     const rows = await getDatabase()
       .select({ date: createdAtDate, count: count(notes).mapWith(Number) })
       .from(notes)
@@ -74,7 +74,7 @@ export class NotesStatisticsManager {
 
     const result: StatisticsDateCountData = {};
     for (const row of rows) {
-      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+      result[format(new Date(row.date), 'yyyy-MM-dd')] = row.count;
     }
 
     if (from && to) {

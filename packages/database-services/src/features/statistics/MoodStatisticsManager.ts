@@ -68,7 +68,7 @@ export class MoodStatisticsManager {
       where = and(where, lte(moodEntries.createdAt, to)) as SQL<unknown>;
     }
 
-    const createdAtDate = sql<Date>`DATE(${moodEntries.createdAt})`;
+    const createdAtDate = sql<string>`DATE(${moodEntries.createdAt})`;
     const rows = await getDatabase()
       .select({ date: createdAtDate, count: count(moodEntries).mapWith(Number) })
       .from(moodEntries)
@@ -78,7 +78,7 @@ export class MoodStatisticsManager {
 
     const result: StatisticsDateCountData = {};
     for (const row of rows) {
-      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+      result[format(new Date(row.date), 'yyyy-MM-dd')] = row.count;
     }
 
     if (from && to) {

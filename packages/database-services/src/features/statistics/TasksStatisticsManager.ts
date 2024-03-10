@@ -64,7 +64,7 @@ export class TasksStatisticsManager {
       where = and(where, lte(tasks.createdAt, to)) as SQL<unknown>;
     }
 
-    const createdAtDate = sql<Date>`DATE(${tasks.createdAt})`;
+    const createdAtDate = sql<string>`DATE(${tasks.createdAt})`;
     const rows = await getDatabase()
       .select({ date: createdAtDate, count: count(tasks).mapWith(Number) })
       .from(tasks)
@@ -74,7 +74,7 @@ export class TasksStatisticsManager {
 
     const result: StatisticsDateCountData = {};
     for (const row of rows) {
-      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+      result[format(new Date(row.date), 'yyyy-MM-dd')] = row.count;
     }
 
     if (from && to) {

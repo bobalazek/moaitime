@@ -64,7 +64,7 @@ export class CalendarStatisticsManager {
       where = and(where, lte(events.createdAt, to)) as SQL<unknown>;
     }
 
-    const createdAtDate = sql<Date>`DATE(${events.createdAt})`;
+    const createdAtDate = sql<string>`DATE(${events.createdAt})`;
     const rows = await getDatabase()
       .select({ date: createdAtDate, count: count(events).mapWith(Number) })
       .from(events)
@@ -74,7 +74,7 @@ export class CalendarStatisticsManager {
 
     const result: StatisticsDateCountData = {};
     for (const row of rows) {
-      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+      result[format(new Date(row.date), 'yyyy-MM-dd')] = row.count;
     }
 
     if (from && to) {

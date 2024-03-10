@@ -68,7 +68,7 @@ export class FocusStatisticsManager {
       where = and(where, lte(focusSessions.createdAt, to)) as SQL<unknown>;
     }
 
-    const createdAtDate = sql<Date>`DATE(${focusSessions.createdAt})`;
+    const createdAtDate = sql<string>`DATE(${focusSessions.createdAt})`;
     const rows = await getDatabase()
       .select({ date: createdAtDate, count: count(focusSessions).mapWith(Number) })
       .from(focusSessions)
@@ -78,7 +78,7 @@ export class FocusStatisticsManager {
 
     const result: StatisticsDateCountData = {};
     for (const row of rows) {
-      result[format(row.date, 'yyyy-MM-dd')] = row.count;
+      result[format(new Date(row.date), 'yyyy-MM-dd')] = row.count;
     }
 
     if (from && to) {

@@ -1113,7 +1113,7 @@ export class TasksManager {
 
     return result.map((row) => {
       return {
-        date: format(row.date, 'yyyy-MM-dd'),
+        date: format(new Date(row.date), 'yyyy-MM-dd'),
         count: row.count,
       };
     });

@@ -347,7 +347,8 @@ export class HabitsManager {
         )
         .execute();
 
-      const targetAmountDelta = newAmount - currentWeeklyResult[0].sum ?? 0;
+      const sumResult = currentWeeklyResult[0].sum ?? 0;
+      const targetAmountDelta = newAmount - sumResult;
       if (habitEntry) {
         return this.updateHabitEntry(habitEntry, habitEntry.amount + targetAmountDelta);
       } else {
@@ -369,7 +370,8 @@ export class HabitsManager {
         )
         .execute();
 
-      const targetAmountDelta = newAmount - currentMonthlyResult[0].sum ?? 0;
+      const sumResult = currentMonthlyResult[0].sum ?? 0;
+      const targetAmountDelta = newAmount - sumResult;
       if (habitEntry) {
         return this.updateHabitEntry(habitEntry, habitEntry.amount + targetAmountDelta);
       } else {
@@ -391,7 +393,8 @@ export class HabitsManager {
         )
         .execute();
 
-      const targetAmountDelta = newAmount - currentYearlyResult[0].sum ?? 0;
+      const sumResult = currentYearlyResult[0].sum ?? 0;
+      const targetAmountDelta = newAmount - sumResult;
       if (habitEntry) {
         return this.updateHabitEntry(habitEntry, habitEntry.amount + targetAmountDelta);
       } else {

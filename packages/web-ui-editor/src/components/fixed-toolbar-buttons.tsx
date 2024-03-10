@@ -12,6 +12,7 @@ import { ELEMENT_OL, ELEMENT_UL } from '@udecode/plate-list';
 import { AlignDropdownMenu } from './align-dropdown-menu';
 import { ColorDropdownMenu } from './color-dropdown-menu';
 import { EmojiDropdownMenu } from './emoji-dropdown-menu';
+import { FontSizeToolbarButton } from './font-size-toolbar-button';
 import { Icons, iconVariants } from './icons';
 import { IndentToolbarButton } from './indent-toolbar-button';
 import { InsertDropdownMenu } from './insert-dropdown-menu';
@@ -42,6 +43,14 @@ export function FixedToolbarButtons() {
             <ToolbarGroup noSeparator>
               <InsertDropdownMenu />
               <TurnIntoDropdownMenu />
+            </ToolbarGroup>
+            <ToolbarGroup>
+              <FontSizeToolbarButton tooltip="Increase font size" action="increase">
+                <Icons.add />
+              </FontSizeToolbarButton>
+              <FontSizeToolbarButton tooltip="Decrease font size" action="decrease">
+                <Icons.minus />
+              </FontSizeToolbarButton>
             </ToolbarGroup>
             <ToolbarGroup>
               <MarkToolbarButton tooltip="Bold (⌘+B)" nodeType={MARK_BOLD}>

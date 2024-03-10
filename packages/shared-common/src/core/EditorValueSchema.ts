@@ -15,6 +15,7 @@ export const EditorNodeBaseSchema = z.object({
   highlight: z.string().optional(),
   align: z.string().optional(),
   lineHeight: z.union([z.number(), z.string()]).optional(),
+  fontSize: z.union([z.number(), z.string()]).optional(),
   url: z.string().optional(),
   size: z.union([z.number(), z.string()]).optional(),
   colSizes: z.array(z.union([z.number(), z.string()])).optional(),

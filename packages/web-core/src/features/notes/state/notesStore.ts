@@ -7,6 +7,7 @@ import {
   NotesListSortFieldEnum,
   SortDirectionEnum,
   UpdateNote,
+  UpdateNoteSchema,
 } from '@moaitime/shared-common';
 
 import {
@@ -180,15 +181,32 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     // so we need to populate it here.
     const note = skipGet ? selectedNote : selectedNote ? await getNote(selectedNote.id) : null;
 
+    let selectedNoteData: UpdateNote | null = null;
+    try {
+      const parsedNote = UpdateNoteSchema.parse(note);
+
+      selectedNoteData = parsedNote;
+    } catch (e) {
+      selectedNoteData = note as UpdateNote;
+    }
+
     set({
       selectedNote: note,
-      selectedNoteData: note,
+      selectedNoteData,
       selectedNoteDataChanged: false,
     });
 
     return note;
   },
   setSelectedNoteData: async (selectedNoteData: CreateNote | UpdateNote | null) => {
+    try {
+      const parsedNote = UpdateNoteSchema.parse(selectedNoteData);
+
+      selectedNoteData = parsedNote;
+    } catch (e) {
+      selectedNoteData = selectedNoteData as UpdateNote;
+    }
+
     set({
       selectedNoteData,
       selectedNoteDataChanged: !!selectedNoteData,

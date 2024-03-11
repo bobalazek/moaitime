@@ -17,11 +17,11 @@
   "module": "./dist/main.mjs",
   "types": "./dist/main.d.ts",
   "scripts": {
-    "build": "vite build",
+    "build:mobile": "vite build",
     "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
     "dev:mobile": "rimraf --glob ./node_modules/.vite && vite",
     "lint": "eslint .",
-    "sync": "pnpm build && cap sync"
+    "sync": "pnpm build:mobile && cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^5.7.2",

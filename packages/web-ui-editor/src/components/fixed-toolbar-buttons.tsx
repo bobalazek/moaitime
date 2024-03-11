@@ -1,3 +1,5 @@
+// CUSTOM - not a part of original platejs package - at least the font size parts
+
 import {
   MARK_BOLD,
   MARK_CODE,
@@ -12,6 +14,7 @@ import { ELEMENT_OL, ELEMENT_UL } from '@udecode/plate-list';
 import { AlignDropdownMenu } from './align-dropdown-menu';
 import { ColorDropdownMenu } from './color-dropdown-menu';
 import { EmojiDropdownMenu } from './emoji-dropdown-menu';
+import { FontSizeDropdownMenu } from './font-size-dropdown-menu';
 import { FontSizeToolbarButton } from './font-size-toolbar-button';
 import { Icons, iconVariants } from './icons';
 import { IndentToolbarButton } from './indent-toolbar-button';
@@ -48,6 +51,7 @@ export function FixedToolbarButtons() {
               <FontSizeToolbarButton tooltip="Increase font size" action="increase">
                 <Icons.add />
               </FontSizeToolbarButton>
+              <FontSizeDropdownMenu />
               <FontSizeToolbarButton tooltip="Decrease font size" action="decrease">
                 <Icons.minus />
               </FontSizeToolbarButton>

@@ -1,6 +1,9 @@
+// CUSTOM - not a part of original platejs package
+
 import { setMarks, useEditorRef } from '@udecode/plate-common';
 import { MARK_FONT_SIZE } from '@udecode/plate-font';
 
+import { DEFAULT_FONT_SIZE } from './font-size-dropdown-menu';
 import { ToolbarButton, ToolbarButtonProps } from './toolbar';
 
 export interface FontSizeToolbarButtonProps
@@ -8,8 +11,6 @@ export interface FontSizeToolbarButtonProps
   action: 'increase' | 'decrease';
   clear?: string | string[];
 }
-
-const DEFAULT_FONT_SIZE = 16;
 
 export function FontSizeToolbarButton({ action, ...props }: FontSizeToolbarButtonProps) {
   const editor = useEditorRef();

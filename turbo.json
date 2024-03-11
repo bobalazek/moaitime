@@ -35,6 +35,10 @@
     "dev:emails": {
       "dependsOn": ["^build"],
       "cache": false
+    },
+    "dev:mobile": {
+      "dependsOn": ["^build"],
+      "cache": false
     }
   }
 }

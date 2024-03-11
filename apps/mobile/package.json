@@ -19,10 +19,8 @@
   "scripts": {
     "build": "vite build",
     "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
-    "dev": "rimraf --glob ./node_modules/.vite && vite",
+    "dev:mobile": "rimraf --glob ./node_modules/.vite && vite",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "serve": "serve ./dist --no-clipboard --single --listen tcp://127.0.0.1:4200",
     "sync": "pnpm build && cap sync"
   },
   "dependencies": {

@@ -4,7 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   server: {
-    port: 4200,
+    port: 4201,
     host: '0.0.0.0',
     hmr: true,
     fs: {
@@ -13,7 +13,7 @@ export default defineConfig({
     },
   },
   preview: {
-    port: 4300,
+    port: 4301,
     host: '0.0.0.0',
   },
   plugins: [react(), tsconfigPaths()],

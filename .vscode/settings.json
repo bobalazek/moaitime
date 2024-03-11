@@ -11,6 +11,10 @@
     "**/node_modules": true,
     "**/dist": true
   },
+  "files.watcherExclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  },
   "files.associations": {
     "*.css": "tailwindcss"
   }

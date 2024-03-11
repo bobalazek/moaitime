@@ -11,7 +11,7 @@ export const NoteEditor = () => {
   const plateEditorKey = selectedNote ? `${selectedNote.id}-${selectedNote.updatedAt}` : 'new';
 
   return (
-    <div className="flex flex-col" data-test="note-editor">
+    <div className="flex select-none flex-col" data-test="note-editor">
       <div className="mb-4">
         <Input
           autoFocus

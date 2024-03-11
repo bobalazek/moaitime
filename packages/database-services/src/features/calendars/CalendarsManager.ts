@@ -237,11 +237,7 @@ export class CalendarsManager {
   }
 
   async create(actorUser: User, data: CreateCalendar) {
-    const maxCount = await usersManager.getUserLimit(actorUser, 'calendarsMaxPerUserCount');
-    const currentCount = await this.countByUserId(actorUser.id);
-    if (currentCount >= maxCount) {
-      throw new Error(`You have reached the maximum number of calendars per user (${maxCount}).`);
-    }
+    await this._checkIfLimitReached(actorUser);
 
     const calendar = await this.insertOne({
       ...data,
@@ -298,18 +294,20 @@ export class CalendarsManager {
     return calendar;
   }
 
-  async undelete(actorUserId: string, calendarId: string) {
-    const canDelete = await this.userCanUpdate(actorUserId, calendarId);
+  async undelete(actorUser: User, calendarId: string) {
+    const canDelete = await this.userCanUpdate(actorUser.id, calendarId);
     if (!canDelete) {
       throw new Error('You cannot undelete this calendar');
     }
+
+    await this._checkIfLimitReached(actorUser);
 
     const calendar = await this.updateOneById(calendarId, {
       deletedAt: null,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_CALENDAR_UNDELETED, {
-      actorUserId,
+      actorUserId: actorUser.id,
       calendarId: calendar.id,
       teamId: calendar.teamId ?? undefined,
     });
@@ -611,6 +609,15 @@ export class CalendarsManager {
     }
 
     return apiCalendars;
+  }
+
+  // Private
+  private async _checkIfLimitReached(actorUser: User) {
+    const maxCount = await usersManager.getUserLimit(actorUser, 'calendarsMaxPerUserCount');
+    const currentCount = await this.countByUserId(actorUser.id);
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of calendars per user (${maxCount}).`);
+    }
   }
 }
 

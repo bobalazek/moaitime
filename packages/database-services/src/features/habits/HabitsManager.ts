@@ -411,17 +411,7 @@ export class HabitsManager {
   }
 
   async create(actorUser: User, data: CreateHabit) {
-    const habitsMaxPerUserCount = await usersManager.getUserLimit(
-      actorUser,
-      'habitsMaxPerUserCount'
-    );
-
-    const habitsCount = await this.countByUserId(actorUser.id);
-    if (habitsCount >= habitsMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
-      );
-    }
+    await this._checkIfLimitReached(actorUser);
 
     const habit = await this.insertOne({
       ...data,
@@ -477,18 +467,20 @@ export class HabitsManager {
     return deletedHabit;
   }
 
-  async undelete(actorUserId: string, habitId: string) {
-    const canDelete = await habitsManager.userCanUpdate(actorUserId, habitId);
+  async undelete(actorUser: User, habitId: string) {
+    const canDelete = await habitsManager.userCanUpdate(actorUser.id, habitId);
     if (!canDelete) {
       throw new Error('You cannot undelete this habit');
     }
+
+    await this._checkIfLimitReached(actorUser);
 
     const undeletedHabit = await habitsManager.updateOneById(habitId, {
       deletedAt: null,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.HABITS_HABIT_DELETED, {
-      actorUserId,
+      actorUserId: actorUser.id,
       habitId: undeletedHabit.id,
     });
 
@@ -537,6 +529,21 @@ export class HabitsManager {
     }
 
     return row;
+  }
+
+  // Private
+  private async _checkIfLimitReached(actorUser: User) {
+    const habitsMaxPerUserCount = await usersManager.getUserLimit(
+      actorUser,
+      'habitsMaxPerUserCount'
+    );
+
+    const habitsCount = await this.countByUserId(actorUser.id);
+    if (habitsCount >= habitsMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
+      );
+    }
   }
 }
 

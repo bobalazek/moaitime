@@ -142,7 +142,7 @@ export class HabitsController {
     @Req() req: Request,
     @Param('habitId') habitId: string
   ): Promise<AbstractResponseDto<Habit>> {
-    const data = await habitsManager.undelete(req.user.id, habitId);
+    const data = await habitsManager.undelete(req.user, habitId);
 
     return {
       success: true,

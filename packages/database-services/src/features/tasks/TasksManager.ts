@@ -624,8 +624,7 @@ export class TasksManager {
       list,
       true
     );
-    // That +1 would be the newly undeleted task
-    if (tasksCount + 1 > tasksMaxPerListCount) {
+    if (tasksCount >= tasksMaxPerListCount) {
       throw new Error(
         `You would reach the maximum number of tasks per list (${tasksMaxPerListCount}) with this undelete.`
       );

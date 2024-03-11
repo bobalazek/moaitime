@@ -78,7 +78,7 @@ export class FocusSessionsController {
     @Req() req: Request,
     @Param('focusSessionId') focusSessionId: string
   ): Promise<AbstractResponseDto<FocusSession>> {
-    const data = await focusSessionsManager.undelete(req.user.id, focusSessionId);
+    const data = await focusSessionsManager.undelete(req.user, focusSessionId);
 
     return {
       success: true,

@@ -115,10 +115,8 @@ export class TagsManager {
   }
 
   async create(actorUser: User, data: CreateTag) {
-    const maxCount = await usersManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
-    const currentCount = await this.countByUserId(actorUser.id);
-    if (currentCount >= maxCount) {
-      throw new Error(`You have reached the maximum number of tags per user (${maxCount}).`);
+    if (!data.teamId) {
+      await this._checkIfLimitReached(actorUser);
     }
 
     if (data.teamId) {
@@ -174,10 +172,19 @@ export class TagsManager {
     return deletedTag;
   }
 
-  async undelete(actorUserId: string, tagId: string) {
-    const canDelete = await tagsManager.userCanUpdate(actorUserId, tagId);
+  async undelete(actorUser: User, tagId: string) {
+    const canDelete = await tagsManager.userCanUpdate(actorUser.id, tagId);
     if (!canDelete) {
       throw new Error('You cannot undelete this tag');
+    }
+
+    const tag = await this.findOneById(tagId);
+    if (!tag) {
+      throw new Error('Tag not found');
+    }
+
+    if (!tag.teamId) {
+      await this._checkIfLimitReached(actorUser);
     }
 
     const undeletedTag = await this.updateOneById(tagId, {
@@ -185,7 +192,7 @@ export class TagsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_UNDELETED, {
-      actorUserId,
+      actorUserId: actorUser.id,
       tagId: undeletedTag.id,
     });
 
@@ -203,6 +210,15 @@ export class TagsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  // Private
+  private async _checkIfLimitReached(actorUser: User) {
+    const maxCount = await usersManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
+    const currentCount = await this.countByUserId(actorUser.id);
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of tags per user (${maxCount}).`);
+    }
   }
 }
 

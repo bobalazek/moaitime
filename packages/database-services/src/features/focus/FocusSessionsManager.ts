@@ -1,6 +1,12 @@
 import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
 
-import { FocusSession, focusSessions, getDatabase, NewFocusSession } from '@moaitime/database-core';
+import {
+  FocusSession,
+  focusSessions,
+  getDatabase,
+  NewFocusSession,
+  User,
+} from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateFocusSession,
@@ -111,14 +117,14 @@ export class FocusSessionsManager {
   }
 
   // Helpers
-  async create(userId: string, data: CreateFocusSession) {
-    const currentFocusSession = await this.findOneCurrentAndByUserId(userId);
+  async create(actorUserId: string, data: CreateFocusSession) {
+    const currentFocusSession = await this.findOneCurrentAndByUserId(actorUserId);
     if (currentFocusSession) {
       throw new Error('You already have an open focus session');
     }
 
     if (data.taskId) {
-      const canView = await tasksManager.userCanView(userId, data.taskId);
+      const canView = await tasksManager.userCanView(actorUserId, data.taskId);
       if (!canView) {
         throw new Error('Task not found');
       }
@@ -126,51 +132,51 @@ export class FocusSessionsManager {
 
     const focusSession = await this.insertOne({
       ...data,
-      userId,
+      userId: actorUserId,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
-      actorUserId: userId,
+      actorUserId,
       focusSessionId: focusSession.id,
     });
 
     return focusSession;
   }
 
-  async view(userId: string, focusSessionId: string, updatePing?: boolean) {
+  async view(actorUserId: string, focusSessionId: string, updatePing?: boolean) {
     let data =
       focusSessionId === 'current'
-        ? await this.findOneCurrentAndByUserId(userId)
-        : await this.findOneByIdAndUserId(focusSessionId, userId);
+        ? await this.findOneCurrentAndByUserId(actorUserId)
+        : await this.findOneByIdAndUserId(focusSessionId, actorUserId);
 
     if (updatePing && data) {
-      data = await this.updateFocusSession(userId, data, FocusSessionUpdateActionEnum.PING);
+      data = await this.updateFocusSession(actorUserId, data, FocusSessionUpdateActionEnum.PING);
     }
 
     return data;
   }
 
-  async action(userId: string, focusSessionId: string, action: FocusSessionUpdateActionEnum) {
+  async action(actorUserId: string, focusSessionId: string, action: FocusSessionUpdateActionEnum) {
     const focusSession =
       focusSessionId === 'current'
-        ? await this.findOneCurrentAndByUserId(userId)
-        : await this.findOneByIdAndUserId(focusSessionId, userId);
+        ? await this.findOneCurrentAndByUserId(actorUserId)
+        : await this.findOneByIdAndUserId(focusSessionId, actorUserId);
 
     if (!focusSession) {
       throw new Error('Focus session not found');
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ACTION_TRIGGERED, {
-      actorUserId: userId,
+      actorUserId,
       focusSessionId: focusSession.id,
       action,
     });
 
-    return this.updateFocusSession(userId, focusSession, action);
+    return this.updateFocusSession(actorUserId, focusSession, action);
   }
 
-  async delete(userId: string, focusSessionId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(userId, focusSessionId);
+  async delete(actorUserId: string, focusSessionId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(actorUserId, focusSessionId);
     if (!canDelete) {
       throw new Error('Focus session not found');
     }
@@ -182,7 +188,7 @@ export class FocusSessionsManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       focusSessionId: focusSession.id,
       isHardDelete,
     });
@@ -190,8 +196,8 @@ export class FocusSessionsManager {
     return focusSession;
   }
 
-  async undelete(userId: string, focusSessionId: string) {
-    const canDelete = await this.userCanUpdate(userId, focusSessionId);
+  async undelete(actorUser: User, focusSessionId: string) {
+    const canDelete = await this.userCanUpdate(actorUser.id, focusSessionId);
     if (!canDelete) {
       throw new Error('You cannot undelete this focus session');
     }
@@ -201,7 +207,7 @@ export class FocusSessionsManager {
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.FOCUS_FOCUS_SESSION_UNDELETED, {
-      actorUserId: userId,
+      actorUserId: actorUser.id,
       focusSessionId: focusSession.id,
     });
 

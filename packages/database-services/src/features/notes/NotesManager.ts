@@ -144,14 +144,7 @@ export class NotesManager {
   }
 
   async create(actorUser: User, data: CreateNote) {
-    const notesMaxPerUserCount = await usersManager.getUserLimit(actorUser, 'notesMaxPerUserCount');
-
-    const notesCount = await this.countByUserId(actorUser.id);
-    if (notesCount >= notesMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of notes per user (${notesMaxPerUserCount}).`
-      );
-    }
+    await this._checkIfLimitReached(actorUser);
 
     const note = await this.insertOne({
       ...data,
@@ -166,8 +159,8 @@ export class NotesManager {
     return note;
   }
 
-  async update(userId: string, noteId: string, data: UpdateNote) {
-    const canView = await this.userCanUpdate(userId, noteId);
+  async update(actorUserId: string, noteId: string, data: UpdateNote) {
+    const canView = await this.userCanUpdate(actorUserId, noteId);
     if (!canView) {
       throw new Error('You cannot update this note');
     }
@@ -180,17 +173,17 @@ export class NotesManager {
     const updatedNote = await this.updateOneById(noteId, data);
 
     globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_EDITED, {
-      actorUserId: userId,
+      actorUserId,
       noteId: updatedNote.id,
     });
 
     return updatedNote;
   }
 
-  async delete(userId: string, noteId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(userId, noteId);
+  async delete(actorUserId: string, noteId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(actorUserId, noteId);
     if (!canDelete) {
-      throw new Error('Note not found');
+      throw new Error('You cannot delete this note');
     }
 
     const deletedNote = isHardDelete
@@ -200,25 +193,27 @@ export class NotesManager {
         });
 
     globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_DELETED, {
-      actorUserId: userId,
+      actorUserId,
       noteId: deletedNote.id,
     });
 
     return deletedNote;
   }
 
-  async undelete(userId: string, noteId: string) {
-    const canDelete = await notesManager.userCanUpdate(userId, noteId);
+  async undelete(actorUser: User, noteId: string) {
+    const canDelete = await notesManager.userCanUpdate(actorUser.id, noteId);
     if (!canDelete) {
       throw new Error('You cannot undelete this note');
     }
+
+    await this._checkIfLimitReached(actorUser);
 
     const undeletedNote = await notesManager.updateOneById(noteId, {
       deletedAt: null,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_UNDELETED, {
-      actorUserId: userId,
+      actorUserId: actorUser.id,
       noteId: undeletedNote.id,
     });
 
@@ -236,6 +231,17 @@ export class NotesManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  // Private
+  private async _checkIfLimitReached(actorUser: User) {
+    const notesMaxPerUserCount = await usersManager.getUserLimit(actorUser, 'notesMaxPerUserCount');
+    const notesCount = await this.countByUserId(actorUser.id);
+    if (notesCount >= notesMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of notes per user (${notesMaxPerUserCount}).`
+      );
+    }
   }
 }
 

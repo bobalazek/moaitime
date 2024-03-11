@@ -96,7 +96,7 @@ export class CalendarsController {
     @Req() req: Request,
     @Param('calendarId') calendarId: string
   ): Promise<AbstractResponseDto<Calendar>> {
-    const data = await calendarsManager.undelete(req.user.id, calendarId);
+    const data = await calendarsManager.undelete(req.user, calendarId);
 
     return {
       success: true,

@@ -98,7 +98,7 @@ export class NotesController {
     @Req() req: Request,
     @Param('noteId') noteId: string
   ): Promise<AbstractResponseDto<Note>> {
-    const data = await notesManager.undelete(req.user.id, noteId);
+    const data = await notesManager.undelete(req.user, noteId);
 
     return {
       success: true,

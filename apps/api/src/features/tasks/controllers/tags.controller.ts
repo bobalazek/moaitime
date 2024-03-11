@@ -86,7 +86,7 @@ export class TagsController {
     @Req() req: Request,
     @Param('tagId') tagId: string
   ): Promise<AbstractResponseDto<Tag>> {
-    const data = await tagsManager.undelete(req.user.id, tagId);
+    const data = await tagsManager.undelete(req.user, tagId);
 
     return {
       success: true,

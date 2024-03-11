@@ -74,7 +74,7 @@ export class EventsController {
     @Req() req: Request,
     @Param('eventId') eventId: string
   ): Promise<AbstractResponseDto<Event>> {
-    const data = await eventsManager.undelete(req.user.id, eventId);
+    const data = await eventsManager.undelete(req.user, eventId);
 
     return {
       success: true,

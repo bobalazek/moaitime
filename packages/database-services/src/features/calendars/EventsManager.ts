@@ -284,14 +284,7 @@ export class EventsManager {
       }
     }
 
-    const maxCount = await usersManager.getUserLimit(
-      actorUser,
-      'calendarsMaxEventsPerCalendarCount'
-    );
-    const currentCount = await eventsManager.countByCalendarId(data.calendarId);
-    if (currentCount >= maxCount) {
-      throw new Error(`You have reached the maximum number of events per calendar (${maxCount}).`);
-    }
+    await this._checkIfLimitReached(actorUser, data.calendarId);
 
     const timezone = data.timezone ?? actorUser?.settings?.generalTimezone ?? 'UTC';
 
@@ -393,25 +386,35 @@ export class EventsManager {
     return event;
   }
 
-  async undelete(actorUserId: string, eventId: string) {
-    const canDelete = await this.userCanUpdate(actorUserId, eventId);
+  async undelete(actorUser: User, eventId: string) {
+    const canDelete = await this.userCanUpdate(actorUser.id, eventId);
     if (!canDelete) {
       throw new Error('You cannot undelete this event');
     }
 
-    const event = await this.updateOneById(eventId, {
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    await this._checkIfLimitReached(actorUser, event.calendarId);
+
+    const undeletedEvent = await this.updateOneById(eventId, {
       deletedAt: null,
     });
-    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, actorUserId);
+    const calendar = await calendarsManager.findOneByIdAndUserId(
+      undeletedEvent.calendarId,
+      actorUser.id
+    );
 
     globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
-      actorUserId,
-      eventId: event.id,
-      calendarId: event.calendarId ?? undefined,
+      actorUserId: actorUser.id,
+      eventId: undeletedEvent.id,
+      calendarId: undeletedEvent.calendarId ?? undefined,
       teamId: calendar?.teamId ?? undefined,
     });
 
-    return event;
+    return undeletedEvent;
   }
 
   // Helpers
@@ -472,6 +475,18 @@ export class EventsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  // Private
+  private async _checkIfLimitReached(actorUser: User, calendarId: string) {
+    const maxCount = await usersManager.getUserLimit(
+      actorUser,
+      'calendarsMaxEventsPerCalendarCount'
+    );
+    const currentCount = await eventsManager.countByCalendarId(calendarId);
+    if (currentCount >= maxCount) {
+      throw new Error(`You have reached the maximum number of events per calendar (${maxCount}).`);
+    }
   }
 }
 

@@ -1,9 +1,8 @@
 // CUSTOM - not a part of original platejs package
 
 import { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
-import { setMarks, useEditorRef, useEditorSelection } from '@udecode/plate-common';
+import { setMarks, useEditorRef, useEditorSelector } from '@udecode/plate-common';
 import { MARK_FONT_SIZE } from '@udecode/plate-font';
-import { useEffect, useState } from 'react';
 
 import {
   DropdownMenu,
@@ -22,23 +21,16 @@ export const DEFAULT_FONT_SIZE = 16;
 export function FontSizeDropdownMenu({ ...props }: DropdownMenuProps) {
   const openState = useOpenState();
   const editor = useEditorRef();
-  const selection = useEditorSelection(editor.id);
-  const [value, setValue] = useState(DEFAULT_FONT_SIZE);
-
-  useEffect(() => {
+  const selectionFontSize = useEditorSelector((editor) => {
     const marks = editor.getMarks();
-    const newValue = (marks as { fontSize: number })?.fontSize;
-
-    if (newValue) {
-      setValue(newValue);
-    }
-  }, [editor, selection]);
+    return (marks as { fontSize: number })?.fontSize;
+  }, []);
 
   return (
     <DropdownMenu modal={false} {...openState} {...props}>
       <DropdownMenuTrigger asChild>
         <ToolbarButton pressed={openState.open} tooltip="Font size" isDropdown>
-          {value}
+          {selectionFontSize}
         </ToolbarButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-0">

@@ -188,6 +188,11 @@ export default function DueDateSelector({
     setDateTimeValue(`${paddedHours}:${paddedMins}`);
   };
 
+  const repeatStartsAt =
+    dateTimeValue && isValidTime(dateTimeValue)
+      ? zonedTimeToUtc(new Date(`${dateValue}T${dateTimeValue}`), 'UTC')
+      : addDays(new Date(`${dateValue}T00:00:00.000`), 1);
+
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
 
   const isDateDisabled = (date: Date) => {
@@ -238,11 +243,7 @@ export default function DueDateSelector({
         {includeRepeat && dateValue && (
           <RepeatSelector
             value={repeatPatternValue ?? undefined}
-            startsAt={
-              dateTimeValue
-                ? zonedTimeToUtc(new Date(`${dateValue}T${dateTimeValue}`), 'UTC')
-                : addDays(new Date(`${dateValue}T00:00:00.000`), 1)
-            }
+            startsAt={repeatStartsAt}
             onChangeValue={onRepeatSelectorChange}
           />
         )}

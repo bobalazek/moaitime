@@ -76,7 +76,11 @@ export const FocusSessionSchema = z.object({
 });
 
 export const CreateFocusSessionSchema = z.object({
-  taskText: z.string().min(1, { message: 'Task text must be at least 1 character long' }),
+  taskText: z
+    .string({
+      required_error: 'Task text must be provided',
+    })
+    .min(1, { message: 'Task text must be at least 1 character long' }),
   settings: FocusSessionSettingsSchema,
   taskId: z.string().nullable().optional(),
 });

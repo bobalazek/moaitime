@@ -20,7 +20,7 @@ const NoteItem = ({ note, isSelected }: { note: Note; isSelected?: boolean }) =>
       data-test="notes--note"
     >
       <div className="truncate" title={note.title} data-test="notes--note--title">
-        {note.title}
+        {note.title || <span className="italic">Untitled</span>}
       </div>
       {note.deletedAt && (
         <div

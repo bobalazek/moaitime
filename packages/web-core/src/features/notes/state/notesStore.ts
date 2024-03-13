@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 import {
   CreateNote,
+  GlobalEventsEnum,
   Note,
   NotesListSortFieldEnum,
   SortDirectionEnum,
@@ -10,6 +11,8 @@ import {
   UpdateNoteSchema,
 } from '@moaitime/shared-common';
 
+import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
+import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
   addNote,
   deleteNote,
@@ -89,16 +92,30 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   },
   addNote: async (note: CreateNote) => {
     const { reloadNotes, setSelectedNoteData } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
+
     const addedNote = await addNote(note);
 
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTES_NOTE_ADDED, {
+      actorUserId: addedNote.userId,
+      noteId: addedNote.id,
+    });
+
     await reloadNotes();
+    await reloadUserUsage();
     await setSelectedNoteData(addedNote);
 
     return addedNote;
   },
   editNote: async (noteId: string, note: UpdateNote) => {
     const { selectedNote, reloadNotes, setSelectedNote } = get();
+
     const editedNote = await editNote(noteId, note);
+
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTES_NOTE_EDITED, {
+      actorUserId: editedNote.userId,
+      noteId: editedNote.id,
+    });
 
     await reloadNotes();
 
@@ -110,9 +127,17 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   },
   deleteNote: async (noteId: string, isHardDelete?: boolean) => {
     const { selectedNote, reloadNotes, setSelectedNote } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
+
     const deletedNote = await deleteNote(noteId, isHardDelete);
 
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTES_NOTE_DELETED, {
+      actorUserId: deletedNote.userId,
+      noteId: deletedNote.id,
+    });
+
     await reloadNotes();
+    await reloadUserUsage();
 
     await setSelectedNote(
       !isHardDelete && selectedNote?.id === deletedNote.id ? deletedNote : null,
@@ -123,9 +148,17 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   },
   undeleteNote: async (noteId: string) => {
     const { selectedNote, reloadNotes, setSelectedNote } = get();
+    const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
+
     const undeletedNote = await undeleteNote(noteId);
 
+    globalEventsEmitter.emit(GlobalEventsEnum.NOTES_NOTE_UNDELETED, {
+      actorUserId: undeletedNote.userId,
+      noteId: undeletedNote.id,
+    });
+
     await reloadNotes();
+    await reloadUserUsage();
 
     if (selectedNote?.id === undeletedNote.id) {
       await setSelectedNote(undeletedNote, true);
@@ -187,7 +220,13 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
       selectedNoteData = parsedNote;
     } catch (e) {
-      selectedNoteData = note as UpdateNote;
+      selectedNoteData = {
+        title: note?.title ?? '',
+        content: note?.content as never,
+        color: note?.color,
+        directory: note?.directory,
+        journalDate: note?.journalDate,
+      };
     }
 
     set({
@@ -198,7 +237,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return note;
   },
-  setSelectedNoteData: async (selectedNoteData: CreateNote | UpdateNote | null) => {
+  setSelectedNoteData: async (selectedNoteData: Note | CreateNote | UpdateNote | null) => {
     try {
       const parsedNote = UpdateNoteSchema.parse(selectedNoteData);
 

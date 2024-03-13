@@ -71,10 +71,7 @@ export default function HabitEditDialog() {
       setSelectedHabitDialogOpen(false);
       setData(DEFAULT_HABIT_DATA);
     } catch (error) {
-      sonnerToast.error('Oops!', {
-        description:
-          error instanceof Error ? error.message : 'Something went wrong while saving the habit.',
-      });
+      // Already handled by the fetch function
     }
   };
 

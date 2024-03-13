@@ -71,6 +71,7 @@ export function createZodValidationPipe(): ZodValidationPipeClass {
       return validate(value, metatype.schema);
     }
   }
+
   return ZodValidationPipe;
 }
 

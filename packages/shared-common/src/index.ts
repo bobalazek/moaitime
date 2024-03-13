@@ -38,6 +38,7 @@ export * from './core/AsyncReturnType';
 export * from './core/SortDirectionEnum';
 export * from './core/ProcessingStatusEnum';
 export * from './core/PermissionsSchema';
+export * from './core/EditorValueSchema';
 export * from './core/PaginationCursorsType';
 export * from './core/WebsocketCloseCodeEnum';
 export * from './core/responses/ErrorResponse';

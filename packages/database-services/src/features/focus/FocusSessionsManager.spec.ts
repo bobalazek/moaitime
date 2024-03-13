@@ -19,6 +19,8 @@ describe('FocusSessionManager.ts', () => {
   beforeEach(async () => {
     await reloadDatabase();
 
+    vi.useFakeTimers();
+
     const user = await usersManager.insertOne({
       displayName: 'test',
       username: 'focussessiontest',
@@ -50,6 +52,10 @@ describe('FocusSessionManager.ts', () => {
         focusRepetitionsCount: 1,
       },
     });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe('update()', () => {

@@ -1,7 +1,7 @@
 import { addDays, format, startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { CalendarIcon, RepeatIcon, XIcon } from 'lucide-react';
-import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
+import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Recurrence } from '@moaitime/recurrence';
 import { isValidTime } from '@moaitime/shared-common';
@@ -87,6 +87,7 @@ export default function DueDateSelector({
   const [dateTimeZoneValue, setDateTimeZoneValue] = useState<string | null>(null);
   const [repeatPatternValue, setRepeatPatternValue] = useState<string | null>(null);
   const [repeatEndsAtValue, setRepeatEndsAtValue] = useState<string | null>(null);
+  const initialDataRef = useRef(data);
 
   useEffect(() => {
     setDateValue(data.date ?? null);
@@ -100,6 +101,13 @@ export default function DueDateSelector({
     if (!repeatPatternValue || !dateValue) {
       return;
     }
+
+    // We want to make sure to only set the repeat pattern value if the date has changed
+    if (initialDataRef.current.date === dateValue) {
+      return;
+    }
+
+    console.log('dateValue', dateValue, initialDataRef.current);
 
     try {
       const newStartDate = new Date(
@@ -191,7 +199,7 @@ export default function DueDateSelector({
 
   const repeatStartsAt =
     dateTimeValue && isValidTime(dateTimeValue)
-      ? zonedTimeToUtc(new Date(`${dateValue}T${dateTimeValue}`), 'UTC')
+      ? new Date(`${dateValue}T${dateTimeValue}`)
       : new Date(`${dateValue}T00:00:00.000`);
 
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);

@@ -75,6 +75,10 @@ export class Recurrence {
       text += ` on the ${this._listToHumanReadable(daysOfMonthOnly, 'dayOfMonth')} of the month`;
     }
 
+    if (this.endsAt) {
+      text += ` until ${this.endsAt.toDateString()}`;
+    }
+
     return text;
   }
 
@@ -109,9 +113,10 @@ export class Recurrence {
   getNextDates(date: Date, count: number): Date[] {
     const dates: Date[] = [];
 
+    const maxCount = this._options.count ? Math.min(count, this._options.count) : count;
     let iterations = 0;
     let currentDate = date;
-    while (dates.length < count) {
+    while (dates.length < maxCount) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
         dates.push(currentDate);
@@ -255,6 +260,7 @@ export class Recurrence {
     };
 
     const converter = toStringMap[type];
+
     return list.map((item) => converter(item)).join(', ');
   }
 

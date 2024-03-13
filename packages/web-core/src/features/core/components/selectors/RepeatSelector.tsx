@@ -1,5 +1,4 @@
 import { addDays } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
@@ -52,11 +51,13 @@ export function RepeatSelector({
   onChangeValue,
   disableTime,
 }: RepeatSelectorProps) {
+  // We shall always get a local (NOT timezoned!) startsAt date here
+
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const [open, setOpen] = useState(false);
   const [recurrence, setRecurrence] = useState(
     new Recurrence({
-      startsAt: zonedTimeToUtc(startsAt, 'UTC'),
+      startsAt,
       interval: RecurrenceIntervalEnum.DAY,
       intervalAmount: 1,
       startOfWeek: generalStartDayOfWeek as RecurrenceDayOfWeekEnum,
@@ -72,7 +73,7 @@ export function RepeatSelector({
     const newRecurrence = value
       ? Recurrence.fromStringPattern(value)
       : recurrence.updateOptions({
-          startsAt: zonedTimeToUtc(startsAt, 'UTC'),
+          startsAt,
         });
 
     setRecurrence(newRecurrence);

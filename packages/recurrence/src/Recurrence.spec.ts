@@ -118,6 +118,47 @@ describe('Recurrence.ts', () => {
       },
       throwsErrorMessage: undefined,
     },
+    {
+      testName: 'should work when daily interval #3',
+      now: '2020-01-01T00:00:00.000Z',
+      options: {
+        startsAt: new Date('2020-01-01T00:00:00.000Z'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 5,
+      },
+      expected: {
+        dates: [
+          '2020-01-02T00:00:00.000Z',
+          '2020-01-03T00:00:00.000Z',
+          '2020-01-04T00:00:00.000Z',
+          '2020-01-05T00:00:00.000Z',
+          '2020-01-06T00:00:00.000Z',
+        ],
+      },
+    },
+    {
+      testName: 'should work when daily interval #4',
+      now: '2020-01-01T00:00:00.000Z',
+      options: {
+        startsAt: new Date('2020-01-01T00:00:00.000Z'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 10,
+        endsAt: new Date('2020-01-08T00:00:00.000Z'),
+      },
+      expected: {
+        dates: [
+          '2020-01-02T00:00:00.000Z',
+          '2020-01-03T00:00:00.000Z',
+          '2020-01-04T00:00:00.000Z',
+          '2020-01-05T00:00:00.000Z',
+          '2020-01-06T00:00:00.000Z',
+          '2020-01-07T00:00:00.000Z',
+          '2020-01-08T00:00:00.000Z',
+        ],
+      },
+    },
     // Weekly
     {
       testName: 'should work when weekly interval #1',
@@ -214,10 +255,6 @@ describe('Recurrence.ts', () => {
         interval: RecurrenceIntervalEnum.DAY,
         intervalAmount: 1,
       },
-      expected: {
-        nextDate: '',
-        humanText: '',
-      },
       throwsErrorMessage: 'Invalid start date',
     },
   ])(`$testName`, async ({ now, options, expected, throwsErrorMessage }) => {
@@ -231,7 +268,18 @@ describe('Recurrence.ts', () => {
     }
 
     const recurrence = new Recurrence(options);
-    expect(recurrence.getNextDate(nowDate)!.toISOString()).toEqual(expected.nextDate);
-    expect(recurrence.toHumanText()).toEqual(expected.humanText);
+
+    if (expected?.nextDate) {
+      expect(recurrence.getNextDate(nowDate)!.toISOString()).toEqual(expected.nextDate);
+    }
+
+    if (expected?.humanText) {
+      expect(recurrence.toHumanText()).toEqual(expected.humanText);
+    }
+
+    if (expected?.dates) {
+      const dates = recurrence.getNextDates(nowDate, options.count!);
+      expect(dates.map((date) => date.toISOString())).toEqual(expected.dates);
+    }
   });
 });

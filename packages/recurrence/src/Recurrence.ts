@@ -115,11 +115,15 @@ export class Recurrence {
 
     const maxCount = this._options.count ? Math.min(count, this._options.count) : count;
     let iterations = 0;
-    let currentDate = date;
+    let currentDate = date < this.startsAt ? new Date(this.startsAt) : new Date(date);
     while (dates.length < maxCount) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
         dates.push(currentDate);
+      }
+
+      if (this.endsAt && currentDate > this.endsAt) {
+        break;
       }
 
       iterations++;

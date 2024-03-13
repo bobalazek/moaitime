@@ -107,8 +107,6 @@ export default function DueDateSelector({
       return;
     }
 
-    console.log('dateValue', dateValue, initialDataRef.current);
-
     try {
       const newStartDate = new Date(
         dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)

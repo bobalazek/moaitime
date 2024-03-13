@@ -1,4 +1,4 @@
-import { add, isBefore, isValid, isWithinInterval } from 'date-fns';
+import { add, isBefore, isWithinInterval } from 'date-fns';
 
 export enum RecurrenceIntervalEnum {
   HOUR = 'hour',
@@ -19,10 +19,10 @@ export enum RecurrenceDayOfWeekEnum {
 }
 
 export type RecurrenceOptions = {
-  startsAt: Date;
+  startsAt: Date | string;
   interval: RecurrenceIntervalEnum;
   intervalAmount: number;
-  endsAt?: Date;
+  endsAt?: Date | string;
   count?: number;
   hoursOfDayOnly?: number[]; // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ... 23
   daysOfWeekOnly?: RecurrenceDayOfWeekEnum[];
@@ -88,7 +88,6 @@ export class Recurrence {
     return new Recurrence(options);
   }
 
-  // Helpers
   getNextDate(date: Date): Date | null {
     let iterations = 0;
 
@@ -128,10 +127,8 @@ export class Recurrence {
   }
 
   getDatesBetween(startDate: Date, endDate: Date) {
-    const adjustedStartDate =
-      startDate < this._options.startsAt ? this._options.startsAt : startDate;
-    const adjustedEndDate =
-      this._options.endsAt && endDate > this._options.endsAt ? this._options.endsAt : endDate;
+    const adjustedStartDate = startDate < this.startsAt ? this.startsAt : startDate;
+    const adjustedEndDate = this.endsAt && endDate > this.endsAt ? this.endsAt : endDate;
 
     const dates: Date[] = [];
     let iterations = 0;
@@ -159,13 +156,23 @@ export class Recurrence {
     return dates;
   }
 
+  // Getters
+  get startsAt() {
+    return new Date(this._options.startsAt);
+  }
+
+  get endsAt() {
+    return this._options.endsAt ? new Date(this._options.endsAt) : undefined;
+  }
+
   // Private
   _validateOptions(options: RecurrenceOptions) {
     if (!options.startsAt) {
       throw new Error('Start date is required');
     }
 
-    if (!isValid(options.startsAt)) {
+    const optionsStartsAt = new Date(options.startsAt);
+    if (isNaN(optionsStartsAt.getTime())) {
       throw new Error('Invalid start date');
     }
 

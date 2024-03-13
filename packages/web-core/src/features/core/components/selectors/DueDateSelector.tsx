@@ -16,6 +16,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
+import { ErrorBoundary } from '../ErrorBoundary';
 import { RepeatSelector } from './RepeatSelector';
 import TimeSelector from './TimeSelector';
 import TimezoneSelector from './TimezoneSelector';
@@ -191,7 +192,7 @@ export default function DueDateSelector({
   const repeatStartsAt =
     dateTimeValue && isValidTime(dateTimeValue)
       ? zonedTimeToUtc(new Date(`${dateValue}T${dateTimeValue}`), 'UTC')
-      : addDays(new Date(`${dateValue}T00:00:00.000`), 1);
+      : new Date(`${dateValue}T00:00:00.000`);
 
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
 
@@ -241,11 +242,13 @@ export default function DueDateSelector({
           weekStartsOn={generalStartDayOfWeek}
         />
         {includeRepeat && dateValue && (
-          <RepeatSelector
-            value={repeatPatternValue ?? undefined}
-            startsAt={repeatStartsAt}
-            onChangeValue={onRepeatSelectorChange}
-          />
+          <ErrorBoundary>
+            <RepeatSelector
+              value={repeatPatternValue ?? undefined}
+              startsAt={repeatStartsAt}
+              onChangeValue={onRepeatSelectorChange}
+            />
+          </ErrorBoundary>
         )}
         {includeTime && dateValue && (
           <>

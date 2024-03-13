@@ -25,8 +25,8 @@ export const getGmtOffset = (timezone: string) => {
   return `GMT${offset}`;
 };
 
-export const isValidDate = (date: string) => {
-  const dateObject = new Date(date);
+export const isValidDate = (dateOrString: Date | string) => {
+  const dateObject = dateOrString instanceof Date ? dateOrString : new Date(dateOrString);
   return !isNaN(dateObject.getTime());
 };
 

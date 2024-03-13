@@ -56,7 +56,7 @@ export function RepeatSelector({
   const [open, setOpen] = useState(false);
   const [recurrence, setRecurrence] = useState(
     new Recurrence({
-      startsAt,
+      startsAt: zonedTimeToUtc(startsAt, 'UTC'),
       interval: RecurrenceIntervalEnum.DAY,
       intervalAmount: 1,
       startOfWeek: generalStartDayOfWeek as RecurrenceDayOfWeekEnum,
@@ -101,10 +101,9 @@ export function RepeatSelector({
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    const recurrenceOptions = recurrence.getOptions();
     const recurrenceValue = recurrence.toStringPattern();
 
-    onChangeValue(recurrenceValue, recurrenceOptions.endsAt);
+    onChangeValue(recurrenceValue, recurrence.endsAt);
 
     setOpen(false);
   };
@@ -144,11 +143,11 @@ export function RepeatSelector({
               type="number"
               value={recurrenceOptions.intervalAmount}
               onChange={(event) => {
-                setRecurrence(
-                  recurrence.updateOptions({
+                setRecurrence((current) => {
+                  return current.updateOptions({
                     intervalAmount: parseInt(event.target.value),
-                  })
-                );
+                  });
+                });
               }}
               className="w-20"
               min={1}
@@ -157,14 +156,16 @@ export function RepeatSelector({
             <select
               value={recurrenceOptions.interval}
               onChange={(event) => {
-                const updateData: Partial<RecurrenceOptions> = {
-                  intervalAmount: parseInt(event.target.value),
-                };
-                if (recurrenceOptions.interval !== RecurrenceIntervalEnum.WEEK) {
-                  updateData.daysOfWeekOnly = undefined;
-                }
+                setRecurrence((current) => {
+                  const updateData: Partial<RecurrenceOptions> = {
+                    interval: event.target.value as RecurrenceIntervalEnum,
+                  };
+                  if (recurrenceOptions.interval !== RecurrenceIntervalEnum.WEEK) {
+                    updateData.daysOfWeekOnly = undefined;
+                  }
 
-                setRecurrence(recurrence.updateOptions(updateData));
+                  return current.updateOptions(updateData);
+                });
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
             >
@@ -182,11 +183,11 @@ export function RepeatSelector({
               type="multiple"
               value={recurrenceOptions.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
-                setRecurrence(
-                  recurrence.updateOptions({
+                setRecurrence((current) => {
+                  return current.updateOptions({
                     daysOfWeekOnly: value?.map((weekDay) => parseInt(weekDay)) ?? undefined,
-                  })
-                );
+                  });
+                });
               }}
             >
               {/* For some strange reason it's 0 for Monday, where as usually that's Sunday */}
@@ -221,8 +222,8 @@ export function RepeatSelector({
             onValueChange={(value) => {
               setEndsType(value as RepeatSelectorEndsEnum);
 
-              setRecurrence(
-                recurrence.updateOptions({
+              setRecurrence((current) => {
+                return current.updateOptions({
                   endsAt:
                     value === RepeatSelectorEndsEnum.UNTIL_DATE
                       ? recurrenceOptions.endsAt ?? addDays(new Date(), 7)
@@ -231,8 +232,8 @@ export function RepeatSelector({
                     value === RepeatSelectorEndsEnum.COUNT
                       ? recurrenceOptions.count ?? DEFAULT_OCCURENCES
                       : undefined,
-                })
-              );
+                });
+              });
             }}
             className="flex flex-col gap-2"
           >
@@ -252,8 +253,8 @@ export function RepeatSelector({
               </div>
               <DateSelector
                 data={convertIsoStringToObject(
-                  recurrenceOptions.endsAt
-                    ? removeDateTimezoneFromItself(recurrenceOptions.endsAt).toISOString()
+                  recurrence.endsAt
+                    ? removeDateTimezoneFromItself(recurrence.endsAt).toISOString()
                     : addDays(new Date(), 7).toISOString(),
                   !disableTime,
                   undefined
@@ -264,12 +265,12 @@ export function RepeatSelector({
                     result?.iso ? new Date(result?.iso) : new Date()
                   );
 
-                  setRecurrence(
-                    recurrence.updateOptions({
+                  setRecurrence((current) => {
+                    return current.updateOptions({
                       endsAt,
                       count: undefined,
-                    })
-                  );
+                    });
+                  });
                 }}
                 disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
                 includeTime={!disableTime}
@@ -290,12 +291,12 @@ export function RepeatSelector({
                   type="number"
                   value={recurrenceOptions.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
-                    setRecurrence(
-                      recurrence.updateOptions({
+                    setRecurrence((current) => {
+                      return current.updateOptions({
                         count: parseInt(event.target.value),
                         endsAt: undefined,
-                      })
-                    );
+                      });
+                    });
                   }}
                   disabled={endsType !== RepeatSelectorEndsEnum.COUNT}
                   className="w-20"
@@ -320,10 +321,9 @@ export function RepeatSelector({
             {recurrenceDates.length > 0 && (
               <ul className="list-disc pl-5 text-xs leading-5">
                 {recurrenceDates.map((date) => {
-                  const finalDate = removeDateTimezoneFromItself(date);
                   return (
                     <li key={date.toISOString()}>
-                      {disableTime ? finalDate.toLocaleDateString() : finalDate.toLocaleString()}
+                      {disableTime ? date.toLocaleDateString() : date.toLocaleString()}
                     </li>
                   );
                 })}

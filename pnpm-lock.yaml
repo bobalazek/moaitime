@@ -490,9 +490,9 @@ importers:
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging
-      '@moaitime/recurrence-parser':
+      '@moaitime/recurrence':
         specifier: workspace:*
-        version: link:../recurrence-parser
+        version: link:../recurrence
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
@@ -527,9 +527,9 @@ importers:
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging
-      '@moaitime/recurrence-parser':
+      '@moaitime/recurrence':
         specifier: workspace:*
-        version: link:../recurrence-parser
+        version: link:../recurrence
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend
@@ -851,7 +851,7 @@ importers:
         specifier: ^5.3.2
         version: 5.3.3
 
-  packages/recurrence-parser:
+  packages/recurrence:
     dependencies:
       '@vvo/tzdb':
         specifier: ^6.124.0
@@ -913,9 +913,9 @@ importers:
 
   packages/shared-common:
     dependencies:
-      '@moaitime/recurrence-parser':
+      '@moaitime/recurrence':
         specifier: workspace:*
-        version: link:../recurrence-parser
+        version: link:../recurrence
       '@vvo/tzdb':
         specifier: ^6.124.0
         version: 6.125.0
@@ -1033,9 +1033,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: 3.2.2
         version: 3.2.2(react@18.2.0)
-      '@moaitime/recurrence-parser':
+      '@moaitime/recurrence':
         specifier: workspace:*
-        version: link:../recurrence-parser
+        version: link:../recurrence
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common

@@ -27,11 +27,12 @@ export type RecurrenceOptions = {
   hoursOfDayOnly?: number[]; // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ... 23
   daysOfWeekOnly?: RecurrenceDayOfWeekEnum[];
   daysOfMonthOnly?: number[]; // 1, 2, 3, 4, 5, 6, 7, 8, 9, ... 31
+  startOfWeek?: RecurrenceDayOfWeekEnum;
 };
 
 export class Recurrence {
   private _options: RecurrenceOptions;
-  private _maxIterations = 1000;
+  private _maxIterations = 5000;
 
   constructor(options: RecurrenceOptions) {
     this._validateOptions(options);
@@ -51,10 +52,12 @@ export class Recurrence {
 
     this._validateOptions(newOptions);
 
+    this._options = newOptions;
+
     return new Recurrence(newOptions);
   }
 
-  convertToHumanText() {
+  toHumanText() {
     const { interval, intervalAmount, hoursOfDayOnly, daysOfWeekOnly, daysOfMonthOnly } =
       this._options;
 
@@ -75,6 +78,16 @@ export class Recurrence {
     return text;
   }
 
+  toStringPattern() {
+    return JSON.stringify(this._options);
+  }
+
+  static fromStringPattern(value: string) {
+    const options = JSON.parse(value);
+
+    return new Recurrence(options);
+  }
+
   // Helpers
   getNextDate(date: Date): Date | null {
     let iterations = 0;
@@ -92,8 +105,6 @@ export class Recurrence {
         throw new Error('Too many iterations. Infinite loop detected.');
       }
     }
-
-    return null;
   }
 
   getNextDates(date: Date, count: number): Date[] {
@@ -146,17 +157,6 @@ export class Recurrence {
       }
     }
     return dates;
-  }
-
-  // Serialization
-  static fromStringPattern(value: string) {
-    const options = JSON.parse(value);
-
-    return new Recurrence(options);
-  }
-
-  static toStringPattern(recurrence: Recurrence) {
-    return JSON.stringify(recurrence._options);
   }
 
   // Private

@@ -26,7 +26,7 @@
   "dependencies": {
     "@moaitime/database-core": "workspace:*",
     "@moaitime/logging": "workspace:*",
-    "@moaitime/recurrence-parser": "workspace:*",
+    "@moaitime/recurrence": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
     "drizzle-orm": "^0.30.0"

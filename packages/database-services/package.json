@@ -31,7 +31,7 @@
     "@moaitime/emails-mailer": "workspace:*",
     "@moaitime/global-events-notifier": "workspace:*",
     "@moaitime/logging": "workspace:*",
-    "@moaitime/recurrence-parser": "workspace:*",
+    "@moaitime/recurrence": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
     "@moaitime/uploader": "workspace:*",

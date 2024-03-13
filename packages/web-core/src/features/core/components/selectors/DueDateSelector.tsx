@@ -3,7 +3,7 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { CalendarIcon, RepeatIcon, XIcon } from 'lucide-react';
 import { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 
-import { recurrenceParser } from '@moaitime/recurrence-parser';
+import { Recurrence } from '@moaitime/recurrence';
 import { isValidTime } from '@moaitime/shared-common';
 import {
   Button,
@@ -105,12 +105,12 @@ export default function DueDateSelector({
         dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)
       );
 
-      let rule = recurrenceParser.getRuleFromString(repeatPatternValue);
-      rule = recurrenceParser.updateRule(rule, {
-        dtstart: zonedTimeToUtc(newStartDate, 'UTC'),
+      const recurrence = Recurrence.fromStringPattern(repeatPatternValue);
+      recurrence.updateOptions({
+        startsAt: zonedTimeToUtc(newStartDate, 'UTC'),
       });
 
-      setRepeatPatternValue(recurrenceParser.getRulePattern(rule));
+      setRepeatPatternValue(recurrence.toStringPattern());
     } catch (error) {
       // ignore, as it's most likely an invalid date
     }

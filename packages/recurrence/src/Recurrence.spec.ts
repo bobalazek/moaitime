@@ -232,6 +232,6 @@ describe('Recurrence.ts', () => {
 
     const recurrence = new Recurrence(options);
     expect(recurrence.getNextDate(nowDate)!.toISOString()).toEqual(expected.nextDate);
-    expect(recurrence.convertToHumanText()).toEqual(expected.humanText);
+    expect(recurrence.toHumanText()).toEqual(expected.humanText);
   });
 });

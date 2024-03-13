@@ -3,7 +3,12 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
-import { recurrenceParser, RecurrenceParserFrequency } from '@moaitime/recurrence-parser';
+import {
+  Recurrence,
+  RecurrenceDayOfWeekEnum,
+  RecurrenceIntervalEnum,
+  RecurrenceOptions,
+} from '@moaitime/recurrence';
 import { addDateTimezoneToItself, removeDateTimezoneFromItself } from '@moaitime/shared-common';
 import {
   Button,
@@ -35,8 +40,8 @@ enum RepeatSelectorEndsEnum {
 }
 
 export type RepeatSelectorProps = {
-  value?: string;
   startsAt: Date;
+  value?: string;
   onChangeValue: (value?: string, endsAt?: Date) => void;
   disableTime?: boolean;
 };
@@ -49,35 +54,35 @@ export function RepeatSelector({
 }: RepeatSelectorProps) {
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const [open, setOpen] = useState(false);
-  const [rule, setRule] = useState(
-    recurrenceParser.createRule({
-      freq: RecurrenceParserFrequency.DAILY,
-      interval: 1,
-      wkst: generalStartDayOfWeek,
+  const [recurrence, setRecurrence] = useState(
+    new Recurrence({
+      startsAt,
+      interval: RecurrenceIntervalEnum.DAY,
+      intervalAmount: 1,
+      startOfWeek: generalStartDayOfWeek as RecurrenceDayOfWeekEnum,
     })
   );
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
-  const ruleString = recurrenceParser.getRuleToText(rule);
-  const ruleDates = recurrenceParser.getRuleDatesAll(rule, MAX_DATES_TO_SHOW);
+  const recurrenceOptions = recurrence.getOptions();
+  const recurrenceString = recurrence.toHumanText();
+  const recurrenceDates = recurrence.getNextDates(startsAt, MAX_DATES_TO_SHOW);
 
   useEffect(() => {
-    const newRule = value
-      ? recurrenceParser.getRuleFromString(value)
-      : recurrenceParser.updateRule(
-          rule,
-          {
-            dtstart: zonedTimeToUtc(startsAt, 'UTC'),
-          },
-          disableTime
-        );
+    const newRecurrence = value
+      ? Recurrence.fromStringPattern(value)
+      : recurrence.updateOptions({
+          startsAt: zonedTimeToUtc(startsAt, 'UTC'),
+        });
 
-    setRule(newRule);
+    setRecurrence(newRecurrence);
+
+    const newRecurrenceOptions = newRecurrence.getOptions();
 
     // Make sure ends at is always first, so we set the correct endsType
-    if (newRule.options.until) {
+    if (newRecurrenceOptions.endsAt) {
       setEndsType(RepeatSelectorEndsEnum.UNTIL_DATE);
-    } else if (newRule.options.count) {
+    } else if (newRecurrenceOptions.count) {
       setEndsType(RepeatSelectorEndsEnum.COUNT);
     }
 
@@ -96,9 +101,10 @@ export function RepeatSelector({
   const onSaveButtonSave = (event: MouseEvent) => {
     event.preventDefault();
 
-    const ruleValue = recurrenceParser.getRulePattern(rule) ?? undefined;
+    const recurrenceOptions = recurrence.getOptions();
+    const recurrenceValue = recurrence.toStringPattern();
 
-    onChangeValue(ruleValue, rule.options.until ?? undefined);
+    onChangeValue(recurrenceValue, recurrenceOptions.endsAt);
 
     setOpen(false);
   };
@@ -116,7 +122,7 @@ export function RepeatSelector({
           {value && (
             <>
               <span className="flex text-left">
-                Repeats {recurrenceParser.getRuleToText(value)}
+                Repeats {Recurrence.fromStringPattern(value).toHumanText()}
               </span>
               <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
                 <XIcon />
@@ -136,16 +142,12 @@ export function RepeatSelector({
             <span>Repeat every</span>
             <Input
               type="number"
-              value={rule.options.interval}
+              value={recurrenceOptions.intervalAmount}
               onChange={(event) => {
-                setRule(
-                  recurrenceParser.updateRule(
-                    rule,
-                    {
-                      interval: parseInt(event.target.value),
-                    },
-                    disableTime
-                  )
+                setRecurrence(
+                  recurrence.updateOptions({
+                    intervalAmount: parseInt(event.target.value),
+                  })
                 );
               }}
               className="w-20"
@@ -153,41 +155,37 @@ export function RepeatSelector({
               max={999}
             />
             <select
-              value={rule.options.freq}
+              value={recurrenceOptions.interval}
               onChange={(event) => {
-                const updateData: Record<string, number | number[]> = {
-                  freq: parseInt(event.target.value),
+                const updateData: Partial<RecurrenceOptions> = {
+                  intervalAmount: parseInt(event.target.value),
                 };
-                if (rule.options.freq === RecurrenceParserFrequency.WEEKLY) {
-                  updateData.byweekday = rule.options.byweekday;
+                if (recurrenceOptions.interval !== RecurrenceIntervalEnum.WEEK) {
+                  updateData.daysOfWeekOnly = undefined;
                 }
 
-                setRule(recurrenceParser.updateRule(rule, updateData, disableTime));
+                setRecurrence(recurrence.updateOptions(updateData));
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
             >
-              <option value={RecurrenceParserFrequency.DAILY}>days</option>
-              <option value={RecurrenceParserFrequency.WEEKLY}>weeks</option>
-              <option value={RecurrenceParserFrequency.MONTHLY}>months</option>
-              <option value={RecurrenceParserFrequency.YEARLY}>years</option>
+              <option value={RecurrenceIntervalEnum.DAY}>days</option>
+              <option value={RecurrenceIntervalEnum.WEEK}>weeks</option>
+              <option value={RecurrenceIntervalEnum.MONTH}>months</option>
+              <option value={RecurrenceIntervalEnum.YEAR}>years</option>
             </select>
           </div>
         </div>
-        {rule.options.freq === RecurrenceParserFrequency.WEEKLY && (
+        {recurrenceOptions.interval === RecurrenceIntervalEnum.WEEK && (
           <div>
             <h4 className="text-muted-foreground">Repeat on</h4>
             <ToggleGroup
               type="multiple"
-              value={rule.options.byweekday?.map((day) => day.toString()) ?? []}
+              value={recurrenceOptions.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
-                setRule(
-                  recurrenceParser.updateRule(
-                    rule,
-                    {
-                      byweekday: value?.map((day) => parseInt(day)) ?? null,
-                    },
-                    disableTime
-                  )
+                setRecurrence(
+                  recurrence.updateOptions({
+                    daysOfWeekOnly: value?.map((weekDay) => parseInt(weekDay)) ?? undefined,
+                  })
                 );
               }}
             >
@@ -223,18 +221,18 @@ export function RepeatSelector({
             onValueChange={(value) => {
               setEndsType(value as RepeatSelectorEndsEnum);
 
-              const options = {
-                until:
-                  value === RepeatSelectorEndsEnum.UNTIL_DATE
-                    ? rule.options.until ?? addDays(new Date(), 7)
-                    : null,
-                count:
-                  value === RepeatSelectorEndsEnum.COUNT
-                    ? rule.options.count ?? DEFAULT_OCCURENCES
-                    : null,
-              };
-
-              setRule(recurrenceParser.updateRule(rule, options, disableTime));
+              setRecurrence(
+                recurrence.updateOptions({
+                  endsAt:
+                    value === RepeatSelectorEndsEnum.UNTIL_DATE
+                      ? recurrenceOptions.endsAt ?? addDays(new Date(), 7)
+                      : undefined,
+                  count:
+                    value === RepeatSelectorEndsEnum.COUNT
+                      ? recurrenceOptions.count ?? DEFAULT_OCCURENCES
+                      : undefined,
+                })
+              );
             }}
             className="flex flex-col gap-2"
           >
@@ -254,27 +252,23 @@ export function RepeatSelector({
               </div>
               <DateSelector
                 data={convertIsoStringToObject(
-                  rule.options.until
-                    ? removeDateTimezoneFromItself(rule.options.until).toISOString()
+                  recurrenceOptions.endsAt
+                    ? removeDateTimezoneFromItself(recurrenceOptions.endsAt).toISOString()
                     : addDays(new Date(), 7).toISOString(),
                   !disableTime,
                   undefined
                 )}
                 onSaveData={(saveData) => {
                   const result = convertObjectToIsoString(saveData);
-                  const until = addDateTimezoneToItself(
+                  const endsAt = addDateTimezoneToItself(
                     result?.iso ? new Date(result?.iso) : new Date()
                   );
 
-                  setRule(
-                    recurrenceParser.updateRule(
-                      rule,
-                      {
-                        until,
-                        count: null,
-                      },
-                      disableTime
-                    )
+                  setRecurrence(
+                    recurrence.updateOptions({
+                      endsAt,
+                      count: undefined,
+                    })
                   );
                 }}
                 disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
@@ -294,17 +288,13 @@ export function RepeatSelector({
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
-                  value={rule.options.count ?? DEFAULT_OCCURENCES}
+                  value={recurrenceOptions.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
-                    setRule(
-                      recurrenceParser.updateRule(
-                        rule,
-                        {
-                          count: parseInt(event.target.value),
-                          until: null,
-                        },
-                        disableTime
-                      )
+                    setRecurrence(
+                      recurrence.updateOptions({
+                        count: parseInt(event.target.value),
+                        endsAt: undefined,
+                      })
                     );
                   }}
                   disabled={endsType !== RepeatSelectorEndsEnum.COUNT}
@@ -317,19 +307,19 @@ export function RepeatSelector({
             </div>
           </RadioGroup>
         </div>
-        {ruleString && (
+        {recurrenceString && (
           <div>
             <h4 className="text-muted-foreground mt-2">
-              Dates for <b className="text-sm">{ruleString}</b>:
+              Dates for <b className="text-sm">{recurrenceString}</b>:
             </h4>
-            {ruleDates.length === 0 && (
+            {recurrenceDates.length === 0 && (
               <div className="text-muted-foreground text-xs">
                 No dates for the specified parameters
               </div>
             )}
-            {ruleDates.length > 0 && (
+            {recurrenceDates.length > 0 && (
               <ul className="list-disc pl-5 text-xs leading-5">
-                {ruleDates.map((date) => {
+                {recurrenceDates.map((date) => {
                   const finalDate = removeDateTimezoneFromItself(date);
                   return (
                     <li key={date.toISOString()}>

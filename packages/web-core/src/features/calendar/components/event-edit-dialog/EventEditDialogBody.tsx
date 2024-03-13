@@ -6,6 +6,7 @@ import { addDateTimezoneToItself, CreateEvent, UpdateEvent } from '@moaitime/sha
 import { Button, Input, Label, sonnerToast, Switch, Textarea } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
+import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { CalendarSelector } from '../../../core/components/selectors/CalendarSelector';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
@@ -231,21 +232,23 @@ export default function EventEditDialogBody() {
       </div>
       <div className="mb-4 flex flex-col gap-2">
         <Label htmlFor="event-repeat">Repeat</Label>
-        <RepeatSelector
-          value={dataRepeatPattern ?? undefined}
-          startsAt={new Date(data?.startsAt ?? Date.now())}
-          onChangeValue={(value, endsAt) => {
-            setData(
-              (current) =>
-                ({
-                  ...current,
-                  repeatPattern: value ?? null,
-                  repeatEndsAt: endsAt ?? null,
-                }) as CreateEvent
-            );
-          }}
-          disableTime={dataIsAllDay}
-        />
+        <ErrorBoundary>
+          <RepeatSelector
+            value={dataRepeatPattern ?? undefined}
+            startsAt={new Date(data?.startsAt ?? Date.now())}
+            onChangeValue={(value, endsAt) => {
+              setData(
+                (current) =>
+                  ({
+                    ...current,
+                    repeatPattern: value ?? null,
+                    repeatEndsAt: endsAt ?? null,
+                  }) as CreateEvent
+              );
+            }}
+            disableTime={dataIsAllDay}
+          />
+        </ErrorBoundary>
       </div>
       <div className="mb-4 flex flex-col gap-2">
         <Label htmlFor="event-calendar">Calendar</Label>

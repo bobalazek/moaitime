@@ -2,7 +2,7 @@ import { addDays, format, subMinutes } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import { User } from '@moaitime/database-core';
-import { recurrenceParser } from '@moaitime/recurrence-parser';
+import { Recurrence } from '@moaitime/recurrence';
 import {
   CalendarEntry,
   CalendarEntryTypeEnum,
@@ -103,7 +103,8 @@ export class CalendarEntriesManager {
           continue;
         }
 
-        const eventIterations = recurrenceParser.getRuleDatesBetween(event.repeatPattern, from, to);
+        const recurrence = Recurrence.fromStringPattern(event.repeatPattern);
+        const eventIterations = recurrence.getDatesBetween(from, to);
         for (const eventIteration of eventIterations) {
           const calendarEntry = this._convertEventToCalendarEntry(event, eventIteration);
 

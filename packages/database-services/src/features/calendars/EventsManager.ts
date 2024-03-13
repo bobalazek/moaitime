@@ -30,7 +30,7 @@ import {
   userCalendars,
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
-import { recurrenceParser } from '@moaitime/recurrence-parser';
+import { Recurrence } from '@moaitime/recurrence';
 import {
   CreateEvent,
   getTimezonedEndOfDay,
@@ -342,9 +342,12 @@ export class EventsManager {
 
     const repeatPattern = data.repeatPattern ?? event.repeatPattern;
     if (startsAt && repeatPattern && data.repeatPattern !== null) {
-      let rule = recurrenceParser.getRuleFromString(repeatPattern);
-      rule = recurrenceParser.updateRule(rule, { dtstart: startsAt });
-      data.repeatPattern = recurrenceParser.getRulePattern(rule);
+      const recurrence = Recurrence.fromStringPattern(repeatPattern);
+      recurrence.updateOptions({
+        startsAt,
+      });
+
+      data.repeatPattern = recurrence.toStringPattern();
     }
 
     const newEvent = await this.updateOneById(eventId, {

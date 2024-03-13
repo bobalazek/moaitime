@@ -8,6 +8,7 @@ import {
   startOfWeek,
   startOfYear,
 } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 import {
   and,
   asc,
@@ -150,6 +151,7 @@ export class HabitsManager {
   async daily(actorUser: User, date: string): Promise<HabitDaily[]> {
     const dateObject = new Date(date);
     const endOfDayDate = endOfDay(dateObject);
+    const { generalStartDayOfWeek } = usersManager.getUserSettings(actorUser);
 
     const where = and(
       eq(habits.userId, actorUser.id),
@@ -190,6 +192,7 @@ export class HabitsManager {
         )
         .groupBy(habitEntries.habitId)
         .execute();
+
       for (const entry of dailyHabitEntries) {
         entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
@@ -202,7 +205,6 @@ export class HabitsManager {
       })
       .map((habit) => habit.id);
     if (weeklyHabitIds.length > 0) {
-      const { generalStartDayOfWeek } = usersManager.getUserSettings(actorUser);
       const startOfWeekDate = startOfWeek(dateObject, {
         weekStartsOn: generalStartDayOfWeek,
       });
@@ -223,6 +225,7 @@ export class HabitsManager {
         )
         .groupBy(habitEntries.habitId)
         .execute();
+
       for (const entry of weeklyHabitEntries) {
         entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
@@ -251,6 +254,7 @@ export class HabitsManager {
         )
         .groupBy(habitEntries.habitId)
         .execute();
+
       for (const entry of monthlyHabitEntries) {
         entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
@@ -279,23 +283,38 @@ export class HabitsManager {
         )
         .groupBy(habitEntries.habitId)
         .execute();
+
       for (const entry of yearlyHabitEntries) {
         entriesMap.set(entry.habitId, entry.sum ?? 0);
       }
     }
 
-    return allHabits.map((habit) => ({
-      id: `${habit.id}-${date}`,
-      date,
-      amount: entriesMap.get(habit.id) ?? 0,
-      habit: {
-        ...habit,
-        order: habit.order ?? 0,
-        deletedAt: habit.deletedAt?.toISOString() ?? null,
-        createdAt: habit.createdAt!.toISOString(),
-        updatedAt: habit.updatedAt!.toISOString(),
-      },
-    }));
+    return allHabits.map((habit) => {
+      const amount = entriesMap.get(habit.id) ?? 0;
+      let goalProgressPercentage = amount === 0 ? 0 : (amount / habit.goalAmount) * 100;
+      if (goalProgressPercentage > 100) {
+        goalProgressPercentage = 100;
+      }
+
+      return {
+        id: `${habit.id}-${date}`,
+        date,
+        amount,
+        goalProgressPercentage,
+        intervalProgressPercentage: this._getIntervalProgressPercentage(
+          dateObject,
+          habit,
+          actorUser
+        ),
+        habit: {
+          ...habit,
+          order: habit.order ?? 0,
+          deletedAt: habit.deletedAt?.toISOString() ?? null,
+          createdAt: habit.createdAt!.toISOString(),
+          updatedAt: habit.updatedAt!.toISOString(),
+        },
+      };
+    });
   }
 
   async view(actorUserId: string, habitId: string) {
@@ -544,6 +563,62 @@ export class HabitsManager {
         `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
       );
     }
+  }
+
+  private _getIntervalProgressPercentage(date: Date, habit: Habit, user: User) {
+    const { generalStartDayOfWeek, generalTimezone } = usersManager.getUserSettings(user);
+
+    const now = utcToZonedTime(new Date(), generalTimezone);
+    let intervalProgressPercentage = 0;
+
+    if (habit.goalFrequency === HabitGoalFrequencyEnum.DAY) {
+      const endOfDayDate = endOfDay(date);
+      if (now.getTime() > endOfDayDate.getTime()) {
+        intervalProgressPercentage = 100;
+      } else {
+        intervalProgressPercentage =
+          ((now.getTime() - date.getTime()) / (endOfDayDate.getTime() - date.getTime())) * 100;
+      }
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.WEEK) {
+      const startOfWeekDate = startOfWeek(date, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const endOfWeekDate = endOfWeek(date, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      if (now.getTime() > endOfWeekDate.getTime()) {
+        intervalProgressPercentage = 100;
+      } else {
+        intervalProgressPercentage =
+          ((now.getTime() - startOfWeekDate.getTime()) /
+            (endOfWeekDate.getTime() - startOfWeekDate.getTime())) *
+          100;
+      }
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.MONTH) {
+      const startOfMonthDate = startOfMonth(date);
+      const endOfMonthDate = endOfMonth(date);
+      if (now.getTime() > endOfMonthDate.getTime()) {
+        intervalProgressPercentage = 100;
+      } else {
+        intervalProgressPercentage =
+          ((now.getTime() - startOfMonthDate.getTime()) /
+            (endOfMonthDate.getTime() - startOfMonthDate.getTime())) *
+          100;
+      }
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.YEAR) {
+      const startOfYearDate = startOfYear(date);
+      const endOfYearDate = endOfYear(date);
+      if (now.getTime() > endOfYearDate.getTime()) {
+        intervalProgressPercentage = 100;
+      } else {
+        intervalProgressPercentage =
+          ((now.getTime() - startOfYearDate.getTime()) /
+            (endOfYearDate.getTime() - startOfYearDate.getTime())) *
+          100;
+      }
+    }
+
+    return intervalProgressPercentage;
   }
 }
 

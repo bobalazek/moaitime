@@ -5,7 +5,11 @@ import { useDebouncedCallback } from 'use-debounce';
 import { HabitDaily } from '@moaitime/shared-common';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@moaitime/web-ui';
 
-import { getLighterBackgroundColor, getTextColor } from '../../../core/utils/ColorHelpers';
+import {
+  getDarkerBackgroundColor,
+  getLighterBackgroundColor,
+  getTextColor,
+} from '../../../core/utils/ColorHelpers';
 import { useHabitsStore } from '../../state/habitsStore';
 
 export type HabitDailyEntryProps = {
@@ -69,6 +73,7 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
   const backgroundColor = habit.color ?? '#aaaaaa';
   const lighterBackgroundColor = getLighterBackgroundColor(backgroundColor, 0.15);
   const textColor = getTextColor(backgroundColor);
+  const intervalProgressBackgroundColor = getDarkerBackgroundColor(backgroundColor, 0.2);
 
   const debouncedUpdateHabitDaily = useDebouncedCallback(async (newAmount) => {
     setIsSaving(true);
@@ -105,7 +110,7 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
 
   return (
     <div
-      className="relative flex w-full flex-col flex-wrap rounded-lg border-2 px-6 py-4"
+      className="relative flex w-full flex-col flex-wrap rounded-lg border px-6 py-4"
       style={{
         color: textColor,
         borderColor: backgroundColor ?? undefined,
@@ -118,6 +123,14 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
           width: `${goalPercentage}%`,
           backgroundColor: backgroundColor ?? undefined,
         }}
+      />
+      <div
+        className="absolute bottom-0 left-0 h-[4px] rounded-md bg-red-400 transition-all"
+        style={{
+          width: `${habitDaily.intervalProgressPercentage}%`,
+          backgroundColor: intervalProgressBackgroundColor,
+        }}
+        title="Progress in the current interval"
       />
       <div className="z-10 flex w-full flex-wrap items-center justify-between gap-2">
         <div className="flex flex-grow">

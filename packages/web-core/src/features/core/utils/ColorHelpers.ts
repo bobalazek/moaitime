@@ -24,3 +24,7 @@ export const getTextColor = (backgroundColor?: string) => {
 export const getLighterBackgroundColor = (backgroundColor: string, amount: number = 0.1) => {
   return colord(backgroundColor).lighten(amount).toHex();
 };
+
+export const getDarkerBackgroundColor = (backgroundColor: string, amount: number = 0.1) => {
+  return colord(backgroundColor).darken(amount).toHex();
+};

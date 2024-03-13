@@ -6,6 +6,8 @@ export const HabitDailySchema = z.object({
   id: z.string(), // ${habitId}-${date}
   date: z.string(),
   amount: z.number(),
+  goalProgressPercentage: z.number(),
+  intervalProgressPercentage: z.number(),
   habit: HabitSchema,
 });
 

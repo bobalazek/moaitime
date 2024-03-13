@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { isValidUuid, Note } from '@moaitime/shared-common';
+import { isValidUuid } from '@moaitime/shared-common';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
 import { useStateAndUrlSync } from '../../../core/hooks/useStateAndUrlSync';
@@ -37,12 +37,8 @@ export default function NotesPage() {
     const noteId = location.pathname.replace('/notes/', '');
     if (isValidUuid(noteId)) {
       try {
-        setSelectedNote({
-          id: noteId,
-        } as Note);
-
         const newSelectedNote = await getNote(noteId);
-        setSelectedNote(newSelectedNote);
+        setSelectedNote(newSelectedNote, true);
 
         if (newSelectedNote && newSelectedNote.deletedAt) {
           setNotesIncludeDeleted(true);

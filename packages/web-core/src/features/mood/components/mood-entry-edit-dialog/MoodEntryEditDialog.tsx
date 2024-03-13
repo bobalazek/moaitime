@@ -67,12 +67,7 @@ export default function MoodEntryEditDialog() {
       setSelectedMoodEntryDialogOpen(false);
       setData(undefined);
     } catch (error) {
-      sonnerToast.error('Oops!', {
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Something went wrong while saving the mood entry.',
-      });
+      // Already handled
     }
   };
 

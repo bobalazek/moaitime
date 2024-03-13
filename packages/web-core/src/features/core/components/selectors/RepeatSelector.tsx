@@ -3,7 +3,7 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { XIcon } from 'lucide-react';
 import { MouseEvent, useEffect, useState } from 'react';
 
-import { recurrenceParser, RuleFrequency } from '@moaitime/recurrence-parser';
+import { recurrenceParser, RecurrenceParserFrequency } from '@moaitime/recurrence-parser';
 import { addDateTimezoneToItself, removeDateTimezoneFromItself } from '@moaitime/shared-common';
 import {
   Button,
@@ -51,7 +51,7 @@ export function RepeatSelector({
   const [open, setOpen] = useState(false);
   const [rule, setRule] = useState(
     recurrenceParser.createRule({
-      freq: RuleFrequency.DAILY,
+      freq: RecurrenceParserFrequency.DAILY,
       interval: 1,
       wkst: generalStartDayOfWeek,
     })
@@ -158,7 +158,7 @@ export function RepeatSelector({
                 const updateData: Record<string, number | number[]> = {
                   freq: parseInt(event.target.value),
                 };
-                if (rule.options.freq === RuleFrequency.WEEKLY) {
+                if (rule.options.freq === RecurrenceParserFrequency.WEEKLY) {
                   updateData.byweekday = rule.options.byweekday;
                 }
 
@@ -166,14 +166,14 @@ export function RepeatSelector({
               }}
               className="rounded-md border border-gray-300 bg-transparent p-2.5"
             >
-              <option value={RuleFrequency.DAILY}>days</option>
-              <option value={RuleFrequency.WEEKLY}>weeks</option>
-              <option value={RuleFrequency.MONTHLY}>months</option>
-              <option value={RuleFrequency.YEARLY}>years</option>
+              <option value={RecurrenceParserFrequency.DAILY}>days</option>
+              <option value={RecurrenceParserFrequency.WEEKLY}>weeks</option>
+              <option value={RecurrenceParserFrequency.MONTHLY}>months</option>
+              <option value={RecurrenceParserFrequency.YEARLY}>years</option>
             </select>
           </div>
         </div>
-        {rule.options.freq === RuleFrequency.WEEKLY && (
+        {rule.options.freq === RecurrenceParserFrequency.WEEKLY && (
           <div>
             <h4 className="text-muted-foreground">Repeat on</h4>
             <ToggleGroup

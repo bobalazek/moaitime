@@ -52,27 +52,21 @@ export function validate<
   return result.data;
 }
 
-export function createZodValidationPipe(): ZodValidationPipeClass {
-  @Injectable()
-  class ZodValidationPipe implements PipeTransform {
-    constructor(private schemaOrDto?: ZodSchema | ZodDto) {}
+@Injectable()
+export class ZodValidationPipe implements PipeTransform {
+  constructor(private schemaOrDto?: ZodSchema | ZodDto) {}
 
-    public transform(value: unknown, metadata: ArgumentMetadata) {
-      if (this.schemaOrDto) {
-        return validate(value, this.schemaOrDto);
-      }
-
-      const { metatype } = metadata;
-
-      if (!isZodDto(metatype)) {
-        return value;
-      }
-
-      return validate(value, metatype.schema);
+  public transform(value: unknown, metadata: ArgumentMetadata) {
+    if (this.schemaOrDto) {
+      return validate(value, this.schemaOrDto);
     }
+
+    const { metatype } = metadata;
+
+    if (!isZodDto(metatype)) {
+      return value;
+    }
+
+    return validate(value, metatype.schema);
   }
-
-  return ZodValidationPipe;
 }
-
-export const ZodValidationPipe = createZodValidationPipe();

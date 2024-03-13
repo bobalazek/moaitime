@@ -2,8 +2,6 @@
   "extends": "@moaitime/tsconfig-config/tsconfig.backend.json",
   "include": ["src/**/*"],
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "jsx": "react-jsx",
     "types": ["vitest/globals"]
   }

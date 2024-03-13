@@ -38,7 +38,6 @@ export default function StatisticsChart({
 
   const dates = Object.keys(data).map((date) => new Date(date).toLocaleDateString());
   const counts = Object.values(data);
-  const maxCount = Math.max(...counts);
 
   return (
     <div>
@@ -61,7 +60,6 @@ export default function StatisticsChart({
           yaxis: {
             forceNiceScale: true,
             decimalsInFloat: 0,
-            max: maxCount,
             labels: {
               formatter: (value) => {
                 const roundedValue = Math.round(value);

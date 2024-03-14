@@ -159,6 +159,45 @@ describe('Recurrence.ts', () => {
         ],
       },
     },
+    {
+      testName: 'should work when daily interval #5',
+      now: '2020-01-01T00:00:00.000Z',
+      options: {
+        startsAt: new Date('2020-01-06T00:00:00.000Z'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 10,
+        endsAt: new Date('2020-01-08T00:00:00.000Z'),
+      },
+      expected: {
+        dates: ['2020-01-07T00:00:00.000Z', '2020-01-08T00:00:00.000Z'],
+      },
+    },
+    {
+      testName: 'should work when daily interval #6',
+      now: '2020-01-01T00:00:00.000Z',
+      options: {
+        startsAt: new Date('2020-01-06T00:00:00.000Z'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 10,
+      },
+      expected: {
+        nextDate: '2020-01-07T00:00:00.000Z',
+      },
+    },
+    {
+      testName: 'should work when daily interval #7',
+      now: '2020-01-01T00:00:00.000Z',
+      options: {
+        startsAt: new Date('2020-01-06T00:00:00.000Z'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+      },
+      expected: {
+        nextDate: '2020-01-07T00:00:00.000Z',
+      },
+    },
     // Weekly
     {
       testName: 'should work when weekly interval #1',

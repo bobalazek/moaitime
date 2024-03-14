@@ -93,14 +93,40 @@ export class Recurrence {
   }
 
   getNextDate(date: Date): Date | null {
-    let iterations = 0;
+    const count = this._options.count ?? 0;
 
-    let currentDate = date;
+    let iterations = 0;
+    let occurrences = 0;
+    let currentDate = count ? this.startsAt : date;
+
+    if (count) {
+      while (currentDate <= date) {
+        currentDate = this._incrementDate(currentDate);
+        if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
+          occurrences++;
+          if (occurrences >= count) {
+            return null;
+          }
+        }
+
+        iterations++;
+        if (iterations > this._maxIterations) {
+          throw new Error('Too many iterations. Infinite loop detected.');
+        }
+      }
+    }
+
+    // Now find the next valid date after the provided date, respecting the count
     // eslint-disable-next-line no-constant-condition
     while (true) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
-        return currentDate;
+        occurrences++;
+        if (count && occurrences >= count) {
+          return null; // If adding this date would exceed the count, don't return it
+        }
+
+        return currentDate; // Return the next valid date
       }
 
       iterations++;
@@ -115,7 +141,7 @@ export class Recurrence {
 
     const maxCount = this._options.count ? Math.min(count, this._options.count) : count;
     let iterations = 0;
-    let currentDate = date < this.startsAt ? new Date(this.startsAt) : new Date(date);
+    let currentDate = date < this.startsAt ? this.startsAt : new Date(date);
     while (dates.length < maxCount) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
@@ -219,11 +245,11 @@ export class Recurrence {
   }
 
   private _isWithinDateRange(date: Date): boolean {
-    if (date < this._options.startsAt) {
+    if (date <= this.startsAt) {
       return false;
     }
 
-    if (this._options.endsAt && date > this._options.endsAt) {
+    if (this.endsAt && date > this.endsAt) {
       return false;
     }
 

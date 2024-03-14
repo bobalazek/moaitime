@@ -8,7 +8,7 @@ import {
   RecurrenceIntervalEnum,
   RecurrenceOptions,
 } from '@moaitime/recurrence';
-import { addDateTimezoneToItself, removeDateTimezoneFromItself } from '@moaitime/shared-common';
+import { addDateTimezoneToItself } from '@moaitime/shared-common';
 import {
   Button,
   Input,
@@ -65,9 +65,8 @@ export function RepeatSelector({
   );
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
-  const recurrenceOptions = recurrence.getOptions();
   const recurrenceString = recurrence.toHumanText();
-  const recurrenceDates = recurrence.getNextDates(startsAt, MAX_DATES_TO_SHOW + 1);
+  const recurrenceDates = recurrence.getNextDates(new Date(startsAt), MAX_DATES_TO_SHOW + 1);
 
   useEffect(() => {
     const newRecurrence = value
@@ -78,12 +77,10 @@ export function RepeatSelector({
 
     setRecurrence(newRecurrence);
 
-    const newRecurrenceOptions = newRecurrence.getOptions();
-
     // Make sure ends at is always first, so we set the correct endsType
-    if (newRecurrenceOptions.endsAt) {
+    if (newRecurrence.options.endsAt) {
       setEndsType(RepeatSelectorEndsEnum.UNTIL_DATE);
-    } else if (newRecurrenceOptions.count) {
+    } else if (newRecurrence.options.count) {
       setEndsType(RepeatSelectorEndsEnum.COUNT);
     }
 
@@ -104,7 +101,10 @@ export function RepeatSelector({
 
     const recurrenceValue = recurrence.toStringPattern();
 
-    onChangeValue(recurrenceValue, recurrence.endsAt);
+    onChangeValue(
+      recurrenceValue,
+      recurrence.options.endsAt ? new Date(recurrence.options.endsAt) : undefined
+    );
 
     setOpen(false);
   };
@@ -142,7 +142,7 @@ export function RepeatSelector({
             <span>Repeat every</span>
             <Input
               type="number"
-              value={recurrenceOptions.intervalAmount}
+              value={recurrence.options.intervalAmount}
               onChange={(event) => {
                 setRecurrence((current) => {
                   return current.updateOptions({
@@ -155,13 +155,13 @@ export function RepeatSelector({
               max={999}
             />
             <select
-              value={recurrenceOptions.interval}
+              value={recurrence.options.interval}
               onChange={(event) => {
                 setRecurrence((current) => {
                   const updateData: Partial<RecurrenceOptions> = {
                     interval: event.target.value as RecurrenceIntervalEnum,
                   };
-                  if (recurrenceOptions.interval !== RecurrenceIntervalEnum.WEEK) {
+                  if (recurrence.options.interval !== RecurrenceIntervalEnum.WEEK) {
                     updateData.daysOfWeekOnly = undefined;
                   }
 
@@ -177,12 +177,12 @@ export function RepeatSelector({
             </select>
           </div>
         </div>
-        {recurrenceOptions.interval === RecurrenceIntervalEnum.WEEK && (
+        {recurrence.options.interval === RecurrenceIntervalEnum.WEEK && (
           <div>
             <h4 className="text-muted-foreground">Repeat on</h4>
             <ToggleGroup
               type="multiple"
-              value={recurrenceOptions.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
+              value={recurrence.options.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
               onValueChange={(value) => {
                 setRecurrence((current) => {
                   return current.updateOptions({
@@ -227,11 +227,11 @@ export function RepeatSelector({
                 return current.updateOptions({
                   endsAt:
                     value === RepeatSelectorEndsEnum.UNTIL_DATE
-                      ? recurrenceOptions.endsAt ?? addDays(new Date(), 7)
+                      ? recurrence.options.endsAt ?? addDays(new Date(), 7)
                       : undefined,
                   count:
                     value === RepeatSelectorEndsEnum.COUNT
-                      ? recurrenceOptions.count ?? DEFAULT_OCCURENCES
+                      ? recurrence.options.count ?? DEFAULT_OCCURENCES
                       : undefined,
                 });
               });
@@ -254,9 +254,10 @@ export function RepeatSelector({
               </div>
               <DateSelector
                 data={convertIsoStringToObject(
-                  recurrence.endsAt
-                    ? removeDateTimezoneFromItself(recurrence.endsAt).toISOString()
-                    : addDays(new Date(), 7).toISOString(),
+                  (recurrence.options.endsAt
+                    ? recurrence.options.endsAt
+                    : addDays(new Date(), 7)
+                  ).toISOString(),
                   !disableTime,
                   undefined
                 )}
@@ -290,7 +291,7 @@ export function RepeatSelector({
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
-                  value={recurrenceOptions.count ?? DEFAULT_OCCURENCES}
+                  value={recurrence.options.count ?? DEFAULT_OCCURENCES}
                   onChange={(event) => {
                     setRecurrence((current) => {
                       return current.updateOptions({

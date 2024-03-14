@@ -94,6 +94,13 @@ export const addDateTimezoneToItself = (date: Date): Date => {
   return new Date(date.valueOf() - tzOffset * 60 * 1000);
 };
 
+export const toLocalTime = (date: Date) => {
+  return format(
+    removeDateTimezoneFromItself(zonedTimeToUtc(date, 'UTC')),
+    'yyyy-MM-dd HH:mm:ss.SSS'
+  ).replace(' ', 'T');
+};
+
 export const padDataForRangeMap = (data: StatisticsDateCountData, from: Date, to: Date) => {
   const map: StatisticsDateCountData = {};
   const range: Date[] = [];

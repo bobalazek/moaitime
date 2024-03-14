@@ -1,4 +1,4 @@
-import { addDays, addMilliseconds, format } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import {
   and,
   asc,
@@ -677,7 +677,7 @@ export class TasksManager {
             : addDays(new Date(task.dueDate), 1)
         );
         const recurrence = Recurrence.fromStringPattern(task.dueDateRepeatPattern);
-        const nextExecutionDate = recurrence.getNextDate(addMilliseconds(currentDueDate, 1));
+        const nextExecutionDate = recurrence.getNextDate(currentDueDate);
         if (nextExecutionDate) {
           const dueDate = nextExecutionDate.toISOString().slice(0, 10);
           const dueDateTime = task.dueDateTime

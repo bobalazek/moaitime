@@ -1,5 +1,7 @@
 import { add, isBefore, isWithinInterval } from 'date-fns';
 
+import { toLocalTime } from '../../shared-common/src/Helpers';
+
 export enum RecurrenceIntervalEnum {
   HOUR = 'hour',
   DAY = 'day',
@@ -19,10 +21,10 @@ export enum RecurrenceDayOfWeekEnum {
 }
 
 export type RecurrenceOptions = {
-  startsAt: Date | string;
+  startsAt: Date;
   interval: RecurrenceIntervalEnum;
   intervalAmount: number;
-  endsAt?: Date | string;
+  endsAt?: Date;
   count?: number;
   hoursOfDayOnly?: number[]; // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ... 23
   daysOfWeekOnly?: RecurrenceDayOfWeekEnum[];
@@ -40,7 +42,8 @@ export class Recurrence {
     this._options = options;
   }
 
-  getOptions() {
+  // Getters
+  get options() {
     return this._options;
   }
 
@@ -75,21 +78,32 @@ export class Recurrence {
       text += ` on the ${this._listToHumanReadable(daysOfMonthOnly, 'dayOfMonth')} of the month`;
     }
 
-    if (this.endsAt) {
-      text += ` until ${this.endsAt.toDateString()}`;
+    if (this.options.endsAt) {
+      const endsAt = new Date(this.options.endsAt);
+      text += ` until ${endsAt.toDateString()}`;
     }
 
     return text;
   }
 
   toStringPattern() {
-    return JSON.stringify(this._options);
+    const { startsAt, endsAt, ...options } = this._options;
+
+    return JSON.stringify({
+      ...options,
+      startsAt: toLocalTime(startsAt),
+      endsAt: endsAt ? toLocalTime(endsAt) : undefined,
+    });
   }
 
   static fromStringPattern(value: string) {
-    const options = JSON.parse(value);
+    const { startsAt, endsAt, ...options } = JSON.parse(value);
 
-    return new Recurrence(options);
+    return new Recurrence({
+      ...options,
+      startsAt: new Date(startsAt),
+      endsAt: endsAt ? new Date(endsAt) : undefined,
+    });
   }
 
   getNextDate(date: Date): Date | null {
@@ -97,8 +111,7 @@ export class Recurrence {
 
     let iterations = 0;
     let occurrences = 0;
-    let currentDate = count ? this.startsAt : date;
-
+    let currentDate = count ? new Date(this.options.startsAt) : date;
     if (count) {
       while (currentDate <= date) {
         currentDate = this._incrementDate(currentDate);
@@ -139,16 +152,19 @@ export class Recurrence {
   getNextDates(date: Date, count: number): Date[] {
     const dates: Date[] = [];
 
+    const startsAt = new Date(this._options.startsAt);
+    const endsAt = this._options.endsAt ? new Date(this._options.endsAt) : null;
+
     const maxCount = this._options.count ? Math.min(count, this._options.count) : count;
     let iterations = 0;
-    let currentDate = date < this.startsAt ? this.startsAt : new Date(date);
+    let currentDate = date < startsAt ? startsAt : new Date(date);
     while (dates.length < maxCount) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
         dates.push(currentDate);
       }
 
-      if (this.endsAt && currentDate > this.endsAt) {
+      if (endsAt && currentDate > endsAt) {
         break;
       }
 
@@ -161,19 +177,21 @@ export class Recurrence {
     return dates;
   }
 
-  getDatesBetween(startDate: Date, endDate: Date) {
-    const adjustedStartDate = startDate < this.startsAt ? this.startsAt : startDate;
-    const adjustedEndDate = this.endsAt && endDate > this.endsAt ? this.endsAt : endDate;
+  getDatesBetween(startDate: Date, endDate: Date): Date[] {
+    const startsAt = new Date(this._options.startsAt);
+    const endsAt = this._options.endsAt ? new Date(this._options.endsAt) : null;
+    const adjustedStartsAt = startDate < startsAt ? startsAt : startDate;
+    const adjustedEndsAt = endsAt && endDate > endsAt ? endsAt : endDate;
 
     const dates: Date[] = [];
     let iterations = 0;
     let occurrences = 0;
-    let currentDate = new Date(adjustedStartDate);
+    let currentDate = new Date(adjustedStartsAt);
 
-    while (isBefore(currentDate, adjustedEndDate)) {
+    while (isBefore(currentDate, adjustedEndsAt)) {
       if (
         this._matchesOptions(currentDate) &&
-        isWithinInterval(currentDate, { start: adjustedStartDate, end: adjustedEndDate })
+        isWithinInterval(currentDate, { start: adjustedStartsAt, end: adjustedEndsAt })
       ) {
         dates.push(currentDate);
         occurrences++;
@@ -191,15 +209,6 @@ export class Recurrence {
     }
 
     return dates;
-  }
-
-  // Getters
-  get startsAt() {
-    return new Date(this._options.startsAt);
-  }
-
-  get endsAt() {
-    return this._options.endsAt ? new Date(this._options.endsAt) : undefined;
   }
 
   // Private
@@ -247,11 +256,14 @@ export class Recurrence {
   }
 
   private _isWithinDateRange(date: Date): boolean {
-    if (date <= this.startsAt) {
+    const startsAt = new Date(this._options.startsAt);
+    const endsAt = this._options.endsAt ? new Date(this._options.endsAt) : null;
+
+    if (date <= startsAt) {
       return false;
     }
 
-    if (this.endsAt && date > this.endsAt) {
+    if (endsAt && date > endsAt) {
       return false;
     }
 
@@ -261,15 +273,15 @@ export class Recurrence {
   private _matchesOptions(date: Date): boolean {
     const { hoursOfDayOnly, daysOfWeekOnly, daysOfMonthOnly } = this._options;
 
-    if (hoursOfDayOnly && !hoursOfDayOnly.includes(date.getUTCHours())) {
+    if (hoursOfDayOnly && !hoursOfDayOnly.includes(date.getHours())) {
       return false;
     }
 
-    if (daysOfWeekOnly && !daysOfWeekOnly.includes(date.getUTCDay() as RecurrenceDayOfWeekEnum)) {
+    if (daysOfWeekOnly && !daysOfWeekOnly.includes(date.getDay() as RecurrenceDayOfWeekEnum)) {
       return false;
     }
 
-    if (daysOfMonthOnly && !daysOfMonthOnly.includes(date.getUTCDate())) {
+    if (daysOfMonthOnly && !daysOfMonthOnly.includes(date.getDate())) {
       return false;
     }
 

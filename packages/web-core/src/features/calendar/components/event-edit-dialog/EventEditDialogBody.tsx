@@ -166,8 +166,10 @@ export default function EventEditDialogBody() {
             const startsAt = result?.iso ? result.iso : undefined;
 
             let endsAt = data?.endsAt; // we also want to update so it's always in the future
-            if (!dataIsAllDay && startsAt && endsAt && new Date(startsAt) >= new Date(endsAt)) {
-              endsAt = addDateTimezoneToItself(addMinutes(new Date(startsAt), 30))
+            if (startsAt && endsAt && new Date(startsAt) >= new Date(endsAt)) {
+              endsAt = addDateTimezoneToItself(
+                addMinutes(new Date(startsAt), !dataIsAllDay ? 30 : 0)
+              )
                 .toISOString()
                 .slice(0, -1);
             }

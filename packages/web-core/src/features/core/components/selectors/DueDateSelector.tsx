@@ -1,5 +1,4 @@
-import { addDays, format, startOfDay } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { format, startOfDay } from 'date-fns';
 import { CalendarIcon, RepeatIcon, XIcon } from 'lucide-react';
 import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
@@ -109,12 +108,12 @@ export default function DueDateSelector({
 
     try {
       const newStartDate = new Date(
-        dateTimeValue ? `${dateValue}T${dateTimeValue}` : addDays(new Date(dateValue), 1)
+        dateTimeValue ? `${dateValue}T${dateTimeValue}` : `${dateValue}T00:00:00.000`
       );
 
       const recurrence = Recurrence.fromStringPattern(repeatPatternValue);
       recurrence.updateOptions({
-        startsAt: zonedTimeToUtc(newStartDate, 'UTC'),
+        startsAt: newStartDate,
       });
 
       setRepeatPatternValue(recurrence.toStringPattern());
@@ -195,10 +194,12 @@ export default function DueDateSelector({
     setDateTimeValue(`${paddedHours}:${paddedMins}`);
   };
 
-  const repeatStartsAt =
-    dateTimeValue && isValidTime(dateTimeValue)
-      ? new Date(`${dateValue}T${dateTimeValue}`)
-      : new Date(`${dateValue}T00:00:00.000`);
+  let repeatStartsAt = new Date();
+  if (dateValue && dateTimeValue && isValidTime(dateTimeValue)) {
+    repeatStartsAt = new Date(`${dateValue}T${dateTimeValue}`);
+  } else if (dateValue) {
+    repeatStartsAt = new Date(`${dateValue}T00:00:00.000`);
+  }
 
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
 

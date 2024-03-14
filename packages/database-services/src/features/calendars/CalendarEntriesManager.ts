@@ -30,20 +30,7 @@ export class CalendarEntriesManager {
       throw new Error('Invalid to date');
     }
 
-    const timezone = actorUser?.settings?.generalTimezone ?? 'UTC';
-
-    let timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
-    let timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
-
-    // To be safe, we need to additionally pull a day before and end, so we catch all events in all timezones.
-    if (timezonedFrom) {
-      timezonedFrom = addDays(timezonedFrom, -1);
-    }
-    if (timezonedTo) {
-      timezonedTo = addDays(timezonedTo, 1);
-    }
-
-    return calendarEntriesManager.findAllForRange(actorUser, timezonedFrom, timezonedTo);
+    return calendarEntriesManager.findAllForRange(actorUser, from, to);
   }
 
   async yearly(actorUserId: string, year: number) {
@@ -74,15 +61,26 @@ export class CalendarEntriesManager {
   }
 
   // Helpers
-  async findAllForRange(user: User, from?: Date, to?: Date): Promise<CalendarEntry[]> {
+  async findAllForRange(user: User, from: string, to: string): Promise<CalendarEntry[]> {
     const timezone = user.settings?.generalTimezone ?? 'UTC';
+
+    let timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
+    let timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
+
+    // To be safe, we need to additionally pull a day before and end, so we catch all events in all timezones.
+    if (timezonedFrom) {
+      timezonedFrom = addDays(timezonedFrom, -1);
+    }
+    if (timezonedTo) {
+      timezonedTo = addDays(timezonedTo, 1);
+    }
 
     const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
     const events = await eventsManager.findManyByCalendarIdsAndRange(
       calendarIdsMap,
       user.id,
-      from,
-      to
+      timezonedFrom,
+      timezonedTo
     );
     const calendarEntries: CalendarEntry[] = events.map((event) => {
       return this._convertEventToCalendarEntry(event);
@@ -90,11 +88,14 @@ export class CalendarEntriesManager {
 
     // Repeating events
     if (from && to) {
+      const recurrenceFrom = new Date(`${from}T00:00:00.000`);
+      const recurrenceTo = new Date(`${to}T23:59:59.999`);
+
       const recurringEvents = await eventsManager.findManyByCalendarIdsAndRange(
         calendarIdsMap,
         user.id,
-        from,
-        to,
+        timezonedFrom,
+        timezonedTo,
         true
       );
       for (const event of recurringEvents) {
@@ -104,7 +105,7 @@ export class CalendarEntriesManager {
         }
 
         const recurrence = Recurrence.fromStringPattern(event.repeatPattern);
-        const eventIterations = recurrence.getDatesBetween(from, to);
+        const eventIterations = recurrence.getDatesBetween(recurrenceFrom, recurrenceTo);
         for (const eventIteration of eventIterations) {
           const calendarEntry = this._convertEventToCalendarEntry(event, eventIteration);
 
@@ -125,7 +126,11 @@ export class CalendarEntriesManager {
     }
 
     const listIds = await listsManager.getVisibleListIdsByUserId(user.id);
-    const rawTasks = await tasksManager.findManyByListIdsAndRange(listIds, from, to);
+    const rawTasks = await tasksManager.findManyByListIdsAndRange(
+      listIds,
+      timezonedFrom,
+      timezonedTo
+    );
     const tasks = await tasksManager.populateTagsAndUsers(rawTasks);
     for (const task of tasks) {
       // We should never have a task without a due date,

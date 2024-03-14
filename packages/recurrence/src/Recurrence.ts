@@ -1,4 +1,4 @@
-import { add, isBefore, isWithinInterval } from 'date-fns';
+import { add } from 'date-fns';
 
 import { toLocalTime } from '../../shared-common/src/Helpers';
 
@@ -176,28 +176,34 @@ export class Recurrence {
   getDatesBetween(startDate: Date, endDate: Date): Date[] {
     const startsAt = new Date(this._options.startsAt);
     const endsAt = this._options.endsAt ? new Date(this._options.endsAt) : null;
-    const adjustedStartsAt = startDate < startsAt ? startsAt : startDate;
+    let currentDate = new Date(startDate < startsAt ? startsAt : startDate);
     const adjustedEndsAt = endsAt && endDate > endsAt ? endsAt : endDate;
 
     const dates: Date[] = [];
     let iterations = 0;
     let occurrences = 0;
-    let currentDate = new Date(adjustedStartsAt);
 
-    while (isBefore(currentDate, adjustedEndsAt)) {
-      if (
-        this._matchesOptions(currentDate) &&
-        isWithinInterval(currentDate, { start: adjustedStartsAt, end: adjustedEndsAt })
-      ) {
-        dates.push(currentDate);
-        occurrences++;
-
-        if (this._options.count !== undefined && occurrences >= this._options.count) {
-          break;
+    if (this._options.count) {
+      let tempDate = new Date(startsAt);
+      while (tempDate < currentDate && occurrences < this._options.count) {
+        if (this._matchesOptions(tempDate) && this._isWithinDateRange(tempDate)) {
+          occurrences++;
         }
-      }
 
+        tempDate = this._incrementDate(tempDate);
+      }
+    }
+
+    while (
+      currentDate <= adjustedEndsAt &&
+      (this._options.count === undefined || occurrences < this._options.count)
+    ) {
+      if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
+        dates.push(new Date(currentDate));
+        occurrences++;
+      }
       currentDate = this._incrementDate(currentDate);
+
       iterations++;
       if (iterations > this._maxIterations) {
         throw new Error('Too many iterations. Infinite loop detected.');

@@ -107,39 +107,34 @@ export class Recurrence {
   }
 
   getNextDate(date: Date): Date | null {
-    const count = this._options.count ?? 0;
-
     let iterations = 0;
-    let occurrences = 0;
-    let currentDate = count ? new Date(this.options.startsAt) : date;
-    if (count) {
-      while (currentDate <= date) {
-        currentDate = this._incrementDate(currentDate);
-        if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
+    let currentDate = new Date(date);
+
+    if (currentDate < this.options.startsAt) {
+      currentDate = new Date(this.options.startsAt);
+    }
+
+    if (this._options.count) {
+      let occurrences = 0;
+      let tempDate = new Date(this.options.startsAt);
+
+      while (tempDate <= date) {
+        if (this._matchesOptions(tempDate) && this._isWithinDateRange(tempDate)) {
           occurrences++;
-          if (occurrences >= count) {
+          if (occurrences >= this._options.count) {
             return null;
           }
         }
 
-        iterations++;
-        if (iterations > this._maxIterations) {
-          throw new Error('Too many iterations. Infinite loop detected.');
-        }
+        tempDate = this._incrementDate(tempDate);
       }
     }
 
-    // Now find the next valid date after the provided date, respecting the count
     // eslint-disable-next-line no-constant-condition
     while (true) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
-        occurrences++;
-        if (count && occurrences >= count) {
-          return null; // If adding this date would exceed the count, don't return it
-        }
-
-        return currentDate; // Return the next valid date
+        return currentDate;
       }
 
       iterations++;

@@ -1,4 +1,5 @@
 import { HistoryIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import {
   Button,
@@ -21,10 +22,7 @@ const NotesPageHeaderButtons = () => {
     deleteNote,
     undeleteNote,
   } = useNotesStore();
-
-  if (!selectedNoteData) {
-    return null;
-  }
+  const unsavedChangesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const onDeleteButtonClick = async () => {
     if (!selectedNote) {
@@ -96,7 +94,7 @@ const NotesPageHeaderButtons = () => {
     setSelectedNote(null);
   };
 
-  const onSaveButtonClick = async () => {
+  const onSaveButtonClick = useCallback(async () => {
     try {
       await saveSelectedNoteData();
 
@@ -106,7 +104,33 @@ const NotesPageHeaderButtons = () => {
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
-  };
+  }, [saveSelectedNoteData]);
+
+  const debouncedSave = useCallback(() => {
+    if (!selectedNote?.id) {
+      return;
+    }
+
+    if (!selectedNoteDataChanged) {
+      return;
+    }
+
+    if (unsavedChangesTimeoutRef.current) {
+      clearTimeout(unsavedChangesTimeoutRef.current);
+    }
+
+    unsavedChangesTimeoutRef.current = setTimeout(() => {
+      onSaveButtonClick();
+    }, 3000);
+  }, [selectedNote?.id, selectedNoteDataChanged, onSaveButtonClick]);
+
+  useEffect(() => {
+    debouncedSave();
+  }, [selectedNoteDataChanged, selectedNoteData, debouncedSave]);
+
+  if (!selectedNoteData) {
+    return null;
+  }
 
   return (
     <div className="flex gap-2">
@@ -156,7 +180,12 @@ const NotesPageHeaderButtons = () => {
       <Button size="sm" variant="outline" className="h-8" onClick={onCancelButtonClick}>
         Cancel
       </Button>
-      <Button size="sm" className="h-8" onClick={onSaveButtonClick}>
+      <Button
+        size="sm"
+        className="h-8"
+        onClick={onSaveButtonClick}
+        disabled={!selectedNoteDataChanged}
+      >
         {selectedNote && <>Save Note</>}
         {!selectedNote && <>Create Note</>}
       </Button>

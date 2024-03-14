@@ -128,7 +128,7 @@ describe('Recurrence.ts', () => {
         count: 5,
       },
       expected: {
-        dates: [
+        nextDates: [
           '2020-01-02T00:00:00.000Z',
           '2020-01-03T00:00:00.000Z',
           '2020-01-04T00:00:00.000Z',
@@ -148,7 +148,7 @@ describe('Recurrence.ts', () => {
         endsAt: new Date('2020-01-08T00:00:00.000Z'),
       },
       expected: {
-        dates: [
+        nextDates: [
           '2020-01-02T00:00:00.000Z',
           '2020-01-03T00:00:00.000Z',
           '2020-01-04T00:00:00.000Z',
@@ -170,7 +170,7 @@ describe('Recurrence.ts', () => {
         endsAt: new Date('2020-01-08T00:00:00.000Z'),
       },
       expected: {
-        dates: ['2020-01-07T00:00:00.000Z', '2020-01-08T00:00:00.000Z'],
+        nextDates: ['2020-01-07T00:00:00.000Z', '2020-01-08T00:00:00.000Z'],
       },
     },
     {
@@ -196,6 +196,44 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-07T00:00:00.000Z',
+      },
+    },
+    {
+      testName: 'should work when daily interval #8',
+      now: '2020-01-01T00:00:00.000Z',
+      startDate: '2020-01-02T00:00:00.000Z', // Those 2 dates are only needed if we have dates between
+      endDate: '2020-01-12T00:00:00.000Z',
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000Z'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+      },
+      expected: {
+        datesBetween: [
+          '2020-01-08T00:00:00.000Z',
+          '2020-01-09T00:00:00.000Z',
+          '2020-01-10T00:00:00.000Z',
+          '2020-01-11T00:00:00.000Z',
+        ],
+      },
+    },
+    {
+      testName: 'should work when daily interval #9',
+      now: '2020-01-01T00:00:00.000Z',
+      startDate: '2020-01-02T00:00:00.000Z', // Those 2 dates are only needed if we have dates between
+      endDate: '2020-01-12T00:00:00.000Z',
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000Z'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 3,
+      },
+      expected: {
+        datesBetween: [
+          '2020-01-08T00:00:00.000Z',
+          '2020-01-09T00:00:00.000Z',
+          '2020-01-10T00:00:00.000Z',
+        ],
       },
     },
     // Weekly
@@ -296,7 +334,7 @@ describe('Recurrence.ts', () => {
       },
       throwsErrorMessage: 'Invalid start date',
     },
-  ])(`$testName`, async ({ now, options, expected, throwsErrorMessage }) => {
+  ])(`$testName`, async ({ now, startDate, endDate, options, expected, throwsErrorMessage }) => {
     const nowDate = new Date(now);
     vitest.setSystemTime(now);
 
@@ -316,9 +354,14 @@ describe('Recurrence.ts', () => {
       expect(recurrence.toHumanText()).toEqual(expected.humanText);
     }
 
-    if (expected?.dates) {
+    if (expected?.nextDates) {
       const dates = recurrence.getNextDates(nowDate, options.count!);
-      expect(dates.map((date) => date.toISOString())).toEqual(expected.dates);
+      expect(dates.map((date) => date.toISOString())).toEqual(expected.nextDates);
+    }
+
+    if (expected?.datesBetween) {
+      const dates = recurrence.getDatesBetween(new Date(startDate!), new Date(endDate!));
+      expect(dates.map((date) => date.toISOString())).toEqual(expected.datesBetween);
     }
   });
 });

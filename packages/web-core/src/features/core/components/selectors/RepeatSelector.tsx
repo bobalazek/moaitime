@@ -67,7 +67,7 @@ export function RepeatSelector({
 
   const recurrenceOptions = recurrence.getOptions();
   const recurrenceString = recurrence.toHumanText();
-  const recurrenceDates = recurrence.getNextDates(startsAt, MAX_DATES_TO_SHOW);
+  const recurrenceDates = recurrence.getNextDates(startsAt, MAX_DATES_TO_SHOW + 1);
 
   useEffect(() => {
     const newRecurrence = value
@@ -321,13 +321,14 @@ export function RepeatSelector({
             )}
             {recurrenceDates.length > 0 && (
               <ul className="list-disc pl-5 text-xs leading-5">
-                {recurrenceDates.map((date) => {
+                {recurrenceDates.slice(0, MAX_DATES_TO_SHOW).map((date) => {
                   return (
                     <li key={date.toISOString()}>
                       {disableTime ? date.toLocaleDateString() : date.toLocaleString()}
                     </li>
                   );
                 })}
+                {recurrenceDates.length > MAX_DATES_TO_SHOW && <li>...</li>}
               </ul>
             )}
           </div>

@@ -167,11 +167,8 @@ export class Recurrence {
 
     const dates: Date[] = [];
     let iterations = 0;
-    let currentDate = adjustedStartDate;
-
-    if (isBefore(currentDate, adjustedStartDate)) {
-      currentDate = new Date(adjustedStartDate);
-    }
+    let occurrences = 0;
+    let currentDate = new Date(adjustedStartDate);
 
     while (isBefore(currentDate, adjustedEndDate)) {
       if (
@@ -179,15 +176,20 @@ export class Recurrence {
         isWithinInterval(currentDate, { start: adjustedStartDate, end: adjustedEndDate })
       ) {
         dates.push(currentDate);
+        occurrences++;
+
+        if (this._options.count !== undefined && occurrences >= this._options.count) {
+          break;
+        }
       }
 
       currentDate = this._incrementDate(currentDate);
-
       iterations++;
       if (iterations > this._maxIterations) {
         throw new Error('Too many iterations. Infinite loop detected.');
       }
     }
+
     return dates;
   }
 

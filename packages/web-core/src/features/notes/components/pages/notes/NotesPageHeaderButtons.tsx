@@ -1,5 +1,6 @@
 import { HistoryIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import {
   Button,
@@ -22,7 +23,6 @@ const NotesPageHeaderButtons = () => {
     deleteNote,
     undeleteNote,
   } = useNotesStore();
-  const unsavedChangesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const onDeleteButtonClick = async () => {
     if (!selectedNote) {
@@ -106,25 +106,15 @@ const NotesPageHeaderButtons = () => {
     }
   }, [saveSelectedNoteData]);
 
-  const debouncedSave = useCallback(() => {
-    if (!selectedNote?.id) {
-      return;
-    }
+  const debouncedSave = useDebouncedCallback(async () => {
+    await onSaveButtonClick();
+  }, 3000);
 
+  useEffect(() => {
     if (!selectedNoteDataChanged) {
       return;
     }
 
-    if (unsavedChangesTimeoutRef.current) {
-      clearTimeout(unsavedChangesTimeoutRef.current);
-    }
-
-    unsavedChangesTimeoutRef.current = setTimeout(() => {
-      onSaveButtonClick();
-    }, 3000);
-  }, [selectedNote?.id, selectedNoteDataChanged, onSaveButtonClick]);
-
-  useEffect(() => {
     debouncedSave();
   }, [selectedNoteDataChanged, selectedNoteData, debouncedSave]);
 

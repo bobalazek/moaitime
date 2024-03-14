@@ -24,9 +24,7 @@ export const NoteSchema = z.object({
 
 export const CreateNoteSchema = z.object({
   type: z.nativeEnum(NoteTypeEnum).default(NoteTypeEnum.NOTE),
-  title: z.string().min(1, {
-    message: 'Note title must be provided',
-  }),
+  title: z.string(),
   content: NoteContentSchema,
   color: z.string().nullable().optional(),
   directory: z.string().nullable().optional(),

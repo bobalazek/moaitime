@@ -215,18 +215,20 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     const note = skipGet ? selectedNote : selectedNote ? await getNote(selectedNote.id) : null;
 
     let selectedNoteData: UpdateNote | null = null;
-    try {
-      const parsedNote = UpdateNoteSchema.parse(note);
+    if (note) {
+      try {
+        const parsedNote = UpdateNoteSchema.parse(note);
 
-      selectedNoteData = parsedNote;
-    } catch (e) {
-      selectedNoteData = {
-        title: note?.title ?? '',
-        content: note?.content as never,
-        color: note?.color,
-        directory: note?.directory,
-        journalDate: note?.journalDate,
-      };
+        selectedNoteData = parsedNote;
+      } catch (e) {
+        selectedNoteData = {
+          title: note?.title ?? '',
+          content: note?.content as never,
+          color: note?.color,
+          directory: note?.directory,
+          journalDate: note?.journalDate,
+        };
+      }
     }
 
     set({

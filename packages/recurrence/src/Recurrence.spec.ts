@@ -24,7 +24,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-01T01:00:00.000',
-        humanText: 'Every hour',
+        humanText: 'every hour starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -38,7 +38,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-01T04:00:00.000',
-        humanText: 'Every 4 hours',
+        humanText: 'every 4 hours starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -53,7 +53,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-01T02:00:00.000',
-        humanText: 'Every hour at 2:00, 3:00',
+        humanText: 'every hour at 2:00, 3:00 starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -69,7 +69,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-04T02:00:00.000',
-        humanText: 'Every hour on Saturday at 2:00, 3:00',
+        humanText: 'every hour on Saturday at 2:00, 3:00 starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -86,7 +86,8 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-15T02:00:00.000',
-        humanText: 'Every hour on Wednesday at 2:00, 3:00 on the 15th of the month',
+        humanText:
+          'every hour on Wednesday at 2:00, 3:00 on the 15th of the month starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -101,7 +102,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-02T00:00:00.000',
-        humanText: 'Every day',
+        humanText: 'every day starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -115,7 +116,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-04T00:00:00.000',
-        humanText: 'Every 3 days',
+        humanText: 'every 3 days starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -261,7 +262,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-08T00:00:00.000',
-        humanText: 'Every week',
+        humanText: 'every week starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -275,7 +276,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-01-15T00:00:00.000',
-        humanText: 'Every 2 weeks',
+        humanText: 'every 2 weeks starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -290,7 +291,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-02-01T00:00:00.000',
-        humanText: 'Every month',
+        humanText: 'every month starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -304,7 +305,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2020-03-01T00:00:00.000',
-        humanText: 'Every 2 months',
+        humanText: 'every 2 months starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -319,7 +320,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2021-01-01T00:00:00.000',
-        humanText: 'Every year',
+        humanText: 'every year starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },
@@ -333,7 +334,7 @@ describe('Recurrence.ts', () => {
       },
       expected: {
         nextDate: '2022-01-01T00:00:00.000',
-        humanText: 'Every 2 years',
+        humanText: 'every 2 years starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
     },

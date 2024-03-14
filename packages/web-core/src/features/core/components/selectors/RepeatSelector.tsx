@@ -66,7 +66,7 @@ export function RepeatSelector({
   const [endsType, setEndsType] = useState<RepeatSelectorEndsEnum>(RepeatSelectorEndsEnum.NEVER);
 
   const recurrenceString = recurrence.toHumanText();
-  const recurrenceDates = recurrence.getNextDates(new Date(startsAt), MAX_DATES_TO_SHOW + 1);
+  const recurrenceDates = recurrence.getNextDates(startsAt, MAX_DATES_TO_SHOW + 1);
 
   useEffect(() => {
     const newRecurrence = value

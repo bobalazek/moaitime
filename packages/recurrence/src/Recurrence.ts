@@ -64,7 +64,7 @@ export class Recurrence {
     const { interval, intervalAmount, hoursOfDayOnly, daysOfWeekOnly, daysOfMonthOnly } =
       this._options;
 
-    let text = `Every ${intervalAmount > 1 ? intervalAmount + ' ' : ''}${interval}${intervalAmount > 1 ? 's' : ''}`;
+    let text = `every ${intervalAmount > 1 ? intervalAmount + ' ' : ''}${interval}${intervalAmount > 1 ? 's' : ''}`;
 
     if (daysOfWeekOnly && daysOfWeekOnly.length > 0) {
       text += ` on ${this._listToHumanReadable(daysOfWeekOnly, 'day')}`;
@@ -79,9 +79,10 @@ export class Recurrence {
     }
 
     if (this.options.endsAt) {
-      const endsAt = new Date(this.options.endsAt);
-      text += ` until ${endsAt.toDateString()}`;
+      text += ` until ${this.options.endsAt.toDateString()}`;
     }
+
+    text += ` starting ${this.options.startsAt.toLocaleDateString()}`;
 
     return text;
   }

@@ -80,6 +80,7 @@ export default function DueDateSelector({
   isTimezoneReadonly,
   timezonePlaceholderText,
 }: DueDateSelectorProps) {
+  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const [open, setOpen] = useState(false);
   const [dateValue, setDateValue] = useState<string | null>(null);
   const [dateTimeValue, setDateTimeValue] = useState<string | null>(null);
@@ -194,14 +195,8 @@ export default function DueDateSelector({
     setDateTimeValue(`${paddedHours}:${paddedMins}`);
   };
 
-  let repeatStartsAt = new Date();
-  if (dateValue && dateTimeValue && isValidTime(dateTimeValue)) {
-    repeatStartsAt = new Date(`${dateValue}T${dateTimeValue}`);
-  } else if (dateValue) {
-    repeatStartsAt = new Date(`${dateValue}T00:00:00.000`);
-  }
-
-  const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
+  const recurrence = repeatPatternValue ? Recurrence.fromStringPattern(repeatPatternValue) : null;
+  const repeatStartsAt = recurrence?.options.startsAt ?? new Date();
 
   const isDateDisabled = (date: Date) => {
     const now = startOfDay(new Date());

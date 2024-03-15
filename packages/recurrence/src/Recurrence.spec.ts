@@ -117,6 +117,7 @@ describe('Recurrence.ts', () => {
     {
       testName: 'should work daily but only 5 iterations',
       now: '2020-01-01T00:00:00.000',
+      count: 5,
       options: {
         startsAt: new Date('2020-01-01T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -137,6 +138,7 @@ describe('Recurrence.ts', () => {
       testName:
         'should work when daily with 10 iterations and an end date earlier than the 10th iteration',
       now: '2020-01-01T00:00:00.000',
+      count: 10,
       options: {
         startsAt: new Date('2020-01-01T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -160,6 +162,7 @@ describe('Recurrence.ts', () => {
       testName:
         'should work when daily with 10 iterations starting after now and an end date only 2 iterations after the start date',
       now: '2020-01-01T00:00:00.000',
+      count: 10,
       options: {
         startsAt: new Date('2020-01-06T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -222,6 +225,7 @@ describe('Recurrence.ts', () => {
       now: '2020-01-01T00:00:00.000',
       startDate: '2020-01-02T00:00:00.000',
       endDate: '2020-01-12T00:00:00.000',
+      count: 4,
       options: {
         startsAt: new Date('2020-01-08T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -238,6 +242,7 @@ describe('Recurrence.ts', () => {
       now: '2020-01-01T00:00:00.000',
       startDate: '2020-01-02T00:00:00.000',
       endDate: '2020-01-12T00:00:00.000',
+      count: 1,
       options: {
         startsAt: new Date('2020-01-08T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -254,6 +259,7 @@ describe('Recurrence.ts', () => {
       now: '2020-01-01T00:00:00.000',
       startDate: '2020-01-02T00:00:00.000',
       endDate: '2020-01-12T00:00:00.000',
+      count: 3,
       options: {
         startsAt: new Date('2020-01-08T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -296,6 +302,7 @@ describe('Recurrence.ts', () => {
     {
       testName: 'should work daily with next dates and an end date option with 10 iterations',
       now: '2020-01-01T00:00:00.000',
+      count: 10,
       options: {
         startsAt: new Date('2020-01-06T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -311,6 +318,7 @@ describe('Recurrence.ts', () => {
       testName:
         'should work daily with 3 iterations and an end date option and only on a Wednesday',
       now: '2020-01-01T00:00:00.000',
+      count: 3,
       options: {
         startsAt: new Date('2020-01-06T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -356,6 +364,7 @@ describe('Recurrence.ts', () => {
     {
       testName: 'should work weekly but only on a Wednesday',
       now: '2020-01-01T00:00:00.000',
+      count: 3,
       options: {
         startsAt: new Date('2020-01-06T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
@@ -436,38 +445,41 @@ describe('Recurrence.ts', () => {
       },
       throwsErrorMessage: 'Invalid start date',
     },
-  ])(`$testName`, async ({ now, startDate, endDate, options, expected, throwsErrorMessage }) => {
-    const nowDate = new Date(now);
-    vitest.setSystemTime(now);
+  ])(
+    `$testName`,
+    async ({ now, startDate, endDate, count, options, expected, throwsErrorMessage }) => {
+      const nowDate = new Date(now);
+      vitest.setSystemTime(now);
 
-    if (throwsErrorMessage) {
-      expect(() => new Recurrence(options)).toThrow(throwsErrorMessage);
+      if (throwsErrorMessage) {
+        expect(() => new Recurrence(options)).toThrow(throwsErrorMessage);
 
-      return;
-    }
-
-    const recurrence = new Recurrence(options);
-
-    if (expected?.nextDate) {
-      expect(toLocalTime(recurrence.getNextDate(nowDate)!)).toEqual(expected.nextDate);
-    }
-
-    if (expected?.humanText) {
-      expect(recurrence.toHumanText()).toEqual(expected.humanText);
-    }
-
-    if (expected?.nextDates) {
-      if (!options.count) {
-        throw new Error('Count is required for nextDates test');
+        return;
       }
 
-      const dates = recurrence.getNextDates(nowDate, options.count);
-      expect(dates.map((date) => toLocalTime(date))).toEqual(expected.nextDates);
-    }
+      const recurrence = new Recurrence(options);
 
-    if (expected?.datesBetween) {
-      const dates = recurrence.getDatesBetween(new Date(startDate!), new Date(endDate!));
-      expect(dates.map((date) => toLocalTime(date))).toEqual(expected.datesBetween);
+      if (expected?.nextDate) {
+        expect(toLocalTime(recurrence.getNextDate(nowDate)!)).toEqual(expected.nextDate);
+      }
+
+      if (expected?.humanText) {
+        expect(recurrence.toHumanText()).toEqual(expected.humanText);
+      }
+
+      if (expected?.nextDates) {
+        if (!count) {
+          throw new Error('Count is required for nextDates test');
+        }
+
+        const dates = recurrence.getNextDates(nowDate, count);
+        expect(dates.map((date) => toLocalTime(date))).toEqual(expected.nextDates);
+      }
+
+      if (expected?.datesBetween) {
+        const dates = recurrence.getDatesBetween(new Date(startDate!), new Date(endDate!));
+        expect(dates.map((date) => toLocalTime(date))).toEqual(expected.datesBetween);
+      }
     }
-  });
+  );
 });

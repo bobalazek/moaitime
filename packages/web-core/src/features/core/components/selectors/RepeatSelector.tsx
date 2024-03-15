@@ -121,7 +121,7 @@ export function RepeatSelector({
           {!value && <span className="text-muted-foreground italic">Does not repeat</span>}
           {value && (
             <>
-              <span className="flex text-left">
+              <span className="flex text-left text-xs">
                 Repeats {Recurrence.fromStringPattern(value).toHumanText()}
               </span>
               <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>

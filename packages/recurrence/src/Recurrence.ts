@@ -78,6 +78,10 @@ export class Recurrence {
       text += ` on the ${this._listToHumanReadable(daysOfMonthOnly, 'dayOfMonth')} of the month`;
     }
 
+    if (this.options.count) {
+      text += ` for ${this.options.count} times`;
+    }
+
     if (this.options.endsAt) {
       text += ` until ${this.options.endsAt.toDateString()}`;
     }

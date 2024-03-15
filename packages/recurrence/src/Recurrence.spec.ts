@@ -311,7 +311,6 @@ describe('Recurrence.ts', () => {
         nextDate: '2020-01-07T00:00:00.000',
       },
     },
-    /*
     {
       testName: 'should work when daily interval #15',
       now: '2020-01-01T00:00:00.000',
@@ -319,13 +318,13 @@ describe('Recurrence.ts', () => {
         startsAt: new Date('2020-01-06T00:00:00.000'),
         interval: RecurrenceIntervalEnum.DAY,
         intervalAmount: 1,
+        count: 10,
         endsAt: new Date('2020-01-08T00:00:00.000'),
       },
       expected: {
         nextDates: ['2020-01-07T00:00:00.000', '2020-01-08T00:00:00.000'],
       },
     },
-    */
     // Weekly
     {
       testName: 'should work when weekly interval #1',

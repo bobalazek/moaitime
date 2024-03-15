@@ -109,15 +109,15 @@ export class Recurrence {
 
   getNextDate(date: Date): Date | null {
     let iterations = 0;
-    let currentDate = new Date(date);
+    let currentDate = date;
 
     if (currentDate < this.options.startsAt) {
-      currentDate = new Date(this.options.startsAt);
+      currentDate = this.options.startsAt;
     }
 
     if (this.options.count) {
       let occurrences = 0;
-      let tempDate = new Date(this.options.startsAt);
+      let tempDate = this.options.startsAt;
 
       while (tempDate <= date) {
         if (this._matchesOptions(tempDate) && this._isWithinDateRange(tempDate)) {
@@ -146,11 +146,15 @@ export class Recurrence {
   }
 
   getNextDates(date: Date, count: number): Date[] {
+    if (count < 1) {
+      return [];
+    }
+
     const dates: Date[] = [];
 
     const maxCount = this.options.count ? Math.min(count, this.options.count) : count;
     let iterations = 0;
-    let currentDate = date < this.options.startsAt ? this.options.startsAt : new Date(date);
+    let currentDate = date < this.options.startsAt ? this.options.startsAt : date;
     while (dates.length < maxCount) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
@@ -171,9 +175,7 @@ export class Recurrence {
   }
 
   getDatesBetween(startDate: Date, endDate: Date): Date[] {
-    let currentDate = new Date(
-      startDate < this.options.startsAt ? this.options.startsAt : startDate
-    );
+    let currentDate = startDate < this.options.startsAt ? this.options.startsAt : startDate;
     const adjustedEndsAt =
       this.options.endsAt && endDate > this.options.endsAt ? this.options.endsAt : endDate;
 
@@ -182,7 +184,7 @@ export class Recurrence {
     let occurrences = 0;
 
     if (this.options.count) {
-      let tempDate = new Date(this.options.startsAt);
+      let tempDate = this.options.startsAt;
       while (tempDate < currentDate && occurrences < this.options.count) {
         if (this._matchesOptions(tempDate) && this._isWithinDateRange(tempDate)) {
           occurrences++;
@@ -197,7 +199,7 @@ export class Recurrence {
       (this.options.count === undefined || occurrences < this.options.count)
     ) {
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
-        dates.push(new Date(currentDate));
+        dates.push(currentDate);
         occurrences++;
       }
       currentDate = this._incrementDate(currentDate);
@@ -217,7 +219,7 @@ export class Recurrence {
       throw new Error('Start date is required');
     }
 
-    const optionsStartsAt = new Date(options.startsAt);
+    const optionsStartsAt = options.startsAt;
     if (isNaN(optionsStartsAt.getTime())) {
       throw new Error('Invalid start date');
     }

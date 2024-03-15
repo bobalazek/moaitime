@@ -244,21 +244,57 @@ export class Recurrence {
   }
 
   private _incrementDate(date: Date): Date {
-    const { interval, intervalAmount } = this.options;
+    const { interval, intervalAmount, daysOfWeekOnly } = this.options;
+
+    // Common function for adjusting the date to the next specified day of the week
+    const adjustDateToNextDayOfWeek = (baseDate: Date): Date => {
+      if (!daysOfWeekOnly || daysOfWeekOnly.length === 0) {
+        return baseDate;
+      }
+      const daysToAdd = this._findNextDayOfWeek(baseDate, daysOfWeekOnly);
+      return add(baseDate, { days: daysToAdd });
+    };
+
     switch (interval) {
       case RecurrenceIntervalEnum.HOUR:
-        return add(date, { hours: intervalAmount });
+        return adjustDateToNextDayOfWeek(add(date, { hours: intervalAmount }));
       case RecurrenceIntervalEnum.DAY:
-        return add(date, { days: intervalAmount });
+        return adjustDateToNextDayOfWeek(add(date, { days: intervalAmount }));
       case RecurrenceIntervalEnum.WEEK:
-        return add(date, { weeks: intervalAmount });
+        return adjustDateToNextDayOfWeek(add(date, { days: intervalAmount * 7 }));
       case RecurrenceIntervalEnum.MONTH:
-        return add(date, { months: intervalAmount });
+        return adjustDateToNextDayOfWeek(add(date, { months: intervalAmount }));
       case RecurrenceIntervalEnum.YEAR:
-        return add(date, { years: intervalAmount });
+        return adjustDateToNextDayOfWeek(add(date, { years: intervalAmount }));
       default:
         throw new Error('Invalid interval type');
     }
+  }
+
+  private _findNextDayOfWeek(currentDate: Date, daysOfWeekOnly: RecurrenceDayOfWeekEnum[]): number {
+    const currentDayOfWeek = currentDate.getDay();
+    let daysUntilNext = daysOfWeekOnly
+      .map((dayOfWeek) =>
+        dayOfWeek >= currentDayOfWeek
+          ? dayOfWeek - currentDayOfWeek
+          : 7 - (currentDayOfWeek - dayOfWeek)
+      )
+      .sort((a, b) => a - b)[0];
+
+    // If we're already on one of the desired days, skip to the next one unless it's the only option
+    if (daysUntilNext === 0 && daysOfWeekOnly.length > 1) {
+      daysUntilNext = daysOfWeekOnly
+        .map((dayOfWeek) =>
+          dayOfWeek > currentDayOfWeek
+            ? dayOfWeek - currentDayOfWeek
+            : 7 - (currentDayOfWeek - dayOfWeek)
+        )
+        .sort((a, b) => a - b)[0];
+    } else if (daysUntilNext === 0) {
+      daysUntilNext = 7; // Move to the same day next week if it's the only day specified
+    }
+
+    return daysUntilNext;
   }
 
   private _isWithinDateRange(date: Date): boolean {

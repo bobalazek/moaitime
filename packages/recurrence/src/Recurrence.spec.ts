@@ -325,6 +325,24 @@ describe('Recurrence.ts', () => {
         nextDates: ['2020-01-07T00:00:00.000', '2020-01-08T00:00:00.000'],
       },
     },
+    {
+      testName: 'should work when daily interval #16',
+      now: '2020-01-01T00:00:00.000',
+      options: {
+        startsAt: new Date('2020-01-06T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 3,
+        daysOfWeekOnly: [3],
+      },
+      expected: {
+        nextDates: [
+          '2020-01-08T00:00:00.000',
+          '2020-01-15T00:00:00.000',
+          '2020-01-22T00:00:00.000',
+        ],
+      },
+    },
     // Weekly
     {
       testName: 'should work when weekly interval #1',
@@ -353,6 +371,24 @@ describe('Recurrence.ts', () => {
         humanText: 'every 2 weeks starting 1/1/2020',
       },
       throwsErrorMessage: undefined,
+    },
+    {
+      testName: 'should work when weekly interval #3',
+      now: '2020-01-01T00:00:00.000',
+      options: {
+        startsAt: new Date('2020-01-06T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 3,
+        daysOfWeekOnly: [3],
+      },
+      expected: {
+        nextDates: [
+          '2020-01-08T00:00:00.000',
+          '2020-01-15T00:00:00.000',
+          '2020-01-22T00:00:00.000',
+        ],
+      },
     },
     // Monthly
     {
@@ -444,7 +480,11 @@ describe('Recurrence.ts', () => {
     }
 
     if (expected?.nextDates) {
-      const dates = recurrence.getNextDates(nowDate, options.count!);
+      if (!options.count) {
+        throw new Error('Count is required for nextDates test');
+      }
+
+      const dates = recurrence.getNextDates(nowDate, options.count);
       expect(dates.map((date) => toLocalTime(date))).toEqual(expected.nextDates);
     }
 

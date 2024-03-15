@@ -244,57 +244,55 @@ export class Recurrence {
   }
 
   private _incrementDate(date: Date): Date {
-    const { interval, intervalAmount, daysOfWeekOnly } = this.options;
+    const { interval, intervalAmount, hoursOfDayOnly } = this.options;
 
-    // Common function for adjusting the date to the next specified day of the week
-    const adjustDateToNextDayOfWeek = (baseDate: Date): Date => {
-      if (!daysOfWeekOnly || daysOfWeekOnly.length === 0) {
-        return baseDate;
-      }
-      const daysToAdd = this._findNextDayOfWeek(baseDate, daysOfWeekOnly);
-      return add(baseDate, { days: daysToAdd });
-    };
+    let nextDate = new Date(date.getTime());
 
     switch (interval) {
       case RecurrenceIntervalEnum.HOUR:
-        return adjustDateToNextDayOfWeek(add(date, { hours: intervalAmount }));
+        nextDate = add(nextDate, { hours: intervalAmount });
+        break;
       case RecurrenceIntervalEnum.DAY:
-        return adjustDateToNextDayOfWeek(add(date, { days: intervalAmount }));
+        nextDate = add(nextDate, { days: intervalAmount });
+        break;
       case RecurrenceIntervalEnum.WEEK:
-        return adjustDateToNextDayOfWeek(add(date, { days: intervalAmount * 7 }));
+        nextDate = add(nextDate, { weeks: intervalAmount });
+        break;
       case RecurrenceIntervalEnum.MONTH:
-        return adjustDateToNextDayOfWeek(add(date, { months: intervalAmount }));
+        nextDate = add(nextDate, { months: intervalAmount });
+        break;
       case RecurrenceIntervalEnum.YEAR:
-        return adjustDateToNextDayOfWeek(add(date, { years: intervalAmount }));
+        nextDate = add(nextDate, { years: intervalAmount });
+        break;
       default:
         throw new Error('Invalid interval type');
     }
-  }
 
-  private _findNextDayOfWeek(currentDate: Date, daysOfWeekOnly: RecurrenceDayOfWeekEnum[]): number {
-    const currentDayOfWeek = currentDate.getDay();
-    let daysUntilNext = daysOfWeekOnly
-      .map((dayOfWeek) =>
-        dayOfWeek >= currentDayOfWeek
-          ? dayOfWeek - currentDayOfWeek
-          : 7 - (currentDayOfWeek - dayOfWeek)
-      )
-      .sort((a, b) => a - b)[0];
+    nextDate = this._moveToNextValidDayOfWeek(nextDate);
 
-    // If we're already on one of the desired days, skip to the next one unless it's the only option
-    if (daysUntilNext === 0 && daysOfWeekOnly.length > 1) {
-      daysUntilNext = daysOfWeekOnly
-        .map((dayOfWeek) =>
-          dayOfWeek > currentDayOfWeek
-            ? dayOfWeek - currentDayOfWeek
-            : 7 - (currentDayOfWeek - dayOfWeek)
-        )
-        .sort((a, b) => a - b)[0];
-    } else if (daysUntilNext === 0) {
-      daysUntilNext = 7; // Move to the same day next week if it's the only day specified
+    if (hoursOfDayOnly && hoursOfDayOnly.length > 0) {
+      while (!hoursOfDayOnly.includes(nextDate.getHours())) {
+        nextDate = add(nextDate, { hours: 1 });
+        nextDate = this._moveToNextValidDayOfWeek(nextDate);
+      }
     }
 
-    return daysUntilNext;
+    return nextDate;
+  }
+
+  private _moveToNextValidDayOfWeek(date: Date) {
+    const { daysOfWeekOnly } = this.options;
+
+    if (!daysOfWeekOnly) {
+      return date;
+    }
+
+    let dayIncrement = 0;
+    while (!daysOfWeekOnly.includes((date.getDay() + dayIncrement) % 7)) {
+      dayIncrement++;
+    }
+
+    return add(date, { days: dayIncrement });
   }
 
   private _isWithinDateRange(date: Date): boolean {

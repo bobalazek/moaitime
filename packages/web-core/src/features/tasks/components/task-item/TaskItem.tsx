@@ -35,6 +35,11 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
   const color = getTextColor(backgroundColor);
 
   const onClick = useCallback(() => {
+    // Prevent opening the dialog when the task is being edited
+    if (textElementRef.current?.contentEditable === 'true') {
+      return;
+    }
+
     setSelectedTaskDialogOpen(true, task);
   }, [setSelectedTaskDialogOpen, task]);
 

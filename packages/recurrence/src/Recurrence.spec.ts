@@ -222,6 +222,53 @@ describe('Recurrence.ts', () => {
     {
       testName: 'should work when daily interval #9',
       now: '2020-01-01T00:00:00.000',
+      startDate: '2020-01-02T00:00:00.000',
+      endDate: '2020-01-12T00:00:00.000',
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        endsAt: new Date('2020-01-10T00:00:00.000'),
+      },
+      expected: {
+        datesBetween: ['2020-01-09T00:00:00.000', '2020-01-10T00:00:00.000'],
+      },
+    },
+    {
+      testName: 'should work when daily interval #10',
+      now: '2020-01-01T00:00:00.000',
+      startDate: '2020-01-02T00:00:00.000',
+      endDate: '2020-01-12T00:00:00.000',
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 4,
+        endsAt: new Date('2020-01-10T00:00:00.000'),
+      },
+      expected: {
+        datesBetween: ['2020-01-09T00:00:00.000', '2020-01-10T00:00:00.000'],
+      },
+    },
+    {
+      testName: 'should work when daily interval #11',
+      now: '2020-01-01T00:00:00.000',
+      startDate: '2020-01-02T00:00:00.000',
+      endDate: '2020-01-12T00:00:00.000',
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        count: 1,
+        endsAt: new Date('2020-01-10T00:00:00.000'),
+      },
+      expected: {
+        datesBetween: ['2020-01-09T00:00:00.000'],
+      },
+    },
+    {
+      testName: 'should work when daily interval #12',
+      now: '2020-01-01T00:00:00.000',
       startDate: '2020-01-02T00:00:00.000', // Those 2 dates are only needed if we have dates between
       endDate: '2020-01-12T00:00:00.000',
       options: {
@@ -239,7 +286,7 @@ describe('Recurrence.ts', () => {
       },
     },
     {
-      testName: 'should work when daily interval #10',
+      testName: 'should work when daily interval #13',
       now: '2020-01-14T00:00:00.000',
       options: {
         startsAt: new Date('2020-01-14T00:00:00.000'),
@@ -251,6 +298,34 @@ describe('Recurrence.ts', () => {
         nextDate: '2020-01-15T00:00:00.000',
       },
     },
+    {
+      testName: 'should work when daily interval #14',
+      now: '2020-01-01T00:00:00.000',
+      options: {
+        startsAt: new Date('2020-01-06T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        endsAt: new Date('2020-01-08T00:00:00.000'),
+      },
+      expected: {
+        nextDate: '2020-01-07T00:00:00.000',
+      },
+    },
+    /*
+    {
+      testName: 'should work when daily interval #15',
+      now: '2020-01-01T00:00:00.000',
+      options: {
+        startsAt: new Date('2020-01-06T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.DAY,
+        intervalAmount: 1,
+        endsAt: new Date('2020-01-08T00:00:00.000'),
+      },
+      expected: {
+        nextDates: ['2020-01-07T00:00:00.000', '2020-01-08T00:00:00.000'],
+      },
+    },
+    */
     // Weekly
     {
       testName: 'should work when weekly interval #1',

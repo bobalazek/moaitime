@@ -283,7 +283,7 @@ export class Recurrence {
   private _moveToNextValidDayOfWeek(date: Date) {
     const { daysOfWeekOnly } = this.options;
 
-    if (!daysOfWeekOnly) {
+    if (!daysOfWeekOnly || daysOfWeekOnly.length === 0) {
       return date;
     }
 
@@ -310,15 +310,23 @@ export class Recurrence {
   private _matchesOptions(date: Date): boolean {
     const { hoursOfDayOnly, daysOfWeekOnly, daysOfMonthOnly } = this.options;
 
-    if (hoursOfDayOnly && !hoursOfDayOnly.includes(date.getHours())) {
+    if (hoursOfDayOnly && hoursOfDayOnly.length > 0 && !hoursOfDayOnly.includes(date.getHours())) {
       return false;
     }
 
-    if (daysOfWeekOnly && !daysOfWeekOnly.includes(date.getDay() as RecurrenceDayOfWeekEnum)) {
+    if (
+      daysOfWeekOnly &&
+      daysOfWeekOnly.length > 0 &&
+      !daysOfWeekOnly.includes(date.getDay() as RecurrenceDayOfWeekEnum)
+    ) {
       return false;
     }
 
-    if (daysOfMonthOnly && !daysOfMonthOnly.includes(date.getDate())) {
+    if (
+      daysOfMonthOnly &&
+      daysOfMonthOnly.length > 0 &&
+      !daysOfMonthOnly.includes(date.getDate())
+    ) {
       return false;
     }
 

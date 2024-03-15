@@ -1079,20 +1079,21 @@ export class TasksManager {
   }
 
   async getCountsByListIdsAndYear(listIds: string[], year: number) {
-    const startOfYear = new Date(year, 0, 1);
-    const endOfYear = new Date(year + 1, 0, 1);
-
-    if (listIds.length === 0) {
+    const includesUnlisted = listIds.includes('');
+    const finalListIds = includesUnlisted ? listIds.filter((id) => id !== '') : listIds;
+    if (finalListIds.length === 0) {
       return [];
     }
 
     const dueDate = sql<Date>`DATE(${tasks.dueDate})`;
     const where = and(
-      inArray(lists.id, listIds),
+      includesUnlisted
+        ? or(inArray(lists.id, finalListIds), isNull(lists.id))
+        : inArray(lists.id, finalListIds),
       isNull(lists.deletedAt),
       isNull(tasks.deletedAt),
       isNotNull(tasks.dueDate),
-      between(dueDate, startOfYear, endOfYear)
+      between(dueDate, `${year}-01-01`, `${year + 1}-01-01`)
     );
 
     const result = await getDatabase()

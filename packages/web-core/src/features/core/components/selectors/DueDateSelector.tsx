@@ -249,6 +249,7 @@ export default function DueDateSelector({
               value={repeatPatternValue ?? undefined}
               startsAt={repeatStartsAt}
               onChangeValue={onRepeatSelectorChange}
+              disableTime={!!dateTimeValue}
             />
           </ErrorBoundary>
         )}

@@ -115,19 +115,19 @@ export function RepeatSelector({
         <Button
           variant="outline"
           aria-expanded={open}
-          className="w-full justify-between text-xs"
           data-test="repeat-selector--trigger-button"
+          className="inline-flex max-w-full items-center justify-between"
         >
-          {!value && <span className="text-muted-foreground italic">Does not repeat</span>}
+          {!value && <span className="italic text-gray-500">Does not repeat</span>}
           {value && (
-            <>
-              <span className="flex text-left text-xs">
+            <div className="text-muted-foreground flex h-4 w-full items-center overflow-hidden text-xs">
+              <div className="flex-grow truncate">
                 Repeats {Recurrence.fromStringPattern(value).toHumanText()}
-              </span>
-              <span className="text-muted-foreground rounded-full p-1" onClick={onClearButtonClick}>
+              </div>
+              <div className="ml-2 flex-shrink-0" onClick={onClearButtonClick}>
                 <XIcon />
-              </span>
-            </>
+              </div>
+            </div>
           )}
         </Button>
       </PopoverTrigger>
@@ -177,7 +177,9 @@ export function RepeatSelector({
             </select>
           </div>
         </div>
-        {recurrence.options.interval === RecurrenceIntervalEnum.WEEK && (
+        {(recurrence.options.interval === RecurrenceIntervalEnum.DAY ||
+          (recurrence.options.daysOfMonthOnly &&
+            recurrence.options.daysOfMonthOnly.length > 0)) && (
           <div>
             <h4 className="text-muted-foreground">Repeat on</h4>
             <ToggleGroup
@@ -334,6 +336,9 @@ export function RepeatSelector({
             )}
           </div>
         )}
+        <div className="text-muted-foreground text-xs">
+          Start date will always be the same as the due date you specified
+        </div>
         <div>
           <Button className="w-full" onClick={onSaveButtonSave}>
             Save

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { XIcon } from 'lucide-react';
+import { MouseEvent, useMemo, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 import {
@@ -52,10 +53,16 @@ export default function TimeSelector({ value, onChangeValue }: TimeSelectorProps
   }, []);
   const debouncedSetModal = useDebouncedCallback(setModal, 200);
 
+  const onClearButtonClick = (event: MouseEvent) => {
+    event.preventDefault();
+
+    onChangeValue('');
+  };
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen} modal={modal}>
       <DropdownMenuTrigger asChild>
-        <div>
+        <div className="relative">
           <Input
             id="time-selector"
             value={value ?? ''}
@@ -72,6 +79,14 @@ export default function TimeSelector({ value, onChangeValue }: TimeSelectorProps
             maxLength={5}
             placeholder="Select time ..."
           />
+          {value && (
+            <div
+              className="text-muted-foreground absolute right-2 top-1 z-10 cursor-pointer p-2"
+              onPointerDown={onClearButtonClick}
+            >
+              <XIcon size={16} />
+            </div>
+          )}
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent

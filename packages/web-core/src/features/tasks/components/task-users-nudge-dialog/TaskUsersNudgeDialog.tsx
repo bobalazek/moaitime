@@ -41,7 +41,11 @@ export default function TaskUsersNudgeDialog() {
     if (!areArraysEqual(newSelectedUserIds, selectedUserIds)) {
       setSelectedUserIds(newSelectedUserIds);
     }
-  }, [selectedUserIds, selectedTask, myUserId, teamUsers]);
+
+    // We only care this effect executing when we open or close the nudge dialog
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usersNudgeDialogOpen]);
 
   const onSubmitButtonClick = async () => {
     try {

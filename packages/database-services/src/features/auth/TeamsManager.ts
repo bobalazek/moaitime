@@ -452,7 +452,7 @@ export class TeamsManager {
       throw new Error('Invitation not found');
     }
 
-    if (teamUserInvitation.userId !== userId) {
+    if (teamUserInvitation.userId && teamUserInvitation.userId !== userId) {
       throw new Error('You cannot accept this invitation');
     }
 

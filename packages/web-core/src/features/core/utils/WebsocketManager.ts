@@ -7,6 +7,7 @@ import { useAuthStore } from '../../auth/state/authStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
 import { useUserNotificationsStore } from '../../notifications/state/userNotificationsStore';
 import { useListsStore } from '../../tasks/state/listsStore';
+import { useTagsStore } from '../../tasks/state/tagsStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import { playNudgeTaskSound } from '../../tasks/utils/TaskHelpers';
 import { useTeamsStore } from '../../teams/state/teamsStore';
@@ -180,6 +181,10 @@ export class WebsocketManager {
 
       await reloadJoinedTeamMembers();
       await reloadJoinedTeamUserInvitations();
+    } else if (data.type.startsWith('tags:tag:')) {
+      const { reloadTags } = useTagsStore.getState();
+
+      await reloadTags();
     }
   }
 

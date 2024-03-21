@@ -108,7 +108,7 @@ export default function MyTeamInvitationsSection() {
         </Table>
       )}
       {auth?.user.emailConfirmedAt === null && (
-        <div className="text-warn mt-2 text-sm">
+        <div className="text-destructive mt-2 text-sm font-bold">
           Keep in mind that you will need to confirm your email address before you can accept
           invitations to join a team!
         </div>

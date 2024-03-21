@@ -183,12 +183,18 @@ export class TasksManager {
       return [];
     }
 
-    where = and(
-      where,
-      includesUnlisted
-        ? or(inArray(lists.id, finalListIds), isNull(lists.id))
-        : inArray(lists.id, finalListIds)
-    ) as SQL<unknown>;
+    if (finalListIds.length === 0 && includesUnlisted) {
+      where = and(where, isNull(lists.id)) as SQL<unknown>;
+    } else if (finalListIds.length > 0) {
+      where = and(
+        where,
+        includesUnlisted
+          ? or(inArray(lists.id, finalListIds), isNull(lists.id))
+          : inArray(lists.id, finalListIds)
+      ) as SQL<unknown>;
+    } else {
+      return [];
+    }
 
     if (from && to) {
       where = and(

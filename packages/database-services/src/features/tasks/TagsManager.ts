@@ -79,10 +79,23 @@ export class TagsManager {
   // Permissions
   async userCanView(userId: string, tagId: string): Promise<boolean> {
     const row = await getDatabase().query.tags.findFirst({
-      where: and(eq(tags.id, tagId), eq(tags.userId, userId)),
+      where: eq(tags.id, tagId),
     });
 
-    return !!row;
+    if (!row) {
+      return false;
+    }
+
+    if (row.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (row.teamId && teamIds.includes(row.teamId)) {
+      return true;
+    }
+
+    return false;
   }
 
   async userCanUpdate(userId: string, tagId: string): Promise<boolean> {
@@ -131,6 +144,7 @@ export class TagsManager {
     globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_ADDED, {
       actorUserId: actorUser.id,
       tagId: tag.id,
+      teamId: tag.teamId ?? undefined,
     });
 
     return tag;
@@ -147,6 +161,7 @@ export class TagsManager {
     globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_EDITED, {
       actorUserId,
       tagId: updatedTag.id,
+      teamId: updatedTag.teamId ?? undefined,
     });
 
     return updatedTag;
@@ -167,6 +182,7 @@ export class TagsManager {
     globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_DELETED, {
       actorUserId,
       tagId: deletedTag.id,
+      teamId: deletedTag.teamId ?? undefined,
     });
 
     return deletedTag;
@@ -194,6 +210,7 @@ export class TagsManager {
     globalEventsNotifier.publish(GlobalEventsEnum.TAGS_TAG_UNDELETED, {
       actorUserId: actorUser.id,
       tagId: undeletedTag.id,
+      teamId: undeletedTag.teamId ?? undefined,
     });
 
     return undeletedTag;
@@ -206,7 +223,7 @@ export class TagsManager {
         count: count(tags.id).mapWith(Number),
       })
       .from(tags)
-      .where(and(eq(tags.userId, userId), isNull(tags.deletedAt)))
+      .where(and(eq(tags.userId, userId), isNull(tags.teamId), isNull(tags.deletedAt)))
       .execute();
 
     return result[0].count ?? 0;

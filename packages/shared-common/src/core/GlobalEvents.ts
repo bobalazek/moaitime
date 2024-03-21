@@ -363,22 +363,26 @@ export type GlobalEvents = {
   [GlobalEventsEnum.TAGS_TAG_ADDED]: {
     actorUserId: string;
     tagId: string;
+    teamId?: string;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TAGS_TAG_EDITED]: {
     actorUserId: string;
     tagId: string;
+    teamId?: string;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TAGS_TAG_DELETED]: {
     actorUserId: string;
     tagId: string;
+    teamId?: string;
     isHardDelete?: boolean;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TAGS_TAG_UNDELETED]: {
     actorUserId: string;
     tagId: string;
+    teamId?: string;
     actorWebsocketToken?: string;
   };
   // Habits

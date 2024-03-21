@@ -36,7 +36,7 @@ const NotesPageHeaderButtons = () => {
 
       setSelectedNote(null);
 
-      sonnerToast.success(`Note "${selectedNote.title}" Deleted`, {
+      sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" Deleted`, {
         description: 'You have successfully deleted the note!',
         action: {
           label: 'Undo',
@@ -56,7 +56,7 @@ const NotesPageHeaderButtons = () => {
     try {
       await deleteNote(selectedNote.id, true);
 
-      sonnerToast.success(`Note "${selectedNote.title}" hard deleted`, {
+      sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" hard deleted`, {
         description: 'The note was successfully hard deleted!',
       });
     } catch (error) {
@@ -72,7 +72,7 @@ const NotesPageHeaderButtons = () => {
     try {
       await undeleteNote(selectedNote.id);
 
-      sonnerToast.success(`Note "${selectedNote.title}" undeleted`, {
+      sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" undeleted`, {
         description: 'The note was successfully undeleted!',
         position: 'top-right',
       });

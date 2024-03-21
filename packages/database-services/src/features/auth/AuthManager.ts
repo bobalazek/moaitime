@@ -15,6 +15,7 @@ import {
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
+import { Logger, logger } from '@moaitime/logging';
 import {
   AUTH_DATA_EXPORT_REQUEST_EXPIRATION_SECONDS,
   AUTH_DELETION_REQUEST_EXPIRATION_SECONDS,
@@ -56,6 +57,7 @@ type AuthLoginResult = {
 
 export class AuthManager {
   constructor(
+    private _logger: Logger,
     private _usersManager: UsersManager,
     private _userAccessTokensManager: UserAccessTokensManager,
     private _userExportsManager: UserDataExportsManager,
@@ -157,14 +159,6 @@ export class AuthManager {
       emailConfirmationLastSentAt: new Date(),
     } as NewUser);
 
-    if (invitation) {
-      await this._invitationsManager.claimInvitation(newUser.id, invitation);
-    }
-
-    if (teamUserInvitation) {
-      await this._teamsManager.acceptTeamInvitation(newUser.id, teamUserInvitation.id);
-    }
-
     for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
       const name = LISTS_DEFAULT_NAMES[i] as keyof typeof TASKS_DEFAULT_ENTRIES;
       const color = MAIN_COLORS[i % MAIN_COLORS.length].value;
@@ -206,6 +200,28 @@ export class AuthManager {
         await this._usersManager.follow(newUser.id, userMoai.id);
       } catch (error) {
         // Well then, keep your secrets
+      }
+    }
+
+    if (invitation) {
+      try {
+        await this._invitationsManager.claimInvitation(newUser.id, invitation);
+      } catch (error) {
+        this._logger.error(
+          error,
+          `[AuthManager] There was an issue trying to claim the invitation`
+        );
+      }
+    }
+
+    if (teamUserInvitation) {
+      try {
+        await this._teamsManager.acceptTeamInvitation(newUser.id, teamUserInvitation.id);
+      } catch (error) {
+        this._logger.error(
+          error,
+          `[AuthManager] There was an issue trying to accept the team invitation`
+        );
       }
     }
 
@@ -872,6 +888,7 @@ export class AuthManager {
 }
 
 export const authManager = new AuthManager(
+  logger,
   usersManager,
   userAccessTokensManager,
   userDataExportsManager,

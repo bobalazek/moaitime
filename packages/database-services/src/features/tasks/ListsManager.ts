@@ -257,6 +257,10 @@ export class ListsManager {
 
     const tasksCountMap = new Map<string | null, number>();
 
+    if (listIds.length === 0) {
+      return tasksCountMap;
+    }
+
     let where = inArray(tasks.listId, listIds);
     if (!options?.includeCompleted) {
       where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;

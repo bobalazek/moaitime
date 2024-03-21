@@ -86,7 +86,7 @@ function MoodEntriesActivityInner() {
     };
   }, [items, fetchPreviousPage, refetch]);
 
-  if (!items) {
+  if (items.length === 0) {
     return null;
   }
 

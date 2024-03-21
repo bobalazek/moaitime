@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useIntersectionObserver } from 'usehooks-ts';
 
@@ -50,7 +50,9 @@ function MoodEntriesActivityInner() {
   const { data, isLoading, hasNextPage, fetchNextPage, fetchPreviousPage, refetch, error } =
     useMoodEntriesQuery();
 
-  const items = data?.pages.flatMap((page) => page.data!);
+  const items = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data!) ?? [];
+  }, [data]);
 
   useEffect(() => {
     const callbackAdded = () => {
@@ -82,7 +84,7 @@ function MoodEntriesActivityInner() {
       globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, callbackEdited);
       globalEventsEmitter.off(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, callbackEdited);
     };
-  }, [fetchPreviousPage, refetch]);
+  }, [items, fetchPreviousPage, refetch]);
 
   if (!items) {
     return null;

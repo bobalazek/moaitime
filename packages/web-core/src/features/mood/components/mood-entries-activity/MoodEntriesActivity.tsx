@@ -50,8 +50,16 @@ function MoodEntriesActivityInner() {
   const { data, isLoading, hasNextPage, fetchNextPage, fetchPreviousPage, refetch, error } =
     useMoodEntriesQuery();
 
+  const items = data?.pages.flatMap((page) => page.data!);
+
   useEffect(() => {
     const callbackAdded = () => {
+      if (items?.length === 0) {
+        refetch();
+
+        return;
+      }
+
       // I have absolutely no idea why this is needed, but it is, otherwise for some reason the refetch does not work,
       // as altough we do get the new data pulled from the API, the data.pages does not contain the newest entry.
       setTimeout(() => {
@@ -76,7 +84,6 @@ function MoodEntriesActivityInner() {
     };
   }, [fetchPreviousPage, refetch]);
 
-  const items = data?.pages.flatMap((page) => page.data!);
   if (!items) {
     return null;
   }

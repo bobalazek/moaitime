@@ -17,6 +17,7 @@ import {
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
+import { getEnv } from '@moaitime/shared-backend';
 import {
   GlobalEventsEnum,
   TeamLimits,
@@ -24,7 +25,6 @@ import {
   TeamUserRoleEnum,
   UpdateTeam,
   UpdateTeamUser,
-  WEB_URL,
 } from '@moaitime/shared-common';
 
 import { calendarsManager } from '../calendars/CalendarsManager';
@@ -644,7 +644,7 @@ export class TeamsManager {
       userEmail: email,
       teamName: team.name,
       invitedByUserDisplayName: user.displayName ?? 'User',
-      registerUrl: `${WEB_URL}/register?teamUserInvitationToken=${token}`,
+      registerUrl: `${getEnv().WEB_BASE_URL}/register?teamUserInvitationToken=${token}`,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITED, {

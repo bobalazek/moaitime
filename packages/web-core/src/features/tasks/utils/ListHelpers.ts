@@ -1,5 +1,4 @@
 import {
-  API_URL,
   CreateList,
   List,
   ResponseInterface,
@@ -8,6 +7,7 @@ import {
   TasksListSortFieldEnum,
   UpdateList,
 } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

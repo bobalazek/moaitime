@@ -1,5 +1,4 @@
 import {
-  API_URL,
   Auth,
   RegisterUser,
   ResponseInterface,
@@ -9,6 +8,7 @@ import {
   UserLimits,
   UserUsage,
 } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

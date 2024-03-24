@@ -18,7 +18,6 @@ import {
 import { formatInTimeZone, getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
-  API_URL,
   Calendar,
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
   CalendarEntry,
@@ -33,6 +32,7 @@ import {
   UpdateUserCalendar,
   UserCalendar,
 } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

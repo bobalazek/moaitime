@@ -36,7 +36,6 @@ import {
   UserPasswordSchema,
   UserRoleEnum,
   UserSettingsSchema,
-  WEB_URL,
 } from '@moaitime/shared-common';
 import { uploader } from '@moaitime/uploader';
 
@@ -230,7 +229,7 @@ export class AuthManager {
     await mailer.sendAuthWelcomeEmail({
       userEmail: newUser.email,
       userDisplayName: newUser.displayName,
-      confirmEmailUrl: `${WEB_URL}/confirm-email?token=${newUser.emailConfirmationToken}`,
+      confirmEmailUrl: `${getEnv().WEB_BASE_URL}/confirm-email?token=${newUser.emailConfirmationToken}`,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_REGISTERED, {
@@ -326,13 +325,13 @@ export class AuthManager {
       await mailer.sendAuthConfirmNewEmailEmail({
         userEmail: updatedUser.newEmail as string,
         userDisplayName: updatedUser.displayName,
-        confirmEmailUrl: `${WEB_URL}/confirm-email?token=${updatedUser.newEmailConfirmationToken}&isNewEmail=true`,
+        confirmEmailUrl: `${getEnv().WEB_BASE_URL}/confirm-email?token=${updatedUser.newEmailConfirmationToken}&isNewEmail=true`,
       });
     } else {
       await mailer.sendAuthConfirmEmailEmail({
         userEmail: updatedUser.email,
         userDisplayName: updatedUser.displayName,
-        confirmEmailUrl: `${WEB_URL}/confirm-email?token=${updatedUser.emailConfirmationToken}`,
+        confirmEmailUrl: `${getEnv().WEB_BASE_URL}/confirm-email?token=${updatedUser.emailConfirmationToken}`,
       });
     }
 
@@ -387,7 +386,7 @@ export class AuthManager {
     await mailer.sendAuthResetPasswordEmail({
       userEmail: updatedUser.email,
       userDisplayName: updatedUser.displayName,
-      resetPasswordUrl: `${WEB_URL}/reset-password?token=${updatedUser.passwordResetToken}`,
+      resetPasswordUrl: `${getEnv().WEB_BASE_URL}/reset-password?token=${updatedUser.passwordResetToken}`,
     });
 
     return updatedUser;
@@ -477,7 +476,7 @@ export class AuthManager {
     await mailer.sendAuthAccountDeletionEmail({
       userEmail: updatedUser.email,
       userDisplayName: updatedUser.displayName,
-      deleteAccountUrl: `${WEB_URL}/delete-account?token=${updatedUser.deletionToken}`,
+      deleteAccountUrl: `${getEnv().WEB_BASE_URL}/delete-account?token=${updatedUser.deletionToken}`,
     });
 
     return updatedUser;
@@ -622,7 +621,7 @@ export class AuthManager {
       await mailer.sendAuthConfirmNewEmailEmail({
         userEmail: updatedUser.newEmail as string,
         userDisplayName: updatedUser.displayName,
-        confirmEmailUrl: `${WEB_URL}/confirm-email?token=${updatedUser.newEmailConfirmationToken}&isNewEmail=true`,
+        confirmEmailUrl: `${getEnv().WEB_BASE_URL}/confirm-email?token=${updatedUser.newEmailConfirmationToken}&isNewEmail=true`,
       });
     }
 

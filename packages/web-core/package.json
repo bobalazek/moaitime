@@ -26,6 +26,7 @@
     "@dnd-kit/utilities": "3.2.2",
     "@moaitime/recurrence": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
+    "@moaitime/shared-frontend": "workspace:*",
     "@moaitime/tsconfig-config": "workspace:*",
     "@moaitime/web-ui": "workspace:*",
     "@moaitime/web-ui-editor": "workspace:*",

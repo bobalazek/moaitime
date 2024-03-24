@@ -1,4 +1,5 @@
-import { API_URL, CreateTag, ResponseInterface, Tag, UpdateTag } from '@moaitime/shared-common';
+import { CreateTag, ResponseInterface, Tag, UpdateTag } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

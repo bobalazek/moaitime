@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { API_URL } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 import { App } from '@moaitime/web-core';
 
 if (import.meta.hot) {

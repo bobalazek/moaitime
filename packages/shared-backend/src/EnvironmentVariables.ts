@@ -24,6 +24,7 @@ export const envSchema = z.object({
   USER_DATA_EXPORTS_BUCKET_URL: z.string().url().min(1),
   USER_AVATARS_BUCKET_URL: z.string().url().min(1),
   API_PORT: z.coerce.number().default(3636),
+  WEB_BASE_URL: z.string().url().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;

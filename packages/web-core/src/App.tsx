@@ -2,7 +2,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'jotai';
 
-import { OAUTH_GOOGLE_CLIENT_ID } from '@moaitime/shared-common';
+import { OAUTH_GOOGLE_CLIENT_ID } from '@moaitime/shared-frontend';
 import { SonnerToaster, Toaster, TooltipProvider } from '@moaitime/web-ui';
 
 import { AppRoutes } from './AppRoutes';

@@ -1,9 +1,5 @@
-import {
-  API_URL,
-  FeedPost,
-  PaginationCursorsType,
-  ResponseInterface,
-} from '@moaitime/shared-common';
+import { FeedPost, PaginationCursorsType, ResponseInterface } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

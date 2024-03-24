@@ -1,12 +1,12 @@
 import {
-  API_URL,
   CreateHabit,
   Habit,
-  HabitDailtEntry,
   HabitDaily,
+  HabitDailyEntry,
   ResponseInterface,
   UpdateHabit,
 } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 
@@ -113,8 +113,8 @@ export const updateHabitDaily = async (
   habitId: string,
   date: string,
   amount: number
-): Promise<HabitDailtEntry> => {
-  const response = await fetchJson<ResponseInterface<HabitDailtEntry>>(
+): Promise<HabitDailyEntry> => {
+  const response = await fetchJson<ResponseInterface<HabitDailyEntry>>(
     `${API_URL}/api/v1/habits/${habitId}/daily/${date}`,
     {
       method: 'PATCH',
@@ -126,5 +126,5 @@ export const updateHabitDaily = async (
     }
   );
 
-  return response.data as HabitDailtEntry;
+  return response.data as HabitDailyEntry;
 };

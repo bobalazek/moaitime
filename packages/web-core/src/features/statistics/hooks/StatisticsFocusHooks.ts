@@ -6,11 +6,11 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 import {
-  API_URL,
   ResponseInterface,
   StatisticsDateCountData,
   StatisticsFocusBasicData,
 } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

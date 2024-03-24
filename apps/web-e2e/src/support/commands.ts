@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
-import { API_URL, UserSettings } from '@moaitime/shared-common';
+import { UserSettings } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

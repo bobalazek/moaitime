@@ -1,4 +1,5 @@
-import { API_URL, BackgroundInterface, ResponseInterface } from '@moaitime/shared-common';
+import { BackgroundInterface, ResponseInterface } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

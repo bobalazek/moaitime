@@ -1,10 +1,5 @@
-import {
-  API_URL,
-  CreateEvent,
-  Event,
-  ResponseInterface,
-  UpdateEvent,
-} from '@moaitime/shared-common';
+import { CreateEvent, Event, ResponseInterface, UpdateEvent } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

@@ -1,9 +1,5 @@
-import {
-  API_URL,
-  CreateFeedbackEntry,
-  FeedbackEntry,
-  ResponseInterface,
-} from '@moaitime/shared-common';
+import { CreateFeedbackEntry, FeedbackEntry, ResponseInterface } from '@moaitime/shared-common';
+import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
 

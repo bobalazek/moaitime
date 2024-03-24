@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { getDatabase, Invitation, invitations, NewInvitation } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
-import { WEB_URL } from '@moaitime/shared-common';
+import { getEnv } from '@moaitime/shared-backend';
 
 import { usersManager } from '../auth/UsersManager';
 
@@ -160,7 +160,7 @@ export class InvitationsManager {
     await mailer.sendSocialUserInvitationEmail({
       userEmail: email,
       invitedByUserDisplayName: user.displayName ?? 'User',
-      registerUrl: `${WEB_URL}/register?invitationToken=${token}`,
+      registerUrl: `${getEnv().WEB_BASE_URL}/register?invitationToken=${token}`,
     });
 
     return invitation;

@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@moaitime/shared-common": "workspace:*",
+    "@moaitime/shared-frontend": "workspace:*",
     "@moaitime/tsconfig-config": "workspace:*",
     "@moaitime/web-core": "workspace:*",
     "react": "18.2.0",

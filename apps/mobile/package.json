@@ -20,7 +20,6 @@
     "build:mobile": "vite build",
     "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
     "dev:mobile": "rimraf --glob ./node_modules/.vite && vite",
-    "lint": "eslint .",
     "sync": "pnpm build:mobile && cap sync"
   },
   "dependencies": {

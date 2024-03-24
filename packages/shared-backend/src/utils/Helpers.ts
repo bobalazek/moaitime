@@ -6,8 +6,6 @@ import { config } from 'dotenv';
 import { ROOT_DIR } from '../Constants';
 
 export const loadEnvironmentVariables = () => {
-  // Keep this one in sync with ./scripts/_helpers.js!
-
   const NODE_ENV = process.env['NODE_ENV'] || 'development';
   const files = [`.env.${NODE_ENV}.local`, `.env.local`, `.env.${NODE_ENV}`, `.env`];
   files.forEach((file) => {

@@ -1,6 +1,8 @@
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'jotai';
 
+import { OAUTH_GOOGLE_CLIENT_ID } from '@moaitime/shared-common';
 import { SonnerToaster, Toaster, TooltipProvider } from '@moaitime/web-ui';
 
 import { AppRoutes } from './AppRoutes';
@@ -30,9 +32,11 @@ export function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Provider>
-            <AppRoutes />
-          </Provider>
+          <GoogleOAuthProvider clientId={OAUTH_GOOGLE_CLIENT_ID}>
+            <Provider>
+              <AppRoutes />
+            </Provider>
+          </GoogleOAuthProvider>
         </TooltipProvider>
       </QueryClientProvider>
       <ToasterContainer />

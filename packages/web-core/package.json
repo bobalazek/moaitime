@@ -34,6 +34,7 @@
     "@moaitime/tsconfig-config": "workspace:*",
     "@moaitime/web-ui": "workspace:*",
     "@moaitime/web-ui-editor": "workspace:*",
+    "@react-oauth/google": "^0.12.1",
     "@tanstack/react-query": "5.17.9",
     "apexcharts": "^3.45.2",
     "clsx": "^2.0.0",

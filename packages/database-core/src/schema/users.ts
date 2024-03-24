@@ -35,6 +35,7 @@ export const users = pgTable(
     biography: text('biography'),
     isPrivate: boolean('is_private').default(false),
     avatarImageUrl: text('avatar_image_url'),
+    oauthGoogleId: text('oauth_google_id').unique(),
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),
     passwordResetToken: text('password_reset_token').unique(),

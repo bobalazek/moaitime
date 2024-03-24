@@ -1,3 +1,4 @@
+import { useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,9 +11,11 @@ import {
   CardTitle,
   Input,
   Label,
+  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
+import { GoogleSvgIcon } from '../../../core/utils/Icons';
 import { useAuthStore } from '../../state/authStore';
 
 export default function AuthLoginPage() {
@@ -20,6 +23,18 @@ export default function AuthLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const googleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      // TODO
+
+      console.log(tokenResponse);
+    },
+    onError: (error) => {
+      sonnerToast.error('Google login failed', {
+        description: error.error_description,
+      });
+    },
+  });
 
   const onForgotPasswordButtonClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -37,6 +52,10 @@ export default function AuthLoginPage() {
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
     }
+  };
+
+  const onLoginGoogleButtonClick = async () => {
+    googleLogin();
   };
 
   return (
@@ -90,16 +109,30 @@ export default function AuthLoginPage() {
                   }}
                 />
               </div>
-              <Button
-                id="login-button"
-                size="lg"
-                variant="default"
-                tabIndex={3}
-                className="w-full"
-                onClick={onLoginButtonClick}
-              >
-                Login
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  id="login-button"
+                  size="lg"
+                  variant="default"
+                  tabIndex={3}
+                  className="w-full"
+                  onClick={onLoginButtonClick}
+                >
+                  Login
+                </Button>
+                <div className="text-muted-foreground text-center text-sm">or</div>
+                <Button
+                  id="login-button"
+                  size="lg"
+                  variant="outline"
+                  tabIndex={3}
+                  className="flex w-full gap-2"
+                  onClick={onLoginGoogleButtonClick}
+                >
+                  <GoogleSvgIcon />
+                  Sign in with Google
+                </Button>
+              </div>
             </div>
             <hr className="my-8" />
             <Button size="lg" variant="outline" className="w-full" onClick={onRegisterButtonClick}>

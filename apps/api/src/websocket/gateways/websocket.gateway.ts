@@ -18,7 +18,10 @@ import { WebsocketCloseCodeEnum } from '@moaitime/shared-common';
 export let globalNotifierSubscription: () => Promise<void>;
 export let terminateServer: () => Promise<void>;
 
-@WebSocketGateway({ path: '/ws', cors: true })
+@WebSocketGateway(0, {
+  path: '/ws',
+  cors: true,
+})
 export class WebsocketGateway
   implements
     OnGatewayInit<WebSocket>,

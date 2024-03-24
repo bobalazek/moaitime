@@ -16,7 +16,7 @@ const NotesPageSidebar = () => {
   return (
     <div
       className={clsx(
-        'flex h-full w-full max-w-full flex-col overflow-auto border-r md:max-w-[320px]',
+        'bg-background flex h-full w-full max-w-full flex-col overflow-auto border-r md:max-w-[320px]',
         !isVisible && 'hidden'
       )}
       data-test="notes--sidebar"

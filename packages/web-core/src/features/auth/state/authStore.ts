@@ -96,11 +96,14 @@ export const useAuthStore = create<AuthStore>()(
       },
       // Logout
       logout: async () => {
+        const { reloadAppData } = useAppStore.getState();
         const { setPopoverOpen } = useTasksStore.getState();
 
         const response = await logout();
 
         set({ auth: null });
+
+        reloadAppData();
 
         localStorage.removeItem('device-uid');
 

@@ -196,7 +196,7 @@ export default function SettingsDialog() {
 
     return (
       <div>
-        <div className="flex items-center gap-2">
+        <div className="bg-background flex items-center gap-2 border-b px-4 py-3">
           {isMobileView && (
             <button onClick={() => setActiveTab(undefined)} className="p-1 text-lg font-bold">
               <ArrowLeftIcon size={24} />
@@ -204,7 +204,7 @@ export default function SettingsDialog() {
           )}
           <h4 className="text-lg font-bold">{tab.label}</h4>
         </div>
-        {tab.content}
+        <div className="p-4">{tab.content}</div>
       </div>
     );
   };
@@ -219,11 +219,16 @@ export default function SettingsDialog() {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent
-        className="max-h-full max-w-screen-lg overflow-auto p-0 shadow-lg md:flex"
+        id="settings-dialog"
+        className="max-h-full max-w-[90%] gap-0 overflow-auto p-0 shadow-lg md:flex lg:max-w-screen-lg"
         data-test="settings--dialog"
       >
         {showSidebar && (
-          <div className="w-full p-4 md:w-1/4" data-test="settings--dialog--sidebar">
+          <div
+            id="settigns-dialog-sidebar"
+            className="bg-background w-full border-r-0 p-4 md:w-1/4 md:border-r"
+            data-test="settings--dialog--sidebar"
+          >
             {tabs.map((tab) => {
               if (tab.horizontalRule) {
                 return <hr key={tab.id} className="my-4 border-gray-200 dark:border-gray-700" />;
@@ -256,10 +261,11 @@ export default function SettingsDialog() {
         )}
         {showContent && (
           <div
+            id="settings-dialog-content"
             className="h-full max-h-[calc(100vh-12rem)] w-full md:w-3/4"
             data-test="settings--dialog--content"
           >
-            <div className="p-4">
+            <div>
               <AnimatePresence>
                 <motion.div
                   layout="position"

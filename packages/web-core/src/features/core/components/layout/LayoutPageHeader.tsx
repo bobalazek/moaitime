@@ -12,7 +12,7 @@ const LayoutPageHeader = ({ testKey, title, children }: LayoutPageHeaderProps) =
 
   return (
     <div
-      className="flex items-center justify-between gap-4 border-b px-4 py-3 text-center text-2xl"
+      className="bg-background flex items-center justify-between gap-4 border-b px-4 py-3 text-center text-2xl"
       data-test={`${testKey}--header`}
     >
       <div className="flex gap-4 align-middle">

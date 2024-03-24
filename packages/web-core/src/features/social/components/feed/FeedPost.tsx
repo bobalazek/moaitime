@@ -9,7 +9,10 @@ export default function FeedPost({ feedPost }: { feedPost: FeedPostType }) {
   const now = new Date();
 
   return (
-    <div key={feedPost.id} className="flex flex-row gap-4 rounded-lg border-2 p-4 shadow-md">
+    <div
+      key={feedPost.id}
+      className="bg-background flex flex-row gap-4 rounded-lg border-2 p-4 shadow-md"
+    >
       <Link to={`/social/users/${feedPost.user.username}`}>
         <UserAvatar user={feedPost.user} />
       </Link>

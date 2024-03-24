@@ -7,7 +7,7 @@ const NotesPageHeader = () => {
     <LayoutPageHeader
       testKey="notes"
       title={
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <div>Notes</div>
           <UsageBadge limitKey="notesMaxPerUserCount" usageKey="notesCount" />
         </div>

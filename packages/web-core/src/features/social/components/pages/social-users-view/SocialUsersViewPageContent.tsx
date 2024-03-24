@@ -132,7 +132,7 @@ const SocialUsersViewPageContent = ({
         {canViewFollowersAndFollowing && (
           <div className="col-span-12 lg:col-span-6 xl:col-span-4">
             <Tabs
-              className="w-full rounded border"
+              className="bg-background w-full rounded border"
               value={view}
               onValueChange={(value) => {
                 setView(value as Views);

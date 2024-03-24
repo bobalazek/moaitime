@@ -22,7 +22,7 @@ export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
 
   return (
     <div
-      className="bg-muted flex flex-row items-center rounded-xl p-4"
+      className="bg-background flex flex-row items-center rounded-xl border p-4 shadow-md"
       data-mood-entry-id={moodEntry.id}
       data-test="mood--mood-entry"
     >

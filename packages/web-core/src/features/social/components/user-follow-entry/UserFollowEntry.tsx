@@ -21,7 +21,7 @@ export default function UserFollowEntry({
   const { removeFollowerUser } = useSocialStore();
 
   return (
-    <div className="flex w-full items-center justify-between overflow-hidden">
+    <div className="bg-background flex w-full items-center justify-between overflow-hidden">
       <div className="flex flex-shrink-0 flex-grow">
         <div className="flex flex-shrink items-center gap-2">
           <Link to={`/social/users/${user.username}`}>

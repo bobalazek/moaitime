@@ -220,13 +220,13 @@ export default function SettingsDialog() {
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent
         id="settings-dialog"
-        className="max-h-[90%] max-w-[90%] gap-0 overflow-auto p-0 shadow-lg md:flex lg:max-h-full lg:max-w-screen-lg"
+        className="max-h-[95%] max-w-[95%] gap-0 p-0 shadow-lg md:flex lg:max-w-screen-lg"
         data-test="settings--dialog"
       >
         {showSidebar && (
           <div
             id="settigns-dialog-sidebar"
-            className="bg-background w-full border-r-0 p-4 md:w-1/4 md:border-r"
+            className="bg-background w-full overflow-auto border-r-0 p-4 md:w-1/4 md:border-r"
             data-test="settings--dialog--sidebar"
           >
             {tabs.map((tab) => {
@@ -262,7 +262,7 @@ export default function SettingsDialog() {
         {showContent && (
           <div
             id="settings-dialog-content"
-            className="h-full max-h-[calc(100vh-12rem)] w-full md:w-3/4"
+            className="w-full overflow-auto md:w-3/4"
             data-test="settings--dialog--content"
           >
             <div>

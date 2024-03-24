@@ -220,7 +220,7 @@ export default function SettingsDialog() {
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent
         id="settings-dialog"
-        className="max-h-full max-w-[90%] gap-0 overflow-auto p-0 shadow-lg md:flex lg:max-w-screen-lg"
+        className="max-h-[90%] max-w-[90%] gap-0 overflow-auto p-0 shadow-lg md:flex lg:max-h-full lg:max-w-screen-lg"
         data-test="settings--dialog"
       >
         {showSidebar && (

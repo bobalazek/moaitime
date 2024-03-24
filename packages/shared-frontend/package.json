@@ -18,6 +18,10 @@
     "lint": "eslint .",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
+  "dependencies": {
+    "@moaitime/shared-backend": "workspace:*",
+    "@moaitime/tsconfig-config": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.3.2"
   }

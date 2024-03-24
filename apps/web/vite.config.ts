@@ -17,5 +17,4 @@ export default defineConfig({
     host: '0.0.0.0',
   },
   plugins: [react(), tsconfigPaths()],
-  envPrefix: ['VITE_', 'WEB_BASE_URL', 'API_BASE_URL', 'GOOGLE_OAUTH_CLIENT_ID'],
 });

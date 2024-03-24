@@ -18,7 +18,8 @@
     "serve": "turbo serve --no-daemon",
     "test": "cross-env NODE_ENV=test turbo test --no-daemon --concurrency=1",
     "test:watch": "cross-env NODE_ENV=test turbo test:watch --no-daemon",
-    "turbo:clean": "pnpx turbo daemon clean"
+    "turbo:clean": "pnpx turbo daemon clean",
+    "types:generate": "turbo types:generate --no-daemon"
   },
   "dependencies": {
     "zod": "^3.22.4"

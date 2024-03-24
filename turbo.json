@@ -39,6 +39,10 @@
     "dev:mobile": {
       "dependsOn": ["^build"],
       "cache": false
+    },
+    "types:generate": {
+      "dependsOn": ["^build"],
+      "cache": false
     }
   }
 }

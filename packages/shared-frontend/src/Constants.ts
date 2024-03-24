@@ -14,4 +14,5 @@ export const WS_URL =
     : `ws://localhost${wsPort}/ws`;
 
 // OAuth
-export const OAUTH_GOOGLE_CLIENT_ID = 'google-client-id';
+export const OAUTH_GOOGLE_CLIENT_ID =
+  import.meta.env.OAUTH_GOOGLE_CLIENT_ID ?? 'oauth-google-client-id';

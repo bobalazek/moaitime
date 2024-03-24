@@ -48,6 +48,7 @@ export default defineConfig((options) => {
   }
 
   return {
+    ...options,
     entry: ['src/main.ts'],
     format: ['cjs', 'esm'],
     dts: process.env.GENERATE_DTS === 'true',

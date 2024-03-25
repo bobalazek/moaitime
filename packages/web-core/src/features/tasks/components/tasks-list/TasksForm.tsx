@@ -54,7 +54,7 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
   };
 
   return (
-    <div className="pt-2" data-parent-id={parentId} data-test="tasks--tasks-form">
+    <div className="border-t p-2" data-parent-id={parentId} data-test="tasks--tasks-form">
       <div className="flex items-center gap-1">
         <Input
           type="text"

@@ -96,7 +96,7 @@ export default function TasksList() {
 
   return (
     <div
-      className="relative h-[320px] max-w-[320px] overflow-auto md:max-w-[380px]"
+      className="relative h-[320px] max-w-[320px] overflow-auto p-2 md:max-w-[380px]"
       data-test="tasks--tasks-list"
     >
       {showConfetti && (

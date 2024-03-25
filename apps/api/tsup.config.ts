@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 import { readdirSync } from 'fs';
 import { join } from 'path';
 
@@ -28,23 +29,19 @@ export default defineConfig((options) => {
       watch.push(join(__dirname, `../../packages/${packageName}/dist/**/index.{js,mjs}`));
     }
 
-    // TODO
-    // At the moment we still have issues with websockets, where they do not close correctly and keep the port open.
-    onSuccess = `node dist/main.js`;
-
-    /*
-    // TODO: fix, as it's not working at the moment
     onSuccess = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { bootstrap } = await import('./dist/main.mjs');
-
-      const app = await bootstrap();
+      const childProcess = spawn('node', ['dist/main.js'], {
+        shell: true,
+      });
+      childProcess.stdout.pipe(process.stdout);
+      childProcess.stderr.pipe(process.stderr);
 
       return async () => {
-        await app.close();
+        if (childProcess.pid && !childProcess.killed) {
+          process.kill(childProcess.pid, 'SIGINT');
+        }
       };
     };
-    */
   }
 
   return {

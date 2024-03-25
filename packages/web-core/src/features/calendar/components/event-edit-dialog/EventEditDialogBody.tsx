@@ -53,7 +53,7 @@ export default function EventEditDialogBody() {
         )
       : null;
   const endDateInCurrentTimezone =
-    !dataIsAllDay && data?.endsAt && dataEndTimezone !== generalTimezone
+    !dataIsAllDay && data?.endsAt && dataEndTimezone && dataEndTimezone !== generalTimezone
       ? format(
           utcToZonedTime(zonedTimeToUtc(data.endsAt, dataEndTimezone ?? 'UTC'), generalTimezone),
           'PPP p'

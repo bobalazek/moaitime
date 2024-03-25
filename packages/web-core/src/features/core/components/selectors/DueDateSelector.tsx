@@ -254,8 +254,8 @@ export default function DueDateSelector({
           </ErrorBoundary>
         )}
         {includeTime && dateValue && (
-          <>
-            <hr className="border-gray-300 dark:border-gray-700" />
+          <div className="flex flex-col gap-2">
+            <hr className="my-4 border-gray-300 dark:border-gray-700" />
             <div className="flex flex-col gap-2">
               <div className="flex justify-between align-bottom">
                 <div>
@@ -293,9 +293,9 @@ export default function DueDateSelector({
                 />
               </div>
             )}
-          </>
+          </div>
         )}
-        <div>
+        <div className="mt-2">
           <Button
             variant="default"
             className="w-full"

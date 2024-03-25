@@ -98,6 +98,7 @@ export * from './habits/HabitDailySchema';
 export * from './habits/HabitDailyEntrySchema';
 export * from './habits/HabitGoalFrequencyEnum';
 export * from './habits/HabitGoalUnitsDefault';
+export * from './habits/HabitTemplates';
 
 // Mood
 export * from './mood/MoodEntrySchema';

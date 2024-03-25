@@ -68,11 +68,12 @@ export class CalendarEntriesManager {
     let timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
 
     // To be safe, we need to additionally pull a day before and end, so we catch all events in all timezones.
+    // One day doesn't seem to be enough, as let's make it 2 for now.
     if (timezonedFrom) {
-      timezonedFrom = addDays(timezonedFrom, -1);
+      timezonedFrom = addDays(timezonedFrom, -2);
     }
     if (timezonedTo) {
-      timezonedTo = addDays(timezonedTo, 1);
+      timezonedTo = addDays(timezonedTo, 2);
     }
 
     const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);

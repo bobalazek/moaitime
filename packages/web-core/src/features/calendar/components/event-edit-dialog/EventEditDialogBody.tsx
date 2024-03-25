@@ -140,7 +140,7 @@ export default function EventEditDialogBody() {
           }}
         />
       </div>
-      <div className="mb-4 flex items-center space-x-2">
+      <div className="mb-4 flex items-center gap-2">
         <Switch
           id="event-isAllDay"
           checked={dataIsAllDay}

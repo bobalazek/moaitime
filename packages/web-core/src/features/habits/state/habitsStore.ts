@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { CreateHabit, Habit, HabitDailtEntry, UpdateHabit } from '@moaitime/shared-common';
+import { CreateHabit, Habit, HabitDailyEntry, UpdateHabit } from '@moaitime/shared-common';
 
 import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { queryClient } from '../../core/utils/FetchHelpers';
@@ -26,7 +26,7 @@ export type HabitsStore = {
   editHabit: (habitId: string, Habit: UpdateHabit) => Promise<Habit>;
   deleteHabit: (habitId: string, isHardDelete?: boolean) => Promise<Habit>;
   undeleteHabit: (habitId: string) => Promise<Habit>;
-  updateHabitDaily: (habitId: string, date: string, amount: number) => Promise<HabitDailtEntry>;
+  updateHabitDaily: (habitId: string, date: string, amount: number) => Promise<HabitDailyEntry>;
   // Selected Date
   selectedDate: Date;
   setSelectedDate: (selectedDate: Date) => void;
@@ -66,7 +66,7 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
     return habit;
   },
   addHabit: async (Habit: CreateHabit) => {
-    const { reloadHabits } = get();
+    const { selectedDate, reloadHabits } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
     const newHabit = await addHabit(Habit);
@@ -77,6 +77,17 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
     queryClient.invalidateQueries({
       queryKey: [HABITS_DAILY_QUERY_KEY],
     });
+
+    // Most people will find it confusing that if we have a selected date in the past and a new habit is added,
+    // the habit will not show up there, that's why, if we have a selected date in the past,
+    // we will set the selected date to today
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (selectedDate < today) {
+      set({
+        selectedDate: today,
+      });
+    }
 
     return newHabit;
   },

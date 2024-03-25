@@ -139,9 +139,9 @@ export default function AuthRegisterPage() {
                 </AlertDescription>
               </Alert>
             )}
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col gap-6">
               {teamUserInvitationToken && (
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="register-teamUserInvitationToken">Team Invitation Token</Label>
                   <Input
                     id="register-teamUserInvitationToken"
@@ -154,7 +154,7 @@ export default function AuthRegisterPage() {
                 </div>
               )}
               {!teamUserInvitationToken && (
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="register-invitationToken">Invitation Token</Label>
                   <Input
                     id="register-invitationToken"
@@ -166,7 +166,7 @@ export default function AuthRegisterPage() {
                   />
                 </div>
               )}
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="register-displayName">Display Name</Label>
                 <Input
                   id="register-displayName"
@@ -178,7 +178,7 @@ export default function AuthRegisterPage() {
                   }}
                 />
               </div>
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="register-username">Username</Label>
                 <Input
                   id="register-username"
@@ -190,7 +190,7 @@ export default function AuthRegisterPage() {
                   }}
                 />
               </div>
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="register-email">Email</Label>
                 <Input
                   type="email"
@@ -204,7 +204,7 @@ export default function AuthRegisterPage() {
                 />
               </div>
               {!oauthToken && (
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="register-password">Password</Label>
                   <Input
                     type="password"

@@ -3,7 +3,7 @@ import MoodEntriesCreatedSection from './MoodEntriesCreatedSection';
 
 export default function StatisticsMoodTabContent() {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <MoodBasicsSection />
       <MoodEntriesCreatedSection />
     </div>

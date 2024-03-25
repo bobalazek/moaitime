@@ -183,7 +183,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
           task.deletedAt ||
           taskTags.length > 0 ||
           taskUsers.length > 0) && (
-          <div className="ml-6 mt-1.5 space-y-1">
+          <div className="ml-6 mt-1.5 flex flex-col gap-1">
             <TaskItemPriority task={task} />
             <TaskItemUsers task={task} />
             <TaskItemTags task={task} />

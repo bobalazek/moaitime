@@ -16,7 +16,7 @@ const TaskItemTags = ({ task }: { task: TaskType }) => {
 
   return (
     <div
-      className="flex items-center justify-start space-x-1 align-middle"
+      className="flex items-center justify-start gap-1 align-middle"
       data-test="tasks--task--tags"
     >
       <TagIcon size={12} className="min-w-[12px]" />

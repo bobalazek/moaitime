@@ -13,7 +13,7 @@ const TaskItemUsers = ({ task }: { task: Task }) => {
 
   return (
     <div
-      className="flex items-center space-x-1 align-middle text-xs"
+      className="flex items-center gap-1 align-middle text-xs"
       data-test="tasks--task--users-text"
     >
       <UsersIcon size={12} />

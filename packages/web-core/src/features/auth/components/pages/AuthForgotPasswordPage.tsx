@@ -46,8 +46,8 @@ export default function AuthForgotPasswordPage() {
             <CardDescription>Oh dear, memory isn't the same as it used to be, uh?</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col space-y-6">
-              <div className="flex flex-col space-y-2">
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="forgotPassword-email">Email</Label>
                 <Input
                   type="email"

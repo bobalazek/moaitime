@@ -10,7 +10,7 @@ const TaskItemDuration = ({ task }: { task: TaskType }) => {
 
   return (
     <div
-      className={cn('flex items-center space-x-1 align-middle text-xs')}
+      className={cn('flex items-center gap-1 align-middle text-xs')}
       data-test="tasks--task--duration"
     >
       <TimerIcon size={12} />

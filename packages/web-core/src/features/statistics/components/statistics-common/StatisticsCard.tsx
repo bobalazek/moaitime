@@ -15,7 +15,7 @@ export default function StatisticsCard({ title, value, icon, description }: Stat
       className="bg-card text-card-foreground rounded-xl border shadow"
       data-test="statistics-card"
     >
-      <div className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+      <div className="flex flex-row items-center justify-between p-4 pb-2">
         <h3 className="text-sm font-medium tracking-tight">{title}</h3>
         {Icon && (
           <div className="text-2xl">

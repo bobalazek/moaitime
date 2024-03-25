@@ -174,11 +174,7 @@ export default function DateSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        side="top"
-        className="w-auto flex-col space-y-4 p-2"
-        data-test="date-selector"
-      >
+      <PopoverContent side="top" className="w-auto flex-col gap-4 p-2" data-test="date-selector">
         <Calendar
           mode="single"
           disabled={isDateDisabled}
@@ -187,9 +183,9 @@ export default function DateSelector({
           weekStartsOn={generalStartDayOfWeek}
         />
         {includeTime && dateValue && (
-          <>
+          <div className="flex flex-col gap-2">
             <hr className="border-gray-300 dark:border-gray-700" />
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <div className="flex justify-between align-bottom">
                 <div>
                   <Label htmlFor="date-selector--time">Time</Label>
@@ -226,9 +222,9 @@ export default function DateSelector({
                 />
               </div>
             )}
-          </>
+          </div>
         )}
-        <div>
+        <div className="mt-2">
           <Button
             variant="default"
             className="w-full"

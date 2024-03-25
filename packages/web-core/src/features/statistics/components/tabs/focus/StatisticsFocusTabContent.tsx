@@ -3,7 +3,7 @@ import FocusSessionsCreatedSection from './FocusSessionsCreatedSection';
 
 export default function StatisticsFocusTabContent() {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <FocusBasicsSection />
       <FocusSessionsCreatedSection />
     </div>

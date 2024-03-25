@@ -167,6 +167,7 @@ export class TasksManager {
 
   async findManyByListIdsAndRange(
     listIds: string[],
+    userId: string,
     from?: Date,
     to?: Date
   ): Promise<TaskWithListColor[]> {
@@ -184,12 +185,12 @@ export class TasksManager {
     }
 
     if (finalListIds.length === 0 && includesUnlisted) {
-      where = and(where, isNull(lists.id)) as SQL<unknown>;
+      where = and(where, and(isNull(lists.id), eq(tasks.userId, userId))) as SQL<unknown>;
     } else if (finalListIds.length > 0) {
       where = and(
         where,
         includesUnlisted
-          ? or(inArray(lists.id, finalListIds), isNull(lists.id))
+          ? or(inArray(lists.id, finalListIds), and(isNull(lists.id), eq(tasks.userId, userId)))
           : inArray(lists.id, finalListIds)
       ) as SQL<unknown>;
     } else {

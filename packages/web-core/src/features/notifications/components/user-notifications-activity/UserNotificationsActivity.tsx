@@ -108,7 +108,7 @@ function UserNotificationsActivityInner() {
         </div>
       )}
       {items.length > 0 && (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {hasPreviousPage && (
             <div className="flex justify-center">
               <Button className="btn btn-primary" onClick={() => fetchPreviousPage()}>

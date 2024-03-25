@@ -32,7 +32,7 @@ export default function CalendarAgendaView() {
         </div>
       )}
       {calendarEntries.length > 0 && (
-        <div className="flex flex-1 flex-col space-y-4">
+        <div className="flex flex-1 flex-col gap-4">
           {Object.keys(calendarEntriesPerDay).map((date) => {
             return (
               <CalendarAgendaViewDay

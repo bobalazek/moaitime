@@ -34,7 +34,7 @@ export type RecurrenceOptions = {
 
 export class Recurrence {
   private _options: RecurrenceOptions;
-  private _maxIterations = 5000;
+  private _maxIterations = 10000;
 
   constructor(options: RecurrenceOptions) {
     this._validateOptions(options);

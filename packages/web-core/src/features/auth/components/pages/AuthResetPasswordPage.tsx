@@ -51,8 +51,8 @@ export default function AuthResetPasswordPage() {
             <CardDescription>There we go! What shall be our new password?</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col space-y-6">
-              <div className="flex flex-col space-y-2">
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="resetPassword-password">Password</Label>
                 <Input
                   type="password"

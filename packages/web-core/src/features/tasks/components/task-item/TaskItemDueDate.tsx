@@ -50,7 +50,7 @@ const TaskItemDueDate = ({
   return (
     <div
       className={cn(
-        'flex items-center space-x-1 align-middle text-xs',
+        'flex items-center gap-1 align-middle text-xs',
         isDueSoon && 'text-yellow-400',
         isAlmostDue && 'text-orange-400',
         isOverDue && 'font-semibold text-red-400'

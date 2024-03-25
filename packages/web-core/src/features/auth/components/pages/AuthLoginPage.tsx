@@ -72,8 +72,8 @@ export default function AuthLoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col space-y-8">
-              <div className="flex flex-col space-y-2">
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="login-email">Email</Label>
                 <Input
                   type="email"
@@ -86,7 +86,7 @@ export default function AuthLoginPage() {
                   }}
                 />
               </div>
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col gap-2">
                 <div className="flex items-end justify-between">
                   <Label htmlFor="login-password">Password</Label>
                   <a

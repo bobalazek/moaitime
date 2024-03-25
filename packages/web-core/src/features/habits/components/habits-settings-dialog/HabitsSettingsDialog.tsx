@@ -1,4 +1,4 @@
-import { CogIcon } from 'lucide-react';
+import { CogIcon, InfoIcon } from 'lucide-react';
 
 import {
   Button,
@@ -40,13 +40,23 @@ export default function HabitsSettingsDialog() {
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">
-          <div className="mt-4" data-test="habits--settings-dialog--habits-wrapper">
+          <div data-test="habits--settings-dialog--habits-wrapper">
             <div className="mb-1 flex items-center gap-2">
               <h3 className="font-bold">Habits</h3>
               <HabitsSettingsDialogHabitsActions />
               <UsageBadge limitKey="habitsMaxPerUserCount" usageKey="habitsCount" />
             </div>
             <HabitsSettingsDialogHabits />
+          </div>
+          <hr className="my-3" />
+          <h3 className="mb-1 flex items-center gap-2 font-bold">
+            <InfoIcon size={16} /> Information
+          </h3>
+          <div className="text-muted-foreground text-xs">
+            The progress bar at the bottom of each habit is the completion percentage of the habit
+            in the relation to the goal. A habit with a daily goal will show 50% progress at noon
+            each day. Likewise, if the goal is weekly, the progress will be 50% on Wednesday and so
+            forth.
           </div>
         </ScrollArea>
       </DialogContent>

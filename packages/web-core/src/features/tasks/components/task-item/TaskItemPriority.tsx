@@ -9,7 +9,7 @@ const TaskItemPriority = ({ task }: { task: TaskType }) => {
 
   return (
     <div
-      className="flex items-center space-x-1 align-middle text-xs font-bold"
+      className="flex items-center gap-1 align-middle text-xs font-bold"
       data-test="tasks--task--priority-text"
       style={{
         color: prioritiesColorMap.get(task.priority) ?? '',

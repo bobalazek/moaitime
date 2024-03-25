@@ -115,8 +115,8 @@ export default function HabitEditDialog() {
       <DialogContent data-test="habbits--habit-edit-dialog">
         <DialogHeader>
           <DialogTitle>
-            {selectedHabitDialog?.id && <>Edit "{selectedHabitDialog.name}" Habit</>}
-            {!selectedHabitDialog?.id && <>Create Habit</>}
+            {habitExists && <>Edit "{selectedHabitDialog.name}" Habit</>}
+            {!habitExists && <>Create Habit</>}
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">

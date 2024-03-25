@@ -233,7 +233,7 @@ export default function DueDateSelector({
       </PopoverTrigger>
       <PopoverContent
         side="top"
-        className="w-auto max-w-[300px] flex-col space-y-4 p-2"
+        className="w-auto max-w-[300px] flex-col gap-2 p-2"
         data-test="date-selector"
       >
         <Calendar
@@ -256,7 +256,7 @@ export default function DueDateSelector({
         {includeTime && dateValue && (
           <>
             <hr className="border-gray-300 dark:border-gray-700" />
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <div className="flex justify-between align-bottom">
                 <div>
                   <Label htmlFor="date-selector--time">Time</Label>

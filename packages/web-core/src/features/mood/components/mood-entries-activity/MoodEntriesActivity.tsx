@@ -111,7 +111,7 @@ function MoodEntriesActivityInner() {
         </div>
       )}
       {items.length > 0 && (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-4">
             <AnimatePresence>
               {items.map((moodEntry) => {
@@ -146,7 +146,7 @@ function MoodEntriesActivityInner() {
             </AnimatePresence>
           </div>
           {hasNextPage && (
-            <div className="flex justify-center">
+            <div className="mt-4 flex justify-center">
               <FetchNextPageButton fetchNextPage={fetchNextPage} />
             </div>
           )}

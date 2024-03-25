@@ -72,7 +72,7 @@ export default function CalendarAgendaViewDayEventEntry({
   return (
     <div
       key={calendarEntry.id}
-      className="flex cursor-pointer justify-between rounded-lg border-2 p-4"
+      className="bg-background flex cursor-pointer justify-between rounded-lg border-2 p-4"
       onClick={onClick}
       style={{
         borderColor: entryColor,
@@ -100,7 +100,7 @@ export default function CalendarAgendaViewDayEventEntry({
           </div>
         )}
       </div>
-      <div className="space-y-2 text-right text-sm">
+      <div className="gap-2 text-right text-sm">
         {calendarEntry.isAllDay && (
           <>
             {daysDifference <= 1 && <span>All-Day</span>}

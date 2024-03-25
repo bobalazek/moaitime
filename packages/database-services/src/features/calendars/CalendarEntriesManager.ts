@@ -128,6 +128,7 @@ export class CalendarEntriesManager {
     const listIds = await listsManager.getVisibleListIdsByUserId(user.id);
     const rawTasks = await tasksManager.findManyByListIdsAndRange(
       listIds,
+      user.id,
       timezonedFrom,
       timezonedTo
     );

@@ -124,7 +124,7 @@ export default function TasksList() {
         >
           <AnimatePresence>
             {selectedListTasks.length === 0 && (
-              <motion.div layout={allowAnimations} className="py-1 italic">
+              <motion.div layout={allowAnimations} className="py-2 text-center italic">
                 No tasks. Yay!
               </motion.div>
             )}

@@ -84,8 +84,9 @@ export default function CalendarEntry({
   let canResizeEndHandler = canResizeAndMove;
   if (canResizeAndMove) {
     canResizeAndMove = calendarEntry.permissions?.canUpdate;
-    canResizeEndHandler = selectedView !== CalendarViewEnum.MONTH;
-    canResizeAndMove &&
+    canResizeEndHandler =
+      selectedView !== CalendarViewEnum.MONTH &&
+      canResizeAndMove &&
       ifIsCalendarEntryEndDateSameAsToday(calendarEntry, generalTimezone, dayDate);
   }
 

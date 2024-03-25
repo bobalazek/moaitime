@@ -252,12 +252,22 @@ export class EventsManager {
     return calendarsManager.userCanView(userId, event.calendarId);
   }
 
-  async userCanUpdate(userId: string, calendarId: string): Promise<boolean> {
-    return this.userCanView(userId, calendarId);
+  async userCanUpdate(userId: string, eventId: string): Promise<boolean> {
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      return false;
+    }
+
+    return calendarsManager.userCanUpdate(userId, event.calendarId);
   }
 
-  async userCanDelete(userId: string, calendarId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, calendarId);
+  async userCanDelete(userId: string, eventId: string): Promise<boolean> {
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      return false;
+    }
+
+    return calendarsManager.userCanDelete(userId, event.calendarId);
   }
 
   // API Helpers
@@ -308,8 +318,8 @@ export class EventsManager {
   }
 
   async update(actorUserId: string, eventId: string, data: UpdateEvent) {
-    const canView = await this.userCanUpdate(actorUserId, eventId);
-    if (!canView) {
+    const canUpdate = await this.userCanUpdate(actorUserId, eventId);
+    if (!canUpdate) {
       throw new Error('You cannot update this event');
     }
 

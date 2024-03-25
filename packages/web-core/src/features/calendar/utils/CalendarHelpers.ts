@@ -18,6 +18,7 @@ import {
 import { formatInTimeZone, getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
 import {
+  addDateTimezoneToItself,
   Calendar,
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
   CalendarEntry,
@@ -647,13 +648,17 @@ export const adjustStartAndEndDates = (
     new Date(calendarEntryOrEvent.startsAt),
     mode === 'end_only' ? 0 : minutesDelta
   );
-  const newStartsAtString = newStartsAt.toISOString();
+  const newStartsAtString = addDateTimezoneToItself(new Date(newStartsAt.toISOString()))
+    .toISOString()
+    .slice(0, -1);
   const newStartsAtUtc = zonedTimeToUtc(newStartsAt, startTimezone).toISOString();
 
   // Ends At
   const endTimezone = calendarEntryOrEvent.endTimezone ?? startTimezone;
   const newEndsAt = addMinutes(new Date(calendarEntryOrEvent.endsAt), minutesDelta);
-  const newEndsAtString = newEndsAt.toISOString();
+  const newEndsAtString = addDateTimezoneToItself(new Date(newEndsAt.toISOString()))
+    .toISOString()
+    .slice(0, -1);
   const newEndsAtUtc = zonedTimeToUtc(newEndsAt, endTimezone).toISOString();
 
   if (newEndsAt < newStartsAt) {

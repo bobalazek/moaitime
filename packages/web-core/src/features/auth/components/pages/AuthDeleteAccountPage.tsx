@@ -50,7 +50,7 @@ export default function AuthDeleteAccountPage() {
   return (
     <ErrorBoundary>
       <div className="flex h-screen items-center justify-center">
-        <Card className="w-full max-w-screen-sm">
+        <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
             <CardTitle>Delete Account</CardTitle>
             <CardDescription>

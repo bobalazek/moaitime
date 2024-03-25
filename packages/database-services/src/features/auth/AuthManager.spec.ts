@@ -19,13 +19,13 @@ describe('AuthManager.ts', () => {
 
   describe('login()', () => {
     it('should not login with invalid credentials', async () => {
-      const result = () => authManager.login('invalid', 'invalid');
+      const result = () => authManager.loginWithCredentials('invalid', 'invalid');
 
       await expect(result).rejects.toThrow('Invalid credentials');
     });
 
     it('should login with valid credentials', async () => {
-      const result = await authManager.login('tester@moaitime.com', 'password');
+      const result = await authManager.loginWithCredentials('tester@moaitime.com', 'password');
 
       expect(result.user.email).toBe('tester@moaitime.com');
       expect(result.user.displayName).toBe('Tester');
@@ -35,7 +35,7 @@ describe('AuthManager.ts', () => {
 
   describe('logout()', () => {
     it('should work correctly', async () => {
-      const result = await authManager.login('tester@moaitime.com', 'password');
+      const result = await authManager.loginWithCredentials('tester@moaitime.com', 'password');
       const token = result.userAccessToken.token;
 
       await authManager.logout(token);
@@ -348,7 +348,7 @@ describe('AuthManager.ts', () => {
         password,
       });
 
-      const userWithAccessToken = await authManager.login(email, password);
+      const userWithAccessToken = await authManager.loginWithCredentials(email, password);
 
       const refreshedUserWithAccessToken = await authManager.refreshToken(
         userWithAccessToken.userAccessToken.refreshToken
@@ -369,7 +369,7 @@ describe('AuthManager.ts', () => {
         password,
       });
 
-      const userWithAccessToken = await authManager.login(email, password);
+      const userWithAccessToken = await authManager.loginWithCredentials(email, password);
 
       await userAccessTokensManager.updateOneById(userWithAccessToken.userAccessToken.id, {
         revokedAt: subMinutes(new Date(), 5),
@@ -391,7 +391,7 @@ describe('AuthManager.ts', () => {
         password,
       });
 
-      const userWithAccessToken = await authManager.login(email, password);
+      const userWithAccessToken = await authManager.loginWithCredentials(email, password);
 
       await userAccessTokensManager.updateOneById(userWithAccessToken.userAccessToken.id, {
         expiresAt: subMinutes(new Date(), 5),
@@ -413,7 +413,7 @@ describe('AuthManager.ts', () => {
         password,
       });
 
-      const userWithAccessToken = await authManager.login(email, password);
+      const userWithAccessToken = await authManager.loginWithCredentials(email, password);
 
       await userAccessTokensManager.updateOneById(userWithAccessToken.userAccessToken.id, {
         refreshTokenClaimedAt: subMinutes(new Date(), 5),

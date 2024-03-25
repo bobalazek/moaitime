@@ -16,6 +16,7 @@ import {
   SQL,
   sum,
 } from 'drizzle-orm';
+import { PgColumn } from 'drizzle-orm/pg-core';
 
 import { databaseCacheManager } from '@moaitime/database-cache';
 import {
@@ -38,6 +39,7 @@ import {
   EntityTypeEnum,
   GlobalEventsEnum,
   isValidUuid,
+  OauthProviderEnum,
   PublicUser,
   PublicUserSchema,
   SortDirectionEnum,
@@ -171,6 +173,30 @@ export class UsersManager {
   async findOneByDeletionToken(deletionToken: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.deletionToken, deletionToken),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByOauthProviderId(
+    provider: OauthProviderEnum,
+    oauthSub: string
+  ): Promise<User | null> {
+    let field: PgColumn | null = null;
+    if (provider === OauthProviderEnum.GOOGLE) {
+      field = users.oauthGoogleId;
+    }
+
+    if (!field) {
+      return null;
+    }
+
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(field, oauthSub),
     });
 
     if (!row) {

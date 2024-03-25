@@ -1,5 +1,8 @@
 import {
   Auth,
+  OauthProviderEnum,
+  OauthToken,
+  OauthUserInfo,
   RegisterUser,
   ResponseInterface,
   UpdateUser,
@@ -21,6 +24,38 @@ export const login = async (email: string, password: string, userAgent?: string)
       'Content-Type': 'application/json',
     },
   });
+
+  return response;
+};
+
+export const oauthLogin = async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
+  const response = await fetchJson<ResponseInterface<Auth>>(
+    `${API_URL}/api/v1/auth/oauth-login/${provider}`,
+    {
+      method: 'POST',
+      body: JSON.stringify(oauthToken),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+
+export const oauthUserInfo = async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
+  const response = await fetchJson<ResponseInterface<OauthUserInfo>>(
+    `${API_URL}/api/v1/auth/oauth-user-info/${provider}`,
+    {
+      method: 'POST',
+      body: JSON.stringify(oauthToken),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
   return response;
 };

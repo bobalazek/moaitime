@@ -23,6 +23,7 @@ export const convertToUserResponseDto = (
       username: userWithAccessToken.username,
       email: userWithAccessToken.email,
       newEmail: userWithAccessToken.newEmail ?? null,
+      hasPassword: !!userWithAccessToken.password,
       roles: userWithAccessToken.roles,
       settings: usersManager.getUserSettings(userWithAccessToken),
       biography: userWithAccessToken.biography,

@@ -2,6 +2,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { OauthProviderEnum } from '@moaitime/shared-common';
 import {
   Button,
   Card,
@@ -19,15 +20,17 @@ import { GoogleSvgIcon } from '../../../core/utils/Icons';
 import { useAuthStore } from '../../state/authStore';
 
 export default function AuthLoginPage() {
-  const { login } = useAuthStore();
+  const { login, oauthLogin } = useAuthStore();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const googleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      // TODO
-
-      console.log(tokenResponse);
+    onSuccess: async (token) => {
+      try {
+        await oauthLogin(OauthProviderEnum.GOOGLE, token);
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
     },
     onError: (error) => {
       sonnerToast.error('Google login failed', {
@@ -61,7 +64,7 @@ export default function AuthLoginPage() {
   return (
     <ErrorBoundary>
       <div className="flex h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-screen-sm">
+        <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
             <CardTitle>Sign In</CardTitle>
             <CardDescription>

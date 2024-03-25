@@ -1,7 +1,11 @@
+import { useGoogleLogin } from '@react-oauth/google';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { OauthProviderEnum, OauthToken } from '@moaitime/shared-common';
 import {
+  Alert,
+  AlertDescription,
   Button,
   Card,
   CardContent,
@@ -15,10 +19,11 @@ import {
 } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
+import { GoogleSvgIcon } from '../../../core/utils/Icons';
 import { useAuthStore } from '../../state/authStore';
 
 export default function AuthRegisterPage() {
-  const { register } = useAuthStore();
+  const { register, oauthUserInfo } = useAuthStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [invitationToken, setInvitationToken] = useState<string>();
@@ -28,6 +33,29 @@ export default function AuthRegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [terms, setTerms] = useState(false);
+  const [oauthProvider, setOauthProvider] = useState<OauthProviderEnum>();
+  const [oauthToken, setOauthToken] = useState<OauthToken>();
+  const googleConnect = useGoogleLogin({
+    onSuccess: async (token) => {
+      try {
+        setOauthProvider(OauthProviderEnum.GOOGLE);
+        setOauthToken(token);
+
+        const userInfo = await oauthUserInfo(OauthProviderEnum.GOOGLE, token);
+        if (userInfo) {
+          setEmail(userInfo.email ?? '');
+          setDisplayName(userInfo.displayName ?? '');
+        }
+      } catch (error) {
+        // We are already handling the error by showing a toast message inside in the fetch function
+      }
+    },
+    onError: (error) => {
+      sonnerToast.error('Google login failed', {
+        description: error.error_description,
+      });
+    },
+  });
 
   useEffect(() => {
     const invitationTokenParam = searchParams.get('invitationToken') ?? undefined;
@@ -39,6 +67,10 @@ export default function AuthRegisterPage() {
 
   const onLoginButtonClick = () => {
     navigate('/login');
+  };
+
+  const onGoogleConnectButtonClick = async () => {
+    googleConnect();
   };
 
   const onRegisterButtonClick = async () => {
@@ -54,9 +86,16 @@ export default function AuthRegisterPage() {
         displayName,
         username,
         email,
-        password,
+        password: password ? password : undefined,
         invitationToken,
         teamUserInvitationToken,
+        oauth:
+          oauthProvider && oauthToken
+            ? {
+                provider: oauthProvider,
+                token: oauthToken,
+              }
+            : undefined,
       });
 
       sonnerToast.success('Success!', {
@@ -70,12 +109,36 @@ export default function AuthRegisterPage() {
   return (
     <ErrorBoundary>
       <div className="flex h-screen items-center justify-center">
-        <Card className="w-full max-w-screen-sm">
+        <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
             <CardTitle>Sign Up</CardTitle>
             <CardDescription>Brilliant, let's get started, shall we?!</CardDescription>
           </CardHeader>
           <CardContent>
+            {!oauthToken && (
+              <>
+                <Button
+                  id="login-button"
+                  size="lg"
+                  variant="outline"
+                  tabIndex={3}
+                  className="flex w-full gap-2"
+                  onClick={onGoogleConnectButtonClick}
+                >
+                  <GoogleSvgIcon />
+                  Connect with Google
+                </Button>
+                <div className="text-muted-foreground py-2 text-center text-sm">or</div>
+              </>
+            )}
+            {oauthToken && (
+              <Alert variant="success" className="mb-6">
+                <AlertDescription>
+                  You are now connected with the OAuth provider! Please continue to fill all the
+                  fields below.
+                </AlertDescription>
+              </Alert>
+            )}
             <div className="flex flex-col space-y-6">
               {teamUserInvitationToken && (
                 <div className="flex flex-col space-y-2">
@@ -140,17 +203,19 @@ export default function AuthRegisterPage() {
                   }}
                 />
               </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="register-password">Password</Label>
-                <Input
-                  type="password"
-                  id="register-password"
-                  value={password}
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                  }}
-                />
-              </div>
+              {!oauthToken && (
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="register-password">Password</Label>
+                  <Input
+                    type="password"
+                    id="register-password"
+                    value={password}
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                    }}
+                  />
+                </div>
+              )}
               <div className="flex flex-row items-center gap-2">
                 <Checkbox
                   id="register-terms"

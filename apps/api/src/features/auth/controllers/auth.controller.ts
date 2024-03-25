@@ -1,8 +1,10 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Param, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { authManager } from '@moaitime/database-services';
+import { OauthProviderEnum } from '@moaitime/shared-common';
 
+import { OauthTokenDto } from '../../../dtos/oauth-token.dto';
 import { ResponseDto } from '../../../dtos/responses/response.dto';
 import { TokenDto } from '../../../dtos/token.dto';
 import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
@@ -19,14 +21,14 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() body: LoginDto,
-    @Res({ passthrough: true }) res: Response,
-    @Req() req: Request
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
     const ip = req.ip;
 
-    const { user, userAccessToken } = await authManager.login(
+    const { user, userAccessToken } = await authManager.loginWithCredentials(
       body.email,
       body.password,
       userAgent,
@@ -64,17 +66,68 @@ export class AuthController {
     };
   }
 
+  @Post('oauth-login/:provider')
+  async oauthLogin(
+    @Param('provider') provider: OauthProviderEnum,
+    @Body() body: OauthTokenDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<LoginResponseDto> {
+    const userAgent = req.get('user-agent');
+    const deviceUid = req.get('device-uid');
+    const ip = req.ip;
+
+    const { user, userAccessToken } = await authManager.oauthLogin(
+      provider,
+      body,
+      userAgent,
+      deviceUid,
+      ip
+    );
+
+    res.status(200);
+
+    return {
+      success: true,
+      message: 'You have successfully logged in',
+      data: convertToUserResponseDto({ ...user, _accessToken: userAccessToken }),
+    };
+  }
+
+  @Post('oauth-user-info/:provider')
+  async oauthUserInfo(
+    @Param('provider') provider: OauthProviderEnum,
+    @Body() body: OauthTokenDto
+  ): Promise<ResponseDto> {
+    const data = await authManager.oauthUserInfo(provider, body);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
   @Post('register')
   async register(
     @Body() body: RegisterDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
-    await authManager.register({
+    const userAgent = req.get('user-agent');
+    const deviceUid = req.get('device-uid');
+    const ip = req.ip;
+
+    const registeredUser = await authManager.register({
       settings: body.settings,
       ...body,
     });
 
-    const { user, userAccessToken } = await authManager.login(body.email, body.password);
+    const { user, userAccessToken } = await authManager.loginWithUserId(
+      registeredUser.id,
+      userAgent,
+      deviceUid,
+      ip
+    );
 
     res.status(200);
 

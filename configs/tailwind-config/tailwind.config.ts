@@ -40,6 +40,10 @@ const config: Config = {
           foreground: 'hsl(var(--destructive-foreground))',
         },
         /* CUSTOM */
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
+        },
         warn: {
           DEFAULT: 'hsl(var(--warn))',
           foreground: 'hsl(var(--warn-foreground))',

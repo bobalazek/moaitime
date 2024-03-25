@@ -16,6 +16,7 @@ import { useAuthStore } from '../../state/authStore';
 
 export default function AccountSettingsAccountPasswordDialog() {
   const {
+    auth,
     accountPasswordSettingsDialogOpen,
     setAccountPasswordSettingsDialogOpen,
     updateAccountPassword,
@@ -31,7 +32,7 @@ export default function AccountSettingsAccountPasswordDialog() {
   const onSaveButtonClick = async () => {
     try {
       await updateAccountPassword({
-        currentPassword,
+        currentPassword: currentPassword || undefined,
         newPassword,
       });
 
@@ -59,17 +60,19 @@ export default function AccountSettingsAccountPasswordDialog() {
         <DialogHeader>
           <DialogTitle>Change Password</DialogTitle>
         </DialogHeader>
-        <div className="my-4 flex flex-col gap-2">
-          <Label htmlFor="passwordSettings-currentPassword">Current Password</Label>
-          <Input
-            type="password"
-            id="passwordSettings-currentPassword"
-            value={currentPassword}
-            onChange={(event) => {
-              setCurrentPassword(event.target.value);
-            }}
-          />
-        </div>
+        {auth?.user.hasPassword && (
+          <div className="my-4 flex flex-col gap-2">
+            <Label htmlFor="passwordSettings-currentPassword">Current Password</Label>
+            <Input
+              type="password"
+              id="passwordSettings-currentPassword"
+              value={currentPassword}
+              onChange={(event) => {
+                setCurrentPassword(event.target.value);
+              }}
+            />
+          </div>
+        )}
         <div className="mb-4 flex flex-col gap-2">
           <Label htmlFor="passwordSettings-newPassword">New Password</Label>
           <Input

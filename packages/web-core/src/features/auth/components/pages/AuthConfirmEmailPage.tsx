@@ -51,7 +51,7 @@ export default function AuthConfirmEmailPage() {
   return (
     <ErrorBoundary>
       <div className="flex h-screen items-center justify-center">
-        <Card className="w-full max-w-screen-sm">
+        <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
             <CardTitle>Confirm Email</CardTitle>
             <CardDescription>

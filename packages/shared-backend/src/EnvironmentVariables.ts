@@ -25,6 +25,8 @@ export const envSchema = z.object({
   USER_AVATARS_BUCKET_URL: z.string().url().min(1),
   API_PORT: z.coerce.number().default(3636),
   WEB_BASE_URL: z.string().url().min(1),
+  OAUTH_GOOGLE_CLIENT_ID: z.string(),
+  OAUTH_GOOGLE_CLIENT_SECRET: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

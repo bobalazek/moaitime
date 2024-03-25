@@ -3,6 +3,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { addSeconds } from 'date-fns';
+import { Issuer } from 'openid-client';
 import { UAParser } from 'ua-parser-js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -31,6 +32,9 @@ import {
   getDomainFromUrl,
   GlobalEventsEnum,
   MAIN_COLORS,
+  OauthProviderEnum,
+  OauthToken,
+  OauthUserInfo,
   ProcessingStatusEnum,
   RegisterUser,
   UserPasswordSchema,
@@ -69,7 +73,31 @@ export class AuthManager {
   ) {}
 
   // Login
-  async login(
+  async loginWithUserId(
+    userId: string,
+    userAgent?: string,
+    deviceUid?: string,
+    ip?: string
+  ): Promise<AuthLoginResult> {
+    const user = await this._usersManager.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid, ip);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
+      actorUserId: user.id,
+      userId: user.id,
+    });
+
+    return {
+      user,
+      userAccessToken,
+    };
+  }
+
+  async loginWithCredentials(
     email: string,
     password: string,
     userAgent?: string,
@@ -112,14 +140,43 @@ export class AuthManager {
     return true;
   }
 
-  // Register
-  async register(data: RegisterUser): Promise<User> {
-    const { password, ...user } = data;
-    if (!password) {
-      throw new Error('Password is not set');
+  // OAuth
+  async oauthLogin(
+    provider: OauthProviderEnum,
+    oauthToken: OauthToken,
+    userAgent?: string,
+    deviceUid?: string,
+    ip?: string
+  ): Promise<AuthLoginResult> {
+    const userInfo = await this._getOauthProviderUserInfo(provider, oauthToken);
+    const user = await this._usersManager.findOneByOauthProviderId(provider, userInfo.sub);
+    if (!user) {
+      throw new Error('No user with this OAuth account found');
     }
 
-    UserPasswordSchema.parse(password);
+    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid, ip);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
+      actorUserId: user.id,
+      userId: user.id,
+      oauthProvider: provider,
+    });
+
+    return {
+      user,
+      userAccessToken,
+    };
+  }
+
+  async oauthUserInfo(provider: OauthProviderEnum, oauthToken: OauthToken) {
+    const userInfo = await this._getOauthProviderUserInfo(provider, oauthToken);
+
+    return userInfo;
+  }
+
+  // Register
+  async register(data: RegisterUser): Promise<User> {
+    const { password, oauth, ...user } = data;
 
     this._usernameValidCheck(user.username);
 
@@ -148,11 +205,32 @@ export class AuthManager {
       );
     }
 
-    const hashedPassword = await this.validateAndHashPassword(password);
+    if (!password && !oauth) {
+      throw new Error('Password is not set');
+    }
+
+    let additionalUserFields: Partial<NewUser> = {};
+
+    if (password) {
+      UserPasswordSchema.parse(password);
+
+      additionalUserFields.password = await this.validateAndHashPassword(password);
+    }
+
+    if (oauth) {
+      const additionalOauthFields = await this._getAdditionalDataForOauth(
+        oauth.provider,
+        oauth.token
+      );
+      additionalUserFields = {
+        ...additionalUserFields,
+        ...additionalOauthFields,
+      };
+    }
 
     const newUser = await this._usersManager.insertOne({
       ...user,
-      password: hashedPassword,
+      ...additionalUserFields,
       roles: [UserRoleEnum.USER],
       emailConfirmationToken: uuidv4(),
       emailConfirmationLastSentAt: new Date(),
@@ -883,6 +961,59 @@ export class AuthManager {
     if (isValid) {
       throw new Error('Username is not available');
     }
+  }
+
+  private async _getOauthProviderUserInfo(
+    provider: OauthProviderEnum,
+    oauthToken: OauthToken
+  ): Promise<OauthUserInfo> {
+    const { OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_CLIENT_SECRET } = getEnv();
+
+    if (provider !== OauthProviderEnum.GOOGLE) {
+      throw new Error('Invalid OAuth provider');
+    }
+
+    try {
+      const googleIssuer = await Issuer.discover('https://accounts.google.com');
+      const client = new googleIssuer.Client({
+        client_id: OAUTH_GOOGLE_CLIENT_ID,
+        client_secret: OAUTH_GOOGLE_CLIENT_SECRET,
+      });
+      const userInfo = await client.userinfo(oauthToken.access_token);
+
+      return {
+        sub: userInfo.sub,
+        email: userInfo.email,
+        emailVerified: userInfo.email_verified,
+        preferredUsername: userInfo.preferred_username,
+        displayName: userInfo.name,
+        avatarUrl: userInfo.picture,
+      };
+    } catch (error) {
+      throw new Error('Failed to get user info from OAuth provider');
+    }
+  }
+
+  private async _getAdditionalDataForOauth(
+    provider: OauthProviderEnum,
+    oauthToken: OauthToken
+  ): Promise<Partial<User>> {
+    const returnedFields: Partial<User> = {};
+
+    if (provider === OauthProviderEnum.GOOGLE) {
+      const userInfo = await this._getOauthProviderUserInfo(provider, oauthToken);
+      const existingUser = await this._usersManager.findOneByOauthProviderId(
+        provider,
+        userInfo.sub
+      );
+      if (existingUser) {
+        throw new Error('User with this OAuth account already exists');
+      }
+
+      returnedFields.oauthGoogleId = userInfo.sub;
+    }
+
+    return returnedFields;
   }
 }
 

@@ -3,6 +3,9 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import {
   Auth,
+  OauthProviderEnum,
+  OauthToken,
+  OauthUserInfo,
   RegisterUser,
   ResponseInterface,
   UpdateUser,
@@ -23,6 +26,8 @@ import {
   getAccount,
   login,
   logout,
+  oauthLogin,
+  oauthUserInfo,
   refreshToken,
   register,
   requestAccountDeletion,
@@ -41,8 +46,10 @@ export type AuthStore = {
   setAuth: (auth: Auth | null) => Promise<void>;
   // Login
   login: (email: string, password: string) => Promise<ResponseInterface>;
-  // Logout
   logout: () => Promise<ResponseInterface>;
+  // OAuth
+  oauthLogin: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<ResponseInterface>;
+  oauthUserInfo: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<OauthUserInfo>;
   // Register
   register: (data: RegisterUser) => Promise<ResponseInterface>;
   // Reset Password
@@ -94,7 +101,6 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      // Logout
       logout: async () => {
         const { reloadAppData } = useAppStore.getState();
         const { setPopoverOpen } = useTasksStore.getState();
@@ -113,11 +119,32 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
+      // OAuth
+      oauthLogin: async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
+        const { reloadAppData } = useAppStore.getState();
+
+        const response = await oauthLogin(provider, oauthToken);
+
+        set({ auth: response.data });
+
+        reloadAppData();
+
+        return response;
+      },
+      oauthUserInfo: async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
+        const response = await oauthUserInfo(provider, oauthToken);
+
+        return response.data!;
+      },
       // Register
       register: async (data: RegisterUser) => {
+        const { reloadAppData } = useAppStore.getState();
+
         const response = await register(data);
 
         set({ auth: response.data });
+
+        reloadAppData();
 
         return response;
       },

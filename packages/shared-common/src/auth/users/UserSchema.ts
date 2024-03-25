@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { OauthProviderEnum } from '../oauth/OauthProviderEnum';
+import { OauthTokenSchema } from '../oauth/OauthTokenSchema';
 import { UserSettingsSchema } from './UserSettingsSchema';
 
 // Public User
@@ -30,6 +32,7 @@ export const PublicUserSchema = z.object({
 
 // User
 export const UserSchema = PublicUserSchema.extend({
+  hasPassword: z.boolean(),
   newEmail: z.string().email().nullable(),
   roles: z.array(z.string()),
   settings: UserSettingsSchema,
@@ -101,13 +104,19 @@ export const RegisterUserSchema = z.object({
   displayName: UserDisplayNameSchema,
   username: UserUsernameSchema,
   email: UserEmailSchema,
-  password: UserPasswordSchema,
+  password: UserPasswordSchema.optional(),
   settings: UserSettingsSchema.pick({
     generalTimezone: true,
     clockUse24HourClock: true,
   }).optional(),
   invitationToken: z.string().optional(),
   teamUserInvitationToken: z.string().optional(),
+  oauth: z
+    .object({
+      provider: z.nativeEnum(OauthProviderEnum),
+      token: OauthTokenSchema,
+    })
+    .optional(),
 });
 
 // User Access Token

@@ -40,7 +40,7 @@ export default function AuthForgotPasswordPage() {
   return (
     <ErrorBoundary>
       <div className="flex h-screen items-center justify-center">
-        <Card className="w-full max-w-screen-sm">
+        <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
             <CardTitle>Forgot Password</CardTitle>
             <CardDescription>Oh dear, memory isn't the same as it used to be, uh?</CardDescription>

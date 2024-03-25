@@ -114,6 +114,7 @@ export type GlobalEvents = {
   [GlobalEventsEnum.AUTH_USER_LOGGED_IN]: {
     actorUserId: string;
     userId: string;
+    oauthProvider?: string;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_LOGGED_OUT]: {

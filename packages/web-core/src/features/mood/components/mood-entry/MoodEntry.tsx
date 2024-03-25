@@ -1,5 +1,4 @@
 import {
-  capitalize,
   EmotionCategoryColors,
   EmotionCategoryEnum,
   EmotionToEmotionCategoryMap,
@@ -66,7 +65,7 @@ export const MoodEntry = ({ moodEntry }: { moodEntry: MoodEntryType }) => {
                       color,
                     }}
                   >
-                    {capitalize(emotion)}
+                    {emotion}
                   </div>
                 );
               })}

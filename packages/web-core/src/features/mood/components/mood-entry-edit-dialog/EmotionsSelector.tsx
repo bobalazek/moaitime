@@ -7,7 +7,7 @@ import {
   EmotionsByCategory,
   EmotionToEmotionCategoryMap,
 } from '@moaitime/shared-common';
-import { Toggle } from '@moaitime/web-ui';
+import { Button, Input, Popover, PopoverContent, PopoverTrigger, Toggle } from '@moaitime/web-ui';
 
 import { getTextColor } from '../../../core/utils/ColorHelpers';
 
@@ -20,6 +20,8 @@ export type EmotionsProps = {
 
 export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
   const [selectedEmotionCategories, setSelectedEmotionCategories] = useState<string[]>([]);
+  const [customEmotionPopoverOpen, setCustomEmotionPopoverOpen] = useState<boolean>(false);
+  const [customEmotionText, setCustomEmotionText] = useState<string>('');
 
   const selectedEmotions = value ?? [];
   const availableEmotions = Array.from(
@@ -33,7 +35,7 @@ export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
 
   return (
     <div>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {emotionCategories.map((emotionCategory) => {
           const isCategoryPressed = selectedEmotionCategories.includes(emotionCategory);
           const backgroundColor = EmotionCategoryColors[emotionCategory as EmotionCategoryEnum]
@@ -64,6 +66,36 @@ export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
             </Toggle>
           );
         })}
+        <Popover open={customEmotionPopoverOpen} onOpenChange={setCustomEmotionPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Toggle size="sm" className="border-2 transition-all">
+              + Custom
+            </Toggle>
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col gap-3 p-2" align="start">
+            <Input
+              className="w-full rounded-md border border-gray-300 p-2"
+              placeholder="Custom emotion"
+              value={customEmotionText}
+              onChange={(e) => setCustomEmotionText(e.target.value)}
+            />
+            <Button
+              className="w-full"
+              size="sm"
+              onClick={() => {
+                if (!customEmotionText) {
+                  return;
+                }
+
+                onChangeValue([...selectedEmotions, customEmotionText]);
+                setCustomEmotionText('');
+                setCustomEmotionPopoverOpen(false);
+              }}
+            >
+              Add
+            </Button>
+          </PopoverContent>
+        </Popover>
       </div>
       {availableEmotions.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
@@ -94,7 +126,7 @@ export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
                   borderColor: backgroundColor,
                 }}
               >
-                {capitalize(emotion)}
+                {emotion}
               </Toggle>
             );
           })}

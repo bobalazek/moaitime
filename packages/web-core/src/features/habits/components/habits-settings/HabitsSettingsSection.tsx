@@ -9,9 +9,6 @@ export default function HabitsSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        Habits are a great way to track your progress and keep yourself accountable.
-      </p>
       <div className="mb-4">
         <div className="flex items-center">
           <Switch

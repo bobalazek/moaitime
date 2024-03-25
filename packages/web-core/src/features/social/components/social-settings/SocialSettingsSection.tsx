@@ -9,7 +9,6 @@ export default function SocialSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">Do you want to enable the social features?</p>
       <div className="mb-4">
         <div className="flex items-center">
           <Switch

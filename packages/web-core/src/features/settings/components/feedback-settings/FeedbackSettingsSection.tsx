@@ -33,9 +33,6 @@ export default function FeedbackSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        Do you want to tell us something? Do you have any feedback? We would love to hear from you!
-      </p>
       <div>
         <Textarea
           id="feedback-message"

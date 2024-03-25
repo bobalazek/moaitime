@@ -12,9 +12,6 @@ export default function CalendarSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        Just some visual squares to show you what day it is.
-      </p>
       <div className="mb-4">
         <div className="flex items-center">
           <Switch

@@ -10,7 +10,6 @@ export default function AccountSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">Who are you?</p>
       <AccountSettingsSectionContent />
       <AccountSettingsAccountPasswordDialog />
     </div>

@@ -27,9 +27,6 @@ export default function PrivacySettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        No worries if you are a little more shy to the outside world!
-      </p>
       <div className="flex flex-col gap-2">
         <div className="flex items-center">
           <Switch id="settings-isPrivate" checked={isPrivate} onCheckedChange={onPrivacyChange} />

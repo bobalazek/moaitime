@@ -9,7 +9,6 @@ export default function TeamSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">Who will be collborating with?</p>
       <TeamSettingsSectionContent />
     </div>
   );

@@ -15,7 +15,6 @@ export default function GeneralSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">Just the general stuff.</p>
       <div className="mb-4">
         <h4 className="mb-2 font-bold">Start day of week</h4>
         <div>

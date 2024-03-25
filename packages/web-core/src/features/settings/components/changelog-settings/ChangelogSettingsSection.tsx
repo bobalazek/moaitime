@@ -24,9 +24,6 @@ export default function ChangelogSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        What is happening with MoaiTime? What have we been working on?
-      </p>
       <div className="flex flex-col gap-4">
         {data.map((entry) => (
           <div key={entry.slug}>

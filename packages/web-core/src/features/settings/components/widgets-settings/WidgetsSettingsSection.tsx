@@ -21,9 +21,6 @@ export default function WidgetsSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        All the settings related to our start page widgets.
-      </p>
       <div className="flex flex-col gap-4">
         {/* Clock */}
         <div className="flex flex-col gap-2">

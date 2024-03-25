@@ -9,9 +9,6 @@ export default function InvitationsSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        Want to invite any mates? Here's the right place to do so!
-      </p>
       <InvitationsSettingsSectionContent />
     </div>
   );

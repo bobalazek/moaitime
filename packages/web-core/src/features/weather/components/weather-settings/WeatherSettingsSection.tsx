@@ -10,7 +10,6 @@ export default function WeatherSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">All the settings related to the weather widget.</p>
       <div className="mb-4">
         <div className="flex items-center">
           <Switch

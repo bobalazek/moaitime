@@ -16,9 +16,6 @@ export default function TasksSettingsSection() {
 
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-400">
-        We know that sometimes you brain just needs a break, so we added a list for you!
-      </p>
       <div className="mb-4">
         <div className="flex items-center">
           <Switch

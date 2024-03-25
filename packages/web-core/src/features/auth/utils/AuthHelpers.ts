@@ -30,7 +30,7 @@ export const login = async (email: string, password: string, userAgent?: string)
 
 export const oauthLogin = async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
   const response = await fetchJson<ResponseInterface<Auth>>(
-    `${API_URL}/api/v1/auth/oauth-login/${provider}`,
+    `${API_URL}/api/v1/auth/oauth/${provider}/login`,
     {
       method: 'POST',
       body: JSON.stringify(oauthToken),
@@ -46,10 +46,41 @@ export const oauthLogin = async (provider: OauthProviderEnum, oauthToken: OauthT
 
 export const oauthUserInfo = async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
   const response = await fetchJson<ResponseInterface<OauthUserInfo>>(
-    `${API_URL}/api/v1/auth/oauth-user-info/${provider}`,
+    `${API_URL}/api/v1/auth/oauth/${provider}/user-info`,
     {
       method: 'POST',
       body: JSON.stringify(oauthToken),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+
+export const oauthLink = async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
+  const response = await fetchJson<ResponseInterface<Auth>>(
+    `${API_URL}/api/v1/auth/oauth/${provider}/link`,
+    {
+      method: 'POST',
+      body: JSON.stringify(oauthToken),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+
+export const oauthUnlink = async (provider: OauthProviderEnum) => {
+  const response = await fetchJson<ResponseInterface<Auth>>(
+    `${API_URL}/api/v1/auth/oauth/${provider}/unlink`,
+    {
+      method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

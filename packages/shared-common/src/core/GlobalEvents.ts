@@ -13,6 +13,8 @@ export enum GlobalEventsEnum {
   AUTH_USER_REGISTERED = 'auth:user:registered',
   AUTH_USER_LOGGED_IN = 'auth:user:logged-in',
   AUTH_USER_LOGGED_OUT = 'auth:user:logged-out',
+  AUTH_USER_OAUTH_LINKED = 'auth:user:oauth-linked',
+  AUTH_USER_OAUTH_UNLINKED = 'auth:user:oauth-unlinked',
   AUTH_USER_UPDATED = 'auth:user:updated',
   AUTH_USER_FOLLOWED_USER = 'auth:user:followed-user',
   AUTH_USER_APPROVE_FOLLOWED_USER = 'auth:user:approve-followed-user',
@@ -120,6 +122,18 @@ export type GlobalEvents = {
   [GlobalEventsEnum.AUTH_USER_LOGGED_OUT]: {
     actorUserId: string;
     userId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_OAUTH_LINKED]: {
+    actorUserId: string;
+    userId: string;
+    oauthProvider: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.AUTH_USER_OAUTH_UNLINKED]: {
+    actorUserId: string;
+    userId: string;
+    oauthProvider: string;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_UPDATED]: {

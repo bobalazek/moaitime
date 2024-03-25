@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { authManager } from '@moaitime/database-services';
@@ -14,6 +14,7 @@ import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
 import { ResendEmailConfirmationDto } from '../dtos/resend-email-confirmation.dto';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
 import { LoginResponseDto } from '../dtos/responses/login-response.dto';
+import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { convertToUserResponseDto } from '../utils/auth.utils';
 
 @Controller('/api/v1/auth')
@@ -66,7 +67,7 @@ export class AuthController {
     };
   }
 
-  @Post('oauth-login/:provider')
+  @Post('oauth/:provider/login')
   async oauthLogin(
     @Param('provider') provider: OauthProviderEnum,
     @Body() body: OauthTokenDto,
@@ -94,7 +95,7 @@ export class AuthController {
     };
   }
 
-  @Post('oauth-user-info/:provider')
+  @Post('oauth/:provider/user-info')
   async oauthUserInfo(
     @Param('provider') provider: OauthProviderEnum,
     @Body() body: OauthTokenDto
@@ -104,6 +105,41 @@ export class AuthController {
     return {
       success: true,
       data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('oauth/:provider/link')
+  async oauthLink(
+    @Param('provider') provider: OauthProviderEnum,
+    @Body() body: OauthTokenDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
+    await authManager.oauthLink(req.user.id, provider, body);
+
+    res.status(200);
+
+    return {
+      success: true,
+      message: 'You have successfully linked your account',
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('oauth/:provider/unlink')
+  async oauthUnlink(
+    @Param('provider') provider: OauthProviderEnum,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
+    await authManager.oauthUnlink(req.user.id, provider);
+
+    res.status(200);
+
+    return {
+      success: true,
+      message: 'You have successfully unlinked your account',
     };
   }
 

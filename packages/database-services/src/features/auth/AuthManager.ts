@@ -142,14 +142,14 @@ export class AuthManager {
 
   // OAuth
   async oauthLogin(
-    provider: OauthProviderEnum,
+    oauthProvider: OauthProviderEnum,
     oauthToken: OauthToken,
     userAgent?: string,
     deviceUid?: string,
     ip?: string
   ): Promise<AuthLoginResult> {
-    const userInfo = await this._getOauthProviderUserInfo(provider, oauthToken);
-    const user = await this._usersManager.findOneByOauthProviderId(provider, userInfo.sub);
+    const userInfo = await this._getOauthProviderUserInfo(oauthProvider, oauthToken);
+    const user = await this._usersManager.findOneByOauthProviderId(oauthProvider, userInfo.sub);
     if (!user) {
       throw new Error('No user with this OAuth account found');
     }
@@ -159,7 +159,7 @@ export class AuthManager {
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
       actorUserId: user.id,
       userId: user.id,
-      oauthProvider: provider,
+      oauthProvider,
     });
 
     return {
@@ -168,10 +168,60 @@ export class AuthManager {
     };
   }
 
-  async oauthUserInfo(provider: OauthProviderEnum, oauthToken: OauthToken) {
-    const userInfo = await this._getOauthProviderUserInfo(provider, oauthToken);
+  async oauthUserInfo(
+    oauthProvider: OauthProviderEnum,
+    oauthToken: OauthToken
+  ): Promise<OauthUserInfo> {
+    const userInfo = await this._getOauthProviderUserInfo(oauthProvider, oauthToken);
 
     return userInfo;
+  }
+
+  async oauthLink(
+    actorUserId: string,
+    oauthProvider: OauthProviderEnum,
+    oauthToken: OauthToken
+  ): Promise<User> {
+    const user = await this._usersManager.findOneById(actorUserId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const userUpdateFields = await this._getAdditionalDataForOauth(oauthProvider, oauthToken, user);
+
+    const updatedUser = await this._usersManager.updateOneById(actorUserId, userUpdateFields);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_OAUTH_LINKED, {
+      actorUserId,
+      userId: actorUserId,
+      oauthProvider,
+    });
+
+    return updatedUser;
+  }
+
+  async oauthUnlink(actorUserId: string, oauthProvider: OauthProviderEnum): Promise<User> {
+    const user = await this._usersManager.findOneById(actorUserId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const oauthProviderField = this._getOauthProviderField(oauthProvider);
+    if (!user[oauthProviderField]) {
+      throw new Error('User does not have this OAuth account linked');
+    }
+
+    const updatedUser = await this._usersManager.updateOneById(actorUserId, {
+      [oauthProviderField]: null,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_OAUTH_UNLINKED, {
+      actorUserId,
+      userId: actorUserId,
+      oauthProvider,
+    });
+
+    return updatedUser;
   }
 
   // Register
@@ -964,12 +1014,12 @@ export class AuthManager {
   }
 
   private async _getOauthProviderUserInfo(
-    provider: OauthProviderEnum,
+    oauthProvider: OauthProviderEnum,
     oauthToken: OauthToken
   ): Promise<OauthUserInfo> {
     const { OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_CLIENT_SECRET } = getEnv();
 
-    if (provider !== OauthProviderEnum.GOOGLE) {
+    if (oauthProvider !== OauthProviderEnum.GOOGLE) {
       throw new Error('Invalid OAuth provider');
     }
 
@@ -994,26 +1044,34 @@ export class AuthManager {
     }
   }
 
+  private _getOauthProviderField(oauthProvider: OauthProviderEnum): keyof User {
+    switch (oauthProvider) {
+      case OauthProviderEnum.GOOGLE:
+        return 'oauthGoogleId';
+      default:
+        throw new Error('Invalid OAuth provider');
+    }
+  }
+
   private async _getAdditionalDataForOauth(
-    provider: OauthProviderEnum,
-    oauthToken: OauthToken
-  ): Promise<Partial<User>> {
-    const returnedFields: Partial<User> = {};
+    oauthProvider: OauthProviderEnum,
+    oauthToken: OauthToken,
+    userSelf?: User
+  ) {
+    const field = this._getOauthProviderField(oauthProvider);
 
-    if (provider === OauthProviderEnum.GOOGLE) {
-      const userInfo = await this._getOauthProviderUserInfo(provider, oauthToken);
-      const existingUser = await this._usersManager.findOneByOauthProviderId(
-        provider,
-        userInfo.sub
-      );
-      if (existingUser) {
-        throw new Error('User with this OAuth account already exists');
-      }
-
-      returnedFields.oauthGoogleId = userInfo.sub;
+    const userInfo = await this._getOauthProviderUserInfo(oauthProvider, oauthToken);
+    const existingUser = await this._usersManager.findOneByOauthProviderId(
+      oauthProvider,
+      userInfo.sub
+    );
+    if (existingUser && (!userSelf || existingUser.id !== userSelf.id)) {
+      throw new Error('This OAuth account is already linked to another user');
     }
 
-    return returnedFields;
+    return {
+      [field]: userInfo.sub,
+    };
   }
 }
 

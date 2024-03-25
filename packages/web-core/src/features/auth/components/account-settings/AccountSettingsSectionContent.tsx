@@ -1,32 +1,30 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, Input, sonnerToast, Textarea } from '@moaitime/web-ui';
 
-import { UserAvatar } from '../../../core/components/UserAvatar';
 import { useSettingsStore } from '../../../settings/state/settingsStore';
 import { useAuthStore } from '../../state/authStore';
+import { LogoutButton } from './buttons/LogoutButton';
+import { RequestAccountDeletionButton } from './buttons/RequestAccountDeletionButton';
+import { RequestDataExportButton } from './buttons/RequestDataExportButton';
+import { AvatarSection } from './sections/AvatarSection';
+import { OauthSection } from './sections/OauthSection';
 
 export default function AccountSettingsSectionContent() {
   const navigate = useNavigate();
   const {
     auth,
-    logout,
     updateAccount,
-    requestDataExport,
-    requestAccountDeletion,
     resendEmailConfirmation,
     cancelNewEmail,
     setAccountPasswordSettingsDialogOpen,
-    deleteAccountAvatar,
-    uploadAccountAvatar,
   } = useAuthStore();
   const { setDialogOpen } = useSettingsStore();
   const [userDisplayName, setUserDisplayName] = useState(auth?.user?.displayName ?? '');
   const [userUsername, setUserUsername] = useState(auth?.user?.username ?? '');
   const [userEmail, setUserEmail] = useState(auth?.user?.email ?? '');
   const [userBiography, setUserBiography] = useState(auth?.user?.biography ?? '');
-  const avatarImageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setUserDisplayName(auth?.user?.displayName ?? '');
@@ -38,40 +36,6 @@ export default function AccountSettingsSectionContent() {
   if (!auth) {
     return null;
   }
-
-  const onAvatarImageUploadButtonClick = async () => {
-    avatarImageInputRef.current?.click();
-  };
-
-  const onAvatarImageRemoveButtonClick = async () => {
-    const result = confirm('Are you sure you want to remove your avatar?');
-    if (!result) {
-      return;
-    }
-
-    try {
-      await deleteAccountAvatar();
-    } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
-    } finally {
-      avatarImageInputRef.current!.value = '';
-    }
-  };
-
-  const onAvatarImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    try {
-      await uploadAccountAvatar(file);
-    } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
-    } finally {
-      avatarImageInputRef.current!.value = '';
-    }
-  };
 
   const onResendVerificationEmailButtonClick = async () => {
     try {
@@ -126,38 +90,10 @@ export default function AccountSettingsSectionContent() {
     }
   };
 
-  const onRequestDataExportButtonClick = async () => {
-    try {
-      const response = await requestDataExport();
-
-      sonnerToast.success(`Data export requested`, {
-        description: response.message ?? `You have successfully requested a data export`,
-      });
-    } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
-    }
-  };
-
   const onViewPublicProfileButtonClick = async () => {
     navigate(`/social/users/${auth.user.username}`);
 
     setDialogOpen(false);
-  };
-
-  const onLogoutButtonClick = async () => {
-    await logout();
-  };
-
-  const onRequestAccountDeletionButtonClick = async () => {
-    try {
-      const response = await requestAccountDeletion();
-
-      sonnerToast.success(`Account deletion requested`, {
-        description: response.message ?? `You have successfully requested your account deletion`,
-      });
-    } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
-    }
   };
 
   return (
@@ -166,25 +102,7 @@ export default function AccountSettingsSectionContent() {
         <h4 className="text-lg font-bold">Photo</h4>
         <p className="mb-2 text-xs text-gray-400">Pick a photo up to 4MB and you will be golden!</p>
         <div className="flex flex-row items-center gap-4">
-          <UserAvatar user={auth.user} />
-          <div className="flex gap-1">
-            <Button size="sm" variant="outline" onClick={onAvatarImageUploadButtonClick}>
-              {auth.user.avatarImageUrl && <>Change Photo</>}
-              {!auth.user.avatarImageUrl && <>Upload Photo</>}
-            </Button>
-            {auth.user.avatarImageUrl && (
-              <Button size="sm" variant="destructive" onClick={onAvatarImageRemoveButtonClick}>
-                Remove Photo
-              </Button>
-            )}
-            <input
-              ref={avatarImageInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={onAvatarImageChange}
-            />
-          </div>
+          <AvatarSection />
         </div>
       </div>
       <div>
@@ -294,19 +212,21 @@ export default function AccountSettingsSectionContent() {
       </div>
       <hr />
       <div>
+        <h4 className="text-lg font-bold">OAuth</h4>
+        <p className="mb-2 text-xs text-gray-400">Connecting people</p>
+        <OauthSection />
+      </div>
+      <hr />
+      <div>
         <h4 className="text-lg font-bold">Data Export</h4>
         <p className="mb-2 text-xs text-gray-400">Get your data!</p>
-        <Button size="sm" variant="default" onClick={onRequestDataExportButtonClick}>
-          Request Data Export
-        </Button>
+        <RequestDataExportButton />
       </div>
       <hr />
       <div>
         <h4 className="text-lg font-bold">Logout</h4>
         <p className="mb-2 text-xs text-gray-400">Want to get a breath of fresh air?</p>
-        <Button size="sm" variant="destructive" onClick={onLogoutButtonClick}>
-          Log me out
-        </Button>
+        <LogoutButton />
       </div>
       <hr />
       <div>
@@ -315,9 +235,7 @@ export default function AccountSettingsSectionContent() {
           Are you really sure you want to leave us? After pressing the button below, we will send
           you the last email to confirm your choice. Your account will then be premanetely deleted.
         </p>
-        <Button size="sm" variant="destructive" onClick={onRequestAccountDeletionButtonClick}>
-          Request account deletion
-        </Button>
+        <RequestAccountDeletionButton />
       </div>
     </div>
   );

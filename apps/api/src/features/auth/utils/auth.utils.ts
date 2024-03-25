@@ -24,6 +24,7 @@ export const convertToUserResponseDto = (
       email: userWithAccessToken.email,
       newEmail: userWithAccessToken.newEmail ?? null,
       hasPassword: !!userWithAccessToken.password,
+      hasOauthGoogle: !!userWithAccessToken.oauthGoogleId,
       roles: userWithAccessToken.roles,
       settings: usersManager.getUserSettings(userWithAccessToken),
       biography: userWithAccessToken.biography,

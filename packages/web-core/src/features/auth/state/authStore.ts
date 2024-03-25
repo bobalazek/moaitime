@@ -26,7 +26,9 @@ import {
   getAccount,
   login,
   logout,
+  oauthLink,
   oauthLogin,
+  oauthUnlink,
   oauthUserInfo,
   refreshToken,
   register,
@@ -50,6 +52,8 @@ export type AuthStore = {
   // OAuth
   oauthLogin: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<ResponseInterface>;
   oauthUserInfo: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<OauthUserInfo>;
+  oauthLink: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<ResponseInterface>;
+  oauthUnlink: (provider: OauthProviderEnum) => Promise<ResponseInterface>;
   // Register
   register: (data: RegisterUser) => Promise<ResponseInterface>;
   // Reset Password
@@ -135,6 +139,24 @@ export const useAuthStore = create<AuthStore>()(
         const response = await oauthUserInfo(provider, oauthToken);
 
         return response.data!;
+      },
+      oauthLink: async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
+        const { reloadAccount } = get();
+
+        const response = await oauthLink(provider, oauthToken);
+
+        await reloadAccount();
+
+        return response;
+      },
+      oauthUnlink: async (provider: OauthProviderEnum) => {
+        const { reloadAccount } = get();
+
+        const response = await oauthUnlink(provider);
+
+        await reloadAccount();
+
+        return response;
       },
       // Register
       register: async (data: RegisterUser) => {

@@ -33,6 +33,7 @@ export const PublicUserSchema = z.object({
 // User
 export const UserSchema = PublicUserSchema.extend({
   hasPassword: z.boolean(),
+  hasOauthGoogle: z.boolean(),
   newEmail: z.string().email().nullable(),
   roles: z.array(z.string()),
   settings: UserSettingsSchema,

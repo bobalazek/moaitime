@@ -23,7 +23,7 @@ const HabitsPageHeaderButtons = () => {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap justify-center gap-2 md:mt-0">
       <HabitsSettingsDialog />
       <HabitsPageHeaderCalendar />
       <Button

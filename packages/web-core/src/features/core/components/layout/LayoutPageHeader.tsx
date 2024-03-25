@@ -12,7 +12,7 @@ const LayoutPageHeader = ({ testKey, title, children }: LayoutPageHeaderProps) =
 
   return (
     <div
-      className="bg-background flex items-center justify-between gap-4 border-b px-4 py-3 text-center text-2xl"
+      className="bg-background flex flex-wrap items-center justify-between gap-1 border-b px-4 py-3 text-center"
       data-test={`${testKey}--header`}
     >
       <div className="flex gap-4 align-middle">
@@ -25,7 +25,7 @@ const LayoutPageHeader = ({ testKey, title, children }: LayoutPageHeaderProps) =
         >
           <ArrowLeftIcon />
         </button>
-        <div>{title}</div>
+        <div className="text-lg md:text-2xl">{title}</div>
       </div>
       {children}
     </div>

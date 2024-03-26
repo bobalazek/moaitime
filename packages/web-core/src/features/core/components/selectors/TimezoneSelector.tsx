@@ -70,7 +70,7 @@ export default function TimezoneSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="absolute z-50 p-0" align="start" data-test="timezone-selector">
+      <PopoverContent className="p-0" align="start" data-test="timezone-selector">
         <GeneralTimezoneSettingContent
           value={value}
           onValueChange={(newValue) => {

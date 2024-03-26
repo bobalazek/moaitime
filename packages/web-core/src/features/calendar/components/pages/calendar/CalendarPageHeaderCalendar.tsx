@@ -24,7 +24,7 @@ function CalendarPageHeaderCalendar() {
           <CalendarIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-auto p-0" data-test="calendar--header--calendar">
+      <PopoverContent className="p-0" align="end" data-test="calendar--header--calendar">
         <Calendar
           captionLayout="dropdown-buttons"
           mode="single"

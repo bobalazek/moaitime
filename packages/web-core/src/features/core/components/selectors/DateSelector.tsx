@@ -174,65 +174,67 @@ export default function DateSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent side="top" className="w-auto flex-col gap-4 p-2" data-test="date-selector">
-        <Calendar
-          mode="single"
-          disabled={isDateDisabled}
-          selected={dateValue ? new Date(dateValue) : undefined}
-          onSelect={onSelectDate}
-          weekStartsOn={generalStartDayOfWeek}
-        />
-        {includeTime && dateValue && (
-          <div className="flex flex-col gap-2">
-            <hr className="border-gray-300 dark:border-gray-700" />
+      <PopoverContent className="p-0" side="top" data-test="date-selector">
+        <div className="w-auto flex-col gap-4 p-2">
+          <Calendar
+            mode="single"
+            disabled={isDateDisabled}
+            selected={dateValue ? new Date(dateValue) : undefined}
+            onSelect={onSelectDate}
+            weekStartsOn={generalStartDayOfWeek}
+          />
+          {includeTime && dateValue && (
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between align-bottom">
-                <div>
-                  <Label htmlFor="date-selector--time">Time</Label>
+              <hr className="border-gray-300 dark:border-gray-700" />
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between align-bottom">
+                  <div>
+                    <Label htmlFor="date-selector--time">Time</Label>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      className="rounded-md border p-1 text-[0.65rem]"
+                      onClick={() => addMinutes(-15)}
+                    >
+                      -15m
+                    </button>
+                    <button
+                      className="rounded-md border p-1 text-[0.65rem]"
+                      onClick={() => addMinutes(15)}
+                    >
+                      +15m
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    className="rounded-md border p-1 text-[0.65rem]"
-                    onClick={() => addMinutes(-15)}
-                  >
-                    -15m
-                  </button>
-                  <button
-                    className="rounded-md border p-1 text-[0.65rem]"
-                    onClick={() => addMinutes(15)}
-                  >
-                    +15m
-                  </button>
-                </div>
-              </div>
-              <TimeSelector
-                value={dateTimeValue ?? undefined}
-                onChangeValue={(value) => setDateTimeValue(value ?? null)}
-              />
-            </div>
-            {!disableTimeZone && (
-              <div>
-                <Label>Timezone</Label>
-                <TimezoneSelector
-                  value={dateTimeZoneValue}
-                  onValueChange={setDateTimeZoneValue}
-                  isReadonly={isTimezoneReadonly}
-                  placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
-                  allowClear={!isTimezoneReadonly}
+                <TimeSelector
+                  value={dateTimeValue ?? undefined}
+                  onChangeValue={(value) => setDateTimeValue(value ?? null)}
                 />
               </div>
-            )}
+              {!disableTimeZone && (
+                <div>
+                  <Label>Timezone</Label>
+                  <TimezoneSelector
+                    value={dateTimeZoneValue}
+                    onValueChange={setDateTimeZoneValue}
+                    isReadonly={isTimezoneReadonly}
+                    placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
+                    allowClear={!isTimezoneReadonly}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          <div className="mt-2">
+            <Button
+              variant="default"
+              className="w-full"
+              onClick={onSaveButtonClick}
+              data-test="date-selector--save-button"
+            >
+              Save
+            </Button>
           </div>
-        )}
-        <div className="mt-2">
-          <Button
-            variant="default"
-            className="w-full"
-            onClick={onSaveButtonClick}
-            data-test="date-selector--save-button"
-          >
-            Save
-          </Button>
         </div>
       </PopoverContent>
     </Popover>

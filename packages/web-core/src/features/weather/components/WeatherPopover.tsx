@@ -15,7 +15,7 @@ export default function WeatherPopover() {
           {/* We need an empty div so it knows where to place that popover */}
           <div className="absolute right-4 top-4" />
         </PopoverTrigger>
-        <PopoverContent className="mb-4 w-full" align="end" data-test="weather--popover">
+        <PopoverContent className="p-0" align="end" data-test="weather--popover">
           <WeatherBody />
         </PopoverContent>
         <WeatherLocationDialog />

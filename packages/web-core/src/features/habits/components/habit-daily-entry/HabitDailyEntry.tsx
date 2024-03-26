@@ -36,22 +36,24 @@ const HabbitDailyEntryEditPopover = ({ habitDaily }: HabitDailyEntryProps) => {
       <PopoverTrigger asChild className="cursor-pointer">
         <PencilIcon size={16} />
       </PopoverTrigger>
-      <PopoverContent align="end" className="flex w-auto flex-col gap-4 p-2">
-        <Input
-          type="number"
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              onSaveButtonClick();
-            }
-          }}
-        />
-        <Button onClick={onSaveButtonClick} variant="outline" size="sm">
-          Save
-        </Button>
+      <PopoverContent className="p-0" align="end">
+        <div className="flex w-auto flex-col gap-4 p-2">
+          <Input
+            type="number"
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
+            onKeyPress={(event) => {
+              if (event.key === 'Enter') {
+                onSaveButtonClick();
+              }
+            }}
+          />
+          <Button onClick={onSaveButtonClick} variant="outline" size="sm">
+            Save
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

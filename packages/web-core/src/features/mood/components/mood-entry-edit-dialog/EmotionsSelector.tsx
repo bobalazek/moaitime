@@ -72,28 +72,30 @@ export function EmotionsSelector({ value, onChangeValue }: EmotionsProps) {
               + Custom
             </Toggle>
           </PopoverTrigger>
-          <PopoverContent className="flex flex-col gap-3 p-2" align="start">
-            <Input
-              className="w-full rounded-md border border-gray-300 p-2"
-              placeholder="Custom emotion"
-              value={customEmotionText}
-              onChange={(e) => setCustomEmotionText(e.target.value)}
-            />
-            <Button
-              className="w-full"
-              size="sm"
-              onClick={() => {
-                if (!customEmotionText) {
-                  return;
-                }
+          <PopoverContent className="p-0" align="start">
+            <div className="flex flex-col gap-3 p-3">
+              <Input
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="Custom emotion"
+                value={customEmotionText}
+                onChange={(e) => setCustomEmotionText(e.target.value)}
+              />
+              <Button
+                className="w-full"
+                size="sm"
+                onClick={() => {
+                  if (!customEmotionText) {
+                    return;
+                  }
 
-                onChangeValue([...selectedEmotions, customEmotionText]);
-                setCustomEmotionText('');
-                setCustomEmotionPopoverOpen(false);
-              }}
-            >
-              Add
-            </Button>
+                  onChangeValue([...selectedEmotions, customEmotionText]);
+                  setCustomEmotionText('');
+                  setCustomEmotionPopoverOpen(false);
+                }}
+              >
+                Add
+              </Button>
+            </div>
           </PopoverContent>
         </Popover>
       </div>

@@ -13,12 +13,12 @@ export default function DeletedListsDialog() {
           <DialogTitle>Deleted lists</DialogTitle>
         </DialogHeader>
         {deletedLists.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-4">
+          <div className="flex flex-col items-center justify-center">
             <div className="text-muted-foreground text-center">No deleted lists</div>
           </div>
         )}
         {deletedLists.length > 0 && (
-          <ScrollArea>
+          <ScrollArea className="max-h-[calc(100vh-12rem)]">
             {deletedLists.map((list) => (
               <ListItem key={list.id} list={list} />
             ))}

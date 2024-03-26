@@ -13,7 +13,7 @@ export default function DeletedHabitsDialog() {
           <DialogTitle>Deleted Habits</DialogTitle>
         </DialogHeader>
         {deletedHabits.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-4">
+          <div className="flex flex-col items-center justify-center">
             <div className="text-muted-foreground text-center">No deleted habits</div>
           </div>
         )}

@@ -14,7 +14,7 @@ export default function DeletedCalendarsDialog() {
           <DialogTitle>Deleted Calendars</DialogTitle>
         </DialogHeader>
         {deletedCalendars.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-4">
+          <div className="flex flex-col items-center justify-center">
             <div className="text-muted-foreground text-center">No deleted calendars</div>
           </div>
         )}

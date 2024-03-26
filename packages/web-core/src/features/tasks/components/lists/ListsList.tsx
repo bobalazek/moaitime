@@ -16,6 +16,48 @@ import { useListsStore } from '../../state/listsStore';
 import ListItemActions from '../list-item/ListItemActions';
 import ListsHeaderActions from './ListsHeaderActions';
 
+const ListsListItem = ({
+  list,
+  showListActions,
+  onClick,
+  tasksCount,
+}: {
+  list: List;
+  showListActions: boolean;
+  onClick?: (list?: List) => void;
+  tasksCount?: number;
+}) => {
+  return (
+    <DropdownMenuRadioItem
+      key={list.id}
+      value={list.id}
+      className="relative flex cursor-pointer justify-between border-l-4 border-l-transparent"
+      style={{ borderColor: list.color ?? 'transparent' }}
+      onClick={(event) => {
+        if (onClick) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          onClick(list);
+        }
+      }}
+    >
+      <span className="w-full items-center gap-1  pr-6">
+        <span className="break-words">{list.name}</span>
+        {typeof tasksCount !== 'undefined' && (
+          <span className="text-gray-400"> ({tasksCount})</span>
+        )}
+        {list.teamId && <UsersIcon className="ml-2 inline-block text-gray-400" size={16} />}
+      </span>
+      {showListActions && (
+        <div className="absolute right-1 top-1 ml-2">
+          <ListItemActions list={list} />
+        </div>
+      )}
+    </DropdownMenuRadioItem>
+  );
+};
+
 export default function ListsList({
   isSubContent = false,
   onListSelect,
@@ -44,7 +86,7 @@ export default function ListsList({
   const unlistedCount = tasksCountMap[''] ?? 0;
 
   return (
-    <Content className="w-56" align="end" data-test="tasks--lists-list--dropdown-menu">
+    <Content className="w-64" align="end" data-test="tasks--lists-list--dropdown-menu">
       {showHeader && (
         <>
           <DropdownMenuLabel className="flex items-center justify-between">
@@ -90,33 +132,13 @@ export default function ListsList({
           </DropdownMenuRadioItem>
         )}
         {filteredLists.map((list) => (
-          <DropdownMenuRadioItem
+          <ListsListItem
             key={list.id}
-            value={list.id}
-            className="relative flex cursor-pointer justify-between border-l-4 border-l-transparent"
-            style={{ borderColor: list.color ?? 'transparent' }}
-            onClick={(event) => {
-              if (onListSelect) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                onListSelect(list);
-              }
-            }}
-          >
-            <span className="w-full items-center gap-1  pr-6">
-              <span className="break-words">{list.name}</span>
-              {typeof tasksCountMap[list.id] !== 'undefined' && (
-                <span className="text-gray-400"> ({tasksCountMap[list.id]})</span>
-              )}
-              {list.teamId && <UsersIcon className="ml-2 inline-block text-gray-400" size={16} />}
-            </span>
-            {showListActions && (
-              <div className="absolute right-1 top-1 ml-2">
-                <ListItemActions list={list} />
-              </div>
-            )}
-          </DropdownMenuRadioItem>
+            list={list}
+            showListActions={showListActions}
+            onClick={onListSelect}
+            tasksCount={tasksCountMap[list.id]}
+          />
         ))}
       </DropdownMenuRadioGroup>
     </Content>

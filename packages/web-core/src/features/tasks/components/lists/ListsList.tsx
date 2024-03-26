@@ -109,12 +109,7 @@ export default function ListsList({
               {typeof tasksCountMap[list.id] !== 'undefined' && (
                 <span className="text-gray-400"> ({tasksCountMap[list.id]})</span>
               )}
-              {list.teamId && (
-                <span>
-                  {' '}
-                  <UsersIcon className="inline text-gray-400" size={16} />
-                </span>
-              )}
+              {list.teamId && <UsersIcon className="ml-2 inline-block text-gray-400" size={16} />}
             </span>
             {showListActions && (
               <div className="absolute right-1 top-1 ml-2">

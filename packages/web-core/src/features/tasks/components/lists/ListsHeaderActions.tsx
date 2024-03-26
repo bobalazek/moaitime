@@ -51,6 +51,8 @@ const ListsHeaderActions = () => {
             event.stopPropagation();
 
             setDeletedListsDialogOpen(true);
+
+            setOpen(false);
           }}
           data-test="tasks--lists-list--header--dropdown-menu--view-deleted-button"
         >

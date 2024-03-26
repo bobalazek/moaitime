@@ -24,7 +24,7 @@ export default function ListDeleteAlertDialog() {
   }
 
   const onConfirmButtonClick = async () => {
-    await deleteList(selectedListDeleteAlertDialog.id);
+    await deleteList(selectedListDeleteAlertDialog.id, true);
 
     sonnerToast.success('List deleted', {
       description: `The "${selectedListDeleteAlertDialog.name}" list has been successfully deleted.`,

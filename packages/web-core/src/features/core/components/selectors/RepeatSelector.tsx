@@ -116,11 +116,11 @@ export function RepeatSelector({
           variant="outline"
           aria-expanded={open}
           data-test="repeat-selector--trigger-button"
-          className="inline-flex w-full max-w-full items-center justify-between text-left"
+          className="inline-flex items-center justify-between text-left"
         >
           {!value && <span className="italic text-gray-500">Does not repeat</span>}
           {value && (
-            <div className="text-muted-foreground flex h-4 w-full items-center overflow-hidden text-xs">
+            <div className="text-muted-foreground flex h-4 items-center overflow-hidden text-xs">
               <div className="flex-grow truncate">
                 Repeats {Recurrence.fromStringPattern(value).toHumanText()}
               </div>
@@ -133,7 +133,7 @@ export function RepeatSelector({
       </PopoverTrigger>
       <PopoverContent
         side="top"
-        className="flex w-[380px] flex-col gap-2 px-4 py-2"
+        className="flex w-full max-w-[360px] flex-col flex-wrap gap-2 px-4 py-2"
         data-test="repeat-selector"
       >
         <h3 className="text-xl font-bold">Repeat</h3>
@@ -180,42 +180,44 @@ export function RepeatSelector({
         {(recurrence.options.interval === RecurrenceIntervalEnum.DAY ||
           (recurrence.options.daysOfMonthOnly &&
             recurrence.options.daysOfMonthOnly.length > 0)) && (
-          <div>
+          <div className="flex flex-col">
             <h4 className="text-muted-foreground">Repeat on</h4>
-            <ToggleGroup
-              type="multiple"
-              value={recurrence.options.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
-              onValueChange={(value) => {
-                setRecurrence((current) => {
-                  return current.updateOptions({
-                    daysOfWeekOnly: value?.map((weekDay) => parseInt(weekDay)) ?? undefined,
+            <div className="flex flex-wrap">
+              <ToggleGroup
+                type="multiple"
+                value={recurrence.options.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
+                onValueChange={(value) => {
+                  setRecurrence((current) => {
+                    return current.updateOptions({
+                      daysOfWeekOnly: value?.map((weekDay) => parseInt(weekDay)) ?? undefined,
+                    });
                   });
-                });
-              }}
-            >
-              {/* For some strange reason it's 0 for Monday, where as usually that's Sunday */}
-              <ToggleGroupItem value="0" className="flex-grow">
-                Mo
-              </ToggleGroupItem>
-              <ToggleGroupItem value="1" className="flex-grow">
-                Tu
-              </ToggleGroupItem>
-              <ToggleGroupItem value="2" className="flex-grow">
-                We
-              </ToggleGroupItem>
-              <ToggleGroupItem value="3" className="flex-grow">
-                Th
-              </ToggleGroupItem>
-              <ToggleGroupItem value="4" className="flex-grow">
-                Fr
-              </ToggleGroupItem>
-              <ToggleGroupItem value="5" className="flex-grow">
-                Sa
-              </ToggleGroupItem>
-              <ToggleGroupItem value="6" className="flex-grow">
-                Su
-              </ToggleGroupItem>
-            </ToggleGroup>
+                }}
+              >
+                {/* For some strange reason it's 0 for Monday, where as usually that's Sunday */}
+                <ToggleGroupItem value="0" className="flex-grow">
+                  Mo
+                </ToggleGroupItem>
+                <ToggleGroupItem value="1" className="flex-grow">
+                  Tu
+                </ToggleGroupItem>
+                <ToggleGroupItem value="2" className="flex-grow">
+                  We
+                </ToggleGroupItem>
+                <ToggleGroupItem value="3" className="flex-grow">
+                  Th
+                </ToggleGroupItem>
+                <ToggleGroupItem value="4" className="flex-grow">
+                  Fr
+                </ToggleGroupItem>
+                <ToggleGroupItem value="5" className="flex-grow">
+                  Sa
+                </ToggleGroupItem>
+                <ToggleGroupItem value="6" className="flex-grow">
+                  Su
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
           </div>
         )}
         <div>
@@ -337,13 +339,11 @@ export function RepeatSelector({
           </div>
         )}
         <div className="text-muted-foreground text-xs">
-          Start date will always be the same as the due date you specified
+          Start date will be the same as the due date you specified
         </div>
-        <div>
-          <Button className="w-full" onClick={onSaveButtonSave}>
-            Save
-          </Button>
-        </div>
+        <Button className="w-full" onClick={onSaveButtonSave}>
+          Save
+        </Button>
       </PopoverContent>
     </Popover>
   );

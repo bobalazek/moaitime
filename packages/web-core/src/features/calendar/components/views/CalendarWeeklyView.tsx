@@ -122,7 +122,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     <div className="flex w-full flex-col border" data-test="calendar--weekly-view">
       <div className="flex">
         <div
-          className="flex w-28 flex-col justify-end border border-l-0 border-t-0 p-2 text-right text-[0.65rem]"
+          className="flex w-20 flex-col justify-end border border-l-0 border-t-0 p-2 text-right text-[0.65rem]"
           data-test="calendar--weekly-view--timezone"
         >
           <div className="truncate" title={generalTimezone}>
@@ -217,7 +217,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             );
           })}
         </div>
-        <div className="w-28 flex-shrink-0">
+        <div className="w-20 flex-shrink-0">
           {hours.map((hour, index) => {
             return (
               <div
@@ -227,7 +227,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                   height: CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
                 }}
               >
-                <div className="flex w-28 items-center justify-end">
+                <div className="flex w-20 items-center justify-end">
                   <div
                     className="bg-background mr-4 w-full text-right"
                     style={{

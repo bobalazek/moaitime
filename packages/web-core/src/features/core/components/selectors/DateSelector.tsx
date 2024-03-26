@@ -159,7 +159,7 @@ export default function DateSelector({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="flex w-full justify-between font-normal"
+          className="flex w-full justify-between text-left font-normal"
           data-test="date-selector--trigger-button"
           disabled={disabled}
         >

@@ -1,18 +1,4 @@
-import {
-  and,
-  asc,
-  DBQueryConfig,
-  desc,
-  eq,
-  gt,
-  gte,
-  isNull,
-  lt,
-  lte,
-  ne,
-  or,
-  SQL,
-} from 'drizzle-orm';
+import { and, asc, desc, eq, gt, gte, isNull, lt, lte, ne, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, NewPost, Post, posts, User } from '@moaitime/database-core';
 import {
@@ -40,10 +26,7 @@ export type PostsManagerFindOptions = {
 };
 
 export class PostsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Post[]> {
-    return getDatabase().query.posts.findMany(options);
-  }
-
+  // Helpers
   async findManyByUserIdWithDataAndMeta(
     userId: string,
     userIdOrUsername?: string,
@@ -179,9 +162,9 @@ export class PostsManager {
     };
   }
 
-  async findOneById(id: string): Promise<Post | null> {
+  async findOneById(postId: string): Promise<Post | null> {
     const row = await getDatabase().query.posts.findFirst({
-      where: eq(posts.id, id),
+      where: eq(posts.id, postId),
     });
 
     return row ?? null;
@@ -193,23 +176,22 @@ export class PostsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewPost>): Promise<Post> {
+  async updateOneById(postId: string, data: Partial<NewPost>): Promise<Post> {
     const rows = await getDatabase()
       .update(posts)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(posts.id, id))
+      .where(eq(posts.id, postId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Post> {
-    const rows = await getDatabase().delete(posts).where(eq(posts.id, id)).returning();
+  async deleteOneById(postId: string): Promise<Post> {
+    const rows = await getDatabase().delete(posts).where(eq(posts.id, postId)).returning();
 
     return rows[0];
   }
 
-  // Helpers
   async addPost(data: {
     userId: string;
     type: PostTypeEnum;

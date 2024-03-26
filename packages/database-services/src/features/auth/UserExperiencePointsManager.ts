@@ -1,4 +1,4 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -9,13 +9,10 @@ import {
 import { Entity } from '@moaitime/shared-common';
 
 export class UserExperiencePointsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<UserExperiencePoint[]> {
-    return getDatabase().query.userExperiencePoints.findMany(options);
-  }
-
-  async findOneById(id: string): Promise<UserExperiencePoint | null> {
+  // Helpers
+  async findOneById(userExperiencePointId: string): Promise<UserExperiencePoint | null> {
     const row = await getDatabase().query.userExperiencePoints.findFirst({
-      where: eq(userExperiencePoints.id, id),
+      where: eq(userExperiencePoints.id, userExperiencePointId),
     });
 
     return row ?? null;
@@ -28,28 +25,27 @@ export class UserExperiencePointsManager {
   }
 
   async updateOneById(
-    id: string,
+    userExperiencePointId: string,
     data: Partial<NewUserExperiencePoint>
   ): Promise<UserExperiencePoint> {
     const rows = await getDatabase()
       .update(userExperiencePoints)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(userExperiencePoints.id, id))
+      .where(eq(userExperiencePoints.id, userExperiencePointId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<UserExperiencePoint> {
+  async deleteOneById(userExperiencePointId: string): Promise<UserExperiencePoint> {
     const rows = await getDatabase()
       .delete(userExperiencePoints)
-      .where(eq(userExperiencePoints.id, id))
+      .where(eq(userExperiencePoints.id, userExperiencePointId))
       .returning();
 
     return rows[0];
   }
 
-  // Helpers
   async addExperiencePointsToUser(
     userId: string,
     type: string,

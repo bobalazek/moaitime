@@ -1,15 +1,11 @@
-import { DBQueryConfig, desc, eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 
 import { getDatabase, NewTestingEmail, TestingEmail, testingEmails } from '@moaitime/database-core';
 
 export class TestingEmailsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<TestingEmail[]> {
-    return getDatabase().query.testingEmails.findMany(options);
-  }
-
-  async findOneById(id: string): Promise<TestingEmail | null> {
+  async findOneById(testingEmailId: string): Promise<TestingEmail | null> {
     const row = await getDatabase().query.testingEmails.findFirst({
-      where: eq(testingEmails.id, id),
+      where: eq(testingEmails.id, testingEmailId),
     });
 
     return row ?? null;
@@ -29,20 +25,23 @@ export class TestingEmailsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewTestingEmail>): Promise<TestingEmail> {
+  async updateOneById(
+    testingEmailId: string,
+    data: Partial<NewTestingEmail>
+  ): Promise<TestingEmail> {
     const rows = await getDatabase()
       .update(testingEmails)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(testingEmails.id, id))
+      .where(eq(testingEmails.id, testingEmailId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<TestingEmail> {
+  async deleteOneById(testingEmailId: string): Promise<TestingEmail> {
     const rows = await getDatabase()
       .delete(testingEmails)
-      .where(eq(testingEmails.id, id))
+      .where(eq(testingEmails.id, testingEmailId))
       .returning();
 
     return rows[0];

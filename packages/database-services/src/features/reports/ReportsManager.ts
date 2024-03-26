@@ -1,15 +1,17 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { getDatabase, NewReport, Report, reports } from '@moaitime/database-core';
 
 export class ReportsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Report[]> {
-    return getDatabase().query.reports.findMany(options);
+  // API Helpers
+  async list() {
+    return getDatabase().query.reports.findMany();
   }
 
-  async findOneById(id: string): Promise<Report | null> {
+  // Helpers
+  async findOneById(reportId: string): Promise<Report | null> {
     const row = await getDatabase().query.reports.findFirst({
-      where: eq(reports.id, id),
+      where: eq(reports.id, reportId),
     });
 
     return row ?? null;
@@ -21,25 +23,20 @@ export class ReportsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewReport>): Promise<Report> {
+  async updateOneById(reportId: string, data: Partial<NewReport>): Promise<Report> {
     const rows = await getDatabase()
       .update(reports)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(reports.id, id))
+      .where(eq(reports.id, reportId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Report> {
-    const rows = await getDatabase().delete(reports).where(eq(reports.id, id)).returning();
+  async deleteOneById(reportId: string): Promise<Report> {
+    const rows = await getDatabase().delete(reports).where(eq(reports.id, reportId)).returning();
 
     return rows[0];
-  }
-
-  // API Helpers
-  async list() {
-    return this.findMany();
   }
 }
 

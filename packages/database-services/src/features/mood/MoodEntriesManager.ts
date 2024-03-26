@@ -1,19 +1,4 @@
-import {
-  and,
-  asc,
-  count,
-  DBQueryConfig,
-  desc,
-  eq,
-  gt,
-  gte,
-  isNull,
-  lt,
-  lte,
-  ne,
-  or,
-  SQL,
-} from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, gte, isNull, lt, lte, ne, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, moodEntries, MoodEntry, NewMoodEntry } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -35,14 +20,116 @@ export type MoodEntriesManagerFindOptions = {
 };
 
 export class MoodEntriesManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<MoodEntry[]> {
-    const rows = await getDatabase().query.moodEntries.findMany(options);
-
-    return rows.map((row) => {
-      return this._fixRowColumns(row);
-    });
+  // API Helpers
+  async list(actorUserId: string, options?: MoodEntriesManagerFindOptions) {
+    return this.findManyByUserIdWithDataAndMeta(actorUserId, options);
   }
 
+  async view(actorUserId: string, moodEntryId: string) {
+    const canView = await this.userCanView(moodEntryId, actorUserId);
+    if (!canView) {
+      throw new Error('You cannot view this mood entry');
+    }
+
+    const data = await this.findOneByIdAndUserId(moodEntryId, actorUserId);
+    if (!data) {
+      throw new Error('Mood entry not found');
+    }
+
+    return data;
+  }
+
+  async create(actorUserId: string, data: CreateMoodEntry) {
+    const moodEntry = await this.insertOne({
+      ...data,
+      loggedAt: data.loggedAt ?? new Date().toISOString(),
+      userId: actorUserId,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
+      actorUserId,
+      moodEntryId: moodEntry.id,
+    });
+
+    return moodEntry;
+  }
+
+  async update(actorUserId: string, moodEntryId: string, data: UpdateMoodEntry) {
+    const canUpdate = await this.userCanUpdate(actorUserId, moodEntryId);
+    if (!canUpdate) {
+      throw new Error('You cannot update this mood entry');
+    }
+
+    const moodEntry = await this.updateOneById(moodEntryId, {
+      ...data,
+      loggedAt: data.loggedAt ? new Date(data.loggedAt).toISOString() : undefined,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
+      actorUserId,
+      moodEntryId: moodEntry.id,
+    });
+
+    return moodEntry;
+  }
+
+  async delete(actorUserId: string, moodEntryId: string, isHardDelete?: boolean) {
+    const canDelete = await this.userCanDelete(actorUserId, moodEntryId);
+    if (!canDelete) {
+      throw new Error('You cannot delete this mood entry');
+    }
+
+    const data = isHardDelete
+      ? await this.deleteOneById(moodEntryId)
+      : await this.updateOneById(moodEntryId, {
+          deletedAt: new Date(),
+        });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
+      actorUserId,
+      moodEntryId: data.id,
+      isHardDelete,
+    });
+
+    return data;
+  }
+
+  async undelete(actorUserId: string, moodEntryId: string) {
+    const canDelete = await this.userCanUpdate(actorUserId, moodEntryId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this mood entry');
+    }
+
+    const moodEntry = await this.updateOneById(moodEntryId, {
+      deletedAt: null,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
+      actorUserId,
+      moodEntryId: moodEntry.id,
+    });
+
+    return moodEntry;
+  }
+
+  // Permissions
+  async userCanView(userId: string, moodEntryId: string): Promise<boolean> {
+    const row = await getDatabase().query.moodEntries.findFirst({
+      where: and(eq(moodEntries.id, moodEntryId), eq(moodEntries.userId, userId)),
+    });
+
+    return !!row;
+  }
+
+  async userCanUpdate(userId: string, moodEntryId: string): Promise<boolean> {
+    return this.userCanView(userId, moodEntryId);
+  }
+
+  async userCanDelete(userId: string, moodEntryId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, moodEntryId);
+  }
+
+  // Helpers
   async findManyByUserIdWithDataAndMeta(
     userId: string,
     options?: MoodEntriesManagerFindOptions
@@ -159,9 +246,9 @@ export class MoodEntriesManager {
     };
   }
 
-  async findOneById(id: string): Promise<MoodEntry | null> {
+  async findOneById(moodEntryId: string): Promise<MoodEntry | null> {
     const row = await getDatabase().query.moodEntries.findFirst({
-      where: eq(moodEntries.id, id),
+      where: eq(moodEntries.id, moodEntryId),
     });
 
     if (!row) {
@@ -171,9 +258,9 @@ export class MoodEntriesManager {
     return this._fixRowColumns(row);
   }
 
-  async findOneByIdAndUserId(id: string, userId: string): Promise<MoodEntry | null> {
+  async findOneByIdAndUserId(moodEntryId: string, userId: string): Promise<MoodEntry | null> {
     const row = await getDatabase().query.moodEntries.findFirst({
-      where: and(eq(moodEntries.id, id), eq(moodEntries.userId, userId)),
+      where: and(eq(moodEntries.id, moodEntryId), eq(moodEntries.userId, userId)),
     });
 
     if (!row) {
@@ -189,132 +276,25 @@ export class MoodEntriesManager {
     return this._fixRowColumns(rows[0]);
   }
 
-  async updateOneById(id: string, data: Partial<NewMoodEntry>): Promise<MoodEntry> {
+  async updateOneById(moodEntryId: string, data: Partial<NewMoodEntry>): Promise<MoodEntry> {
     const rows = await getDatabase()
       .update(moodEntries)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(moodEntries.id, id))
+      .where(eq(moodEntries.id, moodEntryId))
       .returning();
 
     return this._fixRowColumns(rows[0]);
   }
 
-  async deleteOneById(id: string): Promise<MoodEntry> {
-    const rows = await getDatabase().delete(moodEntries).where(eq(moodEntries.id, id)).returning();
+  async deleteOneById(moodEntryId: string): Promise<MoodEntry> {
+    const rows = await getDatabase()
+      .delete(moodEntries)
+      .where(eq(moodEntries.id, moodEntryId))
+      .returning();
 
     return this._fixRowColumns(rows[0]);
   }
 
-  // Permissions
-  async userCanView(userId: string, moodEntryId: string): Promise<boolean> {
-    const row = await getDatabase().query.moodEntries.findFirst({
-      where: and(eq(moodEntries.id, moodEntryId), eq(moodEntries.userId, userId)),
-    });
-
-    return !!row;
-  }
-
-  async userCanUpdate(userId: string, moodEntryId: string): Promise<boolean> {
-    return this.userCanView(userId, moodEntryId);
-  }
-
-  async userCanDelete(userId: string, moodEntryId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, moodEntryId);
-  }
-
-  // API Helpers
-  async list(actorUserId: string, options?: MoodEntriesManagerFindOptions) {
-    return this.findManyByUserIdWithDataAndMeta(actorUserId, options);
-  }
-
-  async view(actorUserId: string, moodEntryId: string) {
-    const canView = await this.userCanView(moodEntryId, actorUserId);
-    if (!canView) {
-      throw new Error('You cannot view this mood entry');
-    }
-
-    const data = await this.findOneByIdAndUserId(moodEntryId, actorUserId);
-    if (!data) {
-      throw new Error('Mood entry not found');
-    }
-
-    return data;
-  }
-
-  async create(actorUserId: string, data: CreateMoodEntry) {
-    const moodEntry = await this.insertOne({
-      ...data,
-      loggedAt: data.loggedAt ?? new Date().toISOString(),
-      userId: actorUserId,
-    });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
-      actorUserId,
-      moodEntryId: moodEntry.id,
-    });
-
-    return moodEntry;
-  }
-
-  async update(actorUserId: string, moodEntryId: string, data: UpdateMoodEntry) {
-    const canUpdate = await this.userCanUpdate(actorUserId, moodEntryId);
-    if (!canUpdate) {
-      throw new Error('You cannot update this mood entry');
-    }
-
-    const moodEntry = await this.updateOneById(moodEntryId, {
-      ...data,
-      loggedAt: data.loggedAt ? new Date(data.loggedAt).toISOString() : undefined,
-    });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
-      actorUserId,
-      moodEntryId: moodEntry.id,
-    });
-
-    return moodEntry;
-  }
-
-  async delete(actorUserId: string, moodEntryId: string, isHardDelete?: boolean) {
-    const canDelete = await this.userCanDelete(actorUserId, moodEntryId);
-    if (!canDelete) {
-      throw new Error('You cannot delete this mood entry');
-    }
-
-    const data = isHardDelete
-      ? await this.deleteOneById(moodEntryId)
-      : await this.updateOneById(moodEntryId, {
-          deletedAt: new Date(),
-        });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_DELETED, {
-      actorUserId,
-      moodEntryId: data.id,
-      isHardDelete,
-    });
-
-    return data;
-  }
-
-  async undelete(actorUserId: string, moodEntryId: string) {
-    const canDelete = await this.userCanUpdate(actorUserId, moodEntryId);
-    if (!canDelete) {
-      throw new Error('You cannot undelete this mood entry');
-    }
-
-    const moodEntry = await this.updateOneById(moodEntryId, {
-      deletedAt: null,
-    });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.MOOD_MOOD_ENTRY_UNDELETED, {
-      actorUserId,
-      moodEntryId: moodEntry.id,
-    });
-
-    return moodEntry;
-  }
-
-  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

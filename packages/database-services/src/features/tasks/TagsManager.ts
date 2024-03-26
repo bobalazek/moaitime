@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, NewTag, Tag, tags, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -11,10 +11,6 @@ export type TagsManagerFindManyByUserIdOptions = {
 };
 
 export class TagsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Tag[]> {
-    return getDatabase().query.tags.findMany(options);
-  }
-
   async findManyByUserId(
     userId: string,
     options?: TagsManagerFindManyByUserIdOptions

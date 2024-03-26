@@ -61,31 +61,6 @@ export type TaskManagerListOptions = {
 };
 
 export class TasksManager {
-  // Permissions
-  async userCanView(userId: string, taskId: string): Promise<boolean> {
-    const task = await this.findOneById(taskId);
-    if (!task) {
-      return false;
-    }
-
-    if (task.userId === userId) {
-      return true;
-    }
-
-    // When we are at this point and there would not be a listId set, then there is probably a bug somewhere,
-    // because the only way the listId is null is for a single user, which should alreadbe be caught few lines above.
-    // So this is more a Typescript sanity check
-    return task.listId ? listsManager.userCanView(userId, task.listId) : false;
-  }
-
-  async userCanUpdate(userId: string, taskId: string): Promise<boolean> {
-    return this.userCanView(userId, taskId);
-  }
-
-  async userCanDelete(userId: string, taskId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, taskId);
-  }
-
   // API Helpers
   async list(
     actorUserId: string,
@@ -515,6 +490,31 @@ export class TasksManager {
     return task;
   }
 
+  // Permissions
+  async userCanView(userId: string, taskId: string): Promise<boolean> {
+    const task = await this.findOneById(taskId);
+    if (!task) {
+      return false;
+    }
+
+    if (task.userId === userId) {
+      return true;
+    }
+
+    // When we are at this point and there would not be a listId set, then there is probably a bug somewhere,
+    // because the only way the listId is null is for a single user, which should alreadbe be caught few lines above.
+    // So this is more a Typescript sanity check
+    return task.listId ? listsManager.userCanView(userId, task.listId) : false;
+  }
+
+  async userCanUpdate(userId: string, taskId: string): Promise<boolean> {
+    return this.userCanView(userId, taskId);
+  }
+
+  async userCanDelete(userId: string, taskId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, taskId);
+  }
+
   // Helpers
   async findManyByUserId(
     userId: string,
@@ -682,9 +682,9 @@ export class TasksManager {
     return rows.map((row) => this._fixRowColumns(row));
   }
 
-  async findOneById(id: string): Promise<Task | null> {
+  async findOneById(taskId: string): Promise<Task | null> {
     const row = await getDatabase().query.tasks.findFirst({
-      where: eq(tasks.id, id),
+      where: eq(tasks.id, taskId),
     });
 
     if (!row) {

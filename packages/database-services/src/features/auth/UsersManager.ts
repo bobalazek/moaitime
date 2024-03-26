@@ -2,7 +2,6 @@ import {
   and,
   asc,
   count,
-  DBQueryConfig,
   desc,
   eq,
   gt,
@@ -74,183 +73,6 @@ export type UsersManagerSearchOptions = UsersManagerFollowOptions & {
 };
 
 export class UsersManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<User[]> {
-    const rows = await getDatabase().query.users.findMany(options);
-
-    return rows;
-  }
-
-  async findManyByEmails(emails: string[]): Promise<User[]> {
-    const rows = await getDatabase().query.users.findMany({
-      where: inArray(users.email, emails),
-    });
-
-    return rows;
-  }
-
-  async findManyByUserIds(userIds: string[]): Promise<User[]> {
-    if (userIds.length === 0) {
-      return [];
-    }
-
-    const rows = await getDatabase().query.users.findMany({
-      where: inArray(users.id, userIds),
-    });
-
-    return rows;
-  }
-
-  async findOneById(id: string): Promise<User | null> {
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(users.id, id),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async findOneByIdOrUsername(idOrUsername: string): Promise<User | null> {
-    if (isValidUuid(idOrUsername)) {
-      return this.findOneById(idOrUsername);
-    }
-
-    return this.findOneByUsername(idOrUsername);
-  }
-
-  async findOneByEmail(email: string): Promise<User | null> {
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(users.email, email),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async findOneByUsername(username: string): Promise<User | null> {
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(users.username, username),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(users.emailConfirmationToken, emailConfirmationToken),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async findOneByNewEmailConfirmationToken(
-    newEmailConfirmationToken: string
-  ): Promise<User | null> {
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(users.newEmailConfirmationToken, newEmailConfirmationToken),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async findOneByPasswordResetToken(passwordResetToken: string): Promise<User | null> {
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(users.passwordResetToken, passwordResetToken),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async findOneByDeletionToken(deletionToken: string): Promise<User | null> {
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(users.deletionToken, deletionToken),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async findOneByOauthProviderId(
-    provider: OauthProviderEnum,
-    oauthSub: string
-  ): Promise<User | null> {
-    let field: PgColumn | null = null;
-    if (provider === OauthProviderEnum.GOOGLE) {
-      field = users.oauthGoogleId;
-    }
-
-    if (!field) {
-      return null;
-    }
-
-    const row = await getDatabase().query.users.findFirst({
-      where: eq(field, oauthSub),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async insertOne(data: NewUser): Promise<User> {
-    const rows = await getDatabase().insert(users).values(data).returning();
-
-    return rows[0] ?? null;
-  }
-
-  async updateOneById(id: string, data: Partial<NewUser>): Promise<User> {
-    const rows = await getDatabase()
-      .update(users)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(users.id, id))
-      .returning();
-
-    return rows[0] ?? null;
-  }
-
-  async deleteOneById(id: string): Promise<User> {
-    const rows = await getDatabase().delete(users).where(eq(users.id, id)).returning();
-
-    return rows[0] ?? null;
-  }
-
-  // Permissions
-  async canViewUserIfPrivate(userId: string, user: User) {
-    const isMyself = userId === user.id;
-    const isFollowing = await this.isFollowingUser(userId, user.id);
-    if (!isMyself && user.isPrivate && isFollowing !== true) {
-      return false;
-    }
-
-    return true;
-  }
-
   // API Helpers
   async view(actorUserId: string, userIdOrUsername: string): Promise<PublicUser> {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
@@ -793,7 +615,178 @@ export class UsersManager {
     return data;
   }
 
+  // Permissions
+  async canViewUserIfPrivate(userId: string, user: User) {
+    const isMyself = userId === user.id;
+    const isFollowing = await this.isFollowingUser(userId, user.id);
+    if (!isMyself && user.isPrivate && isFollowing !== true) {
+      return false;
+    }
+
+    return true;
+  }
+
   // Helpers
+  async findManyByEmails(emails: string[]): Promise<User[]> {
+    const rows = await getDatabase().query.users.findMany({
+      where: inArray(users.email, emails),
+    });
+
+    return rows;
+  }
+
+  async findManyByUserIds(userIds: string[]): Promise<User[]> {
+    if (userIds.length === 0) {
+      return [];
+    }
+
+    const rows = await getDatabase().query.users.findMany({
+      where: inArray(users.id, userIds),
+    });
+
+    return rows;
+  }
+
+  async findOneById(userId: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByIdOrUsername(idOrUsername: string): Promise<User | null> {
+    if (isValidUuid(idOrUsername)) {
+      return this.findOneById(idOrUsername);
+    }
+
+    return this.findOneByUsername(idOrUsername);
+  }
+
+  async findOneByEmail(email: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByUsername(username: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.username, username),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.emailConfirmationToken, emailConfirmationToken),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByNewEmailConfirmationToken(
+    newEmailConfirmationToken: string
+  ): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.newEmailConfirmationToken, newEmailConfirmationToken),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByPasswordResetToken(passwordResetToken: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.passwordResetToken, passwordResetToken),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByDeletionToken(deletionToken: string): Promise<User | null> {
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(users.deletionToken, deletionToken),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async findOneByOauthProviderId(
+    provider: OauthProviderEnum,
+    oauthSub: string
+  ): Promise<User | null> {
+    let field: PgColumn | null = null;
+    if (provider === OauthProviderEnum.GOOGLE) {
+      field = users.oauthGoogleId;
+    }
+
+    if (!field) {
+      return null;
+    }
+
+    const row = await getDatabase().query.users.findFirst({
+      where: eq(field, oauthSub),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async insertOne(data: NewUser): Promise<User> {
+    const rows = await getDatabase().insert(users).values(data).returning();
+
+    return rows[0] ?? null;
+  }
+
+  async updateOneById(userId: string, data: Partial<NewUser>): Promise<User> {
+    const rows = await getDatabase()
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+
+    return rows[0] ?? null;
+  }
+
+  async deleteOneById(userId: string): Promise<User> {
+    const rows = await getDatabase().delete(users).where(eq(users.id, userId)).returning();
+
+    return rows[0] ?? null;
+  }
+
   async isBlockingUser(userId: string, blockedUserId: string) {
     const cacheKey = `users:${userId}:isBlockingUser:${blockedUserId}`;
     const cachedValue = await databaseCacheManager.get<boolean>(cacheKey);

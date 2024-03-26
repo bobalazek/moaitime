@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns';
-import { and, count, DBQueryConfig, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getDatabase, Invitation, invitations, NewInvitation } from '@moaitime/database-core';
@@ -9,13 +9,10 @@ import { getEnv } from '@moaitime/shared-backend';
 import { usersManager } from '../auth/UsersManager';
 
 export class InvitationsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Invitation[]> {
-    return getDatabase().query.invitations.findMany(options);
-  }
-
-  async findOneById(id: string): Promise<Invitation | null> {
+  // Helpers
+  async findOneById(invitationId: string): Promise<Invitation | null> {
     const row = await getDatabase().query.invitations.findFirst({
-      where: eq(invitations.id, id),
+      where: eq(invitations.id, invitationId),
     });
 
     return row ?? null;
@@ -29,9 +26,9 @@ export class InvitationsManager {
     return row ?? null;
   }
 
-  async findOneByIdAndUserId(id: string, userId: string): Promise<Invitation | null> {
+  async findOneByIdAndUserId(invitationId: string, userId: string): Promise<Invitation | null> {
     const row = await getDatabase().query.invitations.findFirst({
-      where: and(eq(invitations.id, id), eq(invitations.userId, userId)),
+      where: and(eq(invitations.id, invitationId), eq(invitations.userId, userId)),
     });
 
     return row ?? null;
@@ -43,23 +40,25 @@ export class InvitationsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewInvitation>): Promise<Invitation> {
+  async updateOneById(invitationId: string, data: Partial<NewInvitation>): Promise<Invitation> {
     const rows = await getDatabase()
       .update(invitations)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(invitations.id, id))
+      .where(eq(invitations.id, invitationId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Invitation> {
-    const rows = await getDatabase().delete(invitations).where(eq(invitations.id, id)).returning();
+  async deleteOneById(invitationId: string): Promise<Invitation> {
+    const rows = await getDatabase()
+      .delete(invitations)
+      .where(eq(invitations.id, invitationId))
+      .returning();
 
     return rows[0];
   }
 
-  // Helpers
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({
@@ -103,7 +102,7 @@ export class InvitationsManager {
 
   // API Helpers
   async list(actorUserId: string) {
-    const data = await this.findMany({
+    const data = await getDatabase().query.invitations.findMany({
       where: eq(invitations.userId, actorUserId),
     });
 

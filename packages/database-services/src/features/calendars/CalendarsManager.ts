@@ -502,9 +502,9 @@ export class CalendarsManager {
     });
   }
 
-  async findOneById(id: string): Promise<Calendar | null> {
+  async findOneById(calendarId: string): Promise<Calendar | null> {
     const row = await getDatabase().query.calendars.findFirst({
-      where: eq(calendars.id, id),
+      where: eq(calendars.id, calendarId),
     });
 
     return row ?? null;
@@ -516,21 +516,21 @@ export class CalendarsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewCalendar>): Promise<Calendar> {
+  async updateOneById(calendarId: string, data: Partial<NewCalendar>): Promise<Calendar> {
     const rows = await getDatabase()
       .update(calendars)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(calendars.id, id))
+      .where(eq(calendars.id, calendarId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Calendar> {
+  async deleteOneById(calendarId: string): Promise<Calendar> {
     return getDatabase().transaction(async (tx) => {
-      await tx.delete(events).where(eq(events.calendarId, id)).returning();
+      await tx.delete(events).where(eq(events.calendarId, calendarId)).returning();
 
-      const rows = await tx.delete(calendars).where(eq(calendars.id, id)).returning();
+      const rows = await tx.delete(calendars).where(eq(calendars.id, calendarId)).returning();
 
       return rows[0];
     });

@@ -1,4 +1,4 @@
-import { and, DBQueryConfig, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -12,13 +12,10 @@ import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { AchievementEnum, AchievementsMap, GlobalEventsEnum } from '@moaitime/shared-common';
 
 export class UserAchievementsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<UserAchievement[]> {
-    return getDatabase().query.userAchievements.findMany(options);
-  }
-
-  async findOneById(id: string): Promise<UserAchievement | null> {
+  // Helpers
+  async findOneById(userAchievementId: string): Promise<UserAchievement | null> {
     const row = await getDatabase().query.userAchievements.findFirst({
-      where: eq(userAchievements.id, id),
+      where: eq(userAchievements.id, userAchievementId),
     });
 
     return row ?? null;
@@ -44,26 +41,28 @@ export class UserAchievementsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewUserAchievement>): Promise<UserAchievement> {
+  async updateOneById(
+    userAchievementId: string,
+    data: Partial<NewUserAchievement>
+  ): Promise<UserAchievement> {
     const rows = await getDatabase()
       .update(userAchievements)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(userAchievements.id, id))
+      .where(eq(userAchievements.id, userAchievementId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<UserAchievement> {
+  async deleteOneById(userAchievementId: string): Promise<UserAchievement> {
     const rows = await getDatabase()
       .delete(userAchievements)
-      .where(eq(userAchievements.id, id))
+      .where(eq(userAchievements.id, userAchievementId))
       .returning();
 
     return rows[0];
   }
 
-  // Helpers
   async addOrUpdateAchievementForUser(
     userId: string,
     achievementKey: AchievementEnum,

@@ -1,4 +1,4 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -9,13 +9,10 @@ import {
 } from '@moaitime/database-core';
 
 export class UserAccessTokensManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<UserAccessToken[]> {
-    return getDatabase().query.userAccessTokens.findMany(options);
-  }
-
-  async findOneById(id: string): Promise<UserAccessToken | null> {
+  // Helpers
+  async findOneById(userAccessTokenId: string): Promise<UserAccessToken | null> {
     const row = await getDatabase().query.userAccessTokens.findFirst({
-      where: eq(userAccessTokens.id, id),
+      where: eq(userAccessTokens.id, userAccessTokenId),
     });
 
     return row ?? null;
@@ -48,11 +45,14 @@ export class UserAccessTokensManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewUserAccessToken>): Promise<UserAccessToken> {
+  async updateOneById(
+    userAccessTokenId: string,
+    data: Partial<NewUserAccessToken>
+  ): Promise<UserAccessToken> {
     const rows = await getDatabase()
       .update(userAccessTokens)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(userAccessTokens.id, id))
+      .where(eq(userAccessTokens.id, userAccessTokenId))
       .returning();
 
     return rows[0];
@@ -71,10 +71,10 @@ export class UserAccessTokensManager {
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<UserAccessToken> {
+  async deleteOneById(userAccessTokenId: string): Promise<UserAccessToken> {
     const rows = await getDatabase()
       .delete(userAccessTokens)
-      .where(eq(userAccessTokens.id, id))
+      .where(eq(userAccessTokens.id, userAccessTokenId))
       .returning();
 
     return rows[0];

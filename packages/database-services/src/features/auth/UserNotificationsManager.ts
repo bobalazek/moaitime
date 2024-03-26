@@ -2,7 +2,6 @@ import {
   and,
   asc,
   count,
-  DBQueryConfig,
   desc,
   eq,
   gt,
@@ -49,10 +48,130 @@ export type UserNotificationsManagerFindOptions = {
 };
 
 export class UserNotificationsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<UserNotification[]> {
-    return getDatabase().query.userNotifications.findMany(options);
+  // API Helpers
+  async list(actorUserId: string, options?: UserNotificationsManagerFindOptions) {
+    return this.findManyByUserIdWithDataAndMeta(actorUserId, options);
   }
 
+  async markAllAsRead(actorUserId: string) {
+    const rows = await getDatabase()
+      .update(userNotifications)
+      .set({ readAt: new Date() })
+      .where(and(eq(userNotifications.userId, actorUserId), isNull(userNotifications.deletedAt)))
+      .returning();
+
+    globalEventsNotifier.publish(
+      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ,
+      {
+        actorUserId,
+      }
+    );
+
+    return rows;
+  }
+
+  async view(actorUserId: string, userNotificationId: string) {
+    const canView = await this.userCanView(actorUserId, userNotificationId);
+    if (!canView) {
+      throw new Error('User cannot view this user notification');
+    }
+
+    const row = await this.findOneById(userNotificationId);
+    if (!row) {
+      throw new Error('User notification not found');
+    }
+
+    const user = await usersManager.findOneById(actorUserId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const processedRows = await this._parseRows(user, [row]);
+    if (processedRows.length === 0) {
+      throw new Error('User notification not found');
+    }
+
+    return processedRows[0];
+  }
+
+  async delete(actorUserId: string, userNotificationId: string) {
+    const canDelete = await this.userCanDelete(actorUserId, userNotificationId);
+    if (!canDelete) {
+      throw new Error('User cannot delete this user notification');
+    }
+
+    const data = await this.updateOneById(userNotificationId, {
+      deletedAt: new Date(),
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, {
+      actorUserId,
+      userNotificationId,
+    });
+
+    return data;
+  }
+
+  async markAsRead(actorUserId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(actorUserId, userNotificationId);
+    if (!canUpdate) {
+      throw new Error('User cannot update this user notification');
+    }
+
+    const data = await this.updateOneById(userNotificationId, {
+      readAt: new Date(),
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ, {
+      actorUserId,
+      userNotificationId,
+    });
+
+    return data;
+  }
+
+  async markAsUnread(actorUserId: string, userNotificationId: string) {
+    const canUpdate = await this.userCanUpdate(actorUserId, userNotificationId);
+    if (!canUpdate) {
+      throw new Error('User cannot update this user notification');
+    }
+
+    const data = await this.updateOneById(userNotificationId, {
+      readAt: null,
+    });
+
+    globalEventsNotifier.publish(
+      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
+      {
+        actorUserId,
+        userNotificationId,
+      }
+    );
+
+    return data;
+  }
+
+  // Permissions
+  async userCanView(userId: string, userNotificationId: string): Promise<boolean> {
+    const row = await getDatabase().query.userNotifications.findFirst({
+      where: and(
+        eq(userNotifications.id, userNotificationId),
+        eq(userNotifications.userId, userId)
+      ),
+    });
+
+    return !!row;
+  }
+
+  async userCanUpdate(userId: string, userNotificationId: string): Promise<boolean> {
+    return this.userCanView(userId, userNotificationId);
+  }
+
+  async userCanDelete(userId: string, userNotificationId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, userNotificationId);
+  }
+
+  // Helpers
   async findOneById(userNotificationId: string): Promise<UserNotification | null> {
     const row = await getDatabase().query.userNotifications.findFirst({
       where: eq(userNotifications.id, userNotificationId),
@@ -215,149 +334,28 @@ export class UserNotificationsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewUserNotification>): Promise<UserNotification> {
+  async updateOneById(
+    userNotificationId: string,
+    data: Partial<NewUserNotification>
+  ): Promise<UserNotification> {
     const rows = await getDatabase()
       .update(userNotifications)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(userNotifications.id, id))
+      .where(eq(userNotifications.id, userNotificationId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<UserNotification> {
+  async deleteOneById(userNotificationId: string): Promise<UserNotification> {
     const rows = await getDatabase()
       .delete(userNotifications)
-      .where(eq(userNotifications.id, id))
+      .where(eq(userNotifications.id, userNotificationId))
       .returning();
 
     return rows[0];
   }
 
-  // Permissions
-  async userCanView(userId: string, userNotificationId: string): Promise<boolean> {
-    const row = await getDatabase().query.userNotifications.findFirst({
-      where: and(
-        eq(userNotifications.id, userNotificationId),
-        eq(userNotifications.userId, userId)
-      ),
-    });
-
-    return !!row;
-  }
-
-  async userCanUpdate(userId: string, userNotificationId: string): Promise<boolean> {
-    return this.userCanView(userId, userNotificationId);
-  }
-
-  async userCanDelete(userId: string, userNotificationId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, userNotificationId);
-  }
-
-  // API Helpers
-  async list(actorUserId: string, options?: UserNotificationsManagerFindOptions) {
-    return this.findManyByUserIdWithDataAndMeta(actorUserId, options);
-  }
-
-  async markAllAsRead(actorUserId: string) {
-    const rows = await getDatabase()
-      .update(userNotifications)
-      .set({ readAt: new Date() })
-      .where(and(eq(userNotifications.userId, actorUserId), isNull(userNotifications.deletedAt)))
-      .returning();
-
-    globalEventsNotifier.publish(
-      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_ALL_AS_READ,
-      {
-        actorUserId,
-      }
-    );
-
-    return rows;
-  }
-
-  async view(actorUserId: string, userNotificationId: string) {
-    const canView = await this.userCanView(actorUserId, userNotificationId);
-    if (!canView) {
-      throw new Error('User cannot view this user notification');
-    }
-
-    const row = await this.findOneById(userNotificationId);
-    if (!row) {
-      throw new Error('User notification not found');
-    }
-
-    const user = await usersManager.findOneById(actorUserId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const processedRows = await this._parseRows(user, [row]);
-    if (processedRows.length === 0) {
-      throw new Error('User notification not found');
-    }
-
-    return processedRows[0];
-  }
-
-  async delete(actorUserId: string, userNotificationId: string) {
-    const canDelete = await this.userCanDelete(actorUserId, userNotificationId);
-    if (!canDelete) {
-      throw new Error('User cannot delete this user notification');
-    }
-
-    const data = await this.updateOneById(userNotificationId, {
-      deletedAt: new Date(),
-    });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_DELETED, {
-      actorUserId,
-      userNotificationId,
-    });
-
-    return data;
-  }
-
-  async markAsRead(actorUserId: string, userNotificationId: string) {
-    const canUpdate = await this.userCanUpdate(actorUserId, userNotificationId);
-    if (!canUpdate) {
-      throw new Error('User cannot update this user notification');
-    }
-
-    const data = await this.updateOneById(userNotificationId, {
-      readAt: new Date(),
-    });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_READ, {
-      actorUserId,
-      userNotificationId,
-    });
-
-    return data;
-  }
-
-  async markAsUnread(actorUserId: string, userNotificationId: string) {
-    const canUpdate = await this.userCanUpdate(actorUserId, userNotificationId);
-    if (!canUpdate) {
-      throw new Error('User cannot update this user notification');
-    }
-
-    const data = await this.updateOneById(userNotificationId, {
-      readAt: null,
-    });
-
-    globalEventsNotifier.publish(
-      GlobalEventsEnum.NOTIFICATIONS_USER_NOTIFICATION_MARKED_AS_UNREAD,
-      {
-        actorUserId,
-        userNotificationId,
-      }
-    );
-
-    return data;
-  }
-
-  // Helpers
   async countUnseenByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

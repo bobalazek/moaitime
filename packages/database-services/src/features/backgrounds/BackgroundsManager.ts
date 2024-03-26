@@ -9,9 +9,9 @@ export class BackgroundsManager {
   }
 
   // Helpers
-  async findOneById(id: string): Promise<Background | null> {
+  async findOneById(backgroundId: string): Promise<Background | null> {
     const row = await getDatabase().query.backgrounds.findFirst({
-      where: eq(backgrounds.id, id),
+      where: eq(backgrounds.id, backgroundId),
     });
 
     return row ?? null;
@@ -23,18 +23,21 @@ export class BackgroundsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewBackground>): Promise<Background> {
+  async updateOneById(backgroundId: string, data: Partial<NewBackground>): Promise<Background> {
     const rows = await getDatabase()
       .update(backgrounds)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(backgrounds.id, id))
+      .where(eq(backgrounds.id, backgroundId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<Background> {
-    const rows = await getDatabase().delete(backgrounds).where(eq(backgrounds.id, id)).returning();
+  async deleteOneById(backgroundId: string): Promise<Background> {
+    const rows = await getDatabase()
+      .delete(backgrounds)
+      .where(eq(backgrounds.id, backgroundId))
+      .returning();
 
     return rows[0];
   }

@@ -4,7 +4,6 @@ import {
   asc,
   between,
   count,
-  DBQueryConfig,
   desc,
   eq,
   gt,
@@ -49,10 +48,6 @@ export type EventsManagerEvent = Event & {
 };
 
 export class EventsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Event[]> {
-    return getDatabase().query.events.findMany(options);
-  }
-
   async findManyByCalendarId(calendarId: string): Promise<Event[]> {
     return getDatabase().query.events.findMany({
       where: and(eq(events.calendarId, calendarId), isNull(events.deletedAt)),

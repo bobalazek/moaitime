@@ -14,7 +14,6 @@ import {
   asc,
   between,
   count,
-  DBQueryConfig,
   desc,
   eq,
   inArray,
@@ -51,10 +50,6 @@ export type HabitsManagerFindManyByUserIdWithOptions = {
 };
 
 export class HabitsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Habit[]> {
-    return getDatabase().query.habits.findMany(options);
-  }
-
   async findManyByUserId(userId: string): Promise<Habit[]> {
     return getDatabase().query.habits.findMany({
       where: and(eq(habits.userId, userId), isNull(habits.deletedAt)),

@@ -1,5 +1,5 @@
 import { subDays } from 'date-fns';
-import { and, count, DBQueryConfig, eq, gt } from 'drizzle-orm';
+import { and, count, eq, gt } from 'drizzle-orm';
 
 import {
   feedbackEntries,
@@ -10,49 +10,6 @@ import {
 import { CreateFeedbackEntry } from '@moaitime/shared-common';
 
 export class FeedbackEntriesManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<FeedbackEntry[]> {
-    const rows = await getDatabase().query.feedbackEntries.findMany(options);
-
-    return rows;
-  }
-
-  async findOneById(id: string): Promise<FeedbackEntry | null> {
-    const row = await getDatabase().query.feedbackEntries.findFirst({
-      where: eq(feedbackEntries.id, id),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return row;
-  }
-
-  async insertOne(data: NewFeedbackEntry): Promise<FeedbackEntry> {
-    const rows = await getDatabase().insert(feedbackEntries).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(id: string, data: Partial<NewFeedbackEntry>): Promise<FeedbackEntry> {
-    const rows = await getDatabase()
-      .update(feedbackEntries)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(feedbackEntries.id, id))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(id: string): Promise<FeedbackEntry> {
-    const rows = await getDatabase()
-      .delete(feedbackEntries)
-      .where(eq(feedbackEntries.id, id))
-      .returning();
-
-    return rows[0];
-  }
-
   // API Helpers
   async create(actorUserId: string, data: CreateFeedbackEntry) {
     const oneDayAgo = subDays(new Date(), 1);
@@ -74,6 +31,47 @@ export class FeedbackEntriesManager {
       ...data,
       userId: actorUserId,
     });
+  }
+
+  // Helpers
+  async findOneById(feedbackEntryId: string): Promise<FeedbackEntry | null> {
+    const row = await getDatabase().query.feedbackEntries.findFirst({
+      where: eq(feedbackEntries.id, feedbackEntryId),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return row;
+  }
+
+  async insertOne(data: NewFeedbackEntry): Promise<FeedbackEntry> {
+    const rows = await getDatabase().insert(feedbackEntries).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(
+    feedbackEntryId: string,
+    data: Partial<NewFeedbackEntry>
+  ): Promise<FeedbackEntry> {
+    const rows = await getDatabase()
+      .update(feedbackEntries)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(feedbackEntries.id, feedbackEntryId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(feedbackEntryId: string): Promise<FeedbackEntry> {
+    const rows = await getDatabase()
+      .delete(feedbackEntries)
+      .where(eq(feedbackEntries.id, feedbackEntryId))
+      .returning();
+
+    return rows[0];
   }
 }
 

@@ -1,4 +1,4 @@
-import { and, count, DBQueryConfig, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq, isNull } from 'drizzle-orm';
 
 import {
   FocusSession,
@@ -22,10 +22,6 @@ import {
 import { tasksManager } from '../tasks/TasksManager';
 
 export class FocusSessionsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<FocusSession[]> {
-    return getDatabase().query.focusSessions.findMany(options);
-  }
-
   async findManyByUserId(userId: string): Promise<FocusSession[]> {
     return getDatabase().query.focusSessions.findMany({
       where: and(eq(focusSessions.userId, userId), isNull(focusSessions.deletedAt)),
@@ -36,9 +32,9 @@ export class FocusSessionsManager {
     });
   }
 
-  async findOneById(id: string): Promise<FocusSession | null> {
+  async findOneById(focusSessionId: string): Promise<FocusSession | null> {
     const row = await getDatabase().query.focusSessions.findFirst({
-      where: eq(focusSessions.id, id),
+      where: eq(focusSessions.id, focusSessionId),
       with: {
         task: true,
       },
@@ -47,9 +43,9 @@ export class FocusSessionsManager {
     return row ?? null;
   }
 
-  async findOneByIdAndUserId(id: string, userId: string): Promise<FocusSession | null> {
+  async findOneByIdAndUserId(focusSessionId: string, userId: string): Promise<FocusSession | null> {
     const row = await getDatabase().query.focusSessions.findFirst({
-      where: and(eq(focusSessions.id, id), eq(focusSessions.userId, userId)),
+      where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
       with: {
         task: true,
       },
@@ -80,20 +76,23 @@ export class FocusSessionsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewFocusSession>): Promise<FocusSession> {
+  async updateOneById(
+    focusSessionId: string,
+    data: Partial<NewFocusSession>
+  ): Promise<FocusSession> {
     const rows = await getDatabase()
       .update(focusSessions)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(focusSessions.id, id))
+      .where(eq(focusSessions.id, focusSessionId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<FocusSession> {
+  async deleteOneById(focusSessionId: string): Promise<FocusSession> {
     const rows = await getDatabase()
       .delete(focusSessions)
-      .where(eq(focusSessions.id, id))
+      .where(eq(focusSessions.id, focusSessionId))
       .returning();
 
     return rows[0];

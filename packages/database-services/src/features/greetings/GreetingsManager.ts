@@ -1,15 +1,17 @@
 import { utcToZonedTime } from 'date-fns-tz';
-import { DBQueryConfig, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import { getDatabase, Greeting, greetings, NewGreeting, User } from '@moaitime/database-core';
 
 import { usersManager } from '../auth/UsersManager';
 
 export class GreetingsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Greeting[]> {
-    return getDatabase().query.greetings.findMany(options);
+  // API Helpers
+  async list(actorUser: User) {
+    return this.getGreetings(actorUser);
   }
 
+  // Helpers
   async findManyRandom(limit = 10): Promise<Greeting[]> {
     return getDatabase().query.greetings.findMany({
       limit,
@@ -17,9 +19,9 @@ export class GreetingsManager {
     });
   }
 
-  async findOneById(id: string): Promise<Greeting | null> {
+  async findOneById(greetingId: string): Promise<Greeting | null> {
     const row = await getDatabase().query.greetings.findFirst({
-      where: eq(greetings.id, id),
+      where: eq(greetings.id, greetingId),
     });
 
     return row ?? null;
@@ -31,11 +33,11 @@ export class GreetingsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewGreeting>): Promise<Greeting> {
+  async updateOneById(greetingId: string, data: Partial<NewGreeting>): Promise<Greeting> {
     const rows = await getDatabase()
       .update(greetings)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(greetings.id, id))
+      .where(eq(greetings.id, greetingId))
       .returning();
 
     return rows[0];
@@ -47,12 +49,6 @@ export class GreetingsManager {
     return rows[0];
   }
 
-  // API Helpers
-  async list(actorUser: User) {
-    return this.getGreetings(actorUser);
-  }
-
-  // Helpers
   async getGreetings(user: User, limit = 20) {
     const { generalTimezone } = usersManager.getUserSettings(user);
 

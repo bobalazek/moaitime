@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns';
-import { and, count, DBQueryConfig, desc, eq, gt, isNull, or } from 'drizzle-orm';
+import { and, count, desc, eq, gt, isNull, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -32,109 +32,6 @@ import { listsManager } from '../tasks/ListsManager';
 import { usersManager } from './UsersManager';
 
 export class TeamsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Team[]> {
-    return getDatabase().query.teams.findMany(options);
-  }
-
-  async findOneById(id: string): Promise<Team | null> {
-    const row = await getDatabase().query.teams.findFirst({
-      where: eq(teams.id, id),
-    });
-
-    return row ?? null;
-  }
-
-  async findManyByUserId(userId: string): Promise<Team[]> {
-    return getDatabase().query.teams.findMany({
-      where: and(eq(teams.userId, userId), isNull(teams.deletedAt)),
-      orderBy: desc(teams.name),
-    });
-  }
-
-  async insertOne(data: NewTeam): Promise<Team> {
-    const rows = await getDatabase().insert(teams).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(id: string, data: Partial<NewTeam>): Promise<Team> {
-    const rows = await getDatabase()
-      .update(teams)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(teams.id, id))
-      .returning();
-
-    return rows[0];
-  }
-
-  async updateOneByUserId(userId: string, data: Partial<NewTeam>): Promise<Team> {
-    const rows = await getDatabase()
-      .update(teams)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(teams.userId, userId))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(id: string): Promise<Team> {
-    const rows = await getDatabase().delete(teams).where(eq(teams.id, id)).returning();
-
-    return rows[0];
-  }
-
-  // Invitations
-  async findOneInvitationById(teamUserInvitationId: string): Promise<TeamUserInvitation | null> {
-    const row = await getDatabase().query.teamUserInvitations.findFirst({
-      where: eq(teamUserInvitations.id, teamUserInvitationId),
-    });
-
-    return row ?? null;
-  }
-
-  async findOneInvitationByToken(
-    teamUserInvitationToken: string
-  ): Promise<TeamUserInvitation | null> {
-    const row = await getDatabase().query.teamUserInvitations.findFirst({
-      where: eq(teamUserInvitations.token, teamUserInvitationToken),
-    });
-
-    return row ?? null;
-  }
-
-  // Permissions
-  async userCanView(userId: string, teamId: string): Promise<boolean> {
-    const row = await getDatabase().query.teamUsers.findFirst({
-      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
-    });
-
-    return !!row;
-  }
-
-  async userCanUpdate(userId: string, teamId: string): Promise<boolean> {
-    const row = await getDatabase().query.teamUsers.findFirst({
-      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
-    });
-
-    if (!row) {
-      return false;
-    }
-
-    return row.roles.includes(TeamUserRoleEnum.OWNER) || row.roles.includes(TeamUserRoleEnum.ADMIN);
-  }
-
-  async userCanDelete(userId: string, teamId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, teamId);
-  }
-
-  async userCanInviteMember(userId: string, teamId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, teamId);
-  }
-
-  async userCanRemoveMember(userId: string, teamId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, teamId);
-  }
-
   // API Helpers
   async list(actorUserId: string) {
     return this.findManyByUserId(actorUserId);
@@ -285,7 +182,105 @@ export class TeamsManager {
     return row;
   }
 
+  // Permissions
+  async userCanView(userId: string, teamId: string): Promise<boolean> {
+    const row = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
+    });
+
+    return !!row;
+  }
+
+  async userCanUpdate(userId: string, teamId: string): Promise<boolean> {
+    const row = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.userId, userId), eq(teamUsers.teamId, teamId)),
+    });
+
+    if (!row) {
+      return false;
+    }
+
+    return row.roles.includes(TeamUserRoleEnum.OWNER) || row.roles.includes(TeamUserRoleEnum.ADMIN);
+  }
+
+  async userCanDelete(userId: string, teamId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, teamId);
+  }
+
+  async userCanInviteMember(userId: string, teamId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, teamId);
+  }
+
+  async userCanRemoveMember(userId: string, teamId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, teamId);
+  }
+
   // Helpers
+  async findOneById(organizationId: string): Promise<Team | null> {
+    const row = await getDatabase().query.teams.findFirst({
+      where: eq(teams.id, organizationId),
+    });
+
+    return row ?? null;
+  }
+
+  async findManyByUserId(userId: string): Promise<Team[]> {
+    return getDatabase().query.teams.findMany({
+      where: and(eq(teams.userId, userId), isNull(teams.deletedAt)),
+      orderBy: desc(teams.name),
+    });
+  }
+
+  async insertOne(data: NewTeam): Promise<Team> {
+    const rows = await getDatabase().insert(teams).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(teamId: string, data: Partial<NewTeam>): Promise<Team> {
+    const rows = await getDatabase()
+      .update(teams)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(teams.id, teamId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async updateOneByUserId(userId: string, data: Partial<NewTeam>): Promise<Team> {
+    const rows = await getDatabase()
+      .update(teams)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(teams.userId, userId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(teamId: string): Promise<Team> {
+    const rows = await getDatabase().delete(teams).where(eq(teams.id, teamId)).returning();
+
+    return rows[0];
+  }
+
+  async findOneInvitationById(teamUserInvitationId: string): Promise<TeamUserInvitation | null> {
+    const row = await getDatabase().query.teamUserInvitations.findFirst({
+      where: eq(teamUserInvitations.id, teamUserInvitationId),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneInvitationByToken(
+    teamUserInvitationToken: string
+  ): Promise<TeamUserInvitation | null> {
+    const row = await getDatabase().query.teamUserInvitations.findFirst({
+      where: eq(teamUserInvitations.token, teamUserInvitationToken),
+    });
+
+    return row ?? null;
+  }
+
   async getJoinedTeamAndTeamUser(
     userId: string
   ): Promise<{ team: Team; teamUser: TeamUser } | null> {

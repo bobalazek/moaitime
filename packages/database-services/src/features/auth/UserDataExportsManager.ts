@@ -1,4 +1,4 @@
-import { asc, DBQueryConfig, desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -9,13 +9,9 @@ import {
 import { ProcessingStatusEnum } from '@moaitime/shared-common';
 
 export class UserDataExportsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<UserDataExport[]> {
-    return getDatabase().query.userDataExports.findMany(options);
-  }
-
-  async findOneById(id: string): Promise<UserDataExport | null> {
+  async findOneById(userDataExportId: string): Promise<UserDataExport | null> {
     const row = await getDatabase().query.userDataExports.findFirst({
-      where: eq(userDataExports.id, id),
+      where: eq(userDataExports.id, userDataExportId),
     });
 
     return row ?? null;
@@ -45,20 +41,23 @@ export class UserDataExportsManager {
     return rows[0];
   }
 
-  async updateOneById(id: string, data: Partial<NewUserDataExport>): Promise<UserDataExport> {
+  async updateOneById(
+    userDataExportId: string,
+    data: Partial<NewUserDataExport>
+  ): Promise<UserDataExport> {
     const rows = await getDatabase()
       .update(userDataExports)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(userDataExports.id, id))
+      .where(eq(userDataExports.id, userDataExportId))
       .returning();
 
     return rows[0];
   }
 
-  async deleteOneById(id: string): Promise<UserDataExport> {
+  async deleteOneById(userDataExportId: string): Promise<UserDataExport> {
     const rows = await getDatabase()
       .delete(userDataExports)
-      .where(eq(userDataExports.id, id))
+      .where(eq(userDataExports.id, userDataExportId))
       .returning();
 
     return rows[0];

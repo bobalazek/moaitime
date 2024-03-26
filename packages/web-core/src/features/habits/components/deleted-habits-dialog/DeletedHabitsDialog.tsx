@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, ScrollArea } from '@moaitime/web-ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@moaitime/web-ui';
 
 import { useHabitsStore } from '../../state/habitsStore';
 import HabitItem from '../habit-item/HabitItem';
@@ -8,7 +8,7 @@ export default function DeletedHabitsDialog() {
 
   return (
     <Dialog open={deletedHabitsDialogOpen} onOpenChange={setDeletedHabitsDialogOpen}>
-      <DialogContent data-test="habits--deleted-habits-dialog">
+      <DialogContent data-test="habits--deleted-habits-dialog" className="overflow-auto">
         <DialogHeader>
           <DialogTitle>Deleted Habits</DialogTitle>
         </DialogHeader>
@@ -18,11 +18,11 @@ export default function DeletedHabitsDialog() {
           </div>
         )}
         {deletedHabits.length > 0 && (
-          <ScrollArea className="max-h-[calc(100vh-12rem)]">
+          <div>
             {deletedHabits.map((habit) => (
               <HabitItem key={habit.id} habit={habit} />
             ))}
-          </ScrollArea>
+          </div>
         )}
       </DialogContent>
     </Dialog>

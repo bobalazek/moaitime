@@ -1,14 +1,7 @@
 import { clsx } from 'clsx';
 
 import { Habit, HabitTemplate } from '@moaitime/shared-common';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  ScrollArea,
-} from '@moaitime/web-ui';
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle } from '@moaitime/web-ui';
 
 import { useHabitsStore } from '../../state/habitsStore';
 
@@ -62,7 +55,7 @@ export default function HabitTemplatesDialog() {
 
   return (
     <Dialog open={habitTemplatesDialogOpen} onOpenChange={setHabitTemplatesDialogOpen}>
-      <DialogContent data-test="habits--habit-templates-dialog">
+      <DialogContent data-test="habits--habit-templates-dialog" className="overflow-auto">
         <DialogHeader>
           <DialogTitle>Habit Templates</DialogTitle>
         </DialogHeader>
@@ -72,7 +65,7 @@ export default function HabitTemplatesDialog() {
           </div>
         )}
         {habitTemplates.length > 0 && (
-          <ScrollArea className="max-h-[calc(100vh-12rem)] pb-6">
+          <div>
             {habitTemplateCategories.map((habitTemplateCategory, index) => {
               const templates = habitTemplatesByCategory[habitTemplateCategory];
               const isLastCategory = index === habitTemplateCategories.length - 1;
@@ -93,7 +86,7 @@ export default function HabitTemplatesDialog() {
                 </div>
               );
             })}
-          </ScrollArea>
+          </div>
         )}
       </DialogContent>
     </Dialog>

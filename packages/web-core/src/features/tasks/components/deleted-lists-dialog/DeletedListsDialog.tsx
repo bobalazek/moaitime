@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, ScrollArea } from '@moaitime/web-ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@moaitime/web-ui';
 
 import { useListsStore } from '../../state/listsStore';
 import ListItem from '../list-item/ListItem';
@@ -8,7 +8,7 @@ export default function DeletedListsDialog() {
 
   return (
     <Dialog open={deletedListsDialogOpen} onOpenChange={setDeletedListsDialogOpen}>
-      <DialogContent data-test="lists--deleted-lists-dialog">
+      <DialogContent data-test="lists--deleted-lists-dialog" className="overflow-auto">
         <DialogHeader>
           <DialogTitle>Deleted lists</DialogTitle>
         </DialogHeader>
@@ -18,11 +18,11 @@ export default function DeletedListsDialog() {
           </div>
         )}
         {deletedLists.length > 0 && (
-          <ScrollArea className="max-h-[calc(100vh-12rem)]">
+          <div>
             {deletedLists.map((list) => (
               <ListItem key={list.id} list={list} />
             ))}
-          </ScrollArea>
+          </div>
         )}
       </DialogContent>
     </Dialog>

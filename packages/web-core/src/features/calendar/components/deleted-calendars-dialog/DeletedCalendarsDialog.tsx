@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, ScrollArea } from '@moaitime/web-ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItem from '../calendar-item/CalendarItem';
@@ -9,7 +9,7 @@ export default function DeletedCalendarsDialog() {
 
   return (
     <Dialog open={deletedCalendarsDialogOpen} onOpenChange={setDeletedCalendarsDialogOpen}>
-      <DialogContent data-test="calendar--deleted-calendars-dialog">
+      <DialogContent data-test="calendar--deleted-calendars-dialog" className="overflow-auto">
         <DialogHeader>
           <DialogTitle>Deleted Calendars</DialogTitle>
         </DialogHeader>
@@ -19,11 +19,11 @@ export default function DeletedCalendarsDialog() {
           </div>
         )}
         {deletedCalendars.length > 0 && (
-          <ScrollArea className="max-h-[calc(100vh-12rem)]">
+          <div>
             {deletedCalendars.map((calendar) => (
               <CalendarItem key={calendar.id} calendar={calendar} hideCheckbox />
             ))}
-          </ScrollArea>
+          </div>
         )}
       </DialogContent>
     </Dialog>

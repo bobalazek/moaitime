@@ -15,10 +15,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "importHelpers": true,
+    "noEmit": true,
     "moduleResolution": "bundler",
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext"],
     "types": ["node", "vitest/globals"],
     "baseUrl": ".",
     "paths": {

@@ -1,16 +1,4 @@
-import {
-  and,
-  asc,
-  count,
-  DBQueryConfig,
-  desc,
-  eq,
-  inArray,
-  isNotNull,
-  isNull,
-  or,
-  SQL,
-} from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNotNull, isNull, or, SQL } from 'drizzle-orm';
 
 import {
   Calendar,
@@ -37,183 +25,6 @@ import { usersManager } from '../auth/UsersManager';
 export type CalendarsManagerVisibleCalendarsMap = Map<string, 'user' | 'team' | 'user-shared'>;
 
 export class CalendarsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Calendar[]> {
-    return getDatabase().query.calendars.findMany(options);
-  }
-
-  async findManyByUserId(userId: string): Promise<Calendar[]> {
-    let where = isNull(calendars.deletedAt);
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (teamIds.length === 0) {
-      where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
-    } else {
-      where = and(
-        where,
-        or(eq(calendars.userId, userId), inArray(calendars.teamId, teamIds))
-      ) as SQL<unknown>;
-    }
-
-    const data = await getDatabase().query.calendars.findMany({
-      where,
-      orderBy: asc(calendars.createdAt),
-    });
-
-    return data;
-  }
-
-  async findOneByIdAndUserId(calendarId: string, userId: string): Promise<Calendar | null> {
-    let where = and(eq(calendars.id, calendarId), isNull(calendars.deletedAt));
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (teamIds.length === 0) {
-      where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
-    } else {
-      where = and(
-        where,
-        or(eq(calendars.userId, userId), inArray(calendars.teamId, teamIds))
-      ) as SQL<unknown>;
-    }
-
-    const row = await getDatabase().query.calendars.findFirst({
-      where,
-    });
-
-    return row ?? null;
-  }
-
-  async findManyDeletedByUserId(userId: string): Promise<Calendar[]> {
-    return getDatabase().query.calendars.findMany({
-      where: and(eq(calendars.userId, userId), isNotNull(calendars.deletedAt)),
-      orderBy: desc(calendars.deletedAt),
-    });
-  }
-
-  async findManyPublic(): Promise<Calendar[]> {
-    return getDatabase().query.calendars.findMany({
-      where: eq(calendars.isPublic, true),
-      orderBy: asc(calendars.name),
-    });
-  }
-
-  async findOneById(id: string): Promise<Calendar | null> {
-    const row = await getDatabase().query.calendars.findFirst({
-      where: eq(calendars.id, id),
-    });
-
-    return row ?? null;
-  }
-
-  async countByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(calendars.id).mapWith(Number),
-      })
-      .from(calendars)
-      .where(and(eq(calendars.userId, userId), isNull(calendars.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
-  async countByTeamId(teamId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(calendars.id).mapWith(Number),
-      })
-      .from(calendars)
-      .where(and(eq(calendars.teamId, teamId), isNull(calendars.deletedAt)))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
-  async countUserCalendarsByUserId(userId: string): Promise<number> {
-    const result = await getDatabase()
-      .select({
-        count: count(userCalendars.id).mapWith(Number),
-      })
-      .from(userCalendars)
-      .where(eq(userCalendars.userId, userId))
-      .execute();
-
-    return result[0].count ?? 0;
-  }
-
-  async insertOne(data: NewCalendar): Promise<Calendar> {
-    const rows = await getDatabase().insert(calendars).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(id: string, data: Partial<NewCalendar>): Promise<Calendar> {
-    const rows = await getDatabase()
-      .update(calendars)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(calendars.id, id))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(id: string): Promise<Calendar> {
-    return getDatabase().transaction(async (tx) => {
-      await tx.delete(events).where(eq(events.calendarId, id)).returning();
-
-      const rows = await tx.delete(calendars).where(eq(calendars.id, id)).returning();
-
-      return rows[0];
-    });
-  }
-
-  // Permissions
-  async userCanView(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
-    const calendar =
-      typeof calendarOrCalendarId === 'string'
-        ? await this.findOneById(calendarOrCalendarId)
-        : calendarOrCalendarId;
-    if (!calendar) {
-      return false;
-    }
-
-    if (calendar.userId === userId || calendar.isPublic) {
-      return true;
-    }
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (calendar.teamId && teamIds.includes(calendar.teamId)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  async userCanUpdate(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
-    const calendar =
-      typeof calendarOrCalendarId === 'string'
-        ? await this.findOneById(calendarOrCalendarId)
-        : calendarOrCalendarId;
-    if (!calendar) {
-      return false;
-    }
-
-    // Pretty much the same check as above, except above we always return true if the calendar is public
-    if (calendar.userId === userId) {
-      return true;
-    }
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (calendar.teamId && teamIds.includes(calendar.teamId)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  async userCanDelete(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
-    return this.userCanUpdate(userId, calendarOrCalendarId);
-  }
-
   // API Helpers
   async list(actorUserId: string) {
     const calendars = await this.findManyByUserId(actorUserId);
@@ -343,7 +154,6 @@ export class CalendarsManager {
     return calendar;
   }
 
-  // Visible
   async getVisibleCalendarIdsByUserIdMap(
     userId: string
   ): Promise<CalendarsManagerVisibleCalendarsMap> {
@@ -351,7 +161,7 @@ export class CalendarsManager {
     const idsMap: CalendarsManagerVisibleCalendarsMap = new Map();
 
     // Calendars
-    const rows = await this.findMany({
+    const rows = await getDatabase().query.calendars.findMany({
       columns: {
         id: true,
       },
@@ -365,7 +175,7 @@ export class CalendarsManager {
     // Team Calendars
     const teamIds = await usersManager.getTeamIds(userId);
     if (teamIds.length > 0) {
-      const teamLists = await this.findMany({
+      const teamLists = await getDatabase().query.calendars.findMany({
         columns: {
           id: true,
         },
@@ -462,7 +272,6 @@ export class CalendarsManager {
     return calendar;
   }
 
-  // User Calendars
   async listUserCalendars(userId: string) {
     return calendarsManager.getUserCalendars(userId);
   }
@@ -587,6 +396,180 @@ export class CalendarsManager {
     const userSettings = usersManager.getUserSettings(user);
 
     return userSettings.calendarVisibleCalendarIds ?? [];
+  }
+
+  // Permissions
+  async userCanView(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
+    const calendar =
+      typeof calendarOrCalendarId === 'string'
+        ? await this.findOneById(calendarOrCalendarId)
+        : calendarOrCalendarId;
+    if (!calendar) {
+      return false;
+    }
+
+    if (calendar.userId === userId || calendar.isPublic) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (calendar.teamId && teamIds.includes(calendar.teamId)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async userCanUpdate(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
+    const calendar =
+      typeof calendarOrCalendarId === 'string'
+        ? await this.findOneById(calendarOrCalendarId)
+        : calendarOrCalendarId;
+    if (!calendar) {
+      return false;
+    }
+
+    // Pretty much the same check as above, except above we always return true if the calendar is public
+    if (calendar.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (calendar.teamId && teamIds.includes(calendar.teamId)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async userCanDelete(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {
+    return this.userCanUpdate(userId, calendarOrCalendarId);
+  }
+
+  // Helpers
+  async findManyByUserId(userId: string): Promise<Calendar[]> {
+    let where = isNull(calendars.deletedAt);
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(calendars.userId, userId), inArray(calendars.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
+    const data = await getDatabase().query.calendars.findMany({
+      where,
+      orderBy: asc(calendars.createdAt),
+    });
+
+    return data;
+  }
+
+  async findOneByIdAndUserId(calendarId: string, userId: string): Promise<Calendar | null> {
+    let where = and(eq(calendars.id, calendarId), isNull(calendars.deletedAt));
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(calendars.userId, userId), inArray(calendars.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
+    const row = await getDatabase().query.calendars.findFirst({
+      where,
+    });
+
+    return row ?? null;
+  }
+
+  async findManyDeletedByUserId(userId: string): Promise<Calendar[]> {
+    return getDatabase().query.calendars.findMany({
+      where: and(eq(calendars.userId, userId), isNotNull(calendars.deletedAt)),
+      orderBy: desc(calendars.deletedAt),
+    });
+  }
+
+  async findManyPublic(): Promise<Calendar[]> {
+    return getDatabase().query.calendars.findMany({
+      where: eq(calendars.isPublic, true),
+      orderBy: asc(calendars.name),
+    });
+  }
+
+  async findOneById(id: string): Promise<Calendar | null> {
+    const row = await getDatabase().query.calendars.findFirst({
+      where: eq(calendars.id, id),
+    });
+
+    return row ?? null;
+  }
+
+  async insertOne(data: NewCalendar): Promise<Calendar> {
+    const rows = await getDatabase().insert(calendars).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(id: string, data: Partial<NewCalendar>): Promise<Calendar> {
+    const rows = await getDatabase()
+      .update(calendars)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(calendars.id, id))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(id: string): Promise<Calendar> {
+    return getDatabase().transaction(async (tx) => {
+      await tx.delete(events).where(eq(events.calendarId, id)).returning();
+
+      const rows = await tx.delete(calendars).where(eq(calendars.id, id)).returning();
+
+      return rows[0];
+    });
+  }
+
+  async countByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(calendars.id).mapWith(Number),
+      })
+      .from(calendars)
+      .where(and(eq(calendars.userId, userId), isNull(calendars.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  async countByTeamId(teamId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(calendars.id).mapWith(Number),
+      })
+      .from(calendars)
+      .where(and(eq(calendars.teamId, teamId), isNull(calendars.deletedAt)))
+      .execute();
+
+    return result[0].count ?? 0;
+  }
+
+  async countUserCalendarsByUserId(userId: string): Promise<number> {
+    const result = await getDatabase()
+      .select({
+        count: count(userCalendars.id).mapWith(Number),
+      })
+      .from(userCalendars)
+      .where(eq(userCalendars.userId, userId))
+      .execute();
+
+    return result[0].count ?? 0;
   }
 
   async convertToApiResponse(calendars: Calendar[], userId: string): Promise<ApiCalendar[]> {

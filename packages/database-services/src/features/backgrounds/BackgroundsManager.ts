@@ -1,12 +1,14 @@
-import { DBQueryConfig, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { Background, backgrounds, getDatabase, NewBackground } from '@moaitime/database-core';
 
 export class BackgroundsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Background[]> {
-    return getDatabase().query.backgrounds.findMany(options);
+  // API Helpers
+  async list() {
+    return getDatabase().query.backgrounds.findMany();
   }
 
+  // Helpers
   async findOneById(id: string): Promise<Background | null> {
     const row = await getDatabase().query.backgrounds.findFirst({
       where: eq(backgrounds.id, id),
@@ -35,11 +37,6 @@ export class BackgroundsManager {
     const rows = await getDatabase().delete(backgrounds).where(eq(backgrounds.id, id)).returning();
 
     return rows[0];
-  }
-
-  // API Helpers
-  async list() {
-    return this.findMany();
   }
 }
 

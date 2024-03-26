@@ -17,7 +17,7 @@ export default function SearchInput() {
       <div className="relative">
         <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 transform text-xl text-gray-400" />
         <Input
-          className="w-full rounded-full px-12 py-7 text-3xl shadow-2xl lg:w-[640px]"
+          className="w-full rounded-full px-12 py-4 shadow-2xl md:py-7 md:text-3xl lg:w-[640px]"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search"

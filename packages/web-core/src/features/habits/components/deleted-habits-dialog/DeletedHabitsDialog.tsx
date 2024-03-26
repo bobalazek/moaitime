@@ -8,7 +8,7 @@ export default function DeletedHabitsDialog() {
 
   return (
     <Dialog open={deletedHabitsDialogOpen} onOpenChange={setDeletedHabitsDialogOpen}>
-      <DialogContent data-test="habits--deleted-habits-dialog" className="overflow-auto">
+      <DialogContent data-test="habits--deleted-habits-dialog">
         <DialogHeader>
           <DialogTitle>Deleted Habits</DialogTitle>
         </DialogHeader>

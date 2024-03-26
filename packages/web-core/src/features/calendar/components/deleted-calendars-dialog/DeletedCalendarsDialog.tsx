@@ -9,7 +9,7 @@ export default function DeletedCalendarsDialog() {
 
   return (
     <Dialog open={deletedCalendarsDialogOpen} onOpenChange={setDeletedCalendarsDialogOpen}>
-      <DialogContent data-test="calendar--deleted-calendars-dialog" className="overflow-auto">
+      <DialogContent data-test="calendar--deleted-calendars-dialog">
         <DialogHeader>
           <DialogTitle>Deleted Calendars</DialogTitle>
         </DialogHeader>

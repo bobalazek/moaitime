@@ -55,7 +55,7 @@ export default function HabitTemplatesDialog() {
 
   return (
     <Dialog open={habitTemplatesDialogOpen} onOpenChange={setHabitTemplatesDialogOpen}>
-      <DialogContent data-test="habits--habit-templates-dialog" className="overflow-auto">
+      <DialogContent data-test="habits--habit-templates-dialog">
         <DialogHeader>
           <DialogTitle>Habit Templates</DialogTitle>
         </DialogHeader>

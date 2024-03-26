@@ -53,7 +53,7 @@ export default function Quote() {
   return (
     <ErrorBoundary>
       <div
-        className="text-shadow cursor-default select-none px-2 text-xl italic text-white"
+        className="text-shadow cursor-default select-none px-2 italic text-white md:text-xl"
         onDoubleClick={() => {
           setRandomQuote();
         }}

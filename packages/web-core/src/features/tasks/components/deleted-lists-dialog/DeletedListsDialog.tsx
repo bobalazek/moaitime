@@ -8,7 +8,7 @@ export default function DeletedListsDialog() {
 
   return (
     <Dialog open={deletedListsDialogOpen} onOpenChange={setDeletedListsDialogOpen}>
-      <DialogContent data-test="lists--deleted-lists-dialog" className="overflow-auto">
+      <DialogContent data-test="lists--deleted-lists-dialog">
         <DialogHeader>
           <DialogTitle>Deleted lists</DialogTitle>
         </DialogHeader>

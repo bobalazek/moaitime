@@ -194,7 +194,8 @@ export class WebsocketManager {
       await reloadNotes();
 
       if (selectedNote?.id === payload.noteId) {
-        await setSelectedNote(selectedNote);
+        const isDeletion = data.type === GlobalEventsEnum.NOTES_NOTE_DELETED;
+        await setSelectedNote(isDeletion ? null : selectedNote);
       }
     }
   }

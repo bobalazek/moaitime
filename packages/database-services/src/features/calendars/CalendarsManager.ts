@@ -62,11 +62,8 @@ export class CalendarsManager {
     return data;
   }
 
-  async findOneByIdAndUserId(calendarId: string | null, userId: string): Promise<Calendar | null> {
-    let where = and(
-      calendarId ? eq(calendars.id, calendarId) : isNull(calendars.id),
-      isNull(calendars.deletedAt)
-    );
+  async findOneByIdAndUserId(calendarId: string, userId: string): Promise<Calendar | null> {
+    let where = and(eq(calendars.id, calendarId), isNull(calendars.deletedAt));
 
     const teamIds = await usersManager.getTeamIds(userId);
     if (teamIds.length === 0) {

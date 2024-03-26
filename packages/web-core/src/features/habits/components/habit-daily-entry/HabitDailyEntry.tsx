@@ -110,7 +110,7 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
 
   return (
     <div
-      className="relative flex w-full flex-col flex-wrap rounded-lg border px-6 py-4"
+      className="relative flex w-full flex-col flex-wrap rounded-lg border p-4"
       style={{
         color: textColor,
         borderColor: backgroundColor ?? undefined,
@@ -132,51 +132,47 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
         }}
         title="Progress in the current interval"
       />
-      <div className="z-10 flex w-full flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-grow">
-          <div className="w-full">
-            <h5 className="text-xl font-bold">{habit.name}</h5>
-            {habit.description && (
-              <div
-                className="text-sm"
-                style={{
-                  color: textColor,
-                }}
-              >
-                {habit.description}
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-shrink">
-          <div className="flex flex-row flex-wrap items-center gap-4">
-            <Button
-              onClick={onDecrementButtonClick}
-              variant="secondary"
-              size="sm"
-              disabled={isSaving}
+      <div className="z-10 flex w-full flex-wrap items-center justify-between gap-2 md:flex-nowrap">
+        <div className="flex flex-col">
+          <h5 className="text-xl font-bold">{habit.name}</h5>
+          {habit.description && (
+            <div
+              className="text-sm"
+              style={{
+                color: textColor,
+              }}
             >
-              <MinusIcon size={24} />
-            </Button>
-            <div>
-              <div className="flex select-none items-center gap-1">
-                <span className="text-2xl font-bold">{currentAmount}</span>
-                <HabbitDailyEntryEditPopover habitDaily={habitDaily} />
-                <span>/</span>
-                <span>{habit.goalAmount}</span>
-                <span>{habit.goalUnit}</span>
-              </div>
-              <div className="text-center text-xs">per {habit.goalFrequency}</div>
+              {habit.description}
             </div>
-            <Button
-              onClick={onIncrementButtonClick}
-              variant="secondary"
-              size="sm"
-              disabled={isSaving}
-            >
-              <PlusIcon size={24} />
-            </Button>
+          )}
+        </div>
+        <div className="flex flex-row items-center gap-4">
+          <Button
+            onClick={onDecrementButtonClick}
+            variant="secondary"
+            size="sm"
+            disabled={isSaving}
+          >
+            <MinusIcon size={24} />
+          </Button>
+          <div>
+            <div className="flex select-none items-center gap-1">
+              <span className="text-2xl font-bold">{currentAmount}</span>
+              <HabbitDailyEntryEditPopover habitDaily={habitDaily} />
+              <span>/</span>
+              <span>{habit.goalAmount}</span>
+              <span>{habit.goalUnit}</span>
+            </div>
+            <div className="text-center text-xs">per {habit.goalFrequency}</div>
           </div>
+          <Button
+            onClick={onIncrementButtonClick}
+            variant="secondary"
+            size="sm"
+            disabled={isSaving}
+          >
+            <PlusIcon size={24} />
+          </Button>
         </div>
       </div>
     </div>

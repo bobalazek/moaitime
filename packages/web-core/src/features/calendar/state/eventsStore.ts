@@ -6,8 +6,8 @@ import { addEvent, deleteEvent, editEvent, undeleteEvent } from '../utils/EventH
 import { useCalendarStore } from './calendarStore';
 
 export type CalendarStore = {
-  addEvent: (event: CreateEvent) => Promise<Event>;
-  editEvent: (eventId: string, event: UpdateEvent) => Promise<Event>;
+  addEvent: (data: CreateEvent) => Promise<Event>;
+  editEvent: (eventId: string, data: UpdateEvent) => Promise<Event>;
   deleteEvent: (eventId: string) => Promise<Event>;
   undeleteEvent: (eventId: string) => Promise<Event>;
   // Selected
@@ -20,19 +20,19 @@ export type CalendarStore = {
 };
 
 export const useEventsStore = create<CalendarStore>()((set) => ({
-  addEvent: async (event: CreateEvent) => {
+  addEvent: async (data: CreateEvent) => {
     const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
 
-    const addedTask = await addEvent(event);
+    const addedTask = await addEvent(data);
 
     await reloadCalendarEntriesDebounced();
 
     return addedTask;
   },
-  editEvent: async (eventId: string, event: UpdateEvent) => {
+  editEvent: async (eventId: string, data: UpdateEvent) => {
     const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
 
-    const editedTask = await editEvent(eventId, event);
+    const editedTask = await editEvent(eventId, data);
 
     await reloadCalendarEntriesDebounced();
 

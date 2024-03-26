@@ -30,8 +30,8 @@ import {
 } from '../utils/TeamHelpers';
 
 export type TeamsStore = {
-  addTeam: (team: CreateTeam) => Promise<Team>;
-  editTeam: (teamId: string, team: UpdateTeam) => Promise<Team>;
+  addTeam: (data: CreateTeam) => Promise<Team>;
+  editTeam: (teamId: string, data: UpdateTeam) => Promise<Team>;
   deleteTeam: (teamId: string) => Promise<Team>;
   leaveTeam: (teamId: string) => Promise<Team>;
   // Selected
@@ -69,19 +69,19 @@ export type TeamsStore = {
 };
 
 export const useTeamsStore = create<TeamsStore>()((set, get) => ({
-  addTeam: async (team: CreateTeam) => {
+  addTeam: async (data: CreateTeam) => {
     const { reloadJoinedTeam } = get();
 
-    const addedTask = await addTeam(team);
+    const addedTask = await addTeam(data);
 
     await reloadJoinedTeam();
 
     return addedTask;
   },
-  editTeam: async (teamId: string, team: UpdateTeam) => {
+  editTeam: async (teamId: string, data: UpdateTeam) => {
     const { reloadJoinedTeam } = get();
 
-    const editedTask = await editTeam(teamId, team);
+    const editedTask = await editTeam(teamId, data);
 
     await reloadJoinedTeam();
 

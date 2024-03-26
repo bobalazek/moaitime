@@ -22,8 +22,8 @@ export type HabitsStore = {
   habits: Habit[];
   reloadHabits: () => Promise<Habit[]>;
   getHabit: (habitId: string) => Promise<Habit | null>;
-  addHabit: (Habit: CreateHabit) => Promise<Habit>;
-  editHabit: (habitId: string, Habit: UpdateHabit) => Promise<Habit>;
+  addHabit: (data: CreateHabit) => Promise<Habit>;
+  editHabit: (habitId: string, data: UpdateHabit) => Promise<Habit>;
   deleteHabit: (habitId: string, isHardDelete?: boolean) => Promise<Habit>;
   undeleteHabit: (habitId: string) => Promise<Habit>;
   updateHabitDaily: (habitId: string, date: string, amount: number) => Promise<HabitDailyEntry>;
@@ -65,11 +65,11 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
 
     return habit;
   },
-  addHabit: async (Habit: CreateHabit) => {
+  addHabit: async (data: CreateHabit) => {
     const { selectedDate, reloadHabits } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
-    const newHabit = await addHabit(Habit);
+    const newHabit = await addHabit(data);
 
     await reloadHabits();
     await reloadUserUsage();
@@ -91,9 +91,9 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
 
     return newHabit;
   },
-  editHabit: async (habitId: string, Habit: UpdateHabit) => {
+  editHabit: async (habitId: string, data: UpdateHabit) => {
     const { reloadHabits } = get();
-    const editedHabit = await editHabit(habitId, Habit);
+    const editedHabit = await editHabit(habitId, data);
 
     await reloadHabits();
 

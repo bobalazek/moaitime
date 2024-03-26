@@ -19,8 +19,8 @@ import {
 export type MoodEntrieStore = {
   /********** Mood Entries **********/
   getMoodEntry: (moodEntryId: string) => Promise<MoodEntry>;
-  addMoodEntry: (moodEntry: CreateMoodEntry) => Promise<MoodEntry>;
-  editMoodEntry: (moodEntryId: string, moodEntry: UpdateMoodEntry) => Promise<MoodEntry>;
+  addMoodEntry: (data: CreateMoodEntry) => Promise<MoodEntry>;
+  editMoodEntry: (moodEntryId: string, data: UpdateMoodEntry) => Promise<MoodEntry>;
   deleteMoodEntry: (moodEntryId: string, isHardDelete?: boolean) => Promise<MoodEntry>;
   undeleteMoodEntry: (moodEntryId: string) => Promise<MoodEntry>;
   // Selected Mood Entry Dialog
@@ -39,8 +39,8 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
 
     return moodentry;
   },
-  addMoodEntry: async (moodEntry: CreateMoodEntry) => {
-    const addedMoodEntry = await addMoodEntry(moodEntry);
+  addMoodEntry: async (data: CreateMoodEntry) => {
+    const addedMoodEntry = await addMoodEntry(data);
 
     globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_ADDED, {
       actorUserId: addedMoodEntry.userId,
@@ -50,8 +50,8 @@ export const useMoodEntriesStore = create<MoodEntrieStore>()((set) => ({
 
     return addedMoodEntry;
   },
-  editMoodEntry: async (moodEntryId: string, moodEntry: UpdateMoodEntry) => {
-    const editedMoodEntry = await editMoodEntry(moodEntryId, moodEntry);
+  editMoodEntry: async (moodEntryId: string, data: UpdateMoodEntry) => {
+    const editedMoodEntry = await editMoodEntry(moodEntryId, data);
 
     globalEventsEmitter.emit(GlobalEventsEnum.MOOD_MOOD_ENTRY_EDITED, {
       actorUserId: editedMoodEntry.userId,

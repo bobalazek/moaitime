@@ -29,8 +29,8 @@ export type ListsStore = {
   lists: List[];
   reloadLists: () => Promise<List[]>;
   getList: (listId: string) => Promise<List | null>;
-  addList: (list: CreateList) => Promise<List>;
-  editList: (listId: string, list: UpdateList) => Promise<List>;
+  addList: (data: CreateList) => Promise<List>;
+  editList: (listId: string, data: UpdateList) => Promise<List>;
   deleteList: (listId: string) => Promise<List | null>;
   addVisibleList: (listId: string) => Promise<void>;
   removeVisibleList: (listId: string) => Promise<void>;
@@ -97,11 +97,11 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
 
     return list ?? null;
   },
-  addList: async (list: CreateList) => {
+  addList: async (data: CreateList) => {
     const { reloadLists, setSelectedList } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
-    const addedList = await addList(list);
+    const addedList = await addList(data);
 
     await reloadLists();
     await setSelectedList(addedList);
@@ -109,10 +109,10 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
 
     return addedList;
   },
-  editList: async (listId: string, list: UpdateList) => {
+  editList: async (listId: string, data: UpdateList) => {
     const { reloadLists, reloadSelectedListTasks } = get();
 
-    const editedList = await editList(listId, list);
+    const editedList = await editList(listId, data);
 
     await reloadLists();
     await reloadSelectedListTasks();

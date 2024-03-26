@@ -58,8 +58,8 @@ export type CalendarStore = {
   /********** Calendars **********/
   calendars: Calendar[];
   reloadCalendars: () => Promise<Calendar[]>;
-  addCalendar: (calendar: CreateCalendar) => Promise<Calendar>;
-  editCalendar: (calendarId: string, calendar: UpdateCalendar) => Promise<Calendar>;
+  addCalendar: (data: CreateCalendar) => Promise<Calendar>;
+  editCalendar: (calendarId: string, data: UpdateCalendar) => Promise<Calendar>;
   deleteCalendar: (calendarId: string, isHardDelete?: boolean) => Promise<Calendar>;
   undeleteCalendar: (calendarId: string) => Promise<Calendar>;
   addVisibleCalendar: (calendarId: string) => Promise<void>;
@@ -206,12 +206,12 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     return calendars;
   },
-  addCalendar: async (calendar: CreateCalendar) => {
+  addCalendar: async (data: CreateCalendar) => {
     const { reloadCalendars, reloadCalendarEntriesDebounced } = get();
     const { reloadAccount } = useAuthStore.getState();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
-    const addedTask = await addCalendar(calendar);
+    const addedTask = await addCalendar(data);
 
     await reloadCalendars();
     await reloadCalendarEntriesDebounced();
@@ -220,10 +220,10 @@ export const useCalendarStore = create<CalendarStore>()((set, get) => ({
 
     return addedTask;
   },
-  editCalendar: async (calendarId: string, calendar: UpdateCalendar) => {
+  editCalendar: async (calendarId: string, data: UpdateCalendar) => {
     const { reloadCalendars, reloadCalendarEntriesDebounced } = get();
 
-    const editedTask = await editCalendar(calendarId, calendar);
+    const editedTask = await editCalendar(calendarId, data);
 
     await reloadCalendars();
     await reloadCalendarEntriesDebounced();

@@ -29,8 +29,8 @@ export type NotesStore = {
   reloadNotes: () => Promise<Note[]>;
   reloadNotesDebounced: () => Promise<void>;
   getNote: (noteId: string) => Promise<Note>;
-  addNote: (note: CreateNote) => Promise<Note>;
-  editNote: (noteId: string, note: UpdateNote, skipSetSelectedNote?: boolean) => Promise<Note>;
+  addNote: (data: CreateNote) => Promise<Note>;
+  editNote: (noteId: string, data: UpdateNote, skipSetSelectedNote?: boolean) => Promise<Note>;
   deleteNote: (noteId: string, isHardDelete?: boolean) => Promise<Note>;
   undeleteNote: (noteId: string) => Promise<Note>;
   shareNoteWithTeam: (noteId: string, teamId: string) => Promise<Note>;
@@ -93,11 +93,11 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return note;
   },
-  addNote: async (note: CreateNote) => {
+  addNote: async (data: CreateNote) => {
     const { reloadNotes, setSelectedNoteData } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
-    const addedNote = await addNote(note);
+    const addedNote = await addNote(data);
 
     globalEventsEmitter.emit(GlobalEventsEnum.NOTES_NOTE_ADDED, {
       actorUserId: addedNote.userId,

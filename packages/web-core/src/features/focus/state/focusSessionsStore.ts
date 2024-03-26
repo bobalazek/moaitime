@@ -21,11 +21,8 @@ import {
 export type FocusSessionsStore = {
   /********** Focus Sessions **********/
   getFocusSession: (focusSessionId: string) => Promise<FocusSession | null>;
-  addFocusSession: (focusSession: CreateFocusSession) => Promise<FocusSession>;
-  editFocusSession: (
-    focusSessionId: string,
-    focusSession: UpdateFocusSession
-  ) => Promise<FocusSession>;
+  addFocusSession: (data: CreateFocusSession) => Promise<FocusSession>;
+  editFocusSession: (focusSessionId: string, data: UpdateFocusSession) => Promise<FocusSession>;
   deleteFocusSession: (focusSessionId: string, isHardDelete?: boolean) => Promise<FocusSession>;
   undeleteFocusSession: (focusSessionId: string) => Promise<FocusSession>;
   triggerFocusSessionAction: (
@@ -46,10 +43,10 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
 
     return focusSession;
   },
-  addFocusSession: async (focusSession: CreateFocusSession) => {
+  addFocusSession: async (data: CreateFocusSession) => {
     const { setCurrentFocusSession } = get();
 
-    const newFocusSession = await addFocusSession(focusSession);
+    const newFocusSession = await addFocusSession(data);
 
     globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_ADDED, {
       actorUserId: newFocusSession.userId,
@@ -61,10 +58,10 @@ export const useFocusSessionsStore = create<FocusSessionsStore>()((set, get) => 
 
     return newFocusSession;
   },
-  editFocusSession: async (focusSessionId: string, focusSession: UpdateFocusSession) => {
+  editFocusSession: async (focusSessionId: string, data: UpdateFocusSession) => {
     const { currentFocusSession, setCurrentFocusSession } = get();
 
-    const editedFocusSession = await editFocusSession(focusSessionId, focusSession);
+    const editedFocusSession = await editFocusSession(focusSessionId, data);
 
     globalEventsEmitter.emit(GlobalEventsEnum.FOCUS_FOCUS_SESSION_EDITED, {
       actorUserId: editedFocusSession.userId,

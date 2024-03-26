@@ -11,6 +11,7 @@ import {
   UpdateNoteSchema,
 } from '@moaitime/shared-common';
 
+import { useAuthStore } from '../../auth/state/authStore';
 import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
@@ -29,9 +30,11 @@ export type NotesStore = {
   reloadNotesDebounced: () => Promise<void>;
   getNote: (noteId: string) => Promise<Note>;
   addNote: (note: CreateNote) => Promise<Note>;
-  editNote: (noteId: string, note: UpdateNote) => Promise<Note>;
+  editNote: (noteId: string, note: UpdateNote, skipSetSelectedNote?: boolean) => Promise<Note>;
   deleteNote: (noteId: string, isHardDelete?: boolean) => Promise<Note>;
   undeleteNote: (noteId: string) => Promise<Note>;
+  shareNoteWithTeam: (noteId: string, teamId: string) => Promise<Note>;
+  unshareNoteFromTeam: (noteId: string) => Promise<Note>;
   // Sort
   notesSortField: NotesListSortFieldEnum;
   notesSortDirection: SortDirectionEnum;
@@ -107,10 +110,10 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     return addedNote;
   },
-  editNote: async (noteId: string, note: UpdateNote) => {
+  editNote: async (noteId: string, data: UpdateNote, skipSetSelectedNote?: boolean) => {
     const { selectedNote, reloadNotes, setSelectedNote } = get();
 
-    const editedNote = await editNote(noteId, note);
+    const editedNote = await editNote(noteId, data);
 
     globalEventsEmitter.emit(GlobalEventsEnum.NOTES_NOTE_EDITED, {
       actorUserId: editedNote.userId,
@@ -119,7 +122,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     await reloadNotes();
 
-    if (selectedNote?.id === editedNote.id) {
+    if (!skipSetSelectedNote && selectedNote?.id === editedNote.id) {
       await setSelectedNote(editedNote, true);
     }
 
@@ -165,6 +168,36 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     }
 
     return undeletedNote;
+  },
+  shareNoteWithTeam: async (noteId: string, teamId: string) => {
+    const { editNote } = get();
+
+    const editedNote = await editNote(noteId, {
+      teamId,
+    });
+
+    return editedNote;
+  },
+  unshareNoteFromTeam: async (noteId: string) => {
+    const { editNote, setSelectedNote } = get();
+    const { auth } = useAuthStore.getState();
+
+    const editedNote = await editNote(
+      noteId,
+      {
+        teamId: null,
+      },
+      true
+    );
+
+    // We skip the set above and only set the selected note if it's the user that created it
+    if (editedNote.userId === auth?.user.id) {
+      await setSelectedNote(editedNote, true);
+    } else {
+      await setSelectedNote(null);
+    }
+
+    return editedNote;
   },
   // Sort
   notesSortField: NotesListSortFieldEnum.CREATED_AT,

@@ -21,7 +21,8 @@ const NotesPageHeaderButtons = () => {
     selectedNoteDataChanged,
     setSelectedNote,
     saveSelectedNoteData,
-    editNote,
+    shareNoteWithTeam,
+    unshareNoteFromTeam,
     deleteNote,
     undeleteNote,
   } = useNotesStore();
@@ -73,9 +74,7 @@ const NotesPageHeaderButtons = () => {
     }
 
     try {
-      await editNote(selectedNote.id, {
-        teamId: joinedTeam.team.id,
-      });
+      await shareNoteWithTeam(selectedNote.id, joinedTeam.team.id);
 
       sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" shared`, {
         description: 'The note was successfully shared with the team!',
@@ -86,15 +85,13 @@ const NotesPageHeaderButtons = () => {
     }
   };
 
-  const onUnshareWithTeamButtonClick = async () => {
+  const onUnshareFromTeamButtonClick = async () => {
     if (!selectedNote || !joinedTeam) {
       return;
     }
 
     try {
-      await editNote(selectedNote.id, {
-        teamId: null,
-      });
+      await unshareNoteFromTeam(selectedNote.id);
 
       sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" unshared`, {
         description: 'The note was successfully unshared with the team!',
@@ -164,7 +161,7 @@ const NotesPageHeaderButtons = () => {
   }
 
   const canShareWithTeam = joinedTeam && selectedNote && !selectedNote.teamId;
-  const canUnshareWithTeam = joinedTeam && selectedNote && selectedNote.teamId;
+  const canUnshareFromTeam = joinedTeam && selectedNote && selectedNote.teamId;
 
   return (
     <div className="flex gap-2">
@@ -188,10 +185,10 @@ const NotesPageHeaderButtons = () => {
                 <span>Share with team</span>
               </DropdownMenuItem>
             )}
-            {canUnshareWithTeam && (
-              <DropdownMenuItem className="cursor-pointer" onClick={onUnshareWithTeamButtonClick}>
+            {canUnshareFromTeam && (
+              <DropdownMenuItem className="cursor-pointer" onClick={onUnshareFromTeamButtonClick}>
                 <UsersIcon className="mr-2 h-4 w-4" />
-                <span>Unshare with team</span>
+                <span>Unshare from team</span>
               </DropdownMenuItem>
             )}
             {!selectedNote.deletedAt && (

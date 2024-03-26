@@ -6,7 +6,6 @@ import {
   eq,
   gt,
   gte,
-  inArray,
   isNull,
   lt,
   lte,
@@ -15,7 +14,7 @@ import {
   SQL,
 } from 'drizzle-orm';
 
-import { getDatabase, NewPost, Post, posts, User, users } from '@moaitime/database-core';
+import { getDatabase, NewPost, Post, posts, User } from '@moaitime/database-core';
 import {
   Entity,
   FeedPost,
@@ -261,12 +260,8 @@ export class PostsManager {
       usersSet.add(post.userId);
     }
 
-    const publicUsers =
-      usersSet.size > 0
-        ? await usersManager.findMany({
-            where: inArray(users.id, Array.from(usersSet)),
-          })
-        : [];
+    const userIds = Array.from(usersSet);
+    const publicUsers = await usersManager.findManyByUserIds(userIds);
     const publicUsersMap = new Map(publicUsers.map((user) => [user.id, user]));
     const objectsMap = await entityManager.getObjectsMap(rows);
 

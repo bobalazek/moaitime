@@ -88,6 +88,18 @@ export class UsersManager {
     return rows;
   }
 
+  async findManyByUserIds(userIds: string[]): Promise<User[]> {
+    if (userIds.length === 0) {
+      return [];
+    }
+
+    const rows = await getDatabase().query.users.findMany({
+      where: inArray(users.id, userIds),
+    });
+
+    return rows;
+  }
+
   async findOneById(id: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.id, id),

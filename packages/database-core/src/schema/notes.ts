@@ -3,6 +3,7 @@ import { date, index, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/
 
 import { NoteTypeEnum } from '@moaitime/shared-common';
 
+import { teams } from './teams';
 import { users } from './users';
 
 export const notes = pgTable(
@@ -26,11 +27,15 @@ export const notes = pgTable(
         onDelete: 'cascade',
       }),
     parentId: uuid('parent_id'), // Relationship to self
+    teamId: uuid('team_id').references(() => teams.id, {
+      onDelete: 'set null',
+    }),
   },
   (table) => {
     return {
       userIdIdx: index('notes_user_id_idx').on(table.userId),
       parentIdIdx: index('notes_parent_id_idx').on(table.parentId),
+      teamIdIdx: index('notes_team_id_idx').on(table.teamId),
     };
   }
 );
@@ -43,6 +48,10 @@ export const notesRelations = relations(notes, ({ one }) => ({
   parent: one(notes, {
     fields: [notes.parentId],
     references: [notes.id],
+  }),
+  team: one(teams, {
+    fields: [notes.userId],
+    references: [teams.id],
   }),
 }));
 

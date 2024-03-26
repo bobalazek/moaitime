@@ -38,6 +38,18 @@ export class TagsManager {
     });
   }
 
+  async findManyByTagIds(tagIds: string[]): Promise<Tag[]> {
+    if (tagIds.length === 0) {
+      return [];
+    }
+
+    const rows = await getDatabase().query.tags.findMany({
+      where: inArray(tags.id, tagIds),
+    });
+
+    return rows;
+  }
+
   async findOneById(tagId: string): Promise<Tag | null> {
     const row = await getDatabase().query.tags.findFirst({
       where: eq(tags.id, tagId),

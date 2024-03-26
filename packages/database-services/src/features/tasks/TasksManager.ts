@@ -928,12 +928,7 @@ export class TasksManager {
   }
 
   async setTags(task: Task, tagIds: string[]) {
-    const newTags =
-      tagIds.length > 0
-        ? await tagsManager.findMany({
-            where: inArray(tags.id, tagIds),
-          })
-        : [];
+    const newTags = await tagsManager.findManyByTagIds(tagIds);
     const list = task.listId ? await listsManager.findOneById(task.listId) : null;
 
     // Check that we do not assign tags from different teams

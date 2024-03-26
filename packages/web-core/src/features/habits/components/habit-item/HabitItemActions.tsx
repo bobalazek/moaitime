@@ -90,19 +90,21 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
         data-test="habits--habit--actions-dropdown-menu"
       >
         <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
-            <FileEditIcon className="mr-2 h-4 w-4" />
-            <span>Edit</span>
-          </DropdownMenuItem>
           {!habit.deletedAt && (
-            <DropdownMenuItem
-              variant="destructive"
-              className="cursor-pointer"
-              onClick={onDeleteButtonClick}
-            >
-              <TrashIcon className="mr-2 h-4 w-4" />
-              <span>Delete</span>
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
+                <FileEditIcon className="mr-2 h-4 w-4" />
+                <span>Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                className="cursor-pointer"
+                onClick={onDeleteButtonClick}
+              >
+                <TrashIcon className="mr-2 h-4 w-4" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </>
           )}
           {habit.deletedAt && (
             <>

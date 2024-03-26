@@ -64,8 +64,8 @@ export default function CalendarEntry({
   const hasAbsoluteClassName = className?.includes('absolute');
   const defaultBackgroundColor = calendarEntry.color ?? '#ffffff';
   const backgroundColor =
-    highlightedCalendarEntry?.id === calendarEntry.id
-      ? colord(defaultBackgroundColor).darken(0.1).toHex()
+    highlightedCalendarEntry?.raw?.id === calendarEntry.raw?.id
+      ? colord(defaultBackgroundColor).darken(0.15).toHex()
       : defaultBackgroundColor;
   const color = getTextColor(backgroundColor)!;
   const colorLighter = colord(color).lighten(0.3).toHex();

@@ -162,7 +162,7 @@ export default function HabitEditDialog() {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="habit-goal">Goal</Label>
-              <div className="flex w-full items-center gap-2">
+              <div className="flex w-full flex-wrap items-center gap-2">
                 <Input
                   type="number"
                   value={data.goalAmount}

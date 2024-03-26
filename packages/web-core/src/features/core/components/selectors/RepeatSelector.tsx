@@ -110,13 +110,13 @@ export function RepeatSelector({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           aria-expanded={open}
           data-test="repeat-selector--trigger-button"
-          className="inline-flex items-center justify-between text-left"
+          className="w-full items-center justify-between text-left"
         >
           {!value && <span className="italic text-gray-500">Does not repeat</span>}
           {value && (
@@ -131,219 +131,220 @@ export function RepeatSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        side="top"
-        className="flex w-full max-w-[360px] flex-col flex-wrap gap-2 px-4 py-2"
-        data-test="repeat-selector"
-      >
-        <h3 className="text-xl font-bold">Repeat</h3>
-        <div className="text-muted-foreground">
-          <div className="flex flex-row items-center gap-2">
-            <span>Repeat every</span>
-            <Input
-              type="number"
-              value={recurrence.options.intervalAmount}
-              onChange={(event) => {
-                setRecurrence((current) => {
-                  return current.updateOptions({
-                    intervalAmount: parseInt(event.target.value),
-                  });
-                });
-              }}
-              className="w-20"
-              min={1}
-              max={999}
-            />
-            <select
-              value={recurrence.options.interval}
-              onChange={(event) => {
-                setRecurrence((current) => {
-                  const updateData: Partial<RecurrenceOptions> = {
-                    interval: event.target.value as RecurrenceIntervalEnum,
-                  };
-                  if (recurrence.options.interval !== RecurrenceIntervalEnum.WEEK) {
-                    updateData.daysOfWeekOnly = undefined;
-                  }
-
-                  return current.updateOptions(updateData);
-                });
-              }}
-              className="rounded-md border border-gray-300 bg-transparent p-2.5"
-            >
-              <option value={RecurrenceIntervalEnum.DAY}>days</option>
-              <option value={RecurrenceIntervalEnum.WEEK}>weeks</option>
-              <option value={RecurrenceIntervalEnum.MONTH}>months</option>
-              <option value={RecurrenceIntervalEnum.YEAR}>years</option>
-            </select>
-          </div>
-        </div>
-        {(recurrence.options.interval === RecurrenceIntervalEnum.DAY ||
-          (recurrence.options.daysOfMonthOnly &&
-            recurrence.options.daysOfMonthOnly.length > 0)) && (
-          <div className="flex flex-col">
-            <h4 className="text-muted-foreground">Repeat on</h4>
-            <div className="flex flex-wrap">
-              <ToggleGroup
-                type="multiple"
-                value={recurrence.options.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
-                onValueChange={(value) => {
+      <PopoverContent className="p-0" data-test="repeat-selector">
+        <div className="flex w-full max-w-[360px] flex-col flex-wrap gap-2 px-4 py-2">
+          <h3 className="text-xl font-bold">Repeat</h3>
+          <div className="text-muted-foreground">
+            <div className="flex flex-row items-center gap-2">
+              <span>Repeat every</span>
+              <Input
+                type="number"
+                value={recurrence.options.intervalAmount}
+                onChange={(event) => {
                   setRecurrence((current) => {
                     return current.updateOptions({
-                      daysOfWeekOnly: value?.map((weekDay) => parseInt(weekDay)) ?? undefined,
+                      intervalAmount: parseInt(event.target.value),
                     });
                   });
                 }}
-              >
-                {/* For some strange reason it's 0 for Monday, where as usually that's Sunday */}
-                <ToggleGroupItem value="0" className="flex-grow">
-                  Mo
-                </ToggleGroupItem>
-                <ToggleGroupItem value="1" className="flex-grow">
-                  Tu
-                </ToggleGroupItem>
-                <ToggleGroupItem value="2" className="flex-grow">
-                  We
-                </ToggleGroupItem>
-                <ToggleGroupItem value="3" className="flex-grow">
-                  Th
-                </ToggleGroupItem>
-                <ToggleGroupItem value="4" className="flex-grow">
-                  Fr
-                </ToggleGroupItem>
-                <ToggleGroupItem value="5" className="flex-grow">
-                  Sa
-                </ToggleGroupItem>
-                <ToggleGroupItem value="6" className="flex-grow">
-                  Su
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
-          </div>
-        )}
-        <div>
-          <h4 className="text-muted-foreground mb-1">Ends</h4>
-          <RadioGroup
-            value={endsType}
-            onValueChange={(value) => {
-              setEndsType(value as RepeatSelectorEndsEnum);
-
-              setRecurrence((current) => {
-                return current.updateOptions({
-                  endsAt:
-                    value === RepeatSelectorEndsEnum.UNTIL_DATE
-                      ? recurrence.options.endsAt ?? addDays(new Date(), 7)
-                      : undefined,
-                  count:
-                    value === RepeatSelectorEndsEnum.COUNT
-                      ? recurrence.options.count ?? DEFAULT_OCCURENCES
-                      : undefined,
-                });
-              });
-            }}
-            className="flex flex-col gap-2"
-          >
-            <div className="flex items-center">
-              <div className="flex w-32 gap-2">
-                <RadioGroupItem id="repeat-ends-type-never" value={RepeatSelectorEndsEnum.NEVER} />
-                <Label htmlFor="repeat-ends-type-never">Never</Label>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="flex min-w-[80px] flex-grow gap-2">
-                <RadioGroupItem
-                  id="repeat-ends-type-until-date"
-                  value={RepeatSelectorEndsEnum.UNTIL_DATE}
-                />
-                <Label htmlFor="repeat-ends-type-until-date">Until</Label>
-              </div>
-              <DateSelector
-                data={convertIsoStringToObject(
-                  (recurrence.options.endsAt
-                    ? recurrence.options.endsAt
-                    : addDays(new Date(), 7)
-                  ).toISOString(),
-                  !disableTime,
-                  undefined
-                )}
-                onSaveData={(saveData) => {
-                  const result = convertObjectToIsoString(saveData);
-                  const endsAt = addDateTimezoneToItself(
-                    result?.iso ? new Date(result?.iso) : new Date()
-                  );
-
-                  setRecurrence((current) => {
-                    return current.updateOptions({
-                      endsAt,
-                      count: undefined,
-                    });
-                  });
-                }}
-                disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
-                includeTime={!disableTime}
-                disableTimeZone={true}
-                disableClear={true}
+                className="w-20"
+                min={1}
+                max={999}
               />
+              <select
+                value={recurrence.options.interval}
+                onChange={(event) => {
+                  setRecurrence((current) => {
+                    const updateData: Partial<RecurrenceOptions> = {
+                      interval: event.target.value as RecurrenceIntervalEnum,
+                    };
+                    if (recurrence.options.interval !== RecurrenceIntervalEnum.WEEK) {
+                      updateData.daysOfWeekOnly = undefined;
+                    }
+
+                    return current.updateOptions(updateData);
+                  });
+                }}
+                className="rounded-md border border-gray-300 bg-transparent p-2.5"
+              >
+                <option value={RecurrenceIntervalEnum.DAY}>days</option>
+                <option value={RecurrenceIntervalEnum.WEEK}>weeks</option>
+                <option value={RecurrenceIntervalEnum.MONTH}>months</option>
+                <option value={RecurrenceIntervalEnum.YEAR}>years</option>
+              </select>
             </div>
-            <div className="flex items-center">
-              <div className="flex min-w-[80px] gap-2">
-                <RadioGroupItem
-                  id="repeat-ends-type-after-count"
-                  value={RepeatSelectorEndsEnum.COUNT}
-                />
-                <Label htmlFor="repeat-ends-type-after-count">After</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  value={recurrence.options.count ?? DEFAULT_OCCURENCES}
-                  onChange={(event) => {
+          </div>
+          {(recurrence.options.interval === RecurrenceIntervalEnum.DAY ||
+            (recurrence.options.daysOfMonthOnly &&
+              recurrence.options.daysOfMonthOnly.length > 0)) && (
+            <div className="flex flex-col">
+              <h4 className="text-muted-foreground">Repeat on</h4>
+              <div className="flex flex-wrap">
+                <ToggleGroup
+                  type="multiple"
+                  value={recurrence.options.daysOfWeekOnly?.map((day) => day.toString()) ?? []}
+                  onValueChange={(value) => {
                     setRecurrence((current) => {
                       return current.updateOptions({
-                        count: parseInt(event.target.value),
-                        endsAt: undefined,
+                        daysOfWeekOnly: value?.map((weekDay) => parseInt(weekDay)) ?? undefined,
                       });
                     });
                   }}
-                  disabled={endsType !== RepeatSelectorEndsEnum.COUNT}
-                  className="w-20"
-                  min={1}
-                  max={999}
-                />
-                <span>occurences</span>
+                >
+                  {/* For some strange reason it's 0 for Monday, where as usually that's Sunday */}
+                  <ToggleGroupItem value="0" className="flex-grow">
+                    Mo
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="1" className="flex-grow">
+                    Tu
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="2" className="flex-grow">
+                    We
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="3" className="flex-grow">
+                    Th
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="4" className="flex-grow">
+                    Fr
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="5" className="flex-grow">
+                    Sa
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="6" className="flex-grow">
+                    Su
+                  </ToggleGroupItem>
+                </ToggleGroup>
               </div>
             </div>
-          </RadioGroup>
-        </div>
-        {recurrenceString && (
+          )}
           <div>
-            <h4 className="text-muted-foreground mt-2">
-              Dates for <b className="text-sm">{recurrenceString}</b>:
-            </h4>
-            {recurrenceDates.length === 0 && (
-              <div className="text-muted-foreground text-xs">
-                No dates for the specified parameters
+            <h4 className="text-muted-foreground mb-1">Ends</h4>
+            <RadioGroup
+              value={endsType}
+              onValueChange={(value) => {
+                setEndsType(value as RepeatSelectorEndsEnum);
+
+                setRecurrence((current) => {
+                  return current.updateOptions({
+                    endsAt:
+                      value === RepeatSelectorEndsEnum.UNTIL_DATE
+                        ? recurrence.options.endsAt ?? addDays(new Date(), 7)
+                        : undefined,
+                    count:
+                      value === RepeatSelectorEndsEnum.COUNT
+                        ? recurrence.options.count ?? DEFAULT_OCCURENCES
+                        : undefined,
+                  });
+                });
+              }}
+              className="flex flex-col gap-2"
+            >
+              <div className="flex items-center">
+                <div className="flex w-32 gap-2">
+                  <RadioGroupItem
+                    id="repeat-ends-type-never"
+                    value={RepeatSelectorEndsEnum.NEVER}
+                  />
+                  <Label htmlFor="repeat-ends-type-never">Never</Label>
+                </div>
               </div>
-            )}
-            {recurrenceDates.length > 0 && (
-              <ul className="list-disc pl-5 text-xs leading-5">
-                {recurrenceDates.slice(0, MAX_DATES_TO_SHOW).map((date) => {
-                  return (
-                    <li key={date.toISOString()}>
-                      {disableTime ? date.toLocaleDateString() : date.toLocaleString()}
-                    </li>
-                  );
-                })}
-                {recurrenceDates.length > MAX_DATES_TO_SHOW && <li>...</li>}
-              </ul>
-            )}
+              <div className="flex items-center">
+                <div className="flex min-w-[80px] flex-grow gap-2">
+                  <RadioGroupItem
+                    id="repeat-ends-type-until-date"
+                    value={RepeatSelectorEndsEnum.UNTIL_DATE}
+                  />
+                  <Label htmlFor="repeat-ends-type-until-date">Until</Label>
+                </div>
+                <DateSelector
+                  data={convertIsoStringToObject(
+                    (recurrence.options.endsAt
+                      ? recurrence.options.endsAt
+                      : addDays(new Date(), 7)
+                    ).toISOString(),
+                    !disableTime,
+                    undefined
+                  )}
+                  onSaveData={(saveData) => {
+                    const result = convertObjectToIsoString(saveData);
+                    const endsAt = addDateTimezoneToItself(
+                      result?.iso ? new Date(result?.iso) : new Date()
+                    );
+
+                    setRecurrence((current) => {
+                      return current.updateOptions({
+                        endsAt,
+                        count: undefined,
+                      });
+                    });
+                  }}
+                  disabled={endsType !== RepeatSelectorEndsEnum.UNTIL_DATE}
+                  includeTime={!disableTime}
+                  disableTimeZone={true}
+                  disableClear={true}
+                />
+              </div>
+              <div className="flex items-center">
+                <div className="flex min-w-[80px] gap-2">
+                  <RadioGroupItem
+                    id="repeat-ends-type-after-count"
+                    value={RepeatSelectorEndsEnum.COUNT}
+                  />
+                  <Label htmlFor="repeat-ends-type-after-count">After</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    value={recurrence.options.count ?? DEFAULT_OCCURENCES}
+                    onChange={(event) => {
+                      setRecurrence((current) => {
+                        return current.updateOptions({
+                          count: parseInt(event.target.value),
+                          endsAt: undefined,
+                        });
+                      });
+                    }}
+                    disabled={endsType !== RepeatSelectorEndsEnum.COUNT}
+                    className="w-20"
+                    min={1}
+                    max={999}
+                  />
+                  <span>occurences</span>
+                </div>
+              </div>
+            </RadioGroup>
           </div>
-        )}
-        <div className="text-muted-foreground text-xs">
-          Start date will be the same as the due date you specified
+          {recurrenceString && (
+            <div>
+              <h4 className="text-muted-foreground mt-2">
+                Dates for <b className="text-sm">{recurrenceString}</b>:
+              </h4>
+              {recurrenceDates.length === 0 && (
+                <div className="text-muted-foreground text-xs">
+                  No dates for the specified parameters
+                </div>
+              )}
+              {recurrenceDates.length > 0 && (
+                <ul className="list-disc pl-5 text-xs leading-5">
+                  {recurrenceDates.slice(0, MAX_DATES_TO_SHOW).map((date) => {
+                    return (
+                      <li key={date.toISOString()}>
+                        {disableTime ? date.toLocaleDateString() : date.toLocaleString()}
+                      </li>
+                    );
+                  })}
+                  {recurrenceDates.length > MAX_DATES_TO_SHOW && <li>...</li>}
+                </ul>
+              )}
+            </div>
+          )}
+          <div className="text-muted-foreground text-xs">
+            Start date will be the same as the due date you specified
+          </div>
+          <Button className="w-full" onClick={onSaveButtonSave}>
+            Save
+          </Button>
         </div>
-        <Button className="w-full" onClick={onSaveButtonSave}>
-          Save
-        </Button>
       </PopoverContent>
     </Popover>
   );

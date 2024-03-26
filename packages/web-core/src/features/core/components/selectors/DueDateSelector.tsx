@@ -231,79 +231,77 @@ export default function DueDateSelector({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        side="top"
-        className="w-auto max-w-[300px] flex-col gap-2 p-2"
-        data-test="date-selector"
-      >
-        <Calendar
-          mode="single"
-          disabled={isDateDisabled}
-          selected={dateValue ? new Date(dateValue) : undefined}
-          onSelect={onSelectDate}
-          weekStartsOn={generalStartDayOfWeek}
-        />
-        {includeRepeat && dateValue && (
-          <ErrorBoundary>
-            <RepeatSelector
-              value={repeatPatternValue ?? undefined}
-              startsAt={repeatStartsAt}
-              onChangeValue={onRepeatSelectorChange}
-              disableTime={!!dateTimeValue}
-            />
-          </ErrorBoundary>
-        )}
-        {includeTime && dateValue && (
-          <div className="flex flex-col gap-2">
-            <hr className="my-4 border-gray-300 dark:border-gray-700" />
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between align-bottom">
-                <div>
-                  <Label htmlFor="date-selector--time">Time</Label>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="rounded-md border p-1 text-[0.65rem]"
-                    onClick={() => addMinutes(-15)}
-                  >
-                    -15m
-                  </button>
-                  <button
-                    className="rounded-md border p-1 text-[0.65rem]"
-                    onClick={() => addMinutes(15)}
-                  >
-                    +15m
-                  </button>
-                </div>
-              </div>
-              <TimeSelector
-                value={dateTimeValue ?? undefined}
-                onChangeValue={(value) => setDateTimeValue(value ?? null)}
+      <PopoverContent className="p-0" data-test="date-selector">
+        <div className="w-auto max-w-[300px] flex-col gap-2 p-2">
+          <Calendar
+            mode="single"
+            disabled={isDateDisabled}
+            selected={dateValue ? new Date(dateValue) : undefined}
+            onSelect={onSelectDate}
+            weekStartsOn={generalStartDayOfWeek}
+          />
+          {includeRepeat && dateValue && (
+            <ErrorBoundary>
+              <RepeatSelector
+                value={repeatPatternValue ?? undefined}
+                startsAt={repeatStartsAt}
+                onChangeValue={onRepeatSelectorChange}
+                disableTime={!!dateTimeValue}
               />
-            </div>
-            {!disableTimeZone && (
-              <div>
-                <Label>Timezone</Label>
-                <TimezoneSelector
-                  value={dateTimeZoneValue}
-                  onValueChange={setDateTimeZoneValue}
-                  isReadonly={isTimezoneReadonly}
-                  placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
-                  allowClear={!isTimezoneReadonly}
+            </ErrorBoundary>
+          )}
+          {includeTime && dateValue && (
+            <div className="flex flex-col gap-2">
+              <hr className="my-4 border-gray-300 dark:border-gray-700" />
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between align-bottom">
+                  <div>
+                    <Label htmlFor="date-selector--time">Time</Label>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      className="rounded-md border p-1 text-[0.65rem]"
+                      onClick={() => addMinutes(-15)}
+                    >
+                      -15m
+                    </button>
+                    <button
+                      className="rounded-md border p-1 text-[0.65rem]"
+                      onClick={() => addMinutes(15)}
+                    >
+                      +15m
+                    </button>
+                  </div>
+                </div>
+                <TimeSelector
+                  value={dateTimeValue ?? undefined}
+                  onChangeValue={(value) => setDateTimeValue(value ?? null)}
                 />
               </div>
-            )}
+              {!disableTimeZone && (
+                <div>
+                  <Label>Timezone</Label>
+                  <TimezoneSelector
+                    value={dateTimeZoneValue}
+                    onValueChange={setDateTimeZoneValue}
+                    isReadonly={isTimezoneReadonly}
+                    placeholderText={timezonePlaceholderText ?? 'Floating timezone'}
+                    allowClear={!isTimezoneReadonly}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          <div className="mt-2">
+            <Button
+              variant="default"
+              className="w-full"
+              onClick={onSaveButtonClick}
+              data-test="date-selector--save-button"
+            >
+              Save
+            </Button>
           </div>
-        )}
-        <div className="mt-2">
-          <Button
-            variant="default"
-            className="w-full"
-            onClick={onSaveButtonClick}
-            data-test="date-selector--save-button"
-          >
-            Save
-          </Button>
         </div>
       </PopoverContent>
     </Popover>

@@ -51,7 +51,7 @@ export default function HabitsSettingsDialogHabitsActions() {
           }}
         >
           <TrashIcon className="mr-2 h-4 w-4" />
-          <span>Show Deleted Habits</span>
+          <span>Show deleted habits</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

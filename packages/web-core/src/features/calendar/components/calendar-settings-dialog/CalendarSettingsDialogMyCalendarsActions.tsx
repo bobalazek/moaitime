@@ -51,7 +51,7 @@ export default function CalendarSettingsDialogMyCalendarsActions() {
           }}
         >
           <TrashIcon className="mr-2 h-4 w-4" />
-          <span>Show Deleted Calendars</span>
+          <span>Show deleted calendars</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -10,7 +10,7 @@ export default function DeletedListsDialog() {
     <Dialog open={deletedListsDialogOpen} onOpenChange={setDeletedListsDialogOpen}>
       <DialogContent data-test="lists--deleted-lists-dialog">
         <DialogHeader>
-          <DialogTitle>Deleted Lists</DialogTitle>
+          <DialogTitle>Deleted lists</DialogTitle>
         </DialogHeader>
         {deletedLists.length === 0 && (
           <div className="flex flex-col items-center justify-center p-4">

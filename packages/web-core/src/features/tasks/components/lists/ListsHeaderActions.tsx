@@ -55,7 +55,7 @@ const ListsHeaderActions = () => {
           data-test="tasks--lists-list--header--dropdown-menu--view-deleted-button"
         >
           <TrashIcon className="mr-2 h-4 w-4" />
-          <span>Show Deleted Lists</span>
+          <span>Show deleted lists</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

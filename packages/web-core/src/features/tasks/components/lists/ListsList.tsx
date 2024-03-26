@@ -16,7 +16,7 @@ import { useListsStore } from '../../state/listsStore';
 import ListItemActions from '../list-item/ListItemActions';
 import ListsHeaderActions from './ListsHeaderActions';
 
-export default function ListsSelectedListDropdownMenuContent({
+export default function ListsList({
   isSubContent = false,
   onListSelect,
 }: {

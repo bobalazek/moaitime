@@ -322,7 +322,7 @@ describe('calendar.cy.ts', () => {
 
     cy.getBySel('calendar--settings--my-calendars--actions')
       .find('div[role="menuitem"]')
-      .contains('Show Deleted Calendars')
+      .contains('Show deleted calendars')
       .click({ force: true });
 
     cy.getBySel('calendar--deleted-calendars-dialog').should('exist');
@@ -351,7 +351,7 @@ describe('calendar.cy.ts', () => {
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
     cy.getBySel('calendar--settings--my-calendars--actions')
-      .contains('Show Deleted Calendars')
+      .contains('Show deleted calendars')
       .click();
 
     cy.getBySel('calendar--deleted-calendars-dialog').contains('New Calendar').should('exist');
@@ -380,7 +380,7 @@ describe('calendar.cy.ts', () => {
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
     cy.getBySel('calendar--settings--my-calendars--actions')
-      .contains('Show Deleted Calendars')
+      .contains('Show deleted calendars')
       .click();
 
     cy.getBySel('calendar--deleted-calendars-dialog')
@@ -425,7 +425,7 @@ describe('calendar.cy.ts', () => {
     cy.getBySel('calendar--settings--my-calendars--actions--trigger-button').click();
 
     cy.getBySel('calendar--settings--my-calendars--actions')
-      .contains('Show Deleted Calendars')
+      .contains('Show deleted calendars')
       .click();
 
     cy.getBySel('calendar--deleted-calendars-dialog')

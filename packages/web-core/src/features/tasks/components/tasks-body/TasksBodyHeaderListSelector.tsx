@@ -3,7 +3,7 @@ import { ChevronDownIcon, UsersIcon } from 'lucide-react';
 import { DropdownMenu, DropdownMenuTrigger } from '@moaitime/web-ui';
 
 import { useListsStore } from '../../state/listsStore';
-import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDropdownMenuContent';
+import ListsList from '../lists/ListsList';
 
 export default function TasksBodyHeaderListSelector() {
   const { selectedList } = useListsStore();
@@ -39,7 +39,7 @@ export default function TasksBodyHeaderListSelector() {
           </button>
         </h3>
       </DropdownMenuTrigger>
-      <ListsSelectedListDropdownMenuContent />
+      <ListsList />
     </DropdownMenu>
   );
 }

@@ -23,7 +23,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { useTasksStore } from '../../state/tasksStore';
-import ListsSelectedListDropdownMenuContent from '../lists/ListsSelectedListDropdownMenuContent';
+import ListsList from '../lists/ListsList';
 
 const TaskItemActions = memo(
   ({
@@ -164,7 +164,7 @@ const TaskItemActions = memo(
                   <ListIcon className="mr-2 h-4 w-4" />
                   <span>Move</span>
                 </DropdownMenuSubTrigger>
-                <ListsSelectedListDropdownMenuContent
+                <ListsList
                   isSubContent={true}
                   onListSelect={async (newList) => {
                     await moveTask(task.id, newList?.id ?? null);

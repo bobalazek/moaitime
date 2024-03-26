@@ -4,7 +4,6 @@ import {
   asc,
   between,
   count,
-  DBQueryConfig,
   desc,
   eq,
   gte,
@@ -62,271 +61,6 @@ export type TaskManagerListOptions = {
 };
 
 export class TasksManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Task[]> {
-    const rows = await getDatabase().query.tasks.findMany(options);
-
-    return rows.map((row) => {
-      return this._fixRowColumns(row);
-    });
-  }
-
-  async findManyByUserId(
-    userId: string,
-    listId?: string | null,
-    options?: TaskManagerListOptions
-  ): Promise<Task[]> {
-    const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
-
-    let where: SQL<unknown> = sql`1 = 1`; // Need this, else typescript will complain down below
-    if (typeof listId !== 'undefined') {
-      where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
-      // The null/unlisted list is an exception, so we always want to get the items as they are only from the user
-      if (!listId) {
-        where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;
-      } else {
-        const list = await listsManager.findOneByIdAndUserId(listId, userId);
-        if (!list) {
-          throw new Error('List for task not found');
-        }
-      }
-    }
-
-    if (options?.query) {
-      where = and(
-        where,
-        or(ilike(tasks.name, `%${options.query}%`), ilike(tasks.description, `%${options.query}%`))
-      ) as SQL<unknown>;
-    }
-
-    if (!options?.includeCompleted) {
-      where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
-    }
-
-    if (!options?.includeDeleted) {
-      where = and(where, isNull(tasks.deletedAt)) as SQL<unknown>;
-    }
-
-    if (options?.sortField) {
-      const direction = options?.sortDirection ?? SortDirectionEnum.ASC;
-      const field = tasks[options.sortField] ?? tasks.order;
-
-      orderBy.unshift(direction === SortDirectionEnum.ASC ? asc(field) : desc(field));
-    }
-
-    if (options?.sortField === TasksListSortFieldEnum.ORDER) {
-      orderBy.unshift(asc(tasks.priority));
-    }
-
-    const childrenMap = {} as Record<string, Task[]>;
-
-    const rootWhere = and(where, isNull(tasks.parentId)) as SQL<unknown>;
-
-    const query = getDatabase()
-      .select()
-      .from(tasks)
-      .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(rootWhere)
-      .orderBy(...orderBy);
-    if (options?.limit) {
-      query.limit(options.limit);
-    }
-
-    const rows = await query.execute();
-
-    if (!options?.excludeChildren) {
-      const childrenWhere = and(where, isNotNull(tasks.parentId)) as SQL<unknown>;
-      const children = await getDatabase().query.tasks.findMany({
-        where: childrenWhere,
-        orderBy,
-      });
-
-      for (const child of children) {
-        if (!child.parentId) {
-          continue;
-        }
-
-        if (!childrenMap[child.parentId]) {
-          childrenMap[child.parentId] = [];
-        }
-
-        childrenMap[child.parentId].push(this._fixRowColumns(child));
-      }
-    }
-
-    return rows.map((row) => {
-      const task = this._fixRowColumns(row.tasks);
-      const list = options?.includeList ? row.lists : undefined;
-
-      return {
-        ...task,
-        list,
-        children: childrenMap[task.id] ?? [],
-      };
-    });
-  }
-
-  async findManyByListIdsAndRange(
-    listIds: string[],
-    userId: string,
-    from?: Date,
-    to?: Date
-  ): Promise<TaskWithListColor[]> {
-    if (listIds.length === 0) {
-      return [];
-    }
-
-    const includesUnlisted = listIds.includes('');
-    const finalListIds = includesUnlisted ? listIds.filter((id) => id !== '') : listIds;
-
-    let where = and(isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
-
-    if (finalListIds.length === 0 && !includesUnlisted) {
-      return [];
-    }
-
-    if (finalListIds.length === 0 && includesUnlisted) {
-      where = and(where, and(isNull(lists.id), eq(tasks.userId, userId))) as SQL<unknown>;
-    } else if (finalListIds.length > 0) {
-      where = and(
-        where,
-        includesUnlisted
-          ? or(inArray(lists.id, finalListIds), and(isNull(lists.id), eq(tasks.userId, userId)))
-          : inArray(lists.id, finalListIds)
-      ) as SQL<unknown>;
-    } else {
-      return [];
-    }
-
-    if (from && to) {
-      where = and(
-        where,
-        between(tasks.dueDate, from.toISOString(), to.toISOString())
-      ) as SQL<unknown>;
-    } else if (from) {
-      where = and(where, gte(tasks.dueDate, from.toISOString())) as SQL<unknown>;
-    } else if (to) {
-      where = and(where, lte(tasks.dueDate, to.toISOString())) as SQL<unknown>;
-    }
-
-    const rows = await getDatabase()
-      .select()
-      .from(tasks)
-      .leftJoin(lists, eq(tasks.listId, lists.id))
-      .where(where)
-      .execute();
-
-    if (rows.length === 0) {
-      return [];
-    }
-
-    return rows.map((row) => {
-      const task = this._fixRowColumns(row.tasks);
-      return { ...task, listColor: row.lists?.color ?? null };
-    });
-  }
-
-  async findManyByParentId(parentId: string): Promise<Task[]> {
-    const rows = await getDatabase()
-      .select()
-      .from(tasks)
-      .where(and(eq(tasks.parentId, parentId), isNull(tasks.deletedAt)))
-      .orderBy(asc(tasks.order))
-      .execute();
-
-    return rows.map((row) => this._fixRowColumns(row));
-  }
-
-  async findOneById(id: string): Promise<Task | null> {
-    const row = await getDatabase().query.tasks.findFirst({
-      where: eq(tasks.id, id),
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return this._fixRowColumns(row);
-  }
-
-  async findOneByIdAndUserId(
-    taskId: string,
-    userId: string
-  ): Promise<(Task & { list: List | null }) | null> {
-    const rows = await getDatabase()
-      .select()
-      .from(tasks)
-      .leftJoin(lists, eq(lists.id, tasks.listId))
-      .where(eq(tasks.id, taskId))
-      .execute();
-    if (rows.length === 0) {
-      return null;
-    }
-
-    const row = rows[0];
-    if (row.lists?.teamId) {
-      const teamIds = await usersManager.getTeamIds(userId);
-      if (!teamIds.includes(row.lists.teamId)) {
-        return null;
-      }
-    } else if (row.tasks.userId !== userId) {
-      return null;
-    }
-
-    const task = this._fixRowColumns(row.tasks);
-
-    return {
-      ...task,
-      list: row.lists,
-    };
-  }
-
-  async findMaxOrderByListId(listId: string | null): Promise<number> {
-    const where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
-
-    const rows = await getDatabase()
-      .select()
-      .from(tasks)
-      .where(where)
-      .orderBy(desc(tasks.order))
-      .limit(1)
-      .execute();
-
-    if (rows.length === 0) {
-      return 0;
-    }
-
-    return rows[0].order ?? 0;
-  }
-
-  async insertOne(data: NewTask): Promise<Task> {
-    const rows = await getDatabase().insert(tasks).values(data).returning();
-
-    return this._fixRowColumns(rows[0]);
-  }
-
-  async updateOneById(taskId: string, data: Partial<NewTask>): Promise<Task> {
-    const rows = await getDatabase()
-      .update(tasks)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(tasks.id, taskId))
-      .returning();
-
-    return this._fixRowColumns(rows[0]);
-  }
-
-  async deleteOneById(taskId: string): Promise<Task> {
-    const rows = await getDatabase().delete(tasks).where(eq(tasks.id, taskId)).returning();
-
-    // We may want to optimize this at some point
-
-    const children = await this.findManyByParentId(taskId);
-    for (const child of children) {
-      await this.deleteOneById(child.id);
-    }
-
-    return this._fixRowColumns(rows[0]);
-  }
-
   // Permissions
   async userCanView(userId: string, taskId: string): Promise<boolean> {
     const task = await this.findOneById(taskId);
@@ -388,9 +122,14 @@ export class TasksManager {
   ) {
     const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
 
-    const list = await listsManager.findOneByIdAndUserId(listId, actorUserId);
-    if (!list) {
-      throw new Error('List not found');
+    let teamId: string | undefined = undefined;
+    if (listId) {
+      const list = await listsManager.findOneByIdAndUserId(listId, actorUserId);
+      if (!list) {
+        throw new Error('List not found');
+      }
+
+      teamId = list.teamId ?? undefined;
     }
 
     await this.reorderList(newListId, actorUserId, sortDirection, originalTaskId, newTaskId);
@@ -398,7 +137,7 @@ export class TasksManager {
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_REORDERED, {
       actorUserId: actorUserId,
       listId: listId ?? undefined,
-      teamId: list?.teamId ?? undefined,
+      teamId,
     });
   }
 
@@ -482,7 +221,9 @@ export class TasksManager {
 
     let list: List | null = null;
     if (typeof data.listId !== 'undefined' && task.listId !== data.listId) {
-      list = await listsManager.findOneByIdAndUserId(data.listId, actorUser.id);
+      list = data.listId
+        ? await listsManager.findOneByIdAndUserId(data.listId, actorUser.id)
+        : null;
 
       const { tasksMaxPerListCount, tasksCount } = await this._doMaxTasksPerListCheck(
         actorUser,
@@ -775,6 +516,263 @@ export class TasksManager {
   }
 
   // Helpers
+  async findManyByUserId(
+    userId: string,
+    listId?: string | null,
+    options?: TaskManagerListOptions
+  ): Promise<Task[]> {
+    const orderBy: Array<SQL<unknown>> = [asc(tasks.createdAt)];
+
+    let where: SQL<unknown> = sql`1 = 1`; // Need this, else typescript will complain down below
+    if (typeof listId !== 'undefined') {
+      where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+      // The null/unlisted list is an exception, so we always want to get the items as they are only from the user
+      if (!listId) {
+        where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;
+      } else {
+        const list = await listsManager.findOneByIdAndUserId(listId, userId);
+        if (!list) {
+          throw new Error('List for task not found');
+        }
+      }
+    }
+
+    if (options?.query) {
+      where = and(
+        where,
+        or(ilike(tasks.name, `%${options.query}%`), ilike(tasks.description, `%${options.query}%`))
+      ) as SQL<unknown>;
+    }
+
+    if (!options?.includeCompleted) {
+      where = and(where, isNull(tasks.completedAt)) as SQL<unknown>;
+    }
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(tasks.deletedAt)) as SQL<unknown>;
+    }
+
+    if (options?.sortField) {
+      const direction = options?.sortDirection ?? SortDirectionEnum.ASC;
+      const field = tasks[options.sortField] ?? tasks.order;
+
+      orderBy.unshift(direction === SortDirectionEnum.ASC ? asc(field) : desc(field));
+    }
+
+    if (options?.sortField === TasksListSortFieldEnum.ORDER) {
+      orderBy.unshift(asc(tasks.priority));
+    }
+
+    const childrenMap = {} as Record<string, Task[]>;
+
+    const rootWhere = and(where, isNull(tasks.parentId)) as SQL<unknown>;
+
+    const query = getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(rootWhere)
+      .orderBy(...orderBy);
+    if (options?.limit) {
+      query.limit(options.limit);
+    }
+
+    const rows = await query.execute();
+
+    if (!options?.excludeChildren) {
+      const childrenWhere = and(where, isNotNull(tasks.parentId)) as SQL<unknown>;
+      const children = await getDatabase().query.tasks.findMany({
+        where: childrenWhere,
+        orderBy,
+      });
+
+      for (const child of children) {
+        if (!child.parentId) {
+          continue;
+        }
+
+        if (!childrenMap[child.parentId]) {
+          childrenMap[child.parentId] = [];
+        }
+
+        childrenMap[child.parentId].push(this._fixRowColumns(child));
+      }
+    }
+
+    return rows.map((row) => {
+      const task = this._fixRowColumns(row.tasks);
+      const list = options?.includeList ? row.lists : undefined;
+
+      return {
+        ...task,
+        list,
+        children: childrenMap[task.id] ?? [],
+      };
+    });
+  }
+
+  async findManyByListIdsAndRange(
+    listIds: string[],
+    userId: string,
+    from?: Date,
+    to?: Date
+  ): Promise<TaskWithListColor[]> {
+    if (listIds.length === 0) {
+      return [];
+    }
+
+    const includesUnlisted = listIds.includes('');
+    const finalListIds = includesUnlisted ? listIds.filter((id) => id !== '') : listIds;
+
+    let where = and(isNull(tasks.deletedAt), isNotNull(tasks.dueDate));
+
+    if (finalListIds.length === 0 && !includesUnlisted) {
+      return [];
+    }
+
+    if (finalListIds.length === 0 && includesUnlisted) {
+      where = and(where, and(isNull(lists.id), eq(tasks.userId, userId))) as SQL<unknown>;
+    } else if (finalListIds.length > 0) {
+      where = and(
+        where,
+        includesUnlisted
+          ? or(inArray(lists.id, finalListIds), and(isNull(lists.id), eq(tasks.userId, userId)))
+          : inArray(lists.id, finalListIds)
+      ) as SQL<unknown>;
+    } else {
+      return [];
+    }
+
+    if (from && to) {
+      where = and(
+        where,
+        between(tasks.dueDate, from.toISOString(), to.toISOString())
+      ) as SQL<unknown>;
+    } else if (from) {
+      where = and(where, gte(tasks.dueDate, from.toISOString())) as SQL<unknown>;
+    } else if (to) {
+      where = and(where, lte(tasks.dueDate, to.toISOString())) as SQL<unknown>;
+    }
+
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(tasks.listId, lists.id))
+      .where(where)
+      .execute();
+
+    if (rows.length === 0) {
+      return [];
+    }
+
+    return rows.map((row) => {
+      const task = this._fixRowColumns(row.tasks);
+      return { ...task, listColor: row.lists?.color ?? null };
+    });
+  }
+
+  async findManyByParentId(parentId: string): Promise<Task[]> {
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .where(and(eq(tasks.parentId, parentId), isNull(tasks.deletedAt)))
+      .orderBy(asc(tasks.order))
+      .execute();
+
+    return rows.map((row) => this._fixRowColumns(row));
+  }
+
+  async findOneById(id: string): Promise<Task | null> {
+    const row = await getDatabase().query.tasks.findFirst({
+      where: eq(tasks.id, id),
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return this._fixRowColumns(row);
+  }
+
+  async findOneByIdAndUserId(
+    taskId: string,
+    userId: string
+  ): Promise<(Task & { list: List | null }) | null> {
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .leftJoin(lists, eq(lists.id, tasks.listId))
+      .where(eq(tasks.id, taskId))
+      .execute();
+    if (rows.length === 0) {
+      return null;
+    }
+
+    const row = rows[0];
+    if (row.lists?.teamId) {
+      const teamIds = await usersManager.getTeamIds(userId);
+      if (!teamIds.includes(row.lists.teamId)) {
+        return null;
+      }
+    } else if (row.tasks.userId !== userId) {
+      return null;
+    }
+
+    const task = this._fixRowColumns(row.tasks);
+
+    return {
+      ...task,
+      list: row.lists,
+    };
+  }
+
+  async findMaxOrderByListId(listId: string | null): Promise<number> {
+    const where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+
+    const rows = await getDatabase()
+      .select()
+      .from(tasks)
+      .where(where)
+      .orderBy(desc(tasks.order))
+      .limit(1)
+      .execute();
+
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    return rows[0].order ?? 0;
+  }
+
+  async insertOne(data: NewTask): Promise<Task> {
+    const rows = await getDatabase().insert(tasks).values(data).returning();
+
+    return this._fixRowColumns(rows[0]);
+  }
+
+  async updateOneById(taskId: string, data: Partial<NewTask>): Promise<Task> {
+    const rows = await getDatabase()
+      .update(tasks)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(tasks.id, taskId))
+      .returning();
+
+    return this._fixRowColumns(rows[0]);
+  }
+
+  async deleteOneById(taskId: string): Promise<Task> {
+    const rows = await getDatabase().delete(tasks).where(eq(tasks.id, taskId)).returning();
+
+    // We may want to optimize this at some point
+
+    const children = await this.findManyByParentId(taskId);
+    for (const child of children) {
+      await this.deleteOneById(child.id);
+    }
+
+    return this._fixRowColumns(rows[0]);
+  }
+
   async updateReorder(map: { [key: string]: number }) {
     return getDatabase().transaction(async (tx) => {
       for (const taskId in map) {

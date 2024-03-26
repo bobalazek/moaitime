@@ -185,7 +185,9 @@ export class UserDataExportProcessor {
   async _saveNotes(userId: string, tmpUserDataExportDir: string) {
     this._logger.debug(`Fetching notes for user (id: ${userId}) ...`);
 
-    const notes = await this._notesManager.findManyByUserId(userId);
+    const notes = await this._notesManager.findManyByUserId(userId, {
+      includeDeleted: true,
+    });
 
     this._logger.debug(`Found ${notes.length} notes for user (id: ${userId}).`);
 

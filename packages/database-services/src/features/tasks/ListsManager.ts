@@ -1,4 +1,4 @@
-import { and, asc, count, DBQueryConfig, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -13,116 +13,6 @@ export type ListsManagerTaskCountOptions = {
 };
 
 export class ListsManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<List[]> {
-    return getDatabase().query.lists.findMany(options);
-  }
-
-  async findManyByUserId(userId: string): Promise<List[]> {
-    let where = isNull(lists.deletedAt);
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (teamIds.length === 0) {
-      where = and(where, eq(lists.userId, userId)) as SQL<unknown>;
-    } else {
-      where = and(
-        where,
-        or(eq(lists.userId, userId), inArray(lists.teamId, teamIds))
-      ) as SQL<unknown>;
-    }
-
-    const result = await getDatabase().query.lists.findMany({
-      where,
-      orderBy: [desc(lists.teamId), desc(lists.order), asc(lists.createdAt)],
-    });
-
-    return result;
-  }
-
-  async findOneById(listId: string): Promise<List | null> {
-    const row = await getDatabase().query.lists.findFirst({
-      where: eq(lists.id, listId),
-    });
-
-    return row ?? null;
-  }
-
-  async findOneByIdAndUserId(listId: string | null, userId: string): Promise<List | null> {
-    let where = and(listId ? eq(lists.id, listId) : isNull(lists.id), isNull(lists.deletedAt));
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (teamIds.length === 0) {
-      where = and(where, eq(lists.userId, userId)) as SQL<unknown>;
-    } else {
-      where = and(
-        where,
-        or(eq(lists.userId, userId), inArray(lists.teamId, teamIds))
-      ) as SQL<unknown>;
-    }
-
-    const row = await getDatabase().query.lists.findFirst({
-      where,
-    });
-
-    return row ?? null;
-  }
-
-  async insertOne(data: NewList): Promise<List> {
-    const rows = await getDatabase().insert(lists).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(listId: string, data: Partial<NewList>): Promise<List> {
-    const rows = await getDatabase()
-      .update(lists)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(lists.id, listId))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(listId: string): Promise<List> {
-    const rows = await getDatabase().delete(lists).where(eq(lists.id, listId)).returning();
-
-    return rows[0];
-  }
-
-  // Permissions
-  async userCanView(userId: string, listId: string): Promise<boolean> {
-    if (listId === '') {
-      // This is the unlisted list - everybody can view it
-      return true;
-    }
-
-    const row = await getDatabase().query.lists.findFirst({
-      where: eq(lists.id, listId),
-    });
-
-    if (!row) {
-      return false;
-    }
-
-    if (row.userId === userId) {
-      return true;
-    }
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (row.teamId && teamIds.includes(row.teamId)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  async userCanUpdate(userId: string, listId: string): Promise<boolean> {
-    return this.userCanView(userId, listId);
-  }
-
-  async userCanDelete(userId: string, listId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, listId);
-  }
-
   // API Helpers
   async list(actorUserId: string) {
     return this.findManyByUserId(actorUserId);
@@ -226,7 +116,113 @@ export class ListsManager {
     return list;
   }
 
+  // Permissions
+  async userCanView(userId: string, listId: string): Promise<boolean> {
+    if (listId === '') {
+      // This is the unlisted list - everybody can view it
+      return true;
+    }
+
+    const row = await getDatabase().query.lists.findFirst({
+      where: eq(lists.id, listId),
+    });
+
+    if (!row) {
+      return false;
+    }
+
+    if (row.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (row.teamId && teamIds.includes(row.teamId)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async userCanUpdate(userId: string, listId: string): Promise<boolean> {
+    return this.userCanView(userId, listId);
+  }
+
+  async userCanDelete(userId: string, listId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, listId);
+  }
+
   // Helpers
+  async findManyByUserId(userId: string): Promise<List[]> {
+    let where = isNull(lists.deletedAt);
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(lists.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(lists.userId, userId), inArray(lists.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
+    const result = await getDatabase().query.lists.findMany({
+      where,
+      orderBy: [desc(lists.teamId), desc(lists.order), asc(lists.createdAt)],
+    });
+
+    return result;
+  }
+
+  async findOneById(listId: string): Promise<List | null> {
+    const row = await getDatabase().query.lists.findFirst({
+      where: eq(lists.id, listId),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByIdAndUserId(listId: string, userId: string): Promise<List | null> {
+    let where = and(eq(lists.id, listId), isNull(lists.deletedAt));
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = and(where, eq(lists.userId, userId)) as SQL<unknown>;
+    } else {
+      where = and(
+        where,
+        or(eq(lists.userId, userId), inArray(lists.teamId, teamIds))
+      ) as SQL<unknown>;
+    }
+
+    const row = await getDatabase().query.lists.findFirst({
+      where,
+    });
+
+    return row ?? null;
+  }
+
+  async insertOne(data: NewList): Promise<List> {
+    const rows = await getDatabase().insert(lists).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(listId: string, data: Partial<NewList>): Promise<List> {
+    const rows = await getDatabase()
+      .update(lists)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(lists.id, listId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(listId: string): Promise<List> {
+    const rows = await getDatabase().delete(lists).where(eq(lists.id, listId)).returning();
+
+    return rows[0];
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({
@@ -327,7 +323,7 @@ export class ListsManager {
     const idsSet = new Set<string>();
 
     // User Lists
-    const userLists = await this.findMany({
+    const userLists = await getDatabase().query.lists.findMany({
       columns: {
         id: true,
       },
@@ -343,7 +339,7 @@ export class ListsManager {
     // Team Lists
     const teamIds = await usersManager.getTeamIds(userId);
     if (teamIds.length > 0) {
-      const teamLists = await this.findMany({
+      const teamLists = await getDatabase().query.lists.findMany({
         columns: {
           id: true,
         },

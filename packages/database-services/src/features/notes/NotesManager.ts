@@ -1,16 +1,4 @@
-import {
-  and,
-  asc,
-  count,
-  DBQueryConfig,
-  desc,
-  eq,
-  ilike,
-  inArray,
-  isNull,
-  or,
-  SQL,
-} from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, isNull, or, SQL } from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -31,7 +19,7 @@ import {
 
 import { usersManager } from '../auth/UsersManager';
 
-export type NotesManagerFindManyByUserIdWithOptions = {
+export type NotesManagerFindManyOptions = {
   search?: string;
   sortField?: NotesListSortFieldEnum;
   sortDirection?: SortDirectionEnum;
@@ -39,127 +27,9 @@ export type NotesManagerFindManyByUserIdWithOptions = {
 };
 
 export class NotesManager {
-  async findMany(options?: DBQueryConfig<'many', true>): Promise<Note[]> {
-    return getDatabase().query.notes.findMany(options);
-  }
-
-  async findManyByUserId(userId: string): Promise<Note[]> {
-    let where: SQL<unknown>;
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (teamIds.length === 0) {
-      where = eq(notes.userId, userId);
-    } else {
-      where = or(eq(notes.userId, userId), inArray(notes.teamId, teamIds)) as SQL<unknown>;
-    }
-
-    return getDatabase().query.notes.findMany({
-      where,
-      orderBy: desc(notes.createdAt),
-    });
-  }
-
-  async findManyByUserIdWithOptions(
-    userId: string,
-    options?: NotesManagerFindManyByUserIdWithOptions
-  ): Promise<NoteWithoutContent[]> {
-    let where: SQL<unknown>;
-    let orderBy = desc(notes.createdAt);
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (teamIds.length === 0) {
-      where = eq(notes.userId, userId) as SQL<unknown>;
-    } else {
-      where = or(eq(notes.userId, userId), inArray(notes.teamId, teamIds)) as SQL<unknown>;
-    }
-
-    if (options?.search) {
-      where = and(where, ilike(notes.title, `%${options.search}%`)) as SQL<unknown>;
-    }
-
-    if (options?.sortField) {
-      const direction = options?.sortDirection ?? SortDirectionEnum.ASC;
-      const field = notes[options.sortField] ?? notes.title;
-
-      orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
-    }
-
-    if (!options?.includeDeleted) {
-      where = and(where, isNull(notes.deletedAt)) as SQL<unknown>;
-    }
-
-    return getDatabase().query.notes.findMany({
-      where,
-      orderBy,
-      columns: {
-        content: false,
-      },
-    });
-  }
-
-  async findOneById(noteId: string): Promise<Note | null> {
-    const row = await getDatabase().query.notes.findFirst({
-      where: eq(notes.id, noteId),
-    });
-
-    return row ?? null;
-  }
-
-  async insertOne(data: NewNote): Promise<Note> {
-    const rows = await getDatabase().insert(notes).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(noteId: string, data: Partial<NewNote>): Promise<Note> {
-    const rows = await getDatabase()
-      .update(notes)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(notes.id, noteId))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(noteId: string): Promise<Note> {
-    const rows = await getDatabase().delete(notes).where(eq(notes.id, noteId)).returning();
-
-    return rows[0];
-  }
-
-  // Permissions
-  async userCanView(userId: string, noteId: string): Promise<boolean> {
-    const row = await getDatabase().query.notes.findFirst({
-      where: eq(notes.id, noteId),
-    });
-
-    if (!row) {
-      return false;
-    }
-
-    if (row.userId === userId) {
-      return true;
-    }
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (row.teamId && teamIds.includes(row.teamId)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  async userCanUpdate(userId: string, noteId: string): Promise<boolean> {
-    return this.userCanView(userId, noteId);
-  }
-
-  async userCanDelete(userId: string, noteId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, noteId);
-  }
-
   // API Helpers
-  async list(actorUserId: string, options?: NotesManagerFindManyByUserIdWithOptions) {
-    return this.findManyByUserIdWithOptions(actorUserId, options);
+  async list(actorUserId: string, options?: NotesManagerFindManyOptions) {
+    return this.findManyByUserId(actorUserId, options);
   }
 
   async view(actorUserId: string, noteId: string) {
@@ -271,7 +141,105 @@ export class NotesManager {
     return undeletedNote;
   }
 
+  // Permissions
+  async userCanView(userId: string, noteId: string): Promise<boolean> {
+    const row = await getDatabase().query.notes.findFirst({
+      where: eq(notes.id, noteId),
+    });
+
+    if (!row) {
+      return false;
+    }
+
+    if (row.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (row.teamId && teamIds.includes(row.teamId)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async userCanUpdate(userId: string, noteId: string): Promise<boolean> {
+    return this.userCanView(userId, noteId);
+  }
+
+  async userCanDelete(userId: string, noteId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, noteId);
+  }
+
   // Helpers
+  async findManyByUserId(
+    userId: string,
+    options?: NotesManagerFindManyOptions
+  ): Promise<NoteWithoutContent[]> {
+    let where: SQL<unknown>;
+    let orderBy = desc(notes.createdAt);
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = eq(notes.userId, userId) as SQL<unknown>;
+    } else {
+      where = or(eq(notes.userId, userId), inArray(notes.teamId, teamIds)) as SQL<unknown>;
+    }
+
+    if (options?.search) {
+      where = and(where, ilike(notes.title, `%${options.search}%`)) as SQL<unknown>;
+    }
+
+    if (options?.sortField) {
+      const direction = options?.sortDirection ?? SortDirectionEnum.ASC;
+      const field = notes[options.sortField] ?? notes.title;
+
+      orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
+    }
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(notes.deletedAt)) as SQL<unknown>;
+    }
+
+    return getDatabase().query.notes.findMany({
+      where,
+      orderBy,
+      columns: {
+        content: false,
+      },
+    });
+  }
+
+  async findOneById(noteId: string): Promise<Note | null> {
+    const row = await getDatabase().query.notes.findFirst({
+      where: eq(notes.id, noteId),
+    });
+
+    return row ?? null;
+  }
+
+  async insertOne(data: NewNote): Promise<Note> {
+    const rows = await getDatabase().insert(notes).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(noteId: string, data: Partial<NewNote>): Promise<Note> {
+    const rows = await getDatabase()
+      .update(notes)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(notes.id, noteId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(noteId: string): Promise<Note> {
+    const rows = await getDatabase().delete(notes).where(eq(notes.id, noteId)).returning();
+
+    return rows[0];
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

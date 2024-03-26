@@ -23,7 +23,7 @@ export default function FocusSettingsSection() {
         focusSessionSettings: focusSessionSettingsData,
       });
     } catch (error) {
-      // Already handled in fetchJson
+      // Already handled by the fetch function
     }
   }, 500);
 

@@ -33,7 +33,7 @@ export default function TeamMembersSection() {
 
       await removeJoinedTeamMember(userId);
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 

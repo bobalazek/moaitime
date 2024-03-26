@@ -11,7 +11,7 @@ import {
 import { useListsStore } from '../../state/listsStore';
 
 const ListsHeaderActions = () => {
-  const { setSelectedListDialogOpen } = useListsStore();
+  const { setSelectedListDialogOpen, setDeletedListsDialogOpen } = useListsStore();
   const [open, setOpen] = useState(false);
 
   return (
@@ -50,9 +50,7 @@ const ListsHeaderActions = () => {
             event.preventDefault();
             event.stopPropagation();
 
-            // TODO
-
-            setOpen(false);
+            setDeletedListsDialogOpen(true);
           }}
           data-test="tasks--lists-list--header--dropdown-menu--view-deleted-button"
         >

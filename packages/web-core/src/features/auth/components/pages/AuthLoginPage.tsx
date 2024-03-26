@@ -29,7 +29,7 @@ export default function AuthLoginPage() {
       try {
         await oauthLogin(OauthProviderEnum.GOOGLE, token);
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     },
     onError: (error) => {
@@ -53,7 +53,7 @@ export default function AuthLoginPage() {
     try {
       await login(email, password);
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

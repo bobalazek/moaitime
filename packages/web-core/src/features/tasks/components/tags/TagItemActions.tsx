@@ -36,7 +36,7 @@ const TagItemActions = memo(({ tag }: { tag: Tag }) => {
         },
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -54,7 +54,7 @@ const TagItemActions = memo(({ tag }: { tag: Tag }) => {
         },
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -68,7 +68,7 @@ const TagItemActions = memo(({ tag }: { tag: Tag }) => {
         description: 'The tag was successfully hard deleted!',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

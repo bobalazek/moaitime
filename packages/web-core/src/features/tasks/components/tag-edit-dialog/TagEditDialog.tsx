@@ -58,10 +58,7 @@ export default function TagEditDialog() {
       setSelectedTagDialogOpen(false);
       setData(undefined);
     } catch (error) {
-      sonnerToast.error('Oops!', {
-        description:
-          error instanceof Error ? error.message : 'Something went wrong while saving the tag.',
-      });
+      // Already handled by the fetch function
     }
   };
 

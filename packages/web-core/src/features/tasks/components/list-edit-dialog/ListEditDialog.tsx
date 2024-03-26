@@ -68,10 +68,7 @@ export default function ListEditDialog() {
       setSelectedListDialogOpen(false);
       setData(undefined);
     } catch (error) {
-      sonnerToast.error('Oops!', {
-        description:
-          error instanceof Error ? error.message : 'Something went wrong while saving the list.',
-      });
+      // Already handled by the fetch function
     }
   };
 

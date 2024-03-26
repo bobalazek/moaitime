@@ -57,7 +57,7 @@ export default function TaskUsersNudgeDialog() {
 
       setUsersNudgeDialogOpen(false);
     } catch (error) {
-      // Already handled in the store
+      // Already handled by the fetch function
     }
   };
 

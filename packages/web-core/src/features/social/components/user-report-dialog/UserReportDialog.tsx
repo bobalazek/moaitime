@@ -43,12 +43,7 @@ export default function UserReportDialog() {
         content: '',
       });
     } catch (error) {
-      sonnerToast.error('Oops!', {
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Something went wrong while submitting the report.',
-      });
+      // Already handled by the fetch function
     }
   };
 

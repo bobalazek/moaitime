@@ -33,6 +33,14 @@ export const getLists = async (options?: {
   return response.data ?? [];
 };
 
+export const getDeletedLists = async () => {
+  const response = await fetchJson<ResponseInterface<List[]>>(`${API_URL}/api/v1/lists/deleted`, {
+    method: 'GET',
+  });
+
+  return response.data ?? [];
+};
+
 export const getList = async (listId: string): Promise<List> => {
   const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists/${listId}`, {
     method: 'GET',
@@ -67,10 +75,30 @@ export const editList = async (listId: string, list: UpdateList): Promise<List> 
   return response.data as List;
 };
 
-export const deleteList = async (listId: string): Promise<List | null> => {
+export const deleteList = async (listId: string, isHardDelete?: boolean): Promise<List | null> => {
   const response = await fetchJson<ResponseInterface<List>>(`${API_URL}/api/v1/lists/${listId}`, {
     method: 'DELETE',
+    body: isHardDelete ? JSON.stringify({ isHardDelete }) : undefined,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
+
+  return response.data as List;
+};
+
+export const undeleteList = async (listId: string): Promise<List> => {
+  const response = await fetchJson<ResponseInterface<List>>(
+    `${API_URL}/api/v1/lists/${listId}/undelete`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
   return response.data as List;
 };

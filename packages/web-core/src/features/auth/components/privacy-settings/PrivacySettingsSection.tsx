@@ -21,7 +21,7 @@ export default function PrivacySettingsSection() {
         description: 'Your privacy settings have been updated successfully!',
       });
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 

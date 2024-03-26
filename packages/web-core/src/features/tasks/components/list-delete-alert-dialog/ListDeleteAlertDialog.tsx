@@ -38,7 +38,8 @@ export default function ListDeleteAlertDialog() {
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the "
-            <b>{selectedListDeleteAlertDialog.name}</b>" list.
+            <b>{selectedListDeleteAlertDialog.name}</b>" list,{' '}
+            <b>including all of the related tasks</b>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

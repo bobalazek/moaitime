@@ -27,7 +27,7 @@ export default function CreateFocusSessionForm() {
     try {
       await addFocusSession(data);
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   }, [addFocusSession, data]);
 

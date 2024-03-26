@@ -68,7 +68,7 @@ const TaskItemActions = memo(
       try {
         await deleteTask(task.id);
 
-        sonnerToast.success(`Task "${task.name}" Deleted`, {
+        sonnerToast.success(`Task "${task.name}" deleted`, {
           description: 'The task was successfully deleted!',
           action: {
             label: 'Undo',
@@ -77,7 +77,7 @@ const TaskItemActions = memo(
           position: 'top-right',
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 
@@ -89,7 +89,7 @@ const TaskItemActions = memo(
           description: 'The task was successfully hard deleted!',
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 
@@ -104,7 +104,7 @@ const TaskItemActions = memo(
           position: 'top-right',
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 

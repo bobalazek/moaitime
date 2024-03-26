@@ -67,7 +67,7 @@ export default function MoodEntryEditDialog() {
       setSelectedMoodEntryDialogOpen(false);
       setData(undefined);
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 

@@ -33,7 +33,7 @@ export default function TeamInvitationsSection() {
         description: 'The team invitation has been removed',
       });
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 

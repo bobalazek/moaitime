@@ -22,7 +22,7 @@ export const AvatarSection = () => {
     try {
       await deleteAccountAvatar();
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     } finally {
       avatarImageInputRef.current!.value = '';
     }
@@ -37,7 +37,7 @@ export const AvatarSection = () => {
     try {
       await uploadAccountAvatar(file);
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     } finally {
       avatarImageInputRef.current!.value = '';
     }

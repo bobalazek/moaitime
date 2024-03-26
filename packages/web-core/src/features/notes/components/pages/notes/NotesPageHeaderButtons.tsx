@@ -40,7 +40,7 @@ const NotesPageHeaderButtons = () => {
 
       setSelectedNote(null);
 
-      sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" Deleted`, {
+      sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" deleted`, {
         description: 'You have successfully deleted the note!',
         action: {
           label: 'Undo',
@@ -48,7 +48,7 @@ const NotesPageHeaderButtons = () => {
         },
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -64,7 +64,7 @@ const NotesPageHeaderButtons = () => {
         description: 'The note was successfully hard deleted!',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -81,7 +81,7 @@ const NotesPageHeaderButtons = () => {
         position: 'top-right',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -98,7 +98,7 @@ const NotesPageHeaderButtons = () => {
         position: 'top-right',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -115,7 +115,7 @@ const NotesPageHeaderButtons = () => {
         position: 'top-right',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -140,7 +140,7 @@ const NotesPageHeaderButtons = () => {
         description: 'You have successfully saved the note!',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   }, [saveSelectedNoteData]);
 

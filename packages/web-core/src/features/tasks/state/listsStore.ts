@@ -17,11 +17,13 @@ import {
   addVisibleList,
   deleteList,
   editList,
+  getDeletedLists,
   getList,
   getLists,
   getTasksCountMap,
   getTasksForList,
   removeVisibleList,
+  undeleteList,
 } from '../utils/ListHelpers';
 
 export type ListsStore = {
@@ -31,7 +33,8 @@ export type ListsStore = {
   getList: (listId: string) => Promise<List | null>;
   addList: (data: CreateList) => Promise<List>;
   editList: (listId: string, data: UpdateList) => Promise<List>;
-  deleteList: (listId: string) => Promise<List | null>;
+  deleteList: (listId: string, isHardDelete?: boolean) => Promise<List | null>;
+  undeleteList: (listId: string) => Promise<List | null>;
   addVisibleList: (listId: string) => Promise<void>;
   removeVisibleList: (listId: string) => Promise<void>;
   // Tasks Count Map
@@ -40,6 +43,11 @@ export type ListsStore = {
   // Selected
   selectedList: List | null;
   setSelectedList: (selectedList: List | null) => Promise<List | null>;
+  // Deleted
+  deletedListsDialogOpen: boolean;
+  setDeletedListsDialogOpen: (deletedListsDialogOpen: boolean) => void;
+  deletedLists: List[];
+  reloadDeletedLists: () => Promise<List[]>;
   // Selected List Dialog
   selectedListDialogOpen: boolean;
   selectedListDialog: List | null;
@@ -119,11 +127,17 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
 
     return editedList;
   },
-  deleteList: async (listId: string) => {
-    const { reloadLists, reloadSelectedListTasks, selectedList } = get();
+  deleteList: async (listId: string, isHardDelete?: boolean) => {
+    const {
+      reloadLists,
+      reloadSelectedListTasks,
+      reloadDeletedLists,
+      deletedListsDialogOpen,
+      selectedList,
+    } = get();
     const { reloadUserUsage } = useUserLimitsAndUsageStore.getState();
 
-    const deletedList = await deleteList(listId);
+    const deletedList = await deleteList(listId, isHardDelete);
 
     await reloadLists();
     await reloadSelectedListTasks();
@@ -136,7 +150,26 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
       });
     }
 
+    if (deletedListsDialogOpen) {
+      await reloadDeletedLists();
+    }
+
     return deletedList;
+  },
+  undeleteList: async (listId: string) => {
+    const { reloadLists, reloadSelectedListTasks, reloadDeletedLists, deletedListsDialogOpen } =
+      get();
+
+    const undeletedList = await undeleteList(listId);
+
+    await reloadLists();
+    await reloadSelectedListTasks();
+
+    if (deletedListsDialogOpen) {
+      await reloadDeletedLists();
+    }
+
+    return undeletedList;
   },
   addVisibleList: async (listId: string) => {
     const { reloadCalendarEntriesDebounced } = useCalendarStore.getState();
@@ -186,6 +219,29 @@ export const useListsStore = create<ListsStore>()((set, get) => ({
     await reloadSelectedListTasks();
 
     return selectedList;
+  },
+  // Deleted
+  deletedListsDialogOpen: false,
+  setDeletedListsDialogOpen: (deletedListsDialogOpen: boolean) => {
+    const { reloadDeletedLists } = get();
+
+    if (deletedListsDialogOpen) {
+      reloadDeletedLists();
+    }
+
+    set({
+      deletedListsDialogOpen,
+    });
+  },
+  deletedLists: [],
+  reloadDeletedLists: async () => {
+    const deletedLists = await getDeletedLists();
+
+    set({
+      deletedLists,
+    });
+
+    return deletedLists;
   },
   // Selected List Dialog
   selectedListDialogOpen: false,

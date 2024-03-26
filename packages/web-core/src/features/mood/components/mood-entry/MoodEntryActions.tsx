@@ -38,7 +38,7 @@ export const MoodEntryActions = ({ moodEntry }: { moodEntry: MoodEntry }) => {
         },
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -52,7 +52,7 @@ export const MoodEntryActions = ({ moodEntry }: { moodEntry: MoodEntry }) => {
         description: 'The mood entry was successfully undeleted!',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -66,7 +66,7 @@ export const MoodEntryActions = ({ moodEntry }: { moodEntry: MoodEntry }) => {
         description: 'The mood entry was successfully hard deleted!',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

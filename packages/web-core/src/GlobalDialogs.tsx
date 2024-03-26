@@ -9,6 +9,7 @@ import DeletedHabitsDialog from './features/habits/components/deleted-habits-dia
 import HabitEditDialog from './features/habits/components/habit-edit-dialog/HabitEditDialog';
 import MoodEntryEditDialog from './features/mood/components/mood-entry-edit-dialog/MoodEntryEditDialog';
 import SettingsDialog from './features/settings/components/SettingsDialog';
+import DeletedListsDialog from './features/tasks/components/deleted-lists-dialog/DeletedListsDialog';
 import ListDeleteAlertDialog from './features/tasks/components/list-delete-alert-dialog/ListDeleteAlertDialog';
 import ListEditDialog from './features/tasks/components/list-edit-dialog/ListEditDialog';
 import TagEditDialog from './features/tasks/components/tag-edit-dialog/TagEditDialog';
@@ -25,6 +26,7 @@ export function GlobalDialogs() {
       <TaskUsersNudgeDialog />
       <ListEditDialog />
       <ListDeleteAlertDialog />
+      <DeletedListsDialog />
       <TagsDialog />
       <TagEditDialog />
       <HabitEditDialog />

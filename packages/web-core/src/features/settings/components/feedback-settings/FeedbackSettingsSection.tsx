@@ -27,7 +27,7 @@ export default function FeedbackSettingsSection() {
 
       setMessage('');
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 

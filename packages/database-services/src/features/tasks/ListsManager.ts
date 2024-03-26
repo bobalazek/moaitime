@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, inArray, isNull, or, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNotNull, isNull, or, SQL } from 'drizzle-orm';
 
 import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -18,6 +18,12 @@ export class ListsManager {
     return this.findManyByUserId(actorUserId);
   }
 
+  async listDeleted(actorUserId: string) {
+    const lists = await this.findManyDeletedByUserId(actorUserId);
+
+    return lists;
+  }
+
   async view(actorUserId: string, listId: string) {
     const canView = await this.userCanView(actorUserId, listId);
     if (!canView) {
@@ -33,7 +39,7 @@ export class ListsManager {
   }
 
   async create(actorUser: User, data: CreateList) {
-    await this._checkIfReachedLimit(data, actorUser);
+    await this._checkIfLimitReached(actorUser, data.teamId);
 
     const list = await this.insertOne({ ...data, userId: actorUser.id });
 
@@ -63,18 +69,42 @@ export class ListsManager {
     return list;
   }
 
-  async delete(actorUserId: string, listId: string) {
+  async delete(actorUserId: string, listId: string, isHardDelete?: boolean) {
     const canDelete = await this.userCanDelete(actorUserId, listId);
     if (!canDelete) {
       throw new Error('You cannot delete this list');
     }
 
-    const list = await this.updateOneById(listId, {
-      deletedAt: new Date(),
-    });
+    const list = isHardDelete
+      ? await this.deleteOneById(listId)
+      : await this.updateOneById(listId, {
+          deletedAt: new Date(),
+        });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_DELETED, {
       actorUserId,
+      listId: list.id,
+      teamId: list.teamId ?? undefined,
+      isHardDelete,
+    });
+
+    return list;
+  }
+
+  async undelete(actorUser: User, listId: string) {
+    const canDelete = await this.userCanUpdate(actorUser.id, listId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this list');
+    }
+
+    await this._checkIfLimitReached(actorUser);
+
+    const list = await this.updateOneById(listId, {
+      deletedAt: null,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_UNDELETED, {
+      actorUserId: actorUser.id,
       listId: list.id,
       teamId: list.teamId ?? undefined,
     });
@@ -171,6 +201,13 @@ export class ListsManager {
     });
 
     return result;
+  }
+
+  async findManyDeletedByUserId(userId: string): Promise<List[]> {
+    return getDatabase().query.lists.findMany({
+      where: and(eq(lists.userId, userId), isNotNull(lists.deletedAt)),
+      orderBy: desc(lists.createdAt),
+    });
   }
 
   async findOneById(listId: string): Promise<List | null> {
@@ -425,17 +462,17 @@ export class ListsManager {
   }
 
   // Private
-  private async _checkIfReachedLimit(data: CreateList, user: User) {
+  private async _checkIfLimitReached(actorUser: User, teamId?: string | null) {
     let maxCount = 0;
     let currentCount = 0;
 
-    if (data.teamId) {
-      const teamIds = await usersManager.getTeamIds(user.id);
-      if (!teamIds.includes(data.teamId)) {
+    if (teamId) {
+      const teamIds = await usersManager.getTeamIds(actorUser.id);
+      if (!teamIds.includes(teamId)) {
         throw new Error('You cannot create a list for this team');
       }
 
-      const team = await teamsManager.findOneById(data.teamId);
+      const team = await teamsManager.findOneById(teamId);
       if (!team) {
         throw new Error('Team not found');
       }
@@ -443,8 +480,8 @@ export class ListsManager {
       maxCount = await teamsManager.getTeamLimit(team, 'listsMaxPerTeamCount');
       currentCount = await this.countByTeamId(team.id);
     } else {
-      maxCount = await usersManager.getUserLimit(user, 'listsMaxPerUserCount');
-      currentCount = await this.countByUserId(user.id);
+      maxCount = await usersManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
+      currentCount = await this.countByUserId(actorUser.id);
     }
 
     if (currentCount >= maxCount) {

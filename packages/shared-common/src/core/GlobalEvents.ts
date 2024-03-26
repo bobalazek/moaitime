@@ -50,6 +50,7 @@ export enum GlobalEventsEnum {
   TASKS_LIST_ADDED = 'tasks:list:added',
   TASKS_LIST_EDITED = 'tasks:list:edited',
   TASKS_LIST_DELETED = 'tasks:list:deleted',
+  TASKS_LIST_UNDELETED = 'tasks:list:undeleted',
   TASKS_LIST_ADD_VISIBLE = 'tasks:list:add-visible',
   TASKS_LIST_REMOVE_VISIBLE = 'tasks:list:remove-visible',
   // Tags
@@ -354,6 +355,14 @@ export type GlobalEvents = {
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.TASKS_LIST_DELETED]: {
+    actorUserId: string;
+    listId: string;
+    teamId?: string;
+    isHardDelete?: boolean;
+    list?: List;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.TASKS_LIST_UNDELETED]: {
     actorUserId: string;
     listId: string;
     teamId?: string;

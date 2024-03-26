@@ -42,7 +42,7 @@ export default function MyTeamInvitationsSection() {
         description: 'The team invitation has been accepted',
       });
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 
@@ -54,7 +54,7 @@ export default function MyTeamInvitationsSection() {
         description: 'The team invitation has been rejected',
       });
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 

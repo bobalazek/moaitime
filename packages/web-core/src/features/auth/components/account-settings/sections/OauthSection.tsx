@@ -16,7 +16,7 @@ export const OauthSection = () => {
           description: 'Your Google account has been successfully linked to your account.',
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     },
     onError: (error) => {
@@ -38,7 +38,7 @@ export const OauthSection = () => {
         description: 'Your Google account has been successfully unlinked from your account.',
       });
     } catch (error) {
-      // already handled
+      // Already handled by the fetch function
     }
   };
 

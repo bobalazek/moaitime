@@ -13,7 +13,7 @@ import {
 
 import UsageBadge from '../../../core/components/UsageBadge';
 import { useListsStore } from '../../state/listsStore';
-import ListActions from './ListActions';
+import ListItemActions from '../list-item/ListItemActions';
 import ListsHeaderActions from './ListsHeaderActions';
 
 export default function ListsSelectedListDropdownMenuContent({
@@ -118,7 +118,7 @@ export default function ListsSelectedListDropdownMenuContent({
             </span>
             {showListActions && (
               <div className="absolute right-1 top-1 ml-2">
-                <ListActions list={list} />
+                <ListItemActions list={list} />
               </div>
             )}
           </DropdownMenuRadioItem>

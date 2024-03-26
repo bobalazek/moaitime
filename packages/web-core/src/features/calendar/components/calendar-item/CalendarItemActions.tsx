@@ -48,7 +48,7 @@ const CalendarItemActions = memo(
           },
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 
@@ -62,18 +62,14 @@ const CalendarItemActions = memo(
           description: 'The calendar was successfully undeleted!',
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 
     const onHardDeleteButtonClick = async () => {
-      try {
-        setCalendarDeleteAlertDialogOpen(true, calendar);
+      setCalendarDeleteAlertDialogOpen(true, calendar);
 
-        setOpen(false);
-      } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
-      }
+      setOpen(false);
     };
 
     const onAddToSharedButtonClick = async () => {
@@ -86,7 +82,7 @@ const CalendarItemActions = memo(
           description: 'The calendar was successfully added to your shared calendars!',
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 
@@ -112,7 +108,7 @@ const CalendarItemActions = memo(
           },
         });
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 
@@ -130,7 +126,7 @@ const CalendarItemActions = memo(
 
         setOpen(false);
       } catch (error) {
-        // We are already handling the error by showing a toast message inside in the fetch function
+        // Already handled by the fetch function
       }
     };
 

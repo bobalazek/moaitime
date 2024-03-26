@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { List } from '@moaitime/database-core';
 import { listsManager } from '@moaitime/database-services';
 
+import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { CreateListDto } from '../dtos/create-list.dto';
@@ -15,6 +16,17 @@ export class ListsController {
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<List[]>> {
     const data = await listsManager.list(req.user.id);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('deleted')
+  async listDeleted(@Req() req: Request): Promise<AbstractResponseDto<List[]>> {
+    const data = await listsManager.listDeleted(req.user.id);
 
     return {
       success: true,
@@ -91,9 +103,24 @@ export class ListsController {
   @Delete(':listId')
   async delete(
     @Req() req: Request,
+    @Param('listId') listId: string,
+    @Body() body: DeleteDto
+  ): Promise<AbstractResponseDto<List>> {
+    const data = await listsManager.delete(req.user.id, listId, body.isHardDelete);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':listId/undelete')
+  async undelete(
+    @Req() req: Request,
     @Param('listId') listId: string
   ): Promise<AbstractResponseDto<List>> {
-    const data = await listsManager.delete(req.user.id, listId);
+    const data = await listsManager.undelete(req.user, listId);
 
     return {
       success: true,

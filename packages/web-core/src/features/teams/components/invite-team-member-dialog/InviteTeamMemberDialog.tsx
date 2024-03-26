@@ -45,7 +45,7 @@ export default function InviteTeamMemberDialog() {
       setInviteTeamMemberDialogOpen(false);
       setEmail('');
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

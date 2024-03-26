@@ -13,7 +13,7 @@ export const RequestDataExportButton = () => {
         description: response.message ?? `You have successfully requested a data export`,
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

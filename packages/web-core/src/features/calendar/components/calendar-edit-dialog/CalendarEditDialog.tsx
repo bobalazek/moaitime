@@ -73,7 +73,7 @@ export default function CalendarEditDialog() {
 
       setSelectedCalendarDialogOpen(false, null);
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -102,7 +102,7 @@ export default function CalendarEditDialog() {
       setSelectedCalendarDialogOpen(false, null);
       setData(undefined);
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

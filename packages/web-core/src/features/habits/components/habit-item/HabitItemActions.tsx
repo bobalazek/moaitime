@@ -29,7 +29,7 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
     try {
       await deleteHabit(habit.id);
 
-      sonnerToast.success(`Habit "${habit.name}" Deleted`, {
+      sonnerToast.success(`Habit "${habit.name}" deleted`, {
         description: 'The habit was successfully deleted!',
         action: {
           label: 'Undo',
@@ -38,7 +38,7 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
         position: 'top-right',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -50,7 +50,7 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
         description: 'The habit was successfully hard deleted!',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -65,7 +65,7 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
         position: 'top-right',
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

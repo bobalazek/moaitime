@@ -46,7 +46,7 @@ export default function InvitationsSettingsSectionContent() {
         description: 'The invitation has been removed',
       });
     } catch (error) {
-      // Already handled
+      // Already handled by the fetch function
     }
   };
 

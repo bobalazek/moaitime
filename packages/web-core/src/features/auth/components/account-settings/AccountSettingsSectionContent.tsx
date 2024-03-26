@@ -45,7 +45,7 @@ export default function AccountSettingsSectionContent() {
         description: `A verification email has been sent to "${auth.user.email}". Please check your inbox and follow the instructions to verify it.`,
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -57,7 +57,7 @@ export default function AccountSettingsSectionContent() {
         description: `A verification email has been sent to "${auth.user.newEmail}". Please check your inbox and follow the instructions to verify it.`,
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -69,7 +69,7 @@ export default function AccountSettingsSectionContent() {
         description: `Your email address has been reverted to "${auth.user.email}".`,
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 
@@ -86,7 +86,7 @@ export default function AccountSettingsSectionContent() {
         description: `You have successfully saved your account.`,
       });
     } catch (error) {
-      // We are already handling the error by showing a toast message inside in the fetch function
+      // Already handled by the fetch function
     }
   };
 

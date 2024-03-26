@@ -91,7 +91,7 @@ export default function CalendarEditDialog() {
     }
 
     try {
-      const editedCalendar = calendarExists
+      const editedCalendar = selectedCalendarDialog?.id
         ? await editCalendar(selectedCalendarDialog.id, data as UpdateCalendar)
         : await addCalendar(data as CreateCalendar);
 

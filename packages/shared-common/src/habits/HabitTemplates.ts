@@ -2,17 +2,17 @@ import { HabitGoalFrequencyEnum } from './HabitGoalFrequencyEnum';
 import { CreateHabit } from './HabitSchema';
 
 export enum HabitTemplateCategoryEnum {
-  HEALTH = '❤️ Health',
-  PERSONAL = '🌟 Personal',
-  WORK = '💻 Work',
-  HOME = '🏠 Home',
-  SOCIAL = '🧑‍🤝‍🧑 Social',
-  OTHER = '❓ Other',
+  HEALTH = 'Health',
+  PERSONAL = 'Personal',
+  WORK = 'Work',
+  HOME = 'Home',
+  SOCIAL = 'Social',
+  OTHER = 'Other',
 }
 
 export type HabitTemplate = CreateHabit & { category: HabitTemplateCategoryEnum };
 
-export const HabitTemplates: HabitTemplate[] = [
+export const habitTemplates: HabitTemplate[] = [
   // Health
   {
     name: '💧 Drink water',
@@ -94,8 +94,8 @@ export const HabitTemplates: HabitTemplate[] = [
     name: '🚫🍬 Avoid sugar',
     description: 'Take the no-added-sugar challenge. Rediscover the sweetness of life.',
     color: '#6B7280',
-    goalAmount: 100,
-    goalUnit: 'percent',
+    goalAmount: 1,
+    goalUnit: 'times',
     goalFrequency: HabitGoalFrequencyEnum.DAY,
     category: HabitTemplateCategoryEnum.HEALTH,
   },
@@ -103,8 +103,8 @@ export const HabitTemplates: HabitTemplate[] = [
     name: '🚫🍔 Avoid processed food',
     description: 'Say yes to whole foods, no to processed. Your body will thank you.',
     color: '#7C3AED',
-    goalAmount: 100,
-    goalUnit: 'percent',
+    goalAmount: 1,
+    goalUnit: 'times',
     goalFrequency: HabitGoalFrequencyEnum.DAY,
     category: HabitTemplateCategoryEnum.HEALTH,
   },
@@ -112,8 +112,8 @@ export const HabitTemplates: HabitTemplate[] = [
     name: '🚫🍟 Avoid fast food',
     description: 'Choose fresh over fast. Homemade for health and happiness.',
     color: '#6B7280',
-    goalAmount: 100,
-    goalUnit: 'percent',
+    goalAmount: 1,
+    goalUnit: 'times',
     goalFrequency: HabitGoalFrequencyEnum.DAY,
     category: HabitTemplateCategoryEnum.HEALTH,
   },
@@ -334,7 +334,7 @@ export const HabitTemplates: HabitTemplate[] = [
     color: '#06B6D4',
     goalAmount: 1,
     goalUnit: 'times',
-    goalFrequency: HabitGoalFrequencyEnum.WEEK,
+    goalFrequency: HabitGoalFrequencyEnum.YEAR,
     category: HabitTemplateCategoryEnum.OTHER,
   },
   {

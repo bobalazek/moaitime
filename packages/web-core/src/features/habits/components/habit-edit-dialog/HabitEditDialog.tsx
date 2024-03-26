@@ -31,9 +31,10 @@ const DEFAULT_HABIT_DATA = {
 
 export default function HabitEditDialog() {
   const {
+    selectedHabitDialog,
     selectedHabitDialogOpen,
     setSelectedHabitDialogOpen,
-    selectedHabitDialog,
+    setHabitTemplatesDialogOpen,
     addHabit,
     editHabit,
     deleteHabit,
@@ -59,8 +60,7 @@ export default function HabitEditDialog() {
 
   const onSaveButtonClick = async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const savedHabit = selectedHabitDialog
+      const savedHabit = selectedHabitDialog?.id
         ? await editHabit(selectedHabitDialog.id, data as UpdateHabit)
         : await addHabit(data as CreateHabit);
 
@@ -108,6 +108,10 @@ export default function HabitEditDialog() {
     } catch (error) {
       // Already handled by the fetch function
     }
+  };
+
+  const onUseTemplateButtonClick = () => {
+    setHabitTemplatesDialogOpen(true);
   };
 
   return (
@@ -213,6 +217,11 @@ export default function HabitEditDialog() {
             {habitExists && (
               <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>
                 Delete
+              </Button>
+            )}
+            {!habitExists && (
+              <Button type="button" variant="outline" onClick={onUseTemplateButtonClick}>
+                Use Template
               </Button>
             )}
           </div>

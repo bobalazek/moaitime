@@ -82,7 +82,7 @@ export default function TeamEditDialog() {
     }
 
     try {
-      const editedTeam = teamExists
+      const editedTeam = selectedTeam?.id
         ? await editTeam(selectedTeam.id, data as UpdateTeam)
         : await addTeam(data as CreateTeam);
 

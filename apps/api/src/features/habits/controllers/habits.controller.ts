@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 import { Habit } from '@moaitime/database-core';
 import { habitsManager } from '@moaitime/database-services';
-import { HabitDaily, isValidDate } from '@moaitime/shared-common';
+import { HabitDaily, HabitTemplate, habitTemplates, isValidDate } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -32,6 +32,15 @@ export class HabitsController {
     return {
       success: true,
       data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('templates')
+  async listTemplates(): Promise<AbstractResponseDto<HabitTemplate[]>> {
+    return {
+      success: true,
+      data: habitTemplates,
     };
   }
 

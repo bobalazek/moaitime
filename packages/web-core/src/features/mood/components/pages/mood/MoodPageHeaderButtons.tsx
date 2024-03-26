@@ -1,4 +1,4 @@
-import { SmilePlusIcon } from 'lucide-react';
+import { PlusIcon } from 'lucide-react';
 
 import { Button } from '@moaitime/web-ui';
 
@@ -20,7 +20,7 @@ const MoodPageHeaderButtons = () => {
         onClick={onAddMoodButtonClick}
         data-test="mood--header--add-new-mood-button"
       >
-        <SmilePlusIcon size={24} />
+        <PlusIcon size={24} />
       </Button>
     </div>
   );

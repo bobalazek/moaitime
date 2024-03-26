@@ -102,9 +102,8 @@ export default function EventEditDialogBody() {
     }
 
     try {
-      const eventId = selectedEvent?.id?.replace('events:', '');
-      const editedEvent = eventId
-        ? await editEvent(eventId, data as UpdateEvent)
+      const editedEvent = selectedEvent?.id
+        ? await editEvent(selectedEvent.id, data as UpdateEvent)
         : await addEvent(data as CreateEvent);
 
       sonnerToast.success(`Event "${editedEvent.title}" save`, {

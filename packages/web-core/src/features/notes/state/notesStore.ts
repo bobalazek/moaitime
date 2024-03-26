@@ -295,7 +295,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
       return null;
     }
 
-    const savedNote = selectedNote
+    const savedNote = selectedNote?.id
       ? await editNote(selectedNote.id, selectedNoteData)
       : await addNote(selectedNoteData as CreateNote);
 

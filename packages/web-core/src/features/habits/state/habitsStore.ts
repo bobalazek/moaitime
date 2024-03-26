@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
-import { CreateHabit, Habit, HabitDailyEntry, UpdateHabit } from '@moaitime/shared-common';
+import {
+  CreateHabit,
+  Habit,
+  HabitDailyEntry,
+  HabitTemplate,
+  UpdateHabit,
+} from '@moaitime/shared-common';
 
 import { useUserLimitsAndUsageStore } from '../../auth/state/userLimitsAndUsageStore';
 import { queryClient } from '../../core/utils/FetchHelpers';
@@ -12,6 +18,7 @@ import {
   getDeletedHabits,
   getHabit,
   getHabits,
+  getHabitTemplates,
   undeleteHabit,
   updateHabitDaily,
 } from '../utils/HabitHelpers';
@@ -45,6 +52,11 @@ export type HabitsStore = {
   setDeletedHabitsDialogOpen: (deletedHabitsDialogOpen: boolean) => void;
   deletedHabits: Habit[];
   reloadDeletedHabits: () => Promise<Habit[]>;
+  // Templates
+  habitTemplatesDialogOpen: boolean;
+  setHabitTemplatesDialogOpen: (habitTemplatesDialogOpen: boolean) => void;
+  habitTemplates: HabitTemplate[];
+  reloadHabitTemplates: () => Promise<HabitTemplate[]>;
 };
 
 export const useHabitsStore = create<HabitsStore>()((set, get) => ({
@@ -195,5 +207,28 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
     });
 
     return deletedHabits;
+  },
+  // Templates
+  habitTemplatesDialogOpen: false,
+  setHabitTemplatesDialogOpen: (habitTemplatesDialogOpen: boolean) => {
+    const { reloadHabitTemplates } = get();
+
+    if (habitTemplatesDialogOpen) {
+      reloadHabitTemplates();
+    }
+
+    set({
+      habitTemplatesDialogOpen,
+    });
+  },
+  habitTemplates: [],
+  reloadHabitTemplates: async () => {
+    const habitTemplates = await getHabitTemplates();
+
+    set({
+      habitTemplates,
+    });
+
+    return habitTemplates;
   },
 }));

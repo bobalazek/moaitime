@@ -3,6 +3,7 @@ import {
   Habit,
   HabitDaily,
   HabitDailyEntry,
+  HabitTemplate,
   ResponseInterface,
   UpdateHabit,
 } from '@moaitime/shared-common';
@@ -33,6 +34,17 @@ export const getDeletedHabits = async () => {
   const response = await fetchJson<ResponseInterface<Habit[]>>(`${API_URL}/api/v1/habits/deleted`, {
     method: 'GET',
   });
+
+  return response.data ?? [];
+};
+
+export const getHabitTemplates = async (): Promise<HabitTemplate[]> => {
+  const response = await fetchJson<ResponseInterface<HabitTemplate[]>>(
+    `${API_URL}/api/v1/habits/templates`,
+    {
+      method: 'GET',
+    }
+  );
 
   return response.data ?? [];
 };

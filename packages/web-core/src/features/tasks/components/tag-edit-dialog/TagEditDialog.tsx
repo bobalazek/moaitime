@@ -47,7 +47,7 @@ export default function TagEditDialog() {
 
   const onSaveButtonClick = async () => {
     try {
-      const savedTag = selectedTagDialog
+      const savedTag = selectedTagDialog?.id
         ? await editTag(selectedTagDialog.id, data as UpdateTag)
         : await addTag(data as CreateTag);
 

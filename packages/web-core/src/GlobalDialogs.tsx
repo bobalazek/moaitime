@@ -7,6 +7,7 @@ import UserCalendarEditDialog from './features/calendar/components/user-calendar
 import CommandsDialog from './features/commands/components/CommandsDialog';
 import DeletedHabitsDialog from './features/habits/components/deleted-habits-dialog/DeletedHabitsDialog';
 import HabitEditDialog from './features/habits/components/habit-edit-dialog/HabitEditDialog';
+import HabitTemplatesDialog from './features/habits/components/habit-templates-dialog/HabitTemplatesDialog';
 import MoodEntryEditDialog from './features/mood/components/mood-entry-edit-dialog/MoodEntryEditDialog';
 import SettingsDialog from './features/settings/components/SettingsDialog';
 import DeletedListsDialog from './features/tasks/components/deleted-lists-dialog/DeletedListsDialog';
@@ -31,6 +32,7 @@ export function GlobalDialogs() {
       <TagEditDialog />
       <HabitEditDialog />
       <DeletedHabitsDialog />
+      <HabitTemplatesDialog />
       <SettingsDialog />
       <CalendarEditDialog />
       <UserCalendarEditDialog />

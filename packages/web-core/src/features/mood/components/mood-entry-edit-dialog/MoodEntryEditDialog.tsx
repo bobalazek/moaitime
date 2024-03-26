@@ -56,7 +56,7 @@ export default function MoodEntryEditDialog() {
 
   const onSaveButtonClick = async () => {
     try {
-      selectedMoodEntryDialog
+      selectedMoodEntryDialog?.id
         ? await editMoodEntry(selectedMoodEntryDialog.id, data as UpdateMoodEntry)
         : await addMoodEntry(data as CreateMoodEntry);
 

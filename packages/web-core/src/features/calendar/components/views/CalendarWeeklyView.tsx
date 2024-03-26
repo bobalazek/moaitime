@@ -132,10 +132,11 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
           </div>
         </div>
         <AnimatePresence>
-          {days.map((day) => {
+          {days.map((day, index) => {
             const dayOfWeek = format(day, 'eee.');
             const dayOfMonth = day.getDate();
             const date = format(day, 'yyyy-MM-dd');
+            const isLastDayOfWeek = index === days.length - 1;
             const isActive = date === format(now, 'yyyy-MM-dd');
             const fullDayCalendarEntries = calendarEntriesPerDayMap.get(date)?.fullDayOnly ?? [];
 
@@ -164,10 +165,13 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                 animate="animate"
                 exit="exit"
                 variants={animationVariants}
-                className="flex-1 cursor-pointer select-none p-2"
+                className={clsx(
+                  'flex-1 cursor-pointer select-none p-2',
+                  !isLastDayOfWeek ? 'border-r' : ''
+                )}
                 data-calendar-day={date}
                 onClick={onDayContainerClick}
-                data-test="calendar--weekly-view--day"
+                data-test="calendar--weekly-view--day-of-week"
               >
                 <div className="text-center text-xs font-bold uppercase">
                   <div data-test="calendar--monthly-view--day-of-week">{dayOfWeek}</div>

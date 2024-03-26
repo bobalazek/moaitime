@@ -25,10 +25,12 @@ export const notes = pgTable(
       .references(() => users.id, {
         onDelete: 'cascade',
       }),
+    parentId: uuid('parent_id'), // Relationship to self
   },
   (table) => {
     return {
       userIdIdx: index('notes_user_id_idx').on(table.userId),
+      parentIdIdx: index('notes_parent_id_idx').on(table.parentId),
     };
   }
 );
@@ -37,6 +39,10 @@ export const notesRelations = relations(notes, ({ one }) => ({
   user: one(users, {
     fields: [notes.userId],
     references: [users.id],
+  }),
+  parent: one(notes, {
+    fields: [notes.parentId],
+    references: [notes.id],
   }),
 }));
 

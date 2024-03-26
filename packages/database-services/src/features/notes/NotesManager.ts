@@ -1,4 +1,16 @@
-import { and, asc, count, DBQueryConfig, desc, eq, ilike, isNull, SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  DBQueryConfig,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  isNull,
+  or,
+  SQL,
+} from 'drizzle-orm';
 
 import {
   getDatabase,
@@ -32,8 +44,17 @@ export class NotesManager {
   }
 
   async findManyByUserId(userId: string): Promise<Note[]> {
+    let where: SQL<unknown>;
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = eq(notes.userId, userId);
+    } else {
+      where = or(eq(notes.userId, userId), inArray(notes.teamId, teamIds)) as SQL<unknown>;
+    }
+
     return getDatabase().query.notes.findMany({
-      where: and(eq(notes.userId, userId), isNull(notes.deletedAt)),
+      where,
       orderBy: desc(notes.createdAt),
     });
   }
@@ -42,11 +63,18 @@ export class NotesManager {
     userId: string,
     options?: NotesManagerFindManyByUserIdWithOptions
   ): Promise<NoteWithoutContent[]> {
-    let where = eq(notes.userId, userId);
+    let where: SQL<unknown>;
     let orderBy = desc(notes.createdAt);
 
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = eq(notes.userId, userId) as SQL<unknown>;
+    } else {
+      where = or(eq(notes.userId, userId), inArray(notes.teamId, teamIds)) as SQL<unknown>;
+    }
+
     if (options?.search) {
-      where = and(ilike(notes.title, `%${options.search}%`)) as SQL<unknown>;
+      where = and(where, ilike(notes.title, `%${options.search}%`)) as SQL<unknown>;
     }
 
     if (options?.sortField) {
@@ -77,14 +105,6 @@ export class NotesManager {
     return row ?? null;
   }
 
-  async findOneByIdAndUserId(noteId: string, userId: string): Promise<Note | null> {
-    const row = await getDatabase().query.notes.findFirst({
-      where: and(eq(notes.id, noteId), eq(notes.userId, userId)),
-    });
-
-    return row ?? null;
-  }
-
   async insertOne(data: NewNote): Promise<Note> {
     const rows = await getDatabase().insert(notes).values(data).returning();
 
@@ -110,10 +130,23 @@ export class NotesManager {
   // Permissions
   async userCanView(userId: string, noteId: string): Promise<boolean> {
     const row = await getDatabase().query.notes.findFirst({
-      where: and(eq(notes.id, noteId), eq(notes.userId, userId)),
+      where: eq(notes.id, noteId),
     });
 
-    return !!row;
+    if (!row) {
+      return false;
+    }
+
+    if (row.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (row.teamId && teamIds.includes(row.teamId)) {
+      return true;
+    }
+
+    return false;
   }
 
   async userCanUpdate(userId: string, noteId: string): Promise<boolean> {
@@ -135,7 +168,7 @@ export class NotesManager {
       throw new Error('You cannot view this note');
     }
 
-    const data = await this.findOneByIdAndUserId(noteId, actorUserId);
+    const data = await this.findOneById(noteId);
     if (!data) {
       throw new Error('Note not found');
     }
@@ -154,6 +187,7 @@ export class NotesManager {
     globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_ADDED, {
       actorUserId: actorUser.id,
       noteId: note.id,
+      teamId: note.teamId ?? undefined,
     });
 
     return note;
@@ -170,11 +204,26 @@ export class NotesManager {
       throw new Error('Note not found');
     }
 
+    // The reason we need that is, that we still want to broadcast the removal of the note from the team,
+    // so their clients get updated
+    let unsharedTeamId: string | undefined = undefined;
+    if (typeof data.teamId !== 'undefined') {
+      const userTeamIds = await usersManager.getTeamIds(actorUserId);
+      if (data.teamId && !userTeamIds.includes(data.teamId)) {
+        throw new Error('You cannot share the note with this team');
+      }
+
+      if (note.teamId && !data.teamId) {
+        unsharedTeamId = note.teamId;
+      }
+    }
+
     const updatedNote = await this.updateOneById(noteId, data);
 
     globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_EDITED, {
       actorUserId,
       noteId: updatedNote.id,
+      teamId: unsharedTeamId ?? updatedNote.teamId ?? undefined,
     });
 
     return updatedNote;
@@ -195,6 +244,7 @@ export class NotesManager {
     globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_DELETED, {
       actorUserId,
       noteId: deletedNote.id,
+      teamId: deletedNote.teamId ?? undefined,
     });
 
     return deletedNote;
@@ -215,6 +265,7 @@ export class NotesManager {
     globalEventsNotifier.publish(GlobalEventsEnum.NOTES_NOTE_UNDELETED, {
       actorUserId: actorUser.id,
       noteId: undeletedNote.id,
+      teamId: undeletedNote.teamId ?? undefined,
     });
 
     return undeletedNote;

@@ -1,4 +1,4 @@
-import { HistoryIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
+import { HistoryIcon, MoreVerticalIcon, TrashIcon, UsersIcon } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -11,6 +11,7 @@ import {
   sonnerToast,
 } from '@moaitime/web-ui';
 
+import { useTeamsStore } from '../../../../teams/state/teamsStore';
 import { useNotesStore } from '../../../state/notesStore';
 
 const NotesPageHeaderButtons = () => {
@@ -20,9 +21,11 @@ const NotesPageHeaderButtons = () => {
     selectedNoteDataChanged,
     setSelectedNote,
     saveSelectedNoteData,
+    editNote,
     deleteNote,
     undeleteNote,
   } = useNotesStore();
+  const { joinedTeam } = useTeamsStore();
 
   const onDeleteButtonClick = async () => {
     if (!selectedNote) {
@@ -58,6 +61,44 @@ const NotesPageHeaderButtons = () => {
 
       sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" hard deleted`, {
         description: 'The note was successfully hard deleted!',
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
+  const onShareWithTeamButtonClick = async () => {
+    if (!selectedNote || !joinedTeam) {
+      return;
+    }
+
+    try {
+      await editNote(selectedNote.id, {
+        teamId: joinedTeam.team.id,
+      });
+
+      sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" shared`, {
+        description: 'The note was successfully shared with the team!',
+        position: 'top-right',
+      });
+    } catch (error) {
+      // We are already handling the error by showing a toast message inside in the fetch function
+    }
+  };
+
+  const onUnshareWithTeamButtonClick = async () => {
+    if (!selectedNote || !joinedTeam) {
+      return;
+    }
+
+    try {
+      await editNote(selectedNote.id, {
+        teamId: null,
+      });
+
+      sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" unshared`, {
+        description: 'The note was successfully unshared with the team!',
+        position: 'top-right',
       });
     } catch (error) {
       // We are already handling the error by showing a toast message inside in the fetch function
@@ -122,6 +163,9 @@ const NotesPageHeaderButtons = () => {
     return null;
   }
 
+  const canShareWithTeam = joinedTeam && selectedNote && !selectedNote.teamId;
+  const canUnshareWithTeam = joinedTeam && selectedNote && selectedNote.teamId;
+
   return (
     <div className="flex gap-2">
       {selectedNoteDataChanged && (
@@ -138,6 +182,18 @@ const NotesPageHeaderButtons = () => {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent data-test="notes--header--note-actions--dropdown-menu">
+            {canShareWithTeam && (
+              <DropdownMenuItem className="cursor-pointer" onClick={onShareWithTeamButtonClick}>
+                <UsersIcon className="mr-2 h-4 w-4" />
+                <span>Share with team</span>
+              </DropdownMenuItem>
+            )}
+            {canUnshareWithTeam && (
+              <DropdownMenuItem className="cursor-pointer" onClick={onUnshareWithTeamButtonClick}>
+                <UsersIcon className="mr-2 h-4 w-4" />
+                <span>Unshare with team</span>
+              </DropdownMenuItem>
+            )}
             {!selectedNote.deletedAt && (
               <DropdownMenuItem
                 variant="destructive"

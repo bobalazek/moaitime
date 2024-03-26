@@ -20,6 +20,8 @@ export const NoteSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   userId: z.string(),
+  parentId: z.string().nullable(),
+  teamId: z.string().nullable(),
 });
 
 export const CreateNoteSchema = z.object({
@@ -44,11 +46,13 @@ export const CreateNoteSchema = z.object({
     )
     .nullable()
     .optional(),
+  parentId: z.string().nullable().optional(),
+  teamId: z.string().nullable().optional(),
 });
 
 export const UpdateNoteSchema = CreateNoteSchema.omit({
   type: true,
-});
+}).partial();
 
 // Types
 export type Note = z.infer<typeof NoteSchema>;

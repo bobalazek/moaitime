@@ -426,22 +426,26 @@ export type GlobalEvents = {
   [GlobalEventsEnum.NOTES_NOTE_ADDED]: {
     actorUserId: string;
     noteId: string;
+    teamId?: string;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.NOTES_NOTE_EDITED]: {
     actorUserId: string;
     noteId: string;
+    teamId?: string;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.NOTES_NOTE_DELETED]: {
     actorUserId: string;
     noteId: string;
+    teamId?: string;
     isHardDelete?: boolean;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.NOTES_NOTE_UNDELETED]: {
     actorUserId: string;
     noteId: string;
+    teamId?: string;
     actorWebsocketToken?: string;
   };
   // Calendars

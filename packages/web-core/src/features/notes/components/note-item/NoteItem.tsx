@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { TrashIcon } from 'lucide-react';
+import { TrashIcon, UsersIcon } from 'lucide-react';
 
 import { Note } from '@moaitime/shared-common';
 
@@ -21,7 +21,9 @@ const NoteItem = ({ note, isSelected }: { note: Note; isSelected?: boolean }) =>
     >
       <div className="truncate" title={note.title} data-test="notes--note--title">
         {note.title || <span className="italic">Untitled</span>}
+        {note.teamId && <UsersIcon className="ml-2 inline-block" size={12} />}
       </div>
+
       {note.deletedAt && (
         <div
           className="text-muted-foreground text-xs"

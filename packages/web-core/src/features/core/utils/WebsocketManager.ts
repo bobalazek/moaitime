@@ -5,6 +5,7 @@ import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 import { sonnerToast } from '../../../../../web-ui/src/components/sonner-toast';
 import { useAuthStore } from '../../auth/state/authStore';
 import { useCalendarStore } from '../../calendar/state/calendarStore';
+import { useNotesStore } from '../../notes/state/notesStore';
 import { useUserNotificationsStore } from '../../notifications/state/userNotificationsStore';
 import { useListsStore } from '../../tasks/state/listsStore';
 import { useTagsStore } from '../../tasks/state/tagsStore';
@@ -185,6 +186,16 @@ export class WebsocketManager {
       const { reloadTags } = useTagsStore.getState();
 
       await reloadTags();
+    } else if (data.type.startsWith('notes:note:')) {
+      const { reloadNotes, setSelectedNote, selectedNote } = useNotesStore.getState();
+
+      const payload = data.payload as GlobalEvents[GlobalEventsEnum.NOTES_NOTE_EDITED];
+
+      await reloadNotes();
+
+      if (selectedNote?.id === payload.noteId) {
+        await setSelectedNote(selectedNote);
+      }
     }
   }
 

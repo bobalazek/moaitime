@@ -26,6 +26,35 @@ export type PostsManagerFindOptions = {
 };
 
 export class PostsManager {
+  // API Helpers
+  async list(actorUserId: string, userIdOrUsername?: string, options?: PostsManagerFindOptions) {
+    return this.findManyByUserIdWithDataAndMeta(actorUserId, userIdOrUsername, options);
+  }
+
+  async delete(actorUserId: string, postId: string) {
+    const canDelete = await this.userCanDelete(actorUserId, postId);
+    if (!canDelete) {
+      throw new Error(`You do not have permission to delete this post.`);
+    }
+
+    return this.deleteOneById(postId);
+  }
+
+  // Permissions
+  async userCanDelete(actorUserId: string, postOrPostId: string | Post): Promise<boolean> {
+    const post =
+      typeof postOrPostId === 'string' ? await this.findOneById(postOrPostId) : postOrPostId;
+    if (!post) {
+      return false;
+    }
+
+    if (post.userId !== actorUserId) {
+      return false;
+    }
+
+    return true;
+  }
+
   // Helpers
   async findManyByUserIdWithDataAndMeta(
     userId: string,
@@ -204,35 +233,6 @@ export class PostsManager {
     const post = await this.insertOne(data);
 
     return post;
-  }
-
-  // Permissions
-  async userCanDelete(actorUserId: string, postOrPostId: string | Post): Promise<boolean> {
-    const post =
-      typeof postOrPostId === 'string' ? await this.findOneById(postOrPostId) : postOrPostId;
-    if (!post) {
-      return false;
-    }
-
-    if (post.userId !== actorUserId) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // API Helpers
-  async list(actorUserId: string, userIdOrUsername?: string, options?: PostsManagerFindOptions) {
-    return this.findManyByUserIdWithDataAndMeta(actorUserId, userIdOrUsername, options);
-  }
-
-  async delete(actorUserId: string, postId: string) {
-    const canDelete = await this.userCanDelete(actorUserId, postId);
-    if (!canDelete) {
-      throw new Error(`You do not have permission to delete this post.`);
-    }
-
-    return this.deleteOneById(postId);
   }
 
   // Private

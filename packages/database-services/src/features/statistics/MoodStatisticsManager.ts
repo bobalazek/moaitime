@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 
 export class MoodStatisticsManager {
+  // Helpers
   async getBasics(user: User): Promise<StatisticsMoodBasicData> {
     let moodEntriesCreatedTodayCount = 0;
     let moodEntriesCreatedYesterdayCount = 0;

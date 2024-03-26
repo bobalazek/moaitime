@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 
 export class NotesStatisticsManager {
+  // Helpers
   async getBasics(user: User): Promise<StatisticsNotesBasicData> {
     let notesCreatedTodayCount = 0;
     let notesCreatedYesterdayCount = 0;

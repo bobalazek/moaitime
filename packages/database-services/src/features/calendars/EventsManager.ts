@@ -48,6 +48,195 @@ export type EventsManagerEvent = Event & {
 };
 
 export class EventsManager {
+  // API Helpers
+  async list(actorUser: User, from: string, to: string) {
+    const timezone = actorUser.settings?.generalTimezone ?? 'UTC';
+    const timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
+    const timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
+
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(actorUser.id);
+    return this.findManyByCalendarIdsAndRange(
+      calendarIdsMap,
+      actorUser.id,
+      timezonedFrom,
+      timezonedTo
+    );
+  }
+
+  async create(actorUser: User, data: CreateEvent) {
+    let calendar: Calendar | null = null;
+    if (data.calendarId) {
+      calendar = await calendarsManager.findOneByIdAndUserId(data.calendarId, actorUser.id);
+      if (!calendar) {
+        throw new Error('Calendar not found');
+      }
+    }
+
+    await this._checkIfLimitReached(actorUser, data.calendarId);
+
+    const timezone = data.timezone ?? actorUser?.settings?.generalTimezone ?? 'UTC';
+
+    const event = await this.insertOne({
+      ...data,
+      timezone,
+      userId: actorUser.id,
+      startsAt: new Date(data.startsAt),
+      endsAt: new Date(data.endsAt),
+      repeatEndsAt: data.repeatEndsAt ? new Date(data.repeatEndsAt) : undefined,
+    });
+
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_ADDED, {
+      actorUserId: actorUser.id,
+      eventId: event.id,
+      calendarId: event.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return event;
+  }
+
+  async update(actorUserId: string, eventId: string, data: UpdateEvent) {
+    const canUpdate = await this.userCanUpdate(actorUserId, eventId);
+    if (!canUpdate) {
+      throw new Error('You cannot update this event');
+    }
+
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    const now = new Date();
+    const startsAt = data.startsAt ? new Date(data.startsAt) : undefined;
+    const endsAt = data.endsAt ? new Date(data.endsAt) : undefined;
+    const finalStartsAt = startsAt ?? event.startsAt ?? now;
+    const finalEndsAt = endsAt ?? event.endsAt ?? now;
+    if (finalStartsAt > finalEndsAt) {
+      throw new Error('Start date must be before end date');
+    }
+
+    const durationSeconds = (finalEndsAt.getTime() - finalStartsAt.getTime()) / 1000;
+    if (!event.isAllDay && durationSeconds < 60) {
+      throw new Error('Event must be at least 1 minute long');
+    }
+
+    // We need to account for the null value, which means to unset the value,
+    // where as undefined means to not update the value.
+    const repeatEndsAt = data.repeatEndsAt
+      ? new Date(data.repeatEndsAt)
+      : data.repeatEndsAt === null
+        ? null
+        : undefined;
+
+    const repeatPattern = data.repeatPattern ?? event.repeatPattern;
+    if (startsAt && repeatPattern && data.repeatPattern !== null) {
+      const recurrence = Recurrence.fromStringPattern(repeatPattern);
+      recurrence.updateOptions({
+        startsAt,
+      });
+
+      data.repeatPattern = recurrence.toStringPattern();
+    }
+
+    const newEvent = await this.updateOneById(eventId, {
+      ...data,
+      startsAt,
+      endsAt,
+      repeatEndsAt,
+    });
+    const calendar = await calendarsManager.findOneByIdAndUserId(newEvent.calendarId, actorUserId);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
+      actorUserId,
+      eventId: newEvent.id,
+      calendarId: newEvent.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return newEvent;
+  }
+
+  async delete(actorUserId: string, eventId: string) {
+    const canDelete = await this.userCanDelete(actorUserId, eventId);
+    if (!canDelete) {
+      throw new Error('Event not found');
+    }
+
+    const event = await this.updateOneById(eventId, {
+      deletedAt: new Date(),
+    });
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, actorUserId);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_DELETED, {
+      actorUserId,
+      eventId: event.id,
+      calendarId: event.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return event;
+  }
+
+  async undelete(actorUser: User, eventId: string) {
+    const canDelete = await this.userCanUpdate(actorUser.id, eventId);
+    if (!canDelete) {
+      throw new Error('You cannot undelete this event');
+    }
+
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    await this._checkIfLimitReached(actorUser, event.calendarId);
+
+    const undeletedEvent = await this.updateOneById(eventId, {
+      deletedAt: null,
+    });
+    const calendar = await calendarsManager.findOneByIdAndUserId(
+      undeletedEvent.calendarId,
+      actorUser.id
+    );
+
+    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
+      actorUserId: actorUser.id,
+      eventId: undeletedEvent.id,
+      calendarId: undeletedEvent.calendarId ?? undefined,
+      teamId: calendar?.teamId ?? undefined,
+    });
+
+    return undeletedEvent;
+  }
+
+  // Permissions
+  async userCanView(userId: string, eventId: string): Promise<boolean> {
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      return false;
+    }
+
+    return calendarsManager.userCanView(userId, event.calendarId);
+  }
+
+  async userCanUpdate(userId: string, eventId: string): Promise<boolean> {
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      return false;
+    }
+
+    return calendarsManager.userCanUpdate(userId, event.calendarId);
+  }
+
+  async userCanDelete(userId: string, eventId: string): Promise<boolean> {
+    const event = await this.findOneById(eventId);
+    if (!event) {
+      return false;
+    }
+
+    return calendarsManager.userCanDelete(userId, event.calendarId);
+  }
+
+  // Helpers
   async findManyByCalendarId(calendarId: string): Promise<Event[]> {
     return getDatabase().query.events.findMany({
       where: and(eq(events.calendarId, calendarId), isNull(events.deletedAt)),
@@ -237,195 +426,6 @@ export class EventsManager {
     return rows;
   }
 
-  // Permissions
-  async userCanView(userId: string, eventId: string): Promise<boolean> {
-    const event = await this.findOneById(eventId);
-    if (!event) {
-      return false;
-    }
-
-    return calendarsManager.userCanView(userId, event.calendarId);
-  }
-
-  async userCanUpdate(userId: string, eventId: string): Promise<boolean> {
-    const event = await this.findOneById(eventId);
-    if (!event) {
-      return false;
-    }
-
-    return calendarsManager.userCanUpdate(userId, event.calendarId);
-  }
-
-  async userCanDelete(userId: string, eventId: string): Promise<boolean> {
-    const event = await this.findOneById(eventId);
-    if (!event) {
-      return false;
-    }
-
-    return calendarsManager.userCanDelete(userId, event.calendarId);
-  }
-
-  // API Helpers
-  async list(actorUser: User, from: string, to: string) {
-    const timezone = actorUser.settings?.generalTimezone ?? 'UTC';
-    const timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
-    const timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
-
-    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(actorUser.id);
-    return this.findManyByCalendarIdsAndRange(
-      calendarIdsMap,
-      actorUser.id,
-      timezonedFrom,
-      timezonedTo
-    );
-  }
-
-  async create(actorUser: User, data: CreateEvent) {
-    let calendar: Calendar | null = null;
-    if (data.calendarId) {
-      calendar = await calendarsManager.findOneByIdAndUserId(data.calendarId, actorUser.id);
-      if (!calendar) {
-        throw new Error('Calendar not found');
-      }
-    }
-
-    await this._checkIfLimitReached(actorUser, data.calendarId);
-
-    const timezone = data.timezone ?? actorUser?.settings?.generalTimezone ?? 'UTC';
-
-    const event = await this.insertOne({
-      ...data,
-      timezone,
-      userId: actorUser.id,
-      startsAt: new Date(data.startsAt),
-      endsAt: new Date(data.endsAt),
-      repeatEndsAt: data.repeatEndsAt ? new Date(data.repeatEndsAt) : undefined,
-    });
-
-    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_ADDED, {
-      actorUserId: actorUser.id,
-      eventId: event.id,
-      calendarId: event.calendarId ?? undefined,
-      teamId: calendar?.teamId ?? undefined,
-    });
-
-    return event;
-  }
-
-  async update(actorUserId: string, eventId: string, data: UpdateEvent) {
-    const canUpdate = await this.userCanUpdate(actorUserId, eventId);
-    if (!canUpdate) {
-      throw new Error('You cannot update this event');
-    }
-
-    const event = await this.findOneById(eventId);
-    if (!event) {
-      throw new Error('Event not found');
-    }
-
-    const now = new Date();
-    const startsAt = data.startsAt ? new Date(data.startsAt) : undefined;
-    const endsAt = data.endsAt ? new Date(data.endsAt) : undefined;
-    const finalStartsAt = startsAt ?? event.startsAt ?? now;
-    const finalEndsAt = endsAt ?? event.endsAt ?? now;
-    if (finalStartsAt > finalEndsAt) {
-      throw new Error('Start date must be before end date');
-    }
-
-    const durationSeconds = (finalEndsAt.getTime() - finalStartsAt.getTime()) / 1000;
-    if (!event.isAllDay && durationSeconds < 60) {
-      throw new Error('Event must be at least 1 minute long');
-    }
-
-    // We need to account for the null value, which means to unset the value,
-    // where as undefined means to not update the value.
-    const repeatEndsAt = data.repeatEndsAt
-      ? new Date(data.repeatEndsAt)
-      : data.repeatEndsAt === null
-        ? null
-        : undefined;
-
-    const repeatPattern = data.repeatPattern ?? event.repeatPattern;
-    if (startsAt && repeatPattern && data.repeatPattern !== null) {
-      const recurrence = Recurrence.fromStringPattern(repeatPattern);
-      recurrence.updateOptions({
-        startsAt,
-      });
-
-      data.repeatPattern = recurrence.toStringPattern();
-    }
-
-    const newEvent = await this.updateOneById(eventId, {
-      ...data,
-      startsAt,
-      endsAt,
-      repeatEndsAt,
-    });
-    const calendar = await calendarsManager.findOneByIdAndUserId(newEvent.calendarId, actorUserId);
-
-    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_EDITED, {
-      actorUserId,
-      eventId: newEvent.id,
-      calendarId: newEvent.calendarId ?? undefined,
-      teamId: calendar?.teamId ?? undefined,
-    });
-
-    return newEvent;
-  }
-
-  async delete(actorUserId: string, eventId: string) {
-    const canDelete = await this.userCanDelete(actorUserId, eventId);
-    if (!canDelete) {
-      throw new Error('Event not found');
-    }
-
-    const event = await this.updateOneById(eventId, {
-      deletedAt: new Date(),
-    });
-    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, actorUserId);
-
-    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_DELETED, {
-      actorUserId,
-      eventId: event.id,
-      calendarId: event.calendarId ?? undefined,
-      teamId: calendar?.teamId ?? undefined,
-    });
-
-    return event;
-  }
-
-  async undelete(actorUser: User, eventId: string) {
-    const canDelete = await this.userCanUpdate(actorUser.id, eventId);
-    if (!canDelete) {
-      throw new Error('You cannot undelete this event');
-    }
-
-    const event = await this.findOneById(eventId);
-    if (!event) {
-      throw new Error('Event not found');
-    }
-
-    await this._checkIfLimitReached(actorUser, event.calendarId);
-
-    const undeletedEvent = await this.updateOneById(eventId, {
-      deletedAt: null,
-    });
-    const calendar = await calendarsManager.findOneByIdAndUserId(
-      undeletedEvent.calendarId,
-      actorUser.id
-    );
-
-    globalEventsNotifier.publish(GlobalEventsEnum.CALENDAR_EVENT_UNDELETED, {
-      actorUserId: actorUser.id,
-      eventId: undeletedEvent.id,
-      calendarId: undeletedEvent.calendarId ?? undefined,
-      teamId: calendar?.teamId ?? undefined,
-    });
-
-    return undeletedEvent;
-  }
-
-  // Helpers
   async getCountsByCalendarIdsAndYear(calendarIds: string[], year: number) {
     const startOfYear = new Date(year, 0, 1);
     const endOfYear = new Date(year + 1, 0, 1);

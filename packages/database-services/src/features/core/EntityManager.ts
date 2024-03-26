@@ -4,6 +4,7 @@ import { getDatabase, tasks, users } from '@moaitime/database-core';
 import { Achievements, Entity } from '@moaitime/shared-common';
 
 export class EntityManager {
+  // Helpers
   async getObjectsMap(rows: { relatedEntities?: Entity[] | null }[]) {
     const relatedEntitiesMap = new Map<string, Entity[]>();
     for (const row of rows) {

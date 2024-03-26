@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 
 export class CalendarStatisticsManager {
+  // Helpers
   async getBasics(user: User): Promise<StatisticsCalendarBasicData> {
     let eventsCreatedTodayCount = 0;
     let eventsCreatedYesterdayCount = 0;

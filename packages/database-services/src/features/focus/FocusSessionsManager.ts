@@ -22,100 +22,7 @@ import {
 import { tasksManager } from '../tasks/TasksManager';
 
 export class FocusSessionsManager {
-  async findManyByUserId(userId: string): Promise<FocusSession[]> {
-    return getDatabase().query.focusSessions.findMany({
-      where: and(eq(focusSessions.userId, userId), isNull(focusSessions.deletedAt)),
-      orderBy: desc(focusSessions.createdAt),
-      with: {
-        task: true,
-      },
-    });
-  }
-
-  async findOneById(focusSessionId: string): Promise<FocusSession | null> {
-    const row = await getDatabase().query.focusSessions.findFirst({
-      where: eq(focusSessions.id, focusSessionId),
-      with: {
-        task: true,
-      },
-    });
-
-    return row ?? null;
-  }
-
-  async findOneByIdAndUserId(focusSessionId: string, userId: string): Promise<FocusSession | null> {
-    const row = await getDatabase().query.focusSessions.findFirst({
-      where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
-      with: {
-        task: true,
-      },
-    });
-
-    return row ?? null;
-  }
-
-  async findOneCurrentAndByUserId(userId: string): Promise<FocusSession | null> {
-    const row = await getDatabase().query.focusSessions.findFirst({
-      where: and(
-        isNull(focusSessions.completedAt),
-        eq(focusSessions.userId, userId),
-        isNull(focusSessions.deletedAt)
-      ),
-      with: {
-        task: true,
-      },
-      orderBy: desc(focusSessions.createdAt),
-    });
-
-    return row ?? null;
-  }
-
-  async insertOne(data: NewFocusSession): Promise<FocusSession> {
-    const rows = await getDatabase().insert(focusSessions).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(
-    focusSessionId: string,
-    data: Partial<NewFocusSession>
-  ): Promise<FocusSession> {
-    const rows = await getDatabase()
-      .update(focusSessions)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(focusSessions.id, focusSessionId))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(focusSessionId: string): Promise<FocusSession> {
-    const rows = await getDatabase()
-      .delete(focusSessions)
-      .where(eq(focusSessions.id, focusSessionId))
-      .returning();
-
-    return rows[0];
-  }
-
-  // Permissions
-  async userCanView(userId: string, focusSessionId: string): Promise<boolean> {
-    const row = await getDatabase().query.focusSessions.findFirst({
-      where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
-    });
-
-    return !!row;
-  }
-
-  async userCanUpdate(userId: string, focusSessionId: string): Promise<boolean> {
-    return this.userCanView(userId, focusSessionId);
-  }
-
-  async userCanDelete(userId: string, focusSessionId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, focusSessionId);
-  }
-
-  // Helpers
+  // API Helpers
   async create(actorUserId: string, data: CreateFocusSession) {
     const currentFocusSession = await this.findOneCurrentAndByUserId(actorUserId);
     if (currentFocusSession) {
@@ -353,7 +260,100 @@ export class FocusSessionsManager {
     return updatedFocusSession;
   }
 
+  // Permissions
+  async userCanView(userId: string, focusSessionId: string): Promise<boolean> {
+    const row = await getDatabase().query.focusSessions.findFirst({
+      where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
+    });
+
+    return !!row;
+  }
+
+  async userCanUpdate(userId: string, focusSessionId: string): Promise<boolean> {
+    return this.userCanView(userId, focusSessionId);
+  }
+
+  async userCanDelete(userId: string, focusSessionId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, focusSessionId);
+  }
+
   // Helpers
+  async findManyByUserId(userId: string): Promise<FocusSession[]> {
+    return getDatabase().query.focusSessions.findMany({
+      where: and(eq(focusSessions.userId, userId), isNull(focusSessions.deletedAt)),
+      orderBy: desc(focusSessions.createdAt),
+      with: {
+        task: true,
+      },
+    });
+  }
+
+  async findOneById(focusSessionId: string): Promise<FocusSession | null> {
+    const row = await getDatabase().query.focusSessions.findFirst({
+      where: eq(focusSessions.id, focusSessionId),
+      with: {
+        task: true,
+      },
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByIdAndUserId(focusSessionId: string, userId: string): Promise<FocusSession | null> {
+    const row = await getDatabase().query.focusSessions.findFirst({
+      where: and(eq(focusSessions.id, focusSessionId), eq(focusSessions.userId, userId)),
+      with: {
+        task: true,
+      },
+    });
+
+    return row ?? null;
+  }
+
+  async findOneCurrentAndByUserId(userId: string): Promise<FocusSession | null> {
+    const row = await getDatabase().query.focusSessions.findFirst({
+      where: and(
+        isNull(focusSessions.completedAt),
+        eq(focusSessions.userId, userId),
+        isNull(focusSessions.deletedAt)
+      ),
+      with: {
+        task: true,
+      },
+      orderBy: desc(focusSessions.createdAt),
+    });
+
+    return row ?? null;
+  }
+
+  async insertOne(data: NewFocusSession): Promise<FocusSession> {
+    const rows = await getDatabase().insert(focusSessions).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(
+    focusSessionId: string,
+    data: Partial<NewFocusSession>
+  ): Promise<FocusSession> {
+    const rows = await getDatabase()
+      .update(focusSessions)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(focusSessions.id, focusSessionId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(focusSessionId: string): Promise<FocusSession> {
+    const rows = await getDatabase()
+      .delete(focusSessions)
+      .where(eq(focusSessions.id, focusSessionId))
+      .returning();
+
+    return rows[0];
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

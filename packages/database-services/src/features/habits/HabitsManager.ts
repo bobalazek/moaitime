@@ -50,90 +50,6 @@ export type HabitsManagerFindManyByUserIdWithOptions = {
 };
 
 export class HabitsManager {
-  async findManyByUserId(userId: string): Promise<Habit[]> {
-    return getDatabase().query.habits.findMany({
-      where: and(eq(habits.userId, userId), isNull(habits.deletedAt)),
-      orderBy: desc(habits.createdAt),
-    });
-  }
-
-  async findManyByUserIdWithOptions(
-    userId: string,
-    options?: HabitsManagerFindManyByUserIdWithOptions
-  ): Promise<Habit[]> {
-    let where = eq(habits.userId, userId);
-
-    if (!options?.includeDeleted) {
-      where = and(where, isNull(habits.deletedAt)) as SQL<unknown>;
-    }
-
-    return getDatabase().query.habits.findMany({
-      where,
-    });
-  }
-
-  async findManyDeletedByUserId(userId: string): Promise<Habit[]> {
-    return getDatabase().query.habits.findMany({
-      where: and(eq(habits.userId, userId), isNotNull(habits.deletedAt)),
-      orderBy: desc(habits.createdAt),
-    });
-  }
-
-  async findOneById(habitId: string): Promise<Habit | null> {
-    const row = await getDatabase().query.habits.findFirst({
-      where: eq(habits.id, habitId),
-    });
-
-    return row ?? null;
-  }
-
-  async findOneByIdAndUserId(habitId: string, userId: string): Promise<Habit | null> {
-    const row = await getDatabase().query.habits.findFirst({
-      where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
-    });
-
-    return row ?? null;
-  }
-
-  async insertOne(data: NewHabit): Promise<Habit> {
-    const rows = await getDatabase().insert(habits).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(habitId: string, data: Partial<NewHabit>): Promise<Habit> {
-    const rows = await getDatabase()
-      .update(habits)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(habits.id, habitId))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(habitId: string): Promise<Habit> {
-    const rows = await getDatabase().delete(habits).where(eq(habits.id, habitId)).returning();
-
-    return rows[0];
-  }
-
-  // Permissions
-  async userCanView(userId: string, habitId: string): Promise<boolean> {
-    const row = await getDatabase().query.habits.findFirst({
-      where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
-    });
-
-    return !!row;
-  }
-
-  async userCanUpdate(userId: string, habitId: string): Promise<boolean> {
-    return this.userCanView(userId, habitId);
-  }
-
-  async userCanDelete(userId: string, habitId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, habitId);
-  }
-
   // API Helpers
   async list(actorUserId: string, options?: HabitsManagerFindManyByUserIdWithOptions) {
     return this.findManyByUserIdWithOptions(actorUserId, options);
@@ -502,6 +418,90 @@ export class HabitsManager {
   }
 
   // Helpers
+  async findManyByUserId(userId: string): Promise<Habit[]> {
+    return getDatabase().query.habits.findMany({
+      where: and(eq(habits.userId, userId), isNull(habits.deletedAt)),
+      orderBy: desc(habits.createdAt),
+    });
+  }
+
+  async findManyByUserIdWithOptions(
+    userId: string,
+    options?: HabitsManagerFindManyByUserIdWithOptions
+  ): Promise<Habit[]> {
+    let where = eq(habits.userId, userId);
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(habits.deletedAt)) as SQL<unknown>;
+    }
+
+    return getDatabase().query.habits.findMany({
+      where,
+    });
+  }
+
+  async findManyDeletedByUserId(userId: string): Promise<Habit[]> {
+    return getDatabase().query.habits.findMany({
+      where: and(eq(habits.userId, userId), isNotNull(habits.deletedAt)),
+      orderBy: desc(habits.createdAt),
+    });
+  }
+
+  async findOneById(habitId: string): Promise<Habit | null> {
+    const row = await getDatabase().query.habits.findFirst({
+      where: eq(habits.id, habitId),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByIdAndUserId(habitId: string, userId: string): Promise<Habit | null> {
+    const row = await getDatabase().query.habits.findFirst({
+      where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
+    });
+
+    return row ?? null;
+  }
+
+  async insertOne(data: NewHabit): Promise<Habit> {
+    const rows = await getDatabase().insert(habits).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(habitId: string, data: Partial<NewHabit>): Promise<Habit> {
+    const rows = await getDatabase()
+      .update(habits)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(habits.id, habitId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(habitId: string): Promise<Habit> {
+    const rows = await getDatabase().delete(habits).where(eq(habits.id, habitId)).returning();
+
+    return rows[0];
+  }
+
+  // Permissions
+  async userCanView(userId: string, habitId: string): Promise<boolean> {
+    const row = await getDatabase().query.habits.findFirst({
+      where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
+    });
+
+    return !!row;
+  }
+
+  async userCanUpdate(userId: string, habitId: string): Promise<boolean> {
+    return this.userCanView(userId, habitId);
+  }
+
+  async userCanDelete(userId: string, habitId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, habitId);
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

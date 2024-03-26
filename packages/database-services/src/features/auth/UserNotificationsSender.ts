@@ -12,6 +12,7 @@ import { UserNotificationsManager, userNotificationsManager } from './UserNotifi
 export class UserNotificationsSender {
   constructor(private _userNotificationsManager: UserNotificationsManager) {}
 
+  // Helpers
   async sendUserFollowRequestReceivedNotification(
     userId: string,
     requestingUser: User

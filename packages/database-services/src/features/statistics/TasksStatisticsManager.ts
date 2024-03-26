@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 
 export class TasksStatisticsManager {
+  // Helpers
   async getBasics(user: User): Promise<StatisticsTasksBasicData> {
     let tasksCreatedTodayCount = 0;
     let tasksCreatedYesterdayCount = 0;

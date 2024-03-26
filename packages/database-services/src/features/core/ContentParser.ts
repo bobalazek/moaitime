@@ -1,4 +1,5 @@
 export class ContentParser {
+  // Helpers
   parse(
     content: string,
     variables: Record<string, unknown>,

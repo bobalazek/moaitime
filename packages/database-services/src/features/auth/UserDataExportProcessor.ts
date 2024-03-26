@@ -35,6 +35,7 @@ export class UserDataExportProcessor {
     private _moodEntriesManager: MoodEntriesManager
   ) {}
 
+  // Helpers
   async processNextPending() {
     // TODO: implement retry mechanism in case of failure
 
@@ -105,6 +106,7 @@ export class UserDataExportProcessor {
     this._logger = logger;
   }
 
+  // Private
   async _saveCalendars(userId: string, tmpUserDataExportDir: string) {
     this._logger.debug(`Fetching calendars for user (id: ${userId}) ...`);
 

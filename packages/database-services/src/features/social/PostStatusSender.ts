@@ -11,6 +11,7 @@ import { PostsManager, postsManager } from './PostsManager';
 export class PostStatusSender {
   constructor(private _postsManager: PostsManager) {}
 
+  // Helpers
   async sendUserCreatedPost(user: User): Promise<Post> {
     const data = {
       variables: {

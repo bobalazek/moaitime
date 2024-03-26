@@ -13,6 +13,7 @@ export class UserDeletionProcessor {
     private _usersManager: UsersManager
   ) {}
 
+  // Helpers
   async processOverdueForDeletion(now = new Date()) {
     this._logger.info('Processing overdue users for deletion ...');
 

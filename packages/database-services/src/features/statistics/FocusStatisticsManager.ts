@@ -9,6 +9,7 @@ import {
 } from '@moaitime/shared-common';
 
 export class FocusStatisticsManager {
+  // Helpers
   async getBasics(user: User): Promise<StatisticsFocusBasicData> {
     let focusSessionsCreatedTodayCount = 0;
     let focusSessionsCreatedYesterdayCount = 0;

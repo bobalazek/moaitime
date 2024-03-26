@@ -11,109 +11,6 @@ export type TagsManagerFindManyByUserIdOptions = {
 };
 
 export class TagsManager {
-  async findManyByUserId(
-    userId: string,
-    options?: TagsManagerFindManyByUserIdOptions
-  ): Promise<Tag[]> {
-    let where: SQL<unknown>;
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (teamIds.length === 0) {
-      where = eq(tags.userId, userId);
-    } else {
-      where = or(eq(tags.userId, userId), inArray(tags.teamId, teamIds)) as SQL<unknown>;
-    }
-
-    if (!options?.includeDeleted) {
-      where = and(where, isNull(tags.deletedAt)) as SQL<unknown>;
-    }
-
-    return getDatabase().query.tags.findMany({
-      where,
-      orderBy: [desc(tags.teamId), desc(tags.createdAt)],
-    });
-  }
-
-  async findManyByTagIds(tagIds: string[]): Promise<Tag[]> {
-    if (tagIds.length === 0) {
-      return [];
-    }
-
-    const rows = await getDatabase().query.tags.findMany({
-      where: inArray(tags.id, tagIds),
-    });
-
-    return rows;
-  }
-
-  async findOneById(tagId: string): Promise<Tag | null> {
-    const row = await getDatabase().query.tags.findFirst({
-      where: eq(tags.id, tagId),
-    });
-
-    return row ?? null;
-  }
-
-  async findOneByIdAndUserId(tagId: string, userId: string): Promise<Tag | null> {
-    const row = await getDatabase().query.tags.findFirst({
-      where: and(eq(tags.id, tagId), eq(tags.userId, userId)),
-    });
-
-    return row ?? null;
-  }
-
-  async insertOne(data: NewTag): Promise<Tag> {
-    const rows = await getDatabase().insert(tags).values(data).returning();
-
-    return rows[0];
-  }
-
-  async updateOneById(tagId: string, data: Partial<NewTag>): Promise<Tag> {
-    const rows = await getDatabase()
-      .update(tags)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(tags.id, tagId))
-      .returning();
-
-    return rows[0];
-  }
-
-  async deleteOneById(tagId: string): Promise<Tag> {
-    const rows = await getDatabase().delete(tags).where(eq(tags.id, tagId)).returning();
-
-    return rows[0];
-  }
-
-  // Permissions
-  async userCanView(userId: string, tagId: string): Promise<boolean> {
-    const row = await getDatabase().query.tags.findFirst({
-      where: eq(tags.id, tagId),
-    });
-
-    if (!row) {
-      return false;
-    }
-
-    if (row.userId === userId) {
-      return true;
-    }
-
-    const teamIds = await usersManager.getTeamIds(userId);
-    if (row.teamId && teamIds.includes(row.teamId)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  async userCanUpdate(userId: string, tagId: string): Promise<boolean> {
-    return this.userCanView(userId, tagId);
-  }
-
-  async userCanDelete(userId: string, tagId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, tagId);
-  }
-
   // API Helpers
   async list(actorUserId: string, includeDeleted?: boolean) {
     return this.findManyByUserId(actorUserId, {
@@ -224,7 +121,110 @@ export class TagsManager {
     return undeletedTag;
   }
 
+  // Permissions
+  async userCanView(userId: string, tagId: string): Promise<boolean> {
+    const row = await getDatabase().query.tags.findFirst({
+      where: eq(tags.id, tagId),
+    });
+
+    if (!row) {
+      return false;
+    }
+
+    if (row.userId === userId) {
+      return true;
+    }
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (row.teamId && teamIds.includes(row.teamId)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async userCanUpdate(userId: string, tagId: string): Promise<boolean> {
+    return this.userCanView(userId, tagId);
+  }
+
+  async userCanDelete(userId: string, tagId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, tagId);
+  }
+
   // Helpers
+  async findManyByUserId(
+    userId: string,
+    options?: TagsManagerFindManyByUserIdOptions
+  ): Promise<Tag[]> {
+    let where: SQL<unknown>;
+
+    const teamIds = await usersManager.getTeamIds(userId);
+    if (teamIds.length === 0) {
+      where = eq(tags.userId, userId);
+    } else {
+      where = or(eq(tags.userId, userId), inArray(tags.teamId, teamIds)) as SQL<unknown>;
+    }
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(tags.deletedAt)) as SQL<unknown>;
+    }
+
+    return getDatabase().query.tags.findMany({
+      where,
+      orderBy: [desc(tags.teamId), desc(tags.createdAt)],
+    });
+  }
+
+  async findManyByTagIds(tagIds: string[]): Promise<Tag[]> {
+    if (tagIds.length === 0) {
+      return [];
+    }
+
+    const rows = await getDatabase().query.tags.findMany({
+      where: inArray(tags.id, tagIds),
+    });
+
+    return rows;
+  }
+
+  async findOneById(tagId: string): Promise<Tag | null> {
+    const row = await getDatabase().query.tags.findFirst({
+      where: eq(tags.id, tagId),
+    });
+
+    return row ?? null;
+  }
+
+  async findOneByIdAndUserId(tagId: string, userId: string): Promise<Tag | null> {
+    const row = await getDatabase().query.tags.findFirst({
+      where: and(eq(tags.id, tagId), eq(tags.userId, userId)),
+    });
+
+    return row ?? null;
+  }
+
+  async insertOne(data: NewTag): Promise<Tag> {
+    const rows = await getDatabase().insert(tags).values(data).returning();
+
+    return rows[0];
+  }
+
+  async updateOneById(tagId: string, data: Partial<NewTag>): Promise<Tag> {
+    const rows = await getDatabase()
+      .update(tags)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(tags.id, tagId))
+      .returning();
+
+    return rows[0];
+  }
+
+  async deleteOneById(tagId: string): Promise<Tag> {
+    const rows = await getDatabase().delete(tags).where(eq(tags.id, tagId)).returning();
+
+    return rows[0];
+  }
+
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({

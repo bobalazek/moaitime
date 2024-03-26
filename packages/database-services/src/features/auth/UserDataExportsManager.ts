@@ -9,6 +9,7 @@ import {
 import { ProcessingStatusEnum } from '@moaitime/shared-common';
 
 export class UserDataExportsManager {
+  // Helpers
   async findOneById(userDataExportId: string): Promise<UserDataExport | null> {
     const row = await getDatabase().query.userDataExports.findFirst({
       where: eq(userDataExports.id, userDataExportId),

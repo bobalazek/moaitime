@@ -72,7 +72,7 @@ export class AuthManager {
     private _postStatusSender: PostStatusSender
   ) {}
 
-  // Login
+  // Helpers
   async loginWithUserId(
     userId: string,
     userAgent?: string,
@@ -140,7 +140,6 @@ export class AuthManager {
     return true;
   }
 
-  // OAuth
   async oauthLogin(
     oauthProvider: OauthProviderEnum,
     oauthToken: OauthToken,
@@ -224,7 +223,6 @@ export class AuthManager {
     return updatedUser;
   }
 
-  // Register
   async register(data: RegisterUser): Promise<User> {
     const { password, oauth, ...user } = data;
 
@@ -368,7 +366,6 @@ export class AuthManager {
     return newUser;
   }
 
-  // Email confirmation
   async confirmEmail(emailConfirmationToken: string, isNewEmail = false): Promise<User> {
     const user = isNewEmail
       ? await this._usersManager.findOneByNewEmailConfirmationToken(emailConfirmationToken)
@@ -485,7 +482,6 @@ export class AuthManager {
     return updatedUser;
   }
 
-  // Password reset
   async requestPasswordReset(email: string): Promise<User> {
     const user = await this._usersManager.findOneByEmail(email);
     if (!user) {
@@ -550,7 +546,6 @@ export class AuthManager {
     return updatedUser;
   }
 
-  // Data export
   async requestDataExport(userId: string): Promise<User> {
     const user = await this._usersManager.findOneById(userId);
     if (!user) {
@@ -578,7 +573,6 @@ export class AuthManager {
     return user;
   }
 
-  // Account deletion
   async requestAccountDeletion(userId: string): Promise<User> {
     const user = await this._usersManager.findOneById(userId);
     if (!user) {
@@ -641,7 +635,6 @@ export class AuthManager {
     return updatedUser;
   }
 
-  // Refresh token
   async refreshToken(refreshToken: string): Promise<AuthLoginResult> {
     const userAccessToken = await this._userAccessTokensManager.findOneByRefreshToken(refreshToken);
     if (!userAccessToken) {
@@ -681,7 +674,6 @@ export class AuthManager {
     };
   }
 
-  // Settings
   async update(userId: string, data: Partial<NewUser>): Promise<User> {
     const user = await this._usersManager.findOneById(userId);
     if (!user) {
@@ -916,7 +908,6 @@ export class AuthManager {
     return updatedUser;
   }
 
-  // Helpers
   async getUserByCredentials(email: string, password: string): Promise<User> {
     const user = await this._usersManager.findOneByEmail(email);
     if (!user) {

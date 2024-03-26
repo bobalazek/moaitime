@@ -4,6 +4,7 @@ import { StatisticsGeneralBasicData } from '@moaitime/shared-common';
 import { usersManager } from '../auth/UsersManager';
 
 export class StatisticsManager {
+  // Helpers
   async getGeneral(user: User): Promise<StatisticsGeneralBasicData> {
     const userUsage = await usersManager.getUserUsage(user);
 

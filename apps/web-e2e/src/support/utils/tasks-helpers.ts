@@ -17,8 +17,11 @@ export function openTasksFirstListActions() {
 export function openTasksNewListDropdownMenu() {
   cy.getBySel('tasks--body-header--lists-list--dropdown-menu--trigger-button').click();
 
-  cy.getBySel('tasks--selected-list--dropdown-menu--add-new-button').click();
+  cy.getBySel('tasks--lists-list--header--dropdown-menu--trigger-button').click();
+
+  cy.getBySel('tasks--lists-list--header--dropdown-menu--add-new-button').click();
 }
+
 export function addMultipleTasks() {
   const addAndWaitForTask = (taskName: string) => {
     const aliasName = `createTask-${taskName}`;

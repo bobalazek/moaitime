@@ -1,4 +1,4 @@
-import { PlusIcon, UsersIcon } from 'lucide-react';
+import { UsersIcon } from 'lucide-react';
 
 import { List } from '@moaitime/shared-common';
 import {
@@ -14,6 +14,7 @@ import {
 import UsageBadge from '../../../core/components/UsageBadge';
 import { useListsStore } from '../../state/listsStore';
 import ListActions from './ListActions';
+import ListsHeaderActions from './ListsHeaderActions';
 
 export default function ListsSelectedListDropdownMenuContent({
   isSubContent = false,
@@ -22,8 +23,7 @@ export default function ListsSelectedListDropdownMenuContent({
   isSubContent?: boolean;
   onListSelect?: (list?: List) => void;
 }) {
-  const { selectedList, lists, tasksCountMap, setSelectedList, setSelectedListDialogOpen } =
-    useListsStore();
+  const { selectedList, lists, tasksCountMap, setSelectedList } = useListsStore();
 
   const Content = isSubContent ? DropdownMenuSubContent : DropdownMenuContent;
   const showHeader = !isSubContent;
@@ -52,18 +52,7 @@ export default function ListsSelectedListDropdownMenuContent({
               <span className="mr-1 font-bold">Lists</span>
               <UsageBadge limitKey="listsMaxPerUserCount" usageKey="listsCount" />
             </div>
-            <DropdownMenuItem asChild>
-              <button
-                type="button"
-                className="cursor-pointer rounded-full"
-                data-test="tasks--selected-list--dropdown-menu--add-new-button"
-                onClick={() => {
-                  setSelectedListDialogOpen(true, null);
-                }}
-              >
-                <PlusIcon className="h-4 w-4" />
-              </button>
-            </DropdownMenuItem>
+            <ListsHeaderActions />
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
         </>
@@ -127,7 +116,11 @@ export default function ListsSelectedListDropdownMenuContent({
                 </span>
               )}
             </span>
-            {showListActions && <ListActions list={list} />}
+            {showListActions && (
+              <div className="absolute right-1 top-1 ml-2">
+                <ListActions list={list} />
+              </div>
+            )}
           </DropdownMenuRadioItem>
         ))}
       </DropdownMenuRadioGroup>

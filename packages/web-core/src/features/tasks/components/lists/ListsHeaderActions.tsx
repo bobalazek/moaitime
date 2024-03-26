@@ -1,7 +1,6 @@
-import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
-import { memo, useState } from 'react';
+import { MoreVerticalIcon, PlusIcon, TrashIcon } from 'lucide-react';
+import { useState } from 'react';
 
-import { List } from '@moaitime/shared-common';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +10,8 @@ import {
 
 import { useListsStore } from '../../state/listsStore';
 
-const ListActions = memo(({ list }: { list: List }) => {
-  const { setSelectedListDialogOpen, setListDeleteAlertDialogOpen } = useListsStore();
+const ListsHeaderActions = () => {
+  const { setSelectedListDialogOpen } = useListsStore();
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,7 +19,7 @@ const ListActions = memo(({ list }: { list: List }) => {
       <DropdownMenuTrigger asChild>
         <button
           className="rounded-full p-1 text-sm"
-          data-test="tasks--list-actions--dropdown-menu--trigger-button"
+          data-test="tasks--lists-list--header--dropdown-menu--trigger-button"
         >
           <MoreVerticalIcon className="h-4 w-4" />
         </button>
@@ -28,7 +27,7 @@ const ListActions = memo(({ list }: { list: List }) => {
       <DropdownMenuContent
         className="w-56"
         align="end"
-        data-test="tasks--list-actions--dropdown-menu"
+        data-test="tasks--lists-list--header--dropdown-menu"
       >
         <DropdownMenuItem
           className="cursor-pointer"
@@ -36,31 +35,33 @@ const ListActions = memo(({ list }: { list: List }) => {
             event.preventDefault();
             event.stopPropagation();
 
-            setSelectedListDialogOpen(true, list);
+            setSelectedListDialogOpen(true, null);
 
             setOpen(false);
           }}
+          data-test="tasks--lists-list--header--dropdown-menu--add-new-button"
         >
-          <PencilIcon className="mr-2 h-4 w-4" />
-          <span>Edit</span>
+          <PlusIcon className="mr-2 h-4 w-4" />
+          <span>Add new list</span>
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="cursor-pointer text-red-500"
+          className="cursor-pointer"
           onClick={async (event) => {
             event.preventDefault();
             event.stopPropagation();
 
-            setListDeleteAlertDialogOpen(true, list);
+            // TODO
 
             setOpen(false);
           }}
+          data-test="tasks--lists-list--header--dropdown-menu--view-deleted-button"
         >
           <TrashIcon className="mr-2 h-4 w-4" />
-          <span>Delete</span>
+          <span>Show Deleted Lists</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-});
+};
 
-export default ListActions;
+export default ListsHeaderActions;

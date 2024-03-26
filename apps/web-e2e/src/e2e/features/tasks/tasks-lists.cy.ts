@@ -201,7 +201,9 @@ describe('tasks-lists.cy.ts', () => {
 
     cy.getBySel('tasks--body-header--lists-list--dropdown-menu--trigger-button').click();
 
-    cy.getBySel('tasks--selected-list--dropdown-menu--add-new-button').click();
+    cy.getBySel('tasks--lists-list--header--dropdown-menu--trigger-button').click();
+
+    cy.getBySel('tasks--lists-list--header--dropdown-menu--add-new-button').click();
 
     cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').click();
 

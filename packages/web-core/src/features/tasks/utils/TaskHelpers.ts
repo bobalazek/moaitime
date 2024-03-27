@@ -130,7 +130,7 @@ export const nudgeTask = async (taskId: string, userIds: string[]): Promise<Task
   return response.data as Task;
 };
 
-export const reorderTask = async (
+export const reorderTasks = async (
   originalTaskId: string,
   newTaskId: string,
   sortDirection: SortDirectionEnum,

@@ -1,4 +1,11 @@
-import { FileEditIcon, HistoryIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  FileEditIcon,
+  HistoryIcon,
+  MoreVerticalIcon,
+  TrashIcon,
+} from 'lucide-react';
 import { memo, useState } from 'react';
 
 import { Habit } from '@moaitime/shared-common';
@@ -14,13 +21,72 @@ import {
 import { useHabitsStore } from '../../state/habitsStore';
 
 const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
-  const { deleteHabit, undeleteHabit, setSelectedHabitDialogOpen } = useHabitsStore();
+  const { habits, deleteHabit, undeleteHabit, reorderHabits, setSelectedHabitDialogOpen } =
+    useHabitsStore();
   const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
 
   const onEditButtonClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
 
     setSelectedHabitDialogOpen(true, habit);
+  };
+
+  const onMoveUpButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.stopPropagation();
+
+    try {
+      let previousHabitId: string | undefined = undefined;
+      for (const currentHabit of habits) {
+        if (habit.id === currentHabit.id) {
+          break;
+        }
+
+        previousHabitId = currentHabit.id;
+      }
+
+      if (!previousHabitId) {
+        return;
+      }
+
+      await reorderHabits(habit.id, previousHabitId);
+
+      sonnerToast.success(`Habit "${habit.name}" moved up`, {
+        description: 'The habit was successfully moved up!',
+      });
+    } catch (error) {
+      // Already handled by the fetch function
+    }
+  };
+
+  const onMoveDownButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.stopPropagation();
+
+    try {
+      let nextHabitId: string | undefined = undefined;
+      let foundCurrentHabit = false;
+      for (const currentHabit of habits) {
+        if (foundCurrentHabit) {
+          nextHabitId = currentHabit.id;
+          break;
+        }
+
+        if (habit.id === currentHabit.id) {
+          foundCurrentHabit = true;
+        }
+      }
+
+      if (!nextHabitId) {
+        return;
+      }
+
+      await reorderHabits(habit.id, nextHabitId);
+
+      sonnerToast.success(`Habit "${habit.name}" moved down`, {
+        description: 'The habit was successfully moved down!',
+      });
+    } catch (error) {
+      // Already handled by the fetch function
+    }
   };
 
   const onDeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -95,6 +161,14 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
               <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>
                 <FileEditIcon className="mr-2 h-4 w-4" />
                 <span>Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={onMoveUpButtonClick}>
+                <ArrowUpIcon className="mr-2 h-4 w-4" />
+                <span>Move Up</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={onMoveDownButtonClick}>
+                <ArrowDownIcon className="mr-2 h-4 w-4" />
+                <span>Move Down</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"

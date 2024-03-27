@@ -88,14 +88,14 @@ export class TasksManager {
   async reorder(
     actorUserId: string,
     listId: string | null,
-    data: {
+    options: {
       sortDirection: SortDirectionEnum;
       listId: string | null;
       originalTaskId: string;
       newTaskId: string;
     }
   ) {
-    const { sortDirection, listId: newListId, originalTaskId, newTaskId } = data;
+    const { sortDirection, listId: newListId, originalTaskId, newTaskId } = options;
 
     let teamId: string | undefined = undefined;
     if (listId) {
@@ -773,14 +773,6 @@ export class TasksManager {
     return this._fixRowColumns(rows[0]);
   }
 
-  async updateReorder(map: { [key: string]: number }) {
-    return getDatabase().transaction(async (tx) => {
-      for (const taskId in map) {
-        await tx.update(tasks).set({ order: map[taskId] }).where(eq(tasks.id, taskId));
-      }
-    });
-  }
-
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({
@@ -865,7 +857,11 @@ export class TasksManager {
       });
     }
 
-    await this.updateReorder(reorderMap);
+    await getDatabase().transaction(async (tx) => {
+      for (const taskId in reorderMap) {
+        await tx.update(tasks).set({ order: reorderMap[taskId] }).where(eq(tasks.id, taskId));
+      }
+    });
   }
 
   /**

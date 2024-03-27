@@ -109,6 +109,17 @@ export const undeleteHabit = async (habitId: string): Promise<Habit> => {
   return response.data as Habit;
 };
 
+export const reorderHabits = async (originalHabitId: string, newHabitId: string) => {
+  return fetchJson<ResponseInterface<Habit>>(`${API_URL}/api/v1/habits/reorder`, {
+    method: 'POST',
+    body: JSON.stringify({ originalHabitId, newHabitId }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
 /********** Habits Daily **********/
 export const getHabitsDaily = async (date: string): Promise<HabitDaily[]> => {
   const response = await fetchJson<ResponseInterface<HabitDaily[]>>(

@@ -63,6 +63,7 @@ export enum GlobalEventsEnum {
   HABITS_HABIT_EDITED = 'habits:habit:edited',
   HABITS_HABIT_DELETED = 'habits:habit:deleted',
   HABITS_HABIT_UNDELETED = 'habits:hait:undeleted',
+  HABITS_REORDERED = 'habits:reordered',
   // Notes
   NOTES_NOTE_ADDED = 'notes:note:added',
   NOTES_NOTE_EDITED = 'notes:note:edited',
@@ -429,6 +430,10 @@ export type GlobalEvents = {
   [GlobalEventsEnum.HABITS_HABIT_UNDELETED]: {
     actorUserId: string;
     habitId: string;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.HABITS_REORDERED]: {
+    actorUserId: string;
     actorWebsocketToken?: string;
   };
   // Notes

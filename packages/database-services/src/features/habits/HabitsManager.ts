@@ -343,8 +343,12 @@ export class HabitsManager {
   async create(actorUser: User, data: CreateHabit) {
     await this._checkIfLimitReached(actorUser);
 
+    const maxOrder = await this.getMaxOrderForUserId(actorUser.id);
+    const order = maxOrder + 1;
+
     const habit = await this.insertOne({
       ...data,
+      order,
       userId: actorUser.id,
     });
 
@@ -417,11 +421,50 @@ export class HabitsManager {
     return undeletedHabit;
   }
 
+  async reorder(
+    actorUserId: string,
+    options: {
+      originalHabitId: string;
+      newHabitId: string;
+    }
+  ) {
+    const { originalHabitId, newHabitId } = options;
+
+    await this.reorderHabits(actorUserId, originalHabitId, newHabitId);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.HABITS_REORDERED, {
+      actorUserId: actorUserId,
+    });
+  }
+
+  // Permissions
+  async userCanView(userId: string, habitId: string): Promise<boolean> {
+    const row = await getDatabase().query.habits.findFirst({
+      where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
+    });
+
+    return !!row;
+  }
+
+  async userCanUpdate(userId: string, habitId: string): Promise<boolean> {
+    return this.userCanView(userId, habitId);
+  }
+
+  async userCanDelete(userId: string, habitId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, habitId);
+  }
+
   // Helpers
-  async findManyByUserId(userId: string): Promise<Habit[]> {
+  async findManyByUserId(userId: string, options?: { includeDeleted: boolean }): Promise<Habit[]> {
+    let where = eq(habits.userId, userId);
+
+    if (!options?.includeDeleted) {
+      where = and(where, isNull(habits.deletedAt)) as SQL<unknown>;
+    }
+
     return getDatabase().query.habits.findMany({
-      where: and(eq(habits.userId, userId), isNull(habits.deletedAt)),
-      orderBy: desc(habits.createdAt),
+      where,
+      orderBy: [asc(habits.order), desc(habits.createdAt)],
     });
   }
 
@@ -485,23 +528,6 @@ export class HabitsManager {
     return rows[0];
   }
 
-  // Permissions
-  async userCanView(userId: string, habitId: string): Promise<boolean> {
-    const row = await getDatabase().query.habits.findFirst({
-      where: and(eq(habits.id, habitId), eq(habits.userId, userId)),
-    });
-
-    return !!row;
-  }
-
-  async userCanUpdate(userId: string, habitId: string): Promise<boolean> {
-    return this.userCanView(userId, habitId);
-  }
-
-  async userCanDelete(userId: string, habitId: string): Promise<boolean> {
-    return this.userCanUpdate(userId, habitId);
-  }
-
   async countByUserId(userId: string): Promise<number> {
     const result = await getDatabase()
       .select({
@@ -512,6 +538,49 @@ export class HabitsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  async reorderHabits(userId: string, originalHabitId: string, newHabitId: string) {
+    const result = await this.findManyByUserId(userId, {
+      includeDeleted: true,
+    });
+
+    const originalIndex = result.findIndex((habit) => habit.id === originalHabitId);
+    const newIndex = result.findIndex((habit) => habit.id === newHabitId);
+
+    if (originalIndex === -1 || newIndex === -1) {
+      throw new Error('Habit not found.');
+    }
+
+    const [movedHabit] = result.splice(originalIndex, 1);
+    result.splice(newIndex, 0, movedHabit);
+
+    const reorderMap: { [key: string]: number } = {};
+    result.forEach((habit, index) => {
+      reorderMap[habit.id] = index;
+    });
+
+    await getDatabase().transaction(async (tx) => {
+      for (const habitId in reorderMap) {
+        await tx.update(habits).set({ order: reorderMap[habitId] }).where(eq(habits.id, habitId));
+      }
+    });
+  }
+
+  async getMaxOrderForUserId(userId: string): Promise<number> {
+    const rows = await getDatabase()
+      .select()
+      .from(habits)
+      .where(eq(habits.userId, userId))
+      .orderBy(desc(habits.order))
+      .limit(1)
+      .execute();
+
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    return rows[0].order ?? 0;
   }
 
   async updateHabitEntry(habitEntry: HabitEntry, amount: number) {

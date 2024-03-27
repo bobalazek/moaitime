@@ -9,6 +9,7 @@ import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { CreateHabitDto } from '../dtos/create-habit.dto';
+import { ReorderHabitsDto } from '../dtos/reorder-habits.dto';
 import { UpdateHabitDto } from '../dtos/update-habit.dto';
 
 @Controller('/api/v1/habits')
@@ -21,6 +22,16 @@ export class HabitsController {
     return {
       success: true,
       data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('reorder')
+  async reorder(@Body() body: ReorderHabitsDto, @Req() req: Request) {
+    await habitsManager.reorder(req.user.id, body);
+
+    return {
+      success: true,
     };
   }
 

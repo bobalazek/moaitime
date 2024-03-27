@@ -19,6 +19,7 @@ import {
   getHabit,
   getHabits,
   getHabitTemplates,
+  reorderHabits,
   undeleteHabit,
   updateHabitDaily,
 } from '../utils/HabitHelpers';
@@ -27,12 +28,14 @@ export type HabitsStore = {
   /********** Habits **********/
   // General
   habits: Habit[];
+  setHabits: (habits: Habit[]) => void;
   reloadHabits: () => Promise<Habit[]>;
   getHabit: (habitId: string) => Promise<Habit | null>;
   addHabit: (data: CreateHabit) => Promise<Habit>;
   editHabit: (habitId: string, data: UpdateHabit) => Promise<Habit>;
   deleteHabit: (habitId: string, isHardDelete?: boolean) => Promise<Habit>;
   undeleteHabit: (habitId: string) => Promise<Habit>;
+  reorderHabits: (activeHabitId: string, overHabitId: string) => Promise<void>;
   updateHabitDaily: (habitId: string, date: string, amount: number) => Promise<HabitDailyEntry>;
   // Selected Date
   selectedDate: Date;
@@ -63,6 +66,11 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
   /********** Habits **********/
   // General
   habits: [],
+  setHabits: (habits: Habit[]) => {
+    set({
+      habits,
+    });
+  },
   reloadHabits: async () => {
     const habits = await getHabits();
 
@@ -152,6 +160,13 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
     });
 
     return undeletedHabit;
+  },
+  reorderHabits: async (originalHabitId: string, newHabitId: string) => {
+    const { reloadHabits } = get();
+
+    await reorderHabits(originalHabitId, newHabitId);
+
+    await reloadHabits();
   },
   updateHabitDaily: async (habitId: string, date: string, amount: number) => {
     const habitDailyEntry = await updateHabitDaily(habitId, date, amount);

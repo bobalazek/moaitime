@@ -14,7 +14,7 @@ import {
   getTask,
   getTasks,
   nudgeTask,
-  reorderTask,
+  reorderTasks,
   uncompleteTask,
   undeleteTask,
 } from '../utils/TaskHelpers';
@@ -318,7 +318,7 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
 
     setSelectedListTasks(newSelectedListTasks);
 
-    await reorderTask(
+    await reorderTasks(
       originalTaskId,
       newTaskId,
       selectedListTasksSortDirection,

@@ -348,13 +348,7 @@ export function PlateEditor({
             plugins={plugins}
             initialValue={value}
             normalizeInitialValue={true}
-            onChange={(newValue) => {
-              // There is an issue with Plate or Slate, where it will trigger a change event on focus,
-              // so this is a workaround to prevent that.
-              if (onChange && newValue !== value) {
-                onChange(newValue);
-              }
-            }}
+            onChange={onChange}
           >
             <FixedToolbar className="mb-2">
               <FixedToolbarButtons />

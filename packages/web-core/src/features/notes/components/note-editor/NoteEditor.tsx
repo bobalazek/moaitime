@@ -1,3 +1,5 @@
+import { isEqual } from 'lodash';
+
 import { UpdateNote } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
 import { PlateEditor } from '@moaitime/web-ui-editor';
@@ -32,6 +34,10 @@ export const NoteEditor = () => {
           key={plateEditorKey}
           value={selectedNoteData?.content}
           onChange={(value) => {
+            if (isEqual(selectedNoteData?.content, value)) {
+              return;
+            }
+
             setSelectedNoteData({
               ...selectedNoteData,
               content: value,

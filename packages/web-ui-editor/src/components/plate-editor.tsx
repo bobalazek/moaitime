@@ -347,6 +347,7 @@ export function PlateEditor({
           <Plate
             plugins={plugins}
             initialValue={value}
+            normalizeInitialValue={true}
             onChange={(newValue) => {
               // There is an issue with Plate or Slate, where it will trigger a change event on focus,
               // so this is a workaround to prevent that.

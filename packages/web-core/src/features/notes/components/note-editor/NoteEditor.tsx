@@ -8,7 +8,7 @@ import { useNotesStore } from '../../state/notesStore';
 export const NoteEditor = () => {
   const { selectedNote, selectedNoteData, setSelectedNoteData } = useNotesStore();
 
-  const plateEditorKey = selectedNote ? `${selectedNote.id}-${selectedNote.updatedAt}` : 'new';
+  const plateEditorKey = selectedNote ? selectedNote.id : 'new';
 
   return (
     <div className="flex select-none flex-col" data-test="note-editor">

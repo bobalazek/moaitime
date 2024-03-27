@@ -166,6 +166,10 @@ export const useHabitsStore = create<HabitsStore>()((set, get) => ({
 
     await reorderHabits(originalHabitId, newHabitId);
 
+    queryClient.invalidateQueries({
+      queryKey: [HABITS_DAILY_QUERY_KEY],
+    });
+
     await reloadHabits();
   },
   updateHabitDaily: async (habitId: string, date: string, amount: number) => {

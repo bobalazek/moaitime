@@ -840,26 +840,29 @@ export class TasksManager {
       sortDirection,
     });
 
-    const originalIndex = result.findIndex((task) => task.id === originalTaskId);
-    const newIndex = result.findIndex((task) => task.id === newTaskId);
+    const originalIndex = result.findIndex((entry) => entry.id === originalTaskId);
+    const newIndex = result.findIndex((entry) => entry.id === newTaskId);
+    if (originalIndex === -1 || newIndex === -1) {
+      throw new Error('Task not found.');
+    }
 
-    const [movedTask] = result.splice(originalIndex, 1);
-    result.splice(newIndex, 0, movedTask);
+    const [movedEntry] = result.splice(originalIndex, 1);
+    result.splice(newIndex, 0, movedEntry);
 
     const reorderMap: { [key: string]: number } = {};
     if (sortDirection === SortDirectionEnum.ASC) {
-      result.forEach((task, index) => {
-        reorderMap[task.id] = index;
+      result.forEach((entry, index) => {
+        reorderMap[entry.id] = index;
       });
     } else {
-      result.forEach((task, index) => {
-        reorderMap[task.id] = result.length - 1 - index;
+      result.forEach((entry, index) => {
+        reorderMap[entry.id] = result.length - 1 - index;
       });
     }
 
     await getDatabase().transaction(async (tx) => {
-      for (const taskId in reorderMap) {
-        await tx.update(tasks).set({ order: reorderMap[taskId] }).where(eq(tasks.id, taskId));
+      for (const entryId in reorderMap) {
+        await tx.update(tasks).set({ order: reorderMap[entryId] }).where(eq(tasks.id, entryId));
       }
     });
   }

@@ -44,15 +44,15 @@ import {
 
 import { usersManager } from '../auth/UsersManager';
 
-export type HabitsManagerFindManyByUserIdWithOptions = {
+export type HabitsManagerListOptions = {
   search?: string;
   includeDeleted?: boolean;
 };
 
 export class HabitsManager {
   // API Helpers
-  async list(actorUserId: string, options?: HabitsManagerFindManyByUserIdWithOptions) {
-    return this.findManyByUserIdWithOptions(actorUserId, options);
+  async list(actorUserId: string, options?: HabitsManagerListOptions) {
+    return this.findManyByUserId(actorUserId, options);
   }
 
   async listDeleted(actorUserId: string) {
@@ -455,23 +455,7 @@ export class HabitsManager {
   }
 
   // Helpers
-  async findManyByUserId(userId: string, options?: { includeDeleted: boolean }): Promise<Habit[]> {
-    let where = eq(habits.userId, userId);
-
-    if (!options?.includeDeleted) {
-      where = and(where, isNull(habits.deletedAt)) as SQL<unknown>;
-    }
-
-    return getDatabase().query.habits.findMany({
-      where,
-      orderBy: [asc(habits.order), desc(habits.createdAt)],
-    });
-  }
-
-  async findManyByUserIdWithOptions(
-    userId: string,
-    options?: HabitsManagerFindManyByUserIdWithOptions
-  ): Promise<Habit[]> {
+  async findManyByUserId(userId: string, options?: HabitsManagerListOptions): Promise<Habit[]> {
     let where = eq(habits.userId, userId);
 
     if (!options?.includeDeleted) {
@@ -545,24 +529,25 @@ export class HabitsManager {
       includeDeleted: true,
     });
 
-    const originalIndex = result.findIndex((habit) => habit.id === originalHabitId);
-    const newIndex = result.findIndex((habit) => habit.id === newHabitId);
+    console.log(originalHabitId, newHabitId);
 
+    const originalIndex = result.findIndex((entry) => entry.id === originalHabitId);
+    const newIndex = result.findIndex((entry) => entry.id === newHabitId);
     if (originalIndex === -1 || newIndex === -1) {
       throw new Error('Habit not found.');
     }
 
-    const [movedHabit] = result.splice(originalIndex, 1);
-    result.splice(newIndex, 0, movedHabit);
+    const [movedEntry] = result.splice(originalIndex, 1);
+    result.splice(newIndex, 0, movedEntry);
 
-    const reorderMap: { [key: string]: number } = {};
-    result.forEach((habit, index) => {
-      reorderMap[habit.id] = index;
+    const reorderMap: Record<string, number> = {};
+    result.forEach((entry, index) => {
+      reorderMap[entry.id] = index;
     });
 
     await getDatabase().transaction(async (tx) => {
-      for (const habitId in reorderMap) {
-        await tx.update(habits).set({ order: reorderMap[habitId] }).where(eq(habits.id, habitId));
+      for (const entryId in reorderMap) {
+        await tx.update(habits).set({ order: reorderMap[entryId] }).where(eq(habits.id, entryId));
       }
     });
   }

@@ -1,10 +1,26 @@
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
 
 import { ErrorAlert } from '../../../core/components/ErrorAlert';
 import { Loader } from '../../../core/components/Loader';
 import { useHabitsDailyQuery } from '../../hooks/useHabitsDailyQuery';
 import { useHabitsStore } from '../../state/habitsStore';
 import HabitDailyEntry from '../habit-daily-entry/HabitDailyEntry';
+
+const animationVariants = {
+  initial: {
+    opacity: 0,
+    y: 100,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: -100,
+  },
+};
 
 const HabitsDailyList = () => {
   const { selectedDate } = useHabitsStore();
@@ -38,7 +54,16 @@ const HabitsDailyList = () => {
         {data.length > 0 && (
           <div className="flex flex-col gap-4">
             {data.map((habitDaily) => (
-              <HabitDailyEntry key={habitDaily.id} habitDaily={habitDaily} />
+              <motion.div
+                key={habitDaily.id}
+                layout
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={animationVariants}
+              >
+                <HabitDailyEntry habitDaily={habitDaily} />
+              </motion.div>
             ))}
           </div>
         )}

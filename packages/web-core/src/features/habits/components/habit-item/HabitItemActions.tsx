@@ -20,10 +20,17 @@ import {
 
 import { useHabitsStore } from '../../state/habitsStore';
 
-const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
+export type HabitItemActionsProps = {
+  habit: Habit;
+};
+
+const HabitItemActions = memo(({ habit }: HabitItemActionsProps) => {
   const { habits, deleteHabit, undeleteHabit, reorderHabits, setSelectedHabitDialogOpen } =
     useHabitsStore();
   const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
+
+  const hideMoveUp = habits.findIndex((h) => h.id === habit.id) === 0;
+  const hideMoveDown = habits.findIndex((h) => h.id === habit.id) === habits.length - 1;
 
   const onEditButtonClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
@@ -36,12 +43,13 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
 
     try {
       let previousHabitId: string | undefined = undefined;
-      for (const currentHabit of habits) {
-        if (habit.id === currentHabit.id) {
-          break;
+      for (let i = 1; i < habits.length; i++) {
+        if (habits[i].id !== habit.id) {
+          continue;
         }
 
-        previousHabitId = currentHabit.id;
+        previousHabitId = habits[i - 1].id;
+        break;
       }
 
       if (!previousHabitId) {
@@ -62,18 +70,12 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
     event.stopPropagation();
 
     try {
-      let nextHabitId: string | undefined = undefined;
-      let foundCurrentHabit = false;
-      for (const currentHabit of habits) {
-        if (foundCurrentHabit) {
-          nextHabitId = currentHabit.id;
-          break;
-        }
-
-        if (habit.id === currentHabit.id) {
-          foundCurrentHabit = true;
-        }
-      }
+      const currentIndex = habits.findIndex((h) => h.id === habit.id);
+      const nextHabit =
+        currentIndex >= 0 && currentIndex < habits.length - 1
+          ? habits[currentIndex + 1]
+          : undefined;
+      const nextHabitId = nextHabit ? nextHabit.id : undefined;
 
       if (!nextHabitId) {
         return;
@@ -162,14 +164,18 @@ const HabitItemActions = memo(({ habit }: { habit: Habit }) => {
                 <FileEditIcon className="mr-2 h-4 w-4" />
                 <span>Edit</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={onMoveUpButtonClick}>
-                <ArrowUpIcon className="mr-2 h-4 w-4" />
-                <span>Move Up</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={onMoveDownButtonClick}>
-                <ArrowDownIcon className="mr-2 h-4 w-4" />
-                <span>Move Down</span>
-              </DropdownMenuItem>
+              {!hideMoveUp && (
+                <DropdownMenuItem className="cursor-pointer" onClick={onMoveUpButtonClick}>
+                  <ArrowUpIcon className="mr-2 h-4 w-4" />
+                  <span>Move Up</span>
+                </DropdownMenuItem>
+              )}
+              {!hideMoveDown && (
+                <DropdownMenuItem className="cursor-pointer" onClick={onMoveDownButtonClick}>
+                  <ArrowDownIcon className="mr-2 h-4 w-4" />
+                  <span>Move Down</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 variant="destructive"
                 className="cursor-pointer"

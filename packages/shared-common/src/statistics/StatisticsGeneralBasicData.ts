@@ -5,6 +5,7 @@ export type StatisticsGeneralBasicData = {
   notesCountTotal: number;
   calendarsCountTotal: number;
   eventsCountTotal: number;
+  habitsCountTotal: number;
   moodEntriesCountTotal: number;
   focusSessionsCountTotal: number;
 };

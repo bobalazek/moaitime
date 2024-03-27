@@ -61,5 +61,6 @@ export * from './features/statistics/StatisticsManager';
 export * from './features/statistics/CalendarStatisticsManager';
 export * from './features/statistics/TasksStatisticsManager';
 export * from './features/statistics/NotesStatisticsManager';
+export * from './features/statistics/HabitsStatisticsManager';
 export * from './features/statistics/MoodStatisticsManager';
 export * from './features/statistics/FocusStatisticsManager';

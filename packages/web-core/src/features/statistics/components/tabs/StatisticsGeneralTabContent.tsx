@@ -5,6 +5,7 @@ import {
   ListChecksIcon,
   ListIcon,
   NotebookPenIcon,
+  RepeatIcon,
   SmileIcon,
   TagsIcon,
 } from 'lucide-react';
@@ -28,6 +29,18 @@ const StatisticsGeneralTabContent = () => {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <StatisticsCard
+        title="Calendars"
+        value={data.calendarsCountTotal}
+        icon={CalendarIcon}
+        description="The number of calendars you created in total"
+      />
+      <StatisticsCard
+        title="Events"
+        value={data.eventsCountTotal}
+        icon={CalendarDaysIcon}
+        description="The number of events you created in total"
+      />
+      <StatisticsCard
         title="Tasks"
         value={data.tasksCountTotal}
         icon={ListChecksIcon}
@@ -46,22 +59,16 @@ const StatisticsGeneralTabContent = () => {
         description="The number of tags you created in total"
       />
       <StatisticsCard
+        title="Habits"
+        value={data.habitsCountTotal}
+        icon={RepeatIcon}
+        description="The number of notes you created in total"
+      />
+      <StatisticsCard
         title="Notes"
         value={data.notesCountTotal}
         icon={NotebookPenIcon}
         description="The number of notes you created in total"
-      />
-      <StatisticsCard
-        title="Calendars"
-        value={data.calendarsCountTotal}
-        icon={CalendarIcon}
-        description="The number of calendars you created in total"
-      />
-      <StatisticsCard
-        title="Events"
-        value={data.eventsCountTotal}
-        icon={CalendarDaysIcon}
-        description="The number of events you created in total"
       />
       <StatisticsCard
         title="Mood Entries"

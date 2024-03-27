@@ -15,6 +15,7 @@ export class StatisticsManager {
       notesCountTotal: userUsage.notesCount,
       calendarsCountTotal: userUsage.calendarsCount,
       eventsCountTotal: userUsage.eventsCount,
+      habitsCountTotal: userUsage.habitsCount,
       moodEntriesCountTotal: userUsage.moodEntriesCount,
       focusSessionsCountTotal: userUsage.focusSessionsCount,
     };

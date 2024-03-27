@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { CreateFocusSession, DEFAULT_USER_SETTINGS } from '@moaitime/shared-common';
-import { Button, cn, Input } from '@moaitime/web-ui';
+import { Button, Input } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { TaskAutocomplete } from '../../../core/components/selectors/TaskAutocomplete';
@@ -47,12 +47,12 @@ export default function CreateFocusSessionForm() {
 
   return (
     <div>
-      <div className="mt-8 flex flex-col gap-4">
+      <div className="flex flex-col flex-wrap gap-2 md:mt-8 md:gap-4">
         <div>I want to work on</div>
         <div className="flex justify-center">
           <TaskAutocomplete
-            inputWrapperClassName={cn('max-w-[480px]')}
-            inputClassName={cn('rounded-lg px-12 py-8 text-center text-2xl')}
+            inputWrapperClassName="max-w-[480px] bg-background"
+            inputClassName="rounded-lg px-8 py-8 text-center text-2xl"
             value={data.taskText ?? null}
             onChangeValue={(value) => {
               setData((current) => ({
@@ -156,7 +156,10 @@ export default function CreateFocusSessionForm() {
           <div>minutes.</div>
         </div>
       </div>
-      <Button className="mt-8 h-20 px-12 text-3xl uppercase" onClick={onSubmitButtonClick}>
+      <Button
+        className="mt-8 h-12 px-12 text-xl uppercase md:h-20 md:text-3xl"
+        onClick={onSubmitButtonClick}
+      >
         Let's go! 🚀
       </Button>
     </div>

@@ -289,9 +289,9 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     return selectedNoteData;
   },
   saveSelectedNoteData: async () => {
-    const { selectedNote, selectedNoteData, editNote, addNote } = get();
+    const { selectedNote, selectedNoteData, selectedNoteDataChanged, editNote, addNote } = get();
 
-    if (!selectedNoteData) {
+    if (!selectedNoteData || !selectedNoteDataChanged) {
       return null;
     }
 

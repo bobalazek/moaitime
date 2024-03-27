@@ -134,7 +134,11 @@ const NotesPageHeaderButtons = () => {
 
   const onSaveButtonClick = useCallback(async () => {
     try {
-      await saveSelectedNoteData();
+      const savedNote = await saveSelectedNoteData();
+      if (!savedNote) {
+        // Most likely means that we tried to save a non-dirty note
+        return;
+      }
 
       sonnerToast.success('Success!', {
         description: 'You have successfully saved the note!',

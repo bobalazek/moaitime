@@ -178,10 +178,15 @@ export class WebsocketManager {
 
       await reloadCalendarEntriesDebounced();
     } else if (data.type.startsWith('teams:team-member:')) {
-      const { reloadJoinedTeamMembers, reloadJoinedTeamUserInvitations } = useTeamsStore.getState();
+      const {
+        reloadJoinedTeamMembers,
+        reloadJoinedTeamUserInvitations,
+        reloadMyTeamUserInvitations,
+      } = useTeamsStore.getState();
 
       await reloadJoinedTeamMembers();
       await reloadJoinedTeamUserInvitations();
+      await reloadMyTeamUserInvitations();
     } else if (data.type.startsWith('tags:tag:')) {
       const { reloadTags } = useTagsStore.getState();
 

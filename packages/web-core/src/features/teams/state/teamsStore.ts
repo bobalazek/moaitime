@@ -227,11 +227,11 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
     return teamUserInvitation;
   },
   rejectTeamInvitation: async (teamUserInvitationId: string) => {
-    const { reloadJoinedTeamUserInvitations } = get();
+    const { reloadMyTeamUserInvitations } = get();
 
     const teamUserInvitation = await rejectTeamInvitation(teamUserInvitationId);
 
-    await reloadJoinedTeamUserInvitations();
+    await reloadMyTeamUserInvitations();
 
     return teamUserInvitation;
   },

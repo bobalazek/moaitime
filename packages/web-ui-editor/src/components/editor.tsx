@@ -59,6 +59,7 @@ const Editor = forwardRef<HTMLDivElement, EditorProps>(
               size,
               variant,
             }),
+            'min-h-80', // CUSTOM
             className
           )}
           disableDefaultStyles

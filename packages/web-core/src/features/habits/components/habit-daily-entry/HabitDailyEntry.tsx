@@ -82,6 +82,9 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
 
     try {
       await updateHabitDaily(habit.id, date, newAmount);
+    } catch (error) {
+      // Revert the amount if the update fails
+      setCurrentAmount(habitDaily.amount);
     } finally {
       setIsSaving(false);
     }
@@ -136,7 +139,12 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
       />
       <div className="z-10 flex w-full flex-wrap items-center justify-between gap-2 md:flex-nowrap">
         <div className="flex flex-col">
-          <h5 className="text-xl font-bold">{habit.name}</h5>
+          <h5 className="flex items-center gap-2 text-xl font-bold">
+            <span>{habit.name}</span>
+            {typeof habitDaily.streak === 'number' && habitDaily.streak > 0 && (
+              <span className="text-xs">🔥 {habitDaily.streak}</span>
+            )}
+          </h5>
           {habit.description && (
             <div
               className="text-sm"

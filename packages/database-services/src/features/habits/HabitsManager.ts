@@ -36,6 +36,7 @@ import {
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
   CreateHabit,
+  DayOfWeek,
   GlobalEventsEnum,
   HabitDaily,
   HabitGoalFrequencyEnum,
@@ -61,13 +62,12 @@ export class HabitsManager {
 
   async daily(actorUser: User, date: string): Promise<HabitDaily[]> {
     const dateObject = new Date(date);
-    const endOfDayDate = endOfDay(dateObject);
     const { generalStartDayOfWeek } = usersManager.getUserSettings(actorUser);
 
     const where = and(
       eq(habits.userId, actorUser.id),
       isNull(habits.deletedAt),
-      lte(habits.createdAt, endOfDayDate)
+      lte(habits.createdAt, endOfDay(dateObject)) // Only show habits that were created before the end of the day on that day
     );
     const allHabits = await getDatabase()
       .select()
@@ -79,138 +79,31 @@ export class HabitsManager {
       return [];
     }
 
-    const entriesMap = new Map<string, number>();
-
-    // Daily
-    const dailyHabitIds = allHabits
-      .filter((habit) => {
-        return habit.goalFrequency === HabitGoalFrequencyEnum.DAY;
-      })
-      .map((habit) => habit.id);
-    if (dailyHabitIds.length > 0) {
-      const startOfDayDate = startOfDay(dateObject);
-      const dailyHabitEntries = await getDatabase()
-        .select({
-          habitId: habitEntries.habitId,
-          sum: sum(habitEntries.amount).mapWith(Number),
-        })
-        .from(habitEntries)
-        .where(
-          and(
-            inArray(habitEntries.habitId, dailyHabitIds),
-            between(habitEntries.loggedAt, startOfDayDate, endOfDayDate)
-          )
-        )
-        .groupBy(habitEntries.habitId)
-        .execute();
-
-      for (const entry of dailyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.sum ?? 0);
-      }
-    }
-
-    // Weekly
-    const weeklyHabitIds = allHabits
-      .filter((habit) => {
-        return habit.goalFrequency === HabitGoalFrequencyEnum.WEEK;
-      })
-      .map((habit) => habit.id);
-    if (weeklyHabitIds.length > 0) {
-      const startOfWeekDate = startOfWeek(dateObject, {
-        weekStartsOn: generalStartDayOfWeek,
-      });
-      const endOfWeekDate = endOfWeek(dateObject, {
-        weekStartsOn: generalStartDayOfWeek,
-      });
-      const weeklyHabitEntries = await getDatabase()
-        .select({
-          habitId: habitEntries.habitId,
-          sum: sum(habitEntries.amount).mapWith(Number),
-        })
-        .from(habitEntries)
-        .where(
-          and(
-            inArray(habitEntries.habitId, weeklyHabitIds),
-            between(habitEntries.loggedAt, startOfWeekDate, endOfWeekDate)
-          )
-        )
-        .groupBy(habitEntries.habitId)
-        .execute();
-
-      for (const entry of weeklyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.sum ?? 0);
-      }
-    }
-
-    // Monthly
-    const monthlyHabitIds = allHabits
-      .filter((habit) => {
-        return habit.goalFrequency === HabitGoalFrequencyEnum.MONTH;
-      })
-      .map((habit) => habit.id);
-    if (monthlyHabitIds.length > 0) {
-      const startOfMonthDate = startOfMonth(dateObject);
-      const endOfMonthDate = endOfMonth(dateObject);
-      const monthlyHabitEntries = await getDatabase()
-        .select({
-          habitId: habitEntries.habitId,
-          sum: sum(habitEntries.amount).mapWith(Number),
-        })
-        .from(habitEntries)
-        .where(
-          and(
-            inArray(habitEntries.habitId, monthlyHabitIds),
-            between(habitEntries.loggedAt, startOfMonthDate, endOfMonthDate)
-          )
-        )
-        .groupBy(habitEntries.habitId)
-        .execute();
-
-      for (const entry of monthlyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.sum ?? 0);
-      }
-    }
-
-    // Yearly
-    const yearlyHabitIds = allHabits
-      .filter((habit) => {
-        return habit.goalFrequency === HabitGoalFrequencyEnum.YEAR;
-      })
-      .map((habit) => habit.id);
-    if (yearlyHabitIds.length > 0) {
-      const startOfYearDate = startOfYear(dateObject);
-      const endOfYearDate = endOfYear(dateObject);
-      const yearlyHabitEntries = await getDatabase()
-        .select({
-          habitId: habitEntries.habitId,
-          sum: sum(habitEntries.amount).mapWith(Number),
-        })
-        .from(habitEntries)
-        .where(
-          and(
-            inArray(habitEntries.habitId, yearlyHabitIds),
-            between(habitEntries.loggedAt, startOfYearDate, endOfYearDate)
-          )
-        )
-        .groupBy(habitEntries.habitId)
-        .execute();
-
-      for (const entry of yearlyHabitEntries) {
-        entriesMap.set(entry.habitId, entry.sum ?? 0);
-      }
-    }
+    const dailyHabitAmountMap = await this._getDailyHabitAmountsMap(
+      allHabits,
+      dateObject,
+      generalStartDayOfWeek
+    );
+    const dailyHabitStreakMap = await this._getDailyHabitStreaksMap(
+      allHabits,
+      dateObject,
+      generalStartDayOfWeek
+    );
 
     return allHabits.map((habit) => {
-      const amount = entriesMap.get(habit.id) ?? 0;
+      const amount = dailyHabitAmountMap.get(habit.id) ?? 0;
       let goalProgressPercentage = amount === 0 ? 0 : (amount / habit.goalAmount) * 100;
       if (goalProgressPercentage > 100) {
         goalProgressPercentage = 100;
       }
 
+      const streak = dailyHabitStreakMap.get(habit.id) ?? 0;
+
       return {
         id: `${habit.id}-${date}`,
         date,
         amount,
+        streak,
         goalProgressPercentage,
         intervalProgressPercentage: this._getIntervalProgressPercentage(
           dateObject,
@@ -243,12 +136,18 @@ export class HabitsManager {
   }
 
   async dailyUpdate(actorUser: User, habitId: string, date: string, newAmount: number) {
-    const habit = await this.view(actorUser.id, habitId);
+    const now = new Date();
+    const endOfToday = endOfDay(now);
 
     const loggedAt = new Date(date);
     const startOfDayDate = startOfDay(loggedAt);
     const endOfDayDate = endOfDay(loggedAt);
 
+    if (loggedAt > endOfToday) {
+      throw new Error('Cannot update habit entry for future dates');
+    }
+
+    const habit = await this.view(actorUser.id, habitId);
     const habitEntry = await getDatabase().query.habitEntries.findFirst({
       where: and(
         eq(habitEntries.habitId, habitId),
@@ -612,6 +511,148 @@ export class HabitsManager {
         `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
       );
     }
+  }
+
+  private async _getDailyHabitAmountsMap(
+    habits: Habit[],
+    date: Date,
+    generalStartDayOfWeek: DayOfWeek
+  ): Promise<Map<string, number>> {
+    const map = new Map<string, number>();
+
+    // Daily
+    const dailyHabitIds = habits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.DAY;
+      })
+      .map((habit) => habit.id);
+    if (dailyHabitIds.length > 0) {
+      const startOfDayDate = startOfDay(date);
+      const endOfDayDate = endOfDay(date);
+      const dailyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, dailyHabitIds),
+            between(habitEntries.loggedAt, startOfDayDate, endOfDayDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
+
+      for (const entry of dailyHabitEntries) {
+        map.set(entry.habitId, entry.sum ?? 0);
+      }
+    }
+
+    // Weekly
+    const weeklyHabitIds = habits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.WEEK;
+      })
+      .map((habit) => habit.id);
+    if (weeklyHabitIds.length > 0) {
+      const startOfWeekDate = startOfWeek(date, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const endOfWeekDate = endOfWeek(date, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const weeklyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, weeklyHabitIds),
+            between(habitEntries.loggedAt, startOfWeekDate, endOfWeekDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
+
+      for (const entry of weeklyHabitEntries) {
+        map.set(entry.habitId, entry.sum ?? 0);
+      }
+    }
+
+    // Monthly
+    const monthlyHabitIds = habits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.MONTH;
+      })
+      .map((habit) => habit.id);
+    if (monthlyHabitIds.length > 0) {
+      const startOfMonthDate = startOfMonth(date);
+      const endOfMonthDate = endOfMonth(date);
+      const monthlyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, monthlyHabitIds),
+            between(habitEntries.loggedAt, startOfMonthDate, endOfMonthDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
+
+      for (const entry of monthlyHabitEntries) {
+        map.set(entry.habitId, entry.sum ?? 0);
+      }
+    }
+
+    // Yearly
+    const yearlyHabitIds = habits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.YEAR;
+      })
+      .map((habit) => habit.id);
+    if (yearlyHabitIds.length > 0) {
+      const startOfYearDate = startOfYear(date);
+      const endOfYearDate = endOfYear(date);
+      const yearlyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+        })
+        .from(habitEntries)
+        .where(
+          and(
+            inArray(habitEntries.habitId, yearlyHabitIds),
+            between(habitEntries.loggedAt, startOfYearDate, endOfYearDate)
+          )
+        )
+        .groupBy(habitEntries.habitId)
+        .execute();
+
+      for (const entry of yearlyHabitEntries) {
+        map.set(entry.habitId, entry.sum ?? 0);
+      }
+    }
+
+    return map;
+  }
+
+  private async _getDailyHabitStreaksMap(
+    habits: Habit[],
+    date: Date,
+    generalStartDayOfWeek: DayOfWeek
+  ): Promise<Map<string, number>> {
+    const map = new Map<string, number>();
+
+    // TODO
+
+    return map;
   }
 
   private _getIntervalProgressPercentage(date: Date, habit: Habit, user: User) {

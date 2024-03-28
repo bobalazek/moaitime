@@ -37,8 +37,12 @@ export default defineConfig((options) => {
       childProcess.stderr.pipe(process.stderr);
 
       return async () => {
-        if (childProcess.pid && !childProcess.killed) {
-          process.kill(childProcess.pid, 'SIGINT');
+        try {
+          if (childProcess.pid && !childProcess.killed) {
+            process.kill(childProcess.pid, 'SIGINT');
+          }
+        } catch (error) {
+          // Ignore for now
         }
       };
     };

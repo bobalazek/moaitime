@@ -9,6 +9,7 @@ export const HabitDailySchema = z.object({
   goalProgressPercentage: z.number(),
   intervalProgressPercentage: z.number(),
   habit: HabitSchema,
+  streak: z.number().optional(),
 });
 
 // Types

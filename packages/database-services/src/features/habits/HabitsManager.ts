@@ -148,6 +148,11 @@ export class HabitsManager {
     }
 
     const habit = await this.view(actorUser.id, habitId);
+    const createdAtStartOfDay = startOfDay(habit.createdAt!);
+    if (loggedAt < createdAtStartOfDay) {
+      throw new Error('Cannot update habit entry for dates before the habit was created');
+    }
+
     const habitEntry = await getDatabase().query.habitEntries.findFirst({
       where: and(
         eq(habitEntries.habitId, habitId),

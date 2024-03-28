@@ -1,6 +1,6 @@
 import { PencilIcon, TrashIcon } from 'lucide-react';
 
-import { TeamUser } from '@moaitime/shared-common';
+import { TeamUser, TeamUserRoleEnum } from '@moaitime/shared-common';
 import {
   Button,
   Table,
@@ -17,7 +17,7 @@ import TeamMemberEditDialog from '../../team-member-edit-dialog/TeamMemberEditDi
 
 export default function TeamMembersSection() {
   const { auth } = useAuthStore();
-  const { joinedTeamMembers, removeJoinedTeamMember, setSelectedTeamMemberDialogOpen } =
+  const { joinedTeam, joinedTeamMembers, removeJoinedTeamMember, setSelectedTeamMemberDialogOpen } =
     useTeamsStore();
 
   const onEditTeamMemberClick = (teamUser: TeamUser) => {
@@ -36,6 +36,10 @@ export default function TeamMembersSection() {
       // Already handled by the fetch function
     }
   };
+
+  const canUpdateOrDeleteTeamMember =
+    joinedTeam?.teamUser.roles.includes(TeamUserRoleEnum.OWNER) ||
+    joinedTeam?.teamUser.roles.includes(TeamUserRoleEnum.ADMIN);
 
   return (
     <div data-test="settings--team-settings--team-members">
@@ -73,17 +77,21 @@ export default function TeamMembersSection() {
                 <TableCell>{joinedTeamMember.roles.join(', ')}</TableCell>
                 <TableCell>{new Date(joinedTeamMember.createdAt).toLocaleString()}</TableCell>
                 <TableCell className="flex gap-2">
-                  <Button size="sm" onClick={() => onEditTeamMemberClick(joinedTeamMember)}>
-                    <PencilIcon size={16} />
-                  </Button>
-                  {auth?.user?.id !== joinedTeamMember.userId && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => onRemoveTeamMemberClick(joinedTeamMember.userId)}
-                    >
-                      <TrashIcon size={16} />
-                    </Button>
+                  {canUpdateOrDeleteTeamMember && (
+                    <>
+                      <Button size="sm" onClick={() => onEditTeamMemberClick(joinedTeamMember)}>
+                        <PencilIcon size={16} />
+                      </Button>
+                      {auth?.user?.id !== joinedTeamMember.userId && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => onRemoveTeamMemberClick(joinedTeamMember.userId)}
+                        >
+                          <TrashIcon size={16} />
+                        </Button>
+                      )}
+                    </>
                   )}
                 </TableCell>
               </TableRow>

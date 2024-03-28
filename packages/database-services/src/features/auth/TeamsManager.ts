@@ -697,7 +697,7 @@ export class TeamsManager {
   }
 
   async updateTeamMember(
-    adminUserId: string,
+    actorUserId: string,
     userId: string,
     teamId: string,
     data: UpdateTeamUser
@@ -707,10 +707,10 @@ export class TeamsManager {
       throw new Error('Team not found');
     }
 
-    const adminTeamUser = await getDatabase().query.teamUsers.findFirst({
-      where: and(eq(teamUsers.userId, adminUserId), eq(teamUsers.teamId, teamId)),
+    const actorTeamUser = await getDatabase().query.teamUsers.findFirst({
+      where: and(eq(teamUsers.userId, actorUserId), eq(teamUsers.teamId, teamId)),
     });
-    if (!adminTeamUser) {
+    if (!actorTeamUser) {
       throw new Error('Admin team user not found');
     }
 
@@ -721,16 +721,24 @@ export class TeamsManager {
       throw new Error('Member not found');
     }
 
-    const canUpdate = await this.userCanUpdate(adminUserId, teamId);
+    const canUpdate = await this.userCanUpdate(actorUserId, teamId);
     if (!canUpdate) {
       throw new Error('You cannot update this member');
+    }
+
+    if (
+      actorTeamUser.id === userId &&
+      !data.roles.includes(TeamUserRoleEnum.OWNER) &&
+      actorTeamUser.roles.includes(TeamUserRoleEnum.OWNER)
+    ) {
+      throw new Error('You cannot remove the owner role from yourself');
     }
 
     if (
       data.roles &&
       data.roles.length > 0 &&
       data.roles.includes(TeamUserRoleEnum.OWNER) &&
-      !adminTeamUser.roles.includes(TeamUserRoleEnum.OWNER)
+      !actorTeamUser.roles.includes(TeamUserRoleEnum.OWNER)
     ) {
       throw new Error('You cannot set a member as owner');
     }
@@ -739,8 +747,8 @@ export class TeamsManager {
       data.roles &&
       data.roles.length > 0 &&
       data.roles.includes(TeamUserRoleEnum.ADMIN) &&
-      !adminTeamUser.roles.includes(TeamUserRoleEnum.OWNER) &&
-      !adminTeamUser.roles.includes(TeamUserRoleEnum.ADMIN)
+      !actorTeamUser.roles.includes(TeamUserRoleEnum.OWNER) &&
+      !actorTeamUser.roles.includes(TeamUserRoleEnum.ADMIN)
     ) {
       throw new Error('You cannot set a member as admin');
     }
@@ -774,7 +782,7 @@ export class TeamsManager {
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_UPDATED, {
-      actorUserId: adminUserId,
+      actorUserId: actorUserId,
       teamId,
       userId,
     });

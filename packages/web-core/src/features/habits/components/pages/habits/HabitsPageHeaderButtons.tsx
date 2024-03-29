@@ -18,9 +18,15 @@ const HabitsPageHeaderButtons = () => {
     setSelectedDate(addDays(selectedDate, +1));
   };
 
+  const onTodayButtonClick = () => {
+    setSelectedDate(new Date());
+  };
+
   const onAddHabitButtonClick = () => {
     setSelectedHabitDialogOpen(true, null);
   };
+
+  const isTodayButtonDisabled = selectedDate.toDateString() === new Date().toDateString();
 
   return (
     <div className="flex flex-wrap justify-center gap-2 md:mt-0">
@@ -32,7 +38,7 @@ const HabitsPageHeaderButtons = () => {
         size="sm"
         onClick={onPrevButtonClick}
         title="Previous date range"
-        data-test="calendar--header--prev-button"
+        data-test="habits--header--prev-button"
       >
         <ArrowLeftIcon />
       </Button>
@@ -42,9 +48,20 @@ const HabitsPageHeaderButtons = () => {
         size="sm"
         onClick={onNextButtonClick}
         title="Next date range"
-        data-test="calendar--header--next-button"
+        data-test="habits--header--next-button"
       >
         <ArrowRightIcon />
+      </Button>
+      <Button
+        className="border"
+        variant="outline"
+        size="sm"
+        onClick={onTodayButtonClick}
+        disabled={isTodayButtonDisabled}
+        title="Go to today"
+        data-test="habits--header--today-button"
+      >
+        Today
       </Button>
       <Button
         size="sm"

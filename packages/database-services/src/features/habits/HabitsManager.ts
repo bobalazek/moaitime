@@ -1,12 +1,15 @@
 import {
+  differenceInDays,
   endOfDay,
   endOfMonth,
   endOfWeek,
   endOfYear,
+  format,
   startOfDay,
   startOfMonth,
   startOfWeek,
   startOfYear,
+  subDays,
 } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import {
@@ -20,6 +23,7 @@ import {
   isNotNull,
   isNull,
   lte,
+  sql,
   SQL,
   sum,
 } from 'drizzle-orm';
@@ -655,7 +659,100 @@ export class HabitsManager {
   ): Promise<Map<string, number>> {
     const map = new Map<string, number>();
 
-    // TODO
+    // For now, we only want to show the streak for the current day
+    const now = new Date();
+    const todayDateString = format(now, 'yyyy-MM-dd');
+    const dateDateString = format(date, 'yyyy-MM-dd'); // TODO: we need to consider the timezone here!
+    if (todayDateString !== dateDateString) {
+      return map;
+    }
+
+    const habitsMap = new Map<string, Habit>();
+    for (const habit of habits) {
+      habitsMap.set(habit.id, habit);
+    }
+
+    // Daily
+    const dailyHabitIds = habits
+      .filter((habit) => {
+        return habit.goalFrequency === HabitGoalFrequencyEnum.DAY;
+      })
+      .map((habit) => habit.id);
+    if (dailyHabitIds.length > 0) {
+      const yesterdayDateString = format(subDays(now, 1), 'yyyy-MM-dd');
+
+      const loggedAtDate = sql<string>`DATE(${habitEntries.loggedAt})`;
+      const dailyHabitEntries = await getDatabase()
+        .select({
+          habitId: habitEntries.habitId,
+          sum: sum(habitEntries.amount).mapWith(Number),
+          date: loggedAtDate,
+        })
+        .from(habitEntries)
+        .where(inArray(habitEntries.habitId, dailyHabitIds))
+        .groupBy(habitEntries.habitId, habitEntries.loggedAt)
+        .orderBy(desc(habitEntries.loggedAt))
+        .execute();
+
+      const entriesPerHabit = new Map<string, { date: string; sum: number }[]>();
+      for (const entry of dailyHabitEntries) {
+        const existingEntries = entriesPerHabit.get(entry.habitId) ?? [];
+
+        if (!entriesPerHabit.has(entry.habitId)) {
+          entriesPerHabit.set(entry.habitId, []);
+        }
+
+        entriesPerHabit.set(entry.habitId, [
+          ...existingEntries,
+          {
+            date: entry.date,
+            sum: entry.sum,
+          },
+        ]);
+      }
+
+      for (const [habitId, entries] of entriesPerHabit) {
+        const isToday = entries[0].date === todayDateString;
+        const isYesterday = entries[0].date === yesterdayDateString;
+
+        if (!isToday && !isYesterday) {
+          map.set(habitId, 0);
+          continue;
+        }
+
+        let streak = 0;
+        let lastEntryDate = new Date(entries[0].date);
+
+        for (const entry of entries) {
+          const habit = habitsMap.get(habitId);
+          if (!habit) {
+            break;
+          }
+
+          const entryDate = new Date(entry.date);
+          const diffInDays = differenceInDays(entryDate, lastEntryDate);
+          console.log(diffInDays, entryDate, lastEntryDate);
+          if (diffInDays > 1) {
+            break;
+          }
+
+          if (entry.sum < habit.goalAmount) {
+            // We still have tollerance if today wasn't reached yet
+            if (isToday) {
+              continue;
+            }
+
+            break;
+          }
+
+          streak++;
+
+          lastEntryDate = entryDate;
+        }
+
+        map.set(habitId, streak);
+      }
+    }
 
     return map;
   }

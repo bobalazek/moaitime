@@ -56,48 +56,63 @@ describe('HabitsManager.ts', () => {
   });
 
   describe('getDailyHabitStreaksMap()', () => {
-    it('should return undefined for streak if it is not today', async () => {
-      vitest.setSystemTime(new Date('2020-01-31T00:00:00.000Z'));
+    it.each([
+      {
+        testName: 'should return undefined for streak if it is not today',
+        now: '2020-02-01T00:00:00.000Z',
+        selectedDate: '2020-01-31T00:00:00.000Z',
+        habitName: 'Daily Habit',
+        habitEntries: [
+          { date: '2020-01-30T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-31T00:00:00.000Z', amount: 2 },
+          { date: '2020-02-01T00:00:00.000Z', amount: 2 },
+        ],
+        expected: undefined,
+      },
+      {
+        testName: 'should return a streak of 2 for a daily habit if not set today yet',
+        now: '2020-02-01T00:00:00.000Z',
+        selectedDate: '2020-02-01T00:00:00.000Z',
+        habitName: 'Daily Habit',
+        habitEntries: [
+          { date: '2020-01-30T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-31T00:00:00.000Z', amount: 2 },
+        ],
+        expected: 2,
+      },
+      {
+        testName: 'should return a streak of 3 for a daily habit if set today',
+        now: '2020-02-01T00:00:00.000Z',
+        selectedDate: '2020-02-01T00:00:00.000Z',
+        habitName: 'Daily Habit',
+        habitEntries: [
+          { date: '2020-01-30T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-31T00:00:00.000Z', amount: 2 },
+          { date: '2020-02-01T00:00:00.000Z', amount: 2 },
+        ],
+        expected: 3,
+      },
+    ])(`$testName`, async ({ now, selectedDate, habitName, habitEntries, expected }) => {
+      vitest.setSystemTime(new Date(now));
 
-      const habitDaily = await habitsManager.findOneByUserIdAndName(user.id, 'Daily Habit');
+      const habitDaily = await habitsManager.findOneByUserIdAndName(user.id, habitName);
       if (!habitDaily) {
         throw new Error('Habit not found');
       }
 
-      await habitsManager.createHabitEntry(habitDaily.id, new Date('2020-01-31T00:00:00.000Z'), 1);
-      await habitsManager.createHabitEntry(habitDaily.id, new Date('2020-02-01T00:00:00.000Z'), 1);
+      for (const entry of habitEntries) {
+        await habitsManager.createHabitEntry(habitDaily.id, new Date(entry.date), entry.amount);
+      }
 
       const habits = await habitsManager.findManyByUserId(user.id);
 
       const streaksMap = await habitsManager.getDailyHabitStreaksMap(
         habits,
-        new Date('2020-02-01T00:00:00.000Z'),
+        new Date(selectedDate),
         1 // Monday
       );
 
-      expect(streaksMap.get(habitDaily.id)).toEqual(undefined);
-    });
-
-    it('should work with daily habits', async () => {
-      vitest.setSystemTime(new Date('2020-02-01T00:00:00.000Z'));
-
-      const habitDaily = await habitsManager.findOneByUserIdAndName(user.id, 'Daily Habit');
-      if (!habitDaily) {
-        throw new Error('Habit not found');
-      }
-
-      await habitsManager.createHabitEntry(habitDaily.id, new Date('2020-01-31T00:00:00.000Z'), 1);
-      await habitsManager.createHabitEntry(habitDaily.id, new Date('2020-02-01T00:00:00.000Z'), 1);
-
-      const habits = await habitsManager.findManyByUserId(user.id);
-
-      const streaksMap = await habitsManager.getDailyHabitStreaksMap(
-        habits,
-        new Date('2020-02-01T00:00:00.000Z'),
-        1 // Monday
-      );
-
-      expect(streaksMap.get(habitDaily.id)).toEqual(2);
+      expect(streaksMap.get(habitDaily.id)).toEqual(expected);
     });
   });
 });

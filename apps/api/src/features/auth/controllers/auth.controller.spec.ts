@@ -49,8 +49,8 @@ describe('AuthController', () => {
             email: 'test@test.com',
             password: 'test',
           },
-          response,
-          request
+          request,
+          response
         );
 
       await expect(result).rejects.toThrow('Invalid credentials');
@@ -65,8 +65,8 @@ describe('AuthController', () => {
             email: 'test@email.com',
             password: 'wrong-password',
           },
-          response,
-          request
+          request,
+          response
         );
 
       await expect(result).rejects.toThrow('Invalid credentials');
@@ -81,8 +81,8 @@ describe('AuthController', () => {
           email: 'test@email.com',
           password: 'test',
         },
-        response,
-        request
+        request,
+        response
       );
 
       expect(success).toBe(true);

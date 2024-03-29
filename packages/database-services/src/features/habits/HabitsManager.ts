@@ -83,12 +83,12 @@ export class HabitsManager {
       return [];
     }
 
-    const dailyHabitAmountMap = await this._getDailyHabitAmountsMap(
+    const dailyHabitAmountMap = await this.getDailyHabitAmountsMap(
       allHabits,
       dateObject,
       generalStartDayOfWeek
     );
-    const dailyHabitStreakMap = await this._getDailyHabitStreaksMap(
+    const dailyHabitStreakMap = await this.getDailyHabitStreaksMap(
       allHabits,
       dateObject,
       generalStartDayOfWeek
@@ -398,6 +398,15 @@ export class HabitsManager {
     return row ?? null;
   }
 
+  // Need for unit tests
+  async findOneByUserIdAndName(userId: string, name: string): Promise<Habit | null> {
+    const row = await getDatabase().query.habits.findFirst({
+      where: and(eq(habits.userId, userId), eq(habits.name, name)),
+    });
+
+    return row ?? null;
+  }
+
   async insertOne(data: NewHabit): Promise<Habit> {
     const rows = await getDatabase().insert(habits).values(data).returning();
 
@@ -436,8 +445,6 @@ export class HabitsManager {
     const result = await this.findManyByUserId(userId, {
       includeDeleted: true,
     });
-
-    console.log(originalHabitId, newHabitId);
 
     const originalIndex = result.findIndex((entry) => entry.id === originalHabitId);
     const newIndex = result.findIndex((entry) => entry.id === newHabitId);
@@ -507,22 +514,7 @@ export class HabitsManager {
     return row;
   }
 
-  // Private
-  private async _checkIfLimitReached(actorUser: User) {
-    const habitsMaxPerUserCount = await usersManager.getUserLimit(
-      actorUser,
-      'habitsMaxPerUserCount'
-    );
-
-    const habitsCount = await this.countByUserId(actorUser.id);
-    if (habitsCount >= habitsMaxPerUserCount) {
-      throw new Error(
-        `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
-      );
-    }
-  }
-
-  private async _getDailyHabitAmountsMap(
+  async getDailyHabitAmountsMap(
     habits: Habit[],
     date: Date,
     generalStartDayOfWeek: DayOfWeek
@@ -652,7 +644,7 @@ export class HabitsManager {
     return map;
   }
 
-  private async _getDailyHabitStreaksMap(
+  async getDailyHabitStreaksMap(
     habits: Habit[],
     date: Date,
     generalStartDayOfWeek: DayOfWeek
@@ -731,7 +723,6 @@ export class HabitsManager {
 
           const entryDate = new Date(entry.date);
           const diffInDays = differenceInDays(entryDate, lastEntryDate);
-          console.log(diffInDays, entryDate, lastEntryDate);
           if (diffInDays > 1) {
             break;
           }
@@ -811,6 +802,21 @@ export class HabitsManager {
     }
 
     return intervalProgressPercentage;
+  }
+
+  // Private
+  private async _checkIfLimitReached(actorUser: User) {
+    const habitsMaxPerUserCount = await usersManager.getUserLimit(
+      actorUser,
+      'habitsMaxPerUserCount'
+    );
+
+    const habitsCount = await this.countByUserId(actorUser.id);
+    if (habitsCount >= habitsMaxPerUserCount) {
+      throw new Error(
+        `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
+      );
+    }
   }
 }
 

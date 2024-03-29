@@ -708,13 +708,13 @@ export class HabitsManager {
       const isInCurrentRange = this._checkIfIsInCurrentRange(
         todayDateString,
         entries[0].date,
-        habit,
+        habit.goalFrequency,
         generalStartDayOfWeek
       );
       const isInPreviousRange = this._checkIfIsInPreviousRange(
         todayDateString,
         entries[0].date,
-        habit,
+        habit.goalFrequency,
         generalStartDayOfWeek
       );
 
@@ -738,7 +738,7 @@ export class HabitsManager {
           const isInCurrentRange = this._checkIfIsInCurrentRange(
             todayDateString,
             entry.date,
-            habit,
+            habit.goalFrequency,
             generalStartDayOfWeek
           );
 
@@ -834,96 +834,78 @@ export class HabitsManager {
     }
   }
 
+  private _getPeriodStartAndEnd(
+    selectedDate: Date,
+    frequency: HabitGoalFrequencyEnum,
+    generalStartDayOfWeek: DayOfWeek
+  ) {
+    let start: Date;
+    let end: Date;
+
+    if (frequency === HabitGoalFrequencyEnum.WEEK) {
+      start = startOfWeek(selectedDate, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      end = endOfWeek(selectedDate, {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+    } else if (frequency === HabitGoalFrequencyEnum.MONTH) {
+      start = startOfMonth(selectedDate);
+      end = endOfMonth(selectedDate);
+    } else if (frequency === HabitGoalFrequencyEnum.YEAR) {
+      start = startOfYear(selectedDate);
+      end = endOfYear(selectedDate);
+    } else {
+      start = startOfDay(selectedDate);
+      end = endOfDay(selectedDate);
+    }
+
+    return { start, end };
+  }
+
   private _checkIfIsInCurrentRange(
     selectedDateString: string,
     entryDateString: string,
-    habit: Habit,
+    frequency: HabitGoalFrequencyEnum,
     generalStartDayOfWeek: DayOfWeek
   ) {
-    if (habit.goalFrequency === HabitGoalFrequencyEnum.WEEK) {
-      const selectedDate = new Date(selectedDateString);
+    const { start, end } = this._getPeriodStartAndEnd(
+      new Date(selectedDateString),
+      frequency,
+      generalStartDayOfWeek
+    );
 
-      const startOfWeekDate = startOfWeek(new Date(selectedDateString), {
-        weekStartsOn: generalStartDayOfWeek,
-      });
-      const endOfWeekDate = endOfWeek(new Date(selectedDateString), {
-        weekStartsOn: generalStartDayOfWeek,
-      });
+    const entryDate = new Date(entryDateString);
 
-      return (
-        selectedDate.getTime() >= startOfWeekDate.getTime() &&
-        selectedDate.getTime() <= endOfWeekDate.getTime()
-      );
-    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.MONTH) {
-      const selectedDate = new Date(selectedDateString);
-
-      const startOfMonthDate = startOfMonth(new Date(selectedDateString));
-      const endOfMonthDate = endOfMonth(new Date(selectedDateString));
-
-      return (
-        selectedDate.getTime() >= startOfMonthDate.getTime() &&
-        selectedDate.getTime() <= endOfMonthDate.getTime()
-      );
-    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.YEAR) {
-      const selectedDate = new Date(selectedDateString);
-
-      const startOfYearDate = startOfYear(new Date(selectedDateString));
-      const endOfYearDate = endOfYear(new Date(selectedDateString));
-
-      return (
-        selectedDate.getTime() >= startOfYearDate.getTime() &&
-        selectedDate.getTime() <= endOfYearDate.getTime()
-      );
-    }
-
-    return entryDateString === selectedDateString;
+    return entryDate.getTime() >= start.getTime() && entryDate.getTime() <= end.getTime();
   }
 
   private _checkIfIsInPreviousRange(
     selectedDateString: string,
     entryDateString: string,
-    habit: Habit,
+    frequency: HabitGoalFrequencyEnum,
     generalStartDayOfWeek: DayOfWeek
   ) {
-    if (habit.goalFrequency === HabitGoalFrequencyEnum.WEEK) {
-      const selectedDate = new Date(subWeeks(new Date(selectedDateString), 1));
-
-      const startOfWeekDate = startOfWeek(new Date(selectedDateString), {
-        weekStartsOn: generalStartDayOfWeek,
-      });
-      const endOfWeekDate = endOfWeek(new Date(selectedDateString), {
-        weekStartsOn: generalStartDayOfWeek,
-      });
-
-      return (
-        selectedDate.getTime() >= startOfWeekDate.getTime() &&
-        selectedDate.getTime() <= endOfWeekDate.getTime()
-      );
-    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.MONTH) {
-      const selectedDate = new Date(subMonths(new Date(selectedDateString), 1));
-
-      const startOfMonthDate = startOfMonth(new Date(selectedDateString));
-      const endOfMonthDate = endOfMonth(new Date(selectedDateString));
-
-      return (
-        selectedDate.getTime() >= startOfMonthDate.getTime() &&
-        selectedDate.getTime() <= endOfMonthDate.getTime()
-      );
-    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.YEAR) {
-      const selectedDate = new Date(subYears(new Date(selectedDateString), 1));
-
-      const startOfYearDate = startOfYear(new Date(selectedDateString));
-      const endOfYearDate = endOfYear(new Date(selectedDateString));
-
-      return (
-        selectedDate.getTime() >= startOfYearDate.getTime() &&
-        selectedDate.getTime() <= endOfYearDate.getTime()
-      );
+    let selectedDate: Date;
+    if (frequency === HabitGoalFrequencyEnum.WEEK) {
+      selectedDate = new Date(subWeeks(new Date(selectedDateString), 1));
+    } else if (frequency === HabitGoalFrequencyEnum.MONTH) {
+      selectedDate = new Date(subMonths(new Date(selectedDateString), 1));
+    } else if (frequency === HabitGoalFrequencyEnum.YEAR) {
+      selectedDate = new Date(subYears(new Date(selectedDateString), 1));
+    } else {
+      selectedDate = new Date(subDays(new Date(selectedDateString), 1));
     }
 
-    const yesterdayDateString = format(subDays(new Date(selectedDateString), 1), 'yyyy-MM-dd');
+    const { start, end } = this._getPeriodStartAndEnd(
+      selectedDate,
+      frequency,
+      generalStartDayOfWeek
+    );
 
-    return entryDateString === yesterdayDateString;
+    const entryDate = new Date(entryDateString);
+
+    return entryDate.getTime() >= start.getTime() && entryDate.getTime() <= end.getTime();
   }
 }
 

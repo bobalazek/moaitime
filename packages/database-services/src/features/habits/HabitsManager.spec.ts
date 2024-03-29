@@ -123,7 +123,6 @@ describe('HabitsManager.ts', () => {
         expected: 3,
       },
       // Weekly
-      /*
       {
         testName: 'should return a streak of 2 for a weekly habit if not set today yet',
         now: '2020-06-01T00:00:00.000Z',
@@ -147,7 +146,54 @@ describe('HabitsManager.ts', () => {
         ],
         expected: 3,
       },
-      */
+      // Monthly
+      {
+        testName: 'should return a streak of 2 for a monthly habit if not set today yet',
+        now: '2020-06-01T00:00:00.000Z',
+        selectedDate: '2020-06-01T00:00:00.000Z',
+        habitName: 'Monthly Habit',
+        habitEntries: [
+          { date: '2020-04-01T00:00:00.000Z', amount: 2 },
+          { date: '2020-05-01T00:00:00.000Z', amount: 2 },
+        ],
+        expected: 2,
+      },
+      {
+        testName: 'should return a streak of 3 for a monthly habit set today',
+        now: '2020-06-01T00:00:00.000Z',
+        selectedDate: '2020-06-01T00:00:00.000Z',
+        habitName: 'Monthly Habit',
+        habitEntries: [
+          { date: '2020-04-01T00:00:00.000Z', amount: 2 },
+          { date: '2020-05-01T00:00:00.000Z', amount: 2 },
+          { date: '2020-06-01T00:00:00.000Z', amount: 2 },
+        ],
+        expected: 3,
+      },
+      // Yearly
+      {
+        testName: 'should return a streak of 2 for a yearly habit if not set today yet',
+        now: '2020-06-01T00:00:00.000Z',
+        selectedDate: '2020-06-01T00:00:00.000Z',
+        habitName: 'Yearly Habit',
+        habitEntries: [
+          { date: '2018-01-01T00:00:00.000Z', amount: 2 },
+          { date: '2019-01-01T00:00:00.000Z', amount: 2 },
+        ],
+        expected: 2,
+      },
+      {
+        testName: 'should return a streak of 3 for a yearly habit set today',
+        now: '2020-06-01T00:00:00.000Z',
+        selectedDate: '2020-06-01T00:00:00.000Z',
+        habitName: 'Yearly Habit',
+        habitEntries: [
+          { date: '2018-01-01T00:00:00.000Z', amount: 2 },
+          { date: '2019-01-01T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-01T00:00:00.000Z', amount: 2 },
+        ],
+        expected: 3,
+      },
     ])(`$testName`, async ({ now, selectedDate, habitName, habitEntries, expected }) => {
       vitest.setSystemTime(new Date(now));
 

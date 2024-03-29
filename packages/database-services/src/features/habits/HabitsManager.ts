@@ -10,6 +10,9 @@ import {
   startOfWeek,
   startOfYear,
   subDays,
+  subMonths,
+  subWeeks,
+  subYears,
 } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import {
@@ -646,16 +649,18 @@ export class HabitsManager {
 
   async getDailyHabitStreaksMap(
     habits: Habit[],
-    date: Date,
+    selectedDate: Date,
     generalStartDayOfWeek: DayOfWeek
   ): Promise<Map<string, number>> {
     const map = new Map<string, number>();
 
+    const loggedAtDate = sql<string>`DATE(${habitEntries.loggedAt})`;
+
     // For now, we only want to show the streak for the current day
     const now = new Date();
-    const todayDateString = format(now, 'yyyy-MM-dd');
-    const dateDateString = format(date, 'yyyy-MM-dd'); // TODO: we need to consider the timezone here!
-    if (todayDateString !== dateDateString) {
+    const todayDateString = format(now, 'yyyy-MM-dd'); // TODO: we need to consider the timezone here!
+    const selectedDateString = format(selectedDate, 'yyyy-MM-dd');
+    if (todayDateString !== selectedDateString) {
       return map;
     }
 
@@ -664,87 +669,95 @@ export class HabitsManager {
       habitsMap.set(habit.id, habit);
     }
 
-    // Daily
-    const dailyHabitIds = habits
-      .filter((habit) => {
-        return habit.goalFrequency === HabitGoalFrequencyEnum.DAY;
+    const habitIds = habits.map((habit) => habit.id);
+    const habitEntriesPerDay = await getDatabase()
+      .select({
+        habitId: habitEntries.habitId,
+        sum: sum(habitEntries.amount).mapWith(Number),
+        date: loggedAtDate,
       })
-      .map((habit) => habit.id);
-    if (dailyHabitIds.length > 0) {
-      const yesterdayDateString = format(subDays(now, 1), 'yyyy-MM-dd');
+      .from(habitEntries)
+      .where(inArray(habitEntries.habitId, habitIds))
+      .groupBy(habitEntries.habitId, habitEntries.loggedAt)
+      .orderBy(desc(habitEntries.loggedAt))
+      .execute();
 
-      const loggedAtDate = sql<string>`DATE(${habitEntries.loggedAt})`;
-      const dailyHabitEntries = await getDatabase()
-        .select({
-          habitId: habitEntries.habitId,
-          sum: sum(habitEntries.amount).mapWith(Number),
-          date: loggedAtDate,
-        })
-        .from(habitEntries)
-        .where(inArray(habitEntries.habitId, dailyHabitIds))
-        .groupBy(habitEntries.habitId, habitEntries.loggedAt)
-        .orderBy(desc(habitEntries.loggedAt))
-        .execute();
+    const dailyEntriesPerHabit = new Map<string, { date: string; sum: number }[]>();
+    for (const entry of habitEntriesPerDay) {
+      const existingEntries = dailyEntriesPerHabit.get(entry.habitId) ?? [];
 
-      const entriesPerHabit = new Map<string, { date: string; sum: number }[]>();
-      for (const entry of dailyHabitEntries) {
-        const existingEntries = entriesPerHabit.get(entry.habitId) ?? [];
-
-        if (!entriesPerHabit.has(entry.habitId)) {
-          entriesPerHabit.set(entry.habitId, []);
-        }
-
-        entriesPerHabit.set(entry.habitId, [
-          ...existingEntries,
-          {
-            date: entry.date,
-            sum: entry.sum,
-          },
-        ]);
+      if (!dailyEntriesPerHabit.has(entry.habitId)) {
+        dailyEntriesPerHabit.set(entry.habitId, []);
       }
 
-      for (const [habitId, entries] of entriesPerHabit) {
-        const isCurrentRange = entries[0].date === todayDateString;
-        const isPreviousRange = entries[0].date === yesterdayDateString;
+      dailyEntriesPerHabit.set(entry.habitId, [
+        ...existingEntries,
+        {
+          date: entry.date,
+          sum: entry.sum,
+        },
+      ]);
+    }
 
-        if (!isCurrentRange && !isPreviousRange) {
-          map.set(habitId, 0);
-          continue;
-        }
-
-        let streak = 0;
-        let lastEntryDate = new Date(entries[0].date);
-
-        for (const entry of entries) {
-          const habit = habitsMap.get(habitId);
-          if (!habit) {
-            break;
-          }
-
-          const entryDate = new Date(entry.date);
-          const diff = differenceInDays(lastEntryDate, entryDate);
-          if (diff > 1) {
-            break;
-          }
-
-          if (entry.sum < habit.goalAmount) {
-            // We still have tollerance if the current range wasn't reached yet
-            if (isCurrentRange) {
-              lastEntryDate = entryDate;
-
-              continue;
-            }
-
-            break;
-          }
-
-          streak++;
-
-          lastEntryDate = entryDate;
-        }
-
-        map.set(habitId, streak);
+    for (const [habitId, entries] of dailyEntriesPerHabit) {
+      const habit = habitsMap.get(habitId);
+      if (!habit) {
+        continue;
       }
+
+      const isInCurrentRange = this._checkIfIsInCurrentRange(
+        todayDateString,
+        entries[0].date,
+        habit,
+        generalStartDayOfWeek
+      );
+      const isInPreviousRange = this._checkIfIsInPreviousRange(
+        todayDateString,
+        entries[0].date,
+        habit,
+        generalStartDayOfWeek
+      );
+
+      if (!isInCurrentRange && !isInPreviousRange) {
+        map.set(habitId, 0);
+
+        continue;
+      }
+
+      let streak = 0;
+      let lastEntryDate = new Date(entries[0].date);
+
+      for (const entry of entries) {
+        const entryDate = new Date(entry.date);
+        const diff = differenceInDays(lastEntryDate, entryDate);
+        if (diff > 1) {
+          break;
+        }
+
+        if (entry.sum < habit.goalAmount) {
+          const isInCurrentRange = this._checkIfIsInCurrentRange(
+            todayDateString,
+            entry.date,
+            habit,
+            generalStartDayOfWeek
+          );
+
+          // We still have tollerance if the current range wasn't reached yet
+          if (isInCurrentRange) {
+            lastEntryDate = entryDate;
+
+            continue;
+          }
+
+          break;
+        }
+
+        lastEntryDate = entryDate;
+
+        streak++;
+      }
+
+      map.set(habitId, streak);
     }
 
     return map;
@@ -819,6 +832,98 @@ export class HabitsManager {
         `You have reached the maximum number of habits per user (${habitsMaxPerUserCount}).`
       );
     }
+  }
+
+  private _checkIfIsInCurrentRange(
+    selectedDateString: string,
+    entryDateString: string,
+    habit: Habit,
+    generalStartDayOfWeek: DayOfWeek
+  ) {
+    if (habit.goalFrequency === HabitGoalFrequencyEnum.WEEK) {
+      const selectedDate = new Date(selectedDateString);
+
+      const startOfWeekDate = startOfWeek(new Date(selectedDateString), {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const endOfWeekDate = endOfWeek(new Date(selectedDateString), {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+
+      return (
+        selectedDate.getTime() >= startOfWeekDate.getTime() &&
+        selectedDate.getTime() <= endOfWeekDate.getTime()
+      );
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.MONTH) {
+      const selectedDate = new Date(selectedDateString);
+
+      const startOfMonthDate = startOfMonth(new Date(selectedDateString));
+      const endOfMonthDate = endOfMonth(new Date(selectedDateString));
+
+      return (
+        selectedDate.getTime() >= startOfMonthDate.getTime() &&
+        selectedDate.getTime() <= endOfMonthDate.getTime()
+      );
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.YEAR) {
+      const selectedDate = new Date(selectedDateString);
+
+      const startOfYearDate = startOfYear(new Date(selectedDateString));
+      const endOfYearDate = endOfYear(new Date(selectedDateString));
+
+      return (
+        selectedDate.getTime() >= startOfYearDate.getTime() &&
+        selectedDate.getTime() <= endOfYearDate.getTime()
+      );
+    }
+
+    return entryDateString === selectedDateString;
+  }
+
+  private _checkIfIsInPreviousRange(
+    selectedDateString: string,
+    entryDateString: string,
+    habit: Habit,
+    generalStartDayOfWeek: DayOfWeek
+  ) {
+    if (habit.goalFrequency === HabitGoalFrequencyEnum.WEEK) {
+      const selectedDate = new Date(subWeeks(new Date(selectedDateString), 1));
+
+      const startOfWeekDate = startOfWeek(new Date(selectedDateString), {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+      const endOfWeekDate = endOfWeek(new Date(selectedDateString), {
+        weekStartsOn: generalStartDayOfWeek,
+      });
+
+      return (
+        selectedDate.getTime() >= startOfWeekDate.getTime() &&
+        selectedDate.getTime() <= endOfWeekDate.getTime()
+      );
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.MONTH) {
+      const selectedDate = new Date(subMonths(new Date(selectedDateString), 1));
+
+      const startOfMonthDate = startOfMonth(new Date(selectedDateString));
+      const endOfMonthDate = endOfMonth(new Date(selectedDateString));
+
+      return (
+        selectedDate.getTime() >= startOfMonthDate.getTime() &&
+        selectedDate.getTime() <= endOfMonthDate.getTime()
+      );
+    } else if (habit.goalFrequency === HabitGoalFrequencyEnum.YEAR) {
+      const selectedDate = new Date(subYears(new Date(selectedDateString), 1));
+
+      const startOfYearDate = startOfYear(new Date(selectedDateString));
+      const endOfYearDate = endOfYear(new Date(selectedDateString));
+
+      return (
+        selectedDate.getTime() >= startOfYearDate.getTime() &&
+        selectedDate.getTime() <= endOfYearDate.getTime()
+      );
+    }
+
+    const yesterdayDateString = format(subDays(new Date(selectedDateString), 1), 'yyyy-MM-dd');
+
+    return entryDateString === yesterdayDateString;
   }
 }
 

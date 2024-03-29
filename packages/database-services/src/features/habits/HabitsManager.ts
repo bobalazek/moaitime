@@ -716,6 +716,7 @@ export class HabitsManager {
 
       const firstEntryNewestDateString = Array.from(entriesMap.keys())[0];
       const isFirstPeriodInCurrentRange = this._checkIfIsIntRange(
+        selectedDateString,
         firstEntryNewestDateString,
         habit.goalFrequency,
         generalStartDayOfWeek
@@ -726,13 +727,13 @@ export class HabitsManager {
       );
       const periodPreviousDateString = format(periodPreviousDate, 'yyyy-MM-dd');
       const isFirstPeriodInPreviousRange = this._checkIfIsIntRange(
+        selectedDateString,
         periodPreviousDateString,
         habit.goalFrequency,
         generalStartDayOfWeek
       );
 
       if (!isFirstPeriodInCurrentRange && !isFirstPeriodInPreviousRange) {
-        console.log(firstEntryNewestDateString, 'Not in range');
         continue;
       }
 
@@ -884,12 +885,13 @@ export class HabitsManager {
   }
 
   private _checkIfIsIntRange(
+    selectedDateString: string,
     entryDateString: string,
     frequency: HabitGoalFrequencyEnum,
     generalStartDayOfWeek: DayOfWeek
   ) {
     const { start, end } = this._getPeriodStartAndEnd(
-      entryDateString,
+      selectedDateString,
       frequency,
       generalStartDayOfWeek
     );

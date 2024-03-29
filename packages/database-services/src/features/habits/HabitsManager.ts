@@ -682,38 +682,47 @@ export class HabitsManager {
       .orderBy(desc(habitEntries.loggedAt))
       .execute();
 
-    const dailyEntriesPerHabit = new Map<string, { date: string; sum: number }[]>();
+    // { habitId =>  { periodStartDate => sum } }
+    const habitEntriesPerPeriod = new Map<string, Map<string, number>>();
     for (const entry of habitEntriesPerDay) {
-      const existingEntries = dailyEntriesPerHabit.get(entry.habitId) ?? [];
-
-      if (!dailyEntriesPerHabit.has(entry.habitId)) {
-        dailyEntriesPerHabit.set(entry.habitId, []);
+      const habit = habitsMap.get(entry.habitId);
+      if (!habit) {
+        continue;
       }
 
-      dailyEntriesPerHabit.set(entry.habitId, [
-        ...existingEntries,
-        {
-          date: entry.date,
-          sum: entry.sum,
-        },
-      ]);
+      const existingEntriesMap =
+        habitEntriesPerPeriod.get(entry.habitId) ?? new Map<string, number>();
+
+      const { start } = this._getPeriodStartAndEnd(
+        new Date(entry.date),
+        habit.goalFrequency,
+        generalStartDayOfWeek
+      );
+
+      const periodStartDate = format(start, 'yyyy-MM-dd');
+      const sum = existingEntriesMap.get(periodStartDate) ?? 0;
+      existingEntriesMap.set(periodStartDate, sum + entry.sum);
+
+      habitEntriesPerPeriod.set(entry.habitId, existingEntriesMap);
     }
 
-    for (const [habitId, entries] of dailyEntriesPerHabit) {
+    for (const [habitId, entriesMap] of habitEntriesPerPeriod) {
       const habit = habitsMap.get(habitId);
       if (!habit) {
         continue;
       }
 
+      const periodStartDate = entriesMap.keys().next().value;
+
       const isInCurrentRange = this._checkIfIsInCurrentRange(
         todayDateString,
-        entries[0].date,
+        periodStartDate,
         habit.goalFrequency,
         generalStartDayOfWeek
       );
       const isInPreviousRange = this._checkIfIsInPreviousRange(
         todayDateString,
-        entries[0].date,
+        periodStartDate,
         habit.goalFrequency,
         generalStartDayOfWeek
       );
@@ -725,19 +734,19 @@ export class HabitsManager {
       }
 
       let streak = 0;
-      let lastEntryDate = new Date(entries[0].date);
+      let lastEntryDate = new Date(periodStartDate);
 
-      for (const entry of entries) {
-        const entryDate = new Date(entry.date);
+      for (const [periodStartDate, sum] of entriesMap) {
+        const entryDate = new Date(periodStartDate);
         const diff = differenceInDays(lastEntryDate, entryDate);
         if (diff > 1) {
           break;
         }
 
-        if (entry.sum < habit.goalAmount) {
+        if (sum < habit.goalAmount) {
           const isInCurrentRange = this._checkIfIsInCurrentRange(
             todayDateString,
-            entry.date,
+            periodStartDate,
             habit.goalFrequency,
             generalStartDayOfWeek
           );

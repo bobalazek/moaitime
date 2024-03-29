@@ -1,5 +1,4 @@
 import {
-  differenceInDays,
   endOfDay,
   endOfMonth,
   endOfWeek,
@@ -712,58 +711,25 @@ export class HabitsManager {
         continue;
       }
 
-      const periodStartDate = entriesMap.keys().next().value;
-
-      const isInCurrentRange = this._checkIfIsInCurrentRange(
-        todayDateString,
-        periodStartDate,
-        habit.goalFrequency,
-        generalStartDayOfWeek
-      );
-      const isInPreviousRange = this._checkIfIsInPreviousRange(
-        todayDateString,
-        periodStartDate,
-        habit.goalFrequency,
-        generalStartDayOfWeek
-      );
-
-      if (!isInCurrentRange && !isInPreviousRange) {
-        map.set(habitId, 0);
-
-        continue;
-      }
-
       let streak = 0;
-      let lastEntryDate = new Date(periodStartDate);
 
-      for (const [periodStartDate, sum] of entriesMap) {
-        const entryDate = new Date(periodStartDate);
-        const diff = differenceInDays(lastEntryDate, entryDate);
-        if (diff > 1) {
-          break;
-        }
+      for (const [periodStartDateString, sum] of entriesMap) {
+        const nextPeriodStartDate = this._getPreviousPeriodStartDate(
+          periodStartDateString,
+          habit.goalFrequency
+        );
+        const nextPeriodStartDateString = format(nextPeriodStartDate, 'yyyy-MM-dd');
+        const nextPeriodExists = entriesMap.has(nextPeriodStartDateString);
 
-        if (sum < habit.goalAmount) {
-          const isInCurrentRange = this._checkIfIsInCurrentRange(
-            todayDateString,
-            periodStartDate,
-            habit.goalFrequency,
-            generalStartDayOfWeek
-          );
+        if (sum >= habit.goalAmount) {
+          streak++;
 
-          // We still have tollerance if the current range wasn't reached yet
-          if (isInCurrentRange) {
-            lastEntryDate = entryDate;
-
-            continue;
+          if (!nextPeriodExists) {
+            break;
           }
-
+        } else {
           break;
         }
-
-        lastEntryDate = entryDate;
-
-        streak++;
       }
 
       map.set(habitId, streak);
@@ -872,28 +838,9 @@ export class HabitsManager {
     return { start, end };
   }
 
-  private _checkIfIsInCurrentRange(
+  private _getPreviousPeriodStartDate(
     selectedDateString: string,
-    entryDateString: string,
-    frequency: HabitGoalFrequencyEnum,
-    generalStartDayOfWeek: DayOfWeek
-  ) {
-    const { start, end } = this._getPeriodStartAndEnd(
-      new Date(selectedDateString),
-      frequency,
-      generalStartDayOfWeek
-    );
-
-    const entryDate = new Date(entryDateString);
-
-    return entryDate.getTime() >= start.getTime() && entryDate.getTime() <= end.getTime();
-  }
-
-  private _checkIfIsInPreviousRange(
-    selectedDateString: string,
-    entryDateString: string,
-    frequency: HabitGoalFrequencyEnum,
-    generalStartDayOfWeek: DayOfWeek
+    frequency: HabitGoalFrequencyEnum
   ) {
     let selectedDate: Date;
     if (frequency === HabitGoalFrequencyEnum.WEEK) {
@@ -906,15 +853,7 @@ export class HabitsManager {
       selectedDate = new Date(subDays(new Date(selectedDateString), 1));
     }
 
-    const { start, end } = this._getPeriodStartAndEnd(
-      selectedDate,
-      frequency,
-      generalStartDayOfWeek
-    );
-
-    const entryDate = new Date(entryDateString);
-
-    return entryDate.getTime() >= start.getTime() && entryDate.getTime() <= end.getTime();
+    return selectedDate;
   }
 }
 

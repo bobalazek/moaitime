@@ -714,26 +714,21 @@ export class HabitsManager {
 
       let streak = 0;
 
-      const firstEntryNewestDateString = Array.from(entriesMap.keys())[0];
-      const isFirstPeriodInCurrentRange = this._checkIfIsIntRange(
-        selectedDateString,
-        firstEntryNewestDateString,
+      const periodStartDate = entriesMap.keys().next().value;
+      const isInCurrentRange = this._checkIfIsInCurrentRange(
+        todayDateString,
+        periodStartDate,
         habit.goalFrequency,
         generalStartDayOfWeek
       );
-      const periodPreviousDate = this._getPreviousPeriodStartDate(
-        firstEntryNewestDateString,
-        habit.goalFrequency
-      );
-      const periodPreviousDateString = format(periodPreviousDate, 'yyyy-MM-dd');
-      const isFirstPeriodInPreviousRange = this._checkIfIsIntRange(
-        selectedDateString,
-        periodPreviousDateString,
+      const isInPreviousRange = this._checkIfIsInPreviousRange(
+        todayDateString,
+        periodStartDate,
         habit.goalFrequency,
         generalStartDayOfWeek
       );
 
-      if (!isFirstPeriodInCurrentRange && !isFirstPeriodInPreviousRange) {
+      if (!isInCurrentRange && !isInPreviousRange) {
         continue;
       }
 
@@ -884,7 +879,7 @@ export class HabitsManager {
     return selectedDate;
   }
 
-  private _checkIfIsIntRange(
+  private _checkIfIsInCurrentRange(
     selectedDateString: string,
     entryDateString: string,
     frequency: HabitGoalFrequencyEnum,
@@ -892,6 +887,24 @@ export class HabitsManager {
   ) {
     const { start, end } = this._getPeriodStartAndEnd(
       selectedDateString,
+      frequency,
+      generalStartDayOfWeek
+    );
+
+    const entryDate = new Date(entryDateString);
+
+    return entryDate.getTime() >= start.getTime() && entryDate.getTime() <= end.getTime();
+  }
+
+  private _checkIfIsInPreviousRange(
+    selectedDateString: string,
+    entryDateString: string,
+    frequency: HabitGoalFrequencyEnum,
+    generalStartDayOfWeek: DayOfWeek
+  ) {
+    const selectedDate = this._getPreviousPeriodStartDate(selectedDateString, frequency);
+    const { start, end } = this._getPeriodStartAndEnd(
+      format(selectedDate, 'yyyy-MM-dd'),
       frequency,
       generalStartDayOfWeek
     );

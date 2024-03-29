@@ -71,6 +71,20 @@ describe('HabitsManager.ts', () => {
         expected: undefined,
       },
       {
+        testName: 'should return undefined if no streak at the moment',
+        now: '2020-02-01T00:00:00.000Z',
+        selectedDate: '2020-02-01T00:00:00.000Z',
+        habitName: 'Daily Habit',
+        habitEntries: [
+          { date: '2020-01-26T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-27T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-28T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-29T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-30T00:00:00.000Z', amount: 2 },
+        ],
+        expected: undefined,
+      },
+      {
         testName: 'should return a streak of 2 for a daily habit if not set today yet',
         now: '2020-02-01T00:00:00.000Z',
         selectedDate: '2020-02-01T00:00:00.000Z',

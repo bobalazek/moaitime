@@ -41,6 +41,7 @@ import {
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import {
+  addDateTimezoneToItself,
   CreateHabit,
   DayOfWeek,
   GlobalEventsEnum,
@@ -693,7 +694,7 @@ export class HabitsManager {
         habitEntriesPerPeriod.get(entry.habitId) ?? new Map<string, number>();
 
       const { start } = this._getPeriodStartAndEnd(
-        new Date(entry.date),
+        entry.date,
         habit.goalFrequency,
         generalStartDayOfWeek
       );
@@ -712,6 +713,28 @@ export class HabitsManager {
       }
 
       let streak = 0;
+
+      const firstEntryNewestDateString = Array.from(entriesMap.keys())[0];
+      const isFirstPeriodInCurrentRange = this._checkIfIsIntRange(
+        firstEntryNewestDateString,
+        habit.goalFrequency,
+        generalStartDayOfWeek
+      );
+      const periodPreviousDate = this._getPreviousPeriodStartDate(
+        firstEntryNewestDateString,
+        habit.goalFrequency
+      );
+      const periodPreviousDateString = format(periodPreviousDate, 'yyyy-MM-dd');
+      const isFirstPeriodInPreviousRange = this._checkIfIsIntRange(
+        periodPreviousDateString,
+        habit.goalFrequency,
+        generalStartDayOfWeek
+      );
+
+      if (!isFirstPeriodInCurrentRange && !isFirstPeriodInPreviousRange) {
+        console.log(firstEntryNewestDateString, 'Not in range');
+        continue;
+      }
 
       for (const [periodStartDateString, sum] of entriesMap) {
         const nextPeriodStartDate = this._getPreviousPeriodStartDate(
@@ -810,10 +833,11 @@ export class HabitsManager {
   }
 
   private _getPeriodStartAndEnd(
-    selectedDate: Date,
+    selectedDateString: string,
     frequency: HabitGoalFrequencyEnum,
     generalStartDayOfWeek: DayOfWeek
   ) {
+    const selectedDate = new Date(selectedDateString);
     let start: Date;
     let end: Date;
 
@@ -835,7 +859,10 @@ export class HabitsManager {
       end = endOfDay(selectedDate);
     }
 
-    return { start, end };
+    return {
+      start: addDateTimezoneToItself(start),
+      end: addDateTimezoneToItself(end),
+    };
   }
 
   private _getPreviousPeriodStartDate(
@@ -854,6 +881,22 @@ export class HabitsManager {
     }
 
     return selectedDate;
+  }
+
+  private _checkIfIsIntRange(
+    entryDateString: string,
+    frequency: HabitGoalFrequencyEnum,
+    generalStartDayOfWeek: DayOfWeek
+  ) {
+    const { start, end } = this._getPeriodStartAndEnd(
+      entryDateString,
+      frequency,
+      generalStartDayOfWeek
+    );
+
+    const entryDate = new Date(entryDateString);
+
+    return entryDate.getTime() >= start.getTime() && entryDate.getTime() <= end.getTime();
   }
 }
 

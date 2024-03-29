@@ -109,7 +109,7 @@ export class HabitsManager {
         amount,
         streak,
         goalProgressPercentage,
-        intervalProgressPercentage: this._getIntervalProgressPercentage(
+        intervalProgressPercentage: this.getIntervalProgressPercentage(
           dateObject,
           habit,
           actorUser
@@ -704,10 +704,10 @@ export class HabitsManager {
       }
 
       for (const [habitId, entries] of entriesPerHabit) {
-        const isToday = entries[0].date === todayDateString;
-        const isYesterday = entries[0].date === yesterdayDateString;
+        const isCurrentRange = entries[0].date === todayDateString;
+        const isPreviousRange = entries[0].date === yesterdayDateString;
 
-        if (!isToday && !isYesterday) {
+        if (!isCurrentRange && !isPreviousRange) {
           map.set(habitId, 0);
           continue;
         }
@@ -722,14 +722,16 @@ export class HabitsManager {
           }
 
           const entryDate = new Date(entry.date);
-          const diffInDays = differenceInDays(entryDate, lastEntryDate);
-          if (diffInDays > 1) {
+          const diff = differenceInDays(lastEntryDate, entryDate);
+          if (diff > 1) {
             break;
           }
 
           if (entry.sum < habit.goalAmount) {
-            // We still have tollerance if today wasn't reached yet
-            if (isToday) {
+            // We still have tollerance if the current range wasn't reached yet
+            if (isCurrentRange) {
+              lastEntryDate = entryDate;
+
               continue;
             }
 
@@ -748,7 +750,7 @@ export class HabitsManager {
     return map;
   }
 
-  private _getIntervalProgressPercentage(date: Date, habit: Habit, user: User) {
+  getIntervalProgressPercentage(date: Date, habit: Habit, user: User) {
     const { generalStartDayOfWeek, generalTimezone } = usersManager.getUserSettings(user);
 
     const now = utcToZonedTime(new Date(), generalTimezone);

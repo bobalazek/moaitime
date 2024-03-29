@@ -92,6 +92,21 @@ describe('HabitsManager.ts', () => {
         ],
         expected: 3,
       },
+      {
+        testName: 'should return a streak of 3 for a daily habit if set today',
+        now: '2020-02-01T00:00:00.000Z',
+        selectedDate: '2020-02-01T00:00:00.000Z',
+        habitName: 'Daily Habit',
+        habitEntries: [
+          { date: '2020-01-26T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-27T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-28T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-30T00:00:00.000Z', amount: 2 },
+          { date: '2020-01-31T00:00:00.000Z', amount: 2 },
+          { date: '2020-02-01T00:00:00.000Z', amount: 2 },
+        ],
+        expected: 3,
+      },
     ])(`$testName`, async ({ now, selectedDate, habitName, habitEntries, expected }) => {
       vitest.setSystemTime(new Date(now));
 

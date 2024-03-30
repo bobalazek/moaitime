@@ -1,4 +1,5 @@
 import { useGoogleLogin } from '@react-oauth/google';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,6 +25,7 @@ export default function AuthLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const googleLogin = useGoogleLogin({
     onSuccess: async (token) => {
       try {
@@ -97,20 +99,31 @@ export default function AuthLoginPage() {
                     Forgot Password?
                   </a>
                 </div>
-                <Input
-                  type="password"
-                  id="login-password"
-                  tabIndex={2}
-                  value={password}
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                  }}
-                  onKeyPress={(event) => {
-                    if (event.key === 'Enter') {
-                      onLoginButtonClick();
-                    }
-                  }}
-                />
+                <div className="relative">
+                  <Input
+                    type={isPasswordVisible ? 'text' : 'password'}
+                    id="login-password"
+                    className="pr-10"
+                    tabIndex={2}
+                    value={password}
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                    }}
+                    onKeyPress={(event) => {
+                      if (event.key === 'Enter') {
+                        onLoginButtonClick();
+                      }
+                    }}
+                  />
+                  <button
+                    className="text-muted-foreground absolute right-2 top-2"
+                    onClick={() => {
+                      setIsPasswordVisible(!isPasswordVisible);
+                    }}
+                  >
+                    {isPasswordVisible ? <EyeIcon /> : <EyeOffIcon />}
+                  </button>
+                </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Button

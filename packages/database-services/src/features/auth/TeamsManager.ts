@@ -5,7 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   getDatabase,
+  lists,
   NewTeam,
+  tags,
   Team,
   teams,
   TeamUser,
@@ -19,6 +21,7 @@ import { mailer } from '@moaitime/emails-mailer';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { getEnv } from '@moaitime/shared-backend';
 import {
+  Team as ApiTeam,
   GlobalEventsEnum,
   TeamLimits,
   TeamUsage,
@@ -61,7 +64,7 @@ export class TeamsManager {
   async delete(actorUserId: string, teamId: string, isHardDelete?: boolean) {
     const canDelete = await this.userCanDelete(actorUserId, teamId);
     if (!canDelete) {
-      throw new Error('Team not found');
+      throw new Error('You cannot delete this team');
     }
 
     const team = isHardDelete
@@ -69,6 +72,9 @@ export class TeamsManager {
       : await this.updateOneById(teamId, {
           deletedAt: new Date(),
         });
+
+    await getDatabase().update(lists).set({ teamId: null }).where(eq(lists.teamId, teamId));
+    await getDatabase().update(tags).set({ teamId: null }).where(eq(tags.teamId, teamId));
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_DELETED, {
       actorUserId,
@@ -211,14 +217,36 @@ export class TeamsManager {
     return this.userCanUpdate(userId, teamId);
   }
 
+  async userCanUpdateMember(userId: string, teamId: string): Promise<boolean> {
+    return this.userCanUpdate(userId, teamId);
+  }
+
   async userCanRemoveMember(userId: string, teamId: string): Promise<boolean> {
     return this.userCanUpdate(userId, teamId);
   }
 
+  async getPermissions(userId: string, teamId: string): Promise<ApiTeam['permissions']> {
+    const canView = await this.userCanView(userId, teamId);
+    const canUpdate = await this.userCanUpdate(userId, teamId);
+    const canDelete = await this.userCanDelete(userId, teamId);
+    const canInviteMember = await this.userCanInviteMember(userId, teamId);
+    const canUpdateMember = await this.userCanUpdateMember(userId, teamId);
+    const canRemoveMember = await this.userCanRemoveMember(userId, teamId);
+
+    return {
+      canView,
+      canUpdate,
+      canDelete,
+      canInviteMember,
+      canUpdateMember,
+      canRemoveMember,
+    };
+  }
+
   // Helpers
-  async findOneById(organizationId: string): Promise<Team | null> {
+  async findOneById(teamId: string): Promise<Team | null> {
     const row = await getDatabase().query.teams.findFirst({
-      where: eq(teams.id, organizationId),
+      where: eq(teams.id, teamId),
     });
 
     return row ?? null;
@@ -301,9 +329,15 @@ export class TeamsManager {
       return null;
     }
 
+    const team = {
+      ...row.teams,
+      permissions: await this.getPermissions(userId, row.teams.id),
+    };
+    const teamUser = row.team_users;
+
     return {
-      team: row.teams,
-      teamUser: row.team_users,
+      team,
+      teamUser,
     };
   }
 

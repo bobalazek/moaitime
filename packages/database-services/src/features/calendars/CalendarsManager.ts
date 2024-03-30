@@ -369,7 +369,7 @@ export class CalendarsManager {
       .execute();
   }
 
-  async getCalendarPermissions(
+  async getPermissions(
     userId: string,
     calendarOrCalendarId: string | Calendar
   ): Promise<ApiCalendar['permissions']> {
@@ -576,7 +576,7 @@ export class CalendarsManager {
     const apiCalendars: ApiCalendar[] = [];
 
     for (const calendar of calendars) {
-      const permissions = await this.getCalendarPermissions(userId, calendar);
+      const permissions = await this.getPermissions(userId, calendar);
 
       apiCalendars.push({
         ...calendar,

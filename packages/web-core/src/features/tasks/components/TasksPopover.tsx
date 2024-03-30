@@ -55,7 +55,7 @@ export default function TasksPopover() {
           <div className="absolute bottom-0 right-4" />
         </PopoverTrigger>
         <PopoverContent className="p-0" id="tasks-popover" align="end" data-test="tasks--popover">
-          <div className="mb-4 w-full min-w-[320px] max-w-[380px] p-0 md:min-w-[380px]">
+          <div className="w-full min-w-[320px] max-w-[380px] p-0 md:min-w-[380px]">
             <TasksBody />
           </div>
         </PopoverContent>

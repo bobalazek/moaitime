@@ -20,6 +20,15 @@ const ListItemActions = memo(({ list }: { list: List }) => {
   const onDeleteButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation();
 
+    if (list.teamId) {
+      const result = confirm(
+        `Are you sure you want to delete the list "${list.name}"? The ownership of lists and tags will be transferred to the user that created them.`
+      );
+      if (!result) {
+        return;
+      }
+    }
+
     try {
       await deleteList(list.id);
 

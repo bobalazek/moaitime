@@ -162,7 +162,7 @@ export class FocusSessionsManager {
     // State and status logic
     if (action === FocusSessionUpdateActionEnum.PAUSE) {
       if (focusSession.status !== FocusSessionStatusEnum.ACTIVE) {
-        throw new Error('Focus session is not active, so it can not be paused');
+        throw new Error('Focus session is not active, so it cannot be paused');
       }
 
       data.status = FocusSessionStatusEnum.PAUSED;
@@ -174,7 +174,7 @@ export class FocusSessionsManager {
       });
     } else if (action === FocusSessionUpdateActionEnum.CONTINUE) {
       if (focusSession.status !== FocusSessionStatusEnum.PAUSED) {
-        throw new Error('Focus session is not paused, so it can not be continued');
+        throw new Error('Focus session is not paused, so it cannot be continued');
       }
 
       data.status = FocusSessionStatusEnum.ACTIVE;

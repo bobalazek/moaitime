@@ -33,14 +33,16 @@ export default function JoinedTeamSection() {
         team.
       </div>
       <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="default"
-          onClick={onEditTeamButtonClick}
-          data-test="settings--team-settings--joined-team--edit-team-button"
-        >
-          Edit Team
-        </Button>
+        {joinedTeam.team.permissions?.canUpdate && (
+          <Button
+            size="sm"
+            variant="default"
+            onClick={onEditTeamButtonClick}
+            data-test="settings--team-settings--joined-team--edit-team-button"
+          >
+            Edit Team
+          </Button>
+        )}
         <Button
           size="sm"
           variant="destructive"

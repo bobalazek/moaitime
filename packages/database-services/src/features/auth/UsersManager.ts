@@ -132,7 +132,7 @@ export class UsersManager {
 
     const isBlocking = await this.isBlockingUser(actorUserId, user.id);
     if (isBlocking) {
-      throw new Error(`You can not follow a user that you are blocking`);
+      throw new Error(`You cannot follow a user that you are blocking`);
     }
 
     const follow = await getDatabase().query.userFollowedUsers.findFirst({

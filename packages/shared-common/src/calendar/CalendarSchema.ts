@@ -16,7 +16,7 @@ export const CalendarSchema = z.object({
   createdAt: z.string(),
   userId: z.string(),
   teamId: z.string().nullable(),
-  permissions: PermissionsSchema,
+  permissions: PermissionsSchema.optional(),
 });
 
 export const CreateCalendarSchema = z.object({

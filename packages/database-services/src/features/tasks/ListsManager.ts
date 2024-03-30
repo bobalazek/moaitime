@@ -1,6 +1,6 @@
 import { and, asc, count, desc, eq, inArray, isNotNull, isNull, or, SQL } from 'drizzle-orm';
 
-import { getDatabase, List, lists, NewList, tasks, User } from '@moaitime/database-core';
+import { getDatabase, List, lists, NewList, tasks, taskUsers, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { CreateList, GlobalEventsEnum, UpdateList } from '@moaitime/shared-common';
 
@@ -80,6 +80,24 @@ export class ListsManager {
       : await this.updateOneById(listId, {
           deletedAt: new Date(),
         });
+
+    if (!isHardDelete) {
+      const result = await getDatabase()
+        .select({
+          id: tasks.id,
+        })
+        .from(tasks)
+        .where(eq(tasks.listId, listId))
+        .execute();
+      const taskIds = result.map((item) => item.id);
+      if (taskIds.length > 0) {
+        await getDatabase().delete(taskUsers).where(inArray(taskUsers.taskId, taskIds)).execute();
+      }
+
+      await this.updateOneById(listId, {
+        teamId: null,
+      });
+    }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TASKS_LIST_DELETED, {
       actorUserId,

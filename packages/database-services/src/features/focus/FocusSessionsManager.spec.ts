@@ -65,7 +65,7 @@ describe('FocusSessionManager.ts', () => {
           FocusSessionUpdateActionEnum.PAUSE
         );
 
-      await expect(result).rejects.toThrow('Focus session is not active, so it can not be paused');
+      await expect(result).rejects.toThrow('Focus session is not active, so it cannot be paused');
     });
 
     it('should not continue if it is already active', async () => {
@@ -77,7 +77,7 @@ describe('FocusSessionManager.ts', () => {
         );
 
       await expect(result).rejects.toThrow(
-        'Focus session is not paused, so it can not be continued'
+        'Focus session is not paused, so it cannot be continued'
       );
     });
 

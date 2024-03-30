@@ -188,7 +188,7 @@ export class TasksManager {
     }
 
     if (task.deletedAt) {
-      throw new Error('You can not update a deleted task');
+      throw new Error('You cannot update a deleted task');
     }
 
     let children: Task[] = [];
@@ -525,7 +525,9 @@ export class TasksManager {
 
     let where: SQL<unknown> = sql`1 = 1`; // Need this, else typescript will complain down below
     if (typeof listId !== 'undefined') {
-      where = listId ? eq(tasks.listId, listId) : isNull(tasks.listId);
+      where = (
+        listId ? and(eq(tasks.listId, listId), isNull(lists.deletedAt)) : isNull(tasks.listId)
+      ) as SQL<unknown>;
       // The null/unlisted list is an exception, so we always want to get the items as they are only from the user
       if (!listId) {
         where = and(where, eq(tasks.userId, userId)) as SQL<unknown>;

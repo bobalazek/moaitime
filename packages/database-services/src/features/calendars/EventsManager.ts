@@ -361,10 +361,7 @@ export class EventsManager {
     const finalRows: (Event & { calendarColor: string | null; permissions?: Permissions })[] = [];
 
     for (const row of result) {
-      const calendarPermissions = await calendarsManager.getCalendarPermissions(
-        userId,
-        row.calendars!
-      );
+      const calendarPermissions = await calendarsManager.getPermissions(userId, row.calendars!);
 
       let permissions: Permissions | undefined = undefined;
       if (calendarPermissions) {

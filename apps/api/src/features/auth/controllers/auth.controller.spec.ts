@@ -97,7 +97,7 @@ describe('AuthController', () => {
         avatarImageUrl: null,
         biography: null,
         isPrivate: false,
-        hasOauthGoogle: false,
+        userIdentities: [],
         hasPassword: true,
         birthDate: '1990-01-01',
         emailConfirmedAt: testUser.emailConfirmedAt?.toISOString() ?? null,

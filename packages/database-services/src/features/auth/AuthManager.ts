@@ -3,16 +3,20 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { addSeconds } from 'date-fns';
+import { and, eq } from 'drizzle-orm';
 import { Issuer } from 'openid-client';
 import { UAParser } from 'ua-parser-js';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  getDatabase,
   Invitation,
   NewUser,
   TeamUserInvitation,
   User,
   UserAccessToken,
+  userIdentities,
+  UserIdentity,
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -186,9 +190,9 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
-    const userUpdateFields = await this._getAdditionalDataForOauth(oauthProvider, oauthToken, user);
+    const oauthUserInfo = await this._getOauthUserInfo(oauthProvider, oauthToken, user);
 
-    const updatedUser = await this._usersManager.updateOneById(actorUserId, userUpdateFields);
+    await this._createOrUpdateUserIdentity(actorUserId, oauthProvider, oauthUserInfo);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_OAUTH_LINKED, {
       actorUserId,
@@ -196,7 +200,7 @@ export class AuthManager {
       oauthProvider,
     });
 
-    return updatedUser;
+    return user;
   }
 
   async oauthUnlink(actorUserId: string, oauthProvider: OauthProviderEnum): Promise<User> {
@@ -205,14 +209,7 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
-    const oauthProviderField = this._getOauthProviderField(oauthProvider);
-    if (!user[oauthProviderField]) {
-      throw new Error('User does not have this OAuth account linked');
-    }
-
-    const updatedUser = await this._usersManager.updateOneById(actorUserId, {
-      [oauthProviderField]: null,
-    });
+    await this._deleteUserIdentity(actorUserId, oauthProvider);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_OAUTH_UNLINKED, {
       actorUserId,
@@ -220,7 +217,7 @@ export class AuthManager {
       oauthProvider,
     });
 
-    return updatedUser;
+    return user;
   }
 
   async register(data: RegisterUser): Promise<User> {
@@ -257,23 +254,11 @@ export class AuthManager {
       throw new Error('Password is not set');
     }
 
-    let additionalUserFields: Partial<NewUser> = {};
-
+    const additionalUserFields: Partial<NewUser> = {};
     if (password) {
       UserPasswordSchema.parse(password);
 
       additionalUserFields.password = await this.validateAndHashPassword(password);
-    }
-
-    if (oauth) {
-      const additionalOauthFields = await this._getAdditionalDataForOauth(
-        oauth.provider,
-        oauth.token
-      );
-      additionalUserFields = {
-        ...additionalUserFields,
-        ...additionalOauthFields,
-      };
     }
 
     const newUser = await this._usersManager.insertOne({
@@ -283,6 +268,12 @@ export class AuthManager {
       emailConfirmationToken: uuidv4(),
       emailConfirmationLastSentAt: new Date(),
     } as NewUser);
+
+    if (oauth) {
+      const oauthUser = await this._getOauthUserInfo(oauth.provider, oauth.token);
+
+      await this._createOrUpdateUserIdentity(newUser.id, oauth.provider, oauthUser);
+    }
 
     for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
       const name = LISTS_DEFAULT_NAMES[i] as keyof typeof TASKS_DEFAULT_ENTRIES;
@@ -1035,22 +1026,11 @@ export class AuthManager {
     }
   }
 
-  private _getOauthProviderField(oauthProvider: OauthProviderEnum): keyof User {
-    switch (oauthProvider) {
-      case OauthProviderEnum.GOOGLE:
-        return 'oauthGoogleId';
-      default:
-        throw new Error('Invalid OAuth provider');
-    }
-  }
-
-  private async _getAdditionalDataForOauth(
+  private async _getOauthUserInfo(
     oauthProvider: OauthProviderEnum,
     oauthToken: OauthToken,
     userSelf?: User
   ) {
-    const field = this._getOauthProviderField(oauthProvider);
-
     const userInfo = await this._getOauthProviderUserInfo(oauthProvider, oauthToken);
     const existingUser = await this._usersManager.findOneByOauthProviderId(
       oauthProvider,
@@ -1060,9 +1040,44 @@ export class AuthManager {
       throw new Error('This OAuth account is already linked to another user');
     }
 
-    return {
-      [field]: userInfo.sub,
-    };
+    return userInfo;
+  }
+
+  private async _createOrUpdateUserIdentity(
+    userId: string,
+    providerKey: OauthProviderEnum,
+    userInfo: OauthUserInfo
+  ): Promise<UserIdentity> {
+    const userIdentity = await getDatabase().query.userIdentities.findFirst({
+      where: and(eq(userIdentities.userId, userId), eq(userIdentities.providerKey, providerKey)),
+    });
+    if (userIdentity) {
+      const rows = await getDatabase()
+        .update(userIdentities)
+        .set({ data: userInfo })
+        .where(and(eq(userIdentities.userId, userId), eq(userIdentities.providerKey, providerKey)))
+        .returning();
+
+      return rows[0];
+    }
+
+    const rows = await getDatabase()
+      .insert(userIdentities)
+      .values({
+        userId,
+        providerKey,
+        providerId: userInfo.sub,
+        data: userInfo,
+      })
+      .returning();
+
+    return rows[0];
+  }
+
+  private async _deleteUserIdentity(userId: string, providerKey: OauthProviderEnum) {
+    await getDatabase()
+      .delete(userIdentities)
+      .where(and(eq(userIdentities.userId, userId), eq(userIdentities.providerKey, providerKey)));
   }
 }
 

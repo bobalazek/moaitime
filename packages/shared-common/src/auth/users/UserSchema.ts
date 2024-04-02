@@ -30,15 +30,22 @@ export const PublicUserSchema = z.object({
   myselfIsBlockingThisUser: z.boolean().optional(),
 });
 
+// User Identity
+export const UserIdentitySchema = z.object({
+  providerKey: z.string(),
+  providerId: z.string(),
+  data: z.record(z.unknown()).nullable(),
+});
+
 // User
 export const UserSchema = PublicUserSchema.extend({
   hasPassword: z.boolean(),
-  hasOauthGoogle: z.boolean(),
   newEmail: z.string().email().nullable(),
   roles: z.array(z.string()),
   settings: UserSettingsSchema,
   birthDate: z.string().nullable(),
   emailConfirmedAt: z.string().nullable(),
+  userIdentities: z.array(UserIdentitySchema),
 });
 
 // User Partials
@@ -121,7 +128,7 @@ export const RegisterUserSchema = z.object({
 });
 
 // User Access Token
-export const UserAccessTokenLiteSchema = z.object({
+export const BaseUserAccessTokenSchema = z.object({
   token: z.string(),
   refreshToken: z.string(),
   expiresAt: z.string().nullable(),
@@ -129,6 +136,8 @@ export const UserAccessTokenLiteSchema = z.object({
 
 // Types
 export type PublicUser = z.infer<typeof PublicUserSchema>;
+
+export type UserIdentity = z.infer<typeof UserIdentitySchema>;
 
 export type User = z.infer<typeof UserSchema>;
 
@@ -138,4 +147,4 @@ export type UpdateUserPassword = z.infer<typeof UpdateUserPasswordSchema>;
 
 export type RegisterUser = z.infer<typeof RegisterUserSchema>;
 
-export type UserAccessTokenLite = z.infer<typeof UserAccessTokenLiteSchema>;
+export type BaseUserAccessToken = z.infer<typeof BaseUserAccessTokenSchema>;

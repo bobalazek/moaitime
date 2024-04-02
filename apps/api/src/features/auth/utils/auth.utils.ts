@@ -2,7 +2,7 @@ import { usersManager } from '@moaitime/database-services';
 
 import { PlanDto } from '../dtos/plan.dto';
 import { SubscriptionDto } from '../dtos/subscription.dto';
-import { UserAccessTokenLiteDto } from '../dtos/user-access-token-lite.dto';
+import { BaseUserAccessTokenDto } from '../dtos/user-access-token-lite.dto';
 import { UserDto } from '../dtos/user.dto';
 import { UserWithAccessToken } from '../types/user-with-access-token.type';
 
@@ -10,7 +10,7 @@ export const convertToUserResponseDto = (
   userWithAccessToken: UserWithAccessToken
 ): {
   user: UserDto;
-  userAccessToken: UserAccessTokenLiteDto;
+  userAccessToken: BaseUserAccessTokenDto;
   plan: PlanDto | null;
   subscription: SubscriptionDto | null;
 } => {
@@ -24,7 +24,6 @@ export const convertToUserResponseDto = (
       email: userWithAccessToken.email,
       newEmail: userWithAccessToken.newEmail ?? null,
       hasPassword: !!userWithAccessToken.password,
-      hasOauthGoogle: !!userWithAccessToken.oauthGoogleId,
       roles: userWithAccessToken.roles,
       settings: usersManager.getUserSettings(userWithAccessToken),
       biography: userWithAccessToken.biography,
@@ -34,6 +33,12 @@ export const convertToUserResponseDto = (
       emailConfirmedAt: userWithAccessToken.emailConfirmedAt?.toISOString() ?? null,
       createdAt: userWithAccessToken.createdAt?.toISOString() ?? now.toISOString(),
       updatedAt: userWithAccessToken.updatedAt?.toISOString() ?? now.toISOString(),
+      userIdentities:
+        userWithAccessToken.userIdentities?.map((identity) => ({
+          providerKey: identity.providerKey,
+          providerId: identity.providerId,
+          data: identity.data,
+        })) ?? [],
     },
     userAccessToken: {
       token: userWithAccessToken._accessToken.token,

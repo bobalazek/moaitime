@@ -12,7 +12,9 @@ import { organizationUsers } from './organizationUsers';
 import { quotes } from './quotes';
 import { teamUsers } from './teamUsers';
 import { userAccessTokens } from './userAccessTokens';
+import { userAchievements } from './userAchievements';
 import { userCalendars } from './userCalendars';
+import { userIdentities } from './userIdentities';
 
 export const users = pgTable(
   'users',
@@ -35,7 +37,6 @@ export const users = pgTable(
     biography: text('biography'),
     isPrivate: boolean('is_private').default(false),
     avatarImageUrl: text('avatar_image_url'),
-    oauthGoogleId: text('oauth_google_id').unique(),
     emailConfirmationToken: text('email_confirmation_token').unique(),
     newEmailConfirmationToken: text('new_email_confirmation_token').unique(),
     passwordResetToken: text('password_reset_token').unique(),
@@ -69,6 +70,8 @@ export const users = pgTable(
 );
 
 export const usersRelations = relations(users, ({ many }) => ({
+  userAchievements: many(userAchievements),
+  userIdentities: many(userIdentities),
   userCalendars: many(userCalendars),
   organizationUsers: many(organizationUsers),
   teamUsers: many(teamUsers),

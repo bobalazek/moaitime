@@ -15,7 +15,6 @@ import {
   SQL,
   sum,
 } from 'drizzle-orm';
-import { PgColumn } from 'drizzle-orm/pg-core';
 
 import { databaseCacheManager } from '@moaitime/database-cache';
 import {
@@ -28,6 +27,7 @@ import {
   userBlockedUsers,
   userExperiencePoints,
   userFollowedUsers,
+  userIdentities,
   users,
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -650,6 +650,9 @@ export class UsersManager {
   async findOneById(userId: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.id, userId),
+      with: {
+        userIdentities: true,
+      },
     });
 
     if (!row) {
@@ -670,6 +673,9 @@ export class UsersManager {
   async findOneByEmail(email: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.email, email),
+      with: {
+        userIdentities: true,
+      },
     });
 
     if (!row) {
@@ -682,6 +688,9 @@ export class UsersManager {
   async findOneByUsername(username: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.username, username),
+      with: {
+        userIdentities: true,
+      },
     });
 
     if (!row) {
@@ -694,6 +703,9 @@ export class UsersManager {
   async findOneByEmailConfirmationToken(emailConfirmationToken: string): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.emailConfirmationToken, emailConfirmationToken),
+      with: {
+        userIdentities: true,
+      },
     });
 
     if (!row) {
@@ -708,6 +720,9 @@ export class UsersManager {
   ): Promise<User | null> {
     const row = await getDatabase().query.users.findFirst({
       where: eq(users.newEmailConfirmationToken, newEmailConfirmationToken),
+      with: {
+        userIdentities: true,
+      },
     });
 
     if (!row) {
@@ -743,19 +758,23 @@ export class UsersManager {
 
   async findOneByOauthProviderId(
     provider: OauthProviderEnum,
-    oauthSub: string
+    providerId: string
   ): Promise<User | null> {
-    let field: PgColumn | null = null;
-    if (provider === OauthProviderEnum.GOOGLE) {
-      field = users.oauthGoogleId;
-    }
-
-    if (!field) {
+    const userIdentity = await getDatabase().query.userIdentities.findFirst({
+      where: and(
+        eq(userIdentities.providerKey, provider),
+        eq(userIdentities.providerId, providerId)
+      ),
+    });
+    if (!userIdentity) {
       return null;
     }
 
     const row = await getDatabase().query.users.findFirst({
-      where: eq(field, oauthSub),
+      where: eq(users.id, userIdentity.userId),
+      with: {
+        userIdentities: true,
+      },
     });
 
     if (!row) {

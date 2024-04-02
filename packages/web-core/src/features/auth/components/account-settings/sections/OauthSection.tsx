@@ -42,18 +42,22 @@ export const OauthSection = () => {
     }
   };
 
+  const hasOauthGoogle = auth?.user.userIdentities.some(
+    (identity) => identity.providerKey === OauthProviderEnum.GOOGLE
+  );
+
   if (!auth) {
     return null;
   }
 
   return (
     <>
-      {!auth.user.hasOauthGoogle && (
+      {!hasOauthGoogle && (
         <Button size="sm" onClick={onOauthGoogleLinkButtonClick}>
           Link Google account
         </Button>
       )}
-      {auth.user.hasOauthGoogle && (
+      {hasOauthGoogle && (
         <Button size="sm" variant="destructive" onClick={onOauthGoogleUnlinkButtonClick}>
           Unlink Google account
         </Button>

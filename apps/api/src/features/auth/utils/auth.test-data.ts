@@ -23,7 +23,6 @@ export const getTestUser = async (): Promise<User> => ({
   passwordResetToken: null,
   deletionToken: null,
   lockedReason: null,
-  oauthGoogleId: null,
   emailConfirmedAt: null,
   emailConfirmationLastSentAt: null,
   newEmailConfirmationLastSentAt: null,

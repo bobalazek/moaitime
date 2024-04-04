@@ -209,6 +209,10 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
+    if (!user.password) {
+      throw new Error('You must first set a password before you can unlink your OAuth account');
+    }
+
     await this._deleteUserIdentity(actorUserId, oauthProvider);
 
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_OAUTH_UNLINKED, {

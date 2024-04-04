@@ -31,6 +31,11 @@ export const OauthSection = () => {
   };
 
   const onOauthGoogleUnlinkButtonClick = async () => {
+    const result = window.confirm('Are you sure you want to unlink your Google account?');
+    if (!result) {
+      return;
+    }
+
     try {
       await oauthUnlink(OauthProviderEnum.GOOGLE);
 

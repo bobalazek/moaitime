@@ -261,18 +261,25 @@ export class AuthManager {
       additionalUserFields.password = await this.validateAndHashPassword(password);
     }
 
+    let oauthUserInfo: OauthUserInfo | null = null;
+    if (oauth) {
+      oauthUserInfo = await this._getOauthUserInfo(oauth.provider, oauth.token);
+
+      if (oauthUserInfo.email !== user.email) {
+        throw new Error('Email from OAuth provider does not match the one provided');
+      }
+    }
+
     const newUser = await this._usersManager.insertOne({
       ...user,
       ...additionalUserFields,
       roles: [UserRoleEnum.USER],
       emailConfirmationToken: uuidv4(),
       emailConfirmationLastSentAt: new Date(),
-    } as NewUser);
+    });
 
-    if (oauth) {
-      const oauthUser = await this._getOauthUserInfo(oauth.provider, oauth.token);
-
-      await this._createOrUpdateUserIdentity(newUser.id, oauth.provider, oauthUser);
+    if (oauth && oauthUserInfo) {
+      await this._createOrUpdateUserIdentity(newUser.id, oauth.provider, oauthUserInfo);
     }
 
     for (let i = 0; i < LISTS_DEFAULT_NAMES.length; i++) {
@@ -1019,6 +1026,9 @@ export class AuthManager {
         emailVerified: userInfo.email_verified,
         preferredUsername: userInfo.preferred_username,
         displayName: userInfo.name,
+        firstName: userInfo.given_name,
+        lastName: userInfo.family_name,
+        locale: userInfo.locale,
         avatarUrl: userInfo.picture,
       };
     } catch (error) {

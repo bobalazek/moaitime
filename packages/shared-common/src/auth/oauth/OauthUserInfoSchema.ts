@@ -6,6 +6,9 @@ export const OauthUserInfoSchema = z.object({
   emailVerified: z.boolean().optional(),
   preferredUsername: z.string().optional(),
   displayName: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  locale: z.string().optional(),
   avatarUrl: z.string().optional(),
 });
 

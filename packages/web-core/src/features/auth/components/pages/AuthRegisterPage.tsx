@@ -2,7 +2,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { OauthProviderEnum, OauthToken } from '@moaitime/shared-common';
+import { OauthProviderEnum, OauthToken, OauthUserInfo } from '@moaitime/shared-common';
 import {
   Alert,
   AlertDescription,
@@ -35,6 +35,7 @@ export default function AuthRegisterPage() {
   const [terms, setTerms] = useState(false);
   const [oauthProvider, setOauthProvider] = useState<OauthProviderEnum>();
   const [oauthToken, setOauthToken] = useState<OauthToken>();
+  const [oauthUserInfoData, setOauthUserInfo] = useState<OauthUserInfo>();
   const googleConnect = useGoogleLogin({
     onSuccess: async (token) => {
       try {
@@ -43,8 +44,9 @@ export default function AuthRegisterPage() {
 
         const userInfo = await oauthUserInfo(OauthProviderEnum.GOOGLE, token);
         if (userInfo) {
+          setOauthUserInfo(userInfo);
           setEmail(userInfo.email ?? '');
-          setDisplayName(userInfo.displayName ?? '');
+          setDisplayName(userInfo.firstName ?? '');
         }
       } catch (error) {
         // Already handled by the fetch function
@@ -131,10 +133,11 @@ export default function AuthRegisterPage() {
                 <div className="text-muted-foreground py-2 text-center text-sm">or</div>
               </>
             )}
-            {oauthToken && (
+            {oauthUserInfoData && (
               <Alert variant="success" className="mb-6">
                 <AlertDescription>
-                  You are now connected with the OAuth provider! Please continue to fill all the
+                  Hello <b>{oauthUserInfoData.firstName}</b> (<b>{oauthUserInfoData.email}</b>)! You
+                  are now connected with the OAuth provider! Please fill out all the remaining
                   fields below.
                 </AlertDescription>
               </Alert>
@@ -163,7 +166,12 @@ export default function AuthRegisterPage() {
                     onChange={(event) => {
                       setInvitationToken(event.target.value);
                     }}
+                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
+                  <div className="text-muted-foreground text-sm">
+                    For now, only users with an invitation token can register. If you don't have
+                    one, do check our social accounts for giveaways!
+                  </div>
                 </div>
               )}
               <div className="flex flex-col gap-2">
@@ -190,31 +198,34 @@ export default function AuthRegisterPage() {
                   }}
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="register-email">Email</Label>
-                <Input
-                  type="email"
-                  id="register-email"
-                  autoFocus
-                  placeholder="johnny.doe@gmail.com"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                  }}
-                />
-              </div>
-              {!oauthToken && (
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="register-password">Password</Label>
-                  <Input
-                    type="password"
-                    id="register-password"
-                    value={password}
-                    onChange={(event) => {
-                      setPassword(event.target.value);
-                    }}
-                  />
-                </div>
+              {!oauthUserInfoData && (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="register-email">Email</Label>
+                    <Input
+                      type="email"
+                      id="register-email"
+                      autoFocus
+                      placeholder="johnny.doe@gmail.com"
+                      value={email}
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                      }}
+                      readOnly={oauthToken !== undefined}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="register-password">Password</Label>
+                    <Input
+                      type="password"
+                      id="register-password"
+                      value={password}
+                      onChange={(event) => {
+                        setPassword(event.target.value);
+                      }}
+                    />
+                  </div>
+                </>
               )}
               <div className="flex flex-row items-center gap-2">
                 <Checkbox

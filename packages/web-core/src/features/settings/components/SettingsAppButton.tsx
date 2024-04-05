@@ -13,6 +13,9 @@ export default function SettingsAppButton() {
         setDialogOpen(true);
       }}
       title="Settings"
+      style={{
+        backgroundImage: 'radial-gradient(circle, #78909C 0%, #37474F 100%)',
+      }}
       data-test="settings--dialog--trigger-button"
     />
   );

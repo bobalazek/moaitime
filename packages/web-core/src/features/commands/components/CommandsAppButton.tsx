@@ -13,6 +13,9 @@ export default function CommandsAppButton() {
         setCommandsDialogOpen(true);
       }}
       title="Commands"
+      style={{
+        backgroundImage: 'radial-gradient(circle, #80DEEA 0%, #0097A7 100%)',
+      }}
       data-test="commands--open-button"
     />
   );

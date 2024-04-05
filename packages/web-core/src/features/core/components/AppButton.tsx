@@ -6,7 +6,7 @@ import { cn, Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@moa
 
 export const AppButton: React.FC<
   ButtonHTMLAttributes<HTMLButtonElement> & { icon: LucideIcon; badgeCount?: number }
-> = ({ icon, badgeCount, title, ...rest }) => {
+> = ({ icon, badgeCount, title, className, ...rest }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const Icon = icon;
@@ -35,7 +35,8 @@ export const AppButton: React.FC<
       type="button"
       className={cn(
         `relative z-20 flex h-10 w-10 select-none items-center justify-center rounded-lg bg-slate-600 shadow-lg transition-all hover:bg-slate-600/70 focus:bg-slate-600/60 md:h-16 md:w-16 md:rounded-2xl`,
-        isPressed && `scale-90`
+        isPressed && `scale-90`,
+        className
       )}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
@@ -43,7 +44,7 @@ export const AppButton: React.FC<
       onTouchEnd={() => setIsPressed(false)}
       {...rest}
     >
-      <Icon className="h-6 w-6 text-white md:h-8 md:w-8" />
+      <Icon className="h-6 w-6 text-white md:h-9 md:w-9" />
       {badgeCount && badgeCount > 0 ? (
         <div className="absolute right-[-4px] top-[-4px] flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-lg">
           {badgeCount > 9 ? '9+' : badgeCount}

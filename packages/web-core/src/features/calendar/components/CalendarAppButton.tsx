@@ -13,6 +13,9 @@ export default function CalendarAppButton() {
         navigate('/calendar');
       }}
       title="Calendar"
+      style={{
+        backgroundImage: 'linear-gradient(180deg, #FF9E80 0%, #FF6E40 100%)',
+      }}
       data-test="calendar--open-button"
     />
   );

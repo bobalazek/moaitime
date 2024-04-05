@@ -13,6 +13,9 @@ export default function StatisticsAppButton() {
         navigate('/statistics');
       }}
       title="Statistics"
+      style={{
+        backgroundImage: 'linear-gradient(180deg, #66BB6A 0%, #388E3C 100%)',
+      }}
       data-test="statistics--open-button"
     />
   );

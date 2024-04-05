@@ -13,6 +13,9 @@ export default function TasksAppButton() {
         setPopoverOpen(true);
       }}
       title="Tasks"
+      style={{
+        backgroundImage: 'linear-gradient(180deg, #4FC3F7 0%, #0288D1 100%)',
+      }}
       data-test="tasks--popover--trigger-button"
     />
   );

@@ -13,6 +13,9 @@ export default function NotesAppButton() {
         navigate('/notes');
       }}
       title="Notes"
+      style={{
+        backgroundImage: 'linear-gradient(180deg, #FFEB3B 0%, #FF9800 100%)',
+      }}
       data-test="notes--open-button"
     />
   );

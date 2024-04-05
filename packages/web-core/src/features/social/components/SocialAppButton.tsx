@@ -13,6 +13,9 @@ export default function SocialAppButton() {
         navigate('/social');
       }}
       title="Social"
+      style={{
+        backgroundImage: 'linear-gradient(180deg, #4DB6AC 0%, #00796B 100%)',
+      }}
       data-test="social--open-button"
     />
   );

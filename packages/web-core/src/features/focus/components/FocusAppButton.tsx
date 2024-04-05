@@ -13,6 +13,9 @@ export default function FocusAppButton() {
         navigate('/focus');
       }}
       title="Focus"
+      style={{
+        backgroundImage: 'linear-gradient(180deg, #FFA726 0%, #F57C00 100%)',
+      }}
       data-test="focus--open-button"
     />
   );

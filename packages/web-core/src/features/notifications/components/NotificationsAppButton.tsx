@@ -16,6 +16,9 @@ export default function NotificationsAppButton() {
       }}
       title="Notifications"
       badgeCount={unreadUserNotificationsCount}
+      style={{
+        backgroundImage: 'radial-gradient(circle, #FF8585 0%, #D84315 100%)',
+      }}
       data-test="notifications--open-button"
     />
   );

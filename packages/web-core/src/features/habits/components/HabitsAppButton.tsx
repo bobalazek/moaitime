@@ -13,6 +13,9 @@ export default function HabitsAppButton() {
         navigate('/habits');
       }}
       title="Habits"
+      style={{
+        backgroundImage: 'radial-gradient(circle, #C5A3FF 0%, #9C27B0 100%)',
+      }}
       data-test="habits--open-button"
     />
   );

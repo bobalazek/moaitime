@@ -43,6 +43,13 @@
       "when": 1712056250232,
       "tag": "0005_messy_micromax",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1712308518161,
+      "tag": "0006_striped_mysterio",
+      "breakpoints": true
     }
   ]
 }

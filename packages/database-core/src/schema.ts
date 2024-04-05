@@ -37,3 +37,4 @@ export * from './schema/userOnlineActivityEntries';
 export * from './schema/userIdentities';
 export * from './schema/users';
 export * from './schema/invitations';
+export * from './schema/sharingEntries';

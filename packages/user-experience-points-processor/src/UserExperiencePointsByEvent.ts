@@ -8,7 +8,7 @@ export const userExperiencePointsByEvent = {
       return [
         {
           id: payload.taskId,
-          type: EntityTypeEnum.TASKS,
+          type: EntityTypeEnum.TASK,
         },
       ];
     },
@@ -19,7 +19,7 @@ export const userExperiencePointsByEvent = {
       return [
         {
           id: payload.taskId,
-          type: EntityTypeEnum.TASKS,
+          type: EntityTypeEnum.TASK,
         },
       ];
     },
@@ -30,7 +30,7 @@ export const userExperiencePointsByEvent = {
       return [
         {
           id: payload.eventId,
-          type: EntityTypeEnum.EVENTS,
+          type: EntityTypeEnum.EVENT,
         },
       ];
     },
@@ -41,7 +41,7 @@ export const userExperiencePointsByEvent = {
       return [
         {
           id: payload.moodEntryId,
-          type: EntityTypeEnum.MOOD_ENTRIES,
+          type: EntityTypeEnum.MOOD_ENTRY,
         },
       ];
     },
@@ -52,7 +52,7 @@ export const userExperiencePointsByEvent = {
       return [
         {
           id: payload.focusSessionId,
-          type: EntityTypeEnum.FOCUS_SESSIONS,
+          type: EntityTypeEnum.FOCUS_SESSION,
         },
       ];
     },
@@ -63,7 +63,7 @@ export const userExperiencePointsByEvent = {
       return [
         {
           id: payload.focusSessionId,
-          type: EntityTypeEnum.FOCUS_SESSIONS,
+          type: EntityTypeEnum.FOCUS_SESSION,
         },
       ];
     },

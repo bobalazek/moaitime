@@ -402,7 +402,7 @@ export class UsersManager {
       userId: actorUserId,
       targetEntity: {
         id: user.id,
-        type: EntityTypeEnum.USERS,
+        type: EntityTypeEnum.USER,
       },
       ...data,
     });

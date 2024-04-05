@@ -13,7 +13,7 @@ export type PostStatusTypeVariables = {
     user: {
       id: string;
       displayName: string;
-      __entityType: EntityTypeEnum.USERS;
+      __entityType: EntityTypeEnum.USER;
     };
   };
 };

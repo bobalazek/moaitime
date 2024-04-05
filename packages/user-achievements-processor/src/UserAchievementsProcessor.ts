@@ -90,11 +90,11 @@ export class UserAchievementsProcessor {
 
     const achievementKey = AchievementEnum.USER_AVATAR_SET;
     const points = user.avatarImageUrl ? 1 : 0;
-    const key = `${EntityTypeEnum.USERS}:${data.userId}`;
+    const key = `${EntityTypeEnum.USER}:${data.userId}`;
 
     await this._addAndNotifyAchievement(data.userId, achievementKey, points, 'set', key, {
       id: data.userId,
-      type: EntityTypeEnum.USERS,
+      type: EntityTypeEnum.USER,
     });
   }
 
@@ -113,7 +113,7 @@ export class UserAchievementsProcessor {
     const followingCount = await usersManager.countFollowing(data.actorUserId);
 
     const achievementKey = AchievementEnum.USER_FOLLOWED_USERS;
-    const key = `${EntityTypeEnum.USERS}:${data.userFollowedUserId}`;
+    const key = `${EntityTypeEnum.USER}:${data.userFollowedUserId}`;
 
     await this._addAndNotifyAchievement(
       data.actorUserId,
@@ -123,7 +123,7 @@ export class UserAchievementsProcessor {
       key,
       {
         id: data.userFollowedUserId,
-        type: EntityTypeEnum.USERS,
+        type: EntityTypeEnum.USER,
       }
     );
   }
@@ -144,11 +144,11 @@ export class UserAchievementsProcessor {
     }
 
     const now = new Date();
-    const key = `${EntityTypeEnum.TASKS}:${task.id}:${now.toISOString().split('T')[0]}`;
+    const key = `${EntityTypeEnum.TASK}:${task.id}:${now.toISOString().split('T')[0]}`;
 
     await this._addAndNotifyAchievement(data.actorUserId, achievementKey, 1, 'add', key, {
       id: task.id,
-      type: EntityTypeEnum.TASKS,
+      type: EntityTypeEnum.TASK,
     });
   }
 
@@ -167,7 +167,7 @@ export class UserAchievementsProcessor {
     }
 
     const now = new Date();
-    const key = `${EntityTypeEnum.MOOD_ENTRIES}:${moodEntry.id}:${now.toISOString().split('T')[0]}`;
+    const key = `${EntityTypeEnum.MOOD_ENTRY}:${moodEntry.id}:${now.toISOString().split('T')[0]}`;
 
     await this._addAndNotifyAchievement(
       data.actorUserId,
@@ -177,7 +177,7 @@ export class UserAchievementsProcessor {
       key,
       {
         id: moodEntry.id,
-        type: EntityTypeEnum.MOOD_ENTRIES,
+        type: EntityTypeEnum.MOOD_ENTRY,
       }
     );
   }
@@ -192,7 +192,7 @@ export class UserAchievementsProcessor {
     }
 
     const now = new Date();
-    const key = `${EntityTypeEnum.HABITS}:${data.habitId}:${now.toISOString().split('T')[0]}`;
+    const key = `${EntityTypeEnum.HABIT}:${data.habitId}:${now.toISOString().split('T')[0]}`;
 
     await this._addAndNotifyAchievement(
       data.actorUserId,
@@ -202,7 +202,7 @@ export class UserAchievementsProcessor {
       key,
       {
         id: data.habitId,
-        type: EntityTypeEnum.HABITS,
+        type: EntityTypeEnum.HABIT,
       }
     );
   }

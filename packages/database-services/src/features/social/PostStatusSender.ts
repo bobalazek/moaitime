@@ -18,7 +18,7 @@ export class PostStatusSender {
         user: {
           id: user.id,
           displayName: user.displayName,
-          __entityType: EntityTypeEnum.USERS,
+          __entityType: EntityTypeEnum.USER,
         },
       },
     };
@@ -26,7 +26,7 @@ export class PostStatusSender {
     const relatedEntities = [
       {
         id: user.id,
-        type: EntityTypeEnum.USERS,
+        type: EntityTypeEnum.USER,
       },
     ];
 

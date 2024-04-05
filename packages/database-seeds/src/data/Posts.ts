@@ -32,14 +32,14 @@ export const getPostSeeds = async (): Promise<NewPost[]> => {
           user: {
             id: user.id,
             displayName: user.displayName,
-            __entityType: EntityTypeEnum.USERS,
+            __entityType: EntityTypeEnum.USER,
           },
         },
       },
       relatedEntities: [
         {
           id: user.id,
-          type: EntityTypeEnum.USERS,
+          type: EntityTypeEnum.USER,
         },
       ],
     });

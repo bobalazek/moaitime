@@ -19,33 +19,33 @@ export type UserNotificationTypeVariables = {
     requestingUser: {
       id: string;
       displayName: string;
-      __entityType: EntityTypeEnum.USERS;
+      __entityType: EntityTypeEnum.USER;
     };
   };
   [UserNotificationTypeEnum.USER_FOLLOW_REQUEST_APPROVED]: {
     approvingUser: {
       id: string;
       displayName: string;
-      __entityType: EntityTypeEnum.USERS;
+      __entityType: EntityTypeEnum.USER;
     };
   };
   [UserNotificationTypeEnum.USER_ASSIGNED_TO_TASK]: {
     assigningUser: {
       id: string;
       displayName: string;
-      __entityType: EntityTypeEnum.USERS;
+      __entityType: EntityTypeEnum.USER;
     };
     task: {
       id: string;
       name: string;
-      __entityType: EntityTypeEnum.TASKS;
+      __entityType: EntityTypeEnum.TASK;
     };
   };
   [UserNotificationTypeEnum.USER_ACHIEVEMENT_RECEIVED]: {
     achievement: {
       id: string;
       name: string;
-      __entityType: EntityTypeEnum.ACHIEVEMENTS;
+      __entityType: EntityTypeEnum.ACHIEVEMENT;
     };
     achievementLevel: number;
   };

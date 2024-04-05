@@ -22,13 +22,13 @@ export class UserNotificationsSender {
         requestingUser: {
           id: requestingUser.id,
           displayName: requestingUser.displayName,
-          __entityType: EntityTypeEnum.USERS,
+          __entityType: EntityTypeEnum.USER,
         },
       };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: requestingUser.id,
-      type: EntityTypeEnum.USERS,
+      type: EntityTypeEnum.USER,
     };
 
     return this._userNotificationsManager.addNotification({
@@ -51,13 +51,13 @@ export class UserNotificationsSender {
         approvingUser: {
           id: approvingUser.id,
           displayName: approvingUser.displayName,
-          __entityType: EntityTypeEnum.USERS,
+          __entityType: EntityTypeEnum.USER,
         },
       };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: approvingUser.id,
-      type: EntityTypeEnum.USERS,
+      type: EntityTypeEnum.USER,
     };
 
     return this._userNotificationsManager.addNotification({
@@ -81,18 +81,18 @@ export class UserNotificationsSender {
         assigningUser: {
           id: assigningUser.id,
           displayName: assigningUser.displayName,
-          __entityType: EntityTypeEnum.USERS,
+          __entityType: EntityTypeEnum.USER,
         },
         task: {
           id: task.id,
           name: task.name,
-          __entityType: EntityTypeEnum.TASKS,
+          __entityType: EntityTypeEnum.TASK,
         },
       };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: task.id,
-      type: EntityTypeEnum.TASKS,
+      type: EntityTypeEnum.TASK,
     };
 
     return this._userNotificationsManager.addNotification({
@@ -121,14 +121,14 @@ export class UserNotificationsSender {
         achievement: {
           id: achievement.key,
           name: achievement.name,
-          __entityType: EntityTypeEnum.ACHIEVEMENTS,
+          __entityType: EntityTypeEnum.ACHIEVEMENT,
         },
         achievementLevel,
       };
     const relatedEntities = this._getRelatedEntitiesFromVariables(variables);
     const targetEntity = {
       id: userId,
-      type: EntityTypeEnum.USERS,
+      type: EntityTypeEnum.USER,
     };
 
     return this._userNotificationsManager.addNotification({

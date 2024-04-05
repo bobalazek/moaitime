@@ -57,6 +57,8 @@ export * from './core/subscriptions/SubscriptionSchema';
 export * from './core/subscriptions/PlanSchema';
 export * from './core/entities/EntitySchema';
 export * from './core/entities/EntityTypeEnum';
+export * from './core/sharing/SharingSubjectTypeEnum';
+export * from './core/sharing/SharingPermissionEnum';
 export * from './core/reports/ReportSchema';
 
 // Focus

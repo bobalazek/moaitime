@@ -1,9 +1,9 @@
 export enum EntityTypeEnum {
-  USERS = 'users',
-  TASKS = 'tasks',
-  EVENTS = 'events',
-  HABITS = 'habits',
-  MOOD_ENTRIES = 'mood-entries',
-  FOCUS_SESSIONS = 'focus-sessions',
-  ACHIEVEMENTS = 'achievements',
+  USER = 'user',
+  TASK = 'task',
+  EVENT = 'event',
+  HABIT = 'habit',
+  MOOD_ENTRY = 'mood-entry',
+  FOCUS_SESSION = 'focus-session',
+  ACHIEVEMENT = 'achievement',
 }

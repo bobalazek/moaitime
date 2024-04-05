@@ -17,6 +17,9 @@ export * from './features/auth/UserAchievementsManager';
 export * from './features/auth/UserNotificationsSender';
 export * from './features/auth/UserOnlineActivityEntriesManager';
 
+// Sharing
+export * from './features/sharing/SharingManager';
+
 // Social
 export * from './features/social/InvitationsManager';
 export * from './features/social/PostsManager';

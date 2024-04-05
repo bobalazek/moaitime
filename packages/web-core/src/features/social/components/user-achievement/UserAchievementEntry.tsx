@@ -10,7 +10,7 @@ export default function UserAchievementEntry({ userAchievement }: UserAchievemen
   return (
     <div
       key={userAchievement.key}
-      className="flex flex-col gap-3 rounded-lg border-2 p-3"
+      className="bg-background flex flex-col gap-3 rounded-lg border-2 p-3 shadow-md"
       data-test="social--user-achievements-grid--user-achievement"
       data-achievement-key={userAchievement.key}
       data-achievement-level={userAchievement.level}

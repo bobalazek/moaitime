@@ -47,7 +47,7 @@ export default function UserProfileDropdown() {
             <BellIcon className="mr-2 h-4 w-4" />
             <span>Notifications</span>
             {unreadUserNotificationsCount && unreadUserNotificationsCount > 0 ? (
-              <div className="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-lg">
+              <div className="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-md">
                 {unreadUserNotificationsCount > 9 ? '9+' : unreadUserNotificationsCount}
               </div>
             ) : null}

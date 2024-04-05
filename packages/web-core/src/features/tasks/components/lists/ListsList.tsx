@@ -3,7 +3,6 @@ import { UsersIcon } from 'lucide-react';
 import { List } from '@moaitime/shared-common';
 import {
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -98,11 +97,6 @@ export default function ListsList({
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
         </>
-      )}
-      {filteredLists.length === 0 && (
-        <DropdownMenuItem className="flex cursor-pointer items-center justify-center text-gray-400">
-          No lists found.
-        </DropdownMenuItem>
       )}
       <DropdownMenuRadioGroup
         value={selectedList?.id ?? ''}

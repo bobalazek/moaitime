@@ -39,7 +39,7 @@ export default function CalendarYearlyViewMonth({ month, now }: { month: Date; n
   };
 
   return (
-    <div className="w-full border" data-test="calendar--yearly-view--month">
+    <div className="bg-background w-full border" data-test="calendar--yearly-view--month">
       <div
         className="p-2 text-center text-xl font-bold"
         data-test="calendar--yearly-view--month--name"

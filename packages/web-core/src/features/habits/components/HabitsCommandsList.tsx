@@ -1,4 +1,4 @@
-import { ExternalLinkIcon, FilesIcon } from 'lucide-react';
+import { ExternalLinkIcon, RepeatIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
@@ -19,7 +19,7 @@ export default function HabitsCommandsList() {
     <CommandGroup
       heading={
         <div className="flex items-center">
-          <FilesIcon className="mr-2" />
+          <RepeatIcon className="mr-2" />
           <span className="font-bold">Habits</span>
         </div>
       }

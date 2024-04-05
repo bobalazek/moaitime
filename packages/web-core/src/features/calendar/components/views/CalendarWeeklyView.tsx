@@ -119,7 +119,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
   }, [onResize]);
 
   return (
-    <div className="flex w-full flex-col border" data-test="calendar--weekly-view">
+    <div className="bg-background flex w-full flex-col border" data-test="calendar--weekly-view">
       <div className="flex">
         <div
           className="flex w-20 flex-col justify-end border border-l-0 border-t-0 p-2 text-right text-[0.65rem]"

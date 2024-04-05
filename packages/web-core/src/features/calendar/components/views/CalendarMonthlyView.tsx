@@ -65,7 +65,7 @@ export default function CalendarMonthlyView() {
   }, [selectedDate]);
 
   return (
-    <div className="flex w-full flex-col border" data-test="calendar--monthly-view">
+    <div className="bg-background flex w-full flex-col border" data-test="calendar--monthly-view">
       <div className="hidden flex-shrink text-center lg:flex">
         {daysOfWeek.map((dayOfWeek) => (
           <div

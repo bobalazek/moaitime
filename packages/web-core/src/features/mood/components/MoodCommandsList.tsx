@@ -1,4 +1,4 @@
-import { PlusIcon, SmileIcon } from 'lucide-react';
+import { ExternalLinkIcon, SmileIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
@@ -32,7 +32,7 @@ export default function MoodCommandsList() {
           setCommandsDialogOpen(false);
         }}
       >
-        <PlusIcon className="mr-2" />
+        <ExternalLinkIcon className="mr-2" />
         <span>
           Open <b>Mood</b>
         </span>

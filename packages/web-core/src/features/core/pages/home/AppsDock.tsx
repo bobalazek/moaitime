@@ -135,19 +135,6 @@ export default function AppsDock() {
                   <SocialAppButton />
                 </motion.div>
               )}
-              {commandsEnabled && (
-                <motion.div
-                  key="commands"
-                  layout
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  variants={animationVariants}
-                  transition={{ delay: delay++ * delayDuration }}
-                >
-                  <CommandsAppButton />
-                </motion.div>
-              )}
               {false && weatherEnabled && (
                 <motion.div
                   key="weather"
@@ -183,6 +170,19 @@ export default function AppsDock() {
               >
                 <NotificationsAppButton />
               </motion.div>
+              {commandsEnabled && (
+                <motion.div
+                  key="commands"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
+                >
+                  <CommandsAppButton />
+                </motion.div>
+              )}
               <motion.div
                 key="settings"
                 layout

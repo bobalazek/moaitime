@@ -13,7 +13,6 @@ export default function TasksCommandsList() {
   const { setCommandsDialogOpen } = useCommandsStore();
 
   const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
-
   if (!tasksEnabled) {
     return null;
   }

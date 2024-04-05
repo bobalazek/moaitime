@@ -16,7 +16,10 @@ import FocusCommandsList from '../../focus/components/FocusCommandsList';
 import HabitsCommandsList from '../../habits/components/HabitsCommandsList';
 import MoodCommandsList from '../../mood/components/MoodCommandsList';
 import NotesCommandsList from '../../notes/components/NotesCommandsList';
+import NotificationsCommandsList from '../../notifications/components/NotificationsCommandsList';
 import SettingsCommandsList from '../../settings/components/SettingsCommandsList';
+import SocialCommandsList from '../../social/components/StatisticsCommandsList';
+import StatisticsCommandsList from '../../statistics/components/StatisticsCommandsList';
 import TasksCommandsList from '../../tasks/components/TasksCommandsList';
 // import WeatherCommandsList from '../../weather/components/WeatherCommandsList';
 import { useCommandsStore } from '../state/commandsStore';
@@ -68,13 +71,15 @@ export default function CommandsDialog() {
               <CommandEmpty>
                 No results found for "<b>{search}</b>".
               </CommandEmpty>
+              <CalendarCommandsList />
               <TasksCommandsList />
               <HabitsCommandsList />
-              <CalendarCommandsList />
               <NotesCommandsList />
-              {/* <WeatherCommandsList /> */}
               <MoodCommandsList />
               <FocusCommandsList />
+              <SocialCommandsList />
+              <StatisticsCommandsList />
+              <NotificationsCommandsList />
               <SettingsCommandsList />
             </CommandList>
           </Command>

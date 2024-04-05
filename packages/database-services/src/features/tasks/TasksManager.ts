@@ -504,7 +504,7 @@ export class TasksManager {
     // When we are at this point and there would not be a listId set, then there is probably a bug somewhere,
     // because the only way the listId is null is for a single user, which should alreadbe be caught few lines above.
     // So this is more a Typescript sanity check
-    return task.listId ? listsManager.userCanView(userId, task.listId) : false;
+    return task.listId ? listsManager.userCanView(userId, task.listId) : true;
   }
 
   async userCanUpdate(userId: string, taskId: string): Promise<boolean> {

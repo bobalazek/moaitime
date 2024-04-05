@@ -1,4 +1,4 @@
-import { ExternalLinkIcon, FilesIcon } from 'lucide-react';
+import { BarChart4Icon, ExternalLinkIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { CommandGroup, CommandItem } from '@moaitime/web-ui';
@@ -13,7 +13,7 @@ export default function StatisticsCommandsList() {
     <CommandGroup
       heading={
         <div className="flex items-center">
-          <FilesIcon className="mr-2" />
+          <BarChart4Icon className="mr-2" />
           <span className="font-bold">Statistics</span>
         </div>
       }

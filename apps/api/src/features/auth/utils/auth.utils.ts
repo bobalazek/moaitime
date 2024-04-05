@@ -1,19 +1,9 @@
 import { usersManager } from '@moaitime/database-services';
 
-import { PlanDto } from '../dtos/plan.dto';
-import { SubscriptionDto } from '../dtos/subscription.dto';
-import { BaseUserAccessTokenDto } from '../dtos/user-access-token-lite.dto';
-import { UserDto } from '../dtos/user.dto';
+import { AuthDto } from '../dtos/auth.dto';
 import { UserWithAccessToken } from '../types/user-with-access-token.type';
 
-export const convertToUserResponseDto = (
-  userWithAccessToken: UserWithAccessToken
-): {
-  user: UserDto;
-  userAccessToken: BaseUserAccessTokenDto;
-  plan: PlanDto | null;
-  subscription: SubscriptionDto | null;
-} => {
+export const convertUserToAuthDto = (userWithAccessToken: UserWithAccessToken): AuthDto => {
   const now = new Date();
 
   return {

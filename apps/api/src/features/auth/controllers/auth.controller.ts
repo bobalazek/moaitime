@@ -5,17 +5,18 @@ import { authManager } from '@moaitime/database-services';
 import { OauthProviderEnum } from '@moaitime/shared-common';
 
 import { OauthTokenDto } from '../../../dtos/oauth-token.dto';
+import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { ResponseDto } from '../../../dtos/responses/response.dto';
 import { TokenDto } from '../../../dtos/token.dto';
+import { AuthDto } from '../dtos/auth.dto';
 import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
 import { LoginDto } from '../dtos/login.dto';
 import { RegisterDto } from '../dtos/register.dto';
 import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
 import { ResendEmailConfirmationDto } from '../dtos/resend-email-confirmation.dto';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
-import { LoginResponseDto } from '../dtos/responses/login-response.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
-import { convertToUserResponseDto } from '../utils/auth.utils';
+import { convertUserToAuthDto } from '../utils/auth.utils';
 
 @Controller('/api/v1/auth')
 export class AuthController {
@@ -24,7 +25,7 @@ export class AuthController {
     @Body() body: LoginDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
-  ): Promise<LoginResponseDto> {
+  ): Promise<AbstractResponseDto<AuthDto>> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
     const ip = req.ip;
@@ -42,7 +43,7 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully logged in',
-      data: convertToUserResponseDto({ ...user, _accessToken: userAccessToken }),
+      data: convertUserToAuthDto({ ...user, _accessToken: userAccessToken }),
     };
   }
 
@@ -73,7 +74,7 @@ export class AuthController {
     @Body() body: OauthTokenDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
-  ): Promise<LoginResponseDto> {
+  ): Promise<AbstractResponseDto<AuthDto>> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
     const ip = req.ip;
@@ -91,7 +92,7 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully logged in',
-      data: convertToUserResponseDto({ ...user, _accessToken: userAccessToken }),
+      data: convertUserToAuthDto({ ...user, _accessToken: userAccessToken }),
     };
   }
 
@@ -148,7 +149,7 @@ export class AuthController {
     @Body() body: RegisterDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
-  ): Promise<LoginResponseDto> {
+  ): Promise<AbstractResponseDto<AuthDto>> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
     const ip = req.ip;
@@ -170,7 +171,7 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully registered',
-      data: convertToUserResponseDto({ ...user, _accessToken: userAccessToken }),
+      data: convertUserToAuthDto({ ...user, _accessToken: userAccessToken }),
     };
   }
 
@@ -313,7 +314,7 @@ export class AuthController {
   async refreshToken(
     @Body() body: TokenDto,
     @Res({ passthrough: true }) res: Response
-  ): Promise<LoginResponseDto> {
+  ): Promise<AbstractResponseDto<AuthDto>> {
     const { user, userAccessToken } = await authManager.refreshToken(body.token);
 
     res.status(200);
@@ -321,7 +322,7 @@ export class AuthController {
     return {
       success: true,
       message: 'You have successfully refreshed your token',
-      data: convertToUserResponseDto({ ...user, _accessToken: userAccessToken }),
+      data: convertUserToAuthDto({ ...user, _accessToken: userAccessToken }),
     };
   }
 }

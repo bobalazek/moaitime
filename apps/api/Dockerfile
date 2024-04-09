@@ -40,4 +40,6 @@ COPY --from=builder /app/pruned/node_modules ./node_modules
 
 EXPOSE ${API_PORT}
 
+HEALTHCHECK --interval=30s --timeout=15s CMD wget --no-verbose --tries=1 --spider http://localhost:${API_PORT}/api/health || exit 1
+
 CMD ["node", "./main.js"]

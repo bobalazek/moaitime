@@ -38,4 +38,6 @@ COPY --from=builder /app/out/full/apps/web/dist ./
 
 EXPOSE ${WEB_PORT}
 
+HEALTHCHECK --interval=30s --timeout=15s CMD wget --no-verbose --tries=1 --spider http://localhost:${WEB_PORT} || exit 1
+
 CMD [ "sh", "-c", "serve . --listen ${WEB_PORT} --single" ]

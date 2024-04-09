@@ -39,4 +39,6 @@ RUN echo '#!/bin/sh' > /app/cli && \
     echo 'exec node /app/apps/cli/dist/main.js "$@"' >> /app/cli && \
     chmod +x /app/cli
 
+HEALTHCHECK --interval=30s --timeout=15s CMD /app/cli health:check
+
 CMD ["node", "./main.js"]

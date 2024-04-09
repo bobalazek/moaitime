@@ -9,9 +9,13 @@ import { addDatabaseInsertFixtureDataCommand } from './database/DatabaseInsertFi
 import { addDatabaseInsertSeedDataCommand } from './database/DatabaseInsertSeedDataCommand';
 import { addDatabaseReloadCommand } from './database/DatabaseReloadCommand';
 import { addDatabaseRunMigrationsCommand } from './database/DatabaseRunMigrationsCommand';
+import { addHealthCheckCommand } from './health/HealthCheckCommand';
 import { addJobsRunnerStartCommand } from './jobs/JobsRunnerStartCommand';
 
 const program = new Command();
+
+// Health
+addHealthCheckCommand(program);
 
 // Database
 addDatabaseInsertSeedDataCommand(program);

@@ -23,10 +23,11 @@
     "@moaitime/database-fixtures": "workspace:*",
     "@moaitime/database-seeds": "workspace:*",
     "@moaitime/database-testing": "workspace:*",
+    "@moaitime/health-checker": "workspace:*",
     "@moaitime/job-runner": "workspace:*",
     "@moaitime/logging": "workspace:*",
     "@moaitime/processes": "workspace:*",
     "commander": "^11.1.0",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.2"
   }
 }

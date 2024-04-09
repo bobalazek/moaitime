@@ -13,13 +13,8 @@ services:
     stop_grace_period: 30s
     depends_on:
       - postgres
-      - clickhouse
       - redis
       - rabbitmq
-      - meilisearch
-      - typesense
-      - loki
-      - pushgateway
     deploy:
       replicas: 2
       resources:

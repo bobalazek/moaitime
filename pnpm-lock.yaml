@@ -211,6 +211,9 @@ importers:
       '@moaitime/database-testing':
         specifier: workspace:*
         version: link:../../packages/database-testing
+      '@moaitime/health-checker':
+        specifier: workspace:*
+        version: link:../../packages/health-checker
       '@moaitime/job-runner':
         specifier: workspace:*
         version: link:../../packages/job-runner
@@ -224,8 +227,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
+        specifier: ^4.7.2
+        version: 4.7.2
 
   apps/mobile:
     dependencies:
@@ -761,6 +764,37 @@ importers:
       '@moaitime/user-notifications-processor':
         specifier: workspace:*
         version: link:../user-notifications-processor
+    devDependencies:
+      typescript:
+        specifier: ^5.3.2
+        version: 5.3.3
+
+  packages/health-checker:
+    dependencies:
+      '@moaitime/bullmq':
+        specifier: '*'
+        version: link:../bullmq
+      '@moaitime/database-core':
+        specifier: '*'
+        version: link:../database-core
+      '@moaitime/emails-core':
+        specifier: '*'
+        version: link:../emails-core
+      '@moaitime/logging':
+        specifier: '*'
+        version: link:../logging
+      '@moaitime/rabbitmq':
+        specifier: '*'
+        version: link:../rabbitmq
+      '@moaitime/redis':
+        specifier: '*'
+        version: link:../redis
+      '@moaitime/shared-backend':
+        specifier: '*'
+        version: link:../shared-backend
+      systeminformation:
+        specifier: ^5.22.2
+        version: 5.22.7
     devDependencies:
       typescript:
         specifier: ^5.3.2
@@ -15711,6 +15745,13 @@ packages:
       - typescript
     dev: true
 
+  /systeminformation@5.22.7:
+    resolution: {integrity: sha512-AWxlP05KeHbpGdgvZkcudJpsmChc2Y5Eo/GvxG/iUA/Aws5LZKHAMSeAo+V+nD+nxWZaxrwpWcnx4SH3oxNL3A==}
+    engines: {node: '>=8.0.0'}
+    os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
+    hasBin: true
+    dev: false
+
   /tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
     dev: false
@@ -16164,8 +16205,8 @@ packages:
       - ts-node
     dev: true
 
-  /tsx@4.7.1:
-    resolution: {integrity: sha512-8d6VuibXHtlN5E3zFkgY8u4DX7Y3Z27zvvPKVmLon/D4AjuKzarkUBTLDBgj9iTQ0hg5xM7c/mYiRVM+HETf0g==}
+  /tsx@4.7.2:
+    resolution: {integrity: sha512-BCNd4kz6fz12fyrgCTEdZHGJ9fWTGeUzXmQysh0RVocDY3h4frk05ZNCXSy4kIenF7y/QnrdiVpTsyNRn6vlAw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:

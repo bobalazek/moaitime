@@ -59,6 +59,12 @@ export const getDatabase = () => {
   return _database;
 };
 
+export const executeRawQuery = async (query: string) => {
+  const database = getDatabase();
+
+  return database.execute(sql.raw(query));
+};
+
 export const destroyDatabase = async () => {
   if (!_database) {
     return;

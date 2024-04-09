@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 
 import { render } from '@react-email/render';
 import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 import { TestingEmailsManager, testingEmailsManager } from '@moaitime/database-services-testing';
 import {
@@ -15,7 +16,7 @@ import {
   TeamsUserInvitationEmail,
 } from '@moaitime/emails-core';
 import { logger, Logger } from '@moaitime/logging';
-import { getEnv, MAILER_FROM } from '@moaitime/shared-backend';
+import { getEnv } from '@moaitime/shared-backend';
 
 import { configureTransporter } from './Helpers';
 
@@ -61,16 +62,23 @@ export type MailerSendSocialUserInvitationEmailOptions = {
 };
 
 export class Mailer {
-  private _transporter: nodemailer.Transporter | null = null;
+  private _nodemailerTransporter: nodemailer.Transporter | null = null;
+  private _resend: Resend | null = null;
 
   constructor(
     private _logger: Logger,
     private _testingEmailsManager: TestingEmailsManager
   ) {
-    const { SMTP_URL, NODE_ENV } = getEnv();
+    const { NODE_ENV, MAILER_SMTP_URL, MAILER_RESEND_API_KEY } = getEnv();
 
-    if (SMTP_URL && NODE_ENV !== 'test') {
-      this._transporter = configureTransporter(decodeURIComponent(SMTP_URL));
+    if (NODE_ENV !== 'test') {
+      if (MAILER_SMTP_URL) {
+        this._nodemailerTransporter = configureTransporter(decodeURIComponent(MAILER_SMTP_URL));
+      }
+
+      if (MAILER_RESEND_API_KEY) {
+        this._resend = new Resend(MAILER_RESEND_API_KEY);
+      }
     }
   }
 
@@ -147,6 +155,8 @@ export class Mailer {
   }
 
   async send(Email: ReactElement, options: MailerSendOptions) {
+    const { MAILER_FROM } = getEnv();
+
     const html = render(Email);
     const text = render(Email, { plainText: true });
 
@@ -165,13 +175,32 @@ export class Mailer {
       });
     }
 
-    if (!this._transporter) {
-      this._logger.warn('SMTP_URL is not set, skipping sending email');
+    let emailSent = false;
+    if (this._resend) {
+      this._logger.debug(
+        `Sending email to ${finalOptions.to} with subject "${finalOptions.subject}" (via Resend) ...`
+      );
 
-      return;
+      await this._resend.emails.send(finalOptions);
+
+      emailSent = true;
     }
 
-    await this._transporter.sendMail(finalOptions);
+    if (this._nodemailerTransporter) {
+      if (emailSent) {
+        this._logger.debug(
+          `Email to ${finalOptions.to} with subject "${finalOptions.subject}" was already sent via Resend, skipping SMTP ...`
+        );
+
+        return;
+      }
+
+      this._logger.debug(
+        `Sending email to ${finalOptions.to} with subject "${finalOptions.subject}" (via SMTP) ...`
+      );
+
+      await this._nodemailerTransporter.sendMail(finalOptions);
+    }
   }
 }
 

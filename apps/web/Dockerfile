@@ -22,12 +22,20 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=@moaitime/web
 
 # Runner
-FROM nginx:1.25.3-alpine AS runner
+FROM base AS runner
 
-COPY ../../docker/web/nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-COPY --from=builder /app/out/full/apps/web/dist /usr/share/nginx/html
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 
-EXPOSE 80
+ARG WEB_PORT=4200
+ENV WEB_PORT=$WEB_PORT
 
-CMD ["nginx", "-g", "daemon off;"]
+RUN npm install -g serve
+
+COPY --from=builder /app/out/full/apps/web/dist ./
+
+EXPOSE ${WEB_PORT}
+
+CMD [ "sh", "-c", "serve . --listen ${WEB_PORT} --single" ]

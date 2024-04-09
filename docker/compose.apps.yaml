@@ -1,0 +1,103 @@
+version: '3.8'
+
+# Here are all the finally build apps for our project
+
+services:
+  ########## API ##########
+  moaitime-api:
+    container_name: moaitime_api
+    build:
+      context: ../ # TODO: what was the reason for this again? Why do we need to go back one level?
+      dockerfile: ./apps/api/Dockerfile
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+      - postgres
+      - clickhouse
+      - redis
+      - rabbitmq
+      - meilisearch
+      - typesense
+      - loki
+      - pushgateway
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - ${API_PORT:-3636}:${API_PORT:-3636}
+    networks:
+      - moaitime-network
+
+  ########## Web ##########
+  moaitime-web:
+    container_name: moaitime_web
+    build:
+      context: ../
+      dockerfile: ./apps/web/Dockerfile
+    restart: unless-stopped
+    stop_grace_period: 30s
+    depends_on:
+      - moaitime-api
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - ${WEB_PORT:-4200}:${WEB_PORT:-4200}
+    networks:
+      - moaitime-network
+
+  ########## CLI ##########
+  # This will basically be a stand-by container that we can use to run commands
+  moaitime-cli:
+    container_name: moaitime_cli
+    build:
+      context: ../
+      dockerfile: ./apps/cli/Dockerfile
+    entrypoint: tail -f /dev/null
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+    networks:
+      - moaitime-network
+
+  moaitime-cli-jobs-runner-start:
+    container_name: moaitime_cli_jobs_runner_start
+    build:
+      context: ../
+      dockerfile: ./apps/cli/Dockerfile
+    stop_grace_period: 30s
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    command: jobs:runner:start
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      resources:
+        reservations:
+          cpus: '2'
+          memory: 4G
+        limits:
+          cpus: '4'
+          memory: 8G
+    networks:
+      - moaitime-network
+
+networks:
+  moaitime-network:
+    name: moaitime_network
+    driver: bridge

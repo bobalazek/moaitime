@@ -18,7 +18,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./postgres/init-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh
     ports:
-      - 5432:5432
+      - ${POSTGRES_PORT:-5432}:5432
     networks:
       - moaitime-network
 
@@ -29,7 +29,7 @@ services:
     volumes:
       - redis-data:/data
     ports:
-      - 6379:6379
+      - ${REDIS_PORT:-6379}:6379
     networks:
       - moaitime-network
 
@@ -43,8 +43,8 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq/
     ports:
-      - 5672:5672
-      - 15672:15672
+      - ${RABBITMQ_PORT:-5672}:5672
+      - ${RABBITMQ_UI_PORT:-5672}:15672
     networks:
       - moaitime-network
 
@@ -59,8 +59,8 @@ services:
     volumes:
       - minio-data:/data
     ports:
-      - 9000:9000
-      - 9001:9001
+      - ${MINIO_PORT:-9000}:9000
+      - ${MINIO_UI_PORT:-9001}:9001
     networks:
       - moaitime-network
 

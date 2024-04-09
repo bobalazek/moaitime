@@ -7,17 +7,16 @@ export default function TermsPage() {
 
   return (
     <div className="flex h-full flex-col items-center justify-center p-5">
-      <div className="prose w-full max-w-4xl">
+      <div className="prose dark:prose-invert w-full max-w-4xl">
         <h1>Terms Of Service</h1>
         <h3>1. Scope and purpose</h3>
         <ol>
           <li>
-            These general terms and conditions (“<strong>Terms and Conditions</strong>”) shall apply
-            to all contracts entered into between us, MoaiTime Inc (“
-            <strong>MoaiTime</strong>”, “<strong>we</strong>”, “<strong>our</strong>” or “
-            <strong>us</strong>”) and you as our customer (“<strong>Customer</strong>” or “
-            <strong>you</strong>”). You are only allowed to use MoaiTime services if you accept the
-            Terms and Conditions.
+            These general terms and conditions (“<b>Terms and Conditions</b>”) shall apply to all
+            contracts entered into between us, MoaiTime Inc (“
+            <b>MoaiTime</b>”, “<b>we</b>”, “<b>our</b>” or “<b>us</b>”) and you as our customer (“
+            <b>Customer</b>” or “<b>you</b>”). You are only allowed to use MoaiTime services if you
+            accept the Terms and Conditions.
           </li>
           <li>
             The version of the Terms and Conditions that apply to your contract shall be the ones in
@@ -33,18 +32,17 @@ export default function TermsPage() {
         <ol>
           <li>
             MoaiTime's business is the provision of an online productivity platform through its
-            webpages moaitime.com and its own mobile applications (the “
-            <strong>MoaiTime App</strong>” and together with the Webpages the “
-            <strong>Services</strong>”). MoaiTime does not guarantee that the Services meet your
-            specific requirements or expectations.
+            webpages moaitime.com and its own mobile applications (the “<b>MoaiTime App</b>” and
+            together with the Webpages the “<b>Services</b>”). MoaiTime does not guarantee that the
+            Services meet your specific requirements or expectations.
           </li>
           <li>
-            Customers require a personal user account (“<strong>Personal Account</strong>”) to be
-            able to use the Services. For this purpose, they must register with their name and email
-            address and provide access to the calendar associated to the used email address.
-            Customers are responsible for ensuring that their data is up-to-date and correct and for
-            all content posted on their Personal Account as well as for any activities occurring
-            under their Personal Account.
+            Customers require a personal user account (“<b>Personal Account</b>”) to be able to use
+            the Services. For this purpose, they must register with their name and email address and
+            provide access to the calendar associated to the used email address. Customers are
+            responsible for ensuring that their data is up-to-date and correct and for all content
+            posted on their Personal Account as well as for any activities occurring under their
+            Personal Account.
           </li>
           <li>
             Customers must prevent unauthorized access to their Personal Account on the Services.
@@ -76,9 +74,9 @@ export default function TermsPage() {
         <ol>
           <li>
             The use of the Services may be subject to a (recurring) payment (“
-            <strong>Paid Services</strong>”). The Paid Services and the respective prices for the
-            Paid Services (“<strong>Price</strong>”) are shown on the offer pages on the Webpages or
-            in the MoaiTime App.
+            <b>Paid Services</b>”). The Paid Services and the respective prices for the Paid
+            Services (“<b>Price</b>”) are shown on the offer pages on the Webpages or in the
+            MoaiTime App.
           </li>
           <li>
             The Price includes the applicable VAT, if any. Any other duties or taxes, if any, will
@@ -105,12 +103,11 @@ export default function TermsPage() {
         <h3>5. Promotions</h3>
         <ol>
           <li>
-            Any contests, sweepstakes or other promotions (collectively the “
-            <strong>Promotions</strong>”) made available through the Services may be governed by
-            rules that are separate from these Terms and Conditions. If you participate in any
-            Promotions, please review the applicable rules as well as our Privacy Policy. If and to
-            the extent that the rules for a Promotion conflict with the Terms and Conditions, the
-            Promotion rules will apply.
+            Any contests, sweepstakes or other promotions (collectively the “<b>Promotions</b>”)
+            made available through the Services may be governed by rules that are separate from
+            these Terms and Conditions. If you participate in any Promotions, please review the
+            applicable rules as well as our Privacy Policy. If and to the extent that the rules for
+            a Promotion conflict with the Terms and Conditions, the Promotion rules will apply.
           </li>
         </ol>
         <h3>6. Renewal and cancellation of Paid Services</h3>

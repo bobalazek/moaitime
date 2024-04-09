@@ -254,6 +254,12 @@ export class AuthManager {
       );
     }
 
+    if (!invitation && !teamUserInvitation) {
+      throw new Error(
+        'Right now we only accept users with an invitation. Please ping us on social media to see if we can sort something out for you!'
+      );
+    }
+
     if (!password && !oauth) {
       throw new Error('Password is not set');
     }

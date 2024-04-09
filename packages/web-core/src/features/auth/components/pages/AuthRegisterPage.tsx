@@ -136,9 +136,22 @@ export default function AuthRegisterPage() {
             {oauthUserInfoData && (
               <Alert variant="success" className="mb-6">
                 <AlertDescription>
-                  Hello <b>{oauthUserInfoData.firstName}</b> (<b>{oauthUserInfoData.email}</b>)! You
-                  are now connected with the OAuth provider! Please fill out all the remaining
-                  fields below.
+                  <div className="flex flex-row items-center gap-4">
+                    {oauthUserInfoData.avatarUrl && (
+                      <div>
+                        <img
+                          src={oauthUserInfoData.avatarUrl}
+                          alt="Profile"
+                          className="h-16 w-16 rounded-full"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      Hello <b>{oauthUserInfoData.firstName}</b> (<b>{oauthUserInfoData.email}</b>)!
+                      You are now connected with the OAuth provider! Please fill out all the
+                      remaining fields below.
+                    </div>
+                  </div>
                 </AlertDescription>
               </Alert>
             )}

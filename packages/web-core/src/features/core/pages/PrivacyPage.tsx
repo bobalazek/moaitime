@@ -7,7 +7,7 @@ export default function PrivacyPage() {
 
   return (
     <div className="flex h-full flex-col items-center justify-center p-5">
-      <div className="prose w-full max-w-4xl">
+      <div className="prose dark:prose-invert w-full max-w-4xl">
         <h1>Privacy Policy</h1>
         <p>
           Your privacy is important to us. It is MoaiTime's policy to respect your privacy and
@@ -240,60 +240,57 @@ export default function PrivacyPage() {
         </p>
         <h3>Your Rights and Controlling Your Personal Information</h3>
         <p>
-          <strong>Your choice:</strong> By providing personal information to us, you understand we
-          will collect, hold, use, and disclose your personal information in accordance with this
-          privacy policy. You do not have to provide personal information to us, however, if you do
-          not, it may affect your use of our website or the products and/or services offered on or
-          through it.
+          <b>Your choice:</b> By providing personal information to us, you understand we will
+          collect, hold, use, and disclose your personal information in accordance with this privacy
+          policy. You do not have to provide personal information to us, however, if you do not, it
+          may affect your use of our website or the products and/or services offered on or through
+          it.
         </p>
         <p>
-          <strong>Information from third parties:</strong> If we receive personal information about
-          you from a third party, we will protect it as set out in this privacy policy. If you are a
-          third party providing personal information about somebody else, you represent and warrant
-          that you have such person’s consent to provide the personal information to us.
+          <b>Information from third parties:</b> If we receive personal information about you from a
+          third party, we will protect it as set out in this privacy policy. If you are a third
+          party providing personal information about somebody else, you represent and warrant that
+          you have such person’s consent to provide the personal information to us.
         </p>
         <p>
-          <strong>Marketing permission:</strong> If you have previously agreed to us using your
-          personal information for direct marketing purposes, you may change your mind at any time
-          by contacting us using the details below.
+          <b>Marketing permission:</b> If you have previously agreed to us using your personal
+          information for direct marketing purposes, you may change your mind at any time by
+          contacting us using the details below.
         </p>
         <p>
-          <strong>Access:</strong> You may request details of the personal information that we hold
-          about you.
+          <b>Access:</b> You may request details of the personal information that we hold about you.
         </p>
         <p>
-          <strong>Correction:</strong> If you believe that any information we hold about you is
-          inaccurate, out of date, incomplete, irrelevant, or misleading, please contact us using
-          the details provided in this privacy policy. We will take reasonable steps to correct any
-          information found to be inaccurate, incomplete, misleading, or out of date.
+          <b>Correction:</b> If you believe that any information we hold about you is inaccurate,
+          out of date, incomplete, irrelevant, or misleading, please contact us using the details
+          provided in this privacy policy. We will take reasonable steps to correct any information
+          found to be inaccurate, incomplete, misleading, or out of date.
         </p>
         <p>
-          <strong>Non-discrimination:</strong> We will not discriminate against you for exercising
-          any of your rights over your personal information. Unless your personal information is
-          required to provide you with a particular service or offer (for example processing
-          transaction data), we will not deny you goods or services and/or charge you different
-          prices or rates for goods or services, including through granting discounts or other
-          benefits, or imposing penalties, or provide you with a different level or quality of goods
-          or services.
+          <b>Non-discrimination:</b> We will not discriminate against you for exercising any of your
+          rights over your personal information. Unless your personal information is required to
+          provide you with a particular service or offer (for example processing transaction data),
+          we will not deny you goods or services and/or charge you different prices or rates for
+          goods or services, including through granting discounts or other benefits, or imposing
+          penalties, or provide you with a different level or quality of goods or services.
         </p>
         <p>
-          <strong>Notification of data breaches:</strong> We will comply with laws applicable to us
-          in respect of any data breach.
+          <b>Notification of data breaches:</b> We will comply with laws applicable to us in respect
+          of any data breach.
         </p>
         <p>
-          <strong>Complaints:</strong> If you believe that we have breached a relevant data
-          protection law and wish to make a complaint, please contact us using the details below and
-          provide us with full details of the alleged breach. We will promptly investigate your
-          complaint and respond to you, in writing, setting out the outcome of our investigation and
-          the steps we will take to deal with your complaint. You also have the right to contact a
-          regulatory body or data protection authority in relation to your complaint.
+          <b>Complaints:</b> If you believe that we have breached a relevant data protection law and
+          wish to make a complaint, please contact us using the details below and provide us with
+          full details of the alleged breach. We will promptly investigate your complaint and
+          respond to you, in writing, setting out the outcome of our investigation and the steps we
+          will take to deal with your complaint. You also have the right to contact a regulatory
+          body or data protection authority in relation to your complaint.
         </p>
         <p>
-          <strong>Unsubscribe:</strong> To unsubscribe from our email database or opt-out of
-          communications (including marketing communications), please contact us using the details
-          provided in this privacy policy, or opt-out using the opt-out facilities provided in the
-          communication. We may need to request specific information from you to help us confirm
-          your identity.
+          <b>Unsubscribe:</b> To unsubscribe from our email database or opt-out of communications
+          (including marketing communications), please contact us using the details provided in this
+          privacy policy, or opt-out using the opt-out facilities provided in the communication. We
+          may need to request specific information from you to help us confirm your identity.
         </p>
         <h3>Use of Cookies</h3>
         <p>
@@ -410,45 +407,47 @@ export default function PrivacyPage() {
         </p>
         <h4>Your Rights and Controlling Your Personal Information</h4>
         <p>
-          <strong>Restrict:</strong> You have the right to request that we restrict the processing
-          of your personal information if (i) you are concerned about the accuracy of your personal
+          <b>Restrict:</b> You have the right to request that we restrict the processing of your
+          personal information if (i) you are concerned about the accuracy of your personal
           information; (ii) you believe your personal information has been unlawfully processed;
           (iii) you need us to maintain the personal information solely for the purpose of a legal
           claim; or (iv) we are in the process of considering your objection in relation to
           processing on the basis of legitimate interests.
         </p>
         <p>
-          <strong>Objecting to processing:</strong> You have the right to object to processing of
-          your personal information that is based on our legitimate interests or public interest. If
-          this is done, we must provide compelling legitimate grounds for the processing which
-          overrides your interests, rights, and freedoms, in order to proceed with the processing of
-          your personal information.
+          <b>Objecting to processing:</b> You have the right to object to processing of your
+          personal information that is based on our legitimate interests or public interest. If this
+          is done, we must provide compelling legitimate grounds for the processing which overrides
+          your interests, rights, and freedoms, in order to proceed with the processing of your
+          personal information.
         </p>
         <p>
-          <strong>Data portability:</strong> You may have the right to request a copy of the
-          personal information we hold about you. Where possible, we will provide this information
-          in CSV format or other easily readable machine format. You may also have the right to
-          request that we transfer this personal information to a third party.
+          <b>Data portability:</b> You may have the right to request a copy of the personal
+          information we hold about you. Where possible, we will provide this information in CSV
+          format or other easily readable machine format. You may also have the right to request
+          that we transfer this personal information to a third party.
         </p>
         <p>
-          <strong>Deletion:</strong> You may have a right to request that we delete the personal
-          information we hold about you at any time, and we will take reasonable steps to delete
-          your personal information from our current records. If you ask us to delete your personal
-          information, we will let you know how the deletion affects your use of our website or
-          products and services. There may be exceptions to this right for specific legal reasons
-          which, if applicable, we will set out for you in response to your request. If you
-          terminate or delete your account, we will delete your personal information within 90 days
-          of the deletion of your account. Please be aware that search engines and similar third
-          parties may still retain copies of your personal information that has been made public at
-          least once, like certain profile information and public comments, even after you have
-          deleted the information from our services or deactivated your account.
+          <b>Deletion:</b> You may have a right to request that we delete the personal information
+          we hold about you at any time, and we will take reasonable steps to delete your personal
+          information from our current records. If you ask us to delete your personal information,
+          we will let you know how the deletion affects your use of our website or products and
+          services. There may be exceptions to this right for specific legal reasons which, if
+          applicable, we will set out for you in response to your request. If you terminate or
+          delete your account, we will delete your personal information within 90 days of the
+          deletion of your account. Please be aware that search engines and similar third parties
+          may still retain copies of your personal information that has been made public at least
+          once, like certain profile information and public comments, even after you have deleted
+          the information from our services or deactivated your account.
         </p>
         <h3>Contact Us</h3>
         <p>
           For any questions or concerns regarding your privacy, you may contact us using the
           following details:
         </p>
-        <p>info@moaitime.com</p>
+        <p>
+          <a href="mailto:info@moaitime.com">info@moaitime.com</a>
+        </p>
       </div>
     </div>
   );

@@ -1,5 +1,10 @@
 # MoaiTime - Docker Commands
 
+## CLI
+
+- `docker build --tag moaitime-cli --file ./apps/cli/Dockerfile .` - builds the CLI container
+- `docker rm -f moaitime-cli && docker run --name moaitime-cli moaitime-cli` - starts the CLI container
+
 ## Web
 
 - `docker build --tag moaitime-web --file ./apps/web/Dockerfile .` - builds the web container

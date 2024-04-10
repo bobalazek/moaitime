@@ -772,25 +772,25 @@ importers:
   packages/health-checker:
     dependencies:
       '@moaitime/bullmq':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../bullmq
       '@moaitime/database-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../database-core
       '@moaitime/emails-core':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../emails-core
       '@moaitime/logging':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../logging
       '@moaitime/rabbitmq':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../rabbitmq
       '@moaitime/redis':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../redis
       '@moaitime/shared-backend':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../shared-backend
       systeminformation:
         specifier: ^5.22.2

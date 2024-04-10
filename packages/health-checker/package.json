@@ -19,13 +19,13 @@
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {
-    "@moaitime/bullmq": "*",
-    "@moaitime/database-core": "*",
-    "@moaitime/emails-core": "*",
-    "@moaitime/logging": "*",
-    "@moaitime/rabbitmq": "*",
-    "@moaitime/redis": "*",
-    "@moaitime/shared-backend": "*",
+    "@moaitime/bullmq": "workspace:*",
+    "@moaitime/database-core": "workspace:*",
+    "@moaitime/emails-core": "workspace:*",
+    "@moaitime/logging": "workspace:*",
+    "@moaitime/rabbitmq": "workspace:*",
+    "@moaitime/redis": "workspace:*",
+    "@moaitime/shared-backend": "workspace:*",
     "systeminformation": "^5.22.2"
   },
   "devDependencies": {

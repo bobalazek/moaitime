@@ -20,6 +20,7 @@ RUN turbo prune @moaitime/web --docker
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=@moaitime/web
+RUN pnpm --filter=@moaitime/web --prod deploy pruned
 
 # Runner
 FROM base AS runner
@@ -34,7 +35,7 @@ ENV WEB_PORT=$WEB_PORT
 
 RUN npm install -g serve
 
-COPY --from=builder /app/out/full/apps/web/dist ./
+COPY --from=builder /app/pruned/dist .
 
 EXPOSE ${WEB_PORT}
 

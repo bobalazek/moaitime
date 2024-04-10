@@ -1,0 +1,99 @@
+name: Build Docker Containers Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_web:
+        description: 'Build and push Web'
+        required: false
+        default: true
+        type: boolean
+      build_api:
+        description: 'Build and push API'
+        required: false
+        default: true
+        type: boolean
+      build_cli:
+        description: 'Build and push CLI'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  build-and-push-web:
+    if: ${{ github.event.inputs.build_web == 'true' }}
+    name: Build and Push Web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git - Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare environment variables
+        run: |
+          echo "app_name=moaitime-web" >> "$GITHUB_ENV"
+          echo "app_folder=web" >> "$GITHUB_ENV"
+          echo "app_build_path=." >> "$GITHUB_ENV"
+
+      - name: Docker - Build
+        run: docker build --tag ${{ env.app_name }} --file ./apps/${{ env.app_folder }}/Dockerfile ${{ env.app_build_path }}
+
+      - name: Docker - Login
+        run: docker login docker.pkg.github.com --username $GITHUB_ACTOR --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker - Tag
+        run: docker tag ${{ env.app_name }} docker.pkg.github.com/${{ github.repository }}/${{ env.app_name }}:latest
+
+      - name: Docker - Push
+        run: docker push docker.pkg.github.com/${{ github.repository }}/${{ env.app_name }}:latest
+
+  build-and-push-api:
+    if: ${{ github.event.inputs.build_api == 'true' }}
+    name: Build and Push API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git - Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare environment variables
+        run: |
+          echo "app_name=moaitime-api" >> "$GITHUB_ENV"
+          echo "app_folder=api" >> "$GITHUB_ENV"
+          echo "app_build_path=." >> "$GITHUB_ENV"
+
+      - name: Docker - Build
+        run: docker build --tag ${{ env.app_name }} --file ./apps/${{ env.app_folder }}/Dockerfile ${{ env.app_build_path }}
+
+      - name: Docker - Login
+        run: docker login docker.pkg.github.com --username $GITHUB_ACTOR --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker - Tag
+        run: docker tag ${{ env.app_name }} docker.pkg.github.com/${{ github.repository }}/${{ env.app_name }}:latest
+
+      - name: Docker - Push
+        run: docker push docker.pkg.github.com/${{ github.repository }}/${{ env.app_name }}:latest
+
+  build-and-push-cli:
+    if: ${{ github.event.inputs.build_cli == 'true' }}
+    name: Build and Push CLI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git - Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare environment variables
+        run: |
+          echo "app_name=moaitime-cli" >> "$GITHUB_ENV"
+          echo "app_folder=cli" >> "$GITHUB_ENV"
+          echo "app_build_path=." >> "$GITHUB_ENV"
+
+      - name: Docker - Build
+        run: docker build --tag ${{ env.app_name }} --file ./apps/${{ env.app_folder }}/Dockerfile ${{ env.app_build_path }}
+
+      - name: Docker - Login
+        run: docker login docker.pkg.github.com --username $GITHUB_ACTOR --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker - Tag
+        run: docker tag ${{ env.app_name }} docker.pkg.github.com/${{ github.repository }}/${{ env.app_name }}:latest
+
+      - name: Docker - Push
+        run: docker push docker.pkg.github.com/${{ github.repository }}/${{ env.app_name }}:latest

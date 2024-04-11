@@ -2,8 +2,6 @@ version: '3.8'
 
 # Here we will have all the services that are needed for the project to run
 
-name: moaitime
-
 services:
   postgres:
     container_name: moaitime_postgres

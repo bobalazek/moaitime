@@ -23,4 +23,4 @@ docker pull ghcr.io/bobalazek/moaitime/moaitime-api:latest
 docker pull ghcr.io/bobalazek/moaitime/moaitime-cli:latest
 
 echo "---------- Doing actual deployment to docker swarm ... ----------"
-docker stack deploy --compose-file ./docker/compose.yaml -compose-file ./docker/compose.deployment.yaml --compose-file ./docker/compose.apps.yaml --compose-file ./docker/compose.overrides.production.yaml moaitime
+docker stack deploy --compose-file ./docker/compose.yaml --compose-file ./docker/compose.deployment.yaml --compose-file ./docker/compose.apps.yaml --compose-file ./docker/compose.overrides.production.yaml moaitime

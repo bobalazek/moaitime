@@ -107,9 +107,16 @@ export const runDatabaseMigrations = async () => {
     const DIST_DELIMITER = `${sep}dist${sep}`;
 
     let migrationsFolder = resolve(relative(process.cwd(), join(__dirname, '..', 'migrations')));
+
+    logger.debug(`Migrations folder: "${migrationsFolder}"`);
+
     if (!existsSync(migrationsFolder) && migrationsFolder.includes(DIST_DELIMITER)) {
       const DIST_DIR = migrationsFolder.split(DIST_DELIMITER)[0];
       migrationsFolder = resolve(join(DIST_DIR, 'libs', 'database-core', 'migrations'));
+
+      logger.debug(
+        `Migrations folder was not found. Trying the dist folder: "${migrationsFolder}"`
+      );
     }
 
     const database = getMigrationDatabase();

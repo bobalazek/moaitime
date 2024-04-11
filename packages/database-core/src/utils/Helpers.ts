@@ -110,13 +110,33 @@ export const runDatabaseMigrations = async () => {
 
     logger.debug(`Migrations folder: "${migrationsFolder}"`);
 
-    if (!existsSync(migrationsFolder) && migrationsFolder.includes(DIST_DELIMITER)) {
+    if (!existsSync(migrationsFolder)) {
       const DIST_DIR = migrationsFolder.split(DIST_DELIMITER)[0];
+      if (!DIST_DIR) {
+        throw new Error(
+          `Could not find the dist directory in the migrations folder: "${migrationsFolder}"`
+        );
+      }
+
       migrationsFolder = resolve(join(DIST_DIR, 'libs', 'database-core', 'migrations'));
 
       logger.debug(
-        `Migrations folder was not found. Trying the dist folder: "${migrationsFolder}"`
+        `Migrations folder was not found. Trying the secondary folder: "${migrationsFolder}"`
       );
+
+      if (!existsSync(migrationsFolder)) {
+        migrationsFolder = resolve(
+          join(DIST_DIR, '..', 'node_modules', '@moaitime', 'database-core', 'migrations')
+        );
+
+        logger.debug(
+          `Migrations folder was still not found. Trying the tertiary folder: "${migrationsFolder}"`
+        );
+      }
+    }
+
+    if (!existsSync(migrationsFolder)) {
+      throw new Error(`Migrations folder not found: "${migrationsFolder}"`);
     }
 
     const database = getMigrationDatabase();

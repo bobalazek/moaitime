@@ -11,6 +11,8 @@ import { SharedQueueWorkerJobEnum } from '@moaitime/shared-backend';
 import { sleep } from '@moaitime/shared-common';
 import { sharedQueueWorker, SharedQueueWorker } from '@moaitime/shared-queue-worker';
 
+import { runDatabaseMigrations } from '../../database-core/src/utils/Helpers';
+
 export class JobRunner {
   private _globalEventsProcessorSubscription?: () => Promise<void>;
 
@@ -30,6 +32,9 @@ export class JobRunner {
 
     await this._registerSharedQueueJobs();
     await this._registerGlobalEventNoifications();
+
+    // Just a fallback, in case we did not run the database migrations before
+    await runDatabaseMigrations();
 
     return new Promise(() => {
       // Together forever and never apart ...

@@ -32,11 +32,11 @@ ENV NODE_ENV=$NODE_ENV
 
 COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/.env.production ./.env.production
-COPY --from=builder /app/pruned/dist .
+COPY --from=builder /app/pruned/dist ./dist
 COPY --from=builder /app/pruned/node_modules ./node_modules
 
 RUN echo '#!/bin/sh' > /app/cli && \
-    echo 'exec node /app/main.js "$@"' >> /app/cli && \
+    echo 'exec node /app/dist/main.js "$@"' >> /app/cli && \
     chmod +x /app/cli
 
 HEALTHCHECK --interval=30s --timeout=15s CMD /app/cli health:check

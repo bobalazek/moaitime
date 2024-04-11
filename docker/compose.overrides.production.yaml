@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  moaitime-api:
+    image: ghcr.io/bobalazek/moaitime/moaitime-api:latest
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+  moaitime-web:
+    image: ghcr.io/bobalazek/moaitime/moaitime-web:latest
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+  moaitime-cli:
+    image: ghcr.io/bobalazek/moaitime/moaitime-cli:latest
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+  moaitime-cli-jobs-runner-start:
+    image: ghcr.io/bobalazek/moaitime/moaitime-cli:latest
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+networks:
+  moaitime-network:
+    driver: overlay

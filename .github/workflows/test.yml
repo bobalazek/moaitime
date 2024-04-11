@@ -24,7 +24,7 @@ jobs:
         run: cp -f .env.local.example .env.local
 
       - name: Docker compose - Build & start the containers
-        run: docker compose --file docker/compose.yaml up -d
+        run: docker compose --file ./docker/compose.yaml up -d
 
       - name: pnpm - Setup
         uses: pnpm/action-setup@v2

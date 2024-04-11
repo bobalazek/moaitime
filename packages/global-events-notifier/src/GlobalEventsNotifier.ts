@@ -1,12 +1,17 @@
 import { Logger, logger } from '@moaitime/logging';
-import { RabbitMQ, rabbitMQ, RabbitMQChannel, RabbitMQConsumeMessage } from '@moaitime/rabbitmq';
+import {
+  RabbitMQ,
+  rabbitMQ,
+  RabbitMQConfirmChannel,
+  RabbitMQConsumeMessage,
+} from '@moaitime/rabbitmq';
 import { Redis, redis } from '@moaitime/redis';
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 export const GLOBAL_EVENTS_QUEUE = 'global-events-queue';
 
 export class GlobalEventsNotifier {
-  private _rabbitMQChannel?: RabbitMQChannel;
+  private _rabbitMQChannel?: RabbitMQConfirmChannel;
   private _additionalPayload?: Record<string, unknown>;
 
   constructor(
@@ -58,6 +63,7 @@ export class GlobalEventsNotifier {
     return async () => {
       this._logger.debug(`[GlobalEventsNotifier] Unsubscribing from global events queue ...`);
 
+      await channel?.waitForConfirms();
       await channel?.close();
     };
   }
@@ -105,7 +111,7 @@ export class GlobalEventsNotifier {
         this._logger.error(`[GlobalEventsNotifier] Connection closed`);
       });
 
-      this._rabbitMQChannel = await connection.createChannel();
+      this._rabbitMQChannel = await connection.createConfirmChannel();
 
       await this._rabbitMQChannel.assertQueue(GLOBAL_EVENTS_QUEUE, { durable: true });
     }

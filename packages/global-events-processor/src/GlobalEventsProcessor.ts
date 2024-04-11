@@ -32,6 +32,7 @@ export class GlobalEventsProcessor {
     });
   }
 
+  // Private
   private async _processEvent<T extends GlobalEventsEnum>(type: T, payload: GlobalEvents[T]) {
     try {
       await userExperiencePointsProcessor.process(type, payload);

@@ -1,5 +1,6 @@
 import {
   Channel,
+  ConfirmChannel,
   connect,
   Connection,
   ConsumeMessage,
@@ -13,6 +14,7 @@ import { getEnv } from '@moaitime/shared-backend';
 
 export {
   Channel as RabbitMQChannel,
+  ConfirmChannel as RabbitMQConfirmChannel,
   ConsumeMessage as RabbitMQConsumeMessage,
   ConsumeMessageFields as RabbitMQConsumeMessageFields,
   MessageProperties as RabbitMQMessageProperties,

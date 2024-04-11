@@ -135,6 +135,15 @@ export const runDatabaseMigrations = async () => {
       }
     }
 
+    // Just a fallback for docker
+    if (!existsSync(migrationsFolder) && existsSync('/app')) {
+      migrationsFolder = resolve(
+        join('/app', 'node_modules', '@moaitime', 'database-core', 'migrations')
+      );
+
+      logger.debug(`Docker migrations folder: "${migrationsFolder}"`);
+    }
+
     if (!existsSync(migrationsFolder)) {
       throw new Error(`Migrations folder not found: "${migrationsFolder}"`);
     }

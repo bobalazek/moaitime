@@ -14,7 +14,7 @@ if (import.meta.hot) {
     }
 
     try {
-      await fetch(`${API_URL}/health`);
+      await fetch(`${API_URL}/api/health`);
 
       if (apiReachableAttempts > 0) {
         window.location.reload();

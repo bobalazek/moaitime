@@ -81,7 +81,7 @@ services:
     command: jobs:runner:start
     restart: unless-stopped
     deploy:
-      replicas: 3
+      replicas: 2
       resources:
         reservations:
           cpus: '1'

@@ -6,7 +6,7 @@ services:
   portainer:
     # Username is "admin" and password is "password"
     container_name: moaitime_portainer
-    image: portainer/portainer-ce:2.19.0
+    image: portainer/portainer-ce:2.19.4
     command: --admin-password '$$2y$$05$$Gi2cvNgIzh2cwEKV9gd0oOTn8Ju8alEX0.963i/poGO340XYS1JdO' # The password is "password"
     restart: unless-stopped
     deploy:

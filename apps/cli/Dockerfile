@@ -33,7 +33,7 @@ ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
 
 # Install PostgreSQL Client (pg_dump). Need for database backup
-RUN apt-get update && apt-get install -y postgresql-client
+RUN apt update && apt install -y postgresql-client
 
 COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/.env.production ./.env.production

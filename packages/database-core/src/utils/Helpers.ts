@@ -22,6 +22,7 @@ type Database = ReturnType<typeof drizzle<typeof schema>>;
 type DatabaseConfig = DrizzleConfig<typeof schema>;
 
 export const createDatabaseAndClient = (
+  connectionUrl?: string,
   clientConfig?: ClientConfig,
   databaseConfig?: DatabaseConfig
 ) => {
@@ -31,13 +32,16 @@ export const createDatabaseAndClient = (
     )}", database config: "${JSON.stringify(databaseConfig)}" ...`
   );
 
-  const { POSTGRESQL_URL } = getEnv();
+  if (!connectionUrl) {
+    const { POSTGRESQL_URL } = getEnv();
 
-  const url = new URL(POSTGRESQL_URL);
+    const url = new URL(POSTGRESQL_URL);
+    url.searchParams.delete('schema');
 
-  url.searchParams.delete('schema');
+    connectionUrl = url.toString();
+  }
 
-  const client = postgres(url.toString(), {
+  const client = postgres(connectionUrl, {
     onnotice: () => {},
     transform: {
       undefined: null,
@@ -63,10 +67,15 @@ export const getDatabase = () => {
   return _database;
 };
 
-export const executeRawQuery = async (query: string) => {
-  const database = getDatabase();
+export const executeRawQuery = async <T extends Record<string, unknown>>(
+  query: string,
+  database?: Database
+) => {
+  if (!database) {
+    database = getDatabase();
+  }
 
-  return database.execute(sql.raw(query));
+  return database.execute<T>(sql.raw(query));
 };
 
 export const destroyDatabase = async () => {
@@ -91,7 +100,7 @@ let _migrationClient: Client | undefined;
 let _migrationDatabase: Database | undefined;
 export const getMigrationDatabase = () => {
   if (!_migrationDatabase) {
-    const { client, database } = createDatabaseAndClient({
+    const { client, database } = createDatabaseAndClient(undefined, {
       max: 1,
     });
 

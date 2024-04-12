@@ -20,9 +20,6 @@ export const envSchema = z.object({
   // Databases
   POSTGRESQL_URL: z.string().url().min(1),
   REDIS_URL: z.string().url().min(1),
-  // Database Backups
-  REMOTE_POSTGRESQL_URL: z.union([z.string().url(), z.literal('')]).default(''), // This will only be used for our sync script, which syncs data to a remote database
-  POSTGRESQL_BACKUP_BUCKET_URL: z.union([z.string().url(), z.literal('')]).default(''),
   // Queues
   RABBITMQ_URL: z.string().url().min(1),
   // Mailer
@@ -32,6 +29,7 @@ export const envSchema = z.object({
   // Storage
   USER_DATA_EXPORTS_BUCKET_URL: z.string().url().min(1),
   USER_AVATARS_BUCKET_URL: z.string().url().min(1),
+  POSTGRESQL_BACKUP_BUCKET_URL: z.union([z.string().url(), z.literal('')]).default(''),
   // Ports and links
   API_PORT: z.coerce.number().default(3636),
   WEB_BASE_URL: z.string().url().min(1),

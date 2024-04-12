@@ -11,9 +11,24 @@ export const sleep = (milliseconds: number): Promise<unknown> => {
   });
 };
 
-// Text
+// Strings
 export const capitalize = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
+export const formatNumber = (number: number): string => {
+  return new Intl.NumberFormat().format(number);
+};
+
+// Arrays
+export const splitArrayIntoSubRanges = <T>(data: T[], size: number) => {
+  const output: T[][] = [];
+
+  for (let i = 0; i < data.length; i += size) {
+    output.push(data.slice(i, i + size));
+  }
+
+  return output;
 };
 
 // Date & Time

@@ -24,7 +24,7 @@ This is the MoaiTime project.
 
 ## Documentation
 
-- [Setup Development Environment](./docs/SETUP-DEVELOPMENT-ENVIRONMENT.md)
+- [Getting Started](./docs/GETTING-STARTED.md)
 - [Commands](./docs/COMMANDS.md)
 - [Development](./docs/DEVELOPMENT.md)
 - [Testing](./docs/TESTING.md)

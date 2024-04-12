@@ -3,12 +3,14 @@ import { Command } from 'commander';
 import { destroyDatabase } from '@moaitime/database-core';
 import { logger } from '@moaitime/logging';
 
+import { addDatabaseBackupCommand } from './database/DatabaseBackupCommand';
 import { addDatabaseDropSchemasCommand } from './database/DatabaseDropSchemasCommand';
-import { addDatabaseGenerateMigrationCommand } from './database/DatabaseGenerateMigrationCommand';
 import { addDatabaseInsertFixtureDataCommand } from './database/DatabaseInsertFixtureDataCommand';
 import { addDatabaseInsertSeedDataCommand } from './database/DatabaseInsertSeedDataCommand';
+import { addDatabaseMigrationsGenerateCommand } from './database/DatabaseMigrationsGenerateCommand';
+import { addDatabaseMigrationsRunCommand } from './database/DatabaseMigrationsRunCommand';
+import { addDatabaseRecoverCommand } from './database/DatabaseRecoverCommand';
 import { addDatabaseReloadCommand } from './database/DatabaseReloadCommand';
-import { addDatabaseRunMigrationsCommand } from './database/DatabaseRunMigrationsCommand';
 import { addHealthCheckCommand } from './health/HealthCheckCommand';
 import { addJobsRunnerStartCommand } from './jobs/JobsRunnerStartCommand';
 
@@ -21,8 +23,10 @@ addHealthCheckCommand(program);
 addDatabaseInsertSeedDataCommand(program);
 addDatabaseInsertFixtureDataCommand(program);
 addDatabaseDropSchemasCommand(program);
-addDatabaseGenerateMigrationCommand(program);
-addDatabaseRunMigrationsCommand(program);
+addDatabaseMigrationsGenerateCommand(program);
+addDatabaseMigrationsRunCommand(program);
+addDatabaseBackupCommand(program);
+addDatabaseRecoverCommand(program);
 addDatabaseReloadCommand(program);
 
 // Jobs

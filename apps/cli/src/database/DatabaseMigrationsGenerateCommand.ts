@@ -23,8 +23,8 @@ function runCommand(fullCommand: string, options?: SpawnOptionsWithoutStdio) {
   });
 }
 
-export const addDatabaseGenerateMigrationCommand = (program: Command) => {
-  const command = program.command('database:generate-migration').action(async () => {
+export const addDatabaseMigrationsGenerateCommand = (program: Command) => {
+  const command = program.command('database:migrations:generate').action(async () => {
     try {
       const cwd = resolve(`${process.cwd()}/../../packages/database-core`);
 
@@ -42,7 +42,7 @@ export const addDatabaseGenerateMigrationCommand = (program: Command) => {
 
       await shutdownManager.shutdown(0);
     } catch (error) {
-      logger.error(error, '[addDatabaseGenerateMigrationCommand] Error');
+      logger.error(error, '[addDatabaseMigrationsGenerateCommand] Error');
 
       await shutdownManager.shutdown(1);
     }

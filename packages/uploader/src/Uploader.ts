@@ -1,4 +1,6 @@
-import { createReadStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 
 import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
@@ -39,6 +41,31 @@ export class Uploader {
     return getSignedUrl(client, getObjectCommand, {
       expiresIn,
     });
+  }
+
+  async downloadFromBucket(bucketUrl: string, fileName: string, filePath: string) {
+    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: bucket,
+      Key: fileName,
+    });
+
+    const response = await client.send(getObjectCommand);
+    if (!response.Body) {
+      throw new Error(`File name "${filePath}" does not seem to exist in bucket "${bucket}"`);
+    }
+
+    if (!(response.Body instanceof Readable)) {
+      throw new Error(`Response body is not a readable stream`);
+    }
+
+    const nodeStream = response.Body;
+    const fileWriteStream = createWriteStream(filePath);
+
+    await pipeline(nodeStream, fileWriteStream);
+
+    return filePath;
   }
 
   async removeFileFromBucket(bucketUrl: string, key: string) {

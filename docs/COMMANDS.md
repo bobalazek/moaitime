@@ -19,11 +19,13 @@
 ### CLI - Database
 
 - `pnpm cli database:reload` - it will run the following commands specified below in that order (drop-schemas, run-migrations, insert-seed-data and insert-fixture-data)
-- `pnpm cli database:generate-migration` - generates a new migration file
-- `pnpm cli database:run-migrations` - runs all the migrations
+- `pnpm cli database:migrations:generate` - generates a new migration file
+- `pnpm cli database:migrations:run` - runs all the migrations
 - `pnpm cli database:drop-schema` - drops the database schema
 - `pnpm cli database:insert-seed-data` - inserts the seed data
 - `pnpm cli database:insert-fixture-data` - inserts the fixture data
+- `pnpm cli database:backup [fileName]` - backs up the database
+- `pnpm cli database:recover <fileName> [-c, --confirm]` - recovers the database
 
 ### CLI - Jobs Runner
 

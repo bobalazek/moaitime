@@ -22,6 +22,7 @@
     "@moaitime/logging": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
+    "@moaitime/uploader": "workspace:*",
     "drizzle-kit": "^0.20.14",
     "drizzle-orm": "^0.30.0",
     "postgres": "^3.4.3"

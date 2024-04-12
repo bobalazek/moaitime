@@ -17,16 +17,25 @@ export const envSchema = z.object({
     .enum(['true', 'false'])
     .transform((value) => value === 'true')
     .default('false'),
+  // Databases
   POSTGRESQL_URL: z.string().url().min(1),
   REDIS_URL: z.string().url().min(1),
+  // Database Backups
+  REMOTE_POSTGRESQL_URL: z.union([z.string().url(), z.literal('')]).default(''), // This will only be used for our sync script, which syncs data to a remote database
+  POSTGRESQL_BACKUP_BUCKET_URL: z.union([z.string().url(), z.literal('')]).default(''),
+  // Queues
   RABBITMQ_URL: z.string().url().min(1),
+  // Mailer
   MAILER_FROM: z.string().min(1),
   MAILER_SMTP_URL: z.union([z.string().url().min(1), z.literal('')]).default(''),
   MAILER_RESEND_API_KEY: z.union([z.string().min(1), z.literal('')]).default(''),
+  // Storage
   USER_DATA_EXPORTS_BUCKET_URL: z.string().url().min(1),
   USER_AVATARS_BUCKET_URL: z.string().url().min(1),
+  // Ports and links
   API_PORT: z.coerce.number().default(3636),
   WEB_BASE_URL: z.string().url().min(1),
+  // OAuth
   OAUTH_GOOGLE_CLIENT_ID: z.string(),
   OAUTH_GOOGLE_CLIENT_SECRET: z.string(),
 });

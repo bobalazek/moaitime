@@ -437,6 +437,9 @@ importers:
       '@moaitime/shared-common':
         specifier: workspace:*
         version: link:../shared-common
+      '@moaitime/uploader':
+        specifier: workspace:*
+        version: link:../uploader
       drizzle-kit:
         specifier: ^0.20.14
         version: 0.20.14

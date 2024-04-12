@@ -10,6 +10,7 @@ bash "$(dirname "$0")/generate-env-generated-file.sh"
 GIT_COMMIT_HASH=$(git rev-parse HEAD)
 echo "GIT_COMMIT_HASH=$GIT_COMMIT_HASH" >> .env.generated
 
+echo "---------- Exporting environment variables ... ----------"
 # Some of our docker compose files (compose.overrides.production.yaml)
 # use variables specified in .env.generated file,
 # so we need to export them before running docker stack deploy.

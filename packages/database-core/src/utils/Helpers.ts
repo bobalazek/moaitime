@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import { join, relative, resolve, sep } from 'path';
+import { join, resolve } from 'path';
 
 import { DrizzleConfig, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -7,7 +7,7 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres'; // Tried to use "pg", but it's not really working on windows, so we need to use this one for now
 
 import { logger } from '@moaitime/logging';
-import { getEnv } from '@moaitime/shared-backend';
+import { getEnv, ROOT_DIR } from '@moaitime/shared-backend';
 
 import * as schema from '../schema';
 
@@ -104,36 +104,9 @@ export const runDatabaseMigrations = async () => {
   try {
     logger.info('Running database migrations ...');
 
-    const DIST_DELIMITER = `${sep}dist${sep}`;
-
-    let migrationsFolder = resolve(relative(process.cwd(), join(__dirname, '..', 'migrations')));
+    let migrationsFolder = resolve(join(ROOT_DIR, 'packages', 'database-core', 'migrations'));
 
     logger.debug(`Migrations folder: "${migrationsFolder}"`);
-
-    if (!existsSync(migrationsFolder)) {
-      const DIST_DIR = migrationsFolder.split(DIST_DELIMITER)[0];
-      if (!DIST_DIR) {
-        throw new Error(
-          `Could not find the dist directory in the migrations folder: "${migrationsFolder}"`
-        );
-      }
-
-      migrationsFolder = resolve(join(DIST_DIR, 'libs', 'database-core', 'migrations'));
-
-      logger.debug(
-        `Migrations folder was not found. Trying the secondary folder: "${migrationsFolder}"`
-      );
-
-      if (!existsSync(migrationsFolder)) {
-        migrationsFolder = resolve(
-          join(DIST_DIR, '..', 'node_modules', '@moaitime', 'database-core', 'migrations')
-        );
-
-        logger.debug(
-          `Migrations folder was still not found. Trying the tertiary folder: "${migrationsFolder}"`
-        );
-      }
-    }
 
     // Just a fallback for docker
     if (!existsSync(migrationsFolder) && existsSync('/app')) {
@@ -141,7 +114,9 @@ export const runDatabaseMigrations = async () => {
         join('/app', 'node_modules', '@moaitime', 'database-core', 'migrations')
       );
 
-      logger.debug(`Docker migrations folder: "${migrationsFolder}"`);
+      logger.debug(
+        `Migrations folder not found, but seems to be the docker environment. Folder: "${migrationsFolder}"`
+      );
     }
 
     if (!existsSync(migrationsFolder)) {

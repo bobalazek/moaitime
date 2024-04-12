@@ -17,9 +17,6 @@ export $(xargs < .env.generated)
 
 #### Docker #####
 echo "---------- Pulling docker images ... ----------"
-echo $GITHUB_PACKAGES_TOKEN | docker login ghcr.io -u bobalazek --password-stdin
-# We need to build the image locally, because the frontend requires the environment variables,
-# which are not available on build-time at the moment in GitHub actions.
 docker build -t moaitime/moaitime-web:latest -f ./apps/web/Dockerfile .
 docker build -t moaitime/moaitime-api:latest -f ./apps/api/Dockerfile .
 docker build -t moaitime/moaitime-cli:latest -f ./apps/cli/Dockerfile .

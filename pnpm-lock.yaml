@@ -459,6 +459,9 @@ importers:
       '@moaitime/logging':
         specifier: workspace:*
         version: link:../logging
+      '@moaitime/recurrence':
+        specifier: workspace:*
+        version: link:../recurrence
       '@moaitime/shared-backend':
         specifier: workspace:*
         version: link:../shared-backend

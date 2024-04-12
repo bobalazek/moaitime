@@ -21,6 +21,7 @@
   "dependencies": {
     "@moaitime/database-core": "workspace:*",
     "@moaitime/logging": "workspace:*",
+    "@moaitime/recurrence": "workspace:*",
     "@moaitime/shared-backend": "workspace:*",
     "@moaitime/shared-common": "workspace:*",
     "date-fns": "^2.30.0",

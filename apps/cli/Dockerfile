@@ -1,5 +1,7 @@
 # Base
-FROM node:20 AS base
+FROM node:20-alpine AS base
+
+RUN apk add --no-cache bash
 
 # Builder
 FROM base AS builder

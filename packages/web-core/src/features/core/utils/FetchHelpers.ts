@@ -76,6 +76,7 @@ export const fetchJson = async <T>(
             window.location.reload();
           },
         },
+        duration: Number.POSITIVE_INFINITY, // Never hide the toast. Only if the user actively dismisses it.
       });
     }
 

@@ -19,24 +19,30 @@ import ListItem from '../list-item/ListItem';
 import CalendarSettingsDialogMyCalendarsActions from './CalendarSettingsDialogMyCalendarsActions';
 import CalendarSettingsDialogUserCalendarsActions from './CalendarSettingsDialogUserCalendarsActions';
 
-export default function CalendarSettingsDialog() {
+export type CalendarSettingsDialogProps = {
+  includeTrigger?: boolean;
+};
+
+export default function CalendarSettingsDialog({ includeTrigger }: CalendarSettingsDialogProps) {
   const { settingsDialogOpen, setSettingsDialogOpen, calendars, userCalendars } =
     useCalendarStore();
   const { lists } = useListsStore();
 
   return (
     <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
-      <DialogTrigger asChild>
-        <Button
-          className="border"
-          variant="ghost"
-          size="sm"
-          title="Open calendar settings"
-          data-test="calendar--header--open-settings-button"
-        >
-          <CogIcon />
-        </Button>
-      </DialogTrigger>
+      {includeTrigger && (
+        <DialogTrigger asChild>
+          <Button
+            className="border"
+            variant="ghost"
+            size="sm"
+            title="Open calendar settings"
+            data-test="calendar--header--open-settings-button"
+          >
+            <CogIcon />
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent data-test="calendar--settings-dialog">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>

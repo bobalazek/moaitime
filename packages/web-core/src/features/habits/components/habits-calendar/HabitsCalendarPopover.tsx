@@ -19,12 +19,12 @@ function HabitsCalendarPopover() {
           variant="ghost"
           size="sm"
           title="Open calendar selector"
-          data-test="habits--header--calendar-popover--trigger-button"
+          data-test="habits--calendar-popover--trigger-button"
         >
           <CalendarIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" align="end" data-test="habits--header--calendar-popover">
+      <PopoverContent className="p-0" align="end" data-test="habits--calendar-popover">
         <HabitsCalendar />
       </PopoverContent>
     </Popover>

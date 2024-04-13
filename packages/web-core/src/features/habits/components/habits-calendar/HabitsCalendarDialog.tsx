@@ -12,7 +12,7 @@ function HabitsCalendarDialog() {
 
   return (
     <Dialog open={habitsCalendarDialogOpen} onOpenChange={setHabitsCalendarDialogOpen}>
-      <DialogContent data-test="habits--header--calendar-dialog">
+      <DialogContent data-test="habits--calendar-dialog">
         <DialogHeader>
           <DialogTitle>Calendar</DialogTitle>
         </DialogHeader>

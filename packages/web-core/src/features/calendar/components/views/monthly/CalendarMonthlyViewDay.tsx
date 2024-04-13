@@ -108,6 +108,9 @@ export default function CalendarMonthlyViewDay({
         </button>
       </div>
       <div className="flex flex-col">
+        {shownCalendarEntries.length === 0 && (
+          <div className="text-muted-foreground mt-2 text-center text-xs">No events</div>
+        )}
         {shownCalendarEntries.length > 0 && (
           <div className="mt-2 flex flex-col gap-1">
             <AnimatePresence>

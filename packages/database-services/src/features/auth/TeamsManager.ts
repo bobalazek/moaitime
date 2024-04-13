@@ -8,6 +8,7 @@ import {
   lists,
   NewTeam,
   tags,
+  taskTags,
   Team,
   teams,
   TeamUser,
@@ -61,9 +62,16 @@ export class TeamsManager {
     return updatedTeam;
   }
 
-  async delete(actorUserId: string, teamId: string, isHardDelete?: boolean) {
+  async delete(
+    actorUserId: string,
+    teamId: string,
+    isHardDelete?: boolean,
+    skipDeleteCheck?: boolean
+  ) {
+    // We need the skip delete check here, because in instances of leaving a team, we actually already remove the team members from the team,
+    // so we wouldn't really be able to delete the team if we didn't skip the delete check.
     const canDelete = await this.userCanDelete(actorUserId, teamId);
-    if (!canDelete) {
+    if (!canDelete && !skipDeleteCheck) {
       throw new Error('You cannot delete this team');
     }
 
@@ -73,8 +81,14 @@ export class TeamsManager {
           deletedAt: new Date(),
         });
 
-    await getDatabase().update(lists).set({ teamId: null }).where(eq(lists.teamId, teamId));
-    await getDatabase().update(tags).set({ teamId: null }).where(eq(tags.teamId, teamId));
+    await getDatabase().transaction(async (trx) => {
+      // Just give the list to the user that created the list
+      trx.update(lists).set({ teamId: null }).where(eq(lists.teamId, teamId));
+
+      // Same for tags, but here we delete the tags from all tasks before
+      trx.delete(taskTags).where(eq(taskTags.tagId, tags.id));
+      trx.update(tags).set({ teamId: null }).where(eq(tags.teamId, teamId));
+    });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_DELETED, {
       actorUserId,
@@ -176,7 +190,7 @@ export class TeamsManager {
     }
 
     if (isOwner) {
-      await this.delete(actorUserId, teamId);
+      await this.delete(actorUserId, teamId, false, true);
     }
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_LEFT, {

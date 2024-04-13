@@ -47,7 +47,14 @@ import { usersManager } from '../auth/UsersManager';
 import { listsManager } from './ListsManager';
 import { tagsManager } from './TagsManager';
 
-export type TaskWithListColor = Task & { listColor?: string | null };
+export type TaskWithListColorBase = Task & { listColor?: string | null };
+export type TaskWithListColor = TaskWithListColorBase & { children?: TaskWithListColor[] };
+export type TaskWithTagsAndUsers = TaskWithListColor & {
+  tagIds: string[];
+  tags: Tag[];
+  userIds: string[];
+  users: User[];
+};
 
 export type TaskManagerListOptions = {
   includeCompleted?: boolean;
@@ -1118,25 +1125,33 @@ export class TasksManager {
     });
   }
 
-  async populateTagsAndUsers(tasks: TaskWithListColor[]) {
+  async populateTagsAndUsers(tasks: TaskWithListColor[]): Promise<TaskWithTagsAndUsers[]> {
+    // TODO definetly optimize this, to prevent recursive calls and queries
+
     const taskIds = tasks.map((task) => task.id);
     const tagsMap = await this.getTagIdsForTaskIds(taskIds);
     const usersMap = await this.getUserIdsForTaskIds(taskIds);
 
-    return tasks.map((task) => {
+    const populated: TaskWithTagsAndUsers[] = [];
+
+    for (const task of tasks) {
       const tags = tagsMap[task.id] || [];
       const tagIds = tags.map((tag) => tag.id);
       const users = usersMap[task.id] || [];
       const userIds = users.map((user) => user.id);
+      const children = task.children ? await this.populateTagsAndUsers(task.children) : [];
 
-      return {
+      populated.push({
         ...task,
         tags,
         tagIds,
         users,
         userIds,
-      };
-    });
+        children,
+      });
+    }
+
+    return populated;
   }
 
   // Private

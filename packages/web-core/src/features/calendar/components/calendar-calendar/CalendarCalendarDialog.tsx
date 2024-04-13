@@ -3,7 +3,6 @@ import { useAtom } from 'jotai';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@moaitime/web-ui';
 
 import { calendarCalendarDialogOpenAtom } from '../../state/calendarAtoms';
-import CalendarPageHeaderViewSelector from '../pages/calendar/CalendarPageHeaderViewSelector';
 import CalendarCalendar from './CalendarCalendar';
 
 function CalendarCalendarDialog() {
@@ -24,9 +23,6 @@ function CalendarCalendarDialog() {
         </DialogHeader>
         <div className="m-auto text-center">
           <CalendarCalendar />
-          <hr className="my-2" />
-          <h3 className="mb-2 font-bold">View</h3>
-          <CalendarPageHeaderViewSelector />
         </div>
       </DialogContent>
     </Dialog>

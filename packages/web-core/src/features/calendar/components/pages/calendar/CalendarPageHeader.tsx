@@ -169,6 +169,7 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <CalendarPageHeaderViewSelector />
           </>
         )}
       </div>

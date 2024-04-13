@@ -142,7 +142,6 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
             >
               <CalendarPageHeaderTodayButtonText />
             </Button>
-            <CalendarPageHeaderViewSelector />
           </>
         )}
         {isMobile && (
@@ -169,9 +168,9 @@ const CalendarPageHeader = forwardRef<CalendarDialogHeaderRef>((_, ref) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <CalendarPageHeaderViewSelector />
           </>
         )}
+        <CalendarPageHeaderViewSelector />
       </div>
     </LayoutPageHeader>
   );

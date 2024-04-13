@@ -68,7 +68,7 @@ function TasksForm() {
           enterKeyHint="enter"
         />
         <Button
-          variant="default"
+          variant="secondary"
           onClick={async () => {
             await onSaveButtonClick();
           }}

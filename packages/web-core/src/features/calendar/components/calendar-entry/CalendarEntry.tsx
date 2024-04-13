@@ -3,7 +3,7 @@ import { colord } from 'colord';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { useAtom } from 'jotai';
 import { debounce } from 'lodash';
-import { FlagIcon, GripHorizontalIcon } from 'lucide-react';
+import { FlagIcon, GripHorizontalIcon, LockIcon } from 'lucide-react';
 import { useCallback } from 'react';
 
 import {
@@ -397,7 +397,7 @@ export default function CalendarEntry({
       data-test="calendar--weekly-view--day--calendar-entry"
     >
       <div
-        className="relative h-full cursor-pointer overflow-hidden rounded-lg border border-transparent px-2 py-1 text-xs transition-all"
+        className="relative h-full cursor-pointer overflow-hidden rounded-lg border border-transparent py-1 pl-2 pr-4 text-xs transition-all"
         data-test="calendar--weekly-view--day--calendar-entry--content"
         style={innerStyle}
       >
@@ -437,6 +437,9 @@ export default function CalendarEntry({
               <GripHorizontalIcon size={14} />
             </div>
           </div>
+        )}
+        {!canResizeAndMove && (
+          <LockIcon size={10} strokeWidth={4} className="absolute right-[2px] top-[2px]" />
         )}
       </div>
     </div>

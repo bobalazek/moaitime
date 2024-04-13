@@ -17,7 +17,7 @@ COPY . .
 # we will use the pnpm version of turbo.
 RUN turbo prune @moaitime/cli --docker
 
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=@moaitime/cli
 RUN pnpm --filter=@moaitime/cli --prod deploy pruned
 

@@ -20,7 +20,7 @@ COPY . .
 # we will use the pnpm version of turbo.
 RUN turbo prune ${PROJECT} --docker
 
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=${PROJECT}
 RUN pnpm --filter=${PROJECT} --prod deploy pruned
 

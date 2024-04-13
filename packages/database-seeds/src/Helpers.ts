@@ -17,6 +17,7 @@ import { logger } from '@moaitime/logging';
 
 import { getBackgroundsSeeds } from './data/Backgrounds';
 import { getCalendarSeeds } from './data/Calendars';
+import { publicCalendars } from './data/calendars/PublicCalendars';
 import { getEventSeeds } from './data/Events';
 import { getGreetingSeeds } from './data/Greetings';
 import { getInterestsSeeds } from './data/Interests';
@@ -101,6 +102,70 @@ export const insertDatabaseSeedData = async () => {
     logger.info('Successfully inserted database seed data');
   } catch (error) {
     logger.error(error, 'Failed to insert database seed data');
+
+    throw error;
+  }
+};
+
+export const updatePublicCalendarsSeedData = async () => {
+  try {
+    logger.info('Updating public calendars seed data ...');
+
+    const database = getMigrationDatabase();
+
+    logger.debug('Updating public calendars ...');
+    for (const publicCalendar of publicCalendars) {
+      const rows = await database
+        .select()
+        .from(calendars)
+        .where(eq(calendars.name, publicCalendar.name))
+        .execute();
+      if (rows.length === 0) {
+        logger.debug(`Inserting public calendar "${publicCalendar.name}" ...`);
+
+        await database.insert(calendars).values(publicCalendar).execute();
+
+        continue;
+      }
+
+      logger.debug(`Updating public calendar "${publicCalendar.name}" ...`);
+
+      const calendar = rows[0];
+      await database
+        .update(calendars)
+        .set(publicCalendar)
+        .where(eq(calendars.id, calendar.id))
+        .execute();
+    }
+
+    logger.debug('Updating public calendar events ...');
+
+    const calendarEvents = await getEventSeeds();
+    for (const publicCalendarEvent of calendarEvents) {
+      const where = eq(events.title, publicCalendarEvent.title);
+
+      const rows = await database.select().from(events).where(where).execute();
+      if (rows.length === 0) {
+        logger.debug(`Inserting public calendar event "${publicCalendarEvent.title}" ...`);
+
+        await database.insert(events).values(publicCalendarEvent).execute();
+
+        continue;
+      }
+
+      logger.debug(`Updating public calendar event "${publicCalendarEvent.title}" ...`);
+
+      const event = rows[0];
+      await database
+        .update(events)
+        .set(publicCalendarEvent)
+        .where(eq(events.id, event.id))
+        .execute();
+    }
+
+    logger.info('Successfully updated public calendars seed data');
+  } catch (error) {
+    logger.error(error, 'Failed to update public calendars seed data');
 
     throw error;
   }

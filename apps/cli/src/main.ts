@@ -11,6 +11,7 @@ import { addDatabaseRecoverCommand } from './database/DatabaseRecoverCommand';
 import { addDatabaseReloadCommand } from './database/DatabaseReloadCommand';
 import { addDatabaseSchemaDropCommand } from './database/DatabaseSchemaDropCommand';
 import { addDatabaseSeedsInsertCommand } from './database/DatabaseSeedsInsertCommand';
+import { addDatabaseSeedsPublicCalendarsUpdateCommand } from './database/DatabaseSeedsPublicCalendarsUpdateCommand';
 import { addHealthCheckCommand } from './health/HealthCheckCommand';
 import { addJobsRunnerStartCommand } from './jobs/JobsRunnerStartCommand';
 
@@ -21,6 +22,7 @@ addHealthCheckCommand(program);
 
 // Database
 addDatabaseSeedsInsertCommand(program);
+addDatabaseSeedsPublicCalendarsUpdateCommand(program);
 addDatabaseFixturesInsertCommand(program);
 addDatabaseSchemaDropCommand(program);
 addDatabaseMigrationsGenerateCommand(program);

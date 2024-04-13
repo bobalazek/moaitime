@@ -23,6 +23,7 @@
 - `pnpm cli database:migrations:run` - runs all the migrations
 - `pnpm cli database:schema:drop` - drops the database schema
 - `pnpm cli database:seeds:insert` - inserts the seed data
+- `pnpm cli database:seeds:public-calendars:update` - updates the seed data for the public calendars
 - `pnpm cli database:fixtures:insert` - inserts the fixture data
 - `pnpm cli database:backup [fileName]` - backs up the database
 - `pnpm cli database:recover <fileName> [-c, --confirm]` - recovers the database

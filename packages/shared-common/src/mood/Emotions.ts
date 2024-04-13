@@ -17,12 +17,12 @@ export const EmotionsByCategory = {
 };
 
 export const EmotionCategoryColors = {
-  [EmotionCategoryEnum.JOY]: '#FFD54F',
+  [EmotionCategoryEnum.JOY]: '#4CAF50',
   [EmotionCategoryEnum.SADNESS]: '#2196F3',
   [EmotionCategoryEnum.FEAR]: '#BA68C8',
   [EmotionCategoryEnum.ANGER]: '#E53935',
   [EmotionCategoryEnum.SURPRISE]: '#FFA726',
-  [EmotionCategoryEnum.DISGUST]: '#43A047',
+  [EmotionCategoryEnum.DISGUST]: '#8D6E63',
 };
 
 export const EmotionToEmotionCategoryMap = new Map(

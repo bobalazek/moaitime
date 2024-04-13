@@ -537,6 +537,8 @@ export class TasksManager {
           throw new Error('List for task not found');
         }
       }
+    } else {
+      where = eq(tasks.userId, userId) as SQL<unknown>;
     }
 
     if (options?.query) {

@@ -4,8 +4,8 @@ import { dropDatabaseSchema } from '@moaitime/database-core';
 import { logger } from '@moaitime/logging';
 import { shutdownManager } from '@moaitime/processes';
 
-export const addDatabaseDropSchemasCommand = (program: Command) => {
-  const command = program.command('database:drop-schema').action(async () => {
+export const addDatabaseSchemaDropCommand = (program: Command) => {
+  const command = program.command('database:schema:drop').action(async () => {
     try {
       logger.info('Dropping database schema ...');
 
@@ -13,7 +13,7 @@ export const addDatabaseDropSchemasCommand = (program: Command) => {
 
       await shutdownManager.shutdown(0);
     } catch (error) {
-      logger.error(error, '[addDatabaseDropSchemasCommand] Error');
+      logger.error(error, '[addDatabaseSchemaDropCommand] Error');
 
       await shutdownManager.shutdown(1);
     }

@@ -32,6 +32,11 @@ export const insertDatabaseSeedData = async () => {
 
     const database = getMigrationDatabase();
 
+    const userRows = await database.select().from(users).execute();
+    if (userRows.length > 0) {
+      throw new Error('Database seed data already exists');
+    }
+
     logger.debug('Inserting user seeds ...');
     const userSeeds = await getUserSeeds();
     await database.insert(users).values(userSeeds).execute();

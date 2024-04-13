@@ -12,13 +12,18 @@ function CalendarCalendarDialog() {
 
   return (
     <Dialog open={calendarCalendarDialogOpen} onOpenChange={setCalendarCalendarDialogOpen}>
-      <DialogContent data-test="calendar--calendar-dialog">
+      <DialogContent
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+        }}
+        data-test="calendar--calendar-dialog"
+      >
         <DialogHeader>
           <DialogTitle>Calendar</DialogTitle>
         </DialogHeader>
         <div className="m-auto">
           <CalendarCalendar />
-        </div>{' '}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -6,6 +6,8 @@ FROM base AS builder
 
 WORKDIR /app
 
+ARG PROJECT=@moaitime/web
+
 RUN apk add --no-cache libc6-compat
 RUN npm install -g pnpm
 RUN npm install -g turbo
@@ -16,11 +18,11 @@ COPY . .
 # but we need to run turbo prune to install the correct dependencies.
 # For now we will just install it globally with npm above, and then for actual building,
 # we will use the pnpm version of turbo.
-RUN turbo prune @moaitime/web --docker
+RUN turbo prune ${PROJECT} --docker
 
 RUN pnpm install --frozen-lockfile
-RUN pnpm turbo run build --filter=@moaitime/web
-RUN pnpm --filter=@moaitime/web --prod deploy pruned
+RUN pnpm turbo run build --filter=${PROJECT}
+RUN pnpm --filter=${PROJECT} --prod deploy pruned
 
 # Runner
 FROM base AS runner

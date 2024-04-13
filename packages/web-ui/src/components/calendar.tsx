@@ -52,7 +52,7 @@ function Calendar({
         day_range_middle: 'aria-selected:bg-accent aria-selected:text-accent-foreground',
         day_hidden: 'invisible',
         caption_dropdowns: 'inline-flex relative',
-        dropdown: 'form-select block w-full bg-transparent',
+        dropdown: 'form-select block w-full bg-background',
         dropdown_month: 'inline-flex items-center space-x-2',
         dropdown_year: 'inline-flex items-center space-x-2',
         vhidden: 'hidden',

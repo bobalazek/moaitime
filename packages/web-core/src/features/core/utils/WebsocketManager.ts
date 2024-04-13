@@ -255,7 +255,7 @@ export class WebsocketManager {
 
     const description = createElement('div', {
       dangerouslySetInnerHTML: {
-        __html: userNotification.content,
+        __html: userNotification.content ?? 'You have a new notification.',
       },
     });
 

@@ -1,3 +1,4 @@
+import { clsx } from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
@@ -115,11 +116,13 @@ function MoodEntriesActivityInner() {
           <div className="flex flex-col gap-4">
             <AnimatePresence>
               {items.map((moodEntry) => {
-                let isHeadingChanged = false;
                 const date = new Date(moodEntry.loggedAt);
                 const heading = getHeading(date);
 
+                let wasFirstHeading = false;
+                let isHeadingChanged = false;
                 if (heading !== lastHeading) {
+                  wasFirstHeading = lastHeading === undefined;
                   lastHeading = heading;
                   isHeadingChanged = true;
                 }
@@ -127,7 +130,13 @@ function MoodEntriesActivityInner() {
                 return (
                   <Fragment key={moodEntry.id}>
                     {isHeadingChanged && (
-                      <div key={heading} className="text-center text-lg font-bold">
+                      <div
+                        key={heading}
+                        className={clsx(
+                          'text-center text-lg font-bold',
+                          !wasFirstHeading && 'mt-6'
+                        )}
+                      >
                         {heading}
                       </div>
                     )}

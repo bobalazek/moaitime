@@ -12,22 +12,21 @@ const LayoutPageHeader = ({ testKey, title, children }: LayoutPageHeaderProps) =
 
   return (
     <div
-      className="bg-background flex flex-wrap items-center justify-between gap-1 border-b px-4 py-3 text-center"
+      className="bg-background flex flex-wrap items-center gap-2 border-b px-4 py-3 text-center"
       data-test={`${testKey}--header`}
     >
-      <div className="flex gap-4 align-middle">
-        <button
-          onClick={() => {
-            navigate('/');
-          }}
-          title="Go Back Home"
-          data-test={`${testKey}--header--home-button`}
-        >
-          <ArrowLeftIcon />
-        </button>
-        <div className="text-lg md:text-2xl">{title}</div>
-      </div>
-      {children}
+      <button
+        title="Go Back Home"
+        className="mr-auto"
+        onClick={() => {
+          navigate('/');
+        }}
+        data-test={`${testKey}--header--home-button`}
+      >
+        <ArrowLeftIcon />
+      </button>
+      <div className="flex min-w-0 flex-auto justify-start text-lg md:text-2xl">{title}</div>
+      <div className="ml-auto">{children}</div>
     </div>
   );
 };

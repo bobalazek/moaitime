@@ -1,3 +1,5 @@
+import { isMobile } from 'react-device-detect';
+
 import LayoutPageHeader from '../../../../core/components/layout/LayoutPageHeader';
 import { useHabitsStore } from '../../../state/habitsStore';
 import HabitsPageHeaderButtons from './HabitsPageHeaderButtons';
@@ -5,16 +7,16 @@ import HabitsPageHeaderButtons from './HabitsPageHeaderButtons';
 const HabitsPageHeader = () => {
   const { selectedDate } = useHabitsStore();
 
+  const date = selectedDate.toLocaleDateString(undefined, {
+    weekday: isMobile ? 'short' : 'long',
+    month: isMobile ? 'short' : 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const title = isMobile ? date : `Habits for ${date}`;
+
   return (
-    <LayoutPageHeader
-      testKey="habits"
-      title={`Habits for ${selectedDate.toLocaleDateString(undefined, {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      })}`}
-    >
+    <LayoutPageHeader testKey="habits" title={title}>
       <HabitsPageHeaderButtons />
     </LayoutPageHeader>
   );

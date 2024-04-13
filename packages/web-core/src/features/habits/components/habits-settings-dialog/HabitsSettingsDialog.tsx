@@ -16,22 +16,28 @@ import { useHabitsStore } from '../../state/habitsStore';
 import HabitsSettingsDialogHabits from './HabitsSettingsDialogHabits';
 import HabitsSettingsDialogHabitsActions from './HabitsSettingsDialogHabitsActions';
 
-export default function HabitsSettingsDialog() {
+export type HabitsSettingsDialogProps = {
+  includeTrigger?: boolean;
+};
+
+export default function HabitsSettingsDialog({ includeTrigger }: HabitsSettingsDialogProps) {
   const { settingsDialogOpen, setSettingsDialogOpen } = useHabitsStore();
 
   return (
     <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
-      <DialogTrigger asChild>
-        <Button
-          className="border"
-          variant="ghost"
-          size="sm"
-          title="Open habits settings"
-          data-test="habits--header--open-settings-button"
-        >
-          <CogIcon />
-        </Button>
-      </DialogTrigger>
+      {includeTrigger && (
+        <DialogTrigger asChild>
+          <Button
+            className="border"
+            variant="ghost"
+            size="sm"
+            title="Open habits settings"
+            data-test="habits--header--open-settings-button"
+          >
+            <CogIcon />
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent data-test="habits--settings-dialog">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>

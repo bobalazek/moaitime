@@ -12,6 +12,8 @@ import {
 import { Icons } from './icons';
 import { ToolbarButton } from './toolbar';
 
+// CUSTOM: there were some classes modified here under item
+
 export function ModeDropdownMenu(props: DropdownMenuProps) {
   const editor = useEditorRef();
   const setReadOnly = usePlateStore().set.readOnly();
@@ -26,13 +28,13 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
     editing: (
       <>
         <Icons.editing className="mr-2 h-5 w-5" />
-        <span className="hidden lg:inline">Editing</span>
+        <span>Editing</span>
       </>
     ),
     viewing: (
       <>
         <Icons.viewing className="mr-2 h-5 w-5" />
-        <span className="hidden lg:inline">Viewing</span>
+        <span>Viewing</span>
       </>
     ),
   };

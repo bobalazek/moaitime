@@ -170,7 +170,7 @@ const NotesPageHeaderButtons = () => {
   return (
     <div className="flex gap-2">
       {selectedNoteDataChanged && (
-        <div className="text-muted-foreground flex items-center text-xs">(unsaved changes)</div>
+        <div className="text-destructive flex items-center text-xs italic">(unsaved)</div>
       )}
       {selectedNote && (
         <DropdownMenu>

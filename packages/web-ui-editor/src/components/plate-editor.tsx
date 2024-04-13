@@ -350,7 +350,7 @@ export function PlateEditor({
             normalizeInitialValue={true}
             onChange={onChange}
           >
-            <FixedToolbar className="mb-2">
+            <FixedToolbar className="mb-3">
               <FixedToolbarButtons />
             </FixedToolbar>
             <Editor {...editorProps} />

@@ -74,7 +74,7 @@ describe('notes.cy.ts', () => {
 
     cy.getBySel('note-editor--title').type('First Note');
 
-    cy.getBySel('notes--header').find('div').contains('(unsaved changes)');
+    cy.getBySel('notes--header').find('div').contains('(unsaved)');
 
     // Show alert if canceling unsaved changes
     const stub = cy.stub();

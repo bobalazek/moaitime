@@ -6,8 +6,8 @@ import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 import { useListsStore } from '../../state/listsStore';
 import { useTasksStore } from '../../state/tasksStore';
 
-function TasksForm({ parentId }: { parentId?: string }) {
-  const { addTask, listEndElement } = useTasksStore();
+function TasksForm() {
+  const { addTask, listEndElement, tasksFormPlaceholder } = useTasksStore();
   const { selectedList } = useListsStore();
   const [name, setName] = useState('');
   const isSubmittingRef = useRef(false);
@@ -30,7 +30,6 @@ function TasksForm({ parentId }: { parentId?: string }) {
       await addTask({
         name: finalName,
         listId: selectedList?.id,
-        parentId,
       });
 
       setName('');
@@ -54,15 +53,11 @@ function TasksForm({ parentId }: { parentId?: string }) {
   };
 
   return (
-    <div
-      className="bg-background border-t p-2"
-      data-parent-id={parentId}
-      data-test="tasks--tasks-form"
-    >
+    <div className="bg-background border-t p-2" data-test="tasks--tasks-form">
       <div className="flex items-center gap-2">
         <Input
           type="text"
-          placeholder="What needs to be done?"
+          placeholder={tasksFormPlaceholder}
           value={name}
           onChange={(event) => {
             setName(event.target.value);

@@ -20,6 +20,24 @@ import {
 } from '../utils/TaskHelpers';
 import { useListsStore } from './listsStore';
 
+const placeholderTexts = [
+  'What are you working on?',
+  'What are you thinking?',
+  'What are you up to?',
+  'What are you planning?',
+  'What are you doing now?',
+  'What are you doing?',
+  'What are your plans?',
+  'What are your thoughts?',
+  'What are your ideas?',
+  'What are your goals?',
+  'What are your dreams?',
+  'What are your wishes?',
+  'Planning something today?',
+  'Thinking about something?',
+  'Working on something?',
+];
+
 export type TasksStore = {
   /********** General **********/
   popoverOpen: boolean;
@@ -28,6 +46,8 @@ export type TasksStore = {
   // Tasks List End Element
   listEndElement: HTMLElement | null;
   setListEndElement: (listEndElement: HTMLElement | null) => void;
+  // Tasks Form
+  tasksFormPlaceholder: string;
   /********** Tasks **********/
   getTasksByQuery: (query: string) => Promise<Task[]>;
   getTask: (taskId: string) => Promise<Task | null>;
@@ -63,6 +83,12 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
     set({
       popoverOpen,
     });
+
+    if (popoverOpen) {
+      set({
+        tasksFormPlaceholder: placeholderTexts[Math.floor(Math.random() * placeholderTexts.length)],
+      });
+    }
 
     if (popoverOpen && !currentPopoverOpen) {
       await reloadSelectedListTasks();
@@ -106,6 +132,8 @@ export const useTasksStore = create<TasksStore>()((set, get) => ({
       listEndElement,
     });
   },
+  // Tasks Form
+  tasksFormPlaceholder: 'What are you working on?',
   /********** Tasks **********/
   getTasksByQuery: async (query: string) => {
     return getTasks(query);

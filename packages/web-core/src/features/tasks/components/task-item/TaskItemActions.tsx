@@ -25,16 +25,14 @@ import {
 import { useTasksStore } from '../../state/tasksStore';
 import ListsList from '../lists/ListsList';
 
+export type TaskItemActionsProps = {
+  task: Task;
+  onEditAndFocus: () => void;
+  onAddSubTaskButtonClick?: () => void;
+};
+
 const TaskItemActions = memo(
-  ({
-    task,
-    onEditAndFocus,
-    onAddSubTaskButtonClick,
-  }: {
-    task: Task;
-    onEditAndFocus: () => void;
-    onAddSubTaskButtonClick?: () => void;
-  }) => {
+  ({ task, onEditAndFocus, onAddSubTaskButtonClick }: TaskItemActionsProps) => {
     const { duplicateTask, deleteTask, undeleteTask, moveTask, setSelectedTaskDialogOpen } =
       useTasksStore();
     const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);

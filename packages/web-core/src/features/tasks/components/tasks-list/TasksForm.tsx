@@ -1,4 +1,4 @@
-import { XCircle } from 'lucide-react';
+import { SendIcon } from 'lucide-react';
 import { KeyboardEvent, useRef, useState } from 'react';
 
 import { Button, Input, sonnerToast } from '@moaitime/web-ui';
@@ -6,7 +6,7 @@ import { Button, Input, sonnerToast } from '@moaitime/web-ui';
 import { useListsStore } from '../../state/listsStore';
 import { useTasksStore } from '../../state/tasksStore';
 
-function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () => void }) {
+function TasksForm({ parentId }: { parentId?: string }) {
   const { addTask, listEndElement } = useTasksStore();
   const { selectedList } = useListsStore();
   const [name, setName] = useState('');
@@ -59,7 +59,7 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
       data-parent-id={parentId}
       data-test="tasks--tasks-form"
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         <Input
           type="text"
           placeholder="What needs to be done?"
@@ -70,18 +70,14 @@ function TasksForm({ parentId, onCancel }: { parentId?: string; onCancel?: () =>
           onKeyPress={onKeyPress}
           enterKeyHint="enter"
         />
-        {onCancel && (
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setName('');
-
-              onCancel();
-            }}
-          >
-            <XCircle size={16} />
-          </Button>
-        )}
+        <Button
+          variant="default"
+          onClick={async () => {
+            await onSaveButtonClick();
+          }}
+        >
+          <SendIcon size={16} />
+        </Button>
       </div>
     </div>
   );

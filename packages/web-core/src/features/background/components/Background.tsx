@@ -25,7 +25,7 @@ export default function Background() {
 
   return (
     <ErrorBoundary>
-      <div className="full-screen z--1 relative" data-test="background">
+      <div className="full-screen z--1" data-test="background">
         <AnimatePresence>
           {currentImage && (
             <motion.div

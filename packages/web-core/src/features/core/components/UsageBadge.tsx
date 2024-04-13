@@ -1,5 +1,3 @@
-import { clsx } from 'clsx';
-
 import { UserLimits, UserUsage } from '@moaitime/shared-common';
 import { Badge } from '@moaitime/web-ui';
 
@@ -31,7 +29,7 @@ export default function UsageBadge({ limitKey, usageKey, usageValue }: UsageBadg
     <div className="inline-block">
       <Badge
         variant={used === limit ? 'destructive' : isAlmostUsed ? 'warn' : 'outline'}
-        className={clsx('px-[4px] py-[2px] text-xs')}
+        className="px-[4px] py-[2px] text-xs"
       >
         Used: {used} / {limit}
       </Badge>

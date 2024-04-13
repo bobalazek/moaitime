@@ -9,7 +9,9 @@ const NotesPageHeader = () => {
       title={
         <div className="flex items-center gap-4">
           <div>Notes</div>
-          <UsageBadge limitKey="notesMaxPerUserCount" usageKey="notesCount" />
+          <div className="hidden md:block">
+            <UsageBadge limitKey="notesMaxPerUserCount" usageKey="notesCount" />
+          </div>
         </div>
       }
     >

@@ -1,4 +1,5 @@
 import { endOfWeek, getWeek, isSameMonth, startOfWeek } from 'date-fns';
+import { isMobile } from 'react-device-detect';
 
 import { CalendarViewEnum } from '@moaitime/shared-common';
 
@@ -12,7 +13,7 @@ function CalendarPageHeaderText() {
   const generalStartDayOfWeek = useAuthUserSetting('generalStartDayOfWeek', 0);
   const year = selectedDate.getFullYear();
   const date = selectedDate.toLocaleString('default', {
-    month: 'long',
+    month: isMobile ? 'short' : 'long',
     day: 'numeric',
     year: 'numeric',
   });
@@ -21,8 +22,8 @@ function CalendarPageHeaderText() {
 
   if (selectedView === CalendarViewEnum.DAY) {
     const day = selectedDate.toLocaleDateString(undefined, {
-      weekday: 'long',
-      month: 'long',
+      weekday: isMobile ? 'short' : 'long',
+      month: isMobile ? 'short' : 'long',
       day: 'numeric',
       year: 'numeric',
     });
@@ -33,11 +34,11 @@ function CalendarPageHeaderText() {
     const startDayOfWeek = startOfWeek(selectedDate, { weekStartsOn: generalStartDayOfWeek });
     const endDayOfWeek = endOfWeek(selectedDate, { weekStartsOn: generalStartDayOfWeek });
     const startDate = startDayOfWeek.toLocaleString('default', {
-      month: !isSameMonth(startDayOfWeek, endDayOfWeek) ? 'long' : undefined,
+      month: !isSameMonth(startDayOfWeek, endDayOfWeek) ? (isMobile ? 'short' : 'long') : undefined,
       day: 'numeric',
     });
     const endDate = endDayOfWeek.toLocaleString('default', {
-      month: 'long',
+      month: isMobile ? 'short' : 'long',
       day: 'numeric',
       year: 'numeric',
     });
@@ -48,7 +49,9 @@ function CalendarPageHeaderText() {
       </span>
     );
   } else if (selectedView === CalendarViewEnum.MONTH) {
-    const month = selectedDate.toLocaleString('default', { month: 'long' });
+    const month = selectedDate.toLocaleString('default', {
+      month: isMobile ? 'short' : 'long',
+    });
 
     text = (
       <span>

@@ -16,15 +16,17 @@ const StatisticsPageMain = () => {
   return (
     <main className="h-full w-full flex-grow overflow-auto p-4" data-test="statistics--main">
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="mb-2">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          <TabsTrigger value="habits">Habits</TabsTrigger>
-          <TabsTrigger value="notes">Notes</TabsTrigger>
-          <TabsTrigger value="mood">Mood</TabsTrigger>
-          <TabsTrigger value="focus">Focus</TabsTrigger>
-        </TabsList>
+        <div className="overflow-auto">
+          <TabsList className="mb-2">
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="habits">Habits</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
+            <TabsTrigger value="mood">Mood</TabsTrigger>
+            <TabsTrigger value="focus">Focus</TabsTrigger>
+          </TabsList>
+        </div>
         <TabsContent value="general">
           <StatisticsGeneralTabContent />
         </TabsContent>

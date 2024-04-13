@@ -7,7 +7,7 @@ const FocusPageMain = () => {
 
   return (
     <main className="h-full w-full flex-grow overflow-auto p-4" data-test="focus--main">
-      <div className="margin-auto container text-center text-2xl">
+      <div className="margin-auto container text-center">
         {currentFocusSession && <CurrentFocusSession />}
         {!currentFocusSession && <CreateFocusSessionForm />}
       </div>

@@ -47,7 +47,7 @@ export default function CreateFocusSessionForm() {
 
   return (
     <div>
-      <div className="flex flex-col flex-wrap gap-2 md:mt-8 md:gap-4">
+      <div className="flex flex-col flex-wrap gap-2 text-sm md:mt-8 md:gap-4 md:text-2xl">
         <div>I want to work on</div>
         <div className="flex justify-center">
           <TaskAutocomplete

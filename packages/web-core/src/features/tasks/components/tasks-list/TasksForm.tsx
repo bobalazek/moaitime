@@ -10,6 +10,7 @@ function TasksForm() {
   const { addTask, listEndElement, tasksFormPlaceholder } = useTasksStore();
   const { selectedList } = useListsStore();
   const [name, setName] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const isSubmittingRef = useRef(false);
 
   const onSaveButtonClick = async () => {
@@ -56,6 +57,7 @@ function TasksForm() {
     <div className="bg-background border-t p-2" data-test="tasks--tasks-form">
       <div className="flex items-center gap-2">
         <Input
+          ref={inputRef}
           type="text"
           placeholder={tasksFormPlaceholder}
           value={name}

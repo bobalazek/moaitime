@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { isMobile } from 'react-device-detect';
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { GlobalEventsEnum } from '@moaitime/shared-common';
@@ -36,6 +37,39 @@ function NavigationEvenListener() {
       navigate(payload.location);
     });
   }, [navigate]);
+
+  return null;
+}
+
+function MobileFocusListener() {
+  const focusedInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!isMobile) {
+      return;
+    }
+
+    const onFocus = (event: FocusEvent) => {
+      const tagName = event.target ? (event.target as unknown as { tagName: string }).tagName : '';
+      if (tagName === 'INPUT') {
+        focusedInputRef.current = event.target as unknown as HTMLInputElement;
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' && focusedInputRef.current) {
+        focusedInputRef.current.blur();
+      }
+    };
+
+    document.addEventListener('focusin', onFocus);
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('focusin', onFocus);
+      document.removeEventListener('keypress', onKeyDown);
+    };
+  }, []);
 
   return null;
 }
@@ -172,6 +206,7 @@ export function AppRoutes() {
       </Routes>
       <GlobalDialogs />
       <NavigationEvenListener />
+      <MobileFocusListener />
     </BrowserRouter>
   );
 }

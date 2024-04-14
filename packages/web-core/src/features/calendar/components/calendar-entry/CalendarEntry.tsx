@@ -196,6 +196,8 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
+        event.preventDefault();
+
         let minutesDeltaRounded = 0;
 
         if (selectedView === CalendarViewEnum.MONTH) {
@@ -243,13 +245,21 @@ export default function CalendarEntry({
       };
 
       const onEnd = async (event: MouseEvent | TouchEvent) => {
+        console.log('END');
+
         if (isTouchEvent && calendarContainer) {
           document.body.style.overflow = 'auto';
           calendarContainer.style.overflow = 'auto';
         }
 
-        document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
-        document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+        if (isTouchEvent) {
+          document.removeEventListener('touchmove', onMove);
+          document.removeEventListener('touchend', onEnd);
+          document.removeEventListener('touchcancel', onEnd);
+        } else {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onEnd);
+        }
 
         if (!hasReachedThresholdForMove(event, initialCoordinates)) {
           if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
@@ -289,8 +299,17 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
-      document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+      if (isTouchEvent) {
+        document.addEventListener('touchmove', onMove, {
+          capture: false,
+          passive: false,
+        });
+        document.addEventListener('touchend', onEnd);
+        document.addEventListener('touchcancel', onEnd);
+      } else {
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+      }
     },
     [
       canResizeAndMove,
@@ -327,6 +346,8 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
+        event.preventDefault();
+
         const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 
         try {
@@ -349,13 +370,21 @@ export default function CalendarEntry({
       };
 
       const onEnd = async () => {
+        console.log('END');
+
         if (isTouchEvent && calendarContainer) {
           document.body.style.overflow = 'auto';
           calendarContainer.style.overflow = 'auto';
         }
 
-        document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
-        document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+        if (isTouchEvent) {
+          document.removeEventListener('touchmove', onMove);
+          document.removeEventListener('touchend', onEnd);
+          document.removeEventListener('touchcancel', onEnd);
+        } else {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onEnd);
+        }
 
         // Same as above
         if (minutesDelta !== 0) {
@@ -378,8 +407,17 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
-      document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+      if (isTouchEvent) {
+        document.addEventListener('touchmove', onMove, {
+          capture: false,
+          passive: false,
+        });
+        document.addEventListener('touchend', onEnd);
+        document.addEventListener('touchcancel', onEnd);
+      } else {
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+      }
     },
     [style, calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]
   );
@@ -387,7 +425,12 @@ export default function CalendarEntry({
   return (
     <div
       key={calendarEntry.id}
-      className={clsx('select-none px-[2px]', !hasAbsoluteClassName && 'relative', className)}
+      className={clsx(
+        'select-none px-[2px]',
+        !hasAbsoluteClassName && 'relative',
+        calendarEventResizing?.id === calendarEntry.id && 'animate-shake',
+        className
+      )}
       style={containerStyle}
       title={calendarEntry.title}
       onMouseDown={onContainerMoveStart}

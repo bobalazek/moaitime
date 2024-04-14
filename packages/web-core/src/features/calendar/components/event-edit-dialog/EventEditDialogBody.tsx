@@ -117,8 +117,8 @@ export default function EventEditDialogBody() {
   };
 
   return (
-    <div>
-      <div className="mb-4 flex flex-col gap-2">
+    <div className="flex flex-col flex-wrap gap-4">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="event-title">Title</Label>
         <Input
           id="event-title"
@@ -128,7 +128,7 @@ export default function EventEditDialogBody() {
           }}
         />
       </div>
-      <div className="mb-4 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="event-description">Description</Label>
         <Textarea
           id="event-description"
@@ -139,7 +139,7 @@ export default function EventEditDialogBody() {
           }}
         />
       </div>
-      <div className="mb-4 flex items-center gap-2">
+      <div className="flex items-center gap-2">
         <Switch
           id="event-isAllDay"
           checked={dataIsAllDay}
@@ -150,7 +150,7 @@ export default function EventEditDialogBody() {
         />
         <Label htmlFor="event-isAllDay">Is All Day?</Label>
       </div>
-      <div className="mb-4 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="event-startsAt">Starts At</Label>
         <DateSelector
           includeTime={!dataIsAllDay}
@@ -196,7 +196,7 @@ export default function EventEditDialogBody() {
           </div>
         )}
       </div>
-      <div className="mb-4 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="event-endsAt">Ends At</Label>
         <DateSelector
           includeTime={!dataIsAllDay}
@@ -231,7 +231,7 @@ export default function EventEditDialogBody() {
           </div>
         )}
       </div>
-      <div className="mb-4 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="event-repeat">Repeat</Label>
         <ErrorBoundary>
           <RepeatSelector
@@ -251,7 +251,7 @@ export default function EventEditDialogBody() {
           />
         </ErrorBoundary>
       </div>
-      <div className="mb-4 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="event-calendar">Calendar</Label>
         <CalendarSelector
           value={dataCalendarId}
@@ -278,7 +278,7 @@ export default function EventEditDialogBody() {
           placeholderText="Inherit from calendar"
         />
       </div>
-      <div className="mt-4 flex flex-row justify-between gap-2">
+      <div className="flex flex-row justify-between gap-2">
         <div>
           {eventExists && (
             <Button type="button" variant="destructive" onClick={onDeleteButtonClick}>

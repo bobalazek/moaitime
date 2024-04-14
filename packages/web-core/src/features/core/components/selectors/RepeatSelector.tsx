@@ -120,11 +120,11 @@ export function RepeatSelector({
         >
           {!value && <span className="italic text-gray-500">Does not repeat</span>}
           {value && (
-            <div className="text-muted-foreground flex items-center gap-4 text-xs">
-              <div className="h-4 overflow-hidden text-ellipsis">
+            <div className="text-muted-foreground flex w-full items-center justify-between gap-3 text-xs">
+              <div className="line-clamp-1">
                 Repeats {Recurrence.fromStringPattern(value).toHumanText()}
               </div>
-              <div className="ml-2" onClick={onClearButtonClick}>
+              <div onClick={onClearButtonClick}>
                 <XIcon />
               </div>
             </div>

@@ -228,6 +228,12 @@ export default function TaskEditDialog() {
                 });
               }}
             />
+            <div className="text-muted-foreground text-xs">
+              If you set the due date, but not the duration above, the duration will be assumed to
+              be 30 minutes.
+              <br /> Setting the due date to 01/01/2023, you will see this task in on 31/12/2022,
+              because the start time would be is assumed 23:30 on 31/12/2022.
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-tags" className="flex items-end justify-between gap-2">

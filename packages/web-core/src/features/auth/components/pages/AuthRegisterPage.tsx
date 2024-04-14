@@ -113,6 +113,7 @@ export default function AuthRegisterPage() {
       <div className="flex h-screen items-center justify-center">
         <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
+            <img src="/assets/logo.png" alt="MoaiTime Logo" className="m-auto mb-4 h-20 w-20" />
             <CardTitle>Sign Up</CardTitle>
             <CardDescription>Brilliant, let's get started, shall we?!</CardDescription>
           </CardHeader>

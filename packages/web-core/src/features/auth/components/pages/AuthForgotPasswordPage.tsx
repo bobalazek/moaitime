@@ -42,6 +42,7 @@ export default function AuthForgotPasswordPage() {
       <div className="flex h-screen items-center justify-center">
         <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
+            <img src="/assets/logo.png" alt="MoaiTime Logo" className="m-auto mb-4 h-20 w-20" />
             <CardTitle>Forgot Password</CardTitle>
             <CardDescription>Oh dear, memory isn't the same as it used to be, uh?</CardDescription>
           </CardHeader>

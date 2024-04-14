@@ -68,6 +68,7 @@ export default function AuthLoginPage() {
       <div className="flex h-screen items-center justify-center p-4">
         <Card className="w-full max-w-screen-sm shadow-xl">
           <CardHeader className="text-center">
+            <img src="/assets/logo.png" alt="MoaiTime Logo" className="m-auto mb-4 h-20 w-20" />
             <CardTitle>Sign In</CardTitle>
             <CardDescription>
               Do you want to experience something magical? If so, you are on the right place!

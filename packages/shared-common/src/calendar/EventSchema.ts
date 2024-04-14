@@ -93,7 +93,7 @@ export const UpdateEventSchema = CreateEventBaseSchema.omit({
   endTimezone: true,
   isAllDay: true,
   calendarId: true,
-});
+}).partial();
 
 // Types
 export type Event = z.infer<typeof EventSchema>;

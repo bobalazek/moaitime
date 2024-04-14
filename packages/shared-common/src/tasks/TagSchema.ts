@@ -21,9 +21,9 @@ export const CreateTagSchema = z.object({
   teamId: z.string().nullable().optional(),
 });
 
-export const UpdateTagSchema = CreateTagSchema.partial().omit({
+export const UpdateTagSchema = CreateTagSchema.omit({
   teamId: true,
-});
+}).partial();
 
 // Types
 export type Tag = z.infer<typeof TagSchema>;

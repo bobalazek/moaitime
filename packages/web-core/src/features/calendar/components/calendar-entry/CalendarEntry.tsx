@@ -316,7 +316,6 @@ export default function CalendarEntry({
           const endsAtString = zonedTimeToUtc(endsAt, 'UTC').toISOString();
 
           await editEvent(calendarEntry.raw!.id, {
-            ...calendarEntry.raw,
             startsAt: startsAtString,
             endsAt: endsAtString,
           } as Event);
@@ -412,7 +411,6 @@ export default function CalendarEntry({
           const endsAtString = zonedTimeToUtc(endsAt, 'UTC').toISOString();
 
           await editEvent(calendarEntry.raw!.id, {
-            ...calendarEntry.raw,
             endsAt: endsAtString,
           } as Event);
         }

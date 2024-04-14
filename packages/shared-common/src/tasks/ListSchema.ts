@@ -21,9 +21,9 @@ export const CreateListSchema = z.object({
   teamId: z.string().nullable().optional(),
 });
 
-export const UpdateListSchema = CreateListSchema.partial().omit({
+export const UpdateListSchema = CreateListSchema.omit({
   teamId: true,
-});
+}).partial();
 
 // Types
 export type List = z.infer<typeof ListSchema>;

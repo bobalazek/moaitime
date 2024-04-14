@@ -251,8 +251,10 @@ export class WebsocketManager {
       return;
     }
 
+    const description = userNotification.content ?? 'You have a new notification.';
+
     sonnerToast.info('New Notification', {
-      description: userNotification.content ?? 'You have a new notification.',
+      description,
       duration: 15000,
       position: 'top-right',
       action: {

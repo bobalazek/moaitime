@@ -40,8 +40,6 @@ export class ContentParser {
       parsedContent = parsedContent.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
     }
 
-    parsedContent = parsedContent.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-
     return parsedContent;
   }
 }

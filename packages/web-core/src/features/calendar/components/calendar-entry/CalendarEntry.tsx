@@ -196,8 +196,10 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
+        if (event.cancelable) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
 
         let minutesDeltaRounded = 0;
 
@@ -345,8 +347,10 @@ export default function CalendarEntry({
       }
 
       const onMove = (event: MouseEvent | TouchEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
+        if (event.cancelable) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
 
         const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 

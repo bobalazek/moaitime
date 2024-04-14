@@ -1,5 +1,3 @@
-import { createElement } from 'react';
-
 import { GlobalEvents, GlobalEventsEnum } from '@moaitime/shared-common';
 
 import { sonnerToast } from '../../../../../web-ui/src/components/sonner-toast';
@@ -253,14 +251,8 @@ export class WebsocketManager {
       return;
     }
 
-    const description = createElement('div', {
-      dangerouslySetInnerHTML: {
-        __html: userNotification.content ?? 'You have a new notification.',
-      },
-    });
-
     sonnerToast.info('New Notification', {
-      description,
+      description: userNotification.content ?? 'You have a new notification.',
       duration: 15000,
       position: 'top-right',
       action: {

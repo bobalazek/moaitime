@@ -76,7 +76,7 @@ const SocialUsersViewPageContent = ({
     <div className="container py-4" data-test="social--users-view--content">
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="col-span-12 lg:col-span-6 xl:col-span-8">
-          <div className="flex flex-row gap-4 overflow-auto">
+          <div className="flex flex-row flex-wrap gap-4 overflow-auto">
             <div>
               {/*
                 Needs to be in an empty div, otherwise the UserAvatar's height is expanded
@@ -132,21 +132,21 @@ const SocialUsersViewPageContent = ({
         {canViewFollowersAndFollowing && (
           <div className="col-span-12 lg:col-span-6 xl:col-span-4">
             <Tabs
-              className="bg-background w-full rounded border"
+              className="bg-background flex-wrap rounded border"
               value={view}
               onValueChange={(value) => {
                 setView(value as Views);
               }}
             >
-              <TabsList className="w-full">
-                <TabsTrigger className="w-full" value="">
+              <TabsList className="flex w-full flex-wrap">
+                <TabsTrigger className="flex-grow" value="">
                   Followers
                 </TabsTrigger>
-                <TabsTrigger className="w-full" value="following">
+                <TabsTrigger className="flex-grow" value="following">
                   Following
                 </TabsTrigger>
                 {user.isMyself && (
-                  <TabsTrigger className="w-full" value="follow-requests">
+                  <TabsTrigger className="flex-grow" value="follow-requests">
                     Follow Requests
                   </TabsTrigger>
                 )}

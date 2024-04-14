@@ -34,6 +34,39 @@ import CalendarEntryTimes from './CalendarEntryTimes';
 
 const DEBOUNCE_UPDATE_TIME = 50;
 
+const registerEventListeners = (
+  isTouchEvent: boolean,
+  onMove: (event: MouseEvent | TouchEvent) => void,
+  onEnd: (event: MouseEvent | TouchEvent) => void
+) => {
+  if (isTouchEvent) {
+    document.addEventListener('touchmove', onMove, {
+      capture: false,
+      passive: false,
+    });
+    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchcancel', onEnd);
+  } else {
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+  }
+};
+
+const unregisterEventListeners = (
+  isTouchEvent: boolean,
+  onMove: (event: MouseEvent | TouchEvent) => void,
+  onEnd: (event: MouseEvent | TouchEvent) => void
+) => {
+  if (isTouchEvent) {
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+    document.removeEventListener('touchcancel', onEnd);
+  } else {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onEnd);
+  }
+};
+
 export type CalendarEntryProps = {
   calendarEntry: CalendarEntryType;
   dayDate?: string;
@@ -119,7 +152,11 @@ export default function CalendarEntry({
       }
     : undefined;
 
-  // Container
+  const debouncedUpdateCalendarEntry = debounce(updateCalendarEntry, DEBOUNCE_UPDATE_TIME, {
+    maxWait: DEBOUNCE_UPDATE_TIME,
+  });
+
+  // Hover
   const onContainerMouseEnter = useCallback(() => {
     setHighlightedCalendarEntry(calendarEventResizing ? null : calendarEntry);
   }, [setHighlightedCalendarEntry, calendarEntry, calendarEventResizing]);
@@ -128,11 +165,7 @@ export default function CalendarEntry({
     setHighlightedCalendarEntry(null);
   }, [setHighlightedCalendarEntry]);
 
-  const debouncedUpdateCalendarEntry = debounce(updateCalendarEntry, DEBOUNCE_UPDATE_TIME, {
-    maxWait: DEBOUNCE_UPDATE_TIME,
-  });
-
-  // Resize/move
+  // Move
   const onContainerMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
       // Sometimes in the future I will look at this and think "what the hell was I thinking?"
@@ -195,6 +228,7 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
+      // Move
       const onMove = (event: MouseEvent | TouchEvent) => {
         if (event.cancelable) {
           event.preventDefault();
@@ -247,20 +281,14 @@ export default function CalendarEntry({
         }
       };
 
+      // End
       const onEnd = async (event: MouseEvent | TouchEvent) => {
         if (isTouchEvent && calendarContainer) {
           document.body.style.overflow = 'auto';
           calendarContainer.style.overflow = 'auto';
         }
 
-        if (isTouchEvent) {
-          document.removeEventListener('touchmove', onMove);
-          document.removeEventListener('touchend', onEnd);
-          document.removeEventListener('touchcancel', onEnd);
-        } else {
-          document.removeEventListener('mousemove', onMove);
-          document.removeEventListener('mouseup', onEnd);
-        }
+        unregisterEventListeners(isTouchEvent, onMove, onEnd);
 
         if (!hasReachedThresholdForMove(event, initialCoordinates)) {
           if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
@@ -300,17 +328,7 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      if (isTouchEvent) {
-        document.addEventListener('touchmove', onMove, {
-          capture: false,
-          passive: false,
-        });
-        document.addEventListener('touchend', onEnd);
-        document.addEventListener('touchcancel', onEnd);
-      } else {
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onEnd);
-      }
+      registerEventListeners(isTouchEvent, onMove, onEnd);
     },
     [
       canResizeAndMove,
@@ -325,7 +343,7 @@ export default function CalendarEntry({
     ]
   );
 
-  const onBottomResizeHandleStart = useCallback(
+  const onBottomHandlerMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
       event.stopPropagation();
 
@@ -337,6 +355,7 @@ export default function CalendarEntry({
 
       setCalendarEventResizing(calendarEntry);
 
+      // Touch stuff
       const isTouchEvent = event.type.startsWith('touch');
       const initialCoordinates = getClientCoordinates(event);
       let minutesDelta = 0;
@@ -346,6 +365,7 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
+      // Move
       const onMove = (event: MouseEvent | TouchEvent) => {
         if (event.cancelable) {
           event.preventDefault();
@@ -373,20 +393,14 @@ export default function CalendarEntry({
         }
       };
 
+      // End
       const onEnd = async () => {
         if (isTouchEvent && calendarContainer) {
           document.body.style.overflow = 'auto';
           calendarContainer.style.overflow = 'auto';
         }
 
-        if (isTouchEvent) {
-          document.removeEventListener('touchmove', onMove);
-          document.removeEventListener('touchend', onEnd);
-          document.removeEventListener('touchcancel', onEnd);
-        } else {
-          document.removeEventListener('mousemove', onMove);
-          document.removeEventListener('mouseup', onEnd);
-        }
+        unregisterEventListeners(isTouchEvent, onMove, onEnd);
 
         // Same as above
         if (minutesDelta !== 0) {
@@ -409,17 +423,7 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      if (isTouchEvent) {
-        document.addEventListener('touchmove', onMove, {
-          capture: false,
-          passive: false,
-        });
-        document.addEventListener('touchend', onEnd);
-        document.addEventListener('touchcancel', onEnd);
-      } else {
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onEnd);
-      }
+      registerEventListeners(isTouchEvent, onMove, onEnd);
     },
     [style, calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]
   );
@@ -435,10 +439,10 @@ export default function CalendarEntry({
       )}
       style={containerStyle}
       title={calendarEntry.title}
-      onMouseDown={onContainerMoveStart}
-      onTouchStart={onContainerMoveStart}
       onMouseEnter={onContainerMouseEnter}
       onMouseLeave={onContainerMouseLeave}
+      onMouseDown={onContainerMoveStart}
+      onTouchStart={onContainerMoveStart}
       data-test="calendar--weekly-view--day--calendar-entry"
     >
       <div
@@ -472,8 +476,8 @@ export default function CalendarEntry({
           <div className="absolute bottom-[4px] left-0 w-full">
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"
-              onMouseDown={onBottomResizeHandleStart}
-              onTouchStart={onBottomResizeHandleStart}
+              onMouseDown={onBottomHandlerMoveStart}
+              onTouchStart={onBottomHandlerMoveStart}
               style={{
                 color: colorLighter,
               }}

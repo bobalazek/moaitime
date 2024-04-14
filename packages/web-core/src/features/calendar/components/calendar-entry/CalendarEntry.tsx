@@ -197,6 +197,7 @@ export default function CalendarEntry({
 
       const onMove = (event: MouseEvent | TouchEvent) => {
         event.preventDefault();
+        event.stopPropagation();
 
         let minutesDeltaRounded = 0;
 
@@ -245,8 +246,6 @@ export default function CalendarEntry({
       };
 
       const onEnd = async (event: MouseEvent | TouchEvent) => {
-        console.log('END');
-
         if (isTouchEvent && calendarContainer) {
           document.body.style.overflow = 'auto';
           calendarContainer.style.overflow = 'auto';
@@ -347,6 +346,7 @@ export default function CalendarEntry({
 
       const onMove = (event: MouseEvent | TouchEvent) => {
         event.preventDefault();
+        event.stopPropagation();
 
         const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 
@@ -370,8 +370,6 @@ export default function CalendarEntry({
       };
 
       const onEnd = async () => {
-        console.log('END');
-
         if (isTouchEvent && calendarContainer) {
           document.body.style.overflow = 'auto';
           calendarContainer.style.overflow = 'auto';

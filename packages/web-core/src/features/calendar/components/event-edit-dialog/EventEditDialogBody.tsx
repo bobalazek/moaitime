@@ -117,7 +117,7 @@ export default function EventEditDialogBody() {
   };
 
   return (
-    <div className="flex flex-col flex-wrap gap-4">
+    <div className="flex w-full flex-col flex-wrap gap-4">
       <div className="flex flex-col gap-2">
         <Label htmlFor="event-title">Title</Label>
         <Input

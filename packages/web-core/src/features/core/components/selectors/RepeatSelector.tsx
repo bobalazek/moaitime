@@ -116,15 +116,15 @@ export function RepeatSelector({
           variant="outline"
           aria-expanded={open}
           data-test="repeat-selector--trigger-button"
-          className="w-full items-center justify-between text-left"
+          className="max-w-full items-center justify-between text-left"
         >
           {!value && <span className="italic text-gray-500">Does not repeat</span>}
           {value && (
-            <div className="text-muted-foreground flex h-4 items-center overflow-hidden text-xs">
-              <div className="flex-grow truncate">
+            <div className="text-muted-foreground flex items-center gap-4 text-xs">
+              <div className="h-4 overflow-hidden text-ellipsis">
                 Repeats {Recurrence.fromStringPattern(value).toHumanText()}
               </div>
-              <div className="ml-2 flex-shrink-0" onClick={onClearButtonClick}>
+              <div className="ml-2" onClick={onClearButtonClick}>
                 <XIcon />
               </div>
             </div>

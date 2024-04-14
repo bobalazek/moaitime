@@ -15,7 +15,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { listsManager } from '../tasks/ListsManager';
-import { tasksManager } from '../tasks/TasksManager';
+import { tasksManager, TaskWithTagsAndUsers } from '../tasks/TasksManager';
 import { calendarsManager } from './CalendarsManager';
 import { eventsManager, EventsManagerEvent } from './EventsManager';
 
@@ -88,10 +88,10 @@ export class CalendarEntriesManager {
     });
 
     // Repeating events
-    if (from && to) {
-      const recurrenceFrom = new Date(`${from}T00:00:00.000`);
-      const recurrenceTo = new Date(`${to}T23:59:59.999`);
+    const recurrenceFrom = from ? new Date(`${from}T00:00:00.000`) : null;
+    const recurrenceTo = to ? new Date(`${to}T23:59:59.999`) : null;
 
+    if (recurrenceFrom && recurrenceTo) {
       const recurringEvents = await eventsManager.findManyByCalendarIdsAndRange(
         calendarIdsMap,
         user.id,
@@ -110,7 +110,7 @@ export class CalendarEntriesManager {
         for (const eventIteration of eventIterations) {
           const calendarEntry = this._convertEventToCalendarEntry(event, eventIteration);
 
-          // Since we are only dealing with recurring events more than da
+          // Since we are only dealing with recurring events more than day
           const calendarEntryIsOriginal =
             event.startsAt &&
             format(eventIteration, 'yyyy-MM-dd') === format(event.startsAt, 'yyyy-MM-dd');
@@ -141,49 +141,38 @@ export class CalendarEntriesManager {
         continue;
       }
 
-      let isAllDay = false;
-      let dateString = task.dueDate;
-      if (task.dueDateTime) {
-        dateString = `${dateString}T${task.dueDateTime}:00.000`;
-      } else {
-        dateString = format(addDays(new Date(dateString), 1), 'yyyy-MM-dd');
-        isAllDay = true;
+      const calendarEntry = this._convertTaskToCalendarEntry(task, timezone);
+      calendarEntries.push(calendarEntry);
+
+      if (task.dueDateRepeatPattern && recurrenceFrom && recurrenceTo) {
+        const recurrence = Recurrence.fromStringPattern(task.dueDateRepeatPattern);
+        const taskIterations = recurrence.getDatesBetween(recurrenceFrom, recurrenceTo);
+        for (const taskIteration of taskIterations) {
+          const calendarEntryIteration = this._convertTaskToCalendarEntry(
+            task,
+            timezone,
+            taskIteration
+          );
+
+          // Since we are only dealing with recurring events more than day
+          const calendarEntryIsOriginal =
+            calendarEntry.startsAtUtc === calendarEntryIteration.startsAtUtc;
+
+          console.log(
+            calendarEntry.endsAtUtc,
+            calendarEntryIteration.endsAtUtc,
+            calendarEntryIsOriginal
+          );
+
+          // We ignore the original event from which this all stems from,
+          // as that is already added above.
+          if (calendarEntryIsOriginal) {
+            continue;
+          }
+
+          calendarEntries.push(calendarEntryIteration);
+        }
       }
-
-      if (task.dueDateTimeZone) {
-        const timezonedDate = utcToZonedTime(
-          zonedTimeToUtc(dateString, task.dueDateTimeZone),
-          timezone
-        );
-
-        dateString = timezonedDate.toISOString().slice(0, -1);
-      }
-
-      const endsAt = dateString;
-      const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
-
-      const startDurationMinutesSub = task.durationSeconds ? task.durationSeconds / 60 : 30;
-
-      const startsAt = subMinutes(new Date(dateString), startDurationMinutesSub)
-        .toISOString()
-        .slice(0, -1);
-      const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
-
-      calendarEntries.push({
-        id: `tasks:${task.id}`,
-        type: CalendarEntryTypeEnum.TASK,
-        title: task.name,
-        description: null,
-        isAllDay,
-        color: task.color ?? task.listColor ?? null,
-        timezone,
-        startsAt,
-        startsAtUtc,
-        endTimezone: timezone,
-        endsAt,
-        endsAtUtc,
-        raw: task as unknown as Task,
-      });
     }
 
     calendarEntries.sort((a, b) => {
@@ -269,6 +258,99 @@ export class CalendarEntriesManager {
         ...event,
         ...eventTimesObject,
       } as unknown as Event,
+    };
+  }
+
+  private _convertTaskToCalendarEntry(
+    task: TaskWithTagsAndUsers,
+    generalTimezone: string,
+    taskIterationDate?: Date
+  ): CalendarEntry {
+    const nowString = new Date().toISOString().slice(0, -1);
+    const timezone = task.dueDateTimeZone ?? generalTimezone;
+
+    let isAllDay = false;
+    let dateString = task.dueDate!;
+    if (task.dueDateTime) {
+      dateString = `${dateString}T${task.dueDateTime}:00.000`;
+    } else {
+      dateString = format(addDays(new Date(dateString), 1), 'yyyy-MM-dd');
+      isAllDay = true;
+    }
+
+    if (task.dueDateTimeZone) {
+      const timezonedDate = utcToZonedTime(
+        zonedTimeToUtc(dateString, task.dueDateTimeZone),
+        timezone
+      );
+
+      dateString = timezonedDate.toISOString().slice(0, -1);
+    }
+
+    const endsAt = dateString;
+    const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
+
+    const startDurationMinutesSub = task.durationSeconds ? task.durationSeconds / 60 : 30;
+
+    const startsAt = subMinutes(new Date(dateString), startDurationMinutesSub)
+      .toISOString()
+      .slice(0, -1);
+    const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
+
+    const timesObject = {
+      timezone,
+      startsAt,
+      startsAtUtc,
+      endTimezone: timezone,
+      endsAt,
+      endsAtUtc,
+    };
+    const taskTimesObject = {
+      ...timesObject,
+    };
+
+    if (taskIterationDate) {
+      const originalStartDate = new Date(startsAt ?? nowString);
+      const originalEndDate = new Date(endsAt ?? nowString);
+      const duration = originalEndDate.getTime() - originalStartDate.getTime();
+
+      const iteratedStartDateTime = new Date(taskIterationDate);
+      iteratedStartDateTime.setHours(
+        originalStartDate.getHours(),
+        originalStartDate.getMinutes(),
+        originalStartDate.getSeconds()
+      );
+
+      const iteratedEndDateTime = new Date(iteratedStartDateTime.getTime() + duration);
+
+      const iteratedStartsAt = iteratedStartDateTime.toISOString().slice(0, -1);
+      const iteratedEndsAt = iteratedEndDateTime.toISOString().slice(0, -1);
+
+      const iteratedStartsAtUtc = zonedTimeToUtc(iteratedStartsAt, timezone).toISOString();
+      const iteratedEndsAtUtc = zonedTimeToUtc(iteratedEndsAt, timezone).toISOString();
+
+      timesObject.startsAt = iteratedStartsAt;
+      timesObject.startsAtUtc = iteratedStartsAtUtc;
+      timesObject.endsAt = iteratedEndsAt;
+      timesObject.endsAtUtc = iteratedEndsAtUtc;
+    }
+
+    const id = taskIterationDate
+      ? `tasks:${task.id}:${taskIterationDate.getTime()}`
+      : `tasks:${task.id}`;
+
+    return {
+      id,
+      type: CalendarEntryTypeEnum.TASK,
+      title: task.name,
+      description: null,
+      isAllDay,
+      color: task.color ?? task.listColor ?? null,
+      ...timesObject,
+      raw: {
+        ...task,
+        ...taskTimesObject,
+      } as unknown as Task,
     };
   }
 }

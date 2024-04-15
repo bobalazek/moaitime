@@ -32,26 +32,42 @@ import {
 } from '../../utils/CalendarHelpers';
 import CalendarEntryTimes from './CalendarEntryTimes';
 
+// Constants
 const DEBOUNCE_UPDATE_TIME = 50;
 
-const lockScroll = () => {
+// Scroll
+let _scrollLocked = false;
+const lockScroll = (isTouchEvent: boolean) => {
+  if (!isTouchEvent || _scrollLocked) {
+    return;
+  }
+
   document.body.style.overflow = 'hidden';
 
   const calendarContainer = document.getElementById('calendar');
   if (calendarContainer) {
     calendarContainer.style.overflow = 'hidden';
   }
+
+  _scrollLocked = true;
 };
 
-const unlockScroll = () => {
+const unlockScroll = (isTouchEvent: boolean) => {
+  if (!isTouchEvent || !_scrollLocked) {
+    return;
+  }
+
   document.body.style.overflow = 'auto';
 
   const calendarContainer = document.getElementById('calendar');
   if (calendarContainer) {
     calendarContainer.style.overflow = 'auto';
   }
+
+  _scrollLocked;
 };
 
+// Listeners
 const registerEventListeners = (
   isTouchEvent: boolean,
   onMove: (event: MouseEvent | TouchEvent) => void,
@@ -174,6 +190,14 @@ export default function CalendarEntry({
     maxWait: DEBOUNCE_UPDATE_TIME,
   });
 
+  const openEditDialog = useCallback(() => {
+    if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
+      setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
+    } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
+      setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
+    }
+  }, [calendarEntry, setSelectedEventDialogOpen, setSelectedTaskDialogOpen]);
+
   // Hover
   const onContainerMouseEnter = useCallback(() => {
     setHighlightedCalendarEntry(calendarEventResizing ? null : calendarEntry);
@@ -186,31 +210,66 @@ export default function CalendarEntry({
   // Move
   const onContainerMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
-      // Sometimes in the future I will look at this and think "what the hell was I thinking?"
-      // Then I will precede and pull my remaining hair out, if, by that time, I still have any left.
-      // Timezones are tricky, ok?
-
       event.stopPropagation();
-
-      // If we can't resize or move, we still want to keep the onClick functionality,
-      // that opens the dialog of that entry.
-      if (!canResizeAndMove) {
-        // TODO: this shouldn't activate instantly either. Need to add a timeout or something.
-        if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-          setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
-        } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
-          setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
-        }
-
-        return;
-      }
 
       const container = (event.target as HTMLDivElement).parentElement;
       if (!container) {
         return;
       }
 
-      setCalendarEventResizing(calendarEntry);
+      // Sometimes in the future I will look at this and think "what the hell was I thinking?"
+      // Then I will precede and pull my remaining hair out, if, by that time, I still have any left.
+      // Timezones are tricky, ok?
+      const isTouchEvent = event.type.startsWith('touch');
+      const moveTimeoutMilliseconds = isTouchEvent ? 250 : 0;
+      const moveThreshold = 5;
+
+      const initialCoordinates = getClientCoordinates(event);
+      let currentCoordinates = initialCoordinates;
+
+      let minutesDelta = 0;
+      let currentDayDate = dayDate;
+
+      let isActivated = false;
+
+      const setEntyAsActive = () => {
+        isActivated = true;
+
+        lockScroll(isTouchEvent);
+
+        setCalendarEventResizing(calendarEntry);
+      };
+
+      const setEntryAsInactive = () => {
+        isActivated = false;
+
+        unlockScroll(isTouchEvent);
+
+        setCalendarEventResizing(null);
+      };
+
+      const debouncedActivate = debounce(() => {
+        if (isTouchEvent) {
+          const toleranceDeltaSinceInitial =
+            Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) +
+            Math.abs(currentCoordinates.clientY - initialCoordinates.clientY);
+
+          if (toleranceDeltaSinceInitial > moveThreshold) {
+            return;
+          }
+        }
+
+        setEntyAsActive();
+      }, moveTimeoutMilliseconds);
+
+      // If we can't resize or move, we still want to keep the onClick functionality,
+      // that opens the dialog of that entry.
+      if (!canResizeAndMove) {
+        // TODO: this shouldn't activate instantly either. Need to add a timeout or something.
+        openEditDialog();
+
+        return;
+      }
 
       // Weekly/Daily
       // Figure out what the width of a weekday is, so when we move left/right,
@@ -234,16 +293,7 @@ export default function CalendarEntry({
         }
       }
 
-      // Touch stuff
-      const isTouchEvent = event.type.startsWith('touch');
-      const initialCoordinates = getClientCoordinates(event);
-
-      let minutesDelta = 0;
-      let currentDayDate = dayDate;
-
-      if (isTouchEvent) {
-        lockScroll();
-      }
+      debouncedActivate();
 
       // Move
       const onMove = (event: MouseEvent | TouchEvent) => {
@@ -252,18 +302,24 @@ export default function CalendarEntry({
           event.stopPropagation();
         }
 
+        currentCoordinates = getClientCoordinates(event);
+
+        debouncedActivate();
+
+        if (!isActivated) {
+          return;
+        }
+
         let minutesDeltaRounded = 0;
 
         if (selectedView === CalendarViewEnum.MONTH) {
-          const { clientX, clientY } = getClientCoordinates(event);
-
           // Find the day we are currently hovering over
           const hoveredDay = calendarDaysOfMonthCoords.find((day) => {
             return (
-              clientX >= day.rect.left &&
-              clientX <= day.rect.right &&
-              clientY >= day.rect.top &&
-              clientY <= day.rect.bottom
+              currentCoordinates.clientX >= day.rect.left &&
+              currentCoordinates.clientX <= day.rect.right &&
+              currentCoordinates.clientY >= day.rect.top &&
+              currentCoordinates.clientY <= day.rect.bottom
             );
           });
 
@@ -300,18 +356,16 @@ export default function CalendarEntry({
 
       // End
       const onEnd = async (event: MouseEvent | TouchEvent) => {
-        if (isTouchEvent) {
-          unlockScroll();
-        }
+        setEntryAsInactive();
 
         unregisterEventListeners(isTouchEvent, onMove, onEnd);
 
+        if (!isActivated) {
+          return;
+        }
+
         if (!hasReachedThresholdForMove(event, initialCoordinates)) {
-          if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-            setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
-          } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
-            setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
-          }
+          openEditDialog();
 
           // Not really sure why this is needed, but it is.
           // Too tired to determine where the problem is,
@@ -339,7 +393,7 @@ export default function CalendarEntry({
 
         // To make sure the onClick event has been fired, to prevent opening the dialog
         setTimeout(() => {
-          setCalendarEventResizing(null);
+          setEntryAsInactive();
         }, 200);
       };
 
@@ -352,8 +406,7 @@ export default function CalendarEntry({
       dayDate,
       editEvent,
       setCalendarEventResizing,
-      setSelectedEventDialogOpen,
-      setSelectedTaskDialogOpen,
+      openEditDialog,
       debouncedUpdateCalendarEntry,
     ]
   );
@@ -364,6 +417,7 @@ export default function CalendarEntry({
 
       const container = (event.target as HTMLDivElement).parentElement;
       if (!container || !style) {
+        // TODO: why again is the !style check here?
         return;
       }
 
@@ -374,16 +428,14 @@ export default function CalendarEntry({
       const initialCoordinates = getClientCoordinates(event);
       let minutesDelta = 0;
 
-      if (isTouchEvent) {
-        lockScroll();
-      }
-
       // Move
       const onMove = (event: MouseEvent | TouchEvent) => {
         if (event.cancelable) {
           event.preventDefault();
           event.stopPropagation();
         }
+
+        lockScroll(isTouchEvent);
 
         const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 
@@ -408,9 +460,7 @@ export default function CalendarEntry({
 
       // End
       const onEnd = async () => {
-        if (isTouchEvent) {
-          unlockScroll();
-        }
+        unlockScroll(isTouchEvent);
 
         unregisterEventListeners(isTouchEvent, onMove, onEnd);
 

@@ -311,7 +311,6 @@ export const getCalendarEntriesForDay = (
   const end = endOfDay(day);
 
   const filteredCalendarEntries = calendarEntries
-    .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
     .filter((calendarEntry) => {
       const calendarEntryStart = utcToZonedTime(calendarEntry.startsAt, timezone);
       const calendarEntryEnd = utcToZonedTime(calendarEntry.endsAt, timezone);

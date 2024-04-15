@@ -34,6 +34,24 @@ import CalendarEntryTimes from './CalendarEntryTimes';
 
 const DEBOUNCE_UPDATE_TIME = 50;
 
+const lockScroll = () => {
+  document.body.style.overflow = 'hidden';
+
+  const calendarContainer = document.getElementById('calendar');
+  if (calendarContainer) {
+    calendarContainer.style.overflow = 'hidden';
+  }
+};
+
+const unlockScroll = () => {
+  document.body.style.overflow = 'auto';
+
+  const calendarContainer = document.getElementById('calendar');
+  if (calendarContainer) {
+    calendarContainer.style.overflow = 'auto';
+  }
+};
+
 const registerEventListeners = (
   isTouchEvent: boolean,
   onMove: (event: MouseEvent | TouchEvent) => void,
@@ -177,6 +195,7 @@ export default function CalendarEntry({
       // If we can't resize or move, we still want to keep the onClick functionality,
       // that opens the dialog of that entry.
       if (!canResizeAndMove) {
+        // TODO: this shouldn't activate instantly either. Need to add a timeout or something.
         if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
           setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
         } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
@@ -186,7 +205,6 @@ export default function CalendarEntry({
         return;
       }
 
-      const calendarContainer = document.getElementById('calendar');
       const container = (event.target as HTMLDivElement).parentElement;
       if (!container) {
         return;
@@ -223,9 +241,8 @@ export default function CalendarEntry({
       let minutesDelta = 0;
       let currentDayDate = dayDate;
 
-      if (isTouchEvent && calendarContainer) {
-        document.body.style.overflow = 'hidden';
-        calendarContainer.style.overflow = 'hidden';
+      if (isTouchEvent) {
+        lockScroll();
       }
 
       // Move
@@ -283,9 +300,8 @@ export default function CalendarEntry({
 
       // End
       const onEnd = async (event: MouseEvent | TouchEvent) => {
-        if (isTouchEvent && calendarContainer) {
-          document.body.style.overflow = 'auto';
-          calendarContainer.style.overflow = 'auto';
+        if (isTouchEvent) {
+          unlockScroll();
         }
 
         unregisterEventListeners(isTouchEvent, onMove, onEnd);
@@ -346,7 +362,6 @@ export default function CalendarEntry({
     (event: React.MouseEvent | React.TouchEvent) => {
       event.stopPropagation();
 
-      const calendarContainer = document.getElementById('calendar');
       const container = (event.target as HTMLDivElement).parentElement;
       if (!container || !style) {
         return;
@@ -359,9 +374,8 @@ export default function CalendarEntry({
       const initialCoordinates = getClientCoordinates(event);
       let minutesDelta = 0;
 
-      if (isTouchEvent && calendarContainer) {
-        document.body.style.overflow = 'hidden';
-        calendarContainer.style.overflow = 'hidden';
+      if (isTouchEvent) {
+        lockScroll();
       }
 
       // Move
@@ -394,9 +408,8 @@ export default function CalendarEntry({
 
       // End
       const onEnd = async () => {
-        if (isTouchEvent && calendarContainer) {
-          document.body.style.overflow = 'auto';
-          calendarContainer.style.overflow = 'auto';
+        if (isTouchEvent) {
+          unlockScroll();
         }
 
         unregisterEventListeners(isTouchEvent, onMove, onEnd);

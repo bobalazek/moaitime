@@ -39,6 +39,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   // Tasks
   tasksEnabled: true,
   tasksSoundsEnabled: true,
+  tasksDefaultDurationSeconds: 60 * 30,
 
   // Habits
   habitsEnabled: true,

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import {
   CreateTask,
+  getStartAndEndDatesForTask,
+  Task,
   UpdateTask,
   UpdateTaskSchema,
   zodErrorToString,
@@ -18,6 +20,7 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
+import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import DueDateSelector from '../../../core/components/selectors/DueDateSelector';
 import { DurationSelector } from '../../../core/components/selectors/DurationSelector';
@@ -29,6 +32,32 @@ import { TeamMembersSelector } from '../../../core/components/selectors/TeamMemb
 import { useListsStore } from '../../state/listsStore';
 import { useTagsStore } from '../../state/tagsStore';
 import { useTasksStore } from '../../state/tasksStore';
+
+function DueDateRangesHelperText({ task }: { task: Task }) {
+  const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
+  const tasksDefaultDurationSeconds = useAuthUserSetting('tasksDefaultDurationSeconds', 60 * 30);
+
+  if (!task.dueDate) {
+    return null;
+  }
+
+  const timesObject = getStartAndEndDatesForTask(
+    task,
+    generalTimezone,
+    tasksDefaultDurationSeconds
+  );
+  if (!timesObject) {
+    return null;
+  }
+
+  return (
+    <div className="text-muted-foreground text-xs">
+      Ends at: {timesObject.endsAt} {task.dueDateTimeZone ? `(${timesObject.endTimezone})` : null}{' '}
+      <br />
+      Starts at: {timesObject.startsAt} {task.dueDateTimeZone ? `(${timesObject.timezone})` : null}
+    </div>
+  );
+}
 
 export default function TaskEditDialog() {
   const {
@@ -228,12 +257,7 @@ export default function TaskEditDialog() {
                 });
               }}
             />
-            <div className="text-muted-foreground text-xs">
-              If you set the due date, but not the duration above, the duration will be assumed to
-              be 30 minutes.
-              <br /> Setting the due date to 01/01/2023, you will see this task in on 31/12/2022,
-              because the start time would be is assumed 23:30 on 31/12/2022.
-            </div>
+            <DueDateRangesHelperText task={{ ...selectedTask, ...data } as unknown as Task} />
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-tags" className="flex items-end justify-between gap-2">

@@ -44,6 +44,17 @@ export const UserSettingsSchema = z.object({
   // Tasks
   tasksEnabled: z.boolean(),
   tasksSoundsEnabled: z.boolean(),
+  tasksDefaultDurationSeconds: z
+    .number()
+    .min(60, {
+      message: 'Duration must be at least 1 minute',
+    })
+    .max(60 * 60 * 24, {
+      message: 'Duration must be at most 24 hours',
+    })
+    .refine((duration) => duration % 60 === 0, {
+      message: 'Duration must be a round number of minutes',
+    }),
 
   // Habits
   habitsEnabled: z.boolean(),

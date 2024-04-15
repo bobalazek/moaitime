@@ -1,5 +1,5 @@
-import { addDays, format, subMinutes } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { addDays, format } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 import { User } from '@moaitime/database-core';
 import { Recurrence } from '@moaitime/recurrence';
@@ -8,6 +8,7 @@ import {
   CalendarEntryTypeEnum,
   CalendarEntryYearlyEntry,
   Event,
+  getStartAndEndDatesForTask,
   getTimezonedEndOfDay,
   getTimezonedStartOfDay,
   isValidDate,
@@ -63,6 +64,7 @@ export class CalendarEntriesManager {
   // Helpers
   async findAllForRange(user: User, from: string, to: string): Promise<CalendarEntry[]> {
     const timezone = user.settings?.generalTimezone ?? 'UTC';
+    const tasksDefaultDurationSeconds = user.settings?.tasksDefaultDurationSeconds ?? 30;
 
     let timezonedFrom = getTimezonedStartOfDay(timezone, from) ?? undefined;
     let timezonedTo = getTimezonedEndOfDay(timezone, to) ?? undefined;
@@ -141,7 +143,11 @@ export class CalendarEntriesManager {
         continue;
       }
 
-      const calendarEntry = this._convertTaskToCalendarEntry(task, timezone);
+      const calendarEntry = this._convertTaskToCalendarEntry(
+        task,
+        timezone,
+        tasksDefaultDurationSeconds
+      );
       calendarEntries.push(calendarEntry);
 
       if (task.dueDateRepeatPattern && recurrenceFrom && recurrenceTo) {
@@ -151,18 +157,13 @@ export class CalendarEntriesManager {
           const calendarEntryIteration = this._convertTaskToCalendarEntry(
             task,
             timezone,
+            tasksDefaultDurationSeconds,
             taskIteration
           );
 
           // Since we are only dealing with recurring events more than day
           const calendarEntryIsOriginal =
             calendarEntry.startsAtUtc === calendarEntryIteration.startsAtUtc;
-
-          console.log(
-            calendarEntry.endsAtUtc,
-            calendarEntryIteration.endsAtUtc,
-            calendarEntryIsOriginal
-          );
 
           // We ignore the original event from which this all stems from,
           // as that is already added above.
@@ -264,54 +265,23 @@ export class CalendarEntriesManager {
   private _convertTaskToCalendarEntry(
     task: TaskWithTagsAndUsers,
     generalTimezone: string,
+    tasksDefaultDurationSeconds: number,
     taskIterationDate?: Date
   ): CalendarEntry {
     const nowString = new Date().toISOString().slice(0, -1);
-    const timezone = task.dueDateTimeZone ?? generalTimezone;
 
-    let isAllDay = false;
-    let dateString = task.dueDate!;
-    if (task.dueDateTime) {
-      dateString = `${dateString}T${task.dueDateTime}:00.000`;
-    } else {
-      dateString = format(addDays(new Date(dateString), 1), 'yyyy-MM-dd');
-      isAllDay = true;
-    }
-
-    if (task.dueDateTimeZone) {
-      const timezonedDate = utcToZonedTime(
-        zonedTimeToUtc(dateString, task.dueDateTimeZone),
-        timezone
-      );
-
-      dateString = timezonedDate.toISOString().slice(0, -1);
-    }
-
-    const endsAt = dateString;
-    const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
-
-    const startDurationMinutesSub = task.durationSeconds ? task.durationSeconds / 60 : 30;
-
-    const startsAt = subMinutes(new Date(dateString), startDurationMinutesSub)
-      .toISOString()
-      .slice(0, -1);
-    const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();
-
-    const timesObject = {
-      timezone,
-      startsAt,
-      startsAtUtc,
-      endTimezone: timezone,
-      endsAt,
-      endsAtUtc,
-    };
+    const timesObject = getStartAndEndDatesForTask(
+      task as unknown as Task,
+      generalTimezone,
+      tasksDefaultDurationSeconds
+    )!;
     const taskTimesObject = {
       ...timesObject,
     };
 
     if (taskIterationDate) {
-      const originalStartDate = new Date(startsAt ?? nowString);
-      const originalEndDate = new Date(endsAt ?? nowString);
+      const originalStartDate = new Date(timesObject.startsAt ?? nowString);
+      const originalEndDate = new Date(timesObject.endsAt ?? nowString);
       const duration = originalEndDate.getTime() - originalStartDate.getTime();
 
       const iteratedStartDateTime = new Date(taskIterationDate);
@@ -326,8 +296,11 @@ export class CalendarEntriesManager {
       const iteratedStartsAt = iteratedStartDateTime.toISOString().slice(0, -1);
       const iteratedEndsAt = iteratedEndDateTime.toISOString().slice(0, -1);
 
-      const iteratedStartsAtUtc = zonedTimeToUtc(iteratedStartsAt, timezone).toISOString();
-      const iteratedEndsAtUtc = zonedTimeToUtc(iteratedEndsAt, timezone).toISOString();
+      const iteratedStartsAtUtc = zonedTimeToUtc(
+        iteratedStartsAt,
+        timesObject.timezone
+      ).toISOString();
+      const iteratedEndsAtUtc = zonedTimeToUtc(iteratedEndsAt, timesObject.timezone).toISOString();
 
       timesObject.startsAt = iteratedStartsAt;
       timesObject.startsAtUtc = iteratedStartsAtUtc;
@@ -344,7 +317,6 @@ export class CalendarEntriesManager {
       type: CalendarEntryTypeEnum.TASK,
       title: task.name,
       description: null,
-      isAllDay,
       color: task.color ?? task.listColor ?? null,
       ...timesObject,
       raw: {

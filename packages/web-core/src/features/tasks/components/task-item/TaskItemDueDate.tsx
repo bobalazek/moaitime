@@ -1,8 +1,8 @@
 import { formatRelative } from 'date-fns';
-import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { format } from 'date-fns-tz';
 import { CalendarIcon } from 'lucide-react';
 
-import { DayOfWeek, Task as TaskType } from '@moaitime/shared-common';
+import { DayOfWeek, getDueDateStringForTask, Task as TaskType } from '@moaitime/shared-common';
 import { cn } from '@moaitime/web-ui';
 
 const TaskItemDueDate = ({
@@ -14,24 +14,9 @@ const TaskItemDueDate = ({
   timezone: string;
   startDayOfWeek: DayOfWeek;
 }) => {
-  if (!task.dueDate) {
+  const dateString = getDueDateStringForTask(task, timezone);
+  if (!dateString) {
     return null;
-  }
-
-  let dateString = task.dueDate;
-  if (task.dueDateTime) {
-    dateString = `${dateString}T${task.dueDateTime}:00.000`;
-  } else {
-    dateString = dateString + 'T23:59:59.999';
-  }
-
-  if (task.dueDateTimeZone) {
-    const timezonedDate = utcToZonedTime(
-      zonedTimeToUtc(dateString, task.dueDateTimeZone),
-      timezone
-    );
-
-    dateString = timezonedDate.toISOString();
   }
 
   const now = new Date();

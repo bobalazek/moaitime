@@ -93,6 +93,7 @@ export * from './tasks/ListSortOptions';
 export * from './tasks/ListSchema';
 export * from './tasks/TaskSchema';
 export * from './tasks/TagSchema';
+export * from './tasks/TaskHelpers';
 
 // Habits
 export * from './habits/HabitSchema';

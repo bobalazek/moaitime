@@ -63,9 +63,14 @@ function DueDateRangesHelperText({ task }: { task: Task }) {
       <div>
         Due on <b>{endsText}</b>, from <b>{startsText}</b>
       </div>
-      <div className="text-[0.65rem]">
-        The <i>from</i> date is derived by subtracting the duration from the due date. It assumes{' '}
-        {tasksDefaultDurationSeconds / 60} minutes by default, if no duration is set.
+      <div className="mt-1 text-[0.65rem] leading-4">
+        The <i>from</i> date is derived by subtracting the duration from the due date.
+        {!task.durationSeconds && (
+          <>
+            {' '}
+            It assumes {tasksDefaultDurationSeconds / 60} minutes by default, if no duration is set.
+          </>
+        )}
       </div>
     </div>
   );

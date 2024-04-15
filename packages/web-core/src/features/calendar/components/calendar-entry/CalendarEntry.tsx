@@ -297,7 +297,7 @@ export default function CalendarEntry({
 
       // Move
       const onMove = (event: MouseEvent | TouchEvent) => {
-        if (event.cancelable) {
+        if (event.cancelable && isActivated) {
           event.preventDefault();
           event.stopPropagation();
         }

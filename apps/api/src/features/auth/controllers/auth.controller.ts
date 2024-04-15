@@ -1,5 +1,6 @@
 import { Body, Controller, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { RealIP } from 'nestjs-real-ip';
 
 import { authManager } from '@moaitime/database-services';
 import { OauthProviderEnum } from '@moaitime/shared-common';
@@ -23,12 +24,12 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() body: LoginDto,
+    @RealIP() ip: string,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<AbstractResponseDto<AuthDto>> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
-    const ip = req.ip;
 
     const { user, userAccessToken } = await authManager.loginWithCredentials(
       body.email,
@@ -72,12 +73,12 @@ export class AuthController {
   async oauthLogin(
     @Param('provider') provider: OauthProviderEnum,
     @Body() body: OauthTokenDto,
+    @RealIP() ip: string,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<AbstractResponseDto<AuthDto>> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
-    const ip = req.ip;
 
     const { user, userAccessToken } = await authManager.oauthLogin(
       provider,
@@ -147,12 +148,12 @@ export class AuthController {
   @Post('register')
   async register(
     @Body() body: RegisterDto,
+    @RealIP() ip: string,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<AbstractResponseDto<AuthDto>> {
     const userAgent = req.get('user-agent');
     const deviceUid = req.get('device-uid');
-    const ip = req.ip;
 
     const registeredUser = await authManager.register({
       settings: body.settings,

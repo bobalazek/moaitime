@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import {
@@ -50,11 +51,22 @@ function DueDateRangesHelperText({ task }: { task: Task }) {
     return null;
   }
 
+  const endsText =
+    format(new Date(timesObject.endsAtUtc), 'PPP p') +
+    (task.dueDateTimeZone ? ` (${timesObject.endTimezone})` : '');
+  const startsText =
+    format(new Date(timesObject.startsAtUtc), 'PPP p') +
+    (task.dueDateTimeZone ? ` (${timesObject.timezone})` : '');
+
   return (
-    <div className="text-muted-foreground text-xs">
-      Ends at: {timesObject.endsAt} {task.dueDateTimeZone ? `(${timesObject.endTimezone})` : null}{' '}
-      <br />
-      Starts at: {timesObject.startsAt} {task.dueDateTimeZone ? `(${timesObject.timezone})` : null}
+    <div className="text-muted-foreground text-sm">
+      <div>
+        Due on <b>{endsText}</b>, from <b>{startsText}</b>
+      </div>
+      <div className="text-[0.65rem]">
+        The <i>from</i> date is derived by subtracting the duration from the due date. It assumes{' '}
+        {tasksDefaultDurationSeconds / 60} minutes by default, if no duration is set.
+      </div>
     </div>
   );
 }

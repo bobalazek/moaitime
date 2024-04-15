@@ -1,6 +1,7 @@
-import { addDays, format, subMinutes } from 'date-fns';
+import { addMilliseconds, subMinutes } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 
+import { addDateTimezoneToItself } from '../Helpers';
 import { Task } from './TaskSchema';
 
 export const getDueDateStringForTask = (task: Task, timezone: string) => {
@@ -43,7 +44,7 @@ export const getStartAndEndDatesForTask = (
   if (task.dueDateTime) {
     dateString = `${dateString}T${task.dueDateTime}:00.000`;
   } else {
-    dateString = format(addDays(new Date(dateString), 1), 'yyyy-MM-dd');
+    dateString = dateString + 'T23:59:59.999';
     isAllDay = true;
   }
 
@@ -57,13 +58,15 @@ export const getStartAndEndDatesForTask = (
   }
 
   const endsAt = dateString;
-  const endsAtUtc = zonedTimeToUtc(endsAt, timezone).toISOString();
+  const endsAtDate = zonedTimeToUtc(endsAt, timezone);
+  const endsAtUtc = endsAtDate.toISOString();
 
   const startDurationMinutesSub = task.durationSeconds
     ? task.durationSeconds / 60
     : tasksDefaultDurationSeconds / 60;
 
-  const startsAt = subMinutes(new Date(endsAtUtc), startDurationMinutesSub)
+  const startsAtDate = addDateTimezoneToItself(subMinutes(endsAtDate, startDurationMinutesSub));
+  const startsAt = (isAllDay ? addMilliseconds(startsAtDate, 1) : startsAtDate)
     .toISOString()
     .slice(0, -1);
   const startsAtUtc = zonedTimeToUtc(startsAt, timezone).toISOString();

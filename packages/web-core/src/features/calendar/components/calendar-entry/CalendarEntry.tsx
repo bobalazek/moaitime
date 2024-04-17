@@ -216,6 +216,11 @@ export default function CalendarEntry({
 
       // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
+        if (event.cancelable) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
         currentCoordinates = getClientCoordinates(event);
 
         if (!canResizeAndMove || !isDraggable) {
@@ -326,7 +331,9 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
+      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove, {
+        passive: false,
+      });
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
     [
@@ -358,6 +365,11 @@ export default function CalendarEntry({
 
       // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
+        if (event.cancelable) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
         const currentCoordinates = getClientCoordinates(event);
         const minutesDeltaRounded = getRoundedMinutesFromCoordinates(
           currentCoordinates,
@@ -410,7 +422,9 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
+      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove, {
+        passive: false,
+      });
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
     [calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]

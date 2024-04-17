@@ -93,13 +93,13 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [singleDay]);
 
-  const onDayClick = (day: Date, event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    setSelectedDate(day);
-    setSelectedView(CalendarViewEnum.DAY);
-  };
+  const onDayClick = useCallback(
+    (day: Date) => {
+      setSelectedDate(day);
+      setSelectedView(CalendarViewEnum.DAY);
+    },
+    [setSelectedDate, setSelectedView]
+  );
 
   useEffect(() => {
     prevSelectedDateRef.current = selectedDate;
@@ -166,9 +166,35 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
               document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
             };
 
+            const onSelectDayButtonMoveStart = (event: React.MouseEvent | React.TouchEvent) => {
+              if (event.cancelable) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+
+              const isTouchEvent = event.type.startsWith('touch');
+
+              if (calendarEventResizing) {
+                return;
+              }
+
+              const onEnd = () => {
+                onDayClick(day);
+
+                document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+              };
+
+              document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+            };
+
             const dayContainerEvents = {
               onMouseDown: onDayContainerMoveStart,
               onTouchStart: onDayContainerMoveStart,
+            };
+
+            const selectDayButtonEvents = {
+              onMouseDown: onSelectDayButtonMoveStart,
+              onTouchStart: onSelectDayButtonMoveStart,
             };
 
             return (
@@ -195,7 +221,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                         'hover:text-secondary h-10 w-10 rounded-full text-2xl transition-all hover:bg-gray-600',
                         isActive && 'bg-primary text-accent'
                       )}
-                      onClick={(event) => onDayClick(day, event)}
+                      {...selectDayButtonEvents}
                     >
                       {dayOfMonth}
                     </button>

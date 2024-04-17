@@ -260,6 +260,10 @@ export default function CalendarEntry({
         }
 
         setEntyAsActive();
+
+        if (!isTouchEvent) {
+          openEditDialog();
+        }
       }, moveTimeoutMilliseconds);
 
       // If we can't resize or move, we still want to keep the onClick functionality,

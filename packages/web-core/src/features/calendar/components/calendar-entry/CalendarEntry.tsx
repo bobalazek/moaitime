@@ -53,7 +53,6 @@ const lockScroll = (isTouchEvent: boolean) => {
 };
 
 const unlockScroll = (isTouchEvent: boolean) => {
-  console.log('Unlocking scroll', _scrollLocked);
   if (!isTouchEvent || !_scrollLocked) {
     return;
   }

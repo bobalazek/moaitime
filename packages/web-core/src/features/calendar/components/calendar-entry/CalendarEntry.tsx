@@ -250,17 +250,23 @@ export default function CalendarEntry({
         setCalendarEventResizing(null);
       };
 
-      const debouncedActivate = debounce(() => {
-        const toleranceDeltaSinceInitial =
-          Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) +
-          Math.abs(currentCoordinates.clientY - initialCoordinates.clientY);
+      const debouncedActivate = debounce(
+        () => {
+          const toleranceDeltaSinceInitial =
+            Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) +
+            Math.abs(currentCoordinates.clientY - initialCoordinates.clientY);
 
-        if (toleranceDeltaSinceInitial < moveThreshold) {
-          return;
+          if (toleranceDeltaSinceInitial < moveThreshold) {
+            return;
+          }
+
+          setEntryMovingActive();
+        },
+        moveTimeoutMilliseconds,
+        {
+          maxWait: moveTimeoutMilliseconds,
         }
-
-        setEntryMovingActive();
-      }, moveTimeoutMilliseconds);
+      );
 
       // If we can't resize or move, we still want to keep the onClick functionality,
       // that opens the dialog of that entry.

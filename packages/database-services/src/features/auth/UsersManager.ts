@@ -139,17 +139,20 @@ export class UsersManager {
       throw new Error('This user does not have an avatar.');
     }
 
-    return fetch(avatarImageUrl).then((res) => {
-      if (!res.ok || !res.body) {
-        throw new Error('Failed to fetch the avatar.');
-      }
+    const response = await fetch(avatarImageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch the avatar image. Error: ${response.statusText}`);
+    }
 
-      if (res.body instanceof ReadableStream) {
-        return Readable.fromWeb(res.body);
-      } else {
-        throw new Error('Response body is not a ReadableStream.');
-      }
-    });
+    if (!response.body) {
+      throw new Error('Response body is not available.');
+    }
+
+    if (!(response.body instanceof ReadableStream)) {
+      throw new Error('Response body is not a ReadableStream.');
+    }
+
+    return Readable.fromWeb(response.body);
   }
 
   async follow(actorUserId: string, userIdOrUsername: string) {

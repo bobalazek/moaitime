@@ -8,7 +8,6 @@ WORKDIR /app
 
 ARG PROJECT=@moaitime/web
 
-RUN apk add --no-cache libc6-compat
 RUN npm install -g pnpm
 RUN npm install -g turbo
 

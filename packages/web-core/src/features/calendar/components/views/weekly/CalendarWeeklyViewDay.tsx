@@ -1,7 +1,7 @@
 import { addMinutes } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
-import { MouseEvent, TouchEvent, useEffect, useMemo, useState } from 'react';
+import { MouseEvent, TouchEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
@@ -59,40 +59,36 @@ export default function CalendarWeeklyViewDay({
     );
   }, [calendarEntries, date, generalTimezone]);
 
-  const onDayContainerClick = (event: MouseEvent | TouchEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const onDayContainerClick = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      const clientCoordinates = getClientCoordinates(event);
+      const { target } = event;
+      const container = (target as HTMLDivElement).parentElement;
+      if (!container || calendarEventResizing) {
+        return;
+      }
 
-    const clientCoordinates = getClientCoordinates(event);
-    const { target } = event;
-    const container = (target as HTMLDivElement).parentElement;
-    if (!container) {
-      return;
-    }
+      const rect = container.getBoundingClientRect();
+      const relativeTop = clientCoordinates.clientY - rect.top;
+      const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
+      const minutes =
+        Math.floor((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
 
-    if (calendarEventResizing) {
-      return;
-    }
+      let startDate = new Date(date);
+      startDate.setHours(hour, minutes, 0, 0);
+      startDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000);
 
-    const rect = container.getBoundingClientRect();
-    const relativeTop = clientCoordinates.clientY - rect.top;
-    const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
-    const minutes =
-      Math.floor((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
+      const startsAt = startDate.toISOString().slice(0, -1);
+      const endsAt = addMinutes(startDate, 30).toISOString().slice(0, -1);
 
-    let startDate = new Date(date);
-    startDate.setHours(hour, minutes, 0, 0);
-    startDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000);
-
-    const startsAt = startDate.toISOString().slice(0, -1);
-    const endsAt = addMinutes(startDate, 30).toISOString().slice(0, -1);
-
-    setSelectedEventDialogOpen(true, {
-      startsAt,
-      endsAt,
-      timezone: generalTimezone,
-    } as Event);
-  };
+      setSelectedEventDialogOpen(true, {
+        startsAt,
+        endsAt,
+        timezone: generalTimezone,
+      } as Event);
+    },
+    [calendarEventResizing, date, generalTimezone, setSelectedEventDialogOpen]
+  );
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -128,7 +124,8 @@ export default function CalendarWeeklyViewDay({
       style={{
         height: totalHeight,
       }}
-      onClick={onDayContainerClick}
+      onMouseUp={onDayContainerClick}
+      onTouchEnd={onDayContainerClick}
       data-test="calendar--weekly-view--day"
       data-date={date}
     >

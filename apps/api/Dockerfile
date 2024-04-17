@@ -6,21 +6,18 @@ FROM base AS builder
 
 WORKDIR /app
 
+ARG PROJECT=@moaitime/api
+
 RUN apk add --no-cache libc6-compat
 RUN npm install -g pnpm
 RUN npm install -g turbo
 
 COPY . .
 
-# This here is a bit of a chicken and egg problem. We want to install turbo with pnpm,
-# but we need to run turbo prune to install the correct dependencies.
-# For now we will just install it globally with npm above, and then for actual building,
-# we will use the pnpm version of turbo.
-RUN turbo prune @moaitime/api --docker
-
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm turbo run build --filter=@moaitime/api
-RUN pnpm --filter=@moaitime/api --prod deploy pruned
+RUN turbo prune ${PROJECT} --docker
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --workspace-root --frozen-lockfile
+RUN pnpm --filter=${PROJECT} --prod deploy pruned
+RUN pnpm turbo run build --filter=${PROJECT}
 
 # Runner
 FROM base AS runner

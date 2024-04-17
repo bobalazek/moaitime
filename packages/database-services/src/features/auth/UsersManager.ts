@@ -1,5 +1,4 @@
 import { Readable } from 'stream';
-import { ReadableStream } from 'stream/web';
 
 import {
   and,
@@ -34,6 +33,7 @@ import {
   users,
 } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
+import { getEnv } from '@moaitime/shared-backend';
 import {
   AchievementsMap,
   CreateReport,
@@ -50,6 +50,7 @@ import {
   UserSettings,
   UserUsage,
 } from '@moaitime/shared-common';
+import { uploader } from '@moaitime/uploader';
 
 import { calendarsManager } from '../calendars/CalendarsManager';
 import { eventsManager } from '../calendars/EventsManager';
@@ -139,20 +140,14 @@ export class UsersManager {
       throw new Error('This user does not have an avatar.');
     }
 
-    const response = await fetch(avatarImageUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch the avatar image. Error: ${response.statusText}`);
+    const key = avatarImageUrl.split('/').pop();
+    if (!key) {
+      throw new Error('Failed to extract the key from the avatar image URL.');
     }
 
-    if (!response.body) {
-      throw new Error('Response body is not available.');
-    }
+    const { USER_AVATARS_BUCKET_URL } = getEnv();
 
-    if (!(response.body instanceof ReadableStream)) {
-      throw new Error('Response body is not a ReadableStream.');
-    }
-
-    return Readable.fromWeb(response.body);
+    return uploader.getStreamFromBucket(USER_AVATARS_BUCKET_URL, key);
   }
 
   async follow(actorUserId: string, userIdOrUsername: string) {

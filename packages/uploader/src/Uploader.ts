@@ -28,44 +28,20 @@ export class Uploader {
       },
     });
     const uploadResponse = await upload.done();
-
-    const getObjectCommand = new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    });
-
     if (isPublic) {
       return uploadResponse.Location!;
     }
 
-    return getSignedUrl(client, getObjectCommand, {
-      expiresIn,
-    });
+    return this.getSignedUrl(bucketUrl, key, expiresIn);
   }
 
-  async downloadFromBucket(bucketUrl: string, fileName: string, filePath: string) {
-    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+  async downloadFromBucket(bucketUrl: string, key: string, destinationFilePath: string) {
+    const fileWriteStream = createWriteStream(destinationFilePath);
+    const stream = await this.getStreamFromBucket(bucketUrl, key);
 
-    const getObjectCommand = new GetObjectCommand({
-      Bucket: bucket,
-      Key: fileName,
-    });
+    await pipeline(stream, fileWriteStream);
 
-    const response = await client.send(getObjectCommand);
-    if (!response.Body) {
-      throw new Error(`File name "${filePath}" does not seem to exist in bucket "${bucket}"`);
-    }
-
-    if (!(response.Body instanceof Readable)) {
-      throw new Error(`Response body is not a readable stream`);
-    }
-
-    const nodeStream = response.Body;
-    const fileWriteStream = createWriteStream(filePath);
-
-    await pipeline(nodeStream, fileWriteStream);
-
-    return filePath;
+    return destinationFilePath;
   }
 
   async removeFileFromBucket(bucketUrl: string, key: string) {
@@ -79,6 +55,39 @@ export class Uploader {
     // error TS2339: Property 'send' does not exist on type 'S3Client' otherwise. Brilliant job on the S3 library there ...
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (client as any).send(deleteObjectCommand);
+  }
+
+  async getStreamFromBucket(bucketUrl: string, key: string): Promise<Readable> {
+    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    const response = await client.send(getObjectCommand);
+    if (!response.Body) {
+      throw new Error(`File name "${key}" does not seem to exist in bucket "${bucket}"`);
+    }
+
+    if (!(response.Body instanceof Readable)) {
+      throw new Error(`Response body is not a readable stream`);
+    }
+
+    return response.Body;
+  }
+
+  async getSignedUrl(bucketUrl: string, key: string, expiresIn?: number): Promise<string> {
+    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    return getSignedUrl(client, getObjectCommand, {
+      expiresIn,
+    });
   }
 
   // Private

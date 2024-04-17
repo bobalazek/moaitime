@@ -132,6 +132,7 @@ export const BaseUserAccessTokenSchema = z.object({
   token: z.string(),
   refreshToken: z.string(),
   expiresAt: z.string().nullable(),
+  deviceUid: z.string().nullable(),
 });
 
 // Types

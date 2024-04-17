@@ -18,6 +18,10 @@ export const envSchema = z.object({
     .enum(['true', 'false'])
     .transform((value) => value === 'true')
     .default('false'),
+  // Application
+  API_BASE_URL: z.string().url().min(1),
+  WEB_BASE_URL: z.string().url().min(1),
+  API_PORT: z.coerce.number().default(3636),
   // Databases
   POSTGRESQL_URL: z.string().url().min(1),
   REDIS_URL: z.string().url().min(1),
@@ -31,9 +35,6 @@ export const envSchema = z.object({
   USER_DATA_EXPORTS_BUCKET_URL: z.string().url().min(1),
   USER_AVATARS_BUCKET_URL: z.string().url().min(1),
   POSTGRESQL_BACKUP_BUCKET_URL: z.union([z.string().url(), z.literal('')]).default(''),
-  // Ports and links
-  API_PORT: z.coerce.number().default(3636),
-  WEB_BASE_URL: z.string().url().min(1),
   // OAuth
   OAUTH_GOOGLE_CLIENT_ID: z.string(),
   OAUTH_GOOGLE_CLIENT_SECRET: z.string(),

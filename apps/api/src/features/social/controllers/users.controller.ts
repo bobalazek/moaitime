@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, StreamableFile, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { usersManager } from '@moaitime/database-services';
@@ -44,6 +44,17 @@ export class UsersController {
       success: true,
       data,
     };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get(':userIdOrUsername/avatar/:fileName')
+  async avatar(
+    @Req() req: Request,
+    @Param('userIdOrUsername') userIdOrUsername: string
+  ): Promise<StreamableFile> {
+    const stream = await usersManager.avatar(req.user.id, userIdOrUsername);
+
+    return new StreamableFile(stream);
   }
 
   @UseGuards(AuthenticatedGuard)

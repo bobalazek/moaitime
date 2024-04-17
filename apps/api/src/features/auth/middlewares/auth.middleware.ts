@@ -25,16 +25,18 @@ export class AuthMiddleware implements NestMiddleware {
       if (accessToken) {
         accessToken = accessToken.toLowerCase().replace('bearer ', '');
       }
+    } else if (req.query['access-token']) {
+      accessToken = req.query['access-token'].toLowerCase();
     }
 
-    const websocketToken = req.get('websocket-token');
+    const websocketToken = req.get('websocket-token') ?? req.query['websocket-token'] ?? null;
     if (websocketToken) {
       globalEventsNotifier.setAdditionalPayload({
         actorWebsocketToken: websocketToken,
       });
     }
 
-    const deviceUid = req.get('device-uid');
+    const deviceUid = req.get('device-uid') ?? req.query['device-uid'] ?? null;
 
     try {
       const userWithAccessToken = accessToken

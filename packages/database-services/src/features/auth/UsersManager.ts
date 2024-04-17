@@ -1,3 +1,6 @@
+import { Readable } from 'stream';
+import { ReadableStream } from 'stream/web';
+
 import {
   and,
   asc,
@@ -113,6 +116,40 @@ export class UsersManager {
       myselfIsFollowedByThisUser,
       myselfIsBlockingThisUser,
     };
+  }
+
+  async avatar(actorUserId: string, userIdOrUsername: string): Promise<Readable> {
+    const user = await this.findOneByIdOrUsername(userIdOrUsername);
+    if (!user) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const isBlocked = await this.isBlockingUser(user.id, actorUserId);
+    if (isBlocked) {
+      throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
+    }
+
+    const canViewUserIfPrivate = await this.canViewUserIfPrivate(actorUserId, user);
+    if (!canViewUserIfPrivate) {
+      throw new Error('This user is private.');
+    }
+
+    const { avatarImageUrl } = user;
+    if (!avatarImageUrl) {
+      throw new Error('This user does not have an avatar.');
+    }
+
+    return fetch(avatarImageUrl).then((res) => {
+      if (!res.ok || !res.body) {
+        throw new Error('Failed to fetch the avatar.');
+      }
+
+      if (res.body instanceof ReadableStream) {
+        return Readable.fromWeb(res.body);
+      } else {
+        throw new Error('Response body is not a ReadableStream.');
+      }
+    });
   }
 
   async follow(actorUserId: string, userIdOrUsername: string) {

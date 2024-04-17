@@ -84,7 +84,7 @@ export class AccountController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: 'jpeg',
+          fileType: /(jpg|jpeg|png|gif)$/,
         })
         .addMaxSizeValidator({
           maxSize: 1024 * 4096,

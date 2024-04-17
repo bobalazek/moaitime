@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 
+import { logger } from '@moaitime/logging';
 import { getEnv } from '@moaitime/shared-backend';
 import { zodErrorToString } from '@moaitime/shared-common';
 
@@ -34,11 +35,15 @@ export class ErrorFilter implements ExceptionFilter {
       stack = exception.stack.split('\n');
     }
 
-    response.status(statusCode).json({
+    const data = {
       statusCode,
       error,
       stack,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    response.status(statusCode).json(data);
+
+    logger.error(data, '[ErrorFilter] An error occurred.');
   }
 }

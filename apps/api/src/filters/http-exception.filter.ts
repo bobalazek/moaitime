@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+import { logger } from '@moaitime/logging';
 import { getEnv } from '@moaitime/shared-backend';
 
 @Catch(HttpException)
@@ -25,12 +26,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
       stack = exception.stack.split('\n');
     }
 
-    response.status(statusCode).json({
+    const data = {
       statusCode,
       error,
       stack,
       timestamp: new Date().toISOString(),
       path: request.url,
-    });
+    };
+
+    response.status(statusCode).json(data);
+
+    logger.error(data, '[HttpExceptionFilter] An error occurred.');
   }
 }

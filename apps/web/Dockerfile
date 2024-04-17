@@ -16,8 +16,8 @@ COPY . .
 
 RUN turbo prune ${PROJECT} --docker
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --workspace-root --frozen-lockfile
-RUN pnpm --filter=${PROJECT} --prod deploy pruned
 RUN pnpm turbo run build --filter=${PROJECT}
+RUN pnpm --filter=${PROJECT} --prod deploy pruned
 
 # Runner
 FROM base AS runner

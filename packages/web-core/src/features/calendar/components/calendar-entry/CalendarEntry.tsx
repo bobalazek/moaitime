@@ -378,6 +378,13 @@ export default function CalendarEntry({
     [calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]
   );
 
+  const containerEvents = {
+    onMouseDown: onContainerMoveStart,
+    onTouchStart: onContainerMoveStart,
+    onMouseEnter: onContainerMouseEnter,
+    onMouseLeave: onContainerMouseLeave,
+  };
+
   return (
     <div
       key={calendarEntry.id}
@@ -389,11 +396,8 @@ export default function CalendarEntry({
       )}
       style={containerStyle}
       title={calendarEntry.title}
-      onMouseDown={onContainerMoveStart}
-      onTouchStart={onContainerMoveStart}
-      onMouseEnter={onContainerMouseEnter}
-      onMouseLeave={onContainerMouseLeave}
       data-test="calendar--weekly-view--day--calendar-entry"
+      {...containerEvents}
     >
       <div
         className="relative h-full cursor-pointer overflow-hidden rounded-lg border border-transparent py-1 pl-2 pr-4 text-xs transition-all"

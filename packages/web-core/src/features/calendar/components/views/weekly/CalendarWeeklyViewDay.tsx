@@ -1,7 +1,7 @@
 import { addMinutes } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
-import { MouseEvent, TouchEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
@@ -59,33 +59,44 @@ export default function CalendarWeeklyViewDay({
     );
   }, [calendarEntries, date, generalTimezone]);
 
-  const onDayContainerClick = useCallback(
-    (event: MouseEvent | TouchEvent) => {
-      const { target } = event;
-      const clientCoordinates = getClientCoordinates(event);
-      const container = (target as HTMLDivElement).parentElement;
-      if (!container || calendarEventResizing) {
-        return;
-      }
+  const onContainerMoveStart = useCallback(
+    (event: React.MouseEvent | React.TouchEvent) => {
+      event.stopPropagation();
 
-      const rect = container.getBoundingClientRect();
-      const relativeTop = clientCoordinates.clientY - rect.top;
-      const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
-      const minutes =
-        Math.floor((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
+      const isTouchEvent = event.type.startsWith('touch');
 
-      let startDate = new Date(date);
-      startDate.setHours(hour, minutes, 0, 0);
-      startDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000);
+      const onEnd = (event: MouseEvent | TouchEvent) => {
+        const { target } = event;
 
-      const startsAt = startDate.toISOString().slice(0, -1);
-      const endsAt = addMinutes(startDate, 30).toISOString().slice(0, -1);
+        const container = (target as HTMLDivElement).parentElement;
+        if (!container || calendarEventResizing) {
+          return;
+        }
 
-      setSelectedEventDialogOpen(true, {
-        startsAt,
-        endsAt,
-        timezone: generalTimezone,
-      } as Event);
+        const clientCoordinates = getClientCoordinates(event);
+        const rect = container.getBoundingClientRect();
+        const relativeTop = clientCoordinates.clientY - rect.top;
+        const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
+        const minutes =
+          Math.floor((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;
+
+        let startDate = new Date(date);
+        startDate.setHours(hour, minutes, 0, 0);
+        startDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000);
+
+        const startsAt = startDate.toISOString().slice(0, -1);
+        const endsAt = addMinutes(startDate, 30).toISOString().slice(0, -1);
+
+        setSelectedEventDialogOpen(true, {
+          startsAt,
+          endsAt,
+          timezone: generalTimezone,
+        } as Event);
+
+        document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+      };
+
+      document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
     [calendarEventResizing, date, generalTimezone, setSelectedEventDialogOpen]
   );
@@ -118,16 +129,20 @@ export default function CalendarWeeklyViewDay({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, currentTimeLineTop]);
 
+  const containerEvents = {
+    onMouseDown: onContainerMoveStart,
+    onTouchStart: onContainerMoveStart,
+  };
+
   return (
     <div
       className="relative ml-[-1px] mt-[-1px] w-0 flex-1 flex-grow cursor-pointer border border-b-0 border-r-0"
       style={{
         height: totalHeight,
       }}
-      onMouseUp={onDayContainerClick}
-      onTouchEnd={onDayContainerClick}
       data-test="calendar--weekly-view--day"
       data-date={date}
+      {...containerEvents}
     >
       <AnimatePresence>
         {calendarEntriesWithStyles.map(({ style, ...calendarEntry }) => {

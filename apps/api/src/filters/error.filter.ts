@@ -2,7 +2,6 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/commo
 import { Response } from 'express';
 
 import { logger } from '@moaitime/logging';
-import { getEnv } from '@moaitime/shared-backend';
 import { zodErrorToString } from '@moaitime/shared-common';
 
 @Catch(Error)
@@ -30,20 +29,18 @@ export class ErrorFilter implements ExceptionFilter {
       error = Array.isArray(exception.message) ? exception.message.join('; ') : exception.message;
     }
 
-    let stack: string[] | undefined;
-    if (getEnv().NODE_ENV !== 'production' && exception.stack) {
-      stack = exception.stack.split('\n');
-    }
-
-    const data = {
+    const responseData = {
       statusCode,
       error,
-      stack,
       timestamp: new Date().toISOString(),
     };
+    const loggerData = {
+      ...responseData,
+      stack: exception.stack,
+    };
 
-    response.status(statusCode).json(data);
+    response.status(statusCode).json(responseData);
 
-    logger.error(data, '[ErrorFilter] An error occurred.');
+    logger.error(loggerData, '[ErrorFilter] An error occurred.');
   }
 }

@@ -24,6 +24,7 @@ import { useCalendarStore } from '../../state/calendarStore';
 import { useEventsStore } from '../../state/eventsStore';
 import {
   adjustStartAndEndDates,
+  getCalendarViewWidths,
   getClientCoordinates,
   getRoundedMinutes,
   hasReachedThresholdForMove,
@@ -141,6 +142,15 @@ export default function CalendarEntry({
 
       event.stopPropagation();
 
+      const calendarContainer = document.getElementById('calendar');
+      const container = (event.target as HTMLDivElement).parentElement;
+      if (!container) {
+        return;
+      }
+
+      const isTouchEvent = event.type.startsWith('touch');
+      const initialCoordinates = getClientCoordinates(event);
+
       const openEventOrTaskDialog = () => {
         if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
           setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
@@ -157,39 +167,9 @@ export default function CalendarEntry({
         return;
       }
 
-      const calendarContainer = document.getElementById('calendar');
-      const container = (event.target as HTMLDivElement).parentElement;
-      if (!container) {
-        return;
-      }
-
-      setCalendarEventResizing(calendarEntry);
-
-      // Weekly/Daily
-      // Figure out what the width of a weekday is, so when we move left/right,
-      // we know when we jumped to the next/previous day.
-      // Let's just get the first day, as they all should have the same width.
-      const calendarDays = Array.from(document.querySelectorAll('div[data-calendar-day]'));
-
-      let calendarWeekdayWidth = 0;
-      if (selectedView !== CalendarViewEnum.MONTH) {
-        calendarWeekdayWidth = calendarDays[0].clientWidth ?? 0;
-      }
-
-      // Monthly
-      const calendarDaysOfMonthCoords: { date: string; rect: DOMRect }[] = [];
-      if (selectedView == CalendarViewEnum.MONTH) {
-        for (const day of calendarDays) {
-          calendarDaysOfMonthCoords.push({
-            date: day.getAttribute('data-calendar-day')!,
-            rect: day.getBoundingClientRect(),
-          });
-        }
-      }
-
-      // Touch stuff
-      const isTouchEvent = event.type.startsWith('touch');
-      const initialCoordinates = getClientCoordinates(event);
+      // General
+      const { calendarWeekdayWidth, calendarDaysOfMonthCoords } =
+        getCalendarViewWidths(selectedView);
 
       let minutesDelta = 0;
       let currentDayDate = dayDate;
@@ -199,6 +179,9 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
+      setCalendarEventResizing(calendarEntry);
+
+      // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
         let minutesDeltaRounded = 0;
 
@@ -315,10 +298,10 @@ export default function CalendarEntry({
         return;
       }
 
-      setCalendarEventResizing(calendarEntry);
-
+      // General
       const isTouchEvent = event.type.startsWith('touch');
       const initialCoordinates = getClientCoordinates(event);
+
       let minutesDelta = 0;
 
       if (isTouchEvent && calendarContainer) {
@@ -326,6 +309,9 @@ export default function CalendarEntry({
         calendarContainer.style.overflow = 'hidden';
       }
 
+      setCalendarEventResizing(calendarEntry);
+
+      // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
         const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
 

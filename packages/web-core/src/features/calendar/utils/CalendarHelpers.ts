@@ -24,6 +24,7 @@ import {
   CalendarEntry,
   CalendarEntryWithVerticalPosition,
   CalendarEntryYearlyEntry,
+  CalendarViewEnum,
   CreateCalendar,
   CreateUserCalendar,
   DayOfWeek,
@@ -682,4 +683,33 @@ export const hasReachedThresholdForMove = (
     Math.abs(clientX - initialCoordinates.clientX) > 10 ||
     Math.abs(clientY - initialCoordinates.clientY) > 10
   );
+};
+
+export const getCalendarViewWidths = (selectedView: CalendarViewEnum) => {
+  // Weekly/Daily
+  // Figure out what the width of a weekday is, so when we move left/right,
+  // we know when we jumped to the next/previous day.
+  // Let's just get the first day, as they all should have the same width.
+  const calendarDays = Array.from(document.querySelectorAll('div[data-calendar-day]'));
+
+  let calendarWeekdayWidth = 0;
+  if (selectedView !== CalendarViewEnum.MONTH) {
+    calendarWeekdayWidth = calendarDays[0].clientWidth ?? 0;
+  }
+
+  // Monthly
+  const calendarDaysOfMonthCoords: { date: string; rect: DOMRect }[] = [];
+  if (selectedView == CalendarViewEnum.MONTH) {
+    for (const day of calendarDays) {
+      calendarDaysOfMonthCoords.push({
+        date: day.getAttribute('data-calendar-day')!,
+        rect: day.getBoundingClientRect(),
+      });
+    }
+  }
+
+  return {
+    calendarWeekdayWidth,
+    calendarDaysOfMonthCoords,
+  };
 };

@@ -671,3 +671,15 @@ export const getClosestNextHalfHour = () => {
 
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), halfHour);
 };
+
+export const hasReachedThresholdForMove = (
+  event: MouseEvent | TouchEvent,
+  initialCoordinates: Coordinates
+) => {
+  const { clientX, clientY } = getClientCoordinates(event);
+
+  return (
+    Math.abs(clientX - initialCoordinates.clientX) > 10 ||
+    Math.abs(clientY - initialCoordinates.clientY) > 10
+  );
+};

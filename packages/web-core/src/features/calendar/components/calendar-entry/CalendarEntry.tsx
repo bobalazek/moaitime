@@ -53,6 +53,7 @@ const lockScroll = (isTouchEvent: boolean) => {
 };
 
 const unlockScroll = (isTouchEvent: boolean) => {
+  console.log('Unlocking scroll', _scrollLocked);
   if (!isTouchEvent || !_scrollLocked) {
     return;
   }
@@ -64,7 +65,7 @@ const unlockScroll = (isTouchEvent: boolean) => {
     calendarContainer.style.overflow = 'auto';
   }
 
-  _scrollLocked;
+  _scrollLocked = false;
 };
 
 export type CalendarEntryProps = {

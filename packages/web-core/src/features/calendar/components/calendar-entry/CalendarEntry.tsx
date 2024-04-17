@@ -174,26 +174,9 @@ export default function CalendarEntry({
 
       event.stopPropagation();
 
+      // General
       const isTouchEvent = event.type.startsWith('touch');
       const initialCoordinates = getClientCoordinates(event);
-
-      const openEventOrTaskDialog = () => {
-        if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-          setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
-        } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
-          setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
-        }
-      };
-
-      // If we can't resize or move, we still want to keep the onClick functionality,
-      // that opens the dialog of that entry.
-      if (!canResizeAndMove) {
-        openEventOrTaskDialog();
-
-        return;
-      }
-
-      // General
       const { calendarWeekdayWidth, calendarDaysOfMonthCoords } =
         getCalendarViewWidths(selectedView);
 
@@ -204,8 +187,21 @@ export default function CalendarEntry({
 
       setCalendarEventResizing(calendarEntry);
 
+      // Helpers
+      const openEventOrTaskDialog = () => {
+        if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
+          setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
+        } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
+          setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
+        }
+      };
+
       // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
+        if (!canResizeAndMove) {
+          return;
+        }
+
         let minutesDeltaRounded = 0;
 
         if (selectedView === CalendarViewEnum.MONTH) {
@@ -259,8 +255,18 @@ export default function CalendarEntry({
       const onEnd = async (event: MouseEvent | TouchEvent) => {
         unlockScroll(isTouchEvent);
 
+        setCalendarEventResizing(null);
+
         document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+
+        // If we can't resize or move, we still want to keep the onClick functionality,
+        // that opens the dialog of that entry.
+        if (!canResizeAndMove) {
+          openEventOrTaskDialog();
+
+          return;
+        }
 
         const currentCoordinates = getClientCoordinates(event);
         const hasReachedThreshold = hasReachedThresholdForMove(

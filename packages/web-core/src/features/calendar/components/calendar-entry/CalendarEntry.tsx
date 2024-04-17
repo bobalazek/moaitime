@@ -35,6 +35,38 @@ import CalendarEntryTimes from './CalendarEntryTimes';
 
 const DEBOUNCE_UPDATE_TIME = 50;
 
+// Scroll
+let _scrollLocked = false;
+const lockScroll = (isTouchEvent: boolean) => {
+  if (!isTouchEvent || _scrollLocked) {
+    return;
+  }
+
+  document.body.style.overflow = 'hidden';
+
+  const calendarContainer = document.getElementById('calendar');
+  if (calendarContainer) {
+    calendarContainer.style.overflow = 'hidden';
+  }
+
+  _scrollLocked = true;
+};
+
+const unlockScroll = (isTouchEvent: boolean) => {
+  if (!isTouchEvent || !_scrollLocked) {
+    return;
+  }
+
+  document.body.style.overflow = 'auto';
+
+  const calendarContainer = document.getElementById('calendar');
+  if (calendarContainer) {
+    calendarContainer.style.overflow = 'auto';
+  }
+
+  _scrollLocked;
+};
+
 export type CalendarEntryProps = {
   calendarEntry: CalendarEntryType;
   dayDate?: string;
@@ -142,12 +174,6 @@ export default function CalendarEntry({
 
       event.stopPropagation();
 
-      const calendarContainer = document.getElementById('calendar');
-      const container = (event.target as HTMLDivElement).parentElement;
-      if (!container) {
-        return;
-      }
-
       const isTouchEvent = event.type.startsWith('touch');
       const initialCoordinates = getClientCoordinates(event);
 
@@ -174,10 +200,7 @@ export default function CalendarEntry({
       let minutesDelta = 0;
       let currentDayDate = dayDate;
 
-      if (isTouchEvent && calendarContainer) {
-        document.body.style.overflow = 'hidden';
-        calendarContainer.style.overflow = 'hidden';
-      }
+      lockScroll(isTouchEvent);
 
       setCalendarEventResizing(calendarEntry);
 
@@ -230,10 +253,7 @@ export default function CalendarEntry({
       };
 
       const onEnd = async (event: MouseEvent | TouchEvent) => {
-        if (isTouchEvent && calendarContainer) {
-          document.body.style.overflow = 'auto';
-          calendarContainer.style.overflow = 'auto';
-        }
+        unlockScroll(isTouchEvent);
 
         document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
@@ -288,15 +308,9 @@ export default function CalendarEntry({
     ]
   );
 
-  const onBottomResizeHandleStart = useCallback(
+  const onBottomResizeHandleMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
       event.stopPropagation();
-
-      const calendarContainer = document.getElementById('calendar');
-      const container = (event.target as HTMLDivElement).parentElement;
-      if (!container || !style) {
-        return;
-      }
 
       // General
       const isTouchEvent = event.type.startsWith('touch');
@@ -304,10 +318,7 @@ export default function CalendarEntry({
 
       let minutesDelta = 0;
 
-      if (isTouchEvent && calendarContainer) {
-        document.body.style.overflow = 'hidden';
-        calendarContainer.style.overflow = 'hidden';
-      }
+      lockScroll(isTouchEvent);
 
       setCalendarEventResizing(calendarEntry);
 
@@ -335,10 +346,7 @@ export default function CalendarEntry({
       };
 
       const onEnd = async () => {
-        if (isTouchEvent && calendarContainer) {
-          document.body.style.overflow = 'auto';
-          calendarContainer.style.overflow = 'auto';
-        }
+        unlockScroll(isTouchEvent);
 
         document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
@@ -367,7 +375,7 @@ export default function CalendarEntry({
       document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
-    [style, calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]
+    [calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]
   );
 
   return (
@@ -413,8 +421,8 @@ export default function CalendarEntry({
           <div className="absolute bottom-[4px] left-0 w-full">
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"
-              onMouseDown={onBottomResizeHandleStart}
-              onTouchStart={onBottomResizeHandleStart}
+              onMouseDown={onBottomResizeHandleMoveStart}
+              onTouchStart={onBottomResizeHandleMoveStart}
               style={{
                 color: colorLighter,
               }}

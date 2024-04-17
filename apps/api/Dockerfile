@@ -8,14 +8,18 @@ WORKDIR /app
 
 ARG PROJECT=@moaitime/api
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
 RUN apk add --no-cache libc6-compat
-RUN npm install -g pnpm
+
+RUN corepack enable
 RUN npm install -g turbo
 
 COPY . .
 
 RUN turbo prune ${PROJECT} --docker
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --workspace-root --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 RUN pnpm turbo run build --filter=${PROJECT}
 RUN pnpm --filter=${PROJECT} --prod deploy pruned
 

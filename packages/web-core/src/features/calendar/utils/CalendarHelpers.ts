@@ -591,7 +591,7 @@ export const getClientCoordinates = (
     };
   }
 
-  const touch = (event as TouchEvent).touches[0];
+  const touch = (event as TouchEvent).changedTouches[0] ?? (event as TouchEvent).touches[0];
 
   return {
     clientX: touch?.clientX ?? 0,

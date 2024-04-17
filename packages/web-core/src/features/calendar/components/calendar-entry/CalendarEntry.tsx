@@ -26,7 +26,7 @@ import {
   adjustStartAndEndDates,
   getCalendarViewWidths,
   getClientCoordinates,
-  getRoundedMinutes,
+  getRoundedMinutesFromCoordinates,
   hasReachedThresholdForMove,
   ifIsCalendarEntryEndDateSameAsToday,
   shouldShowContinuedText,
@@ -229,7 +229,11 @@ export default function CalendarEntry({
             new Date(currentDayDate!).getTime() - new Date(dayDate!).getTime();
           minutesDeltaRounded = Math.round(millisecondsDelta / 60000);
         } else {
-          minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates, calendarWeekdayWidth);
+          minutesDeltaRounded = getRoundedMinutesFromCoordinates(
+            event,
+            initialCoordinates,
+            calendarWeekdayWidth
+          );
         }
 
         try {
@@ -258,7 +262,13 @@ export default function CalendarEntry({
         document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
 
-        if (!hasReachedThresholdForMove(event, initialCoordinates)) {
+        const currentCoordinates = getClientCoordinates(event);
+        const hasReachedThreshold = hasReachedThresholdForMove(
+          currentCoordinates,
+          initialCoordinates,
+          10
+        );
+        if (!hasReachedThreshold) {
           openEventOrTaskDialog();
 
           // Not really sure why this is needed, but it is.
@@ -324,7 +334,7 @@ export default function CalendarEntry({
 
       // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
-        const minutesDeltaRounded = getRoundedMinutes(event, initialCoordinates);
+        const minutesDeltaRounded = getRoundedMinutesFromCoordinates(event, initialCoordinates);
 
         try {
           const { endsAt, endsAtUtc } = adjustStartAndEndDates(

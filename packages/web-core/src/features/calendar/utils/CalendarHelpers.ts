@@ -599,7 +599,7 @@ export const getClientCoordinates = (
   };
 };
 
-export const getRoundedMinutes = (
+export const getRoundedMinutesFromCoordinates = (
   event: MouseEvent | TouchEvent,
   initialCoordinates: Coordinates,
   weekdayWidth?: number
@@ -674,14 +674,13 @@ export const getClosestNextHalfHour = () => {
 };
 
 export const hasReachedThresholdForMove = (
-  event: MouseEvent | TouchEvent,
-  initialCoordinates: Coordinates
+  currentCoordinates: Coordinates,
+  initialCoordinates: Coordinates,
+  threshold = 10
 ) => {
-  const { clientX, clientY } = getClientCoordinates(event);
-
   return (
-    Math.abs(clientX - initialCoordinates.clientX) > 10 ||
-    Math.abs(clientY - initialCoordinates.clientY) > 10
+    Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) > threshold ||
+    Math.abs(currentCoordinates.clientY - initialCoordinates.clientY) > threshold
   );
 };
 

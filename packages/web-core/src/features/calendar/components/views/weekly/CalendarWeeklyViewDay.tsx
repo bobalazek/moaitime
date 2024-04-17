@@ -12,7 +12,11 @@ import {
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { calendarEventResizingAtom } from '../../../state/calendarAtoms';
 import { useEventsStore } from '../../../state/eventsStore';
-import { getCalendarEntriesWithStyles, getClientCoordinates } from '../../../utils/CalendarHelpers';
+import {
+  getCalendarEntriesWithStyles,
+  getClientCoordinates,
+  hasReachedThresholdForMove,
+} from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
 import CalendarWeeklyViewDayCurrentTimeLine from './CalendarWeeklyViewDayCurrentTimeLine';
 
@@ -63,7 +67,9 @@ export default function CalendarWeeklyViewDay({
     (event: React.MouseEvent | React.TouchEvent) => {
       event.stopPropagation();
 
+      // General
       const isTouchEvent = event.type.startsWith('touch');
+      const initialCoordinates = getClientCoordinates(event);
 
       const onEnd = (event: MouseEvent | TouchEvent) => {
         const { target } = event;
@@ -73,9 +79,21 @@ export default function CalendarWeeklyViewDay({
           return;
         }
 
-        const clientCoordinates = getClientCoordinates(event);
+        const currentCoordinates = getClientCoordinates(event);
+
+        if (isTouchEvent) {
+          const hasReachedThreshold = hasReachedThresholdForMove(
+            currentCoordinates,
+            initialCoordinates,
+            10
+          );
+          if (hasReachedThreshold) {
+            return;
+          }
+        }
+
         const rect = container.getBoundingClientRect();
-        const relativeTop = clientCoordinates.clientY - rect.top;
+        const relativeTop = currentCoordinates.clientY - rect.top;
         const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
         const minutes =
           Math.floor((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;

@@ -141,14 +141,18 @@ export default function CalendarEntry({
 
       event.stopPropagation();
 
-      // If we can't resize or move, we still want to keep the onClick functionality,
-      // that opens the dialog of that entry.
-      if (!canResizeAndMove) {
+      const openEventOrTaskDialog = () => {
         if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
           setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
         } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
           setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
         }
+      };
+
+      // If we can't resize or move, we still want to keep the onClick functionality,
+      // that opens the dialog of that entry.
+      if (!canResizeAndMove) {
+        openEventOrTaskDialog();
 
         return;
       }
@@ -252,11 +256,7 @@ export default function CalendarEntry({
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
 
         if (!hasReachedThresholdForMove(event, initialCoordinates)) {
-          if (calendarEntry.type === CalendarEntryTypeEnum.EVENT) {
-            setSelectedEventDialogOpen(true, calendarEntry.raw as Event);
-          } else if (calendarEntry.type === CalendarEntryTypeEnum.TASK) {
-            setSelectedTaskDialogOpen(true, calendarEntry.raw as Task);
-          }
+          openEventOrTaskDialog();
 
           // Not really sure why this is needed, but it is.
           // Too tired to determine where the problem is,

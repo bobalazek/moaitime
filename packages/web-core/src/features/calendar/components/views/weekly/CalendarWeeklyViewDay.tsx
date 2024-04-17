@@ -61,8 +61,8 @@ export default function CalendarWeeklyViewDay({
 
   const onDayContainerClick = useCallback(
     (event: MouseEvent | TouchEvent) => {
-      const clientCoordinates = getClientCoordinates(event);
       const { target } = event;
+      const clientCoordinates = getClientCoordinates(event);
       const container = (target as HTMLDivElement).parentElement;
       if (!container || calendarEventResizing) {
         return;

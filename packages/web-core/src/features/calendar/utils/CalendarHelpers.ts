@@ -600,19 +600,22 @@ export const getClientCoordinates = (
 };
 
 export const getRoundedMinutesFromCoordinates = (
-  event: MouseEvent | TouchEvent,
+  currentCoordinates: Coordinates,
   initialCoordinates: Coordinates,
   weekdayWidth?: number
 ) => {
-  const { clientX, clientY } = getClientCoordinates(event);
-
   let minutesDelta = Math.round(
-    ((clientY - initialCoordinates.clientY) / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) * 60
+    ((currentCoordinates.clientY - initialCoordinates.clientY) /
+      CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) *
+      60
   );
 
   if (weekdayWidth) {
-    const daysDelta = Math.round(Math.abs(clientX - initialCoordinates.clientX) / weekdayWidth);
-    minutesDelta += (clientX > initialCoordinates.clientX ? 1 : -1) * daysDelta * 1440;
+    const daysDelta = Math.round(
+      Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) / weekdayWidth
+    );
+    minutesDelta +=
+      (currentCoordinates.clientX > initialCoordinates.clientX ? 1 : -1) * daysDelta * 1440;
   }
 
   return Math.round(minutesDelta / 15) * 15;

@@ -180,12 +180,30 @@ export default function CalendarEntry({
       const { calendarWeekdayWidth, calendarDaysOfMonthCoords } =
         getCalendarViewWidths(selectedView);
 
+      let currentCoordinates = initialCoordinates;
+      let isDraggable = !isTouchEvent;
       let minutesDelta = 0;
       let currentDayDate = dayDate;
 
-      lockScroll(isTouchEvent);
+      if (isTouchEvent) {
+        setTimeout(() => {
+          const hasReachedThreshold = hasReachedThresholdForMove(
+            currentCoordinates,
+            initialCoordinates,
+            10
+          );
+          if (hasReachedThreshold) {
+            return;
+          }
 
-      setCalendarEventResizing(calendarEntry);
+          isDraggable = true;
+          lockScroll(isTouchEvent);
+          setCalendarEventResizing(calendarEntry);
+        }, 200);
+      } else {
+        lockScroll(isTouchEvent);
+        setCalendarEventResizing(calendarEntry);
+      }
 
       // Helpers
       const openEventOrTaskDialog = () => {
@@ -198,22 +216,22 @@ export default function CalendarEntry({
 
       // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
-        if (!canResizeAndMove) {
+        currentCoordinates = getClientCoordinates(event);
+
+        if (!canResizeAndMove || !isDraggable) {
           return;
         }
 
         let minutesDeltaRounded = 0;
 
         if (selectedView === CalendarViewEnum.MONTH) {
-          const { clientX, clientY } = getClientCoordinates(event);
-
           // Find the day we are currently hovering over
           const hoveredDay = calendarDaysOfMonthCoords.find((day) => {
             return (
-              clientX >= day.rect.left &&
-              clientX <= day.rect.right &&
-              clientY >= day.rect.top &&
-              clientY <= day.rect.bottom
+              currentCoordinates.clientX >= day.rect.left &&
+              currentCoordinates.clientX <= day.rect.right &&
+              currentCoordinates.clientY >= day.rect.top &&
+              currentCoordinates.clientY <= day.rect.bottom
             );
           });
 
@@ -226,7 +244,7 @@ export default function CalendarEntry({
           minutesDeltaRounded = Math.round(millisecondsDelta / 60000);
         } else {
           minutesDeltaRounded = getRoundedMinutesFromCoordinates(
-            event,
+            currentCoordinates,
             initialCoordinates,
             calendarWeekdayWidth
           );
@@ -340,7 +358,11 @@ export default function CalendarEntry({
 
       // Events
       const onMove = (event: MouseEvent | TouchEvent) => {
-        const minutesDeltaRounded = getRoundedMinutesFromCoordinates(event, initialCoordinates);
+        const currentCoordinates = getClientCoordinates(event);
+        const minutesDeltaRounded = getRoundedMinutesFromCoordinates(
+          currentCoordinates,
+          initialCoordinates
+        );
 
         try {
           const { endsAt, endsAtUtc } = adjustStartAndEndDates(

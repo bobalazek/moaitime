@@ -4,7 +4,7 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { useAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { FlagIcon, GripHorizontalIcon, LockIcon } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
@@ -124,6 +124,8 @@ export default function CalendarEntry({
     highlightedCalendarEntryAtom
   );
   const [calendarEventResizing, setCalendarEventResizing] = useAtom(calendarEventResizingAtom);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const bottomHandlerRef = useRef<HTMLDivElement>(null);
 
   const generalTimezone = useAuthUserSetting('generalTimezone', 'UTC');
   const showContinuedText = shouldShowContinuedText(calendarEntry, generalTimezone, dayDate);
@@ -208,7 +210,7 @@ export default function CalendarEntry({
 
   // Move
   const onContainerMoveStart = useCallback(
-    (event: React.MouseEvent | React.TouchEvent) => {
+    (event: MouseEvent | TouchEvent) => {
       event.preventDefault();
       event.stopPropagation();
 
@@ -405,7 +407,7 @@ export default function CalendarEntry({
   );
 
   const onBottomHandlerMoveStart = useCallback(
-    (event: React.MouseEvent | React.TouchEvent) => {
+    (event: MouseEvent | TouchEvent) => {
       event.stopPropagation();
 
       const container = (event.target as HTMLDivElement).parentElement;
@@ -482,8 +484,50 @@ export default function CalendarEntry({
     [style, calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]
   );
 
+  useEffect(() => {
+    if (!containerRef.current || !bottomHandlerRef.current) {
+      return;
+    }
+
+    const containerElement = containerRef.current;
+    const bottomHandlerElement = bottomHandlerRef.current;
+
+    containerElement.addEventListener('mouseenter', onContainerMouseEnter, {
+      capture: false,
+      passive: false,
+    });
+    containerElement.addEventListener('mouseleave', onContainerMouseLeave);
+    containerElement.addEventListener('mousedown', onContainerMoveStart, {
+      capture: false,
+      passive: false,
+    });
+    containerElement.addEventListener('touchstart', onContainerMoveStart);
+
+    bottomHandlerElement.addEventListener('mousedown', onBottomHandlerMoveStart, {
+      capture: false,
+      passive: false,
+    });
+    bottomHandlerElement.addEventListener('touchstart', onBottomHandlerMoveStart);
+
+    return () => {
+      containerElement.removeEventListener('mouseenter', onContainerMouseEnter);
+      containerElement.removeEventListener('mouseleave', onContainerMouseLeave);
+      containerElement.removeEventListener('mousedown', onContainerMoveStart);
+      containerElement.removeEventListener('touchstart', onContainerMoveStart);
+
+      bottomHandlerElement.removeEventListener('mousedown', onBottomHandlerMoveStart);
+      bottomHandlerElement.removeEventListener('touchstart', onBottomHandlerMoveStart);
+    };
+  }, [
+    onBottomHandlerMoveStart,
+    onContainerMouseEnter,
+    onContainerMouseLeave,
+    onContainerMoveStart,
+  ]);
+
   return (
     <div
+      ref={containerRef}
       key={calendarEntry.id}
       className={clsx(
         'select-none px-[2px]',
@@ -493,10 +537,6 @@ export default function CalendarEntry({
       )}
       style={containerStyle}
       title={calendarEntry.title}
-      onMouseEnter={onContainerMouseEnter}
-      onMouseLeave={onContainerMouseLeave}
-      onMouseDown={onContainerMoveStart}
-      onTouchStart={onContainerMoveStart}
       data-test="calendar--weekly-view--day--calendar-entry"
     >
       <div
@@ -529,9 +569,8 @@ export default function CalendarEntry({
         {canResizeEndHandler && (
           <div className="absolute bottom-[4px] left-0 w-full">
             <div
+              ref={bottomHandlerRef}
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-s-resize text-white"
-              onMouseDown={onBottomHandlerMoveStart}
-              onTouchStart={onBottomHandlerMoveStart}
               style={{
                 color: colorLighter,
               }}

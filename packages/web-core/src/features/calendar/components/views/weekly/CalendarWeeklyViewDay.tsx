@@ -1,7 +1,7 @@
 import { addMinutes } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
+import { MouseEvent, TouchEvent, useEffect, useMemo, useState } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
@@ -12,7 +12,7 @@ import {
 import { useAuthUserSetting } from '../../../../auth/state/authStore';
 import { calendarEventResizingAtom } from '../../../state/calendarAtoms';
 import { useEventsStore } from '../../../state/eventsStore';
-import { getCalendarEntriesWithStyles } from '../../../utils/CalendarHelpers';
+import { getCalendarEntriesWithStyles, getClientCoordinates } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
 import CalendarWeeklyViewDayCurrentTimeLine from './CalendarWeeklyViewDayCurrentTimeLine';
 
@@ -59,10 +59,12 @@ export default function CalendarWeeklyViewDay({
     );
   }, [calendarEntries, date, generalTimezone]);
 
-  const onDayContainerClick = (event: MouseEvent) => {
+  const onDayContainerClick = (event: MouseEvent | TouchEvent) => {
     event.preventDefault();
+    event.stopPropagation();
 
-    const { clientY, target } = event;
+    const clientCoordinates = getClientCoordinates(event);
+    const { target } = event;
     const container = (target as HTMLDivElement).parentElement;
     if (!container) {
       return;
@@ -73,7 +75,7 @@ export default function CalendarWeeklyViewDay({
     }
 
     const rect = container.getBoundingClientRect();
-    const relativeTop = clientY - rect.top;
+    const relativeTop = clientCoordinates.clientY - rect.top;
     const hour = Math.floor(relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX);
     const minutes =
       Math.floor((((relativeTop / CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX) % 1) * 60) / 30) * 30;

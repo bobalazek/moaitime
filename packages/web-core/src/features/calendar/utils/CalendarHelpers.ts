@@ -617,18 +617,6 @@ export const getRoundedMinutes = (
   return Math.round(minutesDelta / 15) * 15;
 };
 
-export const hasReachedThresholdForMove = (
-  event: MouseEvent | TouchEvent,
-  initialCoordinates: Coordinates
-) => {
-  const { clientX, clientY } = getClientCoordinates(event);
-
-  return (
-    Math.abs(clientX - initialCoordinates.clientX) > 10 ||
-    Math.abs(clientY - initialCoordinates.clientY) > 10
-  );
-};
-
 export const adjustStartAndEndDates = (
   calendarEntryOrEvent: CalendarEntry | Event,
   minutesDelta: number,

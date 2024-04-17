@@ -26,7 +26,6 @@ import {
   adjustStartAndEndDates,
   getClientCoordinates,
   getRoundedMinutes,
-  hasReachedThresholdForMove,
   ifIsCalendarEntryEndDateSameAsToday,
   shouldShowContinuedText,
 } from '../../utils/CalendarHelpers';
@@ -210,6 +209,7 @@ export default function CalendarEntry({
   // Move
   const onContainerMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
+      event.preventDefault();
       event.stopPropagation();
 
       const container = (event.target as HTMLDivElement).parentElement;
@@ -230,18 +230,18 @@ export default function CalendarEntry({
       let minutesDelta = 0;
       let currentDayDate = dayDate;
 
-      let isActivated = false;
+      let isMovingActivated = false;
 
-      const setEntyAsActive = () => {
-        isActivated = true;
+      const setEntryMovingActive = () => {
+        isMovingActivated = true;
 
         lockScroll(isTouchEvent);
 
         setCalendarEventResizing(calendarEntry);
       };
 
-      const setEntryAsInactive = () => {
-        isActivated = false;
+      const setEntryMovingInactive = () => {
+        isMovingActivated = false;
 
         unlockScroll(isTouchEvent);
 
@@ -249,21 +249,15 @@ export default function CalendarEntry({
       };
 
       const debouncedActivate = debounce(() => {
-        if (isTouchEvent) {
-          const toleranceDeltaSinceInitial =
-            Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) +
-            Math.abs(currentCoordinates.clientY - initialCoordinates.clientY);
+        const toleranceDeltaSinceInitial =
+          Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) +
+          Math.abs(currentCoordinates.clientY - initialCoordinates.clientY);
 
-          if (toleranceDeltaSinceInitial > moveThreshold) {
-            return;
-          }
+        if (toleranceDeltaSinceInitial < moveThreshold) {
+          return;
         }
 
-        setEntyAsActive();
-
-        if (!isTouchEvent) {
-          openEditDialog();
-        }
+        setEntryMovingActive();
       }, moveTimeoutMilliseconds);
 
       // If we can't resize or move, we still want to keep the onClick functionality,
@@ -301,7 +295,7 @@ export default function CalendarEntry({
 
       // Move
       const onMove = (event: MouseEvent | TouchEvent) => {
-        if (event.cancelable && isActivated) {
+        if (event.cancelable && isMovingActivated) {
           event.preventDefault();
           event.stopPropagation();
         }
@@ -310,7 +304,7 @@ export default function CalendarEntry({
 
         debouncedActivate();
 
-        if (!isActivated) {
+        if (!isMovingActivated) {
           return;
         }
 
@@ -360,26 +354,21 @@ export default function CalendarEntry({
 
       // End
       const onEnd = async (event: MouseEvent | TouchEvent) => {
-        setEntryAsInactive();
+        if (event.cancelable) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
 
         unregisterEventListeners(isTouchEvent, onMove, onEnd);
 
-        if (!isActivated) {
-          return;
-        }
-
-        if (!hasReachedThresholdForMove(event, initialCoordinates)) {
+        // We need to do that before, because we are actually deactivating it few lines below
+        if (!isMovingActivated) {
           openEditDialog();
 
-          // Not really sure why this is needed, but it is.
-          // Too tired to determine where the problem is,
-          // but it seems something related with event propagation somewhere.
-          setTimeout(() => {
-            setCalendarEventResizing(null);
-          }, 200);
-
           return;
         }
+
+        setEntryMovingInactive();
 
         if (minutesDelta !== 0) {
           const { startsAt, endsAt } = adjustStartAndEndDates(
@@ -397,7 +386,7 @@ export default function CalendarEntry({
 
         // To make sure the onClick event has been fired, to prevent opening the dialog
         setTimeout(() => {
-          setEntryAsInactive();
+          setEntryMovingInactive();
         }, 200);
       };
 

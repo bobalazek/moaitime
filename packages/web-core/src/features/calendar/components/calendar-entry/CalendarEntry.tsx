@@ -283,14 +283,6 @@ export default function CalendarEntry({
         document.removeEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
 
-        // If we can't resize or move, we still want to keep the onClick functionality,
-        // that opens the dialog of that entry.
-        if (!canResizeAndMove) {
-          openEventOrTaskDialog();
-
-          return;
-        }
-
         const currentCoordinates = getClientCoordinates(event);
         const hasReachedThreshold = hasReachedThresholdForMove(
           currentCoordinates,
@@ -299,15 +291,6 @@ export default function CalendarEntry({
         );
         if (!hasReachedThreshold) {
           openEventOrTaskDialog();
-
-          // Not really sure why this is needed, but it is.
-          // Too tired to determine where the problem is,
-          // but it seems something related with event propagation somewhere.
-          setTimeout(() => {
-            setCalendarEventResizing(null);
-          }, 200);
-
-          return;
         }
 
         if (minutesDelta !== 0) {

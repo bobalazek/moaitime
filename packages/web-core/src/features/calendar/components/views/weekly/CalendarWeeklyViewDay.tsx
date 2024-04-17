@@ -65,7 +65,10 @@ export default function CalendarWeeklyViewDay({
 
   const onContainerMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
-      event.stopPropagation();
+      if (event.cancelable) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
       // General
       const isTouchEvent = event.type.startsWith('touch');

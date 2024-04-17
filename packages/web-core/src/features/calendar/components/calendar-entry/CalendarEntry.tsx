@@ -331,9 +331,7 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove, {
-        passive: false,
-      });
+      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
     [
@@ -351,6 +349,7 @@ export default function CalendarEntry({
 
   const onBottomResizeHandleMoveStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
+      event.preventDefault();
       event.stopPropagation();
 
       // General
@@ -422,9 +421,7 @@ export default function CalendarEntry({
         }, 200);
       };
 
-      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove, {
-        passive: false,
-      });
+      document.addEventListener(isTouchEvent ? 'touchmove' : 'mousemove', onMove);
       document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     },
     [calendarEntry, setCalendarEventResizing, editEvent, debouncedUpdateCalendarEntry]

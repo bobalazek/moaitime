@@ -2,7 +2,7 @@ import { clsx } from 'clsx';
 import { eachDayOfInterval, endOfWeek, format, isSameDay, startOfWeek } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
-import { MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
   CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
@@ -93,7 +93,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [singleDay]);
 
-  const onDayClick = (day: Date, event: MouseEvent) => {
+  const onDayClick = (day: Date, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -140,21 +140,35 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             const isActive = date === format(now, 'yyyy-MM-dd');
             const fullDayCalendarEntries = calendarEntriesPerDayMap.get(date)?.fullDayOnly ?? [];
 
-            const onDayContainerClick = (event: MouseEvent) => {
-              event.preventDefault();
-              event.stopPropagation();
+            const onDayContainerMoveStart = (event: React.MouseEvent | React.TouchEvent) => {
+              if (event.cancelable) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+
+              const isTouchEvent = event.type.startsWith('touch');
+              const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 
               if (calendarEventResizing) {
                 return;
               }
 
-              const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
+              const onEnd = () => {
+                setSelectedEventDialogOpen(true, {
+                  startsAt: dayMidnight,
+                  endsAt: dayMidnight,
+                  isAllDay: true,
+                } as Event);
 
-              setSelectedEventDialogOpen(true, {
-                startsAt: dayMidnight,
-                endsAt: dayMidnight,
-                isAllDay: true,
-              } as Event);
+                document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+              };
+
+              document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+            };
+
+            const dayContainerEvents = {
+              onMouseDown: onDayContainerMoveStart,
+              onTouchStart: onDayContainerMoveStart,
             };
 
             return (
@@ -170,8 +184,8 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
                   !isLastDayOfWeek ? 'border-r' : ''
                 )}
                 data-calendar-day={date}
-                onClick={onDayContainerClick}
                 data-test="calendar--weekly-view--day-of-week"
+                {...dayContainerEvents}
               >
                 <div className="text-center text-xs font-bold uppercase">
                   <div data-test="calendar--monthly-view--day-of-week">{dayOfWeek}</div>

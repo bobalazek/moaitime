@@ -2,7 +2,6 @@ import { clsx } from 'clsx';
 import { format, isSameDay, isSameMonth } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
-import { MouseEvent } from 'react';
 
 import {
   CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT,
@@ -55,7 +54,7 @@ export default function CalendarMonthlyViewDay({
   const dayOfWeek = format(day, 'eee');
   const date = format(day, 'yyyy-MM-dd');
 
-  const onDayClick = (event: MouseEvent) => {
+  const onDayClick = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -63,21 +62,30 @@ export default function CalendarMonthlyViewDay({
     setSelectedView(CalendarViewEnum.DAY);
   };
 
-  const onDayContainerClick = (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const onContainerMoveStart = (event: React.MouseEvent | React.TouchEvent) => {
+    if (event.cancelable) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const isTouchEvent = event.type.startsWith('touch');
+    const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 
     if (calendarEventResizing) {
       return;
     }
 
-    const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
+    const onEnd = () => {
+      setSelectedEventDialogOpen(true, {
+        startsAt: dayMidnight,
+        endsAt: dayMidnight,
+        isAllDay: true,
+      } as Event);
 
-    setSelectedEventDialogOpen(true, {
-      startsAt: dayMidnight,
-      endsAt: dayMidnight,
-      isAllDay: true,
-    } as Event);
+      document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
+    };
+
+    document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
   };
 
   const shownCalendarEntries = calendarEntries.slice(
@@ -86,12 +94,17 @@ export default function CalendarMonthlyViewDay({
   );
   const remainingCalendarEntriesCount = calendarEntries.length - shownCalendarEntries.length;
 
+  const containerEvents = {
+    onMouseDown: onContainerMoveStart,
+    onTouchStart: onContainerMoveStart,
+  };
+
   return (
     <div
       className="flex-grow cursor-pointer select-none border p-2 lg:w-0"
-      onClick={onDayContainerClick}
       data-calendar-day={date}
       data-test="calendar--monthly-view--day"
+      {...containerEvents}
     >
       <div className="text-center">
         <button

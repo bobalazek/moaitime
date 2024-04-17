@@ -381,7 +381,12 @@ export default function CalendarEntry({
   return (
     <div
       key={calendarEntry.id}
-      className={clsx('select-none px-[2px]', !hasAbsoluteClassName && 'relative', className)}
+      className={clsx(
+        'select-none px-[2px]',
+        !hasAbsoluteClassName && 'relative',
+        calendarEventResizing?.id === calendarEntry.id && 'animate-shake',
+        className
+      )}
       style={containerStyle}
       title={calendarEntry.title}
       onMouseDown={onContainerMoveStart}

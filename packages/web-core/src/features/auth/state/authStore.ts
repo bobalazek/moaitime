@@ -19,6 +19,7 @@ import { useAppStore } from '../../core/state/appStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import {
   cancelNewEmail,
+  checkPasswordlessLogin,
   confirmEmail,
   deleteAccount,
   deleteAccountAvatar,
@@ -53,6 +54,7 @@ export type AuthStore = {
   logout: () => Promise<ResponseInterface>;
   // Passwordless Login
   requestPasswordlessLogin: (email: string) => Promise<ResponseInterface>;
+  checkPasswordlessLogin: (token: string) => Promise<ResponseInterface>;
   passwordlessLogin: (token: string, code: string) => Promise<ResponseInterface>;
   // OAuth
   oauthLogin: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<ResponseInterface>;
@@ -131,6 +133,11 @@ export const useAuthStore = create<AuthStore>()(
       // Passwordless Login
       requestPasswordlessLogin: async (email: string) => {
         const response = await requestPasswordlessLogin(email);
+
+        return response;
+      },
+      checkPasswordlessLogin: async (token: string) => {
+        const response = await checkPasswordlessLogin(token);
 
         return response;
       },

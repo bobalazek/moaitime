@@ -16,7 +16,7 @@ export const userPasswordlessLogins = pgTable(
     token: text('token').notNull().unique(), // UUID, so the user can check the status of the token
     code: text('code').notNull(), // The actual 4-6 digit code
     expiresAt: timestamp('expires_at'),
-    acceptedAt: timestamp('accepted_at'),
+    approvedAt: timestamp('approved_at'),
     rejectedAt: timestamp('rejected_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

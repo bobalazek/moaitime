@@ -27,6 +27,7 @@ import {
   AUTH_DELETION_REQUEST_EXPIRATION_SECONDS,
   AUTH_EMAIL_CONFIRMATION_REQUEST_EXPIRATION_SECONDS,
   AUTH_PASSWORD_RESET_REQUEST_EXPIRATION_SECONDS,
+  AUTH_PASSWORDLESS_LOGIN_REQUEST_EXPIRATION_SECONDS,
   compareHash,
   generateHash,
   getEnv,
@@ -60,7 +61,7 @@ import { UserDataExportsManager, userDataExportsManager } from './UserDataExport
 import {
   UserPasswordlessLoginsManager,
   userPasswordlessLoginsManager,
-} from './UserPasswordlessLoginCodesManager';
+} from './UserPasswordlessLoginsManager';
 import { UsersManager, usersManager } from './UsersManager';
 
 type AuthLoginResult = {
@@ -73,7 +74,7 @@ export class AuthManager {
     private _logger: Logger,
     private _usersManager: UsersManager,
     private _userAccessTokensManager: UserAccessTokensManager,
-    private _userPasswordlessCodesManager: UserPasswordlessLoginsManager,
+    private _userPasswordlessLoginsManager: UserPasswordlessLoginsManager,
     private _userExportsManager: UserDataExportsManager,
     private _teamsManager: TeamsManager,
     private _listsManager: ListsManager,
@@ -129,13 +130,13 @@ export class AuthManager {
     };
   }
 
-  async requestPasswordlessLogin(email: string): Promise<User> {
+  async requestPasswordlessLogin(email: string): Promise<UserPasswordlessLogin> {
     const user = await this._usersManager.findOneByEmail(email);
     if (!user) {
       throw new Error('User not found');
     }
 
-    const currentlyActive = await this._userPasswordlessCodesManager.findCurrentlyActiveForUserId(
+    const currentlyActive = await this._userPasswordlessLoginsManager.findCurrentlyActiveForUserId(
       user.id
     );
     if (currentlyActive) {
@@ -146,10 +147,10 @@ export class AuthManager {
 
     const token = uuidv4();
     const code = Math.floor(1000 + Math.random() * 9000).toString();
-    const passwordlessLoginUrl = `${getEnv().WEB_BASE_URL}/auth/passwordless-login?token=${token}&code=${code}`;
-    const expiresAt = addSeconds(new Date(), 300);
+    const passwordlessLoginUrl = `${getEnv().WEB_BASE_URL}/passwordless-login?token=${token}&code=${code}`;
+    const expiresAt = addSeconds(new Date(), AUTH_PASSWORDLESS_LOGIN_REQUEST_EXPIRATION_SECONDS);
 
-    await this._userPasswordlessCodesManager.insertOne({
+    const userPasswordlessLogin = await this._userPasswordlessLoginsManager.insertOne({
       type: UserPasswordlessLoginTypeEnum.EMAIL,
       token,
       code,
@@ -164,11 +165,11 @@ export class AuthManager {
       code,
     });
 
-    return user;
+    return userPasswordlessLogin;
   }
 
   async checkPasswordlessLogin(token: string): Promise<UserPasswordlessLogin> {
-    const passwordlessLogin = await this._userPasswordlessCodesManager.findOneByToken(token);
+    const passwordlessLogin = await this._userPasswordlessLoginsManager.findOneByToken(token);
     if (!passwordlessLogin) {
       throw new Error('Invalid passwordless login token');
     }
@@ -183,7 +184,7 @@ export class AuthManager {
     deviceUid?: string,
     ip?: string
   ): Promise<AuthLoginResult> {
-    const passwordlessLogin = await this._userPasswordlessCodesManager.findOneByToken(token);
+    const passwordlessLogin = await this._userPasswordlessLoginsManager.findOneByToken(token);
     if (!passwordlessLogin) {
       throw new Error('Invalid passwordless login token');
     }
@@ -197,13 +198,21 @@ export class AuthManager {
       throw new Error('Passwordless login code expired');
     }
 
+    if (passwordlessLogin.approvedAt) {
+      throw new Error('Passwordless login already approved');
+    }
+
+    if (passwordlessLogin.rejectedAt) {
+      throw new Error('Passwordless login already rejected');
+    }
+
     const user = await this._usersManager.findOneById(passwordlessLogin.userId);
     if (!user) {
       throw new Error('User not found');
     }
 
-    await this._userPasswordlessCodesManager.updateOneById(passwordlessLogin.id, {
-      acceptedAt: now,
+    await this._userPasswordlessLoginsManager.updateOneById(passwordlessLogin.id, {
+      approvedAt: now,
     });
 
     const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid, ip);

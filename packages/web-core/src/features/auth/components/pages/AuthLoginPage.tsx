@@ -59,6 +59,10 @@ export default function AuthLoginPage() {
     }
   };
 
+  const onPaswordlessLoginButtonClick = async () => {
+    navigate('/passwordless-login');
+  };
+
   const onLoginGoogleButtonClick = async () => {
     googleLogin();
   };
@@ -139,10 +143,21 @@ export default function AuthLoginPage() {
                 </Button>
                 <div className="text-muted-foreground text-center text-sm">or</div>
                 <Button
+                  id="passwordless-login-button"
+                  size="lg"
+                  variant="default"
+                  tabIndex={3}
+                  className="w-full"
+                  onClick={onPaswordlessLoginButtonClick}
+                >
+                  Passwordless Login
+                </Button>
+                <div className="text-muted-foreground text-center text-sm">or</div>
+                <Button
                   id="login-button"
                   size="lg"
                   variant="outline"
-                  tabIndex={3}
+                  tabIndex={4}
                   className="flex w-full gap-2"
                   onClick={onLoginGoogleButtonClick}
                 >

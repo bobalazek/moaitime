@@ -1,0 +1,1 @@
+ALTER TABLE "user_passwordless_logins" RENAME COLUMN "accepted_at" TO "approved_at";

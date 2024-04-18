@@ -67,7 +67,7 @@ export default function AuthRegisterPage() {
     setTeamUserInvitationToken(teamUserInvitationTokenParam);
   }, [searchParams]);
 
-  const onLoginButtonClick = () => {
+  const onBackToLoginButtonClick = () => {
     navigate('/login');
   };
 
@@ -272,7 +272,12 @@ export default function AuthRegisterPage() {
               </Button>
             </div>
             <hr className="my-8" />
-            <Button size="lg" variant="outline" className="w-full" onClick={onLoginButtonClick}>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full"
+              onClick={onBackToLoginButtonClick}
+            >
               Back to Login
             </Button>
           </CardContent>

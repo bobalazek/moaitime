@@ -9,6 +9,7 @@ import {
   UpdateUserPassword,
   UpdateUserSettings,
   UserLimits,
+  UserPasswordlessLogin,
   UserUsage,
 } from '@moaitime/shared-common';
 import { API_URL } from '@moaitime/shared-frontend';
@@ -29,7 +30,7 @@ export const login = async (email: string, password: string, userAgent?: string)
 };
 
 export const requestPasswordlessLogin = async (email: string) => {
-  const response = await fetchJson<ResponseInterface>(
+  const response = await fetchJson<ResponseInterface<UserPasswordlessLogin>>(
     `${API_URL}/api/v1/auth/request-passwordless-login`,
     {
       method: 'POST',
@@ -38,6 +39,17 @@ export const requestPasswordlessLogin = async (email: string) => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+    }
+  );
+
+  return response;
+};
+
+export const checkPasswordlessLogin = async (token: string) => {
+  const response = await fetchJson<ResponseInterface<UserPasswordlessLogin>>(
+    `${API_URL}/api/v1/auth/passwordless-login/${token}`,
+    {
+      method: 'GET',
     }
   );
 

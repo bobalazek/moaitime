@@ -21,7 +21,7 @@ export default function AuthForgotPasswordPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
 
-  const onLoginButtonClick = () => {
+  const onBackToLoginButtonClick = () => {
     navigate('/login');
   };
 
@@ -72,7 +72,12 @@ export default function AuthForgotPasswordPage() {
               </Button>
             </div>
             <hr className="my-8" />
-            <Button size="lg" variant="outline" className="w-full" onClick={onLoginButtonClick}>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full"
+              onClick={onBackToLoginButtonClick}
+            >
               Back to Login
             </Button>
           </CardContent>

@@ -31,7 +31,7 @@ export class UserPasswordlessLoginsManager {
   ): Promise<UserPasswordlessLogin | null> {
     const where = and(
       eq(userPasswordlessLogins.userId, userId),
-      isNull(userPasswordlessLogins.acceptedAt),
+      isNull(userPasswordlessLogins.approvedAt),
       isNull(userPasswordlessLogins.rejectedAt),
       or(isNull(userPasswordlessLogins.expiresAt), gt(userPasswordlessLogins.expiresAt, now))
     );

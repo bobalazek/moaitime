@@ -55,7 +55,8 @@ export class AuthController {
     @Body() body: EmailDto,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
-    await authManager.requestPasswordlessLogin(body.email);
+    const userPasswordlessLogin = await authManager.requestPasswordlessLogin(body.email);
+    const userPasswordlessLoginDto = UserPasswordlessLoginSchema.parse(userPasswordlessLogin);
 
     res.status(200);
 
@@ -63,6 +64,7 @@ export class AuthController {
       success: true,
       message:
         'You have successfully requested the passwordless login. Check your email for the code',
+      data: userPasswordlessLoginDto,
     };
   }
 
@@ -96,7 +98,6 @@ export class AuthController {
   @Get('passwordless-login/:token')
   async checkPasswordlessLogin(@Param('token') token: string): Promise<ResponseDto> {
     const userPasswordlessLogin = await authManager.checkPasswordlessLogin(token);
-
     const userPasswordlessLoginDto = UserPasswordlessLoginSchema.parse(userPasswordlessLogin);
 
     return {

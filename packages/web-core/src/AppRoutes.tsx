@@ -8,6 +8,7 @@ import AuthConfirmEmailPage from './features/auth/components/pages/AuthConfirmEm
 import AuthDeleteAccountPage from './features/auth/components/pages/AuthDeleteAccountPage';
 import AuthForgotPasswordPage from './features/auth/components/pages/AuthForgotPasswordPage';
 import AuthLoginPage from './features/auth/components/pages/AuthLoginPage';
+import AuthPasswordlessLoginPage from './features/auth/components/pages/AuthPasswordlessLoginPage';
 import AuthRegisterPage from './features/auth/components/pages/AuthRegisterPage';
 import AuthResetPasswordPage from './features/auth/components/pages/AuthResetPasswordPage';
 import CalendarPage from './features/calendar/components/pages/CalendarPage';
@@ -171,6 +172,14 @@ export function AppRoutes() {
           element={
             <PublicOnlyRoute>
               <AuthLoginPage />
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/passwordless-login"
+          element={
+            <PublicOnlyRoute>
+              <AuthPasswordlessLoginPage />
             </PublicOnlyRoute>
           }
         />

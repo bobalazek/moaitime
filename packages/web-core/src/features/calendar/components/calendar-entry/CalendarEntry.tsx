@@ -27,8 +27,8 @@ import {
   getCalendarViewWidths,
   getClientCoordinates,
   getRoundedMinutesFromCoordinates,
-  hasReachedThresholdForMove,
   ifIsCalendarEntryEndDateSameAsToday,
+  isThresholdReached,
   shouldShowContinuedText,
 } from '../../utils/CalendarHelpers';
 import CalendarEntryTimes from './CalendarEntryTimes';
@@ -187,7 +187,7 @@ export default function CalendarEntry({
 
       if (isTouchEvent) {
         setTimeout(() => {
-          const hasReachedThreshold = hasReachedThresholdForMove(
+          const hasReachedThreshold = isThresholdReached(
             currentCoordinates,
             initialCoordinates,
             10
@@ -284,11 +284,7 @@ export default function CalendarEntry({
         document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
 
         const currentCoordinates = getClientCoordinates(event);
-        const hasReachedThreshold = hasReachedThresholdForMove(
-          currentCoordinates,
-          initialCoordinates,
-          10
-        );
+        const hasReachedThreshold = isThresholdReached(currentCoordinates, initialCoordinates, 10);
         if (!hasReachedThreshold) {
           openEventOrTaskDialog();
         }

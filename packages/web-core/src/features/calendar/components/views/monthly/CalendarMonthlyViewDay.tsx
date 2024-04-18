@@ -13,6 +13,7 @@ import {
 import { calendarEventResizingAtom } from '../../../state/calendarAtoms';
 import { useCalendarStore } from '../../../state/calendarStore';
 import { useEventsStore } from '../../../state/eventsStore';
+import { getClientCoordinates, isThresholdReached } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
 
 export type CalendarMonthlyViewDayProps = {
@@ -68,14 +69,24 @@ export default function CalendarMonthlyViewDay({
       event.stopPropagation();
     }
 
+    // General
     const isTouchEvent = event.type.startsWith('touch');
+    const initialCoordinates = getClientCoordinates(event);
     const dayMidnight = `${format(day, 'yyyy-MM-dd')}T00:00:00.000`;
 
     if (calendarEventResizing) {
       return;
     }
 
-    const onEnd = () => {
+    const onEnd = (event: MouseEvent | TouchEvent) => {
+      const currentCoordinates = getClientCoordinates(event);
+      if (isTouchEvent) {
+        const hasReachedThreshold = isThresholdReached(currentCoordinates, initialCoordinates, 10);
+        if (hasReachedThreshold) {
+          return;
+        }
+      }
+
       setSelectedEventDialogOpen(true, {
         startsAt: dayMidnight,
         endsAt: dayMidnight,

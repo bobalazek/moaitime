@@ -15,7 +15,7 @@ import { useEventsStore } from '../../../state/eventsStore';
 import {
   getCalendarEntriesWithStyles,
   getClientCoordinates,
-  hasReachedThresholdForMove,
+  isThresholdReached,
 } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
 import CalendarWeeklyViewDayCurrentTimeLine from './CalendarWeeklyViewDayCurrentTimeLine';
@@ -85,7 +85,7 @@ export default function CalendarWeeklyViewDay({
         const currentCoordinates = getClientCoordinates(event);
 
         if (isTouchEvent) {
-          const hasReachedThreshold = hasReachedThresholdForMove(
+          const hasReachedThreshold = isThresholdReached(
             currentCoordinates,
             initialCoordinates,
             10

@@ -676,7 +676,7 @@ export const getClosestNextHalfHour = () => {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), halfHour);
 };
 
-export const hasReachedThresholdForMove = (
+export const isThresholdReached = (
   currentCoordinates: Coordinates,
   initialCoordinates: Coordinates,
   threshold = 10

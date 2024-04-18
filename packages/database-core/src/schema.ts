@@ -25,6 +25,7 @@ export * from './schema/teamUserInvitations';
 export * from './schema/testingEmails';
 export * from './schema/reports';
 export * from './schema/userAccessTokens';
+export * from './schema/userPasswordlessLogins';
 export * from './schema/userDataExports';
 export * from './schema/userCalendars';
 export * from './schema/userNotifications';

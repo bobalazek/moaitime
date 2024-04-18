@@ -1,10 +1,11 @@
-import { Body, Controller, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { RealIP } from 'nestjs-real-ip';
 
 import { authManager } from '@moaitime/database-services';
-import { OauthProviderEnum } from '@moaitime/shared-common';
+import { OauthProviderEnum, UserPasswordlessLoginSchema } from '@moaitime/shared-common';
 
+import { EmailDto } from '../../../dtos/email.dto';
 import { OauthTokenDto } from '../../../dtos/oauth-token.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { ResponseDto } from '../../../dtos/responses/response.dto';
@@ -12,6 +13,7 @@ import { TokenDto } from '../../../dtos/token.dto';
 import { AuthDto } from '../dtos/auth.dto';
 import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
 import { LoginDto } from '../dtos/login.dto';
+import { PasswordlessLoginDto } from '../dtos/passwordless-login.dto';
 import { RegisterDto } from '../dtos/register.dto';
 import { RequestPasswordResetDto } from '../dtos/request-password-reset.dto';
 import { ResendEmailConfirmationDto } from '../dtos/resend-email-confirmation.dto';
@@ -45,6 +47,61 @@ export class AuthController {
       success: true,
       message: 'You have successfully logged in',
       data: convertUserToAuthDto({ ...user, _accessToken: userAccessToken }),
+    };
+  }
+
+  @Post('request-passwordless-login')
+  async requestPasswordlessLogin(
+    @Body() body: EmailDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ResponseDto> {
+    await authManager.requestPasswordlessLogin(body.email);
+
+    res.status(200);
+
+    return {
+      success: true,
+      message:
+        'You have successfully requested the passwordless login. Check your email for the code',
+    };
+  }
+
+  @Post('passwordless-login')
+  async passwordlessLogin(
+    @Body() body: PasswordlessLoginDto,
+    @RealIP() ip: string,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<AbstractResponseDto<AuthDto>> {
+    const userAgent = req.get('user-agent');
+    const deviceUid = req.get('device-uid');
+
+    const { user, userAccessToken } = await authManager.passwordlessLogin(
+      body.token,
+      body.code,
+      userAgent,
+      deviceUid,
+      ip
+    );
+
+    res.status(200);
+
+    return {
+      success: true,
+      message: 'You have successfully logged in',
+      data: convertUserToAuthDto({ ...user, _accessToken: userAccessToken }),
+    };
+  }
+
+  @Get('passwordless-login/:token')
+  async checkPasswordlessLogin(@Param('token') token: string): Promise<ResponseDto> {
+    const userPasswordlessLogin = await authManager.checkPasswordlessLogin(token);
+
+    const userPasswordlessLoginDto = UserPasswordlessLoginSchema.parse(userPasswordlessLogin);
+
+    return {
+      success: true,
+      data: userPasswordlessLoginDto,
     };
   }
 

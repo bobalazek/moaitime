@@ -28,6 +28,39 @@ export const login = async (email: string, password: string, userAgent?: string)
   return response;
 };
 
+export const requestPasswordlessLogin = async (email: string) => {
+  const response = await fetchJson<ResponseInterface>(
+    `${API_URL}/api/v1/auth/request-passwordless-login`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+
+export const passwordlessLogin = async (token: string, code: string) => {
+  const response = await fetchJson<ResponseInterface<Auth>>(
+    `${API_URL}/api/v1/auth/passwordless-login`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ token, code }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response;
+};
+
+// OAuth
 export const oauthLogin = async (provider: OauthProviderEnum, oauthToken: OauthToken) => {
   const response = await fetchJson<ResponseInterface<Auth>>(
     `${API_URL}/api/v1/auth/oauth/${provider}/login`,

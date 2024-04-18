@@ -1,4 +1,5 @@
 import { Team } from '../auth/teams/TeamSchema';
+import { UserPasswordlessLoginTypeEnum } from '../auth/users/UserPasswordlessLoginTypeEnum';
 import { Calendar } from '../calendar/CalendarSchema';
 import { Event } from '../calendar/EventSchema';
 import { FocusSession } from '../focus/FocusSessionSchema';
@@ -119,6 +120,7 @@ export type GlobalEvents = {
     actorUserId: string;
     userId: string;
     oauthProvider?: string;
+    passwordlessLoginType?: UserPasswordlessLoginTypeEnum;
     actorWebsocketToken?: string;
   };
   [GlobalEventsEnum.AUTH_USER_LOGGED_OUT]: {

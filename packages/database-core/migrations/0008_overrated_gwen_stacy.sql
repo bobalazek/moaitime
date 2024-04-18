@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "user_passwordless_codes_token_idx" ON "user_passwordless_codes" ("user_id");

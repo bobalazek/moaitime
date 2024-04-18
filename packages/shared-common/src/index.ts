@@ -7,6 +7,8 @@ export * from './auth/AuthSchema';
 export * from './auth/oauth/OauthProviderEnum';
 export * from './auth/oauth/OauthTokenSchema';
 export * from './auth/oauth/OauthUserInfoSchema';
+export * from './auth/users/UserPasswordlessLoginSchema';
+export * from './auth/users/UserPasswordlessLoginTypeEnum';
 export * from './auth/users/UserRoleEnum';
 export * from './auth/users/UserSettingsDefault';
 export * from './auth/users/UserLimitsAndUsage';

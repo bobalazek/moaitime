@@ -10,6 +10,7 @@ import {
   AuthConfirmEmailEmail,
   AuthConfirmNewEmailEmail,
   AuthPasswordChangedEmail,
+  AuthPasswordlessLoginEmail,
   AuthResetPasswordEmail,
   AuthWelcomeEmail,
   SocialUserInvitationEmail,
@@ -40,6 +41,13 @@ export type MailerSendAuthResetPasswordEmailOptions = {
 export type MailerSendAuthPasswordChangedEmailOptions = {
   userEmail: string;
   userDisplayName: string;
+};
+
+export type MailerSendAuthPasswordlessLoginEmailOptions = {
+  userEmail: string;
+  userDisplayName: string;
+  passwordlessLoginUrl: string;
+  code: string;
 };
 
 export type MailerSendAuthAccountDeletionEmailOptions = {
@@ -124,6 +132,15 @@ export class Mailer {
     return this.send(AuthPasswordChangedEmail(rest), {
       to: userEmail,
       subject: '🔑 Password Changed for MoaiTime',
+    });
+  }
+
+  async sendAuthPasswordlessLoginEmail(options: MailerSendAuthPasswordlessLoginEmailOptions) {
+    const { userEmail, ...rest } = options;
+
+    return this.send(AuthPasswordlessLoginEmail(rest), {
+      to: userEmail,
+      subject: '🪄 Magic Login for MoaiTime',
     });
   }
 

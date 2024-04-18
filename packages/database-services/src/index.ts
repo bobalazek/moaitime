@@ -9,6 +9,7 @@ export * from './features/auth/OrganizationsManager';
 export * from './features/auth/UsersManager';
 export * from './features/auth/UserDataExportsManager';
 export * from './features/auth/UserAccessTokensManager';
+export * from './features/auth/UserPasswordlessLoginCodesManager';
 export * from './features/auth/UserNotificationsManager';
 export * from './features/auth/UserDeletionProcessor';
 export * from './features/auth/UserDataExportProcessor';

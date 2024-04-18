@@ -17,6 +17,7 @@ import {
   UserAccessToken,
   userIdentities,
   UserIdentity,
+  UserPasswordlessLogin,
 } from '@moaitime/database-core';
 import { mailer } from '@moaitime/emails-mailer';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -41,6 +42,7 @@ import {
   OauthUserInfo,
   ProcessingStatusEnum,
   RegisterUser,
+  UserPasswordlessLoginTypeEnum,
   UserPasswordSchema,
   UserRoleEnum,
   UserSettingsSchema,
@@ -55,6 +57,10 @@ import { TasksManager, tasksManager } from '../tasks/TasksManager';
 import { TeamsManager, teamsManager } from './TeamsManager';
 import { UserAccessTokensManager, userAccessTokensManager } from './UserAccessTokensManager';
 import { UserDataExportsManager, userDataExportsManager } from './UserDataExportsManager';
+import {
+  UserPasswordlessLoginsManager,
+  userPasswordlessLoginsManager,
+} from './UserPasswordlessLoginCodesManager';
 import { UsersManager, usersManager } from './UsersManager';
 
 type AuthLoginResult = {
@@ -67,6 +73,7 @@ export class AuthManager {
     private _logger: Logger,
     private _usersManager: UsersManager,
     private _userAccessTokensManager: UserAccessTokensManager,
+    private _userPasswordlessCodesManager: UserPasswordlessLoginsManager,
     private _userExportsManager: UserDataExportsManager,
     private _teamsManager: TeamsManager,
     private _listsManager: ListsManager,
@@ -114,6 +121,97 @@ export class AuthManager {
     globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
       actorUserId: user.id,
       userId: user.id,
+    });
+
+    return {
+      user,
+      userAccessToken,
+    };
+  }
+
+  async requestPasswordlessLogin(email: string): Promise<User> {
+    const user = await this._usersManager.findOneByEmail(email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const currentlyActive = await this._userPasswordlessCodesManager.findCurrentlyActiveForUserId(
+      user.id
+    );
+    if (currentlyActive) {
+      throw new Error(
+        `You already have a pending passwordless login request. Check your email or try again later.`
+      );
+    }
+
+    const token = uuidv4();
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    const passwordlessLoginUrl = `${getEnv().WEB_BASE_URL}/auth/passwordless-login?token=${token}&code=${code}`;
+    const expiresAt = addSeconds(new Date(), 300);
+
+    await this._userPasswordlessCodesManager.insertOne({
+      type: UserPasswordlessLoginTypeEnum.EMAIL,
+      token,
+      code,
+      expiresAt,
+      userId: user.id,
+    });
+
+    await mailer.sendAuthPasswordlessLoginEmail({
+      userEmail: user.email,
+      userDisplayName: user.displayName,
+      passwordlessLoginUrl,
+      code,
+    });
+
+    return user;
+  }
+
+  async checkPasswordlessLogin(token: string): Promise<UserPasswordlessLogin> {
+    const passwordlessLogin = await this._userPasswordlessCodesManager.findOneByToken(token);
+    if (!passwordlessLogin) {
+      throw new Error('Invalid passwordless login token');
+    }
+
+    return passwordlessLogin;
+  }
+
+  async passwordlessLogin(
+    token: string,
+    code: string,
+    userAgent?: string,
+    deviceUid?: string,
+    ip?: string
+  ): Promise<AuthLoginResult> {
+    const passwordlessLogin = await this._userPasswordlessCodesManager.findOneByToken(token);
+    if (!passwordlessLogin) {
+      throw new Error('Invalid passwordless login token');
+    }
+
+    if (passwordlessLogin.code !== code) {
+      throw new Error('Invalid passwordless login code');
+    }
+
+    const now = new Date();
+    if (passwordlessLogin.expiresAt && passwordlessLogin.expiresAt.getTime() < now.getTime()) {
+      throw new Error('Passwordless login code expired');
+    }
+
+    const user = await this._usersManager.findOneById(passwordlessLogin.userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await this._userPasswordlessCodesManager.updateOneById(passwordlessLogin.id, {
+      acceptedAt: now,
+    });
+
+    const userAccessToken = await this.createNewUserAccessToken(user.id, userAgent, deviceUid, ip);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.AUTH_USER_LOGGED_IN, {
+      actorUserId: user.id,
+      userId: user.id,
+      passwordlessLoginType: passwordlessLogin.type,
     });
 
     return {
@@ -1105,6 +1203,7 @@ export const authManager = new AuthManager(
   logger,
   usersManager,
   userAccessTokensManager,
+  userPasswordlessLoginsManager,
   userDataExportsManager,
   teamsManager,
   listsManager,

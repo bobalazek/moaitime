@@ -30,10 +30,12 @@ import {
   oauthLogin,
   oauthUnlink,
   oauthUserInfo,
+  passwordlessLogin,
   refreshToken,
   register,
   requestAccountDeletion,
   requestDataExport,
+  requestPasswordlessLogin,
   requestPasswordReset,
   resendEmailConfirmation,
   resetPassword,
@@ -49,6 +51,9 @@ export type AuthStore = {
   // Login
   login: (email: string, password: string) => Promise<ResponseInterface>;
   logout: () => Promise<ResponseInterface>;
+  // Passwordless Login
+  requestPasswordlessLogin: (email: string) => Promise<ResponseInterface>;
+  passwordlessLogin: (token: string, code: string) => Promise<ResponseInterface>;
   // OAuth
   oauthLogin: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<ResponseInterface>;
   oauthUserInfo: (provider: OauthProviderEnum, oauthToken: OauthToken) => Promise<OauthUserInfo>;
@@ -120,6 +125,23 @@ export const useAuthStore = create<AuthStore>()(
         // Make sure we close the popover, as it can stay open sometimes when logging in,
         // if it was open
         setPopoverOpen(false);
+
+        return response;
+      },
+      // Passwordless Login
+      requestPasswordlessLogin: async (email: string) => {
+        const response = await requestPasswordlessLogin(email);
+
+        return response;
+      },
+      passwordlessLogin: async (token: string, code: string) => {
+        const { reloadAppData } = useAppStore.getState();
+
+        const response = await passwordlessLogin(token, code);
+
+        set({ auth: response.data });
+
+        reloadAppData();
 
         return response;
       },

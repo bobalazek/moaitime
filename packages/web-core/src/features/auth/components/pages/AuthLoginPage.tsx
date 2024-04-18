@@ -60,7 +60,7 @@ export default function AuthLoginPage() {
   };
 
   const onPaswordlessLoginButtonClick = async () => {
-    navigate('/passwordless-login');
+    navigate(`/passwordless-login${email ? `?email=${email}` : ''}`);
   };
 
   const onLoginGoogleButtonClick = async () => {
@@ -145,12 +145,12 @@ export default function AuthLoginPage() {
                 <Button
                   id="passwordless-login-button"
                   size="lg"
-                  variant="default"
+                  variant="outline"
                   tabIndex={3}
                   className="w-full"
                   onClick={onPaswordlessLoginButtonClick}
                 >
-                  Passwordless Login
+                  🪄 Passwordless Login
                 </Button>
                 <div className="text-muted-foreground text-center text-sm">or</div>
                 <Button

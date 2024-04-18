@@ -29,8 +29,13 @@ export default function AuthPasswordlessLoginPage() {
 
   useEffect(() => {
     (async () => {
+      const emailSearchParam = searchParams.get('email');
       const codeSearchParam = searchParams.get('code');
       const tokenSearchParam = searchParams.get('token');
+
+      if (emailSearchParam) {
+        setEmail(emailSearchParam);
+      }
 
       if (codeSearchParam) {
         setCode(codeSearchParam);
@@ -89,9 +94,10 @@ export default function AuthPasswordlessLoginPage() {
             <div className="flex flex-col gap-8">
               {!passwordlessLoginData && (
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="passwordless-login-email">Email</Label>
+                  <Label htmlFor="passwordlessLogin-email">Email</Label>
                   <Input
-                    id="passwordless-login-email"
+                    type="email"
+                    id="passwordlessLogin-email"
                     autoFocus
                     value={email}
                     onChange={(event) => {
@@ -102,9 +108,9 @@ export default function AuthPasswordlessLoginPage() {
               )}
               {passwordlessLoginData && (
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="passwordless-login-code">Code</Label>
+                  <Label htmlFor="passwordlessLogin-code">Code</Label>
                   <Input
-                    id="passwordless-login-code"
+                    id="passwordlessLogin-code"
                     autoFocus
                     value={code}
                     onChange={(event) => {
@@ -115,7 +121,7 @@ export default function AuthPasswordlessLoginPage() {
               )}
               <div className="flex flex-col gap-2">
                 <Button
-                  id="passwordless-login-button"
+                  id="passwordlessLogin-button"
                   size="lg"
                   variant="default"
                   tabIndex={3}

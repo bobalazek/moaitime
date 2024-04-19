@@ -124,7 +124,6 @@ This is where we reached the end of the installation process. You can now enjoy 
 
 - [Development](./docs/DEVELOPMENT.md)
 - [Commands](./docs/COMMANDS.md)
-- [Docker Commands](./docs/DOCKER-COMMANDS.md)
 - [Testing](./docs/TESTING.md)
 
 ## License

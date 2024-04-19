@@ -30,6 +30,7 @@ MoaiTime is a self-hosted productivity app that helps you organize your life, wo
 
 ![Home Page](./docs/screenshots/home-page.png)
 ![Calendar - Monthly](./docs/screenshots/calendar-monthly.png)
+![Calendar - Weekly](./docs/screenshots/calendar-weekly.png)
 ![Tasks](./docs/screenshots/tasks.png)
 ![Habits](./docs/screenshots/habits.png)
 ![Notes](./docs/screenshots/notes.png)

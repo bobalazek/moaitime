@@ -10,6 +10,7 @@ import { useAuthUserSetting } from './features/auth/state/authStore';
 import { ErrorBoundary } from './features/core/components/ErrorBoundary';
 import { queryClient } from './features/core/utils/FetchHelpers';
 import { useTasksStore } from './features/tasks/state/tasksStore';
+import { ProviderComposer } from './ProviderComposer';
 
 function ToasterContainer() {
   const { popoverOpen } = useTasksStore();
@@ -27,18 +28,19 @@ function SonnerToasterContainer() {
   return <SonnerToaster theme={theme} position={toasterPosition} closeButton />;
 }
 
+const providers = [
+  [QueryClientProvider, { client: queryClient }],
+  [TooltipProvider],
+  OAUTH_GOOGLE_CLIENT_ID && [GoogleOAuthProvider, { clientId: OAUTH_GOOGLE_CLIENT_ID }],
+  [Provider],
+];
+
 export function App() {
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <GoogleOAuthProvider clientId={OAUTH_GOOGLE_CLIENT_ID}>
-            <Provider>
-              <AppRoutes />
-            </Provider>
-          </GoogleOAuthProvider>
-        </TooltipProvider>
-      </QueryClientProvider>
+      <ProviderComposer providers={providers}>
+        <AppRoutes />
+      </ProviderComposer>
       <ToasterContainer />
       <SonnerToasterContainer />
     </ErrorBoundary>

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { OauthProviderEnum, OauthToken, OauthUserInfo } from '@moaitime/shared-common';
+import { OAUTH_GOOGLE_CLIENT_ID } from '@moaitime/shared-frontend';
 import {
   Alert,
   AlertDescription,
@@ -118,7 +119,7 @@ export default function AuthRegisterPage() {
             <CardDescription>Brilliant, let's get started, shall we?!</CardDescription>
           </CardHeader>
           <CardContent>
-            {!oauthToken && (
+            {OAUTH_GOOGLE_CLIENT_ID && !oauthToken && (
               <>
                 <Button
                   id="login-button"
@@ -183,8 +184,7 @@ export default function AuthRegisterPage() {
                     placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
                   <div className="text-muted-foreground text-sm">
-                    For now, only users with an invitation token can register. If you don't have
-                    one, do check our social accounts for giveaways!
+                    Only users with an invitation token can register at the moment.
                   </div>
                 </div>
               )}

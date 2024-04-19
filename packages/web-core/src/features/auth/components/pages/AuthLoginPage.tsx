@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { OauthProviderEnum } from '@moaitime/shared-common';
+import { OAUTH_GOOGLE_CLIENT_ID } from '@moaitime/shared-frontend';
 import {
   Button,
   Card,
@@ -152,18 +153,22 @@ export default function AuthLoginPage() {
                 >
                   🪄 Passwordless Login
                 </Button>
-                <div className="text-muted-foreground text-center text-sm">or</div>
-                <Button
-                  id="login-button"
-                  size="lg"
-                  variant="outline"
-                  tabIndex={4}
-                  className="flex w-full gap-2"
-                  onClick={onLoginGoogleButtonClick}
-                >
-                  <GoogleSvgIcon />
-                  Sign in with Google
-                </Button>
+                {OAUTH_GOOGLE_CLIENT_ID && (
+                  <>
+                    <div className="text-muted-foreground text-center text-sm">or</div>
+                    <Button
+                      id="login-button"
+                      size="lg"
+                      variant="outline"
+                      tabIndex={4}
+                      className="flex w-full gap-2"
+                      onClick={onLoginGoogleButtonClick}
+                    >
+                      <GoogleSvgIcon />
+                      Sign in with Google
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
             <hr className="my-8" />

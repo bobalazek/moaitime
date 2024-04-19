@@ -259,7 +259,6 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
           content: note?.content as never,
           color: note?.color,
           directory: note?.directory,
-          journalDate: note?.journalDate,
         };
       }
     }

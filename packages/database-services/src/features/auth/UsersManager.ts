@@ -1024,14 +1024,14 @@ export class UsersManager {
 
     return {
       teamsMaxPerUserCount: 1,
-      tasksMaxPerListCount: 25,
-      listsMaxPerUserCount: 10,
-      tagsMaxPerUserCount: 10,
-      habitsMaxPerUserCount: 5,
-      calendarsMaxPerUserCount: 5,
-      calendarsMaxEventsPerCalendarCount: 1000,
-      calendarsMaxUserCalendarsPerUserCount: 3,
-      notesMaxPerUserCount: 25,
+      tasksMaxPerListCount: 100,
+      listsMaxPerUserCount: 25,
+      tagsMaxPerUserCount: 50,
+      habitsMaxPerUserCount: 100,
+      calendarsMaxPerUserCount: 20,
+      calendarsMaxEventsPerCalendarCount: 10000,
+      calendarsMaxUserCalendarsPerUserCount: 100,
+      notesMaxPerUserCount: 1000,
       userInvitationsMaxPerUserCount: 10,
     };
   }

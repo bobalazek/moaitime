@@ -856,11 +856,11 @@ export class TeamsManager {
     // TODO: once we have plans, we need to adjust the limits depending on that
 
     return {
-      tasksMaxPerListCount: 25,
-      listsMaxPerTeamCount: 3,
-      usersMaxPerTeamCount: 5,
-      calendarsMaxPerTeamCount: 3,
-      calendarsMaxEventsPerCalendarCount: 100,
+      tasksMaxPerListCount: 100,
+      listsMaxPerTeamCount: 25,
+      usersMaxPerTeamCount: 10,
+      calendarsMaxPerTeamCount: 20,
+      calendarsMaxEventsPerCalendarCount: 10000,
     };
   }
 

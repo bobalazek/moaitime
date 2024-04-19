@@ -6,7 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig((options) => {
   const envDir = join(__dirname, '..', '..');
-  const envPrefix = ['VITE_', 'OAUTH_GOOGLE_CLIENT_ID', 'WEB_BASE_URL', 'API_BASE_URL'];
+  const envPrefix = ['VITE_', 'OAUTH_GOOGLE_CLIENT_ID', 'WEB_URL', 'API_URL'];
 
   return {
     ...options,

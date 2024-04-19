@@ -19,8 +19,8 @@ export const envSchema = z.object({
     .transform((value) => value === 'true')
     .default('false'),
   // Application
-  API_BASE_URL: z.string().url().min(1),
-  WEB_BASE_URL: z.string().url().min(1),
+  API_URL: z.string().url().min(1),
+  WEB_URL: z.string().url().min(1),
   API_PORT: z.coerce.number().default(3636),
   // Databases
   POSTGRESQL_URL: z.string().url().min(1),

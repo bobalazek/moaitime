@@ -6,7 +6,7 @@ import { UserWithAccessToken } from '../types/user-with-access-token.type';
 
 export const convertUserToAuthDto = (userWithAccessToken: UserWithAccessToken): AuthDto => {
   const now = new Date();
-  const { API_BASE_URL } = getEnv();
+  const { API_URL } = getEnv();
 
   const userAccessToken = {
     token: userWithAccessToken._accessToken.token,
@@ -18,7 +18,7 @@ export const convertUserToAuthDto = (userWithAccessToken: UserWithAccessToken): 
   const avatarImageUrlRaw = userWithAccessToken.avatarImageUrl;
   const avatarImageFileName = avatarImageUrlRaw ? avatarImageUrlRaw.split('/').pop() : null;
   const avatarImageUrl = avatarImageFileName
-    ? `${API_BASE_URL}/api/v1/users/${userWithAccessToken.id}/avatar/${avatarImageFileName}?access-token=${userAccessToken.token}&device-uid=${userAccessToken.deviceUid}`
+    ? `${API_URL}/api/v1/users/${userWithAccessToken.id}/avatar/${avatarImageFileName}?access-token=${userAccessToken.token}&device-uid=${userAccessToken.deviceUid}`
     : null;
 
   return {

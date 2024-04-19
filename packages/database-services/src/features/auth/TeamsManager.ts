@@ -687,7 +687,7 @@ export class TeamsManager {
       userEmail: email,
       teamName: team.name,
       invitedByUserDisplayName: user.displayName ?? 'User',
-      registerUrl: `${getEnv().WEB_BASE_URL}/register?teamUserInvitationToken=${token}`,
+      registerUrl: `${getEnv().WEB_URL}/register?teamUserInvitationToken=${token}`,
     });
 
     globalEventsNotifier.publish(GlobalEventsEnum.TEAMS_TEAM_MEMBER_INVITED, {

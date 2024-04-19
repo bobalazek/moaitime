@@ -68,7 +68,7 @@ export class InvitationsManager {
     await mailer.sendSocialUserInvitationEmail({
       userEmail: email,
       invitedByUserDisplayName: user.displayName ?? 'User',
-      registerUrl: `${getEnv().WEB_BASE_URL}/register?invitationToken=${token}`,
+      registerUrl: `${getEnv().WEB_URL}/register?invitationToken=${token}`,
     });
 
     return invitation;

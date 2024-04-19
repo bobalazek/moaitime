@@ -14,9 +14,8 @@
   "scripts": {
     "build": "tsup",
     "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
-    "dev:run-exec": "tsx ./src/main.ts",
     "lint": "eslint .",
-    "run-exec": "pnpm build && node ./dist/main.js"
+    "run-exec": "tsx ./src/main.ts"
   },
   "dependencies": {
     "@moaitime/database-core": "workspace:*",

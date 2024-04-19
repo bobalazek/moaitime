@@ -5,7 +5,7 @@
   "scripts": {
     "build": "turbo build --no-daemon",
     "clean": "turbo clean --no-daemon --parallel && rimraf --glob node_modules",
-    "cli": "cd apps/cli && pnpm dev:run-exec",
+    "cli": "pnpm build && cd apps/cli && pnpm run-exec",
     "dev": "cross-env NODE_ENV=development turbo dev --no-daemon --concurrency=50",
     "dev:e2e": "cross-env NODE_ENV=test turbo dev:e2e --no-daemon --concurrency=1",
     "dev:emails": "cross-env NODE_ENV=development turbo dev:emails --no-daemon --concurrency=1",

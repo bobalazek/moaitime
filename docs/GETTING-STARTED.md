@@ -1,4 +1,4 @@
-# MoaiTime - Setup Development Environment
+# MoaiTime - Getting started
 
 ## Prerequisites
 

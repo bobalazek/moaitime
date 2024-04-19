@@ -21,7 +21,7 @@ const publicDirectory = 'public';
 const port = parseInt(values.port ?? '3000');
 const allowedEnvironmentVariables = ['API_URL', 'OAUTH_GOOGLE_CLIENT_ID'];
 
-Bun.serve({
+const server = Bun.serve({
   port,
   async fetch(request: Request) {
     const url = new URL(request.url);
@@ -78,4 +78,24 @@ Bun.serve({
   },
 });
 
-console.log(`Server running on http://localhost:${port}`);
+console.log(`Server listening on ${server.url}`);
+
+process.on('SIGINT', () => {
+  console.log('Received SIGINT, closing server...');
+
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM, closing server...');
+
+  process.exit(0);
+});
+
+process.on('exit', (code) => {
+  server.close();
+
+  console.log(`Server closed with code ${code}`);
+
+  process.exit(code);
+});

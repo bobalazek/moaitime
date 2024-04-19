@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # Deployment
+  portainer:
+    # Username is "admin" and password is "password"
+    container_name: moaitime_portainer
+    image: portainer/portainer-ce:2.20.1
+    command: --admin-password '$$2y$$05$$Gi2cvNgIzh2cwEKV9gd0oOTn8Ju8alEX0.963i/poGO340XYS1JdO' # The password is "password"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    volumes:
+      - portainer-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9443:9443
+    networks:
+      - moaitime-network
+
+  # Apps
+  moaitime-api:
+    image: moaitime/moaitime-api:latest
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+  moaitime-web:
+    image: moaitime/moaitime-web:latest
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+  moaitime-cli:
+    image: moaitime/moaitime-cli:latest
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+  moaitime-cli-jobs-runner-start:
+    image: moaitime/moaitime-cli:latest
+    deploy:
+      replicas: 2
+      resources:
+        reservations:
+          cpus: '1'
+          memory: 2G
+        limits:
+          cpus: '2'
+          memory: 4G
+    env_file:
+      - ../.env.generated
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200m'
+        max-file: '10'
+
+volumes:
+  portainer-data:
+
+networks:
+  moaitime-network:
+    driver: overlay

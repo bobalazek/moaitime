@@ -7,26 +7,14 @@ import { UserRoleEnum } from '../../../shared-common/src';
 export const getUserSeeds = async (): Promise<NewUser[]> => {
   return [
     {
-      username: 'borut',
-      email: 'borut@moaitime.com',
+      username: 'admin',
+      email: 'admin@moaitime.com',
       password: await generateHash('password'),
-      displayName: 'Borut',
+      displayName: 'Admin',
       roles: [UserRoleEnum.ADMIN],
       emailConfirmedAt: new Date(),
       settings: {
-        generalTimezone: 'Europe/Ljubljana',
-        generalStartDayOfWeek: 1,
-      } as UserSettings,
-    },
-    {
-      username: 'ana',
-      email: 'ana@moaitime.com',
-      password: await generateHash('password'),
-      displayName: 'Ana',
-      roles: [UserRoleEnum.ADMIN],
-      emailConfirmedAt: new Date(),
-      settings: {
-        generalTimezone: 'Europe/Ljubljana',
+        generalTimezone: 'Europe/Berlin',
         generalStartDayOfWeek: 1,
       } as UserSettings,
     },
@@ -38,7 +26,7 @@ export const getUserSeeds = async (): Promise<NewUser[]> => {
       roles: [UserRoleEnum.ADMIN],
       emailConfirmedAt: new Date(),
       settings: {
-        generalTimezone: 'Europe/Ljubljana',
+        generalTimezone: 'Europe/Berlin',
         generalStartDayOfWeek: 1,
       } as UserSettings,
     },

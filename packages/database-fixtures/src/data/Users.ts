@@ -14,7 +14,7 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
       roles: [UserRoleEnum.USER],
       emailConfirmedAt: new Date(),
       settings: {
-        generalTimezone: 'Europe/Ljubljana',
+        generalTimezone: 'Europe/Berlin',
         generalStartDayOfWeek: 1,
       } as UserSettings,
     },
@@ -25,7 +25,7 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
       roles: [UserRoleEnum.USER],
       displayName: 'NonVerifiedTester',
       settings: {
-        generalTimezone: 'Europe/Ljubljana',
+        generalTimezone: 'Europe/Berlin',
         generalStartDayOfWeek: 1,
       } as UserSettings,
     },
@@ -37,7 +37,7 @@ export const getUserFixtures = async (): Promise<NewUser[]> => {
       displayName: 'PrivateTester',
       isPrivate: true,
       settings: {
-        generalTimezone: 'Europe/Ljubljana',
+        generalTimezone: 'Europe/Berlin',
         generalStartDayOfWeek: 1,
       } as UserSettings,
     },

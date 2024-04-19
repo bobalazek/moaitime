@@ -31,3 +31,7 @@
 ### CLI - Jobs Runner
 
 - `pnpm cli jobs:runner:start` - starts all the jobs
+
+### CLI - Health
+
+- `pnpm cli health:check` - checks the health of the app

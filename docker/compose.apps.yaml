@@ -15,12 +15,6 @@ services:
       - postgres
       - redis
       - rabbitmq
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          cpus: '1'
-          memory: 2G
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -38,12 +32,6 @@ services:
     stop_grace_period: 30s
     depends_on:
       - moaitime-api
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          cpus: '1'
-          memory: 2G
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -60,11 +48,6 @@ services:
       dockerfile: ./apps/cli/Dockerfile
     entrypoint: tail -f /dev/null
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
     networks:
       - moaitime-network
 
@@ -80,15 +63,6 @@ services:
       - rabbitmq
     command: jobs:runner:start
     restart: unless-stopped
-    deploy:
-      replicas: 2
-      resources:
-        reservations:
-          cpus: '1'
-          memory: 2G
-        limits:
-          cpus: '2'
-          memory: 4G
     networks:
       - moaitime-network
 

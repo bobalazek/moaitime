@@ -2,6 +2,17 @@
 
 MoaiTime is a self-hosted productivity app that helps you organize your life, work and more. It is designed to be simple, fast and easy to use, while also being powerful and feature-rich. It is also open-source, so you can host it yourself, modify it to your liking and contribute to it.
 
+## Screenshots
+
+![Home Page](./docs/screenshots/home-page.png)
+![Calendar - Monthly](./docs/screenshots/calendar-monthly.png)
+![Calendar - Weekly](./docs/screenshots/calendar-weekly.png)
+![Tasks](./docs/screenshots/tasks.png)
+![Habits](./docs/screenshots/habits.png)
+![Notes](./docs/screenshots/notes.png)
+
+And much more! You can find more screenshots on my blog post [https://bobalazek.com/blog/0003-moaitime/](https://bobalazek.com/blog/0003-moaitime/).
+
 ## Features
 
 - **Calendar**, where you can add your events, appointments and more. Additionally you also have the ability to subscribe to other external calendars
@@ -25,17 +36,6 @@ MoaiTime is a self-hosted productivity app that helps you organize your life, wo
   - **Responsive design**, so you can use it on any device (native apps coming soon!)
   - **Accessibility**, so everyone can use it
   - **Data exports**, so you can take your data with you
-
-## Screenshots
-
-![Home Page](./docs/screenshots/home-page.png)
-![Calendar - Monthly](./docs/screenshots/calendar-monthly.png)
-![Calendar - Weekly](./docs/screenshots/calendar-weekly.png)
-![Tasks](./docs/screenshots/tasks.png)
-![Habits](./docs/screenshots/habits.png)
-![Notes](./docs/screenshots/notes.png)
-
-And much more! You can find more screenshots on my blog post [https://bobalazek.com/blog/0003-moaitime/](https://bobalazek.com/blog/0003-moaitime/).
 
 ## Stack
 

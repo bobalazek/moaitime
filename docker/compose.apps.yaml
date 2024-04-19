@@ -7,7 +7,7 @@ services:
   moaitime-api:
     container_name: moaitime_api
     build:
-      context: ../ # TODO: what was the reason for this again? Why do we need to go back one level?
+      context: ../ # We need to go back one directory, so we can access and copy the whole git repository into the container in our dockerfile
       dockerfile: ./apps/api/Dockerfile
     restart: unless-stopped
     stop_grace_period: 30s

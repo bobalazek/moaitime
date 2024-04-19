@@ -38,23 +38,17 @@ And much more! You can find more screenshots on my blog post [https://bobalazek.
 
 ## Stack
 
-- [Turborepo](https://turbo.build/repo) - Monorepo management
-- [pnpm](https://pnpm.io) - Package manager
-- [NestJS](https://nestjs.com) - API Backend
-- [React](https://reactjs.org) - Web App
-- [Zustand](https://zustand.surge.sh) - State Management
-- [Zod](https://zod.dev) - Schema Validation
-- [TailwindCSS](https://tailwindcss.com) - CSS Framework
-  - [Shadcn UI](https://ui.shadcn.com) - Components libraries
-- [PostgreSQL](https://www.postgresql.org) - Database
-- [Docker](https://www.docker.com) - Containerization
-- [Cypress](https://www.cypress.io) - E2E Testing
-- [tsup](https://tsup.egoist.sh) - Bundling
-- [Vite](https://vitejs.dev) - Bundling
-- [Vitest](https://vitest.dev) - Unit Testing
-- [ESLint](https://eslint.org) - Linting
-- [Prettier](https://prettier.io) - Code Formatting
-- [Husky](https://typicode.github.io/husky) - Git Hooks
+- General: [TypeScript](https://www.typescriptlang.org)
+- Tooling: [Turborepo](https://turbo.build/repo), [pnpm](https://pnpm.io), [Vite](https://vitejs.dev), [tsup](https://tsup.egoist.sh), [ESLint](https://eslint.org), [Prettier](https://prettier.io), [Husky](https://typicode.github.io/husky)
+- Shared: [Zod](https://zod.dev)
+- Frontend: [React](https://reactjs.org), [Zustand](https://zustand.surge.sh), [Jotai](https://jotai.org), [React Router](https://reactrouter.com/en/main), [TailwindCSS](https://tailwindcss.com), [Shadcn UI](https://ui.shadcn.com)
+- Backend: [NestJS](https://nestjs.com), [Drizzle ORM](https://orm.drizzle.team), [BullMQ](https://docs.bullmq.io), [Nodemailer](https://nodemailer.com)
+- Mobile [Capacitor](https://capacitorjs.com)
+- Testing: [Cypress](https://www.cypress.io), [Vitest](https://vitest.dev)
+- Infrastructure: [Docker](https://www.docker.com)
+- Databases: [PostgreSQL](https://www.postgresql.org), [Redis](https://redis.io)
+- Storage: [MinIO](https://min.io)
+- CI/CD: [Docker](https://www.docker.com), [GitHub Actions](https://github.com/features/actions), [Portainer](https://www.portainer.io)
 
 ## Documentation
 

@@ -15,11 +15,11 @@ export const convertUserToAuthDto = (userWithAccessToken: UserWithAccessToken): 
     deviceUid: userWithAccessToken._accessToken.deviceUid,
   };
 
-  const avatarImageUrlRaw = userWithAccessToken.avatarImageUrl;
-  const avatarImageFileName = avatarImageUrlRaw ? avatarImageUrlRaw.split('/').pop() : null;
-  const avatarImageUrl = avatarImageFileName
-    ? `${API_URL}/api/v1/users/${userWithAccessToken.id}/avatar/${avatarImageFileName}?access-token=${userAccessToken.token}&device-uid=${userAccessToken.deviceUid}`
-    : null;
+  const avatarImageUrl = usersManager.getUserAvatar(
+    API_URL,
+    userWithAccessToken,
+    userWithAccessToken._accessToken
+  );
 
   return {
     user: {

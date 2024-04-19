@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Req, StreamableFile, UseGuards } fr
 import { Request } from 'express';
 
 import { usersManager } from '@moaitime/database-services';
+import { getEnv } from '@moaitime/shared-backend';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { CreateUserReportDto } from '../../auth/dtos/create-user-report.dto';
@@ -13,17 +14,23 @@ export class UsersController {
   @UseGuards(AuthenticatedGuard)
   @Get()
   async search(@Req() req: Request): Promise<AbstractResponseDto> {
+    const { API_URL } = getEnv();
     const limit = 10;
     const previousCursor = req.query.previousCursor as string | undefined;
     const nextCursor = req.query.nextCursor as string | undefined;
     const query = req.query.query as string | undefined;
 
-    const { data, meta } = await usersManager.search(req.user.id, {
-      limit,
-      previousCursor,
-      nextCursor,
-      query,
-    });
+    const { data, meta } = await usersManager.search(
+      req.user.id,
+      {
+        limit,
+        previousCursor,
+        nextCursor,
+        query,
+      },
+      API_URL,
+      req.user._accessToken
+    );
 
     return {
       success: true,
@@ -38,7 +45,13 @@ export class UsersController {
     @Req() req: Request,
     @Param('userIdOrUsername') userIdOrUsername: string
   ): Promise<AbstractResponseDto<PublicUserDto>> {
-    const data = await usersManager.view(req.user.id, userIdOrUsername);
+    const { API_URL } = getEnv();
+    const data = await usersManager.view(
+      req.user.id,
+      userIdOrUsername,
+      API_URL,
+      req.user._accessToken
+    );
 
     return {
       success: true,
@@ -63,15 +76,22 @@ export class UsersController {
     @Req() req: Request,
     @Param('userIdOrUsername') userIdOrUsername: string
   ): Promise<AbstractResponseDto> {
+    const { API_URL } = getEnv();
     const limit = 10;
     const previousCursor = req.query.previousCursor as string | undefined;
     const nextCursor = req.query.nextCursor as string | undefined;
 
-    const { data, meta } = await usersManager.following(req.user.id, userIdOrUsername, {
-      limit,
-      previousCursor,
-      nextCursor,
-    });
+    const { data, meta } = await usersManager.following(
+      req.user.id,
+      userIdOrUsername,
+      {
+        limit,
+        previousCursor,
+        nextCursor,
+      },
+      API_URL,
+      req.user._accessToken
+    );
 
     return {
       success: true,
@@ -86,15 +106,22 @@ export class UsersController {
     @Req() req: Request,
     @Param('userIdOrUsername') userIdOrUsername: string
   ): Promise<AbstractResponseDto> {
+    const { API_URL } = getEnv();
     const limit = 10;
     const previousCursor = req.query.previousCursor as string | undefined;
     const nextCursor = req.query.nextCursor as string | undefined;
 
-    const { data, meta } = await usersManager.followers(req.user.id, userIdOrUsername, {
-      limit,
-      previousCursor,
-      nextCursor,
-    });
+    const { data, meta } = await usersManager.followers(
+      req.user.id,
+      userIdOrUsername,
+      {
+        limit,
+        previousCursor,
+        nextCursor,
+      },
+      API_URL,
+      req.user._accessToken
+    );
 
     return {
       success: true,
@@ -109,15 +136,22 @@ export class UsersController {
     @Req() req: Request,
     @Param('userIdOrUsername') userIdOrUsername: string
   ): Promise<AbstractResponseDto> {
+    const { API_URL } = getEnv();
     const limit = 10;
     const previousCursor = req.query.previousCursor as string | undefined;
     const nextCursor = req.query.nextCursor as string | undefined;
 
-    const { data, meta } = await usersManager.followRequests(req.user.id, userIdOrUsername, {
-      limit,
-      previousCursor,
-      nextCursor,
-    });
+    const { data, meta } = await usersManager.followRequests(
+      req.user.id,
+      userIdOrUsername,
+      {
+        limit,
+        previousCursor,
+        nextCursor,
+      },
+      API_URL,
+      req.user._accessToken
+    );
 
     return {
       success: true,

@@ -11,7 +11,7 @@ This is the MoaiTime project.
 - [Zustand](https://zustand.surge.sh) - State Management
 - [Zod](https://zod.dev) - Schema Validation
 - [TailwindCSS](https://tailwindcss.com) - CSS Framework
-  - [Radix UI](https://radix-ui.com) and [Shadcn UI](https://ui.shadcn.com) - Components libraries
+  - [Shadcn UI](https://ui.shadcn.com) - Components libraries
 - [PostgreSQL](https://www.postgresql.org) - Database
 - [Docker](https://www.docker.com) - Containerization
 - [Cypress](https://www.cypress.io) - E2E Testing
@@ -28,7 +28,6 @@ This is the MoaiTime project.
 - [Commands](./docs/COMMANDS.md)
 - [Development](./docs/DEVELOPMENT.md)
 - [Testing](./docs/TESTING.md)
-- [Known Issues](./docs/KNOWN-ISSUES.md)
 
 ## License
 

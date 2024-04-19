@@ -25,6 +25,7 @@ import {
   teams,
   teamUsers,
   User,
+  UserAccessToken,
   userAchievements,
   userBlockedUsers,
   userExperiencePoints,
@@ -78,7 +79,12 @@ export type UsersManagerSearchOptions = UsersManagerFollowOptions & {
 
 export class UsersManager {
   // API Helpers
-  async view(actorUserId: string, userIdOrUsername: string): Promise<PublicUser> {
+  async view(
+    actorUserId: string,
+    userIdOrUsername: string,
+    apiUrl: string,
+    userAccessToken: UserAccessToken
+  ): Promise<PublicUser> {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
@@ -100,6 +106,7 @@ export class UsersManager {
     const experiencePoints = canViewUserIfPrivate
       ? await this.getExperincePointsByUserId(user.id)
       : 0;
+    const avatarImageUrl = this.getUserAvatar(apiUrl, user, userAccessToken);
 
     const isMyself = actorUserId === user.id;
     const myselfIsFollowingThisUser = await this.isFollowingUser(actorUserId, user.id);
@@ -108,6 +115,7 @@ export class UsersManager {
 
     return {
       ...parsedUser,
+      avatarImageUrl,
       followersCount,
       followingCount,
       lastActiveAt,
@@ -451,7 +459,12 @@ export class UsersManager {
     return report;
   }
 
-  async search(actorUserId: string, options: UsersManagerSearchOptions) {
+  async search(
+    actorUserId: string,
+    options: UsersManagerSearchOptions,
+    apiUrl: string,
+    userAccessToken: UserAccessToken
+  ) {
     const query = options.query!;
     const limit = options.limit ?? 10;
     const sortDirection = options.sortDirection ?? SortDirectionEnum.DESC;
@@ -513,7 +526,7 @@ export class UsersManager {
       return PublicUserSchema.parse(row);
     });
 
-    const data = await this._populatePublicUsers(parsedRows, actorUserId);
+    const data = await this._populatePublicUsers(parsedRows, actorUserId, apiUrl, userAccessToken);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -557,25 +570,52 @@ export class UsersManager {
   async followers(
     actorUserId: string,
     userIdOrUsername: string,
-    options: UsersManagerFollowOptions
+    options: UsersManagerFollowOptions,
+    apiUrl: string,
+    userAccessToken: UserAccessToken
   ) {
-    return this._getFollowUsers('followers', actorUserId, userIdOrUsername, options);
+    return this._getFollowUsers(
+      'followers',
+      actorUserId,
+      userIdOrUsername,
+      options,
+      apiUrl,
+      userAccessToken
+    );
   }
 
   async following(
     actorUserId: string,
     userIdOrUsername: string,
-    options: UsersManagerFollowOptions
+    options: UsersManagerFollowOptions,
+    apiUrl: string,
+    userAccessToken: UserAccessToken
   ) {
-    return this._getFollowUsers('following', actorUserId, userIdOrUsername, options);
+    return this._getFollowUsers(
+      'following',
+      actorUserId,
+      userIdOrUsername,
+      options,
+      apiUrl,
+      userAccessToken
+    );
   }
 
   async followRequests(
     actorUserId: string,
     userIdOrUsername: string,
-    options: UsersManagerFollowOptions
+    options: UsersManagerFollowOptions,
+    apiUrl: string,
+    userAccessToken: UserAccessToken
   ) {
-    return this._getFollowUsers('follow-requests', actorUserId, userIdOrUsername, options);
+    return this._getFollowUsers(
+      'follow-requests',
+      actorUserId,
+      userIdOrUsername,
+      options,
+      apiUrl,
+      userAccessToken
+    );
   }
 
   async achievements(actorUserId: string, userIdOrUsername: string) {
@@ -1039,12 +1079,28 @@ export class UsersManager {
     };
   }
 
+  getUserAvatar(
+    apiUrl: string,
+    user: User | PublicUser,
+    actorUserAccessToken: UserAccessToken
+  ): string | null {
+    const avatarImageUrlRaw = user.avatarImageUrl;
+    const avatarImageFileName = avatarImageUrlRaw ? avatarImageUrlRaw.split('/').pop() : null;
+    const avatarImageUrl = avatarImageFileName
+      ? `${apiUrl}/api/v1/users/${user.id}/avatar/${avatarImageFileName}?access-token=${actorUserAccessToken?.token}&device-uid=${actorUserAccessToken?.deviceUid}`
+      : null;
+
+    return avatarImageUrl;
+  }
+
   // Private
   private async _getFollowUsers(
     type: 'followers' | 'following' | 'follow-requests',
     userId: string,
     userIdOrUsername: string,
-    options: UsersManagerFollowOptions
+    options: UsersManagerFollowOptions,
+    apiUrl: string,
+    userAccessToken: UserAccessToken
   ) {
     const user = await this.findOneByIdOrUsername(userIdOrUsername);
     if (!user) {
@@ -1174,7 +1230,7 @@ export class UsersManager {
         return !!user;
       }) as PublicUser[];
 
-    const data = await this._populatePublicUsers(parsedRows, userId);
+    const data = await this._populatePublicUsers(parsedRows, userId, apiUrl, userAccessToken);
 
     let previousCursor: string | undefined;
     let nextCursor: string | undefined;
@@ -1215,7 +1271,12 @@ export class UsersManager {
     };
   }
 
-  private async _populatePublicUsers(rows: PublicUser[], userId: string) {
+  private async _populatePublicUsers(
+    rows: PublicUser[],
+    userId: string,
+    apiUrl: string,
+    userAccessToken: UserAccessToken
+  ) {
     if (rows.length === 0) {
       return [];
     }
@@ -1273,9 +1334,11 @@ export class UsersManager {
           : 'pending'
         : false;
       const myselfIsBlockingThisUser = userBlockedUsersMap.has(user.id);
+      const avatarImageUrl = this.getUserAvatar(apiUrl, user, userAccessToken);
 
       return {
         ...user,
+        avatarImageUrl,
         isMyself,
         myselfIsFollowingThisUser,
         myselfIsFollowedByThisUser,

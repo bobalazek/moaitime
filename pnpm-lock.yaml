@@ -18,6 +18,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^19.2.2
         version: 19.2.2
+      '@commitlint/prompt-cli':
+        specifier: ^19.2.2
+        version: 19.2.2(@types/node@20.11.20)(typescript@5.3.3)
       '@moaitime/eslint-config':
         specifier: workspace:*
         version: link:configs/eslint-config
@@ -1941,6 +1944,15 @@ packages:
     resolution: {integrity: sha512-Il+tNyOb8VDxN3P6XoBBwWJtKKGzHlitEuXA5BP6ir/3loWlsSqDr5aecl6hZcC/spjq4pHqNh0qPlfeWu38QA==}
     engines: {node: '>=v18'}
 
+  '@commitlint/prompt-cli@19.2.2':
+    resolution: {integrity: sha512-04u4uyjrbvgKdsXgz8aKNMLwq2WZRSvgi+GSU/g1PdvtTLDZQmuHolnJyQWrCAbRd5779PxJ4r571tpfQ+R0Bg==}
+    engines: {node: '>=v18'}
+    hasBin: true
+
+  '@commitlint/prompt@19.2.2':
+    resolution: {integrity: sha512-ib+5XYws/g4VkP+4IkfH+kTJRbiInPMaq9vjPzfgQvBR3o7KWEQBk4P6ZsZK7VdGANcNXTKo667FNsfyQLPZgg==}
+    engines: {node: '>=v18'}
+
   '@commitlint/read@19.2.1':
     resolution: {integrity: sha512-qETc4+PL0EUv7Q36lJbPG+NJiBOGg7SSC7B5BsPWOmei+Dyif80ErfWQ0qXoW9oCh7GTpTNRoaVhiI8RbhuaNw==}
     engines: {node: '>=v18'}
@@ -2515,6 +2527,10 @@ packages:
       '@vue/compiler-sfc':
         optional: true
 
+  '@inquirer/figures@1.0.1':
+    resolution: {integrity: sha512-mtup3wVKia3ZwULPHcbs4Mor8Voi+iIXEWD7wCNbIO6lYR62oPCTQyrddi5OMYVXHzeCSoneZwJuS8sBvlEwDw==}
+    engines: {node: '>=18'}
+
   '@ionic/cli-framework-output@2.2.8':
     resolution: {integrity: sha512-TshtaFQsovB4NWRBydbNFawql6yul7d5bMiW1WYYf17hd99V6xdDdk3vtF51bw6sLkxON3bDQpWsnUc9/hVo3g==}
     engines: {node: '>=16.0.0'}
@@ -2588,6 +2604,10 @@ packages:
 
   '@ljharb/through@2.3.12':
     resolution: {integrity: sha512-ajo/heTlG3QgC8EGP6APIejksVAYt4ayz4tqoP3MolFELzcH1x1fzwEYRJTPO0IELutZ5HQ0c26/GqAYy79u3g==}
+    engines: {node: '>= 0.4'}
+
+  '@ljharb/through@2.3.13':
+    resolution: {integrity: sha512-/gKJun8NNiWGZJkGzI/Ragc53cOdcLNdzjLaIa+GEjguQs0ulsurx8WN0jijdK9yPqDvziX995sMRLyLt1uZMQ==}
     engines: {node: '>= 0.4'}
 
   '@lukeed/csprng@1.1.0':
@@ -6886,6 +6906,10 @@ packages:
     resolution: {integrity: sha512-mg3Fh9g2zfuVWJn6lhST0O7x4n03k7G8Tx5nvikJkbq8/CK47WDVm+UznF0G6s5Zi0KcyUisr6DU8T67N5U+1Q==}
     engines: {node: '>=14.18.0'}
 
+  inquirer@9.2.19:
+    resolution: {integrity: sha512-WpxOT71HGsFya6/mj5PUue0sWwbpbiPfAR+332zLj/siB0QA1PZM8v3GepegFV1Op189UxHUCF6y8AySdtOMVA==}
+    engines: {node: '>=18'}
+
   internal-slot@1.0.7:
     resolution: {integrity: sha512-NGnrKwXzSms2qUUih/ILZ5JBqNTSa1+ZmP6flaIp6KmSElgE9qdndzS3cqjrDovwFdmwsGsLdeFgB6suw+1e9g==}
     engines: {node: '>= 0.4'}
@@ -10944,6 +10968,26 @@ snapshots:
       conventional-changelog-angular: 7.0.0
       conventional-commits-parser: 5.0.0
 
+  '@commitlint/prompt-cli@19.2.2(@types/node@20.11.20)(typescript@5.3.3)':
+    dependencies:
+      '@commitlint/prompt': 19.2.2(@types/node@20.11.20)(typescript@5.3.3)
+      execa: 8.0.1
+      inquirer: 9.2.19
+    transitivePeerDependencies:
+      - '@types/node'
+      - typescript
+
+  '@commitlint/prompt@19.2.2(@types/node@20.11.20)(typescript@5.3.3)':
+    dependencies:
+      '@commitlint/ensure': 19.0.3
+      '@commitlint/load': 19.2.0(@types/node@20.11.20)(typescript@5.3.3)
+      '@commitlint/types': 19.0.3
+      chalk: 5.3.0
+      inquirer: 9.2.19
+    transitivePeerDependencies:
+      - '@types/node'
+      - typescript
+
   '@commitlint/read@19.2.1':
     dependencies:
       '@commitlint/top-level': 19.0.0
@@ -11368,6 +11412,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@inquirer/figures@1.0.1': {}
+
   '@ionic/cli-framework-output@2.2.8':
     dependencies:
       '@ionic/utils-terminal': 2.3.5
@@ -11498,6 +11544,10 @@ snapshots:
   '@juggle/resize-observer@3.4.0': {}
 
   '@ljharb/through@2.3.12':
+    dependencies:
+      call-bind: 1.0.7
+
+  '@ljharb/through@2.3.13':
     dependencies:
       call-bind: 1.0.7
 
@@ -16470,6 +16520,24 @@ snapshots:
       cli-width: 4.1.0
       external-editor: 3.1.0
       figures: 5.0.0
+      lodash: 4.17.21
+      mute-stream: 1.0.0
+      ora: 5.4.1
+      run-async: 3.0.0
+      rxjs: 7.8.1
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      wrap-ansi: 6.2.0
+
+  inquirer@9.2.19:
+    dependencies:
+      '@inquirer/figures': 1.0.1
+      '@ljharb/through': 2.3.13
+      ansi-escapes: 4.3.2
+      chalk: 5.3.0
+      cli-cursor: 3.1.0
+      cli-width: 4.1.0
+      external-editor: 3.1.0
       lodash: 4.17.21
       mute-stream: 1.0.0
       ora: 5.4.1

@@ -27,6 +27,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.2.2",
     "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/prompt-cli": "^19.2.2",
     "@moaitime/eslint-config": "workspace:*",
     "@moaitime/prettier-config": "workspace:*",
     "@moaitime/tsconfig-config": "workspace:*",

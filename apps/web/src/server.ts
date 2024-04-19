@@ -27,7 +27,7 @@ Bun.serve({
     const url = new URL(request.url);
     const { pathname } = url;
 
-    console.log(`Fetching path: ${pathname}`);
+    console.log(`GET ${pathname}`);
 
     const indexFilePath = join(publicDirectory, 'index.html');
 
@@ -40,9 +40,14 @@ Bun.serve({
       file = Bun.file(pathnameFilePath);
     }
 
-    console.log(process.env);
+    const headers = {
+      'content-type': file.type,
+      'content-length': file.size.toString(),
+      'accept-ranges': 'bytes',
+      connection: 'keep-alive',
+      vary: 'Accept-Encoding',
+    };
 
-    let content = await file.text();
     if (pathnameFilePath === indexFilePath) {
       const globals = allowedEnvironmentVariables.reduce((acc, key) => {
         const value = process.env[key];
@@ -53,6 +58,7 @@ Bun.serve({
         return acc;
       }, {});
 
+      let content = await file.text();
       content = content.replace(
         '<!-- injected globals script -->',
         `<script>
@@ -60,12 +66,14 @@ Bun.serve({
         </script>
         </head>`
       );
+
+      return new Response(content, {
+        headers,
+      });
     }
 
-    return new Response(content, {
-      headers: {
-        'content-type': file.type,
-      },
+    return new Response(file, {
+      headers,
     });
   },
 });

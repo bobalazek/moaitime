@@ -15,4 +15,4 @@ export const API_URL =
 
 // OAuth
 export const OAUTH_GOOGLE_CLIENT_ID =
-  window?.globals?.['API_URL'] || import.meta.env.OAUTH_GOOGLE_CLIENT_ID || '';
+  window?.globals?.['OAUTH_GOOGLE_CLIENT_ID'] || import.meta.env.OAUTH_GOOGLE_CLIENT_ID || '';

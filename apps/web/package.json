@@ -6,6 +6,11 @@
       "types": "./dist/main.d.ts",
       "import": "./dist/main.mjs",
       "require": "./dist/main.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.mjs",
+      "require": "./dist/server.js"
     }
   },
   "main": "./dist/main.js",

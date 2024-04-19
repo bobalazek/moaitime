@@ -22,7 +22,7 @@ RUN pnpm turbo run build --filter=${PROJECT}
 RUN pnpm --filter=${PROJECT} --prod deploy pruned
 
 # Runner
-FROM base AS runner
+FROM oven/bun:1
 
 WORKDIR /app
 
@@ -32,12 +32,13 @@ ENV NODE_ENV=$NODE_ENV
 ARG WEB_PORT=4200
 ENV WEB_PORT=$WEB_PORT
 
-RUN npm install -g serve
+RUN sh -c "curl -fsSL https://bun.sh/install | bash"
 
-COPY --from=builder /app/pruned/dist .
+COPY ./apps/web/src/server.ts .
+COPY --from=builder /app/pruned/dist ./public
 
 EXPOSE ${WEB_PORT}
 
 HEALTHCHECK --interval=30s --timeout=15s CMD wget --no-verbose --tries=1 --spider http://localhost:${WEB_PORT} || exit 1
 
-CMD [ "sh", "-c", "serve . --listen ${WEB_PORT} --single" ]
+CMD [ "sh", "-c", "bun run ./server.ts --port ${WEB_PORT}" ]

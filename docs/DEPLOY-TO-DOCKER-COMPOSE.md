@@ -69,7 +69,7 @@ docker exec -it ee752e6ea743 ./cli database:reload
 
 ### 5. Access and enjoy MoaiTime
 
-You can now access MoaiTime at [http://localhost:4200](http://localhost:4200). The default credentials are - email: `àdmin@moaitime.com`, password: `password`
+You can now access MoaiTime at [http://localhost:4200](http://localhost:4200). The default credentials are - email: `admin@moaitime.com`, password: `password`
 
 ### 6. Enjoy MoaiTime
 

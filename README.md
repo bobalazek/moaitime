@@ -49,7 +49,7 @@ And much more! You can find more screenshots on my blog post [https://bobalazek.
 - Infrastructure: [Docker](https://www.docker.com)
 - Databases: [PostgreSQL](https://www.postgresql.org), [Redis](https://redis.io)
 - Storage: [MinIO](https://min.io)
-- CI/CD: [Docker](https://www.docker.com), [Kubernetes](https://kubernetes.io/), [GitHub Actions](https://github.com/features/actions), [Portainer](https://www.portainer.io)
+- CI/CD: [Docker](https://www.docker.com), [Kubernetes](https://kubernetes.io), [GitHub Actions](https://github.com/features/actions), [Portainer](https://www.portainer.io)
 - Mailer: [Nodemailer](https://nodemailer.com), [Resend](https://resend.com)
 
 ## Installation

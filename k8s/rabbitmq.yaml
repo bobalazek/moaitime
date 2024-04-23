@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: rabbitmq-data
+  name: rabbitmq-data
+  namespace: moaitime
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rabbitmq
+  name: rabbitmq
+  namespace: moaitime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+      namespace: moaitime
+    spec:
+      containers:
+        - env:
+            - name: RABBITMQ_DEFAULT_PASS
+              value: password
+            - name: RABBITMQ_DEFAULT_USER
+              value: user
+          image: rabbitmq:3.12.12-management
+          name: moaitime-rabbitmq
+          ports:
+            - containerPort: 5672
+              hostPort: 5672
+              protocol: TCP
+            - containerPort: 15672
+              hostPort: 15672
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/rabbitmq
+              name: rabbitmq-data
+      restartPolicy: Always
+      volumes:
+        - name: rabbitmq-data
+          persistentVolumeClaim:
+            claimName: rabbitmq-data
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: rabbitmq
+  name: rabbitmq
+  namespace: moaitime
+spec:
+  ports:
+    - name: '5672'
+      port: 5672
+      targetPort: 5672
+    - name: '15672'
+      port: 15672
+      targetPort: 15672
+  selector:
+    app: rabbitmq
+status:
+  loadBalancer: {}

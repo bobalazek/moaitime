@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: moaitime-cli
+  name: moaitime-cli
+  namespace: moaitime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moaitime-cli
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: moaitime-cli
+      namespace: moaitime
+    spec:
+      containers:
+        - command:
+            - tail
+            - -f
+            - /dev/null
+          image: moaitime/moaitime-cli:latest
+          name: moaitime-cli
+          imagePullPolicy: Never
+          resources: {}
+      restartPolicy: Always
+status: {}

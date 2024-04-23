@@ -58,6 +58,7 @@ Right now, we support the following ways to install MoaiTime:
 
 - [Docker Compose](./docs/DEPLOY-TO-DOCKER-COMPOSE.md)
 - [Docker Swarm](./docs/DEPLOY-TO-DOCKER-SWARM.md)
+- [Kubernetes](./docs/DEPLOY-TO-KUBERNETES.md)
 
 ## Documentation
 

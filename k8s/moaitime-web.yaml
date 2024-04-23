@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: moaitime-web
+  name: moaitime-web
+  namespace: moaitime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moaitime-web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: moaitime-web
+      namespace: moaitime
+    spec:
+      containers:
+        - image: moaitime/moaitime-web:latest
+          name: moaitime-web
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4200
+              hostPort: 4200
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: moaitime-web
+  name: moaitime-web
+  namespace: moaitime
+spec:
+  ports:
+    - name: '4200'
+      port: 4200
+      targetPort: 4200
+  selector:
+    app: moaitime-web
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moaitime-web
+  namespace: moaitime
+  labels:
+    app: moaitime-web
+spec:
+  type: LoadBalancer
+  ports:
+    - name: '4200'
+      port: 4200
+      targetPort: 4200
+  selector:
+    app: moaitime-web

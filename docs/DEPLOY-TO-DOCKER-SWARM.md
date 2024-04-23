@@ -1,6 +1,6 @@
 # MoaiTime - Deploy to Docker Swarm
 
-Let's go through the steps to deploy MoaiTime to yout Docker Swarm cluster.
+Let's go through the steps to deploy MoaiTime to your Docker Swarm cluster.
 
 ## Prerequisites
 
@@ -13,23 +13,16 @@ Let's go through the steps to deploy MoaiTime to yout Docker Swarm cluster.
 
 The steps are exactly the same as for the Docker Compose deployment, so please follow the steps from the [DEPLOY-TO-DOCKER-COMPOSE.md](./DEPLOY-TO-DOCKER-COMPOSE.md) file.
 
-### 2. Initialize the Docker Swarm
-
-In cas your swarm cluster is not initialized yet, you can do so by running the following command:
+### 2. Deploy to Docker Swarm
 
 ```bash
+# In case your docker swarm cluster is not yet initialized, you can do so with the following command:
 docker swarm init
-```
 
-If it is, then you can skip this step.
-
-### 3. Deploy to Docker Swarm
-
-```bash
 ./scripts/deploy-to-docker-swarm.sh
 ```
 
-### 4. Setup the database
+### 3. Setup the database
 
 After all the services had been deployed, let's first check that all of the services are working as expected:
 
@@ -43,10 +36,10 @@ Now we can run the database reload command to create the database schema, run th
 docker exec -it moaitime_cli ./cli database:reload
 ```
 
-### 5. Access MoaiTime
+### 4. Access MoaiTime
 
 You can now access MoaiTime at [http://localhost:4200](http://localhost:4200). The default credentials are - email: `admin@moaitime.com`, password: `password`
 
-### 6. Enjoy MoaiTime
+### 5. Enjoy MoaiTime
 
 This is where we reached the end of the installation process. You can now enjoy MoaiTime!

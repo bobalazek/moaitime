@@ -1,6 +1,6 @@
 # MoaiTime - Deploy to Docker Compose
 
-Let's go through the steps to deplot MoaiTime to Docker Compose.
+Let's go through the steps to deploy MoaiTime to Docker Compose.
 
 ## Prerequisites
 

@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: minio-data
+  name: minio-data
+  namespace: moaitime
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: minio
+  name: minio
+  namespace: moaitime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: minio
+      namespace: moaitime
+    spec:
+      containers:
+        - env:
+            - name: MINIO_DEFAULT_BUCKETS
+              value: user-avatars,user-data-exports,database-backups
+            - name: MINIO_ROOT_PASSWORD
+              value: password
+            - name: MINIO_ROOT_USER
+              value: user
+          image: docker.io/bitnami/minio:2023.12.23
+          name: moaitime-minio
+          ports:
+            - containerPort: 9000
+              hostPort: 9000
+              protocol: TCP
+            - containerPort: 9001
+              hostPort: 9001
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: minio-data
+      restartPolicy: Always
+      volumes:
+        - name: minio-data
+          persistentVolumeClaim:
+            claimName: minio-data
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: minio
+  name: minio
+  namespace: moaitime
+spec:
+  ports:
+    - name: '9000'
+      port: 9000
+      targetPort: 9000
+    - name: '9001'
+      port: 9001
+      targetPort: 9001
+  selector:
+    app: minio
+status:
+  loadBalancer: {}

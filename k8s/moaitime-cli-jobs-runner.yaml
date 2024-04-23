@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: moaitime-cli-jobs-runner-start
+  name: moaitime-cli-jobs-runner-start
+  namespace: moaitime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moaitime-cli-jobs-runner-start
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: moaitime-cli-jobs-runner-start
+      namespace: moaitime
+    spec:
+      containers:
+        - args:
+            - jobs:runner:start
+          image: moaitime/moaitime-cli:latest
+          name: moaitime-cli-jobs-runner-start
+          imagePullPolicy: Never
+          resources: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+status: {}

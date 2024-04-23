@@ -52,7 +52,7 @@ kubectl exec -it --namespace moaitime moaitime-cli-668f45457-bc4sl -- ./cli data
 If tou are using minikube, you can start a tunnel to access the MoaiTime application:
 
 ```bash
-minikuube tunnel
+minikube tunnel
 ```
 
 ### 5. Access MoaiTime

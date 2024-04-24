@@ -64,6 +64,11 @@ Right now, we support the following ways to install MoaiTime:
 - [Commands](./docs/COMMANDS.md)
 - [Testing](./docs/TESTING.md)
 
+## TODOs
+
+- [ ] Improve the documentation
+- [ ] Add more unit, integration and E2E tests
+
 ## License
 
 MoaiTime is licensed under the MIT license.

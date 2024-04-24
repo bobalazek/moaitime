@@ -8,6 +8,8 @@ const env = {
       password: 'password',
     },
   },
+  API_URL: process.env.API_URL,
+  OAUTH_GOOGLE_CLIENT_ID: process.env.OAUTH_GOOGLE_CLIENT_ID,
 };
 
 module.exports = defineConfig({

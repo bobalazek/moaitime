@@ -1,15 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Head } from '@nestjs/common';
 
-@Controller('api')
+@Controller()
 export class AppController {
-  @Get()
+  @Head()
+  async head() {
+    return {
+      hello: 'world',
+    };
+  }
+
+  @Get('api')
   async index() {
     return {
       hello: 'world',
     };
   }
 
-  @Get('health')
+  @Get('api/health')
   async health() {
     return {
       status: 'ok',

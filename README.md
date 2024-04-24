@@ -41,8 +41,7 @@ And much more! You can find more screenshots on my blog post [https://bobalazek.
 
 - General: [TypeScript](https://www.typescriptlang.org)
 - Tooling: [Turborepo](https://turbo.build/repo), [pnpm](https://pnpm.io), [Vite](https://vitejs.dev), [tsup](https://tsup.egoist.sh), [ESLint](https://eslint.org), [Prettier](https://prettier.io), [Husky](https://typicode.github.io/husky)
-- Shared: [Zod](https://zod.dev)
-- Frontend: [React](https://reactjs.org), [Zustand](https://zustand.surge.sh), [Jotai](https://jotai.org), [React Router](https://reactrouter.com/en/main), [TailwindCSS](https://tailwindcss.com), [Shadcn UI](https://ui.shadcn.com)
+- Frontend: [React](https://reactjs.org), [Zustand](https://zustand.surge.sh), [Jotai](https://jotai.org), [Zod](https://zod.dev), [React Router](https://reactrouter.com/en/main), [TailwindCSS](https://tailwindcss.com), [Shadcn UI](https://ui.shadcn.com)
 - Backend: [NestJS](https://nestjs.com), [Drizzle ORM](https://orm.drizzle.team), [BullMQ](https://docs.bullmq.io)
 - Mobile: [Capacitor](https://capacitorjs.com)
 - Testing: [Cypress](https://www.cypress.io), [Vitest](https://vitest.dev)

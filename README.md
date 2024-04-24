@@ -1,6 +1,6 @@
 # MoaiTime
 
-MoaiTime is a self-hosted productivity app that helps you organize your life, work and more. It is designed to be simple, fast and easy to use, while also being powerful and feature-rich. It is also open-source, so you can host it yourself, modify it to your liking and contribute to it.
+MoaiTime is a self-hosted all-in-one productivity platform, where you can manage your calendars, events, tasks, lists, habits, notes, mood tracking, focus and more.
 
 ## Screenshots
 
@@ -69,6 +69,9 @@ Right now, we support the following ways to install MoaiTime:
 - [ ] Create an actual logo
 - [ ] Improve the documentation
 - [ ] Add more unit, integration and E2E tests
+- [ ] Integrations with Google Calendar, Todoist, TickTick, Trello and more
+- [ ] Add an onboarding page
+- [ ] Schemantic search accross notes, tasks, habits and events
 
 ## License
 

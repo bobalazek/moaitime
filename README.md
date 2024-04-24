@@ -1,6 +1,6 @@
 # MoaiTime
 
-MoaiTime is a self-hosted all-in-one productivity platform, where you can manage your calendars, events, tasks, lists, habits, notes, mood tracking, focus and more.
+MoaiTime is a self-hosted, all-in-one productivity platform, where you can manage your calendars, events, tasks, lists, habits, notes, mood tracking, focus and more.
 
 ## Screenshots
 

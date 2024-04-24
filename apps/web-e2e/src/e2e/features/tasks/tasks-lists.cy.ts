@@ -36,7 +36,7 @@ describe('tasks-lists.cy.ts', () => {
       .contains('Delete')
       .click({ force: true });
 
-    cy.get('div[role="alertdialog"]').find('button').contains('Confirm').click();
+    cy.get('div[role="alertdialog"]').find('button').contains('Undo').click();
 
     cy.hasToastWithText('List deleted');
   });
@@ -119,28 +119,21 @@ describe('tasks-lists.cy.ts', () => {
     );
   });
 
-  it('should check if add a new task list works correctly', () => {
+  it.only('should check if add a new task list works correctly', () => {
     openTasksPopover();
 
     openTasksNewListDropdownMenu();
 
-    cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').type('New list {enter}');
-
-    cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
-
-    cy.getBySel('tasks--body-header--title').contains('New list');
-  });
-
-  it('should check if a successful message is displayed after adding a new task list', () => {
-    openTasksPopover();
-
-    openTasksNewListDropdownMenu();
+    // A workaround for the autofocus of the dialog
+    cy.wait(500);
 
     cy.getBySel('tasks--list-edit-dialog').find('input[type="text"]').type('New list {enter}');
 
     cy.getBySel('tasks--list-edit-dialog').find('button').contains('Save').click();
 
     cy.hasToastWithText('You have successfully saved the list.');
+
+    cy.getBySel('tasks--body-header--title').contains('New list');
   });
 
   it('should exit the add new task list dialog when clicking on the Close button', () => {

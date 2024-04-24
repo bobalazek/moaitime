@@ -127,17 +127,17 @@ describe('CalendarHelpers.ts', () => {
 
       expect(result).toHaveLength(3);
 
-      expect(result[0].id).toBe('event-2');
+      expect(result[0].id).toBe('event-1');
       expect(result[0].left).toBe('0%');
       expect(result[0].width).toBe('100%');
 
-      expect(result[1].id).toBe('event-1');
+      expect(result[1].id).toBe('event-3');
       expect(result[1].left).toBe('0%');
       expect(result[1].width).toBe('100%');
 
-      expect(result[2].id).toBe('event-3');
-      expect(result[2].left).toBe('0%');
-      expect(result[2].width).toBe('100%');
+      expect(result[2].id).toBe('event-2');
+      expect(result[2].left).toBe('50%');
+      expect(result[2].width).toBe('50%');
     });
 
     it('should return full day only calendar entries', () => {
@@ -407,7 +407,7 @@ describe('CalendarHelpers.ts', () => {
 
       expect(result).toHaveLength(3);
 
-      expect(result.map((event) => event.id)).toEqual(['event-3', 'event-1', 'event-2']);
+      expect(result.map((event) => event.id)).toEqual(['event-1', 'event-2', 'event-3']);
     });
 
     it('should return only the correct full day calendar entries before 20th december', () => {

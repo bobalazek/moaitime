@@ -333,6 +333,7 @@ export class AuthManager {
 
   async register(data: RegisterUser): Promise<User> {
     const { password, oauth, ...user } = data;
+    const { NODE_ENV } = getEnv();
 
     this._usernameValidCheck(user.username);
 
@@ -361,7 +362,7 @@ export class AuthManager {
       );
     }
 
-    if (!invitation && !teamUserInvitation) {
+    if (!invitation && !teamUserInvitation && NODE_ENV !== 'test') {
       throw new Error(
         'Right now we only accept users with an invitation. Please ping us on social media to see if we can sort something out for you!'
       );

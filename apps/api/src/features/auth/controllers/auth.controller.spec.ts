@@ -49,6 +49,7 @@ describe('AuthController', () => {
             email: 'test@test.com',
             password: 'test',
           },
+          '127.0.0.1',
           request,
           response
         );
@@ -65,6 +66,7 @@ describe('AuthController', () => {
             email: 'test@email.com',
             password: 'wrong-password',
           },
+          '127.0.0.1',
           request,
           response
         );
@@ -81,6 +83,7 @@ describe('AuthController', () => {
           email: 'test@email.com',
           password: 'test',
         },
+        '127.0.0.1',
         request,
         response
       );
@@ -108,6 +111,7 @@ describe('AuthController', () => {
         token: testUserAccessToken.token,
         refreshToken: testUserAccessToken.refreshToken,
         expiresAt: null,
+        deviceUid: null,
       });
     });
   });

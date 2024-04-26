@@ -31,17 +31,11 @@ import {
   UpdateTeamUser,
 } from '@moaitime/shared-common';
 
-import { calendarsManager, CalendarsManager } from '../calendars/CalendarsManager';
-import { listsManager, ListsManager } from '../tasks/ListsManager';
-import { usersManager, UsersManager } from './UsersManager';
+import { calendarsManager } from '../calendars/CalendarsManager';
+import { listsManager } from '../tasks/ListsManager';
+import { usersManager } from './UsersManager';
 
 export class TeamsManager {
-  constructor(
-    private _usersManager: UsersManager,
-    private _listsManager: ListsManager,
-    private _calendarsManager: CalendarsManager
-  ) {}
-
   // API Helpers
   async list(actorUserId: string) {
     return this.findManyByUserId(actorUserId);
@@ -126,7 +120,7 @@ export class TeamsManager {
     actorUser: User,
     teamName: string
   ): Promise<{ team: Team; teamUser: TeamUser }> {
-    const maxCount = await this._usersManager.getUserLimit(actorUser, 'teamsMaxPerUserCount');
+    const maxCount = await usersManager.getUserLimit(actorUser, 'teamsMaxPerUserCount');
     const currentCount = await this.countByUserId(actorUser.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of teams per user (${maxCount}).`);
@@ -446,7 +440,7 @@ export class TeamsManager {
     }
 
     const usersByEmail =
-      emailsSet.size > 0 ? await this._usersManager.findManyByEmails([...emailsSet.values()]) : [];
+      emailsSet.size > 0 ? await usersManager.findManyByEmails([...emailsSet.values()]) : [];
     const usersByEmailMap = new Map<string, User>();
     for (const user of usersByEmail) {
       usersByEmailMap.set(user.email, user);
@@ -879,9 +873,9 @@ export class TeamsManager {
   async getTeamUsage(team: Team): Promise<TeamUsage> {
     // TODO: cache!
 
-    const listsCount = await this._listsManager.countByTeamId(team.id);
-    const usersCount = await this._usersManager.countByTeamId(team.id);
-    const calendarsCount = await this._calendarsManager.countByTeamId(team.id);
+    const listsCount = await listsManager.countByTeamId(team.id);
+    const usersCount = await usersManager.countByTeamId(team.id);
+    const calendarsCount = await calendarsManager.countByTeamId(team.id);
 
     return {
       listsCount,
@@ -913,4 +907,4 @@ export class TeamsManager {
   }
 }
 
-export const teamsManager = new TeamsManager(usersManager, listsManager, calendarsManager);
+export const teamsManager = new TeamsManager();

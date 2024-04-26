@@ -15,19 +15,12 @@ import {
   Task,
 } from '@moaitime/shared-common';
 
-import { listsManager, ListsManager } from '../tasks/ListsManager';
-import { tasksManager, TasksManager, TaskWithTagsAndUsers } from '../tasks/TasksManager';
-import { calendarsManager, CalendarsManager } from './CalendarsManager';
-import { eventsManager, EventsManager, EventsManagerEvent } from './EventsManager';
+import { listsManager } from '../tasks/ListsManager';
+import { tasksManager, TaskWithTagsAndUsers } from '../tasks/TasksManager';
+import { calendarsManager } from './CalendarsManager';
+import { eventsManager, EventsManagerEvent } from './EventsManager';
 
 export class CalendarEntriesManager {
-  constructor(
-    private _calendarsManager: CalendarsManager,
-    private _listsManager: ListsManager,
-    private _tasksManager: TasksManager,
-    private _eventsManager: EventsManager
-  ) {}
-
   // API Helpers
   async list(actorUser: User, from: string, to: string) {
     if (!isValidDate(from)) {
@@ -43,17 +36,13 @@ export class CalendarEntriesManager {
 
   async yearly(actorUserId: string, year: number) {
     // Calendar
-    const calendarIdsMap =
-      await this._calendarsManager.getVisibleCalendarIdsByUserIdMap(actorUserId);
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(actorUserId);
     const calendarIds = Array.from(calendarIdsMap.keys());
-    const calendarCounts = await this._eventsManager.getCountsByCalendarIdsAndYear(
-      calendarIds,
-      year
-    );
+    const calendarCounts = await eventsManager.getCountsByCalendarIdsAndYear(calendarIds, year);
 
     // Tasks
-    const listIds = await this._listsManager.getVisibleListIdsByUserId(actorUserId);
-    const taskCounts = await this._tasksManager.getCountsByListIdsAndYear(listIds, year);
+    const listIds = await listsManager.getVisibleListIdsByUserId(actorUserId);
+    const taskCounts = await tasksManager.getCountsByListIdsAndYear(listIds, year);
 
     // Merge
     const daysMap = new Map<string, number>();
@@ -89,8 +78,8 @@ export class CalendarEntriesManager {
       timezonedTo = addDays(timezonedTo, 2);
     }
 
-    const calendarIdsMap = await this._calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
-    const events = await this._eventsManager.findManyByCalendarIdsAndRange(
+    const calendarIdsMap = await calendarsManager.getVisibleCalendarIdsByUserIdMap(user.id);
+    const events = await eventsManager.findManyByCalendarIdsAndRange(
       calendarIdsMap,
       user.id,
       timezonedFrom,
@@ -105,7 +94,7 @@ export class CalendarEntriesManager {
     const recurrenceTo = to ? new Date(`${to}T23:59:59.999`) : null;
 
     if (recurrenceFrom && recurrenceTo) {
-      const recurringEvents = await this._eventsManager.findManyByCalendarIdsAndRange(
+      const recurringEvents = await eventsManager.findManyByCalendarIdsAndRange(
         calendarIdsMap,
         user.id,
         timezonedFrom,
@@ -139,14 +128,14 @@ export class CalendarEntriesManager {
       }
     }
 
-    const listIds = await this._listsManager.getVisibleListIdsByUserId(user.id);
-    const rawTasks = await this._tasksManager.findManyByListIdsAndRange(
+    const listIds = await listsManager.getVisibleListIdsByUserId(user.id);
+    const rawTasks = await tasksManager.findManyByListIdsAndRange(
       listIds,
       user.id,
       timezonedFrom,
       timezonedTo
     );
-    const tasks = await this._tasksManager.populateTagsAndUsers(rawTasks);
+    const tasks = await tasksManager.populateTagsAndUsers(rawTasks);
     for (const task of tasks) {
       // We should never have a task without a due date,
       // but we need to apease typescript.
@@ -338,9 +327,4 @@ export class CalendarEntriesManager {
   }
 }
 
-export const calendarEntriesManager = new CalendarEntriesManager(
-  calendarsManager,
-  listsManager,
-  tasksManager,
-  eventsManager
-);
+export const calendarEntriesManager = new CalendarEntriesManager();

@@ -68,6 +68,6 @@ jobs:
 
       - name: pnpm - Test
         run: pnpm test
-# Wil re-enable this once we have all the bits fixed and possibly optimised, as it takes quite a long time to run all of the tests
-#      - name: pnpm - E2E
-#        run: pnpm e2e
+
+      - name: pnpm - E2E
+        run: pnpm e2e

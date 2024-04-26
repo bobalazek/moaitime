@@ -1,9 +1,7 @@
-import { useGoogleLogin } from '@react-oauth/google';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { OauthProviderEnum } from '@moaitime/shared-common';
 import { OAUTH_GOOGLE_CLIENT_ID } from '@moaitime/shared-frontend';
 import {
   Button,
@@ -14,33 +12,18 @@ import {
   CardTitle,
   Input,
   Label,
-  sonnerToast,
 } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
-import { GoogleSvgIcon } from '../../../core/utils/Icons';
 import { useAuthStore } from '../../state/authStore';
+import GoogleOauthLoginButton from '../buttons/GoogleOauthLoginButton';
 
 export default function AuthLoginPage() {
-  const { login, oauthLogin } = useAuthStore();
+  const { login } = useAuthStore();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (token) => {
-      try {
-        await oauthLogin(OauthProviderEnum.GOOGLE, token);
-      } catch (error) {
-        // Already handled by the fetch function
-      }
-    },
-    onError: (error) => {
-      sonnerToast.error('Google login failed', {
-        description: error.error_description,
-      });
-    },
-  });
 
   const onForgotPasswordButtonClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -62,10 +45,6 @@ export default function AuthLoginPage() {
 
   const onPaswordlessLoginButtonClick = async () => {
     navigate(`/passwordless-login${email ? `?email=${email}` : ''}`);
-  };
-
-  const onLoginGoogleButtonClick = async () => {
-    googleLogin();
   };
 
   return (
@@ -156,17 +135,7 @@ export default function AuthLoginPage() {
                 {OAUTH_GOOGLE_CLIENT_ID && (
                   <>
                     <div className="text-muted-foreground text-center text-sm">or</div>
-                    <Button
-                      id="login-button"
-                      size="lg"
-                      variant="outline"
-                      tabIndex={4}
-                      className="flex w-full gap-2"
-                      onClick={onLoginGoogleButtonClick}
-                    >
-                      <GoogleSvgIcon />
-                      Sign in with Google
-                    </Button>
+                    <GoogleOauthLoginButton />
                   </>
                 )}
               </div>

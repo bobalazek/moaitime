@@ -1,4 +1,3 @@
-import { useGoogleLogin } from '@react-oauth/google';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -20,8 +19,8 @@ import {
 } from '@moaitime/web-ui';
 
 import { ErrorBoundary } from '../../../core/components/ErrorBoundary';
-import { GoogleSvgIcon } from '../../../core/utils/Icons';
 import { useAuthStore } from '../../state/authStore';
+import GoogleOauthRegisterButton from '../buttons/GoogleOauthRegisterButton';
 
 export default function AuthRegisterPage() {
   const { register, oauthUserInfo } = useAuthStore();
@@ -37,28 +36,22 @@ export default function AuthRegisterPage() {
   const [oauthProvider, setOauthProvider] = useState<OauthProviderEnum>();
   const [oauthToken, setOauthToken] = useState<OauthToken>();
   const [oauthUserInfoData, setOauthUserInfo] = useState<OauthUserInfo>();
-  const googleConnect = useGoogleLogin({
-    onSuccess: async (token) => {
-      try {
-        setOauthProvider(OauthProviderEnum.GOOGLE);
-        setOauthToken(token);
 
-        const userInfo = await oauthUserInfo(OauthProviderEnum.GOOGLE, token);
-        if (userInfo) {
-          setOauthUserInfo(userInfo);
-          setEmail(userInfo.email ?? '');
-          setDisplayName(userInfo.firstName ?? '');
-        }
-      } catch (error) {
-        // Already handled by the fetch function
+  const onGoogleConnect = async (token: OauthToken) => {
+    try {
+      setOauthProvider(OauthProviderEnum.GOOGLE);
+      setOauthToken(token);
+
+      const userInfo = await oauthUserInfo(OauthProviderEnum.GOOGLE, token);
+      if (userInfo) {
+        setOauthUserInfo(userInfo);
+        setEmail(userInfo.email ?? '');
+        setDisplayName(userInfo.firstName ?? '');
       }
-    },
-    onError: (error) => {
-      sonnerToast.error('Google login failed', {
-        description: error.error_description,
-      });
-    },
-  });
+    } catch (error) {
+      // Already handled by the fetch function
+    }
+  };
 
   useEffect(() => {
     const invitationTokenParam = searchParams.get('invitationToken') ?? undefined;
@@ -70,10 +63,6 @@ export default function AuthRegisterPage() {
 
   const onBackToLoginButtonClick = () => {
     navigate('/login');
-  };
-
-  const onGoogleConnectButtonClick = async () => {
-    googleConnect();
   };
 
   const onRegisterButtonClick = async () => {
@@ -121,17 +110,7 @@ export default function AuthRegisterPage() {
           <CardContent>
             {OAUTH_GOOGLE_CLIENT_ID && !oauthToken && (
               <>
-                <Button
-                  id="login-button"
-                  size="lg"
-                  variant="outline"
-                  tabIndex={3}
-                  className="flex w-full gap-2"
-                  onClick={onGoogleConnectButtonClick}
-                >
-                  <GoogleSvgIcon />
-                  Connect with Google
-                </Button>
+                <GoogleOauthRegisterButton onSuccess={onGoogleConnect} />
                 <div className="text-muted-foreground py-2 text-center text-sm">or</div>
               </>
             )}

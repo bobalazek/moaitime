@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { OAUTH_GOOGLE_CLIENT_ID } from '@moaitime/shared-frontend';
 import { Button, Input, sonnerToast, Textarea } from '@moaitime/web-ui';
 
 import { useSettingsStore } from '../../../settings/state/settingsStore';
@@ -210,12 +211,16 @@ export default function AccountSettingsSectionContent() {
           Save
         </Button>
       </div>
-      <hr />
-      <div>
-        <h4 className="text-lg font-bold">OAuth</h4>
-        <p className="mb-2 text-xs text-gray-400">Connecting people</p>
-        <OauthSection />
-      </div>
+      {OAUTH_GOOGLE_CLIENT_ID && (
+        <>
+          <hr />
+          <div>
+            <h4 className="text-lg font-bold">OAuth</h4>
+            <p className="mb-2 text-xs text-gray-400">Connecting people</p>
+            <OauthSection />
+          </div>
+        </>
+      )}
       <hr />
       <div>
         <h4 className="text-lg font-bold">Data Export</h4>

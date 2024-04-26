@@ -12,6 +12,7 @@ describe('auth-register.cy.ts', () => {
     cy.get('#register-username').type('newtester');
     cy.get('#register-email').type('newtester@moaitime.com');
     cy.get('#register-password').type('password');
+    cy.get('#register-terms').click();
 
     cy.intercept('POST', '/api/v1/auth/register').as('register');
 

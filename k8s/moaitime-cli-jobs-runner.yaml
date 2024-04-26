@@ -23,7 +23,10 @@ spec:
           image: moaitime/moaitime-cli:latest
           name: moaitime-cli-jobs-runner-start
           imagePullPolicy: Never
-          resources: {}
+          resources:
+            limits:
+              cpu: '2'
+              memory: '4G'
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
 status: {}

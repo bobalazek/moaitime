@@ -25,6 +25,9 @@ spec:
           image: moaitime/moaitime-cli:latest
           name: moaitime-cli
           imagePullPolicy: Never
-          resources: {}
+          resources:
+            limits:
+              cpu: '2'
+              memory: '4G'
       restartPolicy: Always
 status: {}

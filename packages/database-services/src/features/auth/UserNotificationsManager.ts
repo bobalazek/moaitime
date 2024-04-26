@@ -33,9 +33,9 @@ import {
   UserNotificationTypeMessages,
 } from '@moaitime/shared-common';
 
-import { contentParser } from '../core/ContentParser';
-import { entityManager } from '../core/EntityManager';
-import { usersManager } from './UsersManager';
+import { contentParser, ContentParser } from '../core/ContentParser';
+import { entityManager, EntityManager } from '../core/EntityManager';
+import { usersManager, UsersManager } from './UsersManager';
 
 export type UserNotificationsManagerFindOptions = {
   from?: string;
@@ -48,6 +48,12 @@ export type UserNotificationsManagerFindOptions = {
 };
 
 export class UserNotificationsManager {
+  constructor(
+    private _usersManager: UsersManager,
+    private _entityManager: EntityManager,
+    private _contentParser: ContentParser
+  ) {}
+
   // API Helpers
   async list(actorUserId: string, options?: UserNotificationsManagerFindOptions) {
     return this.findManyByUserIdWithDataAndMeta(actorUserId, options);
@@ -81,7 +87,7 @@ export class UserNotificationsManager {
       throw new Error('User notification not found');
     }
 
-    const user = await usersManager.findOneById(actorUserId);
+    const user = await this._usersManager.findOneById(actorUserId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -272,7 +278,7 @@ export class UserNotificationsManager {
       rows.reverse();
     }
 
-    const user = await usersManager.findOneById(userId);
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -413,7 +419,7 @@ export class UserNotificationsManager {
   private async _parseRows(user: User, rows: UserNotification[]) {
     const parsedRows: UserNotificationStripped[] = [];
 
-    const objectsMap = await entityManager.getObjectsMap(rows);
+    const objectsMap = await this._entityManager.getObjectsMap(rows);
 
     for (const row of rows) {
       const content = UserNotificationTypeMessages[row.type as UserNotificationTypeEnum];
@@ -422,7 +428,7 @@ export class UserNotificationsManager {
           ? row.data.variables
           : {}
       ) as Record<string, unknown>;
-      const parsedContent = contentParser.parse(content, variables, objectsMap);
+      const parsedContent = this._contentParser.parse(content, variables, objectsMap);
 
       let link = null;
       if (row.type === UserNotificationTypeEnum.USER_FOLLOW_REQUEST_RECEIVED) {
@@ -466,4 +472,8 @@ export class UserNotificationsManager {
   }
 }
 
-export const userNotificationsManager = new UserNotificationsManager();
+export const userNotificationsManager = new UserNotificationsManager(
+  usersManager,
+  entityManager,
+  contentParser
+);

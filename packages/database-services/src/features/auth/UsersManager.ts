@@ -53,18 +53,21 @@ import {
 } from '@moaitime/shared-common';
 import { uploader } from '@moaitime/uploader';
 
-import { calendarsManager } from '../calendars/CalendarsManager';
-import { eventsManager } from '../calendars/EventsManager';
-import { focusSessionsManager } from '../focus/FocusSessionsManager';
-import { habitsManager } from '../habits/HabitsManager';
-import { moodEntriesManager } from '../mood/MoodEntriesManager';
-import { notesManager } from '../notes/NotesManager';
-import { reportsManager } from '../reports/ReportsManager';
-import { invitationsManager } from '../social/InvitationsManager';
-import { listsManager } from '../tasks/ListsManager';
-import { tagsManager } from '../tasks/TagsManager';
-import { tasksManager } from '../tasks/TasksManager';
-import { userOnlineActivityEntriesManager } from './UserOnlineActivityEntriesManager';
+import { calendarsManager, CalendarsManager } from '../calendars/CalendarsManager';
+import { eventsManager, EventsManager } from '../calendars/EventsManager';
+import { focusSessionsManager, FocusSessionsManager } from '../focus/FocusSessionsManager';
+import { habitsManager, HabitsManager } from '../habits/HabitsManager';
+import { moodEntriesManager, MoodEntriesManager } from '../mood/MoodEntriesManager';
+import { notesManager, NotesManager } from '../notes/NotesManager';
+import { reportsManager, ReportsManager } from '../reports/ReportsManager';
+import { invitationsManager, InvitationsManager } from '../social/InvitationsManager';
+import { listsManager, ListsManager } from '../tasks/ListsManager';
+import { tagsManager, TagsManager } from '../tasks/TagsManager';
+import { tasksManager, TasksManager } from '../tasks/TasksManager';
+import {
+  userOnlineActivityEntriesManager,
+  UserOnlineActivityEntriesManager,
+} from './UserOnlineActivityEntriesManager';
 
 export type UsersManagerFollowOptions = {
   limit: number;
@@ -78,6 +81,21 @@ export type UsersManagerSearchOptions = UsersManagerFollowOptions & {
 };
 
 export class UsersManager {
+  constructor(
+    private _calendarsManager: CalendarsManager,
+    private _eventsManager: EventsManager,
+    private _focusSessionsManager: FocusSessionsManager,
+    private _habitsManager: HabitsManager,
+    private _moodEntriesManager: MoodEntriesManager,
+    private _notesManager: NotesManager,
+    private _reportsManager: ReportsManager,
+    private _invitationsManager: InvitationsManager,
+    private _listsManager: ListsManager,
+    private _tagsManager: TagsManager,
+    private _tasksManager: TasksManager,
+    private _userOnlineActivityEntriesManager: UserOnlineActivityEntriesManager
+  ) {}
+
   // API Helpers
   async view(
     actorUserId: string,
@@ -101,7 +119,7 @@ export class UsersManager {
     const followersCount = canViewUserIfPrivate ? await this.countFollowers(user.id) : 0;
     const followingCount = canViewUserIfPrivate ? await this.countFollowing(user.id) : 0;
     const lastActiveAt = canViewUserIfPrivate
-      ? await userOnlineActivityEntriesManager.getLastActiveAtByUserId(user.id)
+      ? await this._userOnlineActivityEntriesManager.getLastActiveAtByUserId(user.id)
       : null;
     const experiencePoints = canViewUserIfPrivate
       ? await this.getExperincePointsByUserId(user.id)
@@ -441,7 +459,7 @@ export class UsersManager {
       throw new Error(`User with username or ID "${userIdOrUsername}" was not found.`);
     }
 
-    const report = await reportsManager.insertOne({
+    const report = await this._reportsManager.insertOne({
       userId: actorUserId,
       targetEntity: {
         id: user.id,
@@ -1045,17 +1063,17 @@ export class UsersManager {
   async getUserUsage(user: User): Promise<UserUsage> {
     // TODO: cache!
 
-    const listsCount = await listsManager.countByUserId(user.id);
-    const tasksCount = await tasksManager.countByUserId(user.id);
-    const tagsCount = await tagsManager.countByUserId(user.id);
-    const habitsCount = await habitsManager.countByUserId(user.id);
-    const notesCount = await notesManager.countByUserId(user.id);
-    const moodEntriesCount = await moodEntriesManager.countByUserId(user.id);
-    const calendarsCount = await calendarsManager.countByUserId(user.id);
-    const userCalendarsCount = await calendarsManager.countUserCalendarsByUserId(user.id);
-    const eventsCount = await eventsManager.countByUserId(user.id);
-    const focusSessionsCount = await focusSessionsManager.countByUserId(user.id);
-    const userInvitationsCount = await invitationsManager.countByUserId(user.id);
+    const listsCount = await this._listsManager.countByUserId(user.id);
+    const tasksCount = await this._tasksManager.countByUserId(user.id);
+    const tagsCount = await this._tagsManager.countByUserId(user.id);
+    const habitsCount = await this._habitsManager.countByUserId(user.id);
+    const notesCount = await this._notesManager.countByUserId(user.id);
+    const moodEntriesCount = await this._moodEntriesManager.countByUserId(user.id);
+    const calendarsCount = await this._calendarsManager.countByUserId(user.id);
+    const userCalendarsCount = await this._calendarsManager.countUserCalendarsByUserId(user.id);
+    const eventsCount = await this._eventsManager.countByUserId(user.id);
+    const focusSessionsCount = await this._focusSessionsManager.countByUserId(user.id);
+    const userInvitationsCount = await this._invitationsManager.countByUserId(user.id);
 
     return {
       listsCount,
@@ -1356,4 +1374,17 @@ export class UsersManager {
   }
 }
 
-export const usersManager = new UsersManager();
+export const usersManager = new UsersManager(
+  calendarsManager,
+  eventsManager,
+  focusSessionsManager,
+  habitsManager,
+  moodEntriesManager,
+  notesManager,
+  reportsManager,
+  invitationsManager,
+  listsManager,
+  tagsManager,
+  tasksManager,
+  userOnlineActivityEntriesManager
+);

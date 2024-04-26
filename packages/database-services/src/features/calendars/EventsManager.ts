@@ -39,7 +39,7 @@ import {
   UpdateEvent,
 } from '@moaitime/shared-common';
 
-import { usersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 import { calendarsManager, CalendarsManagerVisibleCalendarsMap } from './CalendarsManager';
 
 export type EventsManagerEvent = Event & {
@@ -484,7 +484,7 @@ export class EventsManager {
 
   // Private
   private async _checkIfLimitReached(actorUser: User, calendarId: string) {
-    const maxCount = await usersManager.getUserLimit(
+    const maxCount = await userUsageManager.getUserLimit(
       actorUser,
       'calendarsMaxEventsPerCalendarCount'
     );

@@ -5,6 +5,7 @@ import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { CreateTag, GlobalEventsEnum, UpdateTag } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 
 export type TagsManagerFindManyByUserIdOptions = {
   includeDeleted?: boolean;
@@ -239,7 +240,7 @@ export class TagsManager {
 
   // Private
   private async _checkIfLimitReached(actorUser: User) {
-    const maxCount = await usersManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
+    const maxCount = await userUsageManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
     const currentCount = await this.countByUserId(actorUser.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of tags per user (${maxCount}).`);

@@ -18,6 +18,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 
 export type NotesManagerFindManyOptions = {
   search?: string;
@@ -254,7 +255,10 @@ export class NotesManager {
 
   // Private
   private async _checkIfLimitReached(actorUser: User) {
-    const notesMaxPerUserCount = await usersManager.getUserLimit(actorUser, 'notesMaxPerUserCount');
+    const notesMaxPerUserCount = await userUsageManager.getUserLimit(
+      actorUser,
+      'notesMaxPerUserCount'
+    );
     const notesCount = await this.countByUserId(actorUser.id);
     if (notesCount >= notesMaxPerUserCount) {
       throw new Error(

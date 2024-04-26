@@ -5,7 +5,9 @@ import { globalEventsNotifier } from '@moaitime/global-events-notifier';
 import { CreateList, GlobalEventsEnum, UpdateList } from '@moaitime/shared-common';
 
 import { teamsManager } from '../auth/TeamsManager';
+import { teamUsageManager } from '../auth/TeamUsageManager';
 import { usersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 
 export type ListsManagerTaskCountOptions = {
   includeCompleted?: boolean;
@@ -495,10 +497,10 @@ export class ListsManager {
         throw new Error('Team not found');
       }
 
-      maxCount = await teamsManager.getTeamLimit(team, 'listsMaxPerTeamCount');
+      maxCount = await teamUsageManager.getTeamLimit(team, 'listsMaxPerTeamCount');
       currentCount = await this.countByTeamId(team.id);
     } else {
-      maxCount = await usersManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
+      maxCount = await userUsageManager.getUserLimit(actorUser, 'listsMaxPerUserCount');
       currentCount = await this.countByUserId(actorUser.id);
     }
 

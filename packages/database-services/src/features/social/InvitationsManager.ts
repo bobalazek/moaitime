@@ -7,6 +7,7 @@ import { mailer } from '@moaitime/emails-mailer';
 import { getEnv } from '@moaitime/shared-backend';
 
 import { usersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 
 export class InvitationsManager {
   // API Helpers
@@ -42,7 +43,7 @@ export class InvitationsManager {
     }
 
     const count = await this.countByUserId(userId);
-    const countLimit = await usersManager.getUserLimit(user, 'userInvitationsMaxPerUserCount');
+    const countLimit = await userUsageManager.getUserLimit(user, 'userInvitationsMaxPerUserCount');
     if (count >= countLimit) {
       throw new Error('You have reached the maximum number of invitations');
     }

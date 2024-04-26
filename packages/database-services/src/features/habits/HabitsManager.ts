@@ -51,6 +51,7 @@ import {
 } from '@moaitime/shared-common';
 
 import { usersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 
 export type HabitsManagerListOptions = {
   search?: string;
@@ -815,7 +816,7 @@ export class HabitsManager {
 
   // Private
   private async _checkIfLimitReached(actorUser: User) {
-    const habitsMaxPerUserCount = await usersManager.getUserLimit(
+    const habitsMaxPerUserCount = await userUsageManager.getUserLimit(
       actorUser,
       'habitsMaxPerUserCount'
     );

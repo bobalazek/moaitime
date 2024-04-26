@@ -20,11 +20,14 @@ import {
   UpdateUserCalendar,
 } from '@moaitime/shared-common';
 
-import { usersManager } from '../auth/UsersManager';
+import { usersManager, UsersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 
 export type CalendarsManagerVisibleCalendarsMap = Map<string, 'user' | 'team' | 'user-shared'>;
 
 export class CalendarsManager {
+  constructor(private _usersManager: UsersManager) {}
+
   // API Helpers
   async list(actorUserId: string) {
     const calendars = await this.findManyByUserId(actorUserId);
@@ -173,7 +176,7 @@ export class CalendarsManager {
     }
 
     // Team Calendars
-    const teamIds = await usersManager.getTeamIds(userId);
+    const teamIds = await this._usersManager.getTeamIds(userId);
     if (teamIds.length > 0) {
       const teamLists = await getDatabase().query.calendars.findMany({
         columns: {
@@ -218,12 +221,12 @@ export class CalendarsManager {
   async addVisibleCalendarIdByUserId(userId: string, calendarId: string) {
     const calendar = await this.findOneById(calendarId);
 
-    const user = await usersManager.findOneById(userId);
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       return calendar;
     }
 
-    const userSettings = usersManager.getUserSettings(user);
+    const userSettings = this._usersManager.getUserSettings(user);
     const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
     const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (userCalendarIds.includes(calendarId)) {
@@ -232,7 +235,7 @@ export class CalendarsManager {
 
     userCalendarIds.push(calendarId);
 
-    await usersManager.updateOneById(userId, {
+    await this._usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleCalendarIds: userCalendarIds,
@@ -245,12 +248,12 @@ export class CalendarsManager {
   async removeVisibleCalendarIdByUserId(userId: string, calendarId: string) {
     const calendar = await this.findOneById(calendarId);
 
-    const user = await usersManager.findOneById(userId);
+    const user = await this._usersManager.findOneById(userId);
     if (!user) {
       return calendar;
     }
 
-    const userSettings = usersManager.getUserSettings(user);
+    const userSettings = this._usersManager.getUserSettings(user);
     const userCalendarIdsMap = await this.getVisibleCalendarIdsByUserIdMap(userId);
     const userCalendarIds = Array.from(userCalendarIdsMap.keys());
     if (!userCalendarIds.includes(calendarId)) {
@@ -262,7 +265,7 @@ export class CalendarsManager {
       userCalendarIds.splice(index, 1);
     }
 
-    await usersManager.updateOneById(userId, {
+    await this._usersManager.updateOneById(userId, {
       settings: {
         ...userSettings,
         calendarVisibleCalendarIds: userCalendarIds,
@@ -277,7 +280,7 @@ export class CalendarsManager {
   }
 
   async createUserCalendar(user: User, calendarId: string) {
-    const calendarsMaxUserCalendarsPerUserCount = await usersManager.getUserLimit(
+    const calendarsMaxUserCalendarsPerUserCount = await userUsageManager.getUserLimit(
       user,
       'calendarsMaxUserCalendarsPerUserCount'
     );
@@ -387,13 +390,13 @@ export class CalendarsManager {
   async getUserSettingsCalendarIds(userOrUserId: string | User): Promise<string[]> {
     const user =
       typeof userOrUserId === 'string'
-        ? await usersManager.findOneById(userOrUserId)
+        ? await this._usersManager.findOneById(userOrUserId)
         : userOrUserId;
     if (!user) {
       return [];
     }
 
-    const userSettings = usersManager.getUserSettings(user);
+    const userSettings = this._usersManager.getUserSettings(user);
 
     return userSettings.calendarVisibleCalendarIds ?? [];
   }
@@ -412,7 +415,7 @@ export class CalendarsManager {
       return true;
     }
 
-    const teamIds = await usersManager.getTeamIds(userId);
+    const teamIds = await this._usersManager.getTeamIds(userId);
     if (calendar.teamId && teamIds.includes(calendar.teamId)) {
       return true;
     }
@@ -434,7 +437,7 @@ export class CalendarsManager {
       return true;
     }
 
-    const teamIds = await usersManager.getTeamIds(userId);
+    const teamIds = await this._usersManager.getTeamIds(userId);
     if (calendar.teamId && teamIds.includes(calendar.teamId)) {
       return true;
     }
@@ -450,7 +453,7 @@ export class CalendarsManager {
   async findManyByUserId(userId: string): Promise<Calendar[]> {
     let where = isNull(calendars.deletedAt);
 
-    const teamIds = await usersManager.getTeamIds(userId);
+    const teamIds = await this._usersManager.getTeamIds(userId);
     if (teamIds.length === 0) {
       where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
     } else {
@@ -471,7 +474,7 @@ export class CalendarsManager {
   async findOneByIdAndUserId(calendarId: string, userId: string): Promise<Calendar | null> {
     let where = and(eq(calendars.id, calendarId), isNull(calendars.deletedAt));
 
-    const teamIds = await usersManager.getTeamIds(userId);
+    const teamIds = await this._usersManager.getTeamIds(userId);
     if (teamIds.length === 0) {
       where = and(where, eq(calendars.userId, userId)) as SQL<unknown>;
     } else {
@@ -593,7 +596,7 @@ export class CalendarsManager {
 
   // Private
   private async _checkIfLimitReached(actorUser: User) {
-    const maxCount = await usersManager.getUserLimit(actorUser, 'calendarsMaxPerUserCount');
+    const maxCount = await userUsageManager.getUserLimit(actorUser, 'calendarsMaxPerUserCount');
     const currentCount = await this.countByUserId(actorUser.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of calendars per user (${maxCount}).`);
@@ -601,4 +604,5 @@ export class CalendarsManager {
   }
 }
 
-export const calendarsManager = new CalendarsManager();
+export const calendarsManager = new CalendarsManager(usersManager);
+console.log('CALENDAR IN MANAER', calendarsManager);

@@ -43,7 +43,9 @@ import {
 } from '@moaitime/shared-common';
 
 import { teamsManager } from '../auth/TeamsManager';
+import { teamUsageManager } from '../auth/TeamUsageManager';
 import { usersManager } from '../auth/UsersManager';
+import { userUsageManager } from '../auth/UserUsageManager';
 import { listsManager } from './ListsManager';
 import { tagsManager } from './TagsManager';
 
@@ -1170,10 +1172,10 @@ export class TasksManager {
     if (list && list.teamId) {
       const team = await teamsManager.findOneById(list.teamId);
       tasksMaxPerListCount = team
-        ? await teamsManager.getTeamLimit(team, 'tasksMaxPerListCount')
+        ? await teamUsageManager.getTeamLimit(team, 'tasksMaxPerListCount')
         : 0;
     } else {
-      tasksMaxPerListCount = await usersManager.getUserLimit(user, 'tasksMaxPerListCount');
+      tasksMaxPerListCount = await userUsageManager.getUserLimit(user, 'tasksMaxPerListCount');
     }
 
     const tasksCount = await this.countByListId(list?.id ?? null, user.id);

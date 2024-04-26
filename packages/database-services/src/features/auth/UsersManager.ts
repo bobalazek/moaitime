@@ -47,23 +47,11 @@ import {
   PublicUserSchema,
   SortDirectionEnum,
   UserAchievement,
-  UserLimits,
   UserSettings,
-  UserUsage,
 } from '@moaitime/shared-common';
 import { uploader } from '@moaitime/uploader';
 
-import { calendarsManager, CalendarsManager } from '../calendars/CalendarsManager';
-import { eventsManager, EventsManager } from '../calendars/EventsManager';
-import { focusSessionsManager, FocusSessionsManager } from '../focus/FocusSessionsManager';
-import { habitsManager, HabitsManager } from '../habits/HabitsManager';
-import { moodEntriesManager, MoodEntriesManager } from '../mood/MoodEntriesManager';
-import { notesManager, NotesManager } from '../notes/NotesManager';
 import { reportsManager, ReportsManager } from '../reports/ReportsManager';
-import { invitationsManager, InvitationsManager } from '../social/InvitationsManager';
-import { listsManager, ListsManager } from '../tasks/ListsManager';
-import { tagsManager, TagsManager } from '../tasks/TagsManager';
-import { tasksManager, TasksManager } from '../tasks/TasksManager';
 import {
   userOnlineActivityEntriesManager,
   UserOnlineActivityEntriesManager,
@@ -82,17 +70,7 @@ export type UsersManagerSearchOptions = UsersManagerFollowOptions & {
 
 export class UsersManager {
   constructor(
-    private _calendarsManager: CalendarsManager,
-    private _eventsManager: EventsManager,
-    private _focusSessionsManager: FocusSessionsManager,
-    private _habitsManager: HabitsManager,
-    private _moodEntriesManager: MoodEntriesManager,
-    private _notesManager: NotesManager,
     private _reportsManager: ReportsManager,
-    private _invitationsManager: InvitationsManager,
-    private _listsManager: ListsManager,
-    private _tagsManager: TagsManager,
-    private _tasksManager: TasksManager,
     private _userOnlineActivityEntriesManager: UserOnlineActivityEntriesManager
   ) {}
 
@@ -1036,60 +1014,6 @@ export class UsersManager {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getUserLimits(user: User): Promise<UserLimits> {
-    // TODO: once we have plans, we need to adjust the limits depending on that
-
-    return {
-      teamsMaxPerUserCount: 1,
-      tasksMaxPerListCount: 100,
-      listsMaxPerUserCount: 25,
-      tagsMaxPerUserCount: 50,
-      habitsMaxPerUserCount: 100,
-      calendarsMaxPerUserCount: 20,
-      calendarsMaxEventsPerCalendarCount: 10000,
-      calendarsMaxUserCalendarsPerUserCount: 100,
-      notesMaxPerUserCount: 1000,
-      userInvitationsMaxPerUserCount: 10,
-    };
-  }
-
-  async getUserLimit(user: User, key: keyof UserLimits): Promise<number> {
-    const limits = await this.getUserLimits(user);
-
-    return limits[key];
-  }
-
-  async getUserUsage(user: User): Promise<UserUsage> {
-    // TODO: cache!
-
-    const listsCount = await this._listsManager.countByUserId(user.id);
-    const tasksCount = await this._tasksManager.countByUserId(user.id);
-    const tagsCount = await this._tagsManager.countByUserId(user.id);
-    const habitsCount = await this._habitsManager.countByUserId(user.id);
-    const notesCount = await this._notesManager.countByUserId(user.id);
-    const moodEntriesCount = await this._moodEntriesManager.countByUserId(user.id);
-    const calendarsCount = await this._calendarsManager.countByUserId(user.id);
-    const userCalendarsCount = await this._calendarsManager.countUserCalendarsByUserId(user.id);
-    const eventsCount = await this._eventsManager.countByUserId(user.id);
-    const focusSessionsCount = await this._focusSessionsManager.countByUserId(user.id);
-    const userInvitationsCount = await this._invitationsManager.countByUserId(user.id);
-
-    return {
-      listsCount,
-      tasksCount,
-      tagsCount,
-      habitsCount,
-      notesCount,
-      moodEntriesCount,
-      calendarsCount,
-      userCalendarsCount,
-      eventsCount,
-      focusSessionsCount,
-      userInvitationsCount,
-    };
-  }
-
   getUserSettings(user: User): UserSettings {
     return {
       ...DEFAULT_USER_SETTINGS,
@@ -1374,17 +1298,4 @@ export class UsersManager {
   }
 }
 
-export const usersManager = new UsersManager(
-  calendarsManager,
-  eventsManager,
-  focusSessionsManager,
-  habitsManager,
-  moodEntriesManager,
-  notesManager,
-  reportsManager,
-  invitationsManager,
-  listsManager,
-  tagsManager,
-  tasksManager,
-  userOnlineActivityEntriesManager
-);
+export const usersManager = new UsersManager(reportsManager, userOnlineActivityEntriesManager);

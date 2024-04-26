@@ -5,8 +5,10 @@ export * from './features/core/ContentParser';
 // Auth
 export * from './features/auth/AuthManager';
 export * from './features/auth/TeamsManager';
+export * from './features/auth/TeamUsageManager';
 export * from './features/auth/OrganizationsManager';
 export * from './features/auth/UsersManager';
+export * from './features/auth/UserUsageManager';
 export * from './features/auth/UserDataExportsManager';
 export * from './features/auth/UserAccessTokensManager';
 export * from './features/auth/UserPasswordlessLoginsManager';

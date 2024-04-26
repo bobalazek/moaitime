@@ -24,22 +24,18 @@ import { getEnv } from '@moaitime/shared-backend';
 import {
   Team as ApiTeam,
   GlobalEventsEnum,
-  TeamLimits,
-  TeamUsage,
   TeamUserRoleEnum,
   UpdateTeam,
   UpdateTeamUser,
 } from '@moaitime/shared-common';
 
-import { calendarsManager, CalendarsManager } from '../calendars/CalendarsManager';
-import { listsManager, ListsManager } from '../tasks/ListsManager';
 import { usersManager, UsersManager } from './UsersManager';
+import { userUsageManager, UserUsageManager } from './UserUsageManager';
 
 export class TeamsManager {
   constructor(
     private _usersManager: UsersManager,
-    private _listsManager: ListsManager,
-    private _calendarsManager: CalendarsManager
+    private _userUsageManager: UserUsageManager
   ) {}
 
   // API Helpers
@@ -126,7 +122,7 @@ export class TeamsManager {
     actorUser: User,
     teamName: string
   ): Promise<{ team: Team; teamUser: TeamUser }> {
-    const maxCount = await this._usersManager.getUserLimit(actorUser, 'teamsMaxPerUserCount');
+    const maxCount = await this._userUsageManager.getUserLimit(actorUser, 'teamsMaxPerUserCount');
     const currentCount = await this.countByUserId(actorUser.id);
     if (currentCount >= maxCount) {
       throw new Error(`You have reached the maximum number of teams per user (${maxCount}).`);
@@ -857,39 +853,6 @@ export class TeamsManager {
     return result[0].count ?? 0;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getTeamLimits(team: Team): Promise<TeamLimits> {
-    // TODO: once we have plans, we need to adjust the limits depending on that
-
-    return {
-      tasksMaxPerListCount: 100,
-      listsMaxPerTeamCount: 25,
-      usersMaxPerTeamCount: 10,
-      calendarsMaxPerTeamCount: 20,
-      calendarsMaxEventsPerCalendarCount: 10000,
-    };
-  }
-
-  async getTeamLimit(team: Team, key: keyof TeamLimits): Promise<number> {
-    const limits = await this.getTeamLimits(team);
-
-    return limits[key];
-  }
-
-  async getTeamUsage(team: Team): Promise<TeamUsage> {
-    // TODO: cache!
-
-    const listsCount = await this._listsManager.countByTeamId(team.id);
-    const usersCount = await this._usersManager.countByTeamId(team.id);
-    const calendarsCount = await this._calendarsManager.countByTeamId(team.id);
-
-    return {
-      listsCount,
-      usersCount,
-      calendarsCount,
-    };
-  }
-
   async getAvailableInvitationByToken(token: string): Promise<TeamUserInvitation> {
     const invitation = await this.findOneInvitationByToken(token);
     if (!invitation) {
@@ -913,4 +876,4 @@ export class TeamsManager {
   }
 }
 
-export const teamsManager = new TeamsManager(usersManager, listsManager, calendarsManager);
+export const teamsManager = new TeamsManager(usersManager, userUsageManager);

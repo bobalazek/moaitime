@@ -17,7 +17,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 
-import { authManager, usersManager } from '@moaitime/database-services';
+import { authManager, userUsageManager } from '@moaitime/database-services';
 import { ResponseInterface, UserLimits, UserUsage } from '@moaitime/shared-common';
 
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -116,7 +116,7 @@ export class AccountController {
   @UseGuards(AuthenticatedGuard)
   @Get('limits')
   async limits(@Req() req: Request): Promise<ResponseInterface<UserLimits>> {
-    const data = await usersManager.getUserLimits(req.user);
+    const data = await userUsageManager.getUserLimits(req.user);
 
     return {
       success: true,
@@ -127,7 +127,7 @@ export class AccountController {
   @UseGuards(AuthenticatedGuard)
   @Get('usage')
   async usage(@Req() req: Request): Promise<ResponseInterface<UserUsage>> {
-    const data = await usersManager.getUserUsage(req.user);
+    const data = await userUsageManager.getUserUsage(req.user);
 
     return {
       success: true,

@@ -21,4 +21,4 @@ docker build -t moaitime/moaitime-cli:latest -f ./apps/cli/Dockerfile .
 
 ##### Deployment ######
 echo "---------- Deploy to Docker Swarm ... ----------"
-docker stack deploy --compose-file ./docker/compose.yaml --compose-file ./docker/compose.deployment.yaml --compose-file ./docker/compose.apps.yaml --compose-file ./docker/compose.swarm.yaml moaitime
+docker stack deploy --compose-file ./docker/compose.yaml --compose-file ./docker/compose.apps.yaml --compose-file ./docker/compose.swarm.yaml moaitime

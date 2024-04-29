@@ -66,6 +66,7 @@ Right now, we support the following ways to install MoaiTime:
 
 ## TODOs
 
+- [ ] Improve the UI and UX
 - [ ] Create an actual logo
 - [ ] Improve the documentation
 - [ ] Add more unit, integration and E2E tests

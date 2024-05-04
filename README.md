@@ -36,6 +36,7 @@ And much more! You can find more screenshots on my blog post [https://bobalazek.
   - **Responsive design**, so you can use it on any device (native apps coming soon!)
   - **Accessibility**, so everyone can use it
   - **Data exports**, so you can take your data with you
+  - **Magic links**, so you can easily log in
 
 ## Stack
 

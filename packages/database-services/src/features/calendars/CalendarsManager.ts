@@ -605,4 +605,3 @@ export class CalendarsManager {
 }
 
 export const calendarsManager = new CalendarsManager(usersManager);
-console.log('CALENDAR IN MANAER', calendarsManager);

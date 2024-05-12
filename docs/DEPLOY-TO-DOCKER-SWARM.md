@@ -24,16 +24,25 @@ docker swarm init
 
 ### 3. Setup the database
 
-After all the services had been deployed, let's first check that all of the services are working as expected:
+After all the services had been deployed, we will first need to find the perpetually running CLI container.
 
 ```bash
-docker exec -it moaitime_cli ./cli health:check
+docker ps -a | grep -F moaitime_moaitime-cli.
+
+# Example output:
+# ee752e6ea743   moaitime/moaitime-cli:latest   "tail -f /dev/null"   46 hours ago   Up 46 hours (healthy)   moaitime_moaitime-cli.1.srj4nxdyehe19koy15586cc2v
+```
+
+Then after we have the ID, we check that all of the services are working as expected:
+
+```bash
+docker exec -it ee752e6ea743 ./cli health:check # of course you will need to replace the ID with the one you got from the previous command
 ```
 
 Now we can run the database reload command to create the database schema, run the migrations, insert the seed data and insert the fixture data:
 
 ```bash
-docker exec -it moaitime_cli ./cli database:reload
+docker exec -it ee752e6ea743 ./cli database:reload
 ```
 
 ### 4. Access MoaiTime

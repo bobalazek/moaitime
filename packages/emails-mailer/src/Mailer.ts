@@ -199,6 +199,9 @@ export class Mailer {
       );
 
       const result = await this._resend.emails.send(finalOptions);
+      if (result.error) {
+        throw new Error(`Failed to send email via Resend: ${result.error.message}`);
+      }
 
       this._logger.debug(
         `Email to ${finalOptions.to} with subject "${finalOptions.subject}" was sent via Resend (result: ${JSON.stringify(result)}).`

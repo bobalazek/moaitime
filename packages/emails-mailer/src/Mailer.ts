@@ -201,7 +201,7 @@ export class Mailer {
       const result = await this._resend.emails.send(finalOptions);
 
       this._logger.debug(
-        `Email to ${finalOptions.to} with subject "${finalOptions.subject}" was sent via Resend (result: ${result}).`
+        `Email to ${finalOptions.to} with subject "${finalOptions.subject}" was sent via Resend (result: ${JSON.stringify(result)}).`
       );
 
       emailSent = true;

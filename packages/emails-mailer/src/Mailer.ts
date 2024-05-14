@@ -198,7 +198,11 @@ export class Mailer {
         `Sending email to ${finalOptions.to} with subject "${finalOptions.subject}" (via Resend) ...`
       );
 
-      await this._resend.emails.send(finalOptions);
+      const result = await this._resend.emails.send(finalOptions);
+
+      this._logger.debug(
+        `Email to ${finalOptions.to} with subject "${finalOptions.subject}" was sent via Resend (result: ${result}).`
+      );
 
       emailSent = true;
     }
@@ -217,6 +221,10 @@ export class Mailer {
       );
 
       await this._nodemailerTransporter.sendMail(finalOptions);
+
+      this._logger.debug(
+        `Email to ${finalOptions.to} with subject "${finalOptions.subject}" was sent via SMTP.`
+      );
     }
   }
 }

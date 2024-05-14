@@ -28,7 +28,8 @@ export const envSchema = z.object({
   // Queues
   RABBITMQ_URL: z.string().url().min(1),
   // Mailer
-  MAILER_FROM: z.string().min(1),
+  MAILER_FROM_NAME: z.string().min(1),
+  MAILER_FROM_EMAIL: z.string().min(1),
   MAILER_SMTP_URL: z.union([z.string().url().min(1), z.literal('')]).default(''),
   MAILER_RESEND_API_KEY: z.union([z.string().min(1), z.literal('')]).default(''),
   // Storage

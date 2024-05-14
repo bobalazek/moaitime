@@ -28,7 +28,7 @@ cp .env.local.example .env.local
 After that, you'll need to either create a [Resend](https://resend.com/) account or a SMTP account to send emails. Then set the following environment variables:
 
 ```bash
-MAILER_FROM="MoaiTime Mailer <noreply@mydomain.com>"
+MAILER_FROM_EMAIL=noreply@mydomain.com
 
 # IMPORTANT NOTE - if the username of password have special characters, YOU MUST ENCODE THEM! Use a tool like https://www.urlencoder.org
 MAILER_SMTP_URL=smtp://user:password@mydomain.com:587

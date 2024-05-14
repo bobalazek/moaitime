@@ -172,16 +172,17 @@ export class Mailer {
   }
 
   async send(Email: ReactElement, options: MailerSendOptions) {
-    const { MAILER_FROM } = getEnv();
+    const { MAILER_FROM_NAME, MAILER_FROM_EMAIL } = getEnv();
 
+    const from = `${MAILER_FROM_NAME} <${MAILER_FROM_EMAIL}>`;
     const html = render(Email);
     const text = render(Email, { plainText: true });
 
     const finalOptions = {
-      from: MAILER_FROM,
-      ...options,
+      from,
       html,
       text,
+      ...options,
     };
 
     if (getEnv().NODE_ENV === 'test') {

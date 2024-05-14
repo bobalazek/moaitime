@@ -1,9 +1,7 @@
-import { Team } from '@moaitime/database-core';
-import { TeamLimits, TeamUsage } from '@moaitime/shared-common';
+import { and, count, eq, isNull } from 'drizzle-orm';
 
-import { calendarsManager } from '../calendars/CalendarsManager';
-import { listsManager } from '../tasks/ListsManager';
-import { usersManager } from './UsersManager';
+import { calendars, getDatabase, lists, Team, teamUsers } from '@moaitime/database-core';
+import { TeamLimits, TeamUsage } from '@moaitime/shared-common';
 
 export class TeamUsageManager {
   // Helpers
@@ -28,15 +26,32 @@ export class TeamUsageManager {
 
   async getTeamUsage(team: Team): Promise<TeamUsage> {
     // TODO: cache!
+    // TODO: same as for UserUsageManager - once DI is sorted, use the manager services here
 
-    const listsCount = await listsManager.countByTeamId(team.id);
-    const usersCount = await usersManager.countByTeamId(team.id);
-    const calendarsCount = await calendarsManager.countByTeamId(team.id);
+    const database = getDatabase();
+
+    const listsCount = await database
+      .select({ count: count() })
+      .from(lists)
+      .where(and(eq(lists.teamId, team.id), isNull(lists.deletedAt)))
+      .execute();
+    const usersCount = await database
+      .select({
+        count: count(teamUsers.id).mapWith(Number),
+      })
+      .from(teamUsers)
+      .where(eq(teamUsers.teamId, team.id))
+      .execute();
+    const calendarsCount = await database
+      .select({ count: count() })
+      .from(calendars)
+      .where(and(eq(calendars.teamId, team.id), isNull(calendars.deletedAt)))
+      .execute();
 
     return {
-      listsCount,
-      usersCount,
-      calendarsCount,
+      listsCount: listsCount[0].count ?? 0,
+      usersCount: usersCount[0].count ?? 0,
+      calendarsCount: calendarsCount[0].count ?? 0,
     };
   }
 }

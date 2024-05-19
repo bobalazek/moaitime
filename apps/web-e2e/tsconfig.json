@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@moaitime/tsconfig-config/tsconfig.base.json",
   "include": ["src/**/*"],
   "compilerOptions": {
     "sourceMap": false

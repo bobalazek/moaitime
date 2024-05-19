@@ -1,4 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@moaitime/tsconfig-config/tsconfig.base.json",
   "include": ["src/**/*", "../user-experience-points-processor/src/UserExperiencePointsByEvent.ts"]
 }

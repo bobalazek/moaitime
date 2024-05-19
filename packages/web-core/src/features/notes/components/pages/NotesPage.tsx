@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
+import { useEventListener } from 'usehooks-ts';
 
 import { isValidUuid } from '@moaitime/shared-common';
 
@@ -32,6 +33,15 @@ export default function NotesPage() {
   useEffect(() => {
     document.title = 'Notes | MoaiTime';
   }, []);
+
+  useEventListener('focus', async () => {
+    reloadNotes();
+
+    if (selectedNote?.id) {
+      const newSelectedNote = await getNote(selectedNote.id);
+      setSelectedNote(newSelectedNote, true);
+    }
+  });
 
   const updateStateByUrl = useDebouncedCallback(async () => {
     const noteId = location.pathname.replace('/notes/', '');

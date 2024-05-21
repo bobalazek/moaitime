@@ -15,7 +15,7 @@ export class Uploader {
     expiresIn?: number,
     isPublic?: boolean
   ): Promise<string> {
-    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+    const { client, bucket } = this.getClientAndBucket(bucketUrl);
 
     const upload = new Upload({
       client,
@@ -45,7 +45,7 @@ export class Uploader {
   }
 
   async removeFileFromBucket(bucketUrl: string, key: string) {
-    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+    const { client, bucket } = this.getClientAndBucket(bucketUrl);
 
     const deleteObjectCommand = new DeleteObjectCommand({
       Bucket: bucket,
@@ -58,7 +58,7 @@ export class Uploader {
   }
 
   async getStreamFromBucket(bucketUrl: string, key: string): Promise<Readable> {
-    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+    const { client, bucket } = this.getClientAndBucket(bucketUrl);
 
     const getObjectCommand = new GetObjectCommand({
       Bucket: bucket,
@@ -78,7 +78,7 @@ export class Uploader {
   }
 
   async getSignedUrl(bucketUrl: string, key: string, expiresIn?: number): Promise<string> {
-    const { client, bucket } = this._getClientAndBucket(bucketUrl);
+    const { client, bucket } = this.getClientAndBucket(bucketUrl);
 
     const getObjectCommand = new GetObjectCommand({
       Bucket: bucket,
@@ -90,52 +90,27 @@ export class Uploader {
     });
   }
 
-  // Private
-  private _getClientAndBucket(url: string) {
-    const [protocol, bucketUrl] = url.split('://');
+  getClientAndBucket(url: string) {
+    const urlObject = new URL(url);
 
-    const atSplit = bucketUrl.split('@');
-    if (atSplit.length !== 2) {
-      throw new Error(`Invalid bucket URL (${bucketUrl}).`);
-    }
+    const { protocol, hostname, host, username, password } = urlObject;
+    const region = urlObject.searchParams.get('region') ?? 'us-east-1';
+    const bucket = urlObject.pathname.slice(1);
 
-    const colonSplit = atSplit[0].split(':');
-    if (colonSplit.length !== 2) {
-      throw new Error(`Invalid bucket URL (${bucketUrl}).`);
-    }
-
-    const slashSplit = atSplit[1].split('/');
-
-    const region = 'us-east-1';
-    const domain = slashSplit[0];
-    const bucket = slashSplit[1];
-    const accessKeyId = colonSplit[0];
-    const secretAccessKey = colonSplit[1];
-
-    const forcePathStyle = ['localhost', 'minio', '127.0.0.1'].some((host) =>
-      domain.includes(host)
-    );
-
-    // Not working for some reason. Seems to be a bug in S3Client.
-    // Keeping this is, in case in the future I decide to try optimize this part and break everything.
-    // const endpoint = `${protocol}://${domain}`;
-
-    const client = new S3Client({
-      region,
-      endpoint: {
-        hostname: domain,
-        path: '/',
-        protocol: `${protocol}:`,
-      },
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
-      forcePathStyle,
-    });
+    const isLocal = ['localhost', 'minio', '127.0.0.1'].some((host) => hostname.includes(host));
+    const forcePathStyle = isLocal;
+    const endpoint = `${protocol}//${host}`;
 
     return {
-      client,
+      client: new S3Client({
+        region,
+        endpoint,
+        credentials: {
+          accessKeyId: username,
+          secretAccessKey: password,
+        },
+        forcePathStyle,
+      }),
       bucket,
     };
   }

@@ -16,6 +16,7 @@
     "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
+    "test": "vitest run --fileParallelism=false",
     "types:generate": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir dist"
   },
   "dependencies": {

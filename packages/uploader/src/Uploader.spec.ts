@@ -14,8 +14,8 @@ vitest.mock('@aws-sdk/client-s3', () => {
   };
 });
 
-describe('S3Client.ts', () => {
-  describe('getS3ClientAndBucket()', () => {
+describe('Uploader.ts', () => {
+  describe('getClientAndBucket()', () => {
     beforeEach(() => {
       vitest.clearAllMocks();
     });

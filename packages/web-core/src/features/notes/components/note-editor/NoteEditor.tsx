@@ -12,7 +12,7 @@ export const NoteEditor = () => {
 
   const plateEditorKey = selectedNote ? selectedNote.id : 'new';
 
-  // TODO: fix issue where the new content value is not applied (mostly when we get changes from websockes)
+  // TODO: fix issue where the new content value is not applied (mostly when we get changes from websocket)
 
   return (
     <div className="flex select-none flex-col" data-test="note-editor">

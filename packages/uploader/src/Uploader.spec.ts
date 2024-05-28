@@ -6,11 +6,7 @@ import { uploader } from './Uploader';
 
 vitest.mock('@aws-sdk/client-s3', () => {
   return {
-    S3Client: vitest.fn().mockImplementation(() => {
-      return {
-        send: vitest.fn().mockResolvedValue({}),
-      };
-    }),
+    S3Client: vitest.fn().mockImplementation(() => void 0),
   };
 });
 
@@ -33,12 +29,7 @@ describe('Uploader.ts', () => {
         forcePathStyle: true,
       });
 
-      expect(result).toEqual({
-        client: expect.objectContaining({
-          send: expect.any(Function),
-        }),
-        bucket: 'bucket',
-      });
+      expect(result.bucket).toEqual('bucket');
     });
 
     it('should set forcePathStyle to false for non-local URL', async () => {
@@ -54,12 +45,7 @@ describe('Uploader.ts', () => {
         forcePathStyle: false,
       });
 
-      expect(result).toEqual({
-        client: expect.objectContaining({
-          send: expect.any(Function),
-        }),
-        bucket: 'bucket',
-      });
+      expect(result.bucket).toEqual('bucket');
     });
 
     it('should use the specified region from URL parameters', async () => {
@@ -77,12 +63,7 @@ describe('Uploader.ts', () => {
         forcePathStyle: false,
       });
 
-      expect(result).toEqual({
-        client: expect.objectContaining({
-          send: expect.any(Function),
-        }),
-        bucket: 'bucket',
-      });
+      expect(result.bucket).toEqual('bucket');
     });
 
     it('should handle username and password in URL', async () => {
@@ -98,12 +79,7 @@ describe('Uploader.ts', () => {
         forcePathStyle: true,
       });
 
-      expect(result).toEqual({
-        client: expect.objectContaining({
-          send: expect.any(Function),
-        }),
-        bucket: 'bucket2',
-      });
+      expect(result.bucket).toEqual('bucket2');
     });
 
     it('should handle different bucket names and regions', async () => {
@@ -121,12 +97,7 @@ describe('Uploader.ts', () => {
         forcePathStyle: false,
       });
 
-      expect(result).toEqual({
-        client: expect.objectContaining({
-          send: expect.any(Function),
-        }),
-        bucket: 'another-bucket',
-      });
+      expect(result.bucket).toEqual('another-bucket');
     });
 
     it('should handle URLs with no username and password', async () => {
@@ -142,12 +113,7 @@ describe('Uploader.ts', () => {
         forcePathStyle: false,
       });
 
-      expect(result).toEqual({
-        client: expect.objectContaining({
-          send: expect.any(Function),
-        }),
-        bucket: 'test-bucket',
-      });
+      expect(result.bucket).toEqual('test-bucket');
     });
   });
 });

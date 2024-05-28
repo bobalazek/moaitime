@@ -49,7 +49,10 @@ export type NotesStore = {
   selectedNote: Note | null;
   selectedNoteData: CreateNote | UpdateNote | null; // The cloned object of the selectedNote, so we don't mutate the original
   selectedNoteDataChanged: boolean;
-  setSelectedNote: (note: Note | null, skipGet?: boolean) => Promise<Note | null>;
+  setSelectedNote: (
+    note: (Note & { _fromWebsocket?: boolean }) | null,
+    skipGet?: boolean
+  ) => Promise<Note | null>;
   setSelectedNoteData: (
     noteData: CreateNote | UpdateNote | null
   ) => Promise<CreateNote | UpdateNote | null>;
@@ -239,13 +242,25 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   selectedNote: null,
   selectedNoteData: null,
   selectedNoteDataChanged: false,
-  setSelectedNote: async (selectedNote: Note | null, skipGet?: boolean) => {
+  setSelectedNote: async (
+    selectedNote: (Note & { _fromWebsocket?: boolean }) | null,
+    skipGet?: boolean
+  ) => {
     const { getNote } = get();
 
     // The reason we get this is,
     // because that selected note most likely won't have the "content" field,
     // so we need to populate it here.
-    const note = skipGet ? selectedNote : selectedNote ? await getNote(selectedNote.id) : null;
+    const note = skipGet
+      ? selectedNote
+      : selectedNote
+        ? ((await getNote(selectedNote.id)) as Note)
+        : null;
+
+    // We need this hack to reload the note editor with new value
+    if (note && selectedNote?._fromWebsocket) {
+      (note as Note & { _fromWebsocket?: boolean })._fromWebsocket = true;
+    }
 
     let selectedNoteData: UpdateNote | null = null;
     if (note) {

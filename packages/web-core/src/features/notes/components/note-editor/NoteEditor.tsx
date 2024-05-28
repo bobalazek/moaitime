@@ -1,6 +1,6 @@
 import { isEqual } from 'lodash';
 
-import { UpdateNote } from '@moaitime/shared-common';
+import { Note, UpdateNote } from '@moaitime/shared-common';
 import { Input } from '@moaitime/web-ui';
 import { PlateEditor } from '@moaitime/web-ui-editor';
 
@@ -10,9 +10,15 @@ import { useNotesStore } from '../../state/notesStore';
 export const NoteEditor = () => {
   const { selectedNote, selectedNoteData, setSelectedNoteData } = useNotesStore();
 
-  const plateEditorKey = selectedNote ? selectedNote.id : 'new';
-
-  // TODO: fix issue where the new content value is not applied (mostly when we get changes from websocket)
+  // Hacky workaround to clear re-instantiate the editor if the value changes,
+  // because we got new content from the websocket
+  let plateEditorKey = selectedNote ? selectedNote.id : 'new';
+  if (
+    selectedNote &&
+    typeof (selectedNote as Note & { _fromWebsocket?: boolean })._fromWebsocket !== 'undefined'
+  ) {
+    plateEditorKey += '_ws';
+  }
 
   return (
     <div className="flex select-none flex-col" data-test="note-editor">

@@ -198,7 +198,7 @@ export class WebsocketManager {
 
       if (selectedNote?.id === payload.noteId) {
         const isDeletion = data.type === GlobalEventsEnum.NOTES_NOTE_DELETED;
-        await setSelectedNote(isDeletion ? null : selectedNote);
+        await setSelectedNote(isDeletion ? null : { ...selectedNote, _fromWebsocket: true });
       }
     }
   }

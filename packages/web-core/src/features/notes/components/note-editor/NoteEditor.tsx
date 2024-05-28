@@ -17,7 +17,7 @@ export const NoteEditor = () => {
     selectedNote &&
     typeof (selectedNote as Note & { _forceReset?: boolean })._forceReset !== 'undefined'
   ) {
-    plateEditorKey += '_ws';
+    plateEditorKey += `_${selectedNote.updatedAt}`;
   }
 
   return (

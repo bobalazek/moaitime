@@ -10,7 +10,9 @@ import { useNotesStore } from '../../state/notesStore';
 export const NoteEditor = () => {
   const { selectedNote, selectedNoteData, setSelectedNoteData } = useNotesStore();
 
-  const plateEditorKey = selectedNote ? `${selectedNote.id}-${selectedNote.updatedAt}` : 'new';
+  const plateEditorKey = selectedNote ? selectedNote.id : 'new';
+
+  // TODO: fix issue where the new content value is not applied (mostly when we get changes from websockes)
 
   return (
     <div className="flex select-none flex-col" data-test="note-editor">

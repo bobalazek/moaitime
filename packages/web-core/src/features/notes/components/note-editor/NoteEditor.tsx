@@ -15,7 +15,7 @@ export const NoteEditor = () => {
   let plateEditorKey = selectedNote ? selectedNote.id : 'new';
   if (
     selectedNote &&
-    typeof (selectedNote as Note & { _fromWebsocket?: boolean })._fromWebsocket !== 'undefined'
+    typeof (selectedNote as Note & { _forceReset?: boolean })._forceReset !== 'undefined'
   ) {
     plateEditorKey += '_ws';
   }

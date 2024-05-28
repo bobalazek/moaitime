@@ -50,7 +50,7 @@ export type NotesStore = {
   selectedNoteData: CreateNote | UpdateNote | null; // The cloned object of the selectedNote, so we don't mutate the original
   selectedNoteDataChanged: boolean;
   setSelectedNote: (
-    note: (Note & { _fromWebsocket?: boolean }) | null,
+    note: (Note & { _forceReset?: boolean }) | null,
     skipGet?: boolean
   ) => Promise<Note | null>;
   setSelectedNoteData: (
@@ -243,7 +243,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   selectedNoteData: null,
   selectedNoteDataChanged: false,
   setSelectedNote: async (
-    selectedNote: (Note & { _fromWebsocket?: boolean }) | null,
+    selectedNote: (Note & { _forceReset?: boolean }) | null,
     skipGet?: boolean
   ) => {
     const { getNote } = get();
@@ -258,8 +258,8 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
         : null;
 
     // We need this hack to reload the note editor with new value
-    if (note && selectedNote?._fromWebsocket) {
-      (note as Note & { _fromWebsocket?: boolean })._fromWebsocket = true;
+    if (note && selectedNote?._forceReset) {
+      (note as Note & { _forceReset?: boolean })._forceReset = true;
     }
 
     let selectedNoteData: UpdateNote | null = null;

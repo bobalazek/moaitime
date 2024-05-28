@@ -39,7 +39,7 @@ export default function NotesPage() {
 
     if (selectedNote?.id) {
       const newSelectedNote = await getNote(selectedNote.id);
-      setSelectedNote(newSelectedNote, true);
+      setSelectedNote({ ...newSelectedNote, _forceReset: true }, true);
     }
   });
 

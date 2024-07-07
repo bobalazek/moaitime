@@ -18,7 +18,7 @@ import { sonnerToast } from '@moaitime/web-ui';
 import { useAppStore } from '../../core/state/appStore';
 import { useTasksStore } from '../../tasks/state/tasksStore';
 import {
-  cancelNewEmail,
+  cancelNewEmailConfirmation,
   checkPasswordlessLogin,
   confirmEmail,
   deleteAccount,
@@ -78,7 +78,7 @@ export type AuthStore = {
   // Resend Email Confirmation
   resendEmailConfirmation: (isNewEmail?: boolean) => Promise<ResponseInterface>;
   // Cancel New Email Confirmation
-  cancelNewEmail: () => Promise<ResponseInterface>;
+  cancelNewEmailConfirmation: () => Promise<ResponseInterface>;
   // Account
   reloadAccount: () => Promise<ResponseInterface>;
   updateAccount: (data: UpdateUser) => Promise<ResponseInterface>;
@@ -269,14 +269,14 @@ export const useAuthStore = create<AuthStore>()(
 
         return response;
       },
-      // Cancel New Email
-      cancelNewEmail: async () => {
+      // Cancel New Email Confirmation
+      cancelNewEmailConfirmation: async () => {
         const { auth, reloadAccount } = get();
         if (!auth?.userAccessToken?.token) {
           throw new Error('No token found');
         }
 
-        const response = await cancelNewEmail();
+        const response = await cancelNewEmailConfirmation();
 
         await reloadAccount();
 

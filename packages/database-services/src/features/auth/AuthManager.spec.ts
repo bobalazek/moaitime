@@ -211,7 +211,7 @@ describe('AuthManager.ts', () => {
     });
   });
 
-  describe('cancelNewEmail()', () => {
+  describe('cancelNewEmailConfirmation()', () => {
     it('should throw an error if the user has no new email set', async () => {
       const user = await authManager.register({
         displayName: 'Tester6',
@@ -220,7 +220,7 @@ describe('AuthManager.ts', () => {
         password: 'password',
       });
 
-      const result = () => authManager.cancelNewEmail(user.id);
+      const result = () => authManager.cancelNewEmailConfirmation(user.id);
 
       await expect(result).rejects.toThrow('User does not have a new email set');
     });
@@ -241,7 +241,7 @@ describe('AuthManager.ts', () => {
         newEmailConfirmationLastSentAt: new Date(),
       });
 
-      const updatedUser = await authManager.cancelNewEmail(user.id);
+      const updatedUser = await authManager.cancelNewEmailConfirmation(user.id);
 
       expect(updatedUser.email).toBe('tester+7@moaitime.com');
       expect(updatedUser.newEmail).toBe(null);

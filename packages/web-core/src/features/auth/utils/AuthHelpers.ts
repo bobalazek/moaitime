@@ -185,14 +185,17 @@ export const resendEmailConfirmation = async (isNewEmail?: boolean) => {
   return response;
 };
 
-export const cancelNewEmail = async () => {
-  const response = await fetchJson<ResponseInterface>(`${API_URL}/api/v1/auth/cancel-new-email`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  });
+export const cancelNewEmailConfirmation = async () => {
+  const response = await fetchJson<ResponseInterface>(
+    `${API_URL}/api/v1/auth/cancel-new-email-confirmation`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
   return response;
 };

@@ -250,12 +250,12 @@ export class AuthController {
     };
   }
 
-  @Post('cancel-new-email')
-  async cancelNewEmail(
+  @Post('cancel-new-email-confirmation')
+  async cancelNewEmailConfirmation(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ): Promise<ResponseDto> {
-    await authManager.cancelNewEmail(req.user.id);
+    await authManager.cancelNewEmailConfirmation(req.user.id);
 
     res.status(200);
 

@@ -579,7 +579,7 @@ export class AuthManager {
     return updatedUser;
   }
 
-  async cancelNewEmail(userId: string): Promise<User> {
+  async cancelNewEmailConfirmation(userId: string): Promise<User> {
     const user = await this._usersManager.findOneById(userId);
     if (!user) {
       throw new Error('User not found');

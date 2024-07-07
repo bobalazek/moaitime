@@ -18,7 +18,7 @@ export default function AccountSettingsSectionContent() {
     auth,
     updateAccount,
     resendEmailConfirmation,
-    cancelNewEmail,
+    cancelNewEmailConfirmation,
     setAccountPasswordSettingsDialogOpen,
   } = useAuthStore();
   const { setDialogOpen } = useSettingsStore();
@@ -62,9 +62,9 @@ export default function AccountSettingsSectionContent() {
     }
   };
 
-  const onCancelNewEmailButtonClick = async () => {
+  const onCancelNewEmailConfirmationButtonClick = async () => {
     try {
-      await cancelNewEmail();
+      await cancelNewEmailConfirmation();
 
       sonnerToast.success(`Email change cancelled`, {
         description: `Your email address has been reverted to "${auth.user.email}".`,
@@ -168,7 +168,11 @@ export default function AccountSettingsSectionContent() {
                 here
               </button>{' '}
               to resend the verification email. If you want to cancel the email change, click{' '}
-              <button type="button" className="font-bold" onClick={onCancelNewEmailButtonClick}>
+              <button
+                type="button"
+                className="font-bold"
+                onClick={onCancelNewEmailConfirmationButtonClick}
+              >
                 here
               </button>
               .

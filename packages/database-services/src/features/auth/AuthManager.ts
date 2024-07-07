@@ -881,14 +881,13 @@ export class AuthManager {
       throw new Error('User not found');
     }
 
+    if (!user.password) {
+      throw new Error('You do not have a password set. Please do a password reset first.');
+    }
+
     if (user.password && !currentPassword) {
       throw new Error('You must provide your current password');
     }
-
-    // Figure out how to handle users without password,
-    // like those that registered with OAuth.
-    // Not an issue right now, as we won't have that yet,
-    // but we will need to figure once we are there.
 
     const isPasswordSame =
       currentPassword && user.password

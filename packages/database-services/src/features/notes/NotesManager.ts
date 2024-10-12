@@ -129,7 +129,7 @@ export class NotesManager {
 
     await this._checkIfLimitReached(actorUser);
 
-    const undeletedNote = await notesManager.updateOneById(noteId, {
+    const undeletedNote = await this.updateOneById(noteId, {
       deletedAt: null,
     });
 

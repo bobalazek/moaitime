@@ -6,6 +6,7 @@ import { useAuthUserSetting } from '../../../auth/state/authStore';
 import CalendarAppButton from '../../../calendar/components/CalendarAppButton';
 import CommandsAppButton from '../../../commands/components/CommandsAppButton';
 import FocusAppButton from '../../../focus/components/FocusAppButton';
+import GoalsAppButton from '../../../goals/components/GoalsAppButton';
 import HabitsAppButton from '../../../habits/components/HabitsAppButton';
 import MoodAppButton from '../../../mood/components/MoodAppButton';
 import NotesAppButton from '../../../notes/components/NotesAppButton';
@@ -29,6 +30,7 @@ export default function AppsDock() {
   const calendarEnabled = useAuthUserSetting('calendarEnabled', false);
   const commandsEnabled = useAuthUserSetting('commandsEnabled', false);
   const weatherEnabled = useAuthUserSetting('weatherEnabled', false);
+  const goalsEnabled = useAuthUserSetting('goalsEnabled', false);
   const moodEnabled = useAuthUserSetting('moodEnabled', false);
   const tasksEnabled = useAuthUserSetting('tasksEnabled', false);
   const habitsEnabled = useAuthUserSetting('habitsEnabled', false);
@@ -94,6 +96,19 @@ export default function AppsDock() {
                   transition={{ delay: delay++ * delayDuration }}
                 >
                   <NotesAppButton />
+                </motion.div>
+              )}
+              {goalsEnabled && (
+                <motion.div
+                  key="goals"
+                  layout
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={animationVariants}
+                  transition={{ delay: delay++ * delayDuration }}
+                >
+                  <GoalsAppButton />
                 </motion.div>
               )}
               {moodEnabled && (

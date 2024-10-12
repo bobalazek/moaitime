@@ -9,6 +9,7 @@ import { AuthModule } from './features/auth/auth.module';
 import { BackgroundsModule } from './features/backgrounds/backgrounds.module';
 import { CalendarsModule } from './features/calendar/calendar.module';
 import { FocusModule } from './features/focus/focus.module';
+import { GoalsModule } from './features/goals/goals.module';
 import { GreetingsModule } from './features/greetings/greetings.module';
 import { HabitsModule } from './features/habits/habits.module';
 import { MoodModule } from './features/mood/mood.module';
@@ -37,6 +38,7 @@ const { NODE_ENV } = getEnv();
       QuotesModule,
       TasksModule,
       HabitsModule,
+      GoalsModule,
       CalendarsModule,
       WeatherModule,
       MoodModule,

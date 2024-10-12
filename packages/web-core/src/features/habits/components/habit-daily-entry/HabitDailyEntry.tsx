@@ -16,7 +16,7 @@ export type HabitDailyEntryProps = {
   habitDaily: HabitDaily;
 };
 
-const HabbitDailyEntryEditPopover = ({ habitDaily }: HabitDailyEntryProps) => {
+const HabitDailyEntryEditPopover = ({ habitDaily }: HabitDailyEntryProps) => {
   const { updateHabitDaily } = useHabitsStore();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(habitDaily.amount?.toString() ?? '');
@@ -168,7 +168,7 @@ export default function HabitDailyEntry({ habitDaily }: HabitDailyEntryProps) {
           <div>
             <div className="flex select-none items-center gap-1">
               <span className="text-2xl font-bold">{currentAmount}</span>
-              <HabbitDailyEntryEditPopover habitDaily={habitDaily} />
+              <HabitDailyEntryEditPopover habitDaily={habitDaily} />
               <span>/</span>
               <span>{habit.goalAmount}</span>
               <span>{habit.goalUnit}</span>

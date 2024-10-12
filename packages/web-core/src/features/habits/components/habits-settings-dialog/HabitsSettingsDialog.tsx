@@ -42,7 +42,7 @@ export default function HabitsSettingsDialog({ includeTrigger }: HabitsSettingsD
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            Here you are able to specify the which events and tasks you want to see.
+            Here you are able to specify the which habits you want to see.
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(100vh-12rem)]">

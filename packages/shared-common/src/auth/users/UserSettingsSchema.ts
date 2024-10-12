@@ -93,6 +93,9 @@ export const UserSettingsSchema = z.object({
       return scoreKeys.length === 5 && scoreKeys.every((score) => MOOD_SCORES.includes(score));
     }),
 
+  // Goals
+  goalsEnabled: z.boolean(),
+
   // Focus
   focusEnabled: z.boolean(),
   focusSoundsEnabled: z.boolean(),

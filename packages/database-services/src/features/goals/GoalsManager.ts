@@ -1,21 +1,13 @@
-import { and, asc, count, desc, eq, ilike, isNotNull, isNull, SQL } from 'drizzle-orm';
+import { and, count, desc, eq, ilike, isNotNull, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, Goal, goals, NewGoal, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
-import {
-  CreateGoal,
-  GlobalEventsEnum,
-  GoalsListSortFieldEnum,
-  SortDirectionEnum,
-  UpdateGoal,
-} from '@moaitime/shared-common';
+import { CreateGoal, GlobalEventsEnum, UpdateGoal } from '@moaitime/shared-common';
 
 import { userUsageManager } from '../auth/UserUsageManager';
 
 export type GoalsManagerFindManyOptions = {
   search?: string;
-  sortField?: GoalsListSortFieldEnum;
-  sortDirection?: SortDirectionEnum;
   includeDeleted?: boolean;
 };
 
@@ -167,18 +159,11 @@ export class GoalsManager {
 
   // Helpers
   async findManyByUserId(userId: string, options?: GoalsManagerFindManyOptions): Promise<Goal[]> {
+    const orderBy = desc(goals.order);
     let where: SQL<unknown> = eq(goals.userId, userId) as SQL<unknown>;
-    let orderBy = desc(goals.order);
 
     if (options?.search) {
       where = and(where, ilike(goals.name, `%${options.search}%`)) as SQL<unknown>;
-    }
-
-    if (options?.sortField) {
-      const direction = options?.sortDirection ?? SortDirectionEnum.ASC;
-      const field = goals[options.sortField] ?? goals.name;
-
-      orderBy = direction === SortDirectionEnum.ASC ? asc(field) : desc(field);
     }
 
     if (!options?.includeDeleted) {

@@ -1,11 +1,4 @@
-import {
-  CreateGoal,
-  Goal,
-  GoalsListSortFieldEnum,
-  ResponseInterface,
-  SortDirectionEnum,
-  UpdateGoal,
-} from '@moaitime/shared-common';
+import { CreateGoal, Goal, ResponseInterface, UpdateGoal } from '@moaitime/shared-common';
 import { API_URL } from '@moaitime/shared-frontend';
 
 import { fetchJson } from '../../core/utils/FetchHelpers';
@@ -13,26 +6,14 @@ import { fetchJson } from '../../core/utils/FetchHelpers';
 /********** Goals **********/
 export const getGoals = async (options?: {
   search?: string;
-  sortField?: GoalsListSortFieldEnum;
-  sortDirection?: SortDirectionEnum;
   includeDeleted?: boolean;
 }): Promise<Goal[]> => {
   const search = options?.search ?? '';
-  const sortField = options?.sortField ?? GoalsListSortFieldEnum.ORDER;
-  const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
   const includeDeleted = options?.includeDeleted ?? false;
 
   const url = new URL(`${API_URL}/api/v1/goals`);
   if (search) {
     url.searchParams.append('search', search);
-  }
-
-  if (sortField) {
-    url.searchParams.append('sortField', sortField);
-  }
-
-  if (sortDirection) {
-    url.searchParams.append('sortDirection', sortDirection);
   }
 
   if (includeDeleted) {

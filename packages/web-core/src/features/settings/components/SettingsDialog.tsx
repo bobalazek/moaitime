@@ -15,6 +15,8 @@ import CalendarSettingsSection from '../../calendar/components/calendar-settings
 import CalendarSettingsSectionHeaderText from '../../calendar/components/calendar-settings/CalendarSettingsSectionHeaderText';
 import FocusSettingsSection from '../../focus/components/focus-settings/FocusSettingsSection';
 import FocusSettingsSectionHeaderText from '../../focus/components/focus-settings/FocusSettingsSectionHeaderText';
+import GoalsSettingsSection from '../../goals/components/goals-settings/GoalsSettingsSection';
+import GoalsSettingsSectionHeaderText from '../../goals/components/goals-settings/GoalsSettingsSectionHeaderText';
 import HabitsSettingsSection from '../../habits/components/habits-settings/HabitsSettingsSection';
 import HabitsSettingsSectionHeaderText from '../../habits/components/habits-settings/HabitsSettingsSectionHeaderText';
 import MoodSettingsSection from '../../mood/components/mood-settings/MoodSettingsSection';
@@ -102,6 +104,11 @@ const tabs = [
     id: 'notes',
     label: <NotesSettingsSectionHeaderText />,
     content: <NotesSettingsSection />,
+  },
+  {
+    id: 'goals',
+    label: <GoalsSettingsSectionHeaderText />,
+    content: <GoalsSettingsSection />,
   },
   {
     id: 'mood',

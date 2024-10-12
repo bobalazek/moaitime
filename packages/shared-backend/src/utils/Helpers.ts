@@ -21,9 +21,7 @@ export const loadEnvironmentVariables = () => {
 
   console.log(`Loading environment variables from "${path.join(', ')}" ...`);
 
-  dotenv.config({ path: path });
+  const result = dotenv.config({ path });
 
-  return {
-    NODE_ENV,
-  };
+  return result.parsed;
 };

@@ -47,6 +47,8 @@ export default function HabitEditDialog() {
 
   useEffect(() => {
     if (!selectedHabitDialog) {
+      setData(DEFAULT_HABIT_DATA);
+
       return;
     }
 

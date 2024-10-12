@@ -11,8 +11,6 @@ export const goals = pgTable(
     description: text('description'),
     order: integer('order').default(0),
     color: text('color'),
-    priority: integer('priority'),
-    areas: text('areas').array(), // In what areas of life this goal is important?
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

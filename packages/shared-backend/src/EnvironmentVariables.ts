@@ -3,10 +3,10 @@ import { z } from 'zod';
 import { AVAILABLE_NODE_ENVS } from './Constants';
 import { loadEnvironmentVariables } from './utils/Helpers';
 
-const { NODE_ENV } = loadEnvironmentVariables();
-
 export const envSchema = z.object({
-  NODE_ENV: z.enum(AVAILABLE_NODE_ENVS).default(NODE_ENV as (typeof AVAILABLE_NODE_ENVS)[number]),
+  NODE_ENV: z
+    .enum(AVAILABLE_NODE_ENVS)
+    .default(process.env.NODE_ENV as (typeof AVAILABLE_NODE_ENVS)[number]),
   GIT_COMMIT_HASH: z.string().optional(),
   SERVICE_NAME: z.string().default('unknown_service'),
   LOGGER_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('trace'),
@@ -46,7 +46,9 @@ export type Env = z.infer<typeof envSchema>;
 let _cachedEnv: Env | null = null;
 export const getEnv = () => {
   if (_cachedEnv === null) {
-    _cachedEnv = envSchema.parse(process.env);
+    const parsed = loadEnvironmentVariables();
+
+    _cachedEnv = envSchema.parse(parsed);
   }
 
   return _cachedEnv;

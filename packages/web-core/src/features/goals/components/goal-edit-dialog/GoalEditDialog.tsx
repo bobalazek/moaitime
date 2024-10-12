@@ -20,6 +20,7 @@ import { useGoalsStore } from '../../state/goalsStore';
 const DEFAULT_GOAL_DATA = {
   name: '',
   description: '',
+  color: undefined,
 };
 
 export default function GoalEditDialog() {
@@ -37,6 +38,8 @@ export default function GoalEditDialog() {
 
   useEffect(() => {
     if (!selectedGoalDialog) {
+      setData(DEFAULT_GOAL_DATA);
+
       return;
     }
 

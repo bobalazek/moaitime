@@ -15,7 +15,8 @@ export const loadEnvironmentVariables = () => {
     }
 
     console.log(`Loading environment variables from ${envFilePath} ...`);
-    dotenv.config({ path: envFilePath, override: true });
+
+    dotenv.config({ path: envFilePath });
   });
 
   return {

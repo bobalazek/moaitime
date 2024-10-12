@@ -64,6 +64,28 @@ import {
 } from './UserPasswordlessLoginsManager';
 import { UsersManager, usersManager } from './UsersManager';
 
+const RESERVED_USERNAMES = [
+  // Reserved
+  'moai',
+  // General
+  'admin',
+  'administrator',
+  'mod',
+  'moderator',
+  'root',
+  'superuser',
+  'su',
+  'user',
+  'users',
+  'team',
+  'teams',
+  // Other
+  'api',
+  'web',
+  'cli',
+  'settings',
+];
+
 type AuthLoginResult = {
   user: User;
   userAccessToken: UserAccessToken;
@@ -1098,22 +1120,7 @@ export class AuthManager {
 
   // Private
   private _usernameValidCheck(username: string) {
-    const isValid = [
-      // Reserved
-      'moai',
-      // General
-      'admin',
-      'administrator',
-      'mod',
-      'moderator',
-      'root',
-      'superuser',
-      'su',
-      'user',
-      'users',
-      'team',
-      'teams',
-    ].includes(username);
+    const isValid = RESERVED_USERNAMES.includes(username);
     if (isValid) {
       throw new Error('Username is not available');
     }
@@ -1149,6 +1156,8 @@ export class AuthManager {
         avatarUrl: userInfo.picture,
       };
     } catch (error) {
+      this._logger.error(error, '[AuthManager] Failed to get user info from OAuth provider');
+
       throw new Error('Failed to get user info from OAuth provider');
     }
   }

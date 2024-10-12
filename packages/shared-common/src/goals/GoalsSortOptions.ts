@@ -2,6 +2,7 @@ export enum GoalsListSortFieldEnum {
   NAME = 'name',
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
+  ORDER = 'order',
 }
 
 export const goalsSortOptions = [
@@ -16,5 +17,9 @@ export const goalsSortOptions = [
   {
     label: 'Updated At',
     value: GoalsListSortFieldEnum.UPDATED_AT,
+  },
+  {
+    label: 'Order',
+    value: GoalsListSortFieldEnum.ORDER,
   },
 ];

@@ -71,6 +71,7 @@ export enum GlobalEventsEnum {
   GOALS_GOAL_EDITED = 'goals:goal:edited',
   GOALS_GOAL_DELETED = 'goals:goal:deleted',
   GOALS_GOAL_UNDELETED = 'goals:goal:undeleted',
+  GOALS_REORDERED = 'goals:reordered',
   // Notes
   NOTES_NOTE_ADDED = 'notes:note:added',
   NOTES_NOTE_EDITED = 'notes:note:edited',
@@ -468,6 +469,10 @@ export type GlobalEvents = {
     actorUserId: string;
     goalId: string;
     goal?: Goal;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.GOALS_REORDERED]: {
+    actorUserId: string;
     actorWebsocketToken?: string;
   };
   // Notes

@@ -5,6 +5,7 @@ import EventEditDialog from './features/calendar/components/event-edit-dialog/Ev
 import PublicCalendarsDialog from './features/calendar/components/public-calendars-dialog/PublicCalendarsDialog';
 import UserCalendarEditDialog from './features/calendar/components/user-calendar-edit-dialog/UserCalendarEditDialog';
 import CommandsDialog from './features/commands/components/CommandsDialog';
+import DeletedGoalsDialog from './features/goals/components/deleted-goals-dialog/DeletedGoalsDialog';
 import GoalEditDialog from './features/goals/components/goal-edit-dialog/GoalEditDialog';
 import DeletedHabitsDialog from './features/habits/components/deleted-habits-dialog/DeletedHabitsDialog';
 import HabitEditDialog from './features/habits/components/habit-edit-dialog/HabitEditDialog';
@@ -35,6 +36,7 @@ export function GlobalDialogs() {
       <DeletedHabitsDialog />
       <HabitTemplatesDialog />
       <GoalEditDialog />
+      <DeletedGoalsDialog />
       <SettingsDialog />
       <CalendarEditDialog />
       <UserCalendarEditDialog />

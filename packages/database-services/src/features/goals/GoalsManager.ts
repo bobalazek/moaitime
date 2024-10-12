@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, isNull, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, isNotNull, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, Goal, goals, NewGoal, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -25,6 +25,10 @@ export class GoalsManager {
     return this.findManyByUserId(actorUserId, options);
   }
 
+  async listDeleted(actorUserId: string) {
+    return this.findManyDeletedByUserId(actorUserId);
+  }
+
   async view(actorUserId: string, goalId: string) {
     const canView = await this.userCanView(actorUserId, goalId);
     if (!canView) {
@@ -42,8 +46,12 @@ export class GoalsManager {
   async create(actorUser: User, data: CreateGoal) {
     await this._checkIfLimitReached(actorUser);
 
+    const maxOrder = await this.getMaxOrderForUserId(actorUser.id);
+    const order = maxOrder + 1;
+
     const goal = await this.insertOne({
       ...data,
+      order,
       userId: actorUser.id,
     });
 
@@ -116,6 +124,22 @@ export class GoalsManager {
     return undeletedGoal;
   }
 
+  async reorder(
+    actorUserId: string,
+    options: {
+      originalGoalId: string;
+      newGoalId: string;
+    }
+  ) {
+    const { originalGoalId, newGoalId } = options;
+
+    await this.reorderGoals(actorUserId, originalGoalId, newGoalId);
+
+    globalEventsNotifier.publish(GlobalEventsEnum.GOALS_REORDERED, {
+      actorUserId: actorUserId,
+    });
+  }
+
   // Permissions
   async userCanView(userId: string, goalId: string): Promise<boolean> {
     const row = await getDatabase().query.goals.findFirst({
@@ -144,7 +168,7 @@ export class GoalsManager {
   // Helpers
   async findManyByUserId(userId: string, options?: GoalsManagerFindManyOptions): Promise<Goal[]> {
     let where: SQL<unknown> = eq(goals.userId, userId) as SQL<unknown>;
-    let orderBy = desc(goals.createdAt);
+    let orderBy = desc(goals.order);
 
     if (options?.search) {
       where = and(where, ilike(goals.name, `%${options.search}%`)) as SQL<unknown>;
@@ -164,6 +188,13 @@ export class GoalsManager {
     return getDatabase().query.goals.findMany({
       where,
       orderBy,
+    });
+  }
+
+  async findManyDeletedByUserId(userId: string): Promise<Goal[]> {
+    return getDatabase().query.goals.findMany({
+      where: and(eq(goals.userId, userId), isNotNull(goals.deletedAt)),
+      orderBy: desc(goals.createdAt),
     });
   }
 
@@ -207,6 +238,48 @@ export class GoalsManager {
       .execute();
 
     return result[0].count ?? 0;
+  }
+
+  async reorderGoals(userId: string, originalGoalId: string, newGoalId: string) {
+    const result = await this.findManyByUserId(userId, {
+      includeDeleted: true,
+    });
+
+    const originalIndex = result.findIndex((entry) => entry.id === originalGoalId);
+    const newIndex = result.findIndex((entry) => entry.id === newGoalId);
+    if (originalIndex === -1 || newIndex === -1) {
+      throw new Error('Goal not found.');
+    }
+
+    const [movedEntry] = result.splice(originalIndex, 1);
+    result.splice(newIndex, 0, movedEntry);
+
+    const reorderMap: Record<string, number> = {};
+    result.forEach((entry, index) => {
+      reorderMap[entry.id] = index;
+    });
+
+    await getDatabase().transaction(async (tx) => {
+      for (const entryId in reorderMap) {
+        await tx.update(goals).set({ order: reorderMap[entryId] }).where(eq(goals.id, entryId));
+      }
+    });
+  }
+
+  async getMaxOrderForUserId(userId: string): Promise<number> {
+    const rows = await getDatabase()
+      .select()
+      .from(goals)
+      .where(eq(goals.userId, userId))
+      .orderBy(desc(goals.order))
+      .limit(1)
+      .execute();
+
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    return rows[0].order ?? 0;
   }
 
   // Private

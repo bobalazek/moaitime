@@ -18,8 +18,8 @@ export const getGoals = async (options?: {
   includeDeleted?: boolean;
 }): Promise<Goal[]> => {
   const search = options?.search ?? '';
-  const sortField = options?.sortField ?? GoalsListSortFieldEnum.CREATED_AT;
-  const sortDirection = options?.sortDirection ?? SortDirectionEnum.DESC;
+  const sortField = options?.sortField ?? GoalsListSortFieldEnum.ORDER;
+  const sortDirection = options?.sortDirection ?? SortDirectionEnum.ASC;
   const includeDeleted = options?.includeDeleted ?? false;
 
   const url = new URL(`${API_URL}/api/v1/goals`);
@@ -40,6 +40,14 @@ export const getGoals = async (options?: {
   }
 
   const response = await fetchJson<ResponseInterface<Goal[]>>(url.toString(), {
+    method: 'GET',
+  });
+
+  return response.data ?? [];
+};
+
+export const getDeletedGoals = async () => {
+  const response = await fetchJson<ResponseInterface<Goal[]>>(`${API_URL}/api/v1/goals/deleted`, {
     method: 'GET',
   });
 
@@ -106,4 +114,15 @@ export const undeleteGoal = async (goalId: string): Promise<Goal> => {
   );
 
   return response.data as Goal;
+};
+
+export const reorderGoals = async (originalGoalId: string, newGoalId: string) => {
+  return fetchJson<ResponseInterface<Goal>>(`${API_URL}/api/v1/goals/reorder`, {
+    method: 'POST',
+    body: JSON.stringify({ originalGoalId, newGoalId }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
 };

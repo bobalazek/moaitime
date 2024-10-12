@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
-import { ErrorAlert } from '../../../core/components/ErrorAlert';
-import { Loader } from '../../../core/components/Loader';
-import { useGoalsQuery } from '../../hooks/useGoalsDailyQuery';
+import { useGoalsStore } from '../../state/goalsStore';
 import GoalEntry from '../goal-entry/GoalEntry';
 
 const animationVariants = {
@@ -21,20 +20,16 @@ const animationVariants = {
 };
 
 const GoalsList = () => {
-  const { isLoading, error, data } = useGoalsQuery();
+  const { goals, reloadGoals } = useGoalsStore();
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  if (error || !data) {
-    return <ErrorAlert error={error} />;
-  }
+  useEffect(() => {
+    reloadGoals();
+  }, [reloadGoals]);
 
   return (
     <div>
       <div data-test="goals-list">
-        {data.length === 0 && (
+        {goals.length === 0 && (
           <div className="text-muted-foreground justify-center text-center">
             <div className="mb-3 text-3xl">No goals just yet.</div>
             <div>
@@ -48,9 +43,9 @@ const GoalsList = () => {
             </div>
           </div>
         )}
-        {data.length > 0 && (
+        {goals.length > 0 && (
           <div className="flex flex-col gap-4">
-            {data.map((goal) => (
+            {goals.map((goal) => (
               <motion.div
                 key={goal.id}
                 layout

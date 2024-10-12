@@ -9,6 +9,7 @@ import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
 import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 import { CreateGoalDto } from '../dtos/create-goal.dto';
+import { ReorderGoalsDto } from '../dtos/reorder-goals.dto';
 import { UpdateGoalDto } from '../dtos/update-goal.dto';
 
 @Controller('/api/v1/goals')
@@ -27,6 +28,27 @@ export class GoalsController {
       sortDirection,
       includeDeleted,
     });
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('reorder')
+  async reorder(@Body() body: ReorderGoalsDto, @Req() req: Request) {
+    await goalsManager.reorder(req.user.id, body);
+
+    return {
+      success: true,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('deleted')
+  async listDeleted(@Req() req: Request): Promise<AbstractResponseDto<Goal[]>> {
+    const data = await goalsManager.listDeleted(req.user.id);
 
     return {
       success: true,

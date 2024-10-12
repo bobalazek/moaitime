@@ -294,6 +294,11 @@ export default function TaskEditDialog() {
               onChangeValue={(value) => setData((current) => ({ ...current, tagIds: value }))}
               teamId={teamId}
             />
+            {teamId && (
+              <div className="text-muted-foreground text-xs">
+                Only tags for this team will be shown
+              </div>
+            )}
           </div>
           {selectedList?.teamId && (
             <div className="flex flex-col gap-2">

@@ -51,6 +51,8 @@ export function TagsSelector({ value, onChangeValue, teamId }: TagsSelectorProps
     }
   };
 
+  const placeholder = teamId ? 'Select team tags ...' : 'Select tags ...';
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -66,7 +68,7 @@ export function TagsSelector({ value, onChangeValue, teamId }: TagsSelectorProps
               <span>{selectedTags.map((tag) => tag.name).join(', ')}</span>
             )}
             {selectedTags.length === 0 && (
-              <span className="text-muted-foreground">Select tags ...</span>
+              <span className="text-muted-foreground">{placeholder}</span>
             )}
           </div>
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -96,14 +98,14 @@ export function TagsSelector({ value, onChangeValue, teamId }: TagsSelectorProps
 
                   onChangeValue(newValues);
                 }}
-                className="cursor-pointer border-l-4 border-l-transparent"
+                className="flex cursor-pointer items-center gap-2 border-l-4 border-l-transparent"
                 style={{
                   borderColor: tag?.color ?? 'transparent',
                 }}
               >
                 <CheckIcon
                   className={clsx(
-                    'mr-2 h-4 w-4',
+                    'h-4 w-4',
                     selectedTags.includes(tag) ? 'opacity-100' : 'opacity-0'
                   )}
                 />

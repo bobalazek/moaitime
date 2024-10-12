@@ -50,9 +50,13 @@ And much more! You can find more screenshots on my blog post [https://bobalazek.
 - CI/CD: [Docker](https://www.docker.com), [Kubernetes](https://kubernetes.io), [GitHub Actions](https://github.com/features/actions), [Portainer](https://www.portainer.io)
 - Mailer: [Nodemailer](https://nodemailer.com), [Resend](https://resend.com)
 
-## Installation
+## Development
 
-Right now, we support the following ways to install MoaiTime:
+You'll need to follow the [following guide](./docs/DEVELOPMENT.md).
+
+## Deployment
+
+Right now, we support the following ways to deploy MoaiTime:
 
 - [Docker Compose](./docs/DEPLOY-TO-DOCKER-COMPOSE.md)
 - [Docker Swarm](./docs/DEPLOY-TO-DOCKER-SWARM.md)

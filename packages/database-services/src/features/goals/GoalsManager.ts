@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, isNotNull, isNull, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, isNotNull, isNull, SQL } from 'drizzle-orm';
 
 import { getDatabase, Goal, goals, NewGoal, User } from '@moaitime/database-core';
 import { globalEventsNotifier } from '@moaitime/global-events-notifier';
@@ -159,7 +159,7 @@ export class GoalsManager {
 
   // Helpers
   async findManyByUserId(userId: string, options?: GoalsManagerFindManyOptions): Promise<Goal[]> {
-    const orderBy = desc(goals.order);
+    const orderBy = asc(goals.order);
     let where: SQL<unknown> = eq(goals.userId, userId) as SQL<unknown>;
 
     if (options?.search) {

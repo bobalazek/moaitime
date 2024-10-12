@@ -369,7 +369,7 @@ export class HabitsManager {
   // Helpers
   async findManyByUserId(userId: string, options?: HabitsManagerListOptions): Promise<Habit[]> {
     let where = eq(habits.userId, userId);
-    const orderBy = desc(habits.order);
+    const orderBy = asc(habits.order);
 
     if (!options?.includeDeleted) {
       where = and(where, isNull(habits.deletedAt)) as SQL<unknown>;

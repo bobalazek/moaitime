@@ -5,6 +5,7 @@ import {
   events,
   focusSessions,
   getDatabase,
+  goals,
   habits,
   invitations,
   lists,
@@ -33,6 +34,7 @@ export class UserUsageManager {
       calendarsMaxEventsPerCalendarCount: 10000,
       calendarsMaxUserCalendarsPerUserCount: 100,
       notesMaxPerUserCount: 1000,
+      goalsMaxPerUserCount: 100,
       userInvitationsMaxPerUserCount: 10,
     };
   }
@@ -74,6 +76,11 @@ export class UserUsageManager {
       .from(notes)
       .where(and(eq(notes.userId, user.id), isNull(notes.deletedAt)))
       .execute();
+    const goalsCount = await database
+      .select({ count: count() })
+      .from(goals)
+      .where(and(eq(goals.userId, user.id), isNull(goals.deletedAt)))
+      .execute();
     const moodEntriesCount = await database
       .select({ count: count() })
       .from(moodEntries)
@@ -112,6 +119,7 @@ export class UserUsageManager {
       tagsCount: tagsCount[0].count ?? 0,
       habitsCount: habitsCount[0].count ?? 0,
       notesCount: notesCount[0].count ?? 0,
+      goalsCount: goalsCount[0].count ?? 0,
       moodEntriesCount: moodEntriesCount[0].count ?? 0,
       calendarsCount: calendarsCount[0].count ?? 0,
       userCalendarsCount: userCalendarsCount[0].count ?? 0,

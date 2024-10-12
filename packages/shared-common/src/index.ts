@@ -109,6 +109,10 @@ export * from './habits/HabitTemplates';
 export * from './mood/MoodEntrySchema';
 export * from './mood/Emotions';
 
+// Goals
+export * from './goals/GoalSchema';
+export * from './goals/GoalsSortOptions';
+
 // Weather
 export * from './weather/Weather';
 

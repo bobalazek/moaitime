@@ -5,6 +5,7 @@ import { Event } from '../calendar/EventSchema';
 import { FocusSession } from '../focus/FocusSessionSchema';
 import { FocusSessionStageEnum } from '../focus/FocusSessionStageEnum';
 import { FocusSessionUpdateActionEnum } from '../focus/FocusSessionUpdateActionEnum';
+import { Goal } from '../goals/GoalSchema';
 import { MoodEntry } from '../mood/MoodEntrySchema';
 import { List } from '../tasks/ListSchema';
 import { Task } from '../tasks/TaskSchema';
@@ -65,6 +66,11 @@ export enum GlobalEventsEnum {
   HABITS_HABIT_DELETED = 'habits:habit:deleted',
   HABITS_HABIT_UNDELETED = 'habits:hait:undeleted',
   HABITS_REORDERED = 'habits:reordered',
+  // Goals
+  GOALS_GOAL_ADDED = 'goals:goal:added',
+  GOALS_GOAL_EDITED = 'goals:goal:edited',
+  GOALS_GOAL_DELETED = 'goals:goal:deleted',
+  GOALS_GOAL_UNDELETED = 'goals:goal:undeleted',
   // Notes
   NOTES_NOTE_ADDED = 'notes:note:added',
   NOTES_NOTE_EDITED = 'notes:note:edited',
@@ -436,6 +442,32 @@ export type GlobalEvents = {
   };
   [GlobalEventsEnum.HABITS_REORDERED]: {
     actorUserId: string;
+    actorWebsocketToken?: string;
+  };
+  // Goals
+  [GlobalEventsEnum.GOALS_GOAL_ADDED]: {
+    actorUserId: string;
+    goalId: string;
+    goal?: Goal;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.GOALS_GOAL_EDITED]: {
+    actorUserId: string;
+    goalId: string;
+    goal?: Goal;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.GOALS_GOAL_DELETED]: {
+    actorUserId: string;
+    goalId: string;
+    goal?: Goal;
+    isHardDelete?: boolean;
+    actorWebsocketToken?: string;
+  };
+  [GlobalEventsEnum.GOALS_GOAL_UNDELETED]: {
+    actorUserId: string;
+    goalId: string;
+    goal?: Goal;
     actorWebsocketToken?: string;
   };
   // Notes

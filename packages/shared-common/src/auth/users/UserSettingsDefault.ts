@@ -90,4 +90,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
     longBreakDurationSeconds: 15 * 60,
     focusRepetitionsCount: 4,
   },
+
+  // Goals
+  goalsEnabled: true,
 };

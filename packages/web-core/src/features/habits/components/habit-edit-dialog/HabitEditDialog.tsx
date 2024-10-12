@@ -24,6 +24,8 @@ import { useHabitsStore } from '../../state/habitsStore';
 
 const DEFAULT_HABIT_DATA = {
   name: '',
+  description: '',
+  color: '',
   goalAmount: 1,
   goalUnit: HABIT_GOAL_UNITS_DEFAULT[0],
   goalFrequency: HabitGoalFrequencyEnum.DAY,

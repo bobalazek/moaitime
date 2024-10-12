@@ -59,6 +59,9 @@ export * from './features/tasks/TagsManager';
 // Mood
 export * from './features/mood/MoodEntriesManager';
 
+// Goals
+export * from './features/goals/GoalsManager';
+
 // Settings
 export * from './features/settings/FeedbackEntriesManager';
 

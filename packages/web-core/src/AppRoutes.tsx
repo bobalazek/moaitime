@@ -20,6 +20,7 @@ import PrivacyPage from './features/core/pages/PrivacyPage';
 import TermsPage from './features/core/pages/TermsPage';
 import { globalEventsEmitter } from './features/core/state/globalEventsEmitter';
 import FocusPage from './features/focus/components/pages/FocusPage';
+import GoalsPage from './features/goals/components/pages/GoalsPage';
 import HabitsPage from './features/habits/components/pages/HabitsPage';
 import MoodPage from './features/mood/components/pages/MoodPage';
 import NotesPage from './features/notes/components/pages/NotesPage';
@@ -124,6 +125,14 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <MoodPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/goals/*"
+          element={
+            <ProtectedRoute>
+              <GoalsPage />
             </ProtectedRoute>
           }
         />

@@ -14,7 +14,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN apk add --no-cache libc6-compat
 
 RUN corepack enable
-RUN npm install -g turbo@1.13.3
+RUN npm install -g turbo@2.1.3
 
 COPY . .
 

@@ -7,7 +7,7 @@ import { ROOT_DIR } from '../Constants';
 
 export const loadEnvironmentVariables = () => {
   const NODE_ENV = process.env.NODE_ENV || 'development';
-  const files = [`.env`, `.env.${NODE_ENV}`, `.env.local`, `.env.${NODE_ENV}.local`];
+  const files = [`.env.${NODE_ENV}.local`, `.env.local`, `.env.${NODE_ENV}`, `.env`];
   files.forEach((file) => {
     const envFilePath = resolve(join(ROOT_DIR, file));
     if (!existsSync(envFilePath)) {

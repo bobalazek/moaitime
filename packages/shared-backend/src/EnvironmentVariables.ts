@@ -48,7 +48,7 @@ export const getEnv = () => {
   if (_cachedEnv === null) {
     const parsed = loadEnvironmentVariables();
 
-    _cachedEnv = envSchema.parse(parsed);
+    _cachedEnv = envSchema.parse({ ...process.env, ...parsed });
   }
 
   return _cachedEnv;

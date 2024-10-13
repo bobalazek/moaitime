@@ -121,6 +121,7 @@ export * from './statistics/StatisticsGeneralBasicData';
 export * from './statistics/StatisticsCalendarBasicData';
 export * from './statistics/StatisticsTasksBasicData';
 export * from './statistics/StatisticsNotesBasicData';
+export * from './statistics/StatisticsGoalsBasicData';
 export * from './statistics/StatisticsHabitsBasicData';
 export * from './statistics/StatisticsMoodBasicData';
 export * from './statistics/StatisticsFocusBasicData';

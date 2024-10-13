@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@moaitime/web-ui';
 
 import StatisticsCalendarTabContent from '../../tabs/calendar/StatisticsCalendarTabContent';
 import StatisticsFocusTabContent from '../../tabs/focus/StatisticsFocusTabContent';
+import StatisticsGoalsTabContent from '../../tabs/goals/StatisticsGoalsTabContent';
 import StatisticsHabitsTabContent from '../../tabs/habits/StatisticsHabitsTabContent';
 import StatisticsMoodTabContent from '../../tabs/mood/StatisticsMoodTabContent';
 import StatisticsNotesTabContent from '../../tabs/notes/StatisticsNotesTabContent';
@@ -22,6 +23,7 @@ const StatisticsPageMain = () => {
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="habits">Habits</TabsTrigger>
+            <TabsTrigger value="goals">Goals</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
             <TabsTrigger value="mood">Mood</TabsTrigger>
             <TabsTrigger value="focus">Focus</TabsTrigger>
@@ -38,6 +40,9 @@ const StatisticsPageMain = () => {
         </TabsContent>
         <TabsContent value="habits">
           <StatisticsHabitsTabContent />
+        </TabsContent>
+        <TabsContent value="goals">
+          <StatisticsGoalsTabContent />
         </TabsContent>
         <TabsContent value="notes">
           <StatisticsNotesTabContent />

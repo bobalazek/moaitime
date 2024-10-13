@@ -3,6 +3,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppMiddleware } from '../../middlewares/app.middleware';
 import { CalendarStatisticsController } from './controllers/calendar-statistics.controller';
 import { FocusStatisticsController } from './controllers/focus-statistics.controller';
+import { GoalsStatisticsController } from './controllers/goals-statistics.controller';
 import { HabitsStatisticsController } from './controllers/habits-statistics.controller';
 import { MoodStatisticsController } from './controllers/mood-statistics.controller';
 import { NotesStatisticsController } from './controllers/notes-statistics.controller';
@@ -16,6 +17,7 @@ import { TasksStatisticsController } from './controllers/tasks-statistics.contro
     CalendarStatisticsController,
     TasksStatisticsController,
     HabitsStatisticsController,
+    GoalsStatisticsController,
     NotesStatisticsController,
     MoodStatisticsController,
     FocusStatisticsController,

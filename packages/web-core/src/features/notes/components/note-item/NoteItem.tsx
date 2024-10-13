@@ -14,8 +14,8 @@ const NoteItem = ({ note, isSelected }: { note: Note; isSelected?: boolean }) =>
         'flex cursor-pointer items-center justify-between gap-2 px-2 py-2 text-xs hover:bg-gray-100 hover:dark:bg-gray-700',
         isSelected && 'bg-gray-200 dark:bg-gray-800'
       )}
-      onClick={() => {
-        setSelectedNote(note);
+      onClick={async () => {
+        await setSelectedNote(note);
       }}
       data-test="notes--note"
     >

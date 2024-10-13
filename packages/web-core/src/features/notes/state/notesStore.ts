@@ -243,33 +243,38 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
   selectedNoteData: null,
   selectedNoteDataChanged: false,
   setSelectedNote: async (
-    selectedNote: (Note & { _forceReset?: boolean }) | null,
+    newSelectedNote: (Note & { _forceReset?: boolean }) | null,
     skipGet?: boolean
   ) => {
-    const { getNote } = get();
+    const { getNote, selectedNote, selectedNoteData, selectedNoteDataChanged, editNote } = get();
+
+    // If we navigate away without saving, we want to save the changes
+    if (selectedNoteDataChanged && selectedNote && selectedNote.id !== newSelectedNote?.id) {
+      await editNote(selectedNote.id, selectedNoteData as UpdateNote);
+    }
 
     // The reason we get this is,
     // because that selected note most likely won't have the "content" field,
     // so we need to populate it here.
     const note = skipGet
-      ? selectedNote
-      : selectedNote
-        ? ((await getNote(selectedNote.id)) as Note)
+      ? newSelectedNote
+      : newSelectedNote
+        ? ((await getNote(newSelectedNote.id)) as Note)
         : null;
 
     // We need this hack to reload the note editor with new value
-    if (note && selectedNote?._forceReset) {
+    if (note && newSelectedNote?._forceReset) {
       (note as Note & { _forceReset?: boolean })._forceReset = true;
     }
 
-    let selectedNoteData: UpdateNote | null = null;
+    let newSelectedNoteData: UpdateNote | null = null;
     if (note) {
       try {
         const parsedNote = UpdateNoteSchema.parse(note);
 
-        selectedNoteData = parsedNote;
+        newSelectedNoteData = parsedNote;
       } catch (e) {
-        selectedNoteData = {
+        newSelectedNoteData = {
           title: note?.title ?? '',
           content: note?.content as never,
           color: note?.color,
@@ -280,7 +285,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
 
     set({
       selectedNote: note,
-      selectedNoteData,
+      selectedNoteData: newSelectedNoteData,
       selectedNoteDataChanged: false,
     });
 

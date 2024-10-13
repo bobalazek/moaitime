@@ -35,11 +35,11 @@ export default function NotesPage() {
   }, []);
 
   useEventListener('focus', async () => {
-    reloadNotes();
+    await reloadNotes();
 
     if (selectedNote?.id) {
       const newSelectedNote = await getNote(selectedNote.id);
-      setSelectedNote({ ...newSelectedNote, _forceReset: true }, true);
+      await setSelectedNote({ ...newSelectedNote, _forceReset: true }, true);
     }
   });
 
@@ -48,7 +48,7 @@ export default function NotesPage() {
     if (isValidUuid(noteId)) {
       try {
         const newSelectedNote = await getNote(noteId);
-        setSelectedNote(newSelectedNote, true);
+        await setSelectedNote(newSelectedNote, true);
 
         if (newSelectedNote && newSelectedNote.deletedAt) {
           setNotesIncludeDeleted(true);

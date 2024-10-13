@@ -38,7 +38,7 @@ const NotesPageHeaderButtons = () => {
 
       await deleteNote(noteId);
 
-      setSelectedNote(null);
+      await setSelectedNote(null);
 
       sonnerToast.success(`Note "${selectedNote.title ?? 'Untitled'}" deleted`, {
         description: 'You have successfully deleted the note!',
@@ -129,7 +129,7 @@ const NotesPageHeaderButtons = () => {
       }
     }
 
-    setSelectedNote(null);
+    await setSelectedNote(null);
   };
 
   const onSaveButtonClick = useCallback(async () => {

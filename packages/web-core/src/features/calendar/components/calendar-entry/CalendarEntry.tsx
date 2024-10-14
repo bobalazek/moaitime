@@ -8,6 +8,7 @@ import { useCallback } from 'react';
 
 import {
   CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX,
+  CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX,
   // Needs to be a different name to the component name itself
   CalendarEntry as CalendarEntryType,
   CalendarEntryTypeEnum,
@@ -414,7 +415,9 @@ export default function CalendarEntry({
     onMouseLeave: onContainerMouseLeave,
   };
 
-  const isReallyNarrow = finalHeight && finalHeight <= 40;
+  const isReallyNarrow =
+    finalHeight &&
+    finalHeight < CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX - CALENDAR_WEEKLY_ENTRY_BOTTOM_TOLERANCE_PX;
 
   return (
     <div

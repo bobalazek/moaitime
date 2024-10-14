@@ -259,7 +259,7 @@ export const useNotesStore = create<NotesStore>()((set, get) => ({
     const note = skipGet
       ? newSelectedNote
       : newSelectedNote
-        ? ((await getNote(newSelectedNote.id)) as Note)
+        ? await getNote(newSelectedNote.id)
         : null;
 
     // We need this hack to reload the note editor with new value

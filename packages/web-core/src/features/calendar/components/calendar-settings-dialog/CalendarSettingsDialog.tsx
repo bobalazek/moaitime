@@ -1,4 +1,5 @@
 import { CogIcon } from 'lucide-react';
+import { useEffect } from 'react';
 
 import {
   Button,
@@ -24,9 +25,25 @@ export type CalendarSettingsDialogProps = {
 };
 
 export default function CalendarSettingsDialog({ includeTrigger }: CalendarSettingsDialogProps) {
-  const { settingsDialogOpen, setSettingsDialogOpen, calendars, userCalendars } =
-    useCalendarStore();
-  const { lists } = useListsStore();
+  const {
+    settingsDialogOpen,
+    setSettingsDialogOpen,
+    calendars,
+    userCalendars,
+    reloadCalendars,
+    reloadUserCalendars,
+  } = useCalendarStore();
+  const { lists, reloadLists } = useListsStore();
+
+  useEffect(() => {
+    if (!settingsDialogOpen) {
+      return;
+    }
+
+    reloadCalendars();
+    reloadUserCalendars();
+    reloadLists();
+  }, [settingsDialogOpen, reloadCalendars, reloadUserCalendars, reloadLists]);
 
   return (
     <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>

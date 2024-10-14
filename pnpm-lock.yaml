@@ -235,6 +235,9 @@ importers:
       '@moaitime/processes':
         specifier: workspace:*
         version: link:../../packages/processes
+      '@moaitime/shared-backend':
+        specifier: workspace:*
+        version: link:../../packages/shared-backend
       commander:
         specifier: ^11.1.0
         version: 11.1.0

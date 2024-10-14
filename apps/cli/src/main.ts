@@ -2,6 +2,7 @@ import { Command } from 'commander';
 
 import { destroyDatabase } from '@moaitime/database-core';
 import { logger } from '@moaitime/logging';
+import { setEnv } from '@moaitime/shared-backend';
 
 import { addDatabaseBackupCommand } from './database/DatabaseBackupCommand';
 import { addDatabaseFixturesInsertCommand } from './database/DatabaseFixturesInsertCommand';
@@ -35,6 +36,17 @@ addDatabaseReloadCommand(program);
 addJobsRunnerStartCommand(program);
 
 program
+  .hook('preAction', async () => {
+    setEnv({
+      SERVICE_NAME: 'cli',
+    });
+
+    logger.reset({
+      base: {
+        service: 'cli',
+      },
+    });
+  })
   .hook('postAction', async () => {
     await destroyDatabase();
     await logger.terminate();

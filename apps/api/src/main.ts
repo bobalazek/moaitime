@@ -3,7 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { json } from 'express';
 
-import { getEnv } from '@moaitime/shared-backend';
+import { logger } from '@moaitime/logging';
+import { getEnv, setEnv } from '@moaitime/shared-backend';
 
 import { AppModule } from './app.module';
 import { ErrorFilter } from './filters/error.filter';
@@ -15,6 +16,16 @@ declare const module: any;
 
 export async function bootstrap() {
   Logger.log('🚀 Starting the API server...');
+
+  setEnv({
+    SERVICE_NAME: 'api',
+  });
+
+  logger.reset({
+    base: {
+      service: 'api',
+    },
+  });
 
   // Variables
   const { API_PORT, NODE_ENV } = getEnv();

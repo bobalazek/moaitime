@@ -42,7 +42,7 @@ export default function CalendarEditDialog() {
       name: selectedCalendarDialog.name,
       description: selectedCalendarDialog.description,
       color: selectedCalendarDialog.color ?? undefined,
-      teamId: selectedCalendarDialog.teamId,
+      teamId: selectedCalendarDialog.teamId ?? null,
     });
   }, [selectedCalendarDialog]);
 
@@ -166,7 +166,7 @@ export default function CalendarEditDialog() {
                 onCheckedChange={() => {
                   setData((current) => ({
                     ...current,
-                    teamId: (data as CreateCalendar)?.teamId ? undefined : joinedTeam?.team.id,
+                    teamId: (data as CreateCalendar)?.teamId ? null : joinedTeam?.team.id,
                   }));
                 }}
               />

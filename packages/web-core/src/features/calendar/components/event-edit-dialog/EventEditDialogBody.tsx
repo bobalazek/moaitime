@@ -264,7 +264,6 @@ export default function EventEditDialogBody() {
                 }) as CreateEvent
             );
           }}
-          isReadonly={eventExists}
           autoSelectFirstIfValueNoneSet
         />
       </div>

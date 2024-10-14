@@ -39,6 +39,7 @@ import {
   UpdateEvent,
 } from '@moaitime/shared-common';
 
+import { usersManager } from '../auth/UsersManager';
 import { userUsageManager } from '../auth/UserUsageManager';
 import { calendarsManager, CalendarsManagerVisibleCalendarsMap } from './CalendarsManager';
 
@@ -224,6 +225,20 @@ export class EventsManager {
       return false;
     }
 
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+    if (!calendar) {
+      return false;
+    }
+
+    if (calendar.isPublic) {
+      return false;
+    }
+
+    if (calendar.teamId) {
+      const teamIds = await usersManager.getTeamIds(userId);
+      return teamIds.includes(calendar.teamId);
+    }
+
     return calendarsManager.userCanUpdate(userId, event.calendarId);
   }
 
@@ -231,6 +246,20 @@ export class EventsManager {
     const event = await this.findOneById(eventId);
     if (!event) {
       return false;
+    }
+
+    const calendar = await calendarsManager.findOneByIdAndUserId(event.calendarId, userId);
+    if (!calendar) {
+      return false;
+    }
+
+    if (calendar.isPublic) {
+      return false;
+    }
+
+    if (calendar.teamId) {
+      const teamIds = await usersManager.getTeamIds(userId);
+      return teamIds.includes(calendar.teamId);
     }
 
     return calendarsManager.userCanDelete(userId, event.calendarId);
@@ -365,10 +394,21 @@ export class EventsManager {
 
       let permissions: Permissions | undefined = undefined;
       if (calendarPermissions) {
+        // TODO: optimise as this is quite DB heavy
+        let canUpdate = calendarPermissions.canUpdate;
+        if (!canUpdate) {
+          canUpdate = await this.userCanUpdate(userId, row.events.id);
+        }
+
+        let canDelete = calendarPermissions.canDelete;
+        if (!canDelete) {
+          canDelete = await this.userCanDelete(userId, row.events.id);
+        }
+
         permissions = {
           canView: true,
-          canUpdate: calendarPermissions.canUpdate,
-          canDelete: calendarPermissions.canDelete,
+          canUpdate,
+          canDelete,
         };
       }
 

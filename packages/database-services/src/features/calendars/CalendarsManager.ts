@@ -432,17 +432,11 @@ export class CalendarsManager {
       return false;
     }
 
-    // Pretty much the same check as above, except above we always return true if the calendar is public
-    if (calendar.userId === userId) {
-      return true;
+    if (calendar.isPublic) {
+      return false;
     }
 
-    const teamIds = await this._usersManager.getTeamIds(userId);
-    if (calendar.teamId && teamIds.includes(calendar.teamId)) {
-      return true;
-    }
-
-    return false;
+    return calendar.userId === userId;
   }
 
   async userCanDelete(userId: string, calendarOrCalendarId: string | Calendar): Promise<boolean> {

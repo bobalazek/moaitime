@@ -5,14 +5,6 @@ import pino, { BaseLogger, Bindings, LogFn, transport, TransportTargetOptions } 
 
 import { getEnv, LOGS_DIR } from '@moaitime/shared-backend';
 
-const {
-  LOGGER_FORCE_JSON_OUTPUT,
-  LOGGER_WRITE_TO_LOG_FILES,
-  NODE_ENV,
-  LOGGER_LEVEL,
-  SERVICE_NAME,
-} = getEnv();
-
 export class Logger implements BaseLogger {
   private _logger: ReturnType<typeof pino>;
   private _loggerTransport: ReturnType<typeof transport>;
@@ -21,6 +13,8 @@ export class Logger implements BaseLogger {
   public level = 'trace';
 
   constructor() {
+    const { LOGGER_LEVEL } = getEnv();
+
     this.level = LOGGER_LEVEL;
 
     this._loggerTransport = this._createTransport();
@@ -79,6 +73,8 @@ export class Logger implements BaseLogger {
   }
 
   private _defaultOptions() {
+    const { NODE_ENV, SERVICE_NAME } = getEnv();
+
     return {
       level: this.level,
       base: {
@@ -97,6 +93,8 @@ export class Logger implements BaseLogger {
   }
 
   private _createTransport() {
+    const { LOGGER_FORCE_JSON_OUTPUT, LOGGER_WRITE_TO_LOG_FILES, NODE_ENV } = getEnv();
+
     if (LOGGER_FORCE_JSON_OUTPUT) {
       return process.stdout;
     }

@@ -46,9 +46,9 @@ export type Env = z.infer<typeof envSchema>;
 let _cachedEnv: Env | null = null;
 export const getEnv = () => {
   if (_cachedEnv === null) {
-    const parsed = loadEnvironmentVariables();
+    loadEnvironmentVariables();
 
-    _cachedEnv = envSchema.parse({ ...process.env, ...parsed });
+    _cachedEnv = envSchema.parse(process.env);
   }
 
   return _cachedEnv;

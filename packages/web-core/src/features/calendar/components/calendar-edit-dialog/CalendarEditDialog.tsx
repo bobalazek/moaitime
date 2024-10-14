@@ -153,10 +153,10 @@ export default function CalendarEditDialog() {
         {calendarExists && selectedCalendarDialog?.teamId && (
           <div className="text-muted-foreground text-xs">
             <UsersIcon className="mr-1 inline-block" size={16} />
-            This calendar was created and is owned by your team.
+            This calendar is shared with your team.
           </div>
         )}
-        {!calendarExists && joinedTeam && (
+        {joinedTeam && (
           <div className="flex flex-col gap-2">
             <div className="flex items-center">
               <Switch
@@ -175,7 +175,7 @@ export default function CalendarEditDialog() {
               </Label>
             </div>
             <p className="text-muted-foreground text-xs">
-              With this toggle you will create a calendar and transfer the ownership to your team.
+              With this toggle you will be able to share this calendar with your team.
             </p>
           </div>
         )}

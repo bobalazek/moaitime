@@ -28,9 +28,7 @@ export const CreateCalendarSchema = z.object({
   teamId: z.string().nullable().optional(),
 });
 
-export const UpdateCalendarSchema = CreateCalendarSchema.omit({
-  teamId: true,
-}).partial();
+export const UpdateCalendarSchema = CreateCalendarSchema.partial();
 
 // User Calendar
 export const UserCalendarSchema = z.object({

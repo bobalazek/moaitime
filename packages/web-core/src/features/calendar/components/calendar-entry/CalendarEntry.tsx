@@ -15,6 +15,7 @@ import {
   Event,
   Task,
 } from '@moaitime/shared-common';
+import { cn } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { getTextColor } from '../../../core/utils/ColorHelpers';
@@ -413,6 +414,8 @@ export default function CalendarEntry({
     onMouseLeave: onContainerMouseLeave,
   };
 
+  const isReallyNarrow = finalHeight && finalHeight <= 40;
+
   return (
     <div
       key={calendarEntry.id}
@@ -432,28 +435,46 @@ export default function CalendarEntry({
         data-test="calendar--weekly-view--day--calendar-entry--content"
         style={innerStyle}
       >
-        <h4
-          className="overflow-auto break-words font-bold"
-          data-test="calendar--weekly-view--day--calendar-entry--title"
-        >
-          {calendarEntryTitle}
-          {showContinuedText && (
-            <span
-              className="text-[0.65rem] transition-all"
-              style={{
-                color: colorLighter,
-              }}
-            >
-              {' '}
-              (cont.)
-            </span>
+        <div
+          className={cn(
+            'flex',
+            isReallyNarrow ? 'flex-row items-center justify-between' : 'flex-col'
           )}
-        </h4>
-        {showTimes && (
-          <div className="break-words text-[0.65rem] font-semibold">
-            <CalendarEntryTimes calendarEntry={calendarEntry} />
-          </div>
-        )}
+        >
+          <h4
+            className={cn(
+              'font-bold',
+              isReallyNarrow
+                ? 'min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap'
+                : 'overflow-auto break-words'
+            )}
+            data-test="calendar--weekly-view--day--calendar-entry--title"
+            title={calendarEntry.title}
+          >
+            {calendarEntryTitle}
+            {!isReallyNarrow && showContinuedText && (
+              <span
+                className="text-[0.65rem] transition-all"
+                style={{
+                  color: colorLighter,
+                }}
+              >
+                {' '}
+                (cont.)
+              </span>
+            )}
+          </h4>
+          {showTimes && (
+            <div
+              className={cn(
+                'break-words text-[0.65rem] font-semibold',
+                isReallyNarrow && 'ml-1 whitespace-nowrap'
+              )}
+            >
+              <CalendarEntryTimes calendarEntry={calendarEntry} />
+            </div>
+          )}
+        </div>
         {canResizeEndHandler && (
           <div className="absolute bottom-[4px] left-0 w-full">
             <div

@@ -2,6 +2,21 @@
 
 echo "=============================== Deploying to docker swarm ... ==============================="
 
+##### Check Disk Space ######
+echo "---------- Checking Disk Space ... ----------"
+df -h
+
+usage=$(df -hP /dev/mapper/ubuntu--vg-ubuntu--lv | awk '{print $5}' | tail -1 | sed 's/%//g')
+echo "Disk Usage: $usage%"
+
+if [ $usage -gt 80 ]; then
+  echo "Disk space is more than 80% full. Running docker prune ..."
+  docker system prune -a -f
+
+  echo "---------- Checking Disk Space - again ... ----------"
+  df -h
+fi
+
 ##### Environment #####
 echo "---------- Setting environment variables from the environment files ... ----------"
 bash "$(dirname "$0")/generate-env-generated-file.sh"

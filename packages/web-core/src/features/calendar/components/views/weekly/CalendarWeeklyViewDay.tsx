@@ -15,6 +15,7 @@ import { useEventsStore } from '../../../state/eventsStore';
 import {
   getCalendarEntriesWithStyles,
   getClientCoordinates,
+  getThresholdPixels,
   isThresholdReached,
 } from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
@@ -41,7 +42,9 @@ const animationVariants = {
   },
 };
 
-const totalHeight = CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX * 24;
+const TOTAL_HEIGHT = CALENDAR_WEEKLY_VIEW_HOUR_HEIGHT_PX * 24;
+const MOBILE_THRESHOLD_PIXELS = 10;
+const DESKTOP_THRESHOLD_PIXELS = 5;
 
 export default function CalendarWeeklyViewDay({
   date,
@@ -88,9 +91,14 @@ export default function CalendarWeeklyViewDay({
           const hasReachedThreshold = isThresholdReached(
             currentCoordinates,
             initialCoordinates,
-            10
+            MOBILE_THRESHOLD_PIXELS
           );
           if (hasReachedThreshold) {
+            return;
+          }
+        } else {
+          const threshold = getThresholdPixels(currentCoordinates, initialCoordinates);
+          if (threshold > DESKTOP_THRESHOLD_PIXELS) {
             return;
           }
         }
@@ -129,7 +137,7 @@ export default function CalendarWeeklyViewDay({
       const calculateCurrentTimeLineTop = () => {
         const now = new Date();
         const currentMinute = now.getMinutes() + now.getHours() * 60;
-        const top = (currentMinute / 1440) * totalHeight;
+        const top = (currentMinute / 1440) * TOTAL_HEIGHT;
 
         setCurrentTimeLineTop(top);
       };
@@ -159,7 +167,7 @@ export default function CalendarWeeklyViewDay({
     <div
       className="relative ml-[-1px] mt-[-1px] w-0 flex-1 flex-grow cursor-pointer border border-b-0 border-r-0"
       style={{
-        height: totalHeight,
+        height: TOTAL_HEIGHT,
       }}
       data-test="calendar--weekly-view--day"
       data-date={date}

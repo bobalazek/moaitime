@@ -676,15 +676,22 @@ export const getClosestNextHalfHour = () => {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), halfHour);
 };
 
+export const getThresholdPixels = (
+  currentCoordinates: Coordinates,
+  initialCoordinates: Coordinates
+) => {
+  const xDelta = Math.abs(currentCoordinates.clientX - initialCoordinates.clientX);
+  const yDelta = Math.abs(currentCoordinates.clientY - initialCoordinates.clientY);
+
+  return xDelta + yDelta;
+};
+
 export const isThresholdReached = (
   currentCoordinates: Coordinates,
   initialCoordinates: Coordinates,
-  threshold = 10
+  threshold: number = 10
 ) => {
-  return (
-    Math.abs(currentCoordinates.clientX - initialCoordinates.clientX) > threshold ||
-    Math.abs(currentCoordinates.clientY - initialCoordinates.clientY) > threshold
-  );
+  return getThresholdPixels(currentCoordinates, initialCoordinates) > threshold;
 };
 
 export const getCalendarViewWidths = (selectedView: CalendarViewEnum) => {

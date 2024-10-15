@@ -257,7 +257,7 @@ export default function CalendarWeeklyView({ singleDay }: { singleDay?: Date }) 
             );
           })}
         </div>
-        <div className="w-20 flex-shrink-0">
+        <div className="w-20 flex-shrink-0 select-none">
           {hours.map((hour, index) => {
             return (
               <div

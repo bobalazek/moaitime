@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { format, isSameDay, isSameMonth } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
+import { useRef } from 'react';
 
 import {
   CALENDAR_MONTHLY_VIEW_DAY_ENTRIES_COUNT_LIMIT,
@@ -13,7 +14,11 @@ import {
 import { calendarEventResizingAtom } from '../../../state/calendarAtoms';
 import { useCalendarStore } from '../../../state/calendarStore';
 import { useEventsStore } from '../../../state/eventsStore';
-import { getClientCoordinates, isThresholdReached } from '../../../utils/CalendarHelpers';
+import {
+  getClientCoordinates,
+  getThresholdPixels,
+  isThresholdReached,
+} from '../../../utils/CalendarHelpers';
 import CalendarEntry from '../../calendar-entry/CalendarEntry';
 
 export type CalendarMonthlyViewDayProps = {
@@ -38,6 +43,9 @@ const animationVariants = {
   },
 };
 
+const MOBILE_THRESHOLD_PIXELS = 10;
+const DESKTOP_THRESHOLD_PIXELS = 5;
+
 export default function CalendarMonthlyViewDay({
   day,
   now,
@@ -55,12 +63,20 @@ export default function CalendarMonthlyViewDay({
   const dayOfWeek = format(day, 'eee');
   const date = format(day, 'yyyy-MM-dd');
 
+  const onDayClickRef = useRef<boolean>(false);
+
   const onDayClick = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
+    onDayClickRef.current = true;
+
     setSelectedDate(day);
     setSelectedView(CalendarViewEnum.DAY);
+
+    setTimeout(() => {
+      onDayClickRef.current = false;
+    }, 100);
   };
 
   const onContainerMoveStart = (event: React.MouseEvent | React.TouchEvent) => {
@@ -79,19 +95,34 @@ export default function CalendarMonthlyViewDay({
     }
 
     const onEnd = (event: MouseEvent | TouchEvent) => {
-      const currentCoordinates = getClientCoordinates(event);
-      if (isTouchEvent) {
-        const hasReachedThreshold = isThresholdReached(currentCoordinates, initialCoordinates, 10);
-        if (hasReachedThreshold) {
+      setTimeout(() => {
+        if (onDayClickRef.current) {
           return;
         }
-      }
 
-      setSelectedEventDialogOpen(true, {
-        startsAt: dayMidnight,
-        endsAt: dayMidnight,
-        isAllDay: true,
-      } as Event);
+        const currentCoordinates = getClientCoordinates(event);
+        if (isTouchEvent) {
+          const hasReachedThreshold = isThresholdReached(
+            currentCoordinates,
+            initialCoordinates,
+            MOBILE_THRESHOLD_PIXELS
+          );
+          if (hasReachedThreshold) {
+            return;
+          }
+        } else {
+          const threshold = getThresholdPixels(currentCoordinates, initialCoordinates);
+          if (threshold > DESKTOP_THRESHOLD_PIXELS) {
+            return;
+          }
+        }
+
+        setSelectedEventDialogOpen(true, {
+          startsAt: dayMidnight,
+          endsAt: dayMidnight,
+          isAllDay: true,
+        } as Event);
+      }, 50);
 
       document.removeEventListener(isTouchEvent ? 'touchend' : 'mouseup', onEnd);
     };

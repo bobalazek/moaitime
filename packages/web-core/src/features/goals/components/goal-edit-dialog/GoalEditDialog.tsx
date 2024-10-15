@@ -14,13 +14,19 @@ import {
   Textarea,
 } from '@moaitime/web-ui';
 
+import {
+  convertIsoStringToObject,
+  convertObjectToIsoString,
+} from '../../../calendar/utils/CalendarHelpers';
 import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
+import DateSelector, { DateSelectorData } from '../../../core/components/selectors/DateSelector';
 import { useGoalsStore } from '../../state/goalsStore';
 
 const DEFAULT_GOAL_DATA = {
   name: '',
   description: '',
   color: undefined,
+  targetCompletedAt: undefined,
 };
 
 export default function GoalEditDialog() {
@@ -47,6 +53,7 @@ export default function GoalEditDialog() {
       name: selectedGoalDialog.name,
       description: selectedGoalDialog.description,
       color: selectedGoalDialog.color,
+      targetCompletedAt: selectedGoalDialog.targetCompletedAt,
     });
   }, [selectedGoalDialog]);
 
@@ -145,6 +152,29 @@ export default function GoalEditDialog() {
                 }}
                 contentProps={{
                   'data-test': 'habits--habit-edit-dialog--color-select',
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="goal-target-completed-at">Completion target date</Label>
+              <DateSelector
+                includeTime={false}
+                disableClear
+                data={
+                  data?.targetCompletedAt
+                    ? convertIsoStringToObject(data?.targetCompletedAt, false, undefined)
+                    : { date: null, dateTime: null, dateTimeZone: null }
+                }
+                onSaveData={(saveData) => {
+                  const result = convertObjectToIsoString<DateSelectorData>(saveData);
+
+                  setData(
+                    (current) =>
+                      ({
+                        ...current,
+                        targetCompletedAt: result?.iso,
+                      }) as CreateGoal
+                  );
                 }}
               />
             </div>

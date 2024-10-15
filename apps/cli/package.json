@@ -15,7 +15,7 @@
     "build": "tsup",
     "clean": "rimraf --glob node_modules --glob .turbo --glob dist",
     "lint": "eslint .",
-    "run-exec": "tsx --import tsx/cjs ./src/main.ts"
+    "run-exec": "tsx ./src/main.ts"
   },
   "dependencies": {
     "@moaitime/database-core": "workspace:*",

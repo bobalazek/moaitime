@@ -44,6 +44,7 @@ export class GoalsManager {
     const goal = await this.insertOne({
       ...data,
       order,
+      targetCompletedAt: data.targetCompletedAt ? new Date(data.targetCompletedAt) : null,
       userId: actorUser.id,
     });
 
@@ -66,7 +67,10 @@ export class GoalsManager {
       throw new Error('Goal not found');
     }
 
-    const updatedGoal = await this.updateOneById(goalId, data);
+    const updatedGoal = await this.updateOneById(goalId, {
+      ...data,
+      targetCompletedAt: data.targetCompletedAt ? new Date(data.targetCompletedAt) : null,
+    });
 
     globalEventsNotifier.publish(GlobalEventsEnum.GOALS_GOAL_EDITED, {
       actorUserId,
@@ -129,6 +133,28 @@ export class GoalsManager {
 
     globalEventsNotifier.publish(GlobalEventsEnum.GOALS_REORDERED, {
       actorUserId: actorUserId,
+    });
+  }
+
+  async complete(actorUserId: string, goalId: string) {
+    const goal = await this.findOneById(goalId);
+    if (!goal) {
+      throw new Error('Goal not found');
+    }
+
+    return this.updateOneById(goalId, {
+      completedAt: new Date(),
+    });
+  }
+
+  async uncomplete(actorUserId: string, goalId: string) {
+    const goal = await this.findOneById(goalId);
+    if (!goal) {
+      throw new Error('Goal not found');
+    }
+
+    return this.updateOneById(goalId, {
+      completedAt: null,
     });
   }
 

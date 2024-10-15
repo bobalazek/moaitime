@@ -5,12 +5,14 @@ import { CreateGoal, GlobalEventsEnum, Goal, UpdateGoal } from '@moaitime/shared
 import { globalEventsEmitter } from '../../core/state/globalEventsEmitter';
 import {
   addGoal,
+  completeGoal,
   deleteGoal,
   editGoal,
   getDeletedGoals,
   getGoal,
   getGoals,
   reorderGoals,
+  uncompleteGoal,
   undeleteGoal,
 } from '../utils/GoalHelpers';
 
@@ -25,6 +27,8 @@ export type GoalsStore = {
   deleteGoal: (goalId: string, isHardDelete?: boolean) => Promise<Goal>;
   undeleteGoal: (goalId: string) => Promise<Goal>;
   reorderGoals: (originalGoalId: string, newGoalId: string) => Promise<void>;
+  completeGoal: (goalId: string) => Promise<Goal>;
+  uncompleteGoal: (goalId: string) => Promise<Goal>;
   // Settings Dialog
   settingsDialogOpen: boolean;
   setSettingsDialogOpen: (settingsDialogOpen: boolean) => void;
@@ -135,6 +139,24 @@ export const useGoalsStore = create<GoalsStore>()((set, get) => ({
     await reorderGoals(originalGoalId, newGoalId);
 
     await reloadGoals();
+  },
+  completeGoal: async (goalId: string) => {
+    const { reloadGoals } = get();
+
+    const completedGoal = await completeGoal(goalId);
+
+    await reloadGoals();
+
+    return completedGoal;
+  },
+  uncompleteGoal: async (goalId: string) => {
+    const { reloadGoals } = get();
+
+    const uncompletedGoal = await uncompleteGoal(goalId);
+
+    await reloadGoals();
+
+    return uncompletedGoal;
   },
   // Settings Dialog
   settingsDialogOpen: false,

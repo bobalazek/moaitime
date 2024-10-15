@@ -6,8 +6,11 @@ export const GoalSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().nullable(),
+  order: z.number(),
   color: ColorSchema.nullable(),
-  areas: z.array(z.string()),
+  areasOfLife: z.array(z.string()),
+  targetCompletedAt: z.string().nullable(),
+  completedAt: z.string().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -24,7 +27,8 @@ export const CreateGoalSchema = z.object({
     }),
   description: z.string().nullable().optional(),
   color: ColorSchema.nullable().optional(),
-  areas: z.array(z.string()).optional(),
+  areasOfLife: z.array(z.string()).optional(),
+  targetCompletedAt: z.string().nullable().optional(),
 });
 
 export const UpdateGoalSchema = CreateGoalSchema.partial();

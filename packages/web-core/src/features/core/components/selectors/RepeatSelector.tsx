@@ -116,9 +116,9 @@ export function RepeatSelector({
           variant="outline"
           aria-expanded={open}
           data-test="repeat-selector--trigger-button"
-          className="max-w-full items-center justify-between text-left"
+          className="w-full max-w-full items-center justify-between text-left"
         >
-          {!value && <span className="italic text-gray-500">Does not repeat</span>}
+          {!value && <div className="flex w-full italic text-gray-500">Does not repeat</div>}
           {value && (
             <div className="text-muted-foreground flex w-full items-center justify-between gap-3 text-xs">
               <div className="line-clamp-1">

@@ -3,7 +3,6 @@ import { Request } from 'express';
 
 import { Goal } from '@moaitime/database-core';
 import { goalsManager } from '@moaitime/database-services';
-import { GoalsListSortFieldEnum, SortDirectionEnum } from '@moaitime/shared-common';
 
 import { DeleteDto } from '../../../dtos/delete.dto';
 import { AbstractResponseDto } from '../../../dtos/responses/abstract-response.dto';
@@ -18,14 +17,10 @@ export class GoalsController {
   @Get()
   async list(@Req() req: Request): Promise<AbstractResponseDto<Goal[]>> {
     const search = req.query.search as string;
-    const sortField = req.query.sortField as GoalsListSortFieldEnum;
-    const sortDirection = req.query.sortDirection as SortDirectionEnum;
     const includeDeleted = req.query.includeDeleted === 'true';
 
     const data = await goalsManager.list(req.user.id, {
       search,
-      sortField,
-      sortDirection,
       includeDeleted,
     });
 
@@ -121,6 +116,34 @@ export class GoalsController {
     @Param('goalId') goalId: string
   ): Promise<AbstractResponseDto<Goal>> {
     const data = await goalsManager.undelete(req.user, goalId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':goalId/complete')
+  async complete(
+    @Req() req: Request,
+    @Param('goalId') goalId: string
+  ): Promise<AbstractResponseDto<Goal>> {
+    const data = await goalsManager.complete(req.user.id, goalId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post(':goalId/uncomplete')
+  async uncomplete(
+    @Req() req: Request,
+    @Param('goalId') goalId: string
+  ): Promise<AbstractResponseDto<Goal>> {
+    const data = await goalsManager.uncomplete(req.user.id, goalId);
 
     return {
       success: true,

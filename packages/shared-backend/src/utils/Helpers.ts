@@ -8,32 +8,18 @@ import { ROOT_DIR } from '../Constants';
 export const loadEnvironmentVariables = () => {
   const NODE_ENV = process.env.NODE_ENV || 'development';
   const files = [
-    `.env.generated`,
-    `.env.${NODE_ENV}.local`,
-    `.env.local`,
-    `.env.${NODE_ENV}`,
     `.env`,
+    `.env.${NODE_ENV}`,
+    `.env.local`,
+    `.env.${NODE_ENV}.local`,
+    `.env.generated`,
   ];
-
-  const path: string[] = [];
   files.forEach((file) => {
     const envFilePath = resolve(join(ROOT_DIR, file));
     if (!existsSync(envFilePath)) {
       return;
     }
 
-    path.push(envFilePath);
+    dotenv.config({ path: envFilePath, override: true });
   });
-
-  if (path.length === 0) {
-    console.warn('No environment variables file found');
-
-    return {};
-  }
-
-  console.log(`Loading environment variables from "${path.join(', ')}" ...`);
-
-  const result = dotenv.config({ path });
-
-  return result.parsed;
 };

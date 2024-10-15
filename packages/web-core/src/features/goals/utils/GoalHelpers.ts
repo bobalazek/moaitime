@@ -107,3 +107,25 @@ export const reorderGoals = async (originalGoalId: string, newGoalId: string) =>
     },
   });
 };
+
+export const completeGoal = async (goalId: string): Promise<Goal> => {
+  const response = await fetchJson<ResponseInterface<Goal>>(
+    `${API_URL}/api/v1/goals/${goalId}/complete`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as Goal;
+};
+
+export const uncompleteGoal = async (goalId: string): Promise<Goal> => {
+  const response = await fetchJson<ResponseInterface<Goal>>(
+    `${API_URL}/api/v1/goals/${goalId}/uncomplete`,
+    {
+      method: 'POST',
+    }
+  );
+
+  return response.data as Goal;
+};

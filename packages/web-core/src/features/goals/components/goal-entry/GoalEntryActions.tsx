@@ -1,4 +1,4 @@
-import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
+import { CheckIcon, MoreVerticalIcon, PencilIcon, TrashIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { Goal } from '@moaitime/shared-common';
@@ -14,8 +14,25 @@ import {
 import { useGoalsStore } from '../../state/goalsStore';
 
 export const GoalEntryActions = ({ goal }: { goal: Goal }) => {
-  const { deleteGoal, undeleteGoal, setSelectedGoalDialogOpen } = useGoalsStore();
+  const { deleteGoal, undeleteGoal, setSelectedGoalDialogOpen, completeGoal, uncompleteGoal } =
+    useGoalsStore();
   const [open, setOpen] = useState(false);
+
+  const onCompleteButtonClick = async () => {
+    try {
+      await completeGoal(goal.id);
+    } catch (error) {
+      // Already handled by the fetch function
+    }
+  };
+
+  const onUncompleteButtonClick = async () => {
+    try {
+      await uncompleteGoal(goal.id);
+    } catch (error) {
+      // Already handled by the fetch function
+    }
+  };
 
   const onEditButtonClick = async () => {
     setSelectedGoalDialogOpen(true, goal);
@@ -81,6 +98,18 @@ export const GoalEntryActions = ({ goal }: { goal: Goal }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent data-test="goal--goal-entry--actions-dropdown-menu">
+        {!goal.completedAt && (
+          <DropdownMenuItem className="cursor-pointer" onClick={onCompleteButtonClick}>
+            <CheckIcon className="mr-2 h-4 w-4" />
+            <span>Complete</span>
+          </DropdownMenuItem>
+        )}
+        {goal.completedAt && (
+          <DropdownMenuItem className="cursor-pointer" onClick={onUncompleteButtonClick}>
+            <XIcon className="mr-2 h-4 w-4" />
+            <span>Uncomplete</span>
+          </DropdownMenuItem>
+        )}
         {!goal.deletedAt && (
           <>
             <DropdownMenuItem className="cursor-pointer" onClick={onEditButtonClick}>

@@ -275,6 +275,62 @@ describe('Recurrence.ts', () => {
       },
     },
     {
+      testName: 'should work weekly with dates between and an count option',
+      now: '2020-01-01T00:00:00.000',
+      startDate: '2020-01-02T00:00:00.000',
+      endDate: '2022-02-12T00:00:00.000',
+      count: 3,
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.WEEK,
+        intervalAmount: 1,
+        count: 3,
+      },
+      expected: {
+        datesBetween: [
+          '2020-01-15T00:00:00.000',
+          '2020-01-22T00:00:00.000',
+          '2020-01-29T00:00:00.000',
+        ],
+      },
+    },
+    {
+      testName: 'should work monthly with dates between and an count option',
+      now: '2020-01-01T00:00:00.000',
+      startDate: '2020-01-02T00:00:00.000',
+      endDate: '2022-05-12T00:00:00.000',
+      count: 3,
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.MONTH,
+        intervalAmount: 1,
+        count: 3,
+      },
+      expected: {
+        datesBetween: [
+          '2020-02-08T00:00:00.000',
+          '2020-03-08T00:00:00.000',
+          '2020-04-08T00:00:00.000',
+        ],
+      },
+    },
+    {
+      testName: 'should work yearly with dates between and an count option and 1 iteration',
+      now: '2020-01-01T00:00:00.000',
+      startDate: '2020-01-02T00:00:00.000',
+      endDate: '2021-01-12T00:00:00.000',
+      count: 1,
+      options: {
+        startsAt: new Date('2020-01-08T00:00:00.000'),
+        interval: RecurrenceIntervalEnum.YEAR,
+        intervalAmount: 1,
+        count: 1,
+      },
+      expected: {
+        datesBetween: ['2021-01-08T00:00:00.000'],
+      },
+    },
+    {
       testName: 'should work daily with the next date option',
       now: '2020-01-14T00:00:00.000',
       options: {

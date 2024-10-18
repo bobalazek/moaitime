@@ -185,7 +185,7 @@ export class Recurrence {
       ? Math.min(this.options.count, Number.MAX_SAFE_INTEGER)
       : Number.MAX_SAFE_INTEGER;
     let iterations = 0;
-    let currentDate = this._incrementDate(new Date(this.options.startsAt));
+    let currentDate = this._incrementDate(this.options.startsAt);
 
     while (currentDate <= endDate) {
       if (this._matchesOptions(currentDate) && currentDate >= startDate) {
@@ -197,7 +197,7 @@ export class Recurrence {
 
     while (dates.length < maxCount && currentDate <= endDate) {
       if (this._matchesOptions(currentDate)) {
-        dates.push(new Date(currentDate));
+        dates.push(currentDate);
       }
 
       currentDate = this._incrementDate(currentDate);

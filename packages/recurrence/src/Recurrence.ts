@@ -179,33 +179,27 @@ export class Recurrence {
   }
 
   getDatesBetween(startDate: Date, endDate: Date): Date[] {
-    let currentDate = startDate < this.options.startsAt ? this.options.startsAt : startDate;
-    const adjustedEndsAt =
-      this.options.endsAt && endDate > this.options.endsAt ? this.options.endsAt : endDate;
-
     const dates: Date[] = [];
     let iterations = 0;
     let occurrences = 0;
 
-    if (this.options.count) {
-      let tempDate = this.options.startsAt;
-      while (tempDate < currentDate && occurrences < this.options.count) {
-        if (this._matchesOptions(tempDate) && this._isWithinDateRange(tempDate)) {
-          occurrences++;
-        }
+    let currentDate = new Date(this.options.startsAt.getTime());
 
-        tempDate = this._incrementDate(tempDate);
-      }
-    }
+    const adjustedEndDate = this.options.endsAt
+      ? new Date(Math.min(endDate.getTime(), this.options.endsAt.getTime()))
+      : endDate;
 
     while (
-      currentDate <= adjustedEndsAt &&
+      currentDate <= adjustedEndDate &&
       (this.options.count === undefined || occurrences < this.options.count)
     ) {
-      if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
-        dates.push(currentDate);
+      if (this._matchesOptions(currentDate)) {
+        if (currentDate >= startDate && currentDate <= adjustedEndDate) {
+          dates.push(new Date(currentDate.getTime()));
+        }
         occurrences++;
       }
+
       currentDate = this._incrementDate(currentDate);
 
       iterations++;

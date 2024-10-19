@@ -6,13 +6,15 @@ import dotenv from 'dotenv';
 import { ROOT_DIR } from '../Constants';
 
 export const loadEnvironmentVariables = () => {
+  console.log('Loading environment variables ...');
+
   const NODE_ENV = process.env.NODE_ENV || 'development';
   const files = [
-    `.env`,
-    `.env.${NODE_ENV}`,
-    `.env.local`,
-    `.env.${NODE_ENV}.local`,
     `.env.generated`,
+    `.env.${NODE_ENV}.local`,
+    `.env.local`,
+    `.env.${NODE_ENV}`,
+    `.env`,
   ];
   files.forEach((file) => {
     const envFilePath = resolve(join(ROOT_DIR, file));
@@ -20,6 +22,8 @@ export const loadEnvironmentVariables = () => {
       return;
     }
 
-    dotenv.config({ path: envFilePath, override: true });
+    console.log(`Loading environment variables from "${envFilePath}" ...`);
+
+    dotenv.config({ path: envFilePath });
   });
 };

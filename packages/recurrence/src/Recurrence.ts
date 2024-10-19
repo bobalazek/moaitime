@@ -30,11 +30,21 @@ export type RecurrenceOptions = {
   daysOfWeekOnly?: RecurrenceDayOfWeekEnum[];
   daysOfMonthOnly?: number[]; // 1, 2, 3, 4, 5, 6, 7, 8, 9, ... 31
   startOfWeek?: RecurrenceDayOfWeekEnum;
+  maxIterations?: number;
+};
+
+export const DAY_OF_WEEK_MAP = {
+  [RecurrenceDayOfWeekEnum.SUNDAY]: 'Sunday',
+  [RecurrenceDayOfWeekEnum.MONDAY]: 'Monday',
+  [RecurrenceDayOfWeekEnum.TUESDAY]: 'Tuesday',
+  [RecurrenceDayOfWeekEnum.WEDNESDAY]: 'Wednesday',
+  [RecurrenceDayOfWeekEnum.THURSDAY]: 'Thursday',
+  [RecurrenceDayOfWeekEnum.FRIDAY]: 'Friday',
+  [RecurrenceDayOfWeekEnum.SATURDAY]: 'Saturday',
 };
 
 export class Recurrence {
   private _options: RecurrenceOptions;
-  private _maxIterations = 10000;
 
   constructor(options: RecurrenceOptions) {
     this._validateOptions(options);
@@ -44,7 +54,7 @@ export class Recurrence {
 
   // Getters
   get options() {
-    return this._options;
+    return { maxIterations: 10000, ...this._options };
   }
 
   updateOptions(options: Partial<RecurrenceOptions>) {
@@ -61,8 +71,16 @@ export class Recurrence {
   }
 
   toHumanText() {
-    const { interval, intervalAmount, hoursOfDayOnly, daysOfWeekOnly, daysOfMonthOnly } =
-      this.options;
+    const {
+      interval,
+      intervalAmount,
+      hoursOfDayOnly,
+      daysOfWeekOnly,
+      daysOfMonthOnly,
+      count,
+      endsAt,
+      startsAt,
+    } = this.options;
 
     let text = `every ${intervalAmount > 1 ? intervalAmount + ' ' : ''}${interval}${intervalAmount > 1 ? 's' : ''}`;
 
@@ -78,15 +96,15 @@ export class Recurrence {
       text += ` on the ${this._listToHumanReadable(daysOfMonthOnly, 'dayOfMonth')} of the month`;
     }
 
-    if (this.options.count) {
-      text += ` for ${this.options.count} times`;
+    if (count) {
+      text += ` for ${count} times`;
     }
 
-    if (this.options.endsAt) {
-      text += ` until ${this.options.endsAt.toDateString()}`;
+    if (endsAt) {
+      text += ` until ${endsAt.toDateString()}`;
     }
 
-    text += ` starting ${this.options.startsAt.toLocaleDateString()}`;
+    text += ` starting ${startsAt.toLocaleDateString()}`;
 
     return text;
   }
@@ -112,21 +130,23 @@ export class Recurrence {
   }
 
   getNextDate(date: Date): Date | null {
+    const { startsAt, maxIterations, count } = this.options;
+
     let iterations = 0;
     let currentDate = date;
 
-    if (currentDate < this.options.startsAt) {
-      currentDate = this.options.startsAt;
+    if (currentDate < startsAt) {
+      currentDate = startsAt;
     }
 
-    if (this.options.count) {
+    if (count) {
       let occurrences = 0;
-      let tempDate = this.options.startsAt;
+      let tempDate = startsAt;
 
       while (tempDate <= date) {
         if (this._matchesOptions(tempDate) && this._isWithinDateRange(tempDate)) {
           occurrences++;
-          if (occurrences >= this.options.count) {
+          if (occurrences >= count) {
             return null;
           }
         }
@@ -143,34 +163,36 @@ export class Recurrence {
       }
 
       iterations++;
-      if (iterations > this._maxIterations) {
+      if (iterations > maxIterations) {
         throw new Error('Too many iterations. Infinite loop detected.');
       }
     }
   }
 
-  getNextDates(date: Date, count: number): Date[] {
-    if (count < 1) {
+  getNextDates(date: Date, maxCount: number): Date[] {
+    const { startsAt, endsAt, maxIterations, count } = this.options;
+
+    if (maxCount < 1) {
       return [];
     }
 
     const dates: Date[] = [];
 
-    const maxCount = this.options.count ? Math.min(count, this.options.count) : count;
+    maxCount = count ? Math.min(maxCount, count) : maxCount;
     let iterations = 0;
-    let currentDate = date < this.options.startsAt ? this.options.startsAt : date;
+    let currentDate = date < startsAt ? startsAt : date;
     while (dates.length < maxCount) {
       currentDate = this._incrementDate(currentDate);
       if (this._matchesOptions(currentDate) && this._isWithinDateRange(currentDate)) {
         dates.push(currentDate);
       }
 
-      if (this.options.endsAt && currentDate > this.options.endsAt) {
+      if (endsAt && currentDate > endsAt) {
         break;
       }
 
       iterations++;
-      if (iterations > this._maxIterations) {
+      if (iterations > maxIterations) {
         throw new Error('Too many iterations. Infinite loop detected.');
       }
     }
@@ -179,13 +201,13 @@ export class Recurrence {
   }
 
   getDatesBetween(startDate: Date, endDate: Date): Date[] {
+    const { startsAt, endsAt, maxIterations, count } = this.options;
+
     const dates: Date[] = [];
 
-    const maxCount = this.options.count
-      ? Math.min(this.options.count, Number.MAX_SAFE_INTEGER)
-      : Number.MAX_SAFE_INTEGER;
+    const maxCount = count ? Math.min(count, Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER;
     let iterations = 0;
-    let currentDate = this._incrementDate(this.options.startsAt);
+    let currentDate = this._incrementDate(startsAt);
 
     while (currentDate <= endDate) {
       if (this._matchesOptions(currentDate) && currentDate >= startDate) {
@@ -202,12 +224,12 @@ export class Recurrence {
 
       currentDate = this._incrementDate(currentDate);
 
-      if (this.options.endsAt && currentDate > this.options.endsAt) {
+      if (endsAt && currentDate > endsAt) {
         break;
       }
 
       iterations++;
-      if (iterations > this._maxIterations) {
+      if (iterations > maxIterations) {
         throw new Error('Too many iterations. Infinite loop detected.');
       }
     }
@@ -239,10 +261,18 @@ export class Recurrence {
     if (options.endsAt && options.startsAt > options.endsAt) {
       throw new Error('Start date must be before end date');
     }
+
+    if (options.maxIterations) {
+      if (options.maxIterations < 0) {
+        throw new Error('Max iterations must be a number greater than 0');
+      } else if (options.maxIterations > Number.MAX_SAFE_INTEGER) {
+        throw new Error('Max iterations must be a number less than Number.MAX_SAFE_INTEGER');
+      }
+    }
   }
 
   private _incrementDate(date: Date): Date {
-    const { interval, intervalAmount, hoursOfDayOnly } = this.options;
+    const { interval, intervalAmount } = this.options;
 
     let nextDate = new Date(date.getTime());
 
@@ -266,16 +296,24 @@ export class Recurrence {
         throw new Error('Invalid interval type');
     }
 
-    nextDate = this._moveToNextValidDayOfWeek(nextDate);
+    nextDate = this._moveToNextValidDate(nextDate);
+
+    return nextDate;
+  }
+
+  private _moveToNextValidDate(date: Date) {
+    const { hoursOfDayOnly } = this.options;
+
+    date = this._moveToNextValidDayOfWeek(date);
 
     if (hoursOfDayOnly && hoursOfDayOnly.length > 0) {
-      while (!hoursOfDayOnly.includes(nextDate.getHours())) {
-        nextDate = add(nextDate, { hours: 1 });
-        nextDate = this._moveToNextValidDayOfWeek(nextDate);
+      while (!hoursOfDayOnly.includes(date.getHours())) {
+        date = add(date, { hours: 1 });
+        date = this._moveToNextValidDayOfWeek(date);
       }
     }
 
-    return nextDate;
+    return date;
   }
 
   private _moveToNextValidDayOfWeek(date: Date) {
@@ -294,11 +332,13 @@ export class Recurrence {
   }
 
   private _isWithinDateRange(date: Date): boolean {
-    if (date <= this.options.startsAt) {
+    const { startsAt, endsAt } = this.options;
+
+    if (date <= startsAt) {
       return false;
     }
 
-    if (this.options.endsAt && date > this.options.endsAt) {
+    if (endsAt && date > endsAt) {
       return false;
     }
 
@@ -340,27 +380,12 @@ export class Recurrence {
     }
 
     const toStringMap = {
-      day: (item: RecurrenceDayOfWeekEnum) => this._dayOfWeekToString(item),
+      day: (item: RecurrenceDayOfWeekEnum) => DAY_OF_WEEK_MAP[item],
       hour: (item: number) => `${item}:00`,
       dayOfMonth: (item: number) =>
         `${item}${item === 1 ? 'st' : item === 2 ? 'nd' : item === 3 ? 'rd' : 'th'}`,
     };
 
-    const converter = toStringMap[type];
-
-    return list.map((item) => converter(item)).join(', ');
-  }
-
-  private _dayOfWeekToString(day: RecurrenceDayOfWeekEnum): string {
-    const dayOfWeekMap = {
-      [RecurrenceDayOfWeekEnum.SUNDAY]: 'Sunday',
-      [RecurrenceDayOfWeekEnum.MONDAY]: 'Monday',
-      [RecurrenceDayOfWeekEnum.TUESDAY]: 'Tuesday',
-      [RecurrenceDayOfWeekEnum.WEDNESDAY]: 'Wednesday',
-      [RecurrenceDayOfWeekEnum.THURSDAY]: 'Thursday',
-      [RecurrenceDayOfWeekEnum.FRIDAY]: 'Friday',
-      [RecurrenceDayOfWeekEnum.SATURDAY]: 'Saturday',
-    };
-    return dayOfWeekMap[day];
+    return list.map((item) => toStringMap[type](item)).join(', ');
   }
 }

@@ -122,7 +122,6 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
     return team;
   },
   getTeamSync: (teamId: string) => {
-    console.log(_cachedTeamsMap);
     return _cachedTeamsMap.get(teamId);
   },
   // Selected

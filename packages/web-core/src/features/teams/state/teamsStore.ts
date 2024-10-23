@@ -21,6 +21,7 @@ import {
   editTeamMember,
   getJoinedTeam,
   getMyTeamInvitations,
+  getTeam,
   getTeamInvitations,
   getTeamMembers,
   leaveTeam,
@@ -34,6 +35,8 @@ export type TeamsStore = {
   editTeam: (teamId: string, data: UpdateTeam) => Promise<Team>;
   deleteTeam: (teamId: string) => Promise<Team>;
   leaveTeam: (teamId: string) => Promise<Team>;
+  getTeam: (teamId: string) => Promise<Team>;
+  getTeamSync: (teamId: string) => Team;
   // Selected
   selectedTeamDialogOpen: boolean;
   selectedTeam: Team | null;
@@ -68,6 +71,7 @@ export type TeamsStore = {
   setInviteTeamMemberDialogOpen: (inviteTeamMemberDialogOpen: boolean) => void;
 };
 
+const _cachedTeamsMap = new Map();
 export const useTeamsStore = create<TeamsStore>()((set, get) => ({
   addTeam: async (data: CreateTeam) => {
     const { reloadJoinedTeam } = get();
@@ -105,6 +109,22 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
 
     return leftTeam;
   },
+  getTeam: async (teamId: string) => {
+    const cachedTeam = _cachedTeamsMap.get(teamId);
+    if (cachedTeam) {
+      return cachedTeam;
+    }
+
+    const team = await getTeam(teamId);
+
+    _cachedTeamsMap.set(teamId, team);
+
+    return team;
+  },
+  getTeamSync: (teamId: string) => {
+    console.log(_cachedTeamsMap);
+    return _cachedTeamsMap.get(teamId);
+  },
   // Selected
   selectedTeamDialogOpen: false,
   selectedTeam: null,
@@ -138,6 +158,8 @@ export const useTeamsStore = create<TeamsStore>()((set, get) => ({
     set({
       joinedTeam,
     });
+
+    _cachedTeamsMap.set(joinedTeam.team.id, joinedTeam.team);
 
     await reloadJoinedTeamMembers();
     await reloadJoinedTeamUserInvitations();

@@ -6,6 +6,7 @@ import { Checkbox } from '@moaitime/web-ui';
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { getTextColor } from '../../../core/utils/ColorHelpers';
 import { useListsStore } from '../../../tasks/state/listsStore';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 
 export interface ListItemProps {
   list: List;
@@ -14,8 +15,10 @@ export interface ListItemProps {
 
 export default function ListItem({ list, hideCheckbox }: ListItemProps) {
   const { addVisibleList, removeVisibleList } = useListsStore();
+  const { getTeamSync } = useTeamsStore();
 
   const visibleListIds = useAuthUserSetting('calendarVisibleListIds', [] as string[]);
+  const team = list.teamId ? getTeamSync(list.teamId) : null;
 
   const isChecked =
     visibleListIds.includes('*') || visibleListIds.includes(list.id === 'unlisted' ? '' : list.id);
@@ -55,9 +58,14 @@ export default function ListItem({ list, hideCheckbox }: ListItemProps) {
         <div className="break-words px-6">
           <span data-test="calendar--list-item--name">{list.name}</span>
           {list?.teamId && (
-            <span className="ml-1">
-              {' '}
-              <UsersIcon className="inline text-gray-400" size={16} />
+            <span className="ml-2" title={`This list is shared with ${team?.name ?? 'your team'}`}>
+              <UsersIcon
+                className="inline text-gray-400"
+                size={16}
+                style={{
+                  color: team?.color ?? undefined,
+                }}
+              />
             </span>
           )}
         </div>

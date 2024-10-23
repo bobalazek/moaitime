@@ -39,6 +39,14 @@ export const editTeam = async (teamId: string, data: UpdateTeam): Promise<Team> 
   return response.data as Team;
 };
 
+export const getTeam = async (teamId: string): Promise<Team> => {
+  const response = await fetchJson<ResponseInterface<Team>>(`${API_URL}/api/v1/teams/${teamId}`, {
+    method: 'GET',
+  });
+
+  return response.data as Team;
+};
+
 export const deleteTeam = async (teamId: string): Promise<Team> => {
   const response = await fetchJson<ResponseInterface<Team>>(`${API_URL}/api/v1/teams/${teamId}`, {
     method: 'DELETE',

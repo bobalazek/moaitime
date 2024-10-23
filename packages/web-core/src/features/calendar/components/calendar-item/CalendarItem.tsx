@@ -5,6 +5,7 @@ import { Checkbox } from '@moaitime/web-ui';
 
 import { useAuthUserSetting } from '../../../auth/state/authStore';
 import { getTextColor } from '../../../core/utils/ColorHelpers';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 import { useCalendarStore } from '../../state/calendarStore';
 import CalendarItemActions from './CalendarItemActions';
 
@@ -22,9 +23,11 @@ export default function CalendarItem({
   showUserCalendarActions,
 }: CalendarItemProps) {
   const { addVisibleCalendar, removeVisibleCalendar } = useCalendarStore();
+  const { getTeamSync } = useTeamsStore();
 
   const visibleCalendarIds = useAuthUserSetting('calendarVisibleCalendarIds', [] as string[]);
 
+  const team = calendar.teamId ? getTeamSync(calendar.teamId) : null;
   const isChecked = visibleCalendarIds.includes('*') || visibleCalendarIds.includes(calendar.id);
 
   const onCheckedChange = async () => {
@@ -62,9 +65,17 @@ export default function CalendarItem({
         <div className="break-words px-6">
           <span data-test="calendar--settings-dialog--calendar--name">{calendar.name}</span>
           {calendar?.teamId && (
-            <span className="ml-1">
-              {' '}
-              <UsersIcon className="inline text-gray-400" size={16} />
+            <span
+              className="ml-2"
+              title={`This calendar is shared with ${team?.name ?? 'your team'}`}
+            >
+              <UsersIcon
+                className="inline text-gray-400"
+                size={16}
+                style={{
+                  color: team?.color ?? undefined,
+                }}
+              />
             </span>
           )}
         </div>

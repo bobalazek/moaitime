@@ -2,6 +2,7 @@ import { UsersIcon } from 'lucide-react';
 
 import { Tag } from '@moaitime/shared-common';
 
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 import TagItemActions from './TagItemActions';
 
 export interface TagItemProps {
@@ -9,6 +10,10 @@ export interface TagItemProps {
 }
 
 export default function TagItem({ tag }: TagItemProps) {
+  const { getTeamSync } = useTeamsStore();
+
+  const team = tag.teamId ? getTeamSync(tag.teamId) : null;
+
   return (
     <div
       className="min-h-[2rem] rounded-lg border-l-4 p-1 outline-none hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -23,9 +28,12 @@ export default function TagItem({ tag }: TagItemProps) {
           <div>
             <span data-test="tasks--tag-item--name">{tag.name}</span>
             {tag.teamId && (
-              <span className="ml-1">
-                {' '}
-                <UsersIcon className="inline text-gray-400" size={16} />
+              <span className="ml-2" title={`This tag is shared with ${team?.name ?? 'your team'}`}>
+                <UsersIcon
+                  className="inline text-gray-400"
+                  size={16}
+                  style={{ color: team?.color ?? undefined }}
+                />
               </span>
             )}
           </div>

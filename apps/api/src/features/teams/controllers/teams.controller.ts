@@ -26,6 +26,20 @@ export class TeamsController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @Get(':teamId')
+  async get(
+    @Req() req: Request,
+    @Param('teamId') teamId: string
+  ): Promise<AbstractResponseDto<Team>> {
+    const data = await teamsManager.get(req.user.id, teamId);
+
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
   @Post()
   async create(
     @Body() body: CreateTeamDto,

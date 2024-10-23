@@ -14,6 +14,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { useTagsStore } from '../../../tasks/state/tagsStore';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 
 export type TagsSelectorProps = {
   value?: string[];
@@ -25,6 +26,7 @@ export function TagsSelector({ value, onChangeValue, teamId }: TagsSelectorProps
   const { tags, addTag } = useTagsStore();
   const [open, setOpen] = useState(false);
   const [commandValue, setCommandValue] = useState('');
+  const { getTeamSync } = useTeamsStore();
 
   const selectedTags = tags.filter((tag) => value?.includes(tag.id));
   const filteredTags = tags.filter((tag) => {
@@ -36,6 +38,7 @@ export function TagsSelector({ value, onChangeValue, teamId }: TagsSelectorProps
 
     return doesInclude;
   });
+  const team = teamId ? getTeamSync(teamId) : null;
 
   const onCreateTag = async () => {
     try {
@@ -111,9 +114,14 @@ export function TagsSelector({ value, onChangeValue, teamId }: TagsSelectorProps
                 />
                 <span>{tag.name}</span>
                 {tag.teamId && (
-                  <span>
-                    {' '}
-                    <UsersIcon className="inline text-gray-400" size={16} />
+                  <span title={`This tag is shared with ${team?.name ?? 'your team'}`}>
+                    <UsersIcon
+                      className="inline text-gray-400"
+                      size={16}
+                      style={{
+                        color: team?.color ?? undefined,
+                      }}
+                    />
                   </span>
                 )}
               </CommandItem>

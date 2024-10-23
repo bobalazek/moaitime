@@ -11,6 +11,7 @@ import {
 } from '@moaitime/web-ui';
 
 import UsageBadge from '../../../core/components/UsageBadge';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 import { useListsStore } from '../../state/listsStore';
 import ListItemActions from '../list-item/ListItemActions';
 import ListsHeaderActions from './ListsHeaderActions';
@@ -26,6 +27,10 @@ const ListsListItem = ({
   onClick?: (list?: List) => void;
   tasksCount?: number;
 }) => {
+  const { getTeamSync } = useTeamsStore();
+
+  const team = list.teamId ? getTeamSync(list.teamId) : null;
+
   return (
     <DropdownMenuRadioItem
       key={list.id}
@@ -46,7 +51,15 @@ const ListsListItem = ({
         {typeof tasksCount !== 'undefined' && (
           <span className="text-gray-400"> ({tasksCount})</span>
         )}
-        {list.teamId && <UsersIcon className="ml-2 inline-block text-gray-400" size={16} />}
+        {list.teamId && (
+          <span title={`This list is shared with ${team?.name ?? 'your team'}`}>
+            <UsersIcon
+              className="ml-2 inline-block text-gray-400"
+              size={16}
+              style={{ color: team?.color ?? undefined }}
+            />
+          </span>
+        )}
       </span>
       {showListActions && (
         <div className="absolute right-1 top-1 ml-2">

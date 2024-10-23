@@ -28,7 +28,7 @@ export default function CalendarEditDialog() {
     deleteCalendar,
     setSelectedCalendarDialogOpen,
   } = useCalendarStore();
-  const { joinedTeam } = useTeamsStore();
+  const { joinedTeam, getTeamSync } = useTeamsStore();
   const [data, setData] = useState<CreateCalendar | UpdateCalendar>();
 
   useEffect(() => {
@@ -46,6 +46,7 @@ export default function CalendarEditDialog() {
     });
   }, [selectedCalendarDialog]);
 
+  const team = selectedCalendarDialog?.teamId ? getTeamSync(selectedCalendarDialog.teamId) : null;
   const calendarExists = !!selectedCalendarDialog?.id;
 
   const onDeleteButtonClick = async () => {
@@ -152,7 +153,13 @@ export default function CalendarEditDialog() {
         </div>
         {calendarExists && selectedCalendarDialog?.teamId && (
           <div className="text-muted-foreground text-xs">
-            <UsersIcon className="mr-1 inline-block" size={16} />
+            <UsersIcon
+              className="mr-2 inline-block"
+              size={16}
+              style={{
+                color: team?.color ?? undefined,
+              }}
+            />
             This calendar is shared with your team.
           </div>
         )}

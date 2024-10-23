@@ -43,6 +43,20 @@ export class TeamsManager {
     return this.findManyByUserId(actorUserId);
   }
 
+  async get(actorUserId: string, teamId: string) {
+    const canView = await this.userCanView(actorUserId, teamId);
+    if (!canView) {
+      throw new Error('You cannot view this team');
+    }
+
+    const team = await this.findOneById(teamId);
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    return team;
+  }
+
   async update(actorUserId: string, teamId: string, data: UpdateTeam) {
     const canView = await this.userCanUpdate(actorUserId, teamId);
     if (!canView) {

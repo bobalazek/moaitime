@@ -13,6 +13,7 @@ export const TeamPermissionsSchema = PermissionsSchema.extend({
 export const TeamSchema = z.object({
   id: z.string(),
   name: z.string(),
+  color: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   permissions: TeamPermissionsSchema.optional(),
@@ -20,6 +21,7 @@ export const TeamSchema = z.object({
 
 export const CreateTeamSchema = z.object({
   name: z.string({ required_error: 'Name is required' }),
+  color: z.string().optional(),
 });
 
 export const UpdateTeamSchema = CreateTeamSchema.partial();

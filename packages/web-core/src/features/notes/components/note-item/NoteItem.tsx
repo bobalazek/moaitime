@@ -3,10 +3,14 @@ import { TrashIcon, UsersIcon } from 'lucide-react';
 
 import { Note } from '@moaitime/shared-common';
 
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 import { useNotesStore } from '../../state/notesStore';
 
 const NoteItem = ({ note, isSelected }: { note: Note; isSelected?: boolean }) => {
   const { setSelectedNote } = useNotesStore();
+  const { getTeamSync } = useTeamsStore();
+
+  const team = note.teamId ? getTeamSync(note.teamId) : null;
 
   return (
     <div
@@ -21,7 +25,15 @@ const NoteItem = ({ note, isSelected }: { note: Note; isSelected?: boolean }) =>
     >
       <div className="truncate" title={note.title} data-test="notes--note--title">
         {note.title || <span className="italic">Untitled</span>}
-        {note.teamId && <UsersIcon className="ml-2 inline-block" size={12} />}
+        {note.teamId && (
+          <UsersIcon
+            className="ml-2 inline-block"
+            size={12}
+            style={{
+              color: team?.color ?? undefined,
+            }}
+          />
+        )}
       </div>
 
       {note.deletedAt && (

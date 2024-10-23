@@ -17,6 +17,7 @@ import {
 } from '@moaitime/web-ui';
 
 import { useCalendarStore } from '../../../calendar/state/calendarStore';
+import { useTeamsStore } from '../../../teams/state/teamsStore';
 
 export type CalendarSelectorProps = {
   value?: string;
@@ -32,9 +33,11 @@ export function CalendarSelector({
   autoSelectFirstIfValueNoneSet,
 }: CalendarSelectorProps) {
   const { calendars } = useCalendarStore();
+  const { getTeamSync } = useTeamsStore();
   const [open, setOpen] = useState(false);
 
   const selectedCalendar = calendars.find((calendar) => calendar.id === value) ?? null;
+  const team = selectedCalendar?.teamId ? getTeamSync(selectedCalendar.teamId) : null;
 
   useEffect(() => {
     if (!autoSelectFirstIfValueNoneSet) {
@@ -96,9 +99,17 @@ export function CalendarSelector({
                   />
                   <span>{calendar.name}</span>
                   {calendar?.teamId && (
-                    <span className="ml-1">
-                      {' '}
-                      <UsersIcon className="inline text-gray-400" size={16} />
+                    <span
+                      className="ml-2"
+                      title={`This calendar is shared with ${team?.name ?? 'your team'}`}
+                    >
+                      <UsersIcon
+                        className="inline text-gray-400"
+                        size={16}
+                        style={{
+                          color: team?.color ?? undefined,
+                        }}
+                      />
                     </span>
                   )}
                 </CommandItem>

@@ -12,6 +12,7 @@ import {
   sonnerToast,
 } from '@moaitime/web-ui';
 
+import { ColorSelector } from '../../../core/components/selectors/ColorSelector';
 import { useTeamsStore } from '../../state/teamsStore';
 
 export default function TeamEditDialog() {
@@ -34,6 +35,7 @@ export default function TeamEditDialog() {
 
     setData({
       name: selectedTeam.name,
+      color: selectedTeam.color,
     });
   }, [selectedTeam]);
 
@@ -114,6 +116,15 @@ export default function TeamEditDialog() {
             onChange={(event) => {
               setData((current) => ({ ...current, name: event.target.value }));
             }}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="team-edit-color">Color</Label>
+          <ColorSelector
+            value={data?.color ?? undefined}
+            onChangeValue={(value) =>
+              setData((current) => ({ ...current, color: value ?? null }) as CreateTeam)
+            }
           />
         </div>
         <div className="flex flex-row justify-between gap-2">

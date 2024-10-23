@@ -23,7 +23,7 @@ import { useTagsStore } from '../../state/tagsStore';
 export default function TagEditDialog() {
   const { selectedTagDialogOpen, setSelectedTagDialogOpen, selectedTagDialog, addTag, editTag } =
     useTagsStore();
-  const { joinedTeam } = useTeamsStore();
+  const { joinedTeam, getTeamSync } = useTeamsStore();
   const [data, setData] = useState<CreateTag | UpdateTag>();
 
   useEffect(() => {
@@ -62,6 +62,8 @@ export default function TagEditDialog() {
     }
   };
 
+  const team = selectedTagDialog?.teamId ? getTeamSync(selectedTagDialog.teamId) : null;
+
   return (
     <Dialog open={selectedTagDialogOpen} onOpenChange={setSelectedTagDialogOpen}>
       <DialogContent data-test="tasks--tag-edit-dialog">
@@ -99,7 +101,13 @@ export default function TagEditDialog() {
           </div>
           {selectedTagDialog && selectedTagDialog?.teamId && (
             <div className="text-muted-foreground text-xs">
-              <UsersIcon className="mr-1 inline-block" size={16} />
+              <UsersIcon
+                className="mr-1 inline-block"
+                size={16}
+                style={{
+                  color: team?.color ?? undefined,
+                }}
+              />
               This tag was created and is owned by your team.
             </div>
           )}

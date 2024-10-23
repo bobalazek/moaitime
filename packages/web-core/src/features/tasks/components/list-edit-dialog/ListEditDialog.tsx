@@ -33,7 +33,7 @@ export default function ListEditDialog() {
     addList,
     editList,
   } = useListsStore();
-  const { joinedTeam } = useTeamsStore();
+  const { joinedTeam, getTeamSync } = useTeamsStore();
   const [data, setData] = useState<CreateList | UpdateList>();
 
   useEffect(() => {
@@ -72,6 +72,8 @@ export default function ListEditDialog() {
     }
   };
 
+  const team = selectedListDialog?.teamId ? getTeamSync(selectedListDialog.teamId) : null;
+
   return (
     <Dialog open={selectedListDialogOpen} onOpenChange={setSelectedListDialogOpen}>
       <DialogContent data-test="tasks--list-edit-dialog">
@@ -108,8 +110,17 @@ export default function ListEditDialog() {
             />
           </div>
           {selectedListDialog && selectedListDialog?.teamId && (
-            <div className="text-muted-foreground text-xs">
-              <UsersIcon className="mr-1 inline-block" size={16} />
+            <div
+              className="text-muted-foreground text-xs"
+              title={`This list is shared with ${team?.name ?? 'your team'}`}
+            >
+              <UsersIcon
+                className="mr-2 inline-block"
+                size={16}
+                style={{
+                  color: team?.color ?? undefined,
+                }}
+              />
               This list was created and is owned by your team.
             </div>
           )}

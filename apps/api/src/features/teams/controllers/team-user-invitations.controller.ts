@@ -1,4 +1,13 @@
-import { Controller, Delete, NotFoundException, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
 
 import { teamsManager } from '@moaitime/database-services';
@@ -9,6 +18,17 @@ import { AuthenticatedGuard } from '../../auth/guards/authenticated.guard';
 
 @Controller('/api/v1/team-user-invitations')
 export class TeamUserInvitationsController {
+  @UseGuards(AuthenticatedGuard)
+  @Get('my')
+  async my(@Req() req: Request): Promise<AbstractResponseDto<TeamUserInvitation[]>> {
+    const data = await teamsManager.getUserInvitations(req.user.id, req.user.email);
+
+    return {
+      success: true,
+      data: data as unknown as TeamUserInvitation[],
+    };
+  }
+
   @UseGuards(AuthenticatedGuard)
   @Post(':teamUserInvitationId/accept')
   async accept(

@@ -187,7 +187,7 @@ export const deleteTeamInvitation = async (teamUserInvitationId: string) => {
 /********** My Team Invitations **********/
 export const getMyTeamInvitations = async () => {
   const response = await fetchJson<ResponseInterface<TeamUserInvitation[]>>(
-    `${API_URL}/api/v1/my-team-user-invitations`,
+    `${API_URL}/api/v1/team-user-invitations/my`,
     {
       method: 'GET',
     }

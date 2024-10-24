@@ -63,7 +63,7 @@ export function ListSelector({ value, onChangeValue }: ListSelectorProps) {
           <CommandInput placeholder="Search lists ..." />
           <CommandEmpty>No list found.</CommandEmpty>
           <CommandList>
-            <CommandGroup>
+            <CommandGroup className="w-full max-w-[420px]">
               {showUnlistedList && (
                 <CommandItem
                   onSelect={() => {

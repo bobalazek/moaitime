@@ -133,22 +133,24 @@ export function TaskAutocomplete({
         }}
         data-test="task-autocomplete"
       >
-        {tasks.map((task) => (
-          <button
-            type="button"
-            key={task.id}
-            onClick={() => onSelectTaskButtonClick(task)}
-            className={cn(
-              'hover:bg-accent hover:text-accent-foreground w-full px-4 py-2 text-left focus:outline-none',
-              {
-                'bg-accent text-accent-foreground': task.id === focusedTaskId,
-              }
-            )}
-          >
-            {task.name}
-            {task.list && ` (${task.list.name})`}
-          </button>
-        ))}
+        <div className="max-w-[420px] overflow-y-auto">
+          {tasks.map((task) => (
+            <button
+              type="button"
+              key={task.id}
+              onClick={() => onSelectTaskButtonClick(task)}
+              className={cn(
+                'hover:bg-accent hover:text-accent-foreground w-full px-4 py-2 text-left focus:outline-none',
+                {
+                  'bg-accent text-accent-foreground': task.id === focusedTaskId,
+                }
+              )}
+            >
+              {task.name}
+              {task.list && ` (${task.list.name})`}
+            </button>
+          ))}
+        </div>
       </PopoverContent>
     </Popover>
   );

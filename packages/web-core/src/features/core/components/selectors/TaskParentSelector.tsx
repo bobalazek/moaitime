@@ -87,7 +87,7 @@ export function TaskParentSelector({
           />
           <CommandEmpty>No task found.</CommandEmpty>
           <CommandList>
-            <CommandGroup className="w-full">
+            <CommandGroup className="w-full max-w-[420px]">
               {!commandValue && (
                 <CommandItem
                   value={EMPTY_VALUE_PLACEHOLDER}
@@ -117,15 +117,17 @@ export function TaskParentSelector({
                     setOpen(false);
                   }}
                   disabled={disabledTaskIds.includes(task.id)}
-                  className="w-full cursor-pointer"
+                  className="cursor-pointer"
                 >
-                  <CheckIcon
-                    className={clsx(
-                      'mr-2 h-4 w-4',
-                      value === task.id ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
-                  <div className="truncate">{task.name}</div>
+                  <div className="flex w-full items-center">
+                    <CheckIcon
+                      className={clsx(
+                        'mr-2 h-4 w-4 flex-shrink-0',
+                        value === task.id ? 'opacity-100' : 'opacity-0'
+                      )}
+                    />
+                    <div className="min-w-0 flex-1 truncate">{task.name}</div>
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>

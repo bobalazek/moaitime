@@ -77,7 +77,7 @@ export function CalendarSelector({
           <CommandInput placeholder="Search calendars ..." />
           <CommandEmpty>No calendar found.</CommandEmpty>
           <CommandList>
-            <CommandGroup>
+            <CommandGroup className="w-full max-w-[420px]">
               {calendars.map((calendar) => (
                 <CommandItem
                   key={calendar.id}

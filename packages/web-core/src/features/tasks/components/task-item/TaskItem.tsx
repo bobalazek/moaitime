@@ -18,7 +18,13 @@ import TaskItemPriority from './TaskItemPriority';
 import TaskItemTags from './TaskItemTags';
 import TaskItemUsers from './TaskItemUsers';
 
-const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) => {
+export type TaskItemProps = {
+  task: TaskType;
+  setCanDrag?: (canDrag: boolean) => void;
+  depth?: number;
+};
+
+const TaskItem = memo(({ task, setCanDrag, depth = 0 }: TaskItemProps) => {
   const { highlightedTaskId, setSelectedTaskDialogOpen, editTask, completeTask, uncompleteTask } =
     useTasksStore();
   const [showConfetti, setShowConfetti] = useState(false);
@@ -52,6 +58,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
       }
 
       textElementRef.current.contentEditable = 'true';
+      setCanDrag?.(false); // Prevent dragging when editing
 
       setTimeout(() => {
         if (!textElementRef.current) {
@@ -65,7 +72,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
         }
       }, 0);
     },
-    []
+    [setCanDrag]
   );
 
   const onKeyDown = async (event: React.KeyboardEvent) => {
@@ -84,6 +91,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
     const name = e.target.innerText.trim();
     if (name === task.name) {
       e.target.contentEditable = 'false';
+      setCanDrag?.(true); // Allow dragging when not editing
 
       return;
     }
@@ -95,6 +103,7 @@ const TaskItem = memo(({ task, depth = 0 }: { task: TaskType; depth?: number }) 
     }
 
     e.target.contentEditable = 'false';
+    setCanDrag?.(true); // Allow dragging when not editing
   };
 
   const onCompleteCheckboxToggle = async (value: boolean) => {

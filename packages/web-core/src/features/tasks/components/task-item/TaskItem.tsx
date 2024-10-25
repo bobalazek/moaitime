@@ -58,7 +58,7 @@ const TaskItem = memo(({ task, setCanDrag, depth = 0 }: TaskItemProps) => {
       }
 
       textElementRef.current.contentEditable = 'true';
-      setCanDrag?.(false); // Prevent dragging when editing
+      setCanDrag?.(false);
 
       setTimeout(() => {
         if (!textElementRef.current) {
@@ -91,7 +91,7 @@ const TaskItem = memo(({ task, setCanDrag, depth = 0 }: TaskItemProps) => {
     const name = e.target.innerText.trim();
     if (name === task.name) {
       e.target.contentEditable = 'false';
-      setCanDrag?.(true); // Allow dragging when not editing
+      setCanDrag?.(true);
 
       return;
     }
@@ -103,7 +103,7 @@ const TaskItem = memo(({ task, setCanDrag, depth = 0 }: TaskItemProps) => {
     }
 
     e.target.contentEditable = 'false';
-    setCanDrag?.(true); // Allow dragging when not editing
+    setCanDrag?.(true);
   };
 
   const onCompleteCheckboxToggle = async (value: boolean) => {

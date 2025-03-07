@@ -17,7 +17,7 @@ RUN npm install -g turbo@2.1.3
 COPY . .
 
 RUN turbo prune ${PROJECT} --docker
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
+RUN pnpm install --frozen-lockfile --ignore-scripts
 RUN pnpm turbo run build --filter=${PROJECT}
 RUN pnpm --filter=${PROJECT} --prod deploy pruned
 

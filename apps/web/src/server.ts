@@ -63,8 +63,7 @@ const server = Bun.serve({
         '<!-- injected globals script -->',
         `<script>
           window.globals = ${JSON.stringify(globals)};
-        </script>
-        </head>`
+        </script>`
       );
 
       return new Response(content, {
